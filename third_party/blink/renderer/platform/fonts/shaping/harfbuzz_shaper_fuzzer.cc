@@ -55,7 +55,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   NGTextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
                                     result_view.get()};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
-      font.GetFontDescription(), 1, text_info.text, text_info.from,
+      font.GetFontDescription(), false, text_info.text, text_info.from,
       text_info.to, text_info.shape_result,
       ShapeResultBloberizer::Type::kEmitText);
   bloberizer_ng.Blobs();
@@ -79,7 +79,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     ShapeResultBuffer buffer;
     word_shaper.FillResultBuffer(subrun_info, &buffer);
     ShapeResultBloberizer::FillGlyphs bloberizer(
-        font.GetFontDescription(), 1, subrun_info, buffer,
+        font.GetFontDescription(), false, subrun_info, buffer,
         ShapeResultBloberizer::Type::kEmitText);
     bloberizer.Blobs();
   }

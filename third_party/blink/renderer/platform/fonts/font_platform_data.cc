@@ -234,10 +234,10 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
   return result;
 }
 
-SkFont FontPlatformData::CreateSkFont(float device_scale_factor,
+SkFont FontPlatformData::CreateSkFont(bool should_use_subpixel_positioning,
                                       const FontDescription*) const {
   SkFont font;
-  style_.ApplyToSkFont(&font, device_scale_factor);
+  style_.ApplyToSkFont(&font, should_use_subpixel_positioning);
 
   const float ts = text_size_ >= 0 ? text_size_ : 12;
   font.setSize(SkFloatToScalar(ts));

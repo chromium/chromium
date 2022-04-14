@@ -131,7 +131,7 @@ class PLATFORM_EXPORT FontPlatformData {
   const WebFontRenderStyle& GetFontRenderStyle() const { return style_; }
 #endif
 
-  SkFont CreateSkFont(float device_scale_factor = 1,
+  SkFont CreateSkFont(bool should_use_subpixel_positioning = false,
                       const FontDescription* = nullptr) const;
 
   // Computes a digest from the typeface. The digest only depends on the

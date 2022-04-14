@@ -259,7 +259,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
 }
 
 SkFont FontPlatformData::CreateSkFont(
-    float,
+    bool,
     const FontDescription* font_description) const {
   bool should_smooth_fonts = true;
   bool should_antialias = true;

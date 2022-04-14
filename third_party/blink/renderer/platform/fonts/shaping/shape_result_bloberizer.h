@@ -33,9 +33,9 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   struct FillGlyphs;
   struct FillTextEmphasisGlyphs;
 
-  ShapeResultBloberizer(const FontDescription&,
-                        float device_scale_factor,
-                        Type);
+  explicit ShapeResultBloberizer(const FontDescription&,
+                                 bool should_use_subpixel_antialiasing,
+                                 Type);
   ShapeResultBloberizer(const ShapeResultBloberizer&) = delete;
   ShapeResultBloberizer& operator=(const ShapeResultBloberizer&) = delete;
 
@@ -169,7 +169,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   bool HasPendingVerticalOffsets() const;
 
   const FontDescription& font_description_;
-  const float device_scale_factor_;
+  const bool should_use_subpixel_antialiasing_;
   const Type type_;
 
   // Current text blob state.
@@ -204,7 +204,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphsNG
     : public ShapeResultBloberizer {
   FillGlyphsNG(const FontDescription&,
-               float device_scale_factor,
+               bool should_use_subpixel_antialiasing,
                const StringView&,
                unsigned from,
                unsigned to,
@@ -214,7 +214,7 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphsNG
 struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphsNG
     : public ShapeResultBloberizer {
   FillTextEmphasisGlyphsNG(const FontDescription&,
-                           float device_scale_factor,
+                           bool should_use_subpixel_antialiasing,
                            const StringView&,
                            unsigned from,
                            unsigned to,
@@ -225,7 +225,7 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphsNG
 struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
     : public ShapeResultBloberizer {
   FillGlyphs(const FontDescription&,
-             float device_scale_factor,
+             bool should_use_subpixel_antialiasing,
              const TextRunPaintInfo&,
              const ShapeResultBuffer&,
              Type);
@@ -233,7 +233,7 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
 struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphs
     : public ShapeResultBloberizer {
   FillTextEmphasisGlyphs(const FontDescription&,
-                         float device_scale_factor,
+                         bool should_use_subpixel_antialiasing,
                          const TextRunPaintInfo&,
                          const ShapeResultBuffer&,
                          const GlyphData& emphasis_data);

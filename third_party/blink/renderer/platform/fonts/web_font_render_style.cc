@@ -96,8 +96,9 @@ void WebFontRenderStyle::OverrideWith(const WebFontRenderStyle& other) {
     use_subpixel_positioning = other.use_subpixel_positioning;
 }
 
-void WebFontRenderStyle::ApplyToSkFont(SkFont* font,
-                                       float device_scale_factor) const {
+void WebFontRenderStyle::ApplyToSkFont(
+    SkFont* font,
+    bool should_use_subpixel_positioning) const {
   auto sk_hint_style = static_cast<SkFontHinting>(hint_style);
   font->setHinting(sk_hint_style);
   font->setEmbeddedBitmaps(use_bitmaps);
@@ -112,9 +113,9 @@ void WebFontRenderStyle::ApplyToSkFont(SkFont* font,
 
   // Force-enable subpixel positioning, except when full hinting is requested on
   // low-dpi screen or when running web tests.
-  bool force_subpixel_positioning =
-      !WebTestSupport::IsRunningWebTest() &&
-      (sk_hint_style != SkFontHinting::kFull || device_scale_factor > 1.0f);
+  bool force_subpixel_positioning = !WebTestSupport::IsRunningWebTest() &&
+                                    (sk_hint_style != SkFontHinting::kFull ||
+                                     should_use_subpixel_positioning);
 
   font->setSubpixel(force_subpixel_positioning || use_subpixel_positioning);
 
