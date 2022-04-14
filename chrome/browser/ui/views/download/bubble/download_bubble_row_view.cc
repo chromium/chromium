@@ -165,10 +165,6 @@ void DownloadBubbleRowView::LoadIcon() {
     return;
   }
 
-  // Don't try to load icon from the same file path again.
-  if (last_used_file_path_ == file_path)
-    return;
-  last_used_file_path_ = file_path;
   IconManager* const im = g_browser_process->icon_manager();
   const gfx::Image* const file_icon_image =
       im->LookupIconFromFilepath(file_path, IconLoader::SMALL, current_scale_);
@@ -197,8 +193,10 @@ views::View* DownloadBubbleRowView::TargetForRect(views::View* root,
 
   views::View* v = views::ViewTargeterDelegate::TargetForRect(root, rect);
   // Return the button if that is the target.
-  if (v && (v == cancel_button_ || v == discard_button_ || v == scan_button_))
+  if (v && (v == cancel_button_ || v == discard_button_ || v == scan_button_ ||
+            v == open_now_button_)) {
     return v;
+  }
   // All events go to this otherwise.
   return this;
 }
@@ -281,6 +279,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   scan_button_ =
       AddMainPageButton(DownloadCommands::DEEP_SCAN,
                         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN));
+  open_now_button_ = AddMainPageButton(
+      DownloadCommands::BYPASS_DEEP_SCANNING,
+      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_NOW));
 
   subpage_icon_ = main_row_->AddChildView(std::make_unique<views::ImageView>());
   subpage_icon_->SetProperty(views::kMarginsKey,
@@ -331,6 +332,8 @@ void DownloadBubbleRowView::UpdateButtonsForItems() {
                               DownloadCommands::DISCARD);
   scan_button_->SetVisible(ui_info_.primary_button_command ==
                            DownloadCommands::DEEP_SCAN);
+  open_now_button_->SetVisible(ui_info_.primary_button_command ==
+                               DownloadCommands::BYPASS_DEEP_SCANNING);
 
   subpage_icon_->SetVisible(ui_info_.has_subpage);
 }
@@ -352,8 +355,12 @@ void DownloadBubbleRowView::UpdateProgressBar() {
           gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
               views::DISTANCE_RELATED_CONTROL_VERTICAL)));
     }
-    progress_bar_->SetValue(static_cast<double>(model_->PercentComplete()) /
-                            100);
+    if (ui_info_.is_progress_bar_looping) {
+      progress_bar_->SetValue(-1);
+    } else {
+      progress_bar_->SetValue(static_cast<double>(model_->PercentComplete()) /
+                              100);
+    }
     return;
   }
 

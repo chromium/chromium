@@ -22,21 +22,8 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
 
   PrefService* prefs = profile->GetPrefs();
 
-  // TODO(crbug.com/1307021): Enable download bubble for enhanced protection
-  // users, advanced protection users and enterprise connector users once it
-  // supports deep scanning.
-  if (safe_browsing::IsEnhancedProtectionEnabled(*prefs)) {
-    return false;
-  }
-
-  auto* advanced_protection_manager =
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile);
-  if (advanced_protection_manager &&
-      advanced_protection_manager->IsUnderAdvancedProtection()) {
-    return false;
-  }
-
+  // TODO(crbug.com/1307021): Enable download bubble for enterprise connector
+  // users once it supports enterprise deep scanning workflow.
   auto* connector_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile);

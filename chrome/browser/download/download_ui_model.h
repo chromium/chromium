@@ -86,6 +86,7 @@ class DownloadUIModel {
   struct BubbleUIInfo {
     // has a progress bar and a cancel button.
     bool has_progress_bar = false;
+    bool is_progress_bar_looping = false;
     // kColorAlertHighSeverity, kColorAlertMediumSeverity, or
     // kColorSecondaryForeground
     ui::ColorId secondary_color = ui::kColorSecondaryForeground;
@@ -126,6 +127,7 @@ class DownloadUIModel {
     BubbleUIInfo& AddCheckbox(const std::u16string& label);
     BubbleUIInfo& AddSubpageButton(const std::u16string& label,
                                    DownloadCommands::Command command);
+    BubbleUIInfo& SetProgressBarLooping();
   };
 #endif
 

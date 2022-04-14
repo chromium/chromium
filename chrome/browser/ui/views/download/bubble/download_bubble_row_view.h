@@ -108,6 +108,7 @@ class DownloadBubbleRowView : public HoverButton,
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   raw_ptr<views::MdTextButton> discard_button_ = nullptr;
   raw_ptr<views::MdTextButton> scan_button_ = nullptr;
+  raw_ptr<views::MdTextButton> open_now_button_ = nullptr;
 
   // Main row of the download row, everything above the progress bar.
   raw_ptr<views::View> main_row_ = nullptr;
@@ -140,7 +141,6 @@ class DownloadBubbleRowView : public HoverButton,
   DownloadUIModel::BubbleUIInfo ui_info_;
 
   const gfx::VectorIcon* last_overriden_icon_ = nullptr;
-  base::FilePath last_used_file_path_;
   bool already_set_default_icon_ = false;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};

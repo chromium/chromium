@@ -54,20 +54,6 @@ TEST_F(DownloadBubblePrefsTest, FeatureFlagDisabled) {
   EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));
 }
 
-TEST_F(DownloadBubblePrefsTest, EnhancedProtectionEnabled) {
-  feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));
-}
-
-TEST_F(DownloadBubblePrefsTest, AdvancedProtectionEnabled) {
-  feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
-  safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(profile_)
-      ->SetAdvancedProtectionStatusForTesting(true);
-  EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));
-}
-
 TEST_F(DownloadBubblePrefsTest, DownloadBubbleEnabledManaged) {
   feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);

@@ -2593,6 +2593,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Label for the button prompting to bypass Deep Scanning">
         Open
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN_NOW"
+               desc="Label for the button prompting to open a download while deep scanning is in progress">
+        Open Now
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_DISK_FULL"
                desc="Status text for a download item that was interrupted because there is not enough room on the disk to download this file.">
         Out of storage space
@@ -2720,6 +2724,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
                desc="Prompt for Deep Scanning of a download">
         Scan before opening
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING"
+               desc="Status text for a download item that is being scanned.">
+        Scanning...
       </message>
 
       <!-- Desktop omnibox PWA install icon -->
