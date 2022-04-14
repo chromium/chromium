@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_VIEW_H_
 
 #include "components/user_notes/browser/user_note_instance.h"
+#include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/view.h"
 
 // View of a user note in the side panel in multiple states. The view in the
@@ -43,10 +44,13 @@ class UserNoteView : public views::View {
   std::unique_ptr<views::View> CreateHeaderView(std::string& note_date);
   std::unique_ptr<views::View> CreateQuoteView(std::string& note_quote);
   std::unique_ptr<views::View> CreateBodyView(std::string& note_text);
-  std::unique_ptr<views::View> CreateButtonsView();
-  std::unique_ptr<views::View> CreateTextareaView(std::string& text);
+
+  void OnCancelNewUserNote();
+  void OnAddUserNote();
 
   raw_ptr<user_notes::UserNoteInstance> user_note_instance_;
+  raw_ptr<views::Textarea> text_area_;
+  raw_ptr<views::View> button_container_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_VIEW_H_
