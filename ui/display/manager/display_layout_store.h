@@ -12,6 +12,7 @@
 
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_export.h"
 
 namespace display {
@@ -41,19 +42,33 @@ class DISPLAY_MANAGER_EXPORT DisplayLayoutStore {
   void RegisterLayoutForDisplayIdList(const DisplayIdList& list,
                                       std::unique_ptr<DisplayLayout> layout);
 
-  // If no layout is registered, it creatas new layout using
-  // |default_display_layout_|.
+  // Returns a layout for given `display_id_list` or fails with DCHECK if not
+  // exist.
   const DisplayLayout& GetRegisteredDisplayLayout(const DisplayIdList& list);
 
   // Update the default unified desktop mode in the display layout for
-  // |display_list|.  This creates new display layout if no layout is
-  // registered for |display_list|.
+  // |display_list|.
   void UpdateDefaultUnified(const DisplayIdList& display_list,
                             bool default_unified);
 
  private:
+  friend void DisplayManager::UpdateDisplaysWith(
+      const std::vector<ManagedDisplayInfo>& updated_display_info_list);
+
+  // Returns a layout for the given `display_id_list` or create one if no layout
+  // has been registered. This should be created at the designated point only
+  // (currently in `DisplayManager::UpdateDisplayWith()` to ensure we do not
+  // generate a new layout in random places. This is private so that only
+  // `DisplayManager::UpdateDisplaysWith()` can call this method.
+  const DisplayLayout& GetOrCreateRegisteredDisplayLayout(
+      const DisplayIdList& display_id_list);
+
   // Creates new layout for display list from |default_display_layout_|.
   DisplayLayout* CreateDefaultDisplayLayout(const DisplayIdList& display_list);
+
+  const DisplayLayout& GetOrCreateRegisteredDisplayLayoutInternal(
+      const DisplayIdList& list,
+      bool create_if_not_exist);
 
   // The default display placement.
   DisplayPlacement default_display_placement_;

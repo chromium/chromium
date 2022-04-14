@@ -318,7 +318,7 @@ class DisplayPrefsTestGuest : public DisplayPrefsTest {
 TEST_F(DisplayPrefsTest, ListedLayoutOverrides) {
   UpdateDisplay("200x100,300x200");
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   display::DisplayIdList dummy_list = display::test::CreateDisplayIdList2(
       list[0], display::GetNextSynthesizedDisplayId(list[1]));
   ASSERT_NE(list[0], dummy_list[1]);
@@ -1154,7 +1154,7 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
   display_manager()->SetUnifiedDesktopEnabled(true);
 
   UpdateDisplay("300x200,200x100");
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   EXPECT_EQ(gfx::Size(700, 200),
             display::Screen::GetScreen()->GetPrimaryDisplay().size());
 
@@ -1278,7 +1278,7 @@ TEST_F(DisplayPrefsTest, SaveThreeDisplays) {
   LoggedInAsUser();
   UpdateDisplay("300x200,300x200,400x300");
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(3u, list.size());
 
   display::DisplayLayoutBuilder builder(list[0]);
@@ -1310,7 +1310,7 @@ TEST_F(DisplayPrefsTest, RestoreThreeDisplays) {
 
   UpdateDisplay("300x200,300x200,400x300");
   display::DisplayIdList new_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(3u, list.size());
   ASSERT_EQ(list[0], new_list[0]);
   ASSERT_EQ(list[1], new_list[1]);
@@ -1678,7 +1678,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
 TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   UpdateDisplay("480x320/r@1.25,640x480/l@1.3,320x240@1.2");
 
-  display::DisplayIdList ids = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList ids = display_manager()->GetConnectedDisplayIdList();
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
 

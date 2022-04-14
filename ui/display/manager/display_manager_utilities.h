@@ -66,8 +66,11 @@ DISPLAY_MANAGER_EXPORT bool ComputeBoundary(const Display& display_a,
                                             gfx::Rect* a_edge_in_screen,
                                             gfx::Rect* b_edge_in_screen);
 
-// Sorts id list using |CompareDisplayIds| below.
+// Sorts id list using `CompareDisplayIds()` in display.h.
 DISPLAY_MANAGER_EXPORT void SortDisplayIdList(DisplayIdList* list);
+
+// Check if the list is sorted using `CompareDisplayIds()` in display.h.
+DISPLAY_MANAGER_EXPORT bool IsDisplayIdListSorted(const DisplayIdList& list);
 
 // Default id generator.
 class DefaultDisplayIdGenerator {

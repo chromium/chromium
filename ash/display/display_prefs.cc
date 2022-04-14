@@ -489,7 +489,7 @@ void StoreCurrentDisplayLayoutPrefs(PrefService* pref_service) {
     return;
   }
 
-  display::DisplayIdList list = display_manager->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager->GetConnectedDisplayIdList();
   const display::DisplayLayout& display_layout =
       display_manager->layout_store()->GetRegisteredDisplayLayout(list);
 

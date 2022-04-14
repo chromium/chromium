@@ -124,6 +124,9 @@ class DISPLAY_EXPORT DisplayLayout final {
   // as mirrored, primary_id are ignored.
   bool HasSamePlacementList(const DisplayLayout& layout) const;
 
+  // Removes the display placemenats created for `display_id_list`.
+  void RemoveDisplayPlacements(const DisplayIdList& display_id_list);
+
   // Returns string representation of the layout for debugging/testing.
   std::string ToString() const;
 

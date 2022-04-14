@@ -47,7 +47,7 @@ TEST_F(StickyKeysOverlayTest, OverlayNotDestroyedAfterDisplayRemoved) {
   // Add a secondary display to the left of the primary one.
   UpdateDisplay("1280x1024,1980x1080");
   display::DisplayIdList display_ids =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   int64_t primary_display_id = display_ids[0];
   int64_t secondary_display_id = display_ids[1];
   display_manager()->SetLayoutForCurrentDisplays(

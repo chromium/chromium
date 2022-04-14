@@ -2490,7 +2490,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopEnabledWithExtended) {
   Shell::GetPrimaryRootWindow()->RemoveObserver(this);
 
   UpdateDisplay("400x500,300x200");
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   display::DisplayLayoutBuilder builder(
       display_manager()->layout_store()->GetRegisteredDisplayLayout(list));
   builder.SetDefaultUnified(false);
@@ -2652,7 +2652,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopInvalidMatrices) {
   display_manager()->SetUnifiedDesktopEnabled(true);
   display::Screen* screen = display::Screen::GetScreen();
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(2u, list.size());
   {
     // Create an empty matrix.
@@ -2691,7 +2691,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopInvalidMatrices) {
 
   // Switch to 3 displays.
   UpdateDisplay("500x300,400x500,500x300");
-  list = display_manager()->GetCurrentDisplayIdList();
+  list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(3u, list.size());
   {
     // Create a matrix with unequal rows
@@ -2728,7 +2728,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopVerticalLayout2x1) {
   // This is still a horizontal layout.
   EXPECT_EQ(gfx::Size(1150, 500), screen->GetPrimaryDisplay().size());
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(2u, list.size());
   {
     // Create a 2 x 1 vertical layout matrix and set it.
@@ -2833,7 +2833,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopVerticalLayout3x1) {
   display_manager()->SetUnifiedDesktopEnabled(true);
   display::Screen* screen = display::Screen::GetScreen();
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(3u, list.size());
   {
     // Create a 3 x 1 vertical layout matrix and set it.
@@ -2908,7 +2908,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopGridLayout2x2) {
   display_manager()->SetUnifiedDesktopEnabled(true);
   display::Screen* screen = display::Screen::GetScreen();
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(4u, list.size());
   // Create a 2 x 2 vertical layout matrix and set it.
   // [500 x 300] [400 x 500]
@@ -2970,7 +2970,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopGridLayout3x2) {
   display_manager()->SetUnifiedDesktopEnabled(true);
   display::Screen* screen = display::Screen::GetScreen();
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(6u, list.size());
   // Create a 3 x 2 vertical layout matrix and set it.
   // [500 x 300] [400 x 500]
@@ -3675,7 +3675,7 @@ TEST_F(DisplayManagerTest, ForcedMirrorMode) {
   observer.OnDisplayModeChanged(outputs);
 
   const display::DisplayIdList current_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   display_manager()->layout_store()->UpdateDefaultUnified(current_list,
                                                           false /* unified */);
   EXPECT_EQ(display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR,
@@ -4355,7 +4355,8 @@ TEST_F(DisplayManagerTest, MirrorModeRestore) {
 
 TEST_F(DisplayManagerTest, MixedMirrorModeBasics) {
   UpdateDisplay("300x400,400x500,500x600");
-  display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList id_list =
+      display_manager()->GetConnectedDisplayIdList();
 
   // Turn on mixed mirror mode. (Mirror from the first display to the second
   // display)
@@ -4371,16 +4372,23 @@ TEST_F(DisplayManagerTest, MixedMirrorModeBasics) {
   EXPECT_EQ(1U, destination_ids.size());
   EXPECT_EQ(id_list[1], destination_ids[0]);
   EXPECT_TRUE(display_manager()->mixed_mirror_mode_params());
+  EXPECT_EQ(gfx::Point(300, 0),
+            display_manager()->GetDisplayForId(id_list[2]).bounds().origin());
 
   // Turn off mirror mode.
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_FALSE(display_manager()->mixed_mirror_mode_params());
+  EXPECT_EQ(gfx::Point(300, 0),
+            display_manager()->GetDisplayForId(id_list[1]).bounds().origin());
+  EXPECT_EQ(gfx::Point(700, 0),
+            display_manager()->GetDisplayForId(id_list[2]).bounds().origin());
 }
 
 TEST_F(DisplayManagerTest, MixedMirrorModeToMirrorMode) {
   UpdateDisplay("300x400,400x500,500x600");
-  display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList id_list =
+      display_manager()->GetConnectedDisplayIdList();
 
   // Turn on mixed mirror mode. (Mirror from the first display to the second
   // display)
@@ -4411,7 +4419,8 @@ TEST_F(DisplayManagerTest, MixedMirrorModeToMirrorMode) {
 
 TEST_F(DisplayManagerTest, MirrorModeToMixedMirrorMode) {
   UpdateDisplay("300x400,400x500,500x600");
-  display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList id_list =
+      display_manager()->GetConnectedDisplayIdList();
 
   // Turn on mirror mode.
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);

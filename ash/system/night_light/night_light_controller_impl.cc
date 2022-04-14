@@ -294,7 +294,7 @@ void ApplyTemperatureToAllDisplays(float temperature) {
   Shell* shell = Shell::Get();
   WindowTreeHostManager* wth_manager = shell->window_tree_host_manager();
   for (int64_t display_id :
-       shell->display_manager()->GetCurrentDisplayIdList()) {
+       shell->display_manager()->GetConnectedDisplayIdList()) {
     DCHECK_NE(display_id, display::kUnifiedDisplayId);
 
     aura::Window* root_window =

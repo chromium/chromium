@@ -805,7 +805,7 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   if (layout.primary_id != new_primary_display.id()) {
     std::unique_ptr<display::DisplayLayout> swapped_layout = layout.Copy();
     swapped_layout->SwapPrimaryDisplay(new_primary_display.id());
-    display::DisplayIdList list = display_manager->GetCurrentDisplayIdList();
+    display::DisplayIdList list = display_manager->GetConnectedDisplayIdList();
     GetDisplayManager()->layout_store()->RegisterLayoutForDisplayIdList(
         list, std::move(swapped_layout));
   }

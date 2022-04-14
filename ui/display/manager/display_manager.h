@@ -170,8 +170,15 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Returns the actual display layout after it has been resolved and applied.
   const DisplayLayout& GetCurrentResolvedDisplayLayout() const;
 
-  // Returns the current display list.
-  DisplayIdList GetCurrentDisplayIdList() const;
+  // Returns the currently connected display list.
+  DisplayIdList GetConnectedDisplayIdList() const;
+
+  // Generates the connected display list that is the combination of currently
+  // connected but not considered as active display list, and the passed
+  // `display_id_list`. This is used during the display configuration where
+  // `active_display_list_` can be stale.
+  DisplayIdList GenerateConnectedDisplayIdListUsingDisplayIdList(
+      const DisplayIdList& display_id_list) const;
 
   // Sets the layout for the current display pair. The |layout| specifies the
   // locaion of the displays relative to their parents.
@@ -266,10 +273,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // configurations is passed as a vector of Display object, which contains each
   // display's new infomration.
   void OnNativeDisplaysChanged(
-      const std::vector<ManagedDisplayInfo>& display_info_list);
-
-  // Updates the internal display data and notifies observers about the changes.
-  void UpdateDisplaysWith(
       const std::vector<ManagedDisplayInfo>& display_info_list);
 
   // Updates current displays using current |display_info_|.
@@ -505,6 +508,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
  private:
   friend class test::DisplayManagerTestApi;
+  friend class DisplayLayoutStore;
 
   // See description above |notify_depth_| for details.
   class BeginEndNotifier {
@@ -523,6 +527,11 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void set_change_display_upon_host_resize(bool value) {
     change_display_upon_host_resize_ = value;
   }
+
+  // Updates the internal display data using `updated_display_info_list` and
+  // notifies observers about the changes.
+  void UpdateDisplaysWith(
+      const std::vector<ManagedDisplayInfo>& updated_display_info_list);
 
   // Creates software mirroring display related information. The display used to
   // mirror the content is removed from the |display_info_list|.
@@ -578,6 +587,8 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void UpdateInfoForRestoringMirrorMode();
 
   void UpdatePrimaryDisplayIdIfNecessary();
+
+  void UpdateLayoutForMixedMode();
 
   Delegate* delegate_ = nullptr;  // not owned.
 

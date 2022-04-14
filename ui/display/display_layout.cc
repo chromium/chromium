@@ -10,6 +10,7 @@
 #include <sstream>
 #include <unordered_map>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -622,6 +623,19 @@ void DisplayLayout::SwapPrimaryDisplay(int64_t new_primary_id) {
 
 bool DisplayLayout::HasSamePlacementList(const DisplayLayout& layout) const {
   return placement_list == layout.placement_list;
+}
+
+void DisplayLayout::RemoveDisplayPlacements(const DisplayIdList& list) {
+  placement_list.erase(
+      std::remove_if(placement_list.begin(), placement_list.end(),
+                     [list](const DisplayPlacement& placement) {
+                       return base::Contains(list, placement.display_id);
+                     }),
+      placement_list.end());
+  for (DisplayPlacement& placement : placement_list) {
+    if (base::Contains(list, placement.parent_display_id))
+      placement.parent_display_id = primary_id;
+  }
 }
 
 std::string DisplayLayout::ToString() const {

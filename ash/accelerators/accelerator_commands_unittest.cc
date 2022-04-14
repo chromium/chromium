@@ -90,7 +90,8 @@ TEST_F(AcceleratorCommandsTest, CycleSwapPrimaryDisplay) {
       .SetFirstDisplayAsInternalDisplay();
   UpdateDisplay("800x600,800x600,800x600");
 
-  display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList id_list =
+      display_manager()->GetConnectedDisplayIdList();
 
   ShiftPrimaryDisplay();
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
@@ -107,7 +108,8 @@ TEST_F(AcceleratorCommandsTest, CycleSwapPrimaryDisplay) {
 
 TEST_F(AcceleratorCommandsTest, CycleMixedMirrorModeSwapPrimaryDisplay) {
   UpdateDisplay("300x400,400x500,500x600");
-  display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList id_list =
+      display_manager()->GetConnectedDisplayIdList();
 
   // Turn on mixed mirror mode. (Mirror from the first display to the second
   // display)

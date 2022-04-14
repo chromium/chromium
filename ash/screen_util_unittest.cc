@@ -147,7 +147,7 @@ TEST_F(ScreenUtilTest, ShelfDisplayBoundsInUnifiedDesktopGrid) {
       nullptr, GetContext(), gfx::Rect(10, 10, 100, 100));
   aura::Window* window = widget->GetNativeWindow();
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(6u, list.size());
   // Create a 3 x 2 vertical layout matrix and set it.
   // [500 x 400] [400 x 600]

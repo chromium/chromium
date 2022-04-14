@@ -489,7 +489,7 @@ TEST_F(DragWindowResizerTest, DragWindowControllerAcrossThreeDisplays) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   // Layout so that all three displays touch each other.
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(3u, list.size());
   ASSERT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(), list[0]);
   display::DisplayLayoutBuilder builder(list[0]);
@@ -599,7 +599,7 @@ TEST_F(DragWindowResizerTest, DragWindowControllerWithCustomShadowBounds) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   // Layout so that all three displays touch each other.
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(3u, list.size());
   ASSERT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(), list[0]);
   display::DisplayLayoutBuilder builder(list[0]);

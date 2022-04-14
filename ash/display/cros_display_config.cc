@@ -210,7 +210,7 @@ mojom::DisplayConfigResult SetDisplayLayoutMode(
       absl::in_place, source.id(), destination_ids);
   const display::MixedMirrorModeParamsErrors error_type =
       display::ValidateParamsForMixedMirrorMode(
-          display_manager->GetCurrentDisplayIdList(), *mixed_params);
+          display_manager->GetConnectedDisplayIdList(), *mixed_params);
   switch (error_type) {
     case display::MixedMirrorModeParamsErrors::kErrorSingleDisplay:
       return mojom::DisplayConfigResult::kMirrorModeSingleDisplayError;
@@ -643,7 +643,7 @@ mojom::DisplayConfigResult SetDisplayLayouts(
   }
 
   const display::DisplayIdList display_ids =
-      display_manager->GetCurrentDisplayIdList();
+      display_manager->GetConnectedDisplayIdList();
   std::unique_ptr<display::DisplayLayout> layout = builder.Build();
   if (display_manager->IsInUnifiedMode()) {
     if (root_id == display::kInvalidDisplayId) {

@@ -167,6 +167,12 @@ void SortDisplayIdList(DisplayIdList* ids) {
             [](int64_t a, int64_t b) { return CompareDisplayIds(a, b); });
 }
 
+bool IsDisplayIdListSorted(const DisplayIdList& list) {
+  return std::is_sorted(list.begin(), list.end(), [](int64_t a, int64_t b) {
+    return CompareDisplayIds(a, b);
+  });
+}
+
 std::string DisplayIdListToString(const DisplayIdList& list) {
   std::stringstream s;
   const char* sep = "";

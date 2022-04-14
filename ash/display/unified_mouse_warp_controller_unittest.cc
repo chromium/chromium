@@ -241,7 +241,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryAndWarpSimpleTest) {
   BoundaryTestBody("0+0-1920x1080,1930+0-1920x1200",
                    {} /* empty matrix = default */, expected_edges);
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(2u, list.size());
 
   // Assert mouse warps in all bounds to the correct display.
@@ -261,7 +261,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
       "0+1080-300x500,310+1080-600x599,920+1080-400x450";
   UpdateDisplay(display_specs);
   display_manager()->SetUnifiedDesktopEnabled(true);
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(9u, list.size());
 
   // Test a very general case of a 3 x 3 matrix.

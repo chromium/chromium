@@ -902,7 +902,7 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithThreeDisplays) {
   UpdateDisplay("500x400,400x300,300x200");
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::DisplayIdList non_primary_ids =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   auto itr =
       std::remove(non_primary_ids.begin(), non_primary_ids.end(), primary_id);
   ASSERT_TRUE(itr != non_primary_ids.end());
@@ -1022,7 +1022,7 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithFourDisplays) {
   UpdateDisplay("600x500,500x400,400x300,300x200");
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::DisplayIdList non_primary_ids =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   auto itr =
       std::remove(non_primary_ids.begin(), non_primary_ids.end(), primary_id);
   ASSERT_TRUE(itr != non_primary_ids.end());

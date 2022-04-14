@@ -154,11 +154,11 @@ gfx::Transform GetUncalibratedTransform(const gfx::Transform& tm,
   return ctm;
 }
 
-DisplayIdList GetCurrentDisplayIdList(const DisplayManager* display_manager) {
+DisplayIdList GetConnectedDisplayIdList(const DisplayManager* display_manager) {
   DCHECK(display_manager->num_connected_displays());
   if (display_manager->num_connected_displays() == 1)
     return DisplayIdList{display_manager->first_display_id()};
-  return display_manager->GetCurrentDisplayIdList();
+  return display_manager->GetConnectedDisplayIdList();
 }
 
 }  // namespace
@@ -330,7 +330,7 @@ void TouchTransformController::UpdateTouchTransforms(
   if (display_manager_->num_connected_displays() == 0)
     return;
 
-  DisplayIdList display_id_list = GetCurrentDisplayIdList(display_manager_);
+  DisplayIdList display_id_list = GetConnectedDisplayIdList(display_manager_);
   DCHECK(display_id_list.size());
 
   DisplayInfoList display_info_list;

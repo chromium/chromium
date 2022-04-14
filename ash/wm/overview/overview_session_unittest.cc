@@ -6993,7 +6993,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
   const aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
   const display::DisplayIdList display_ids =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(2u, display_ids.size());
   ASSERT_EQ(root_windows[0], Shell::GetRootWindowForDisplayId(display_ids[0]));
   ASSERT_EQ(root_windows[1], Shell::GetRootWindowForDisplayId(display_ids[1]));

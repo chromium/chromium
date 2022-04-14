@@ -51,7 +51,7 @@ int64_t DeviceDisplayCrosTestHelper::GetSecondDisplayId() const {
     ADD_FAILURE() << "The second display is not connected.";
     return 0;
   }
-  return GetDisplayManager()->GetCurrentDisplayIdList()[1];
+  return GetDisplayManager()->GetConnectedDisplayIdList()[1];
 }
 
 const display::Display& DeviceDisplayCrosTestHelper::GetFirstDisplay() const {

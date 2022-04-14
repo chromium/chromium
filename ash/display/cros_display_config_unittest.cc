@@ -532,7 +532,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
     SCOPED_TRACE(config);
     UpdateDisplay(config);
     display::DisplayIdList display_id_list =
-        display_manager()->GetCurrentDisplayIdList();
+        display_manager()->GetConnectedDisplayIdList();
 
     const float zoom_factor_1 = 1.23f;
     const float zoom_factor_2 = 2.34f;
@@ -674,7 +674,7 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationNonTouchDisplay) {
           .SetFirstDisplayAsInternalDisplay();
 
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   // Pick the non internal display Id.
   const int64_t display_id = display_id_list[0] == internal_display_id
@@ -701,7 +701,7 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInvalidPoints) {
           .SetFirstDisplayAsInternalDisplay();
 
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   // Pick the non internal display Id.
   const int64_t display_id = display_id_list[0] == internal_display_id
@@ -732,7 +732,7 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationSuccess) {
           .SetFirstDisplayAsInternalDisplay();
 
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   // Pick the non internal display Id.
   const int64_t display_id = display_id_list[0] == internal_display_id

@@ -89,7 +89,7 @@ gfx::Vector3dF GetDisplayCompositorRGBScaleFactors(int64_t display_id) {
 std::vector<gfx::Vector3dF> GetAllDisplaysCompositorsRGBScaleFactors() {
   std::vector<gfx::Vector3dF> scale_factors;
   for (int64_t display_id :
-       Shell::Get()->display_manager()->GetCurrentDisplayIdList()) {
+       Shell::Get()->display_manager()->GetConnectedDisplayIdList()) {
     scale_factors.push_back(GetDisplayCompositorRGBScaleFactors(display_id));
   }
   return scale_factors;
@@ -114,7 +114,7 @@ void TestDisplayCompositorTemperature(int64_t display_id, float temperature) {
 // to the given |temperature|.
 void TestCompositorsTemperature(float temperature) {
   for (int64_t display_id :
-       Shell::Get()->display_manager()->GetCurrentDisplayIdList()) {
+       Shell::Get()->display_manager()->GetConnectedDisplayIdList()) {
     TestDisplayCompositorTemperature(display_id, temperature);
   }
 }

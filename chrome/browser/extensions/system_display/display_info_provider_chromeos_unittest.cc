@@ -1470,7 +1470,7 @@ TEST_F(DisplayInfoProviderChromeosTest, DisplayMode) {
 TEST_F(DisplayInfoProviderChromeosTest, GetDisplayZoomFactor) {
   UpdateDisplay("1200x600,1600x1000*2");
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   float zoom_factor_1 = 1.23f;
   float zoom_factor_2 = 2.34f;
@@ -1490,7 +1490,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetDisplayZoomFactor) {
 TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   UpdateDisplay("1200x600, 1600x1000#1600x1000");
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   float zoom_factor_1 = 1.23f;
   float zoom_factor_2 = 2.34f;
@@ -1542,7 +1542,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // to 4096px.
   UpdateDisplay("400x400, 4500x1000#4500x1000");
 
-  display_id_list = display_manager()->GetCurrentDisplayIdList();
+  display_id_list = display_manager()->GetConnectedDisplayIdList();
 
   // Results in a logical width of 500px. This is below the 640px threshold but
   // is valid because the initial width was 400px, so the logical width now
@@ -1670,7 +1670,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
 
   // Add more displays.
   UpdateDisplay("200x200,600x600,700x700");
-  display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList id_list =
+      display_manager()->GetConnectedDisplayIdList();
   EXPECT_EQ(3U, id_list.size());
 
   {

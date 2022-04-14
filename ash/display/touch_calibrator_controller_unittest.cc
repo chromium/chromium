@@ -89,7 +89,7 @@ class TouchCalibratorControllerTest : public AshTestBase {
     // touch display at index 1.
     const int kTargetDisplayIndex = 1;
     display::DisplayIdList display_id_list =
-        display_manager()->GetCurrentDisplayIdList();
+        display_manager()->GetConnectedDisplayIdList();
     int64_t target_display_id = display_id_list[kTargetDisplayIndex];
     const display::Display& touch_display =
         display_manager()->GetDisplayForId(target_display_id);
@@ -112,7 +112,7 @@ class TouchCalibratorControllerTest : public AshTestBase {
     // There should be a touch calibrator view associated with each of the
     // active displays.
     EXPECT_EQ(ctrl->touch_calibrator_widgets_.size(),
-              display_manager()->GetCurrentDisplayIdList().size());
+              display_manager()->GetConnectedDisplayIdList().size());
 
     TouchCalibratorView* target_calibrator_view =
         static_cast<TouchCalibratorView*>(
@@ -382,7 +382,7 @@ TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
   // display at index 2.
   const int kTargetDisplayIndex = 2;
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   int64_t internal_display_id = display_id_list[1];
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
@@ -476,7 +476,7 @@ TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
   // display at index 1.
   const int kTargetDisplayIndex = 1;
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   int64_t internal_display_id = display_id_list[0];
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),

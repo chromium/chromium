@@ -590,8 +590,8 @@ TEST_F(ScreenOrientationControllerTest, RotateInactiveDisplay) {
   // The display::ManagedDisplayInfo list with two active displays needs to be
   // added first so that the DisplayManager can track the
   // |internal_display_info| as inactive instead of non-existent.
-  display_manager()->UpdateDisplaysWith(display_info_list_two_active);
-  display_manager()->UpdateDisplaysWith(display_info_list_one_active);
+  display_manager()->OnNativeDisplaysChanged(display_info_list_two_active);
+  display_manager()->OnNativeDisplaysChanged(display_info_list_one_active);
 
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                          kInternalDisplayId);
