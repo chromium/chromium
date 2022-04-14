@@ -23,30 +23,20 @@ constexpr base::TimeDelta kDialogDelay = base::Minutes(5);
 constexpr base::TimeDelta kGraceTime = base::Hours(1);
 }  // namespace
 
-RebootNotificationsScheduler* RebootNotificationsScheduler::instance = nullptr;
-
 RebootNotificationsScheduler::RebootNotificationsScheduler()
     : RebootNotificationsScheduler(base::DefaultClock::GetInstance(),
-                                   base::DefaultTickClock::GetInstance()) {}
-
-RebootNotificationsScheduler::RebootNotificationsScheduler(
-    const base::Clock* clock,
-    const base::TickClock* tick_clock)
-    : notification_timer_(clock, tick_clock), dialog_timer_(clock, tick_clock) {
-  DCHECK(!RebootNotificationsScheduler::Get());
-  RebootNotificationsScheduler::SetInstance(this);
+                                   base::DefaultTickClock::GetInstance()) {
   if (session_manager::SessionManager::Get())
     observation_.Observe(session_manager::SessionManager::Get());
 }
 
-RebootNotificationsScheduler::~RebootNotificationsScheduler() {
-  DCHECK_EQ(instance, this);
-  RebootNotificationsScheduler::SetInstance(nullptr);
-}
+RebootNotificationsScheduler::RebootNotificationsScheduler(
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : notification_timer_(clock, tick_clock),
+      dialog_timer_(clock, tick_clock) {}
 
-RebootNotificationsScheduler* RebootNotificationsScheduler::Get() {
-  return RebootNotificationsScheduler::instance;
-}
+RebootNotificationsScheduler::~RebootNotificationsScheduler() = default;
 
 void RebootNotificationsScheduler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -158,11 +148,6 @@ PrefService* RebootNotificationsScheduler::GetPrefsForActiveProfile() const {
 void RebootNotificationsScheduler::OnRebootButtonClicked() {
   DCHECK(reboot_callback_);
   std::move(reboot_callback_).Run();
-}
-
-void RebootNotificationsScheduler::SetInstance(
-    RebootNotificationsScheduler* reboot_notifications_scheduler) {
-  RebootNotificationsScheduler::instance = reboot_notifications_scheduler;
 }
 
 const base::Time RebootNotificationsScheduler::GetCurrentTime() const {
