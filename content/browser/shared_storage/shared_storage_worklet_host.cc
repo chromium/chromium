@@ -346,14 +346,8 @@ void SharedStorageWorkletHost::SharedStorageKeys(
         pending_listener) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
-  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
-      listener(std::move(pending_listener));
-
-  listener->DidReadEntries(
-      /*success=*/false,
-      /*error_message=*/"sharedStorage.keys() is not implemented",
-      /*entries=*/{},
-      /*has_more_entries=*/false);
+  shared_storage_manager_->Keys(shared_storage_origin_,
+                                std::move(pending_listener), base::DoNothing());
 }
 
 void SharedStorageWorkletHost::SharedStorageEntries(
@@ -362,14 +356,8 @@ void SharedStorageWorkletHost::SharedStorageEntries(
         pending_listener) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
-  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
-      listener(std::move(pending_listener));
-
-  listener->DidReadEntries(
-      /*success=*/false,
-      /*error_message=*/"sharedStorage.entries() is not implemented",
-      /*entries=*/{},
-      /*has_more_entries=*/false);
+  shared_storage_manager_->Entries(
+      shared_storage_origin_, std::move(pending_listener), base::DoNothing());
 }
 
 void SharedStorageWorkletHost::SharedStorageLength(
