@@ -402,25 +402,33 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   }
 
   // Returns false if fenced frames are disabled. Returns true if the
-  // feature is enabled and if |this| or any of its ancestor nodes is a
+  // feature is enabled and if `this` or any of its ancestor nodes is a
   // fenced frame. For MPArch based fenced frames returns the value of
   // Page::IsMainFrameFencedFrameRoot and for shadowDOM based fenced frames
   // returns true, if the FrameTree that this frame is in is not the outermost
   // FrameTree.
   bool IsInFencedFrameTree() const;
 
+  // Returns the mode set on the fenced frame if the frame is inside a fenced
+  // frame tree. Otherwise returns `absl::nullopt`. This should not be called
+  // on a detached frame.
+  absl::optional<mojom::blink::FencedFrameMode> GetFencedFrameMode() const;
+
   // Returns false if fenced frames are disabled. Returns true if the feature
-  // is enabled with the shadowDOM implementation and if |this| is in a fenced
+  // is enabled with the shadowDOM implementation and if `this` is in a fenced
   // frame tree whose root is in opaque-ads mode.
   // TODO(crbug.com/1262022): Remove this when we remove the shadowDOM
   // implementation for fenced frames, or even earlier when we refactor mode
   // checks to be based on capabilities instead.
   bool IsInShadowDOMOpaqueAdsFencedFrameTree() const;
 
-  // Returns the mode set on the fenced frame if the frame is inside a fenced
-  // frame tree. Otherwise returns `absl::nullopt`. This should not be called
-  // on a detached frame.
-  absl::optional<mojom::blink::FencedFrameMode> GetFencedFrameMode() const;
+  // Returns false if fenced frames are disabled. Returns true if the feature
+  // is enabled with the MPArch implementation and if `this` is in a fenced
+  // frame tree whose root is in opaque-ads mode.
+  // TODO(crbug.com/1262022): Simplify this when we remove the shadowDOM
+  // implementation for fenced frames, or even earlier when we refactor mode
+  // checks to be based on capabilities instead.
+  bool IsInMPArchOpaqueAdsFencedFrameTree() const;
 
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or

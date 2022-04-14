@@ -6825,9 +6825,9 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       GetProcess()->GetID(), params->initiator_origin, params->post_body,
       params->extra_headers, params->referrer.To<content::Referrer>(),
       params->disposition, params->should_replace_current_entry,
-      params->user_gesture, params->triggering_event_info,
-      params->href_translate, std::move(blob_url_loader_factory),
-      params->impression);
+      params->user_gesture, params->is_unfenced_top_navigation,
+      params->triggering_event_info, params->href_translate,
+      std::move(blob_url_loader_factory), params->impression);
 }
 
 void RenderFrameHostImpl::DidStopLoading() {

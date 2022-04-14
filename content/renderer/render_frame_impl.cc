@@ -5190,6 +5190,12 @@ void RenderFrameImpl::BeginNavigation(
   }
 #endif
 
+  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  if (info->is_unfenced_top_navigation) {
+    OpenURL(std::move(info));
+    return;
+  }
+
   // If the browser is interested, then give it a chance to look at the request.
   if (IsTopLevelNavigation(frame_) &&
       GetWebView()
@@ -5513,6 +5519,7 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       GetWebView()->HistoryBackListCount() +
           GetWebView()->HistoryForwardListCount() + 1;
   params->user_gesture = info->has_transient_user_activation;
+  params->is_unfenced_top_navigation = info->is_unfenced_top_navigation;
   params->initiator_policy_container_keep_alive_handle =
       std::move(info->initiator_policy_container_keep_alive_handle);
 

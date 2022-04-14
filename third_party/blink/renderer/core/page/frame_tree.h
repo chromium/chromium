@@ -109,8 +109,11 @@ class CORE_EXPORT FrameTree final {
   void Trace(Visitor*) const;
 
  private:
-  Frame* FindFrameForNavigationInternal(const AtomicString& name,
-                                        const KURL&) const;
+  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  Frame* FindFrameForNavigationInternal(
+      const AtomicString& name,
+      const KURL&,
+      FrameLoadRequest* request = nullptr) const;
 
   Member<Frame> this_frame_;
 

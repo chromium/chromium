@@ -49,15 +49,22 @@ async function createAndValidateWindow() {
     // auxiliary browsing context.
     // The normal cross-platform test_driver APIs don't seem to work in
     // auxiliary browsing contexts.
-    // The Blink-internal API `eventSender` works in the top-level frame
-    // of the auxiliary browsing context, but not when called from inside
-    // the fenced frame.
+    // The Blink-internal API `eventSender` works differently in ShadowDOM
+    // and MPArch. In ShadowDOM, it only works when called from the top-level
+    // frame. In MPArch it only works when called from inside the fenced frame.
+    // So we do both.
+
+    // User activate ShadowDOM.
     assert_not_equals(eventSender, null);
     var rect = window.fenced_frame.element.getBoundingClientRect();
     eventSender.mouseMoveTo(rect.x+rect.width/2, rect.y+rect.height/2);
     eventSender.mouseDown();
 
     const nested_iframe_url = await window.fenced_frame.execute(async () => {
+      // User activate MPArch.
+      assert_not_equals(eventSender, null);
+      eventSender.mouseDown();
+
       assert_true(navigator.userActivation.isActive,
                   "Now the fenced frame should be active.");
 
@@ -220,6 +227,10 @@ promise_test(async () => {
 
   // Use _unfencedTop inside the default mode fenced frame.
   await frame.execute(() => {
+    // User activate MPArch.
+    assert_not_equals(eventSender, null);
+    eventSender.mouseDown();
+
     assert_true(navigator.userActivation.isActive,
                 "The frame should be active before opening a window.");
     const openee = window.open('resources/dummy.html', '_unfencedTop');

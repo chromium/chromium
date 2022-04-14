@@ -168,6 +168,14 @@ struct OpenURLParams {
   bool should_replace_current_entry;
   bool user_gesture;
 
+  // Whether this should be interpreted as a navigation to _unfencedTop,
+  // i.e. to the outermost frame from a fenced frame in a renderer process that
+  // doesn't get a handle to that frame.
+  // The disposition should always be CURRENT_TAB when this flag is set;
+  // the browser will target the outermost frame instead of the current frame.
+  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  bool is_unfenced_top_navigation = false;
+
   // Extra information about the triggering of the OpenURL.
   blink.mojom.TriggeringEventInfo triggering_event_info;
   pending_remote<blink.mojom.BlobURLToken>? blob_url_token;

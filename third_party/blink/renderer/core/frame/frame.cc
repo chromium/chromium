@@ -365,24 +365,6 @@ bool Frame::IsInFencedFrameTree() const {
   }
 }
 
-bool Frame::IsInShadowDOMOpaqueAdsFencedFrameTree() const {
-  if (!blink::features::IsFencedFramesEnabled())
-    return false;
-
-  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
-    case blink::features::FencedFramesImplementationType::kMPArch:
-      return false;
-    case blink::features::FencedFramesImplementationType::kShadowDOM: {
-      Frame* top = &Tree().Top(FrameTreeBoundary::kFenced);
-      return top->Owner() && top->Owner()->GetFramePolicy().is_fenced &&
-             top->Owner()->GetFramePolicy().fenced_frame_mode ==
-                 mojom::blink::FencedFrameMode::kOpaqueAds;
-    }
-    default:
-      return false;
-  }
-}
-
 absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
     const {
   DCHECK(!IsDetached());
@@ -404,6 +386,37 @@ absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
           ->GetFramePolicy()
           .fenced_frame_mode;
   }
+}
+
+bool Frame::IsInShadowDOMOpaqueAdsFencedFrameTree() const {
+  if (!blink::features::IsFencedFramesEnabled())
+    return false;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch:
+      return false;
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      Frame* top = &Tree().Top(FrameTreeBoundary::kFenced);
+      return top->Owner() && top->Owner()->GetFramePolicy().is_fenced &&
+             top->Owner()->GetFramePolicy().fenced_frame_mode ==
+                 mojom::blink::FencedFrameMode::kOpaqueAds;
+    }
+  }
+  return false;
+}
+
+bool Frame::IsInMPArchOpaqueAdsFencedFrameTree() const {
+  if (!blink::features::IsFencedFramesEnabled())
+    return false;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch:
+      return GetPage() && GetPage()->FencedFrameMode() ==
+                              mojom::blink::FencedFrameMode::kOpaqueAds;
+    case blink::features::FencedFramesImplementationType::kShadowDOM:
+      return false;
+  }
+  return false;
 }
 
 void Frame::SetOwner(FrameOwner* owner) {

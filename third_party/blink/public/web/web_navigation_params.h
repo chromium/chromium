@@ -108,6 +108,13 @@ struct BLINK_EXPORT WebNavigationInfo {
   // by the window.open'd frame.
   bool is_opener_navigation = false;
 
+  // Whether this is a navigation to _unfencedTop, i.e. to the top-level frame
+  // from a renderer process that does not get a handle to the frame.
+  // The browser should ignore the specified target frame and pick (and
+  // validate) the top-level frame instead.
+  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  bool is_unfenced_top_navigation = false;
+
   // Event information. See TriggeringEventInfo.
   blink::mojom::TriggeringEventInfo triggering_event_info =
       blink::mojom::TriggeringEventInfo::kUnknown;

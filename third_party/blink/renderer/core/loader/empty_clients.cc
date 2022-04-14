@@ -104,6 +104,8 @@ void EmptyLocalFrameClient::BeginNavigation(
     NavigationPolicy,
     WebFrameLoadType,
     bool,
+    // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+    bool,
     mojom::blink::TriggeringEventInfo,
     HTMLFormElement*,
     network::mojom::CSPDisposition,

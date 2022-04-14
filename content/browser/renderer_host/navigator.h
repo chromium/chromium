@@ -135,6 +135,8 @@ class CONTENT_EXPORT Navigator {
       WindowOpenDisposition disposition,
       bool should_replace_current_entry,
       bool user_gesture,
+      // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+      bool is_unfenced_top_navigation,
       blink::mojom::TriggeringEventInfo triggering_event_info,
       const std::string& href_translate,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,

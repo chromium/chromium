@@ -211,7 +211,7 @@ FrameTree::FindResult FrameTree::FindOrCreateFrameForNavigation(
     return FindResult(current_frame, false);
 
   const KURL& url = request.GetResourceRequest().Url();
-  Frame* frame = FindFrameForNavigationInternal(name, url);
+  Frame* frame = FindFrameForNavigationInternal(name, url, &request);
   bool new_window = false;
   if (!frame) {
     frame = CreateNewWindow(*current_frame, request, name);
@@ -234,8 +234,10 @@ FrameTree::FindResult FrameTree::FindOrCreateFrameForNavigation(
   return FindResult(frame, new_window);
 }
 
-Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
-                                                 const KURL& url) const {
+Frame* FrameTree::FindFrameForNavigationInternal(
+    const AtomicString& name,
+    const KURL& url,
+    FrameLoadRequest* request) const {
   if (EqualIgnoringASCIICase(name, "_current")) {
     UseCounter::Count(
         blink::DynamicTo<blink::LocalFrame>(this_frame_.Get())->GetDocument(),
@@ -252,15 +254,24 @@ Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
 
   // The target _unfencedTop should only be treated as a special name in
   // opaque-ads mode fenced frames.
-  // TODO(crbug.com/1123606): _unfencedTop is temporarily treated as a normal
-  // target name in MPArch, as a stopgap for origin trial. (As a normal target
-  // name, it will open an auxiliary browsing context rather than navigate the
-  // top-level frame, which is an unideal but acceptable behavior.)
-  // TODO(crbug.com/1262022): Simplify check when  ShadowDOM fenced frames are
+  // TODO(crbug.com/1262022): Simplify check when ShadowDOM fenced frames are
   // eventually removed.
-  if (EqualIgnoringASCIICase(name, "_unfencedTop") &&
-      this_frame_.Get()->IsInShadowDOMOpaqueAdsFencedFrameTree()) {
-    return &Top();
+  if (EqualIgnoringASCIICase(name, "_unfencedTop")) {
+    // In ShadowDOM, we can just return the unfenced top frame, because it
+    // exists in the renderer process.
+    if (this_frame_.Get()->IsInShadowDOMOpaqueAdsFencedFrameTree()) {
+      return &Top();
+    }
+    // In MPArch, because the fenced frame tree is isolated in the renderer
+    // process, we instead set a flag that will later indicate to the browser
+    // that this is an _unfencedTop navigation, and return the current frame
+    // so that the renderer-side checks will succeed.
+    // TODO(crbug.com/1315802): Refactor MPArch _unfencedTop handling.
+    if (this_frame_.Get()->IsInMPArchOpaqueAdsFencedFrameTree() &&
+        request != nullptr) {
+      request->SetIsUnfencedTopNavigation(true);
+      return this_frame_;
+    }
   }
 
   if (EqualIgnoringASCIICase(name, "_parent")) {

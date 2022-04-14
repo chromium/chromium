@@ -122,6 +122,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       NavigationPolicy,
       WebFrameLoadType,
       bool is_client_redirect,
+      // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+      bool is_unfenced_top_navigation,
       mojom::blink::TriggeringEventInfo,
       HTMLFormElement*,
       network::mojom::CSPDisposition should_bypass_main_world_csp,

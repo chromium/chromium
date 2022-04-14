@@ -8736,6 +8736,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="273" label="FF_CREATE_WHILE_PRERENDERING"/>
   <int value="274" label="RFHI_SET_OVERLAYS_CONTENT_NOT_OUTERMOST_FRAME"/>
   <int value="275" label="FF_DIFFERENT_MODE_THAN_EMBEDDER"/>
+  <int value="276" label="RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
