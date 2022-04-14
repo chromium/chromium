@@ -12883,6 +12883,10 @@ void RenderFrameHostImpl::EnableMojoJsBindingsWithBroker(
   GetFrameBindingsControl()->EnableMojoJsBindingsWithBroker(std::move(broker));
 }
 
+bool RenderFrameHostImpl::IsOutermostMainFrame() const {
+  return !GetParentOrOuterDocument();
+}
+
 BackForwardCacheMetrics* RenderFrameHostImpl::GetBackForwardCacheMetrics() {
   NavigationEntryImpl* navigation_entry =
       frame_tree()->controller().GetEntryWithUniqueID(nav_entry_id());

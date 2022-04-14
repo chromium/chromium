@@ -791,9 +791,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EnableMojoJsBindingsWithBroker(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker);
 
-  // Returns true if this is a main RenderFrameHost. True if and only if this
-  // RenderFrameHost doesn't have a parent.
+  // Frame trees may be nested so it can be the case that is_main_frame() is
+  // true, but is not the outermost RenderFrameHost (it only checks for nullity
+  // of |parent_|. In particular, !is_main_frame() cannot be used to check if
+  // this RenderFrameHost is embedded -- use !IsOutermostMainFrame() instead.
+  // NB: this does not escape guest views; IsOutermostMainFrame() will be true
+  // for the outermost main frame in an inner guest view.
   bool is_main_frame() const { return !parent_; }
+  bool IsOutermostMainFrame() const;
 
   // Returns this RenderFrameHost's loading state. This method is only used by
   // FrameTreeNode. The proper way to check whether a frame is loading is to

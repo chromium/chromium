@@ -926,8 +926,11 @@ void Navigator::NavigateFromFrameProxy(
   }
 
   // Allow the delegate to cancel the cross-process navigation.
+  // TODO(crbug.com/1316388): With MPArch there may be multiple main frames and
+  // so is_main_frame should not be used to identify outermost main frames.
+  // Follow up to confirm correctness.
   if (!delegate_->ShouldAllowRendererInitiatedCrossProcessNavigation(
-          render_frame_host->is_main_frame()))
+          render_frame_host->IsOutermostMainFrame()))
     return;
 
   // TODO(creis): Determine if this transfer started as a browser-initiated
