@@ -28,11 +28,33 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_constants/constants.h"
+#include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/common/extension.h"
+
+namespace {
+
+// Returns the browser app name if it's an app type browser. Returns an empty
+// string otherwise.
+std::string GetBrowserAppName(
+    const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data,
+    const std::string& app_id) {
+  const bool app_type_browser =
+      app_restore_data->app_type_browser.value_or(false);
+  if (!app_type_browser)
+    return std::string();
+
+  const absl::optional<std::string>& maybe_app_name =
+      app_restore_data->app_name;
+  return maybe_app_name.has_value() && !maybe_app_name.value().empty()
+             ? maybe_app_name.value()
+             : app_id;
+}
+
+}  // namespace
 
 DesksTemplatesAppLaunchHandler::DesksTemplatesAppLaunchHandler(Profile* profile)
     : ash::AppLaunchHandler(profile),
@@ -158,21 +180,12 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       if (!urls || urls->empty())
         continue;
 
-      const bool app_type_browser =
-          app_restore_data->app_type_browser.value_or(false);
-
-      const absl::optional<std::string> maybe_app_name =
-          app_restore_data->app_name;
-      const std::string app_name =
-          maybe_app_name.has_value() && !maybe_app_name.value().empty()
-              ? maybe_app_name.value()
-              : app_id;
-
       const gfx::Rect current_bounds =
           app_restore_data->current_bounds.value_or(gfx::Rect());
+      const std::string app_name = GetBrowserAppName(app_restore_data, app_id);
 
       Browser::CreateParams create_params =
-          app_type_browser
+          !app_name.empty()
               ? Browser::CreateParams::CreateForApp(app_name,
                                                     /*trusted_source=*/true,
                                                     current_bounds, profile(),
@@ -290,7 +303,8 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
           chromeos::ToWindowShowState(
               app_restore_data->window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),
-          app_restore_data->active_tab_index.value());
+          app_restore_data->active_tab_index.value(),
+          GetBrowserAppName(app_restore_data, app_id));
     }
   }
   restore_data()->RemoveApp(app_constants::kLacrosAppId);

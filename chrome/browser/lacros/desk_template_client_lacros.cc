@@ -27,20 +27,30 @@ DeskTemplateClientLacros::~DeskTemplateClientLacros() = default;
 void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
     const gfx::Rect& bounds,
     const ui::mojom::WindowShowState show_state,
-    crosapi::mojom::DeskTemplateStatePtr tabstrip_state) {
+    crosapi::mojom::DeskTemplateStatePtr additional_state) {
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
-  Browser::CreateParams create_params = Browser::CreateParams(
-      Browser::TYPE_NORMAL, profile, /*user_gesture=*/false);
+
+  const absl::optional<std::string>& browser_app_name =
+      additional_state->browser_app_name;
+  Browser::CreateParams create_params =
+      browser_app_name.has_value() && !browser_app_name.value().empty()
+          ? Browser::CreateParams::CreateForApp(browser_app_name.value(),
+                                                /*trusted_source=*/true, bounds,
+                                                profile,
+                                                /*user_gesture=*/false)
+          : Browser::CreateParams(Browser::TYPE_NORMAL, profile,
+                                  /*user_gesture=*/false);
   create_params.should_trigger_session_restore = false;
   create_params.initial_show_state =
       static_cast<ui::WindowShowState>(show_state);
   create_params.initial_bounds = bounds;
   Browser* browser = Browser::Create(create_params);
-  for (size_t i = 0; i < tabstrip_state->urls.size(); i++) {
-    chrome::AddTabAt(browser, tabstrip_state->urls.at(i), /*index=*/-1,
-                     /*foreground=*/
-                     (i == static_cast<size_t>(tabstrip_state->active_index)));
+  for (size_t i = 0; i < additional_state->urls.size(); i++) {
+    chrome::AddTabAt(
+        browser, additional_state->urls.at(i), /*index=*/-1,
+        /*foreground=*/
+        (i == static_cast<size_t>(additional_state->active_index)));
   }
   if (show_state == ui::mojom::WindowShowState::SHOW_STATE_MINIMIZED) {
     browser->window()->Minimize();

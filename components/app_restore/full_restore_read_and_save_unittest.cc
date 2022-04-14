@@ -952,7 +952,8 @@ TEST_F(FullRestoreReadAndSaveTest, LacrosBrowserWindowSavingCreateWindowFirst) {
   auto* window = widget->GetNativeWindow();
   SaveWindowInfo(window, kActivationIndex1);
   app_restore::OnLacrosWindowAdded(window, kBrowserSessionId,
-                                   /*restored_browser_session_id=*/0);
+                                   /*restored_browser_session_id=*/0,
+                                   /*is_browser_app=*/false);
 
   // Verify the browser window is saved.
   EXPECT_EQ(app_constants::kLacrosAppId,
@@ -998,7 +999,8 @@ TEST_F(FullRestoreReadAndSaveTest,
   // OnLacrosWindowAdded is called first, then init the browser window later.
   auto window = CreateLacrosWindow(kLacrosWindowId);
   app_restore::OnLacrosWindowAdded(window.get(), kBrowserSessionId,
-                                   /*restored_browser_session_id=*/0);
+                                   /*restored_browser_session_id=*/0,
+                                   /*is_browser_app=*/false);
   window->Init(ui::LAYER_NOT_DRAWN);
 
   SaveWindowInfo(window.get(), kActivationIndex1);

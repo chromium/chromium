@@ -20,17 +20,17 @@ LacrosWindowHandler::~LacrosWindowHandler() = default;
 
 void LacrosWindowHandler::OnBrowserWindowAdded(
     const apps::BrowserWindowInstance& instance) {
-  ::app_restore::OnLacrosWindowAdded(instance.window,
-                                     instance.browser_session_id,
-                                     instance.restored_browser_session_id);
+  ::app_restore::OnLacrosWindowAdded(
+      instance.window, instance.browser_session_id,
+      instance.restored_browser_session_id, /*is_browser_app=*/false);
 }
 
 void LacrosWindowHandler::OnBrowserAppAdded(
     const apps::BrowserAppInstance& instance) {
   if (instance.type == apps::BrowserAppInstance::Type::kAppWindow) {
-    ::app_restore::OnLacrosWindowAdded(instance.window,
-                                       instance.browser_session_id,
-                                       instance.restored_browser_session_id);
+    ::app_restore::OnLacrosWindowAdded(
+        instance.window, instance.browser_session_id,
+        instance.restored_browser_session_id, /*is_browser_app=*/true);
   }
 }
 

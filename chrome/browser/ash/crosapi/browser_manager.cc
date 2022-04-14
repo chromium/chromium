@@ -318,11 +318,13 @@ BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
     const std::vector<GURL>& urls,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
-    int32_t active_tab_index)
+    int32_t active_tab_index,
+    const std::string& app_name)
     : urls(urls),
       bounds(bounds),
       show_state(show_state),
-      active_tab_index(active_tab_index) {}
+      active_tab_index(active_tab_index),
+      app_name(app_name) {}
 
 BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
     RestoreFromDeskTemplate&&) = default;
@@ -611,14 +613,16 @@ void BrowserManager::CreateBrowserWithRestoredData(
     const std::vector<GURL>& urls,
     const gfx::Rect& bounds,
     const ui::WindowShowState show_state,
-    int32_t active_tab_index) {
+    int32_t active_tab_index,
+    const std::string& app_name) {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
       mojom::InitialBrowserAction::kDoNotOpenWindow));
   // The service will not be available, return immediately.
   if (result == MaybeStartResult::kNotStarted)
     return;
 
-  windows_to_restore_.emplace_back(urls, bounds, show_state, active_tab_index);
+  windows_to_restore_.emplace_back(urls, bounds, show_state, active_tab_index,
+                                   app_name);
   if (result == MaybeStartResult::kRunning)
     RestoreWindowsFromTemplate();
 }
@@ -1468,15 +1472,15 @@ void BrowserManager::RestoreWindowsFromTemplate() {
   }
 
   for (const auto& data : windows_to_restore_) {
-    crosapi::mojom::DeskTemplateStatePtr tabstrip_state =
-        crosapi::mojom::DeskTemplateState::New(data.urls,
-                                               data.active_tab_index);
+    crosapi::mojom::DeskTemplateStatePtr additional_state =
+        crosapi::mojom::DeskTemplateState::New(data.urls, data.active_tab_index,
+                                               data.app_name);
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->desk_template_ash()
         ->CreateBrowserWithRestoredData(data.bounds,
                                         ConvertWindowShowState(data.show_state),
-                                        std::move(tabstrip_state));
+                                        std::move(additional_state));
   }
 
   windows_to_restore_.clear();

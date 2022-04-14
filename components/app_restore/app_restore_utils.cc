@@ -225,7 +225,8 @@ int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) {
 
 void OnLacrosWindowAdded(aura::Window* const window,
                          uint32_t browser_session_id,
-                         uint32_t restored_browser_session_id) {
+                         uint32_t restored_browser_session_id,
+                         bool is_browser_app) {
   if (!IsLacrosWindow(window))
     return;
 
@@ -233,7 +234,8 @@ void OnLacrosWindowAdded(aura::Window* const window,
       ->OnLacrosBrowserWindowAdded(window, restored_browser_session_id);
 
   full_restore::FullRestoreSaveHandler::GetInstance()
-      ->OnLacrosBrowserWindowAdded(window, browser_session_id);
+      ->OnLacrosBrowserWindowAdded(window, browser_session_id,
+                                   restored_browser_session_id, is_browser_app);
 }
 
 }  // namespace app_restore

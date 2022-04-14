@@ -34,7 +34,7 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
   void CreateBrowserWithRestoredData(
       const gfx::Rect& bounds,
       const ui::mojom::WindowShowState show_state,
-      crosapi::mojom::DeskTemplateStatePtr tabstrip_state);
+      crosapi::mojom::DeskTemplateStatePtr additional_state);
 
   // crosapi::mojom::DeskTemplate:
   void AddDeskTemplateClient(

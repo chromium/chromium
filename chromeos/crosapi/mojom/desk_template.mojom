@@ -8,8 +8,8 @@ import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// State of the tab strip in the single Lacros window for saving in the desk
-// template.
+// Additional state of the browser in the single Lacros window for saving in the
+// desk template.
 [Stable]
 struct DeskTemplateState {
   // URLs in the tab strip.
@@ -17,10 +17,12 @@ struct DeskTemplateState {
 
   // Index of the active tab.
   uint32 active_index@1;
+
+  [MinVersion=2] string? browser_app_name@2;
 };
 
 // Interface for desk template clients.  Implemented by lacros-chrome.
-// Next version: 2
+// Next version: 3
 // Next method id: 2
 [Stable]
 interface DeskTemplateClient {
