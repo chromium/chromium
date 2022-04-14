@@ -262,8 +262,6 @@ class CrostiniManager::CrostiniRestarter
   // chromeos::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
   void StartTerminaVmFinished(bool success);
-  void GetTerminaVmKernelVersionFinished(
-      const absl::optional<std::string>& maybe_kernel_version);
   void SharePathsFinished(bool success, const std::string& failure_reason);
   void StartLxdFinished(CrostiniResult result);
   void CreateLxdContainerFinished(CrostiniResult result);
@@ -688,14 +686,13 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
     FinishRestart(CrostiniResult::VM_START_FAILED);
     return;
   }
+
   // Cache kernel version for enterprise reporting, if it is enabled
   // by policy, and we are in the default Termina case.
   if (profile_->GetPrefs()->GetBoolean(
           crostini::prefs::kReportCrostiniUsageEnabled) &&
       container_id_.vm_name == kCrostiniDefaultVmName) {
-    crostini_manager_->GetTerminaVmKernelVersion(
-        base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
+    crostini_manager_->UpdateTerminaVmKernelVersion();
   }
 
   if (options_.start_vm_only) {
@@ -708,20 +705,6 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
       container_id_.vm_name, options_.share_paths, /*persist=*/false,
       base::BindOnce(&CrostiniRestarter::SharePathsFinished,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CrostiniManager::CrostiniRestarter::GetTerminaVmKernelVersionFinished(
-    const absl::optional<std::string>& maybe_kernel_version) {
-  // In the error case, Crostini should still start, so we do not propagate
-  // errors any further here. Also, any error would already have been logged
-  // by CrostiniManager, so here we just (re)set the kernel version pref to
-  // the empty string in case the response is empty.
-  std::string kernel_version;
-  if (maybe_kernel_version.has_value()) {
-    kernel_version = maybe_kernel_version.value();
-  }
-  WriteTerminaVmKernelVersionToPrefsForReporting(profile_->GetPrefs(),
-                                                 kernel_version);
 }
 
 void CrostiniManager::CrostiniRestarter::SharePathsFinished(
@@ -1348,15 +1331,14 @@ void CrostiniManager::StopVm(std::string name,
                      std::move(name), std::move(callback)));
 }
 
-void CrostiniManager::GetTerminaVmKernelVersion(
-    GetTerminaVmKernelVersionCallback callback) {
+void CrostiniManager::UpdateTerminaVmKernelVersion() {
   vm_tools::concierge::GetVmEnterpriseReportingInfoRequest request;
   request.set_vm_name(kCrostiniDefaultVmName);
   request.set_owner_id(owner_id_);
   GetConciergeClient()->GetVmEnterpriseReportingInfo(
       std::move(request),
       base::BindOnce(&CrostiniManager::OnGetTerminaVmKernelVersion,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniManager::StartLxd(std::string vm_name,
@@ -2529,23 +2511,21 @@ void CrostiniManager::OnVmStoppedCleanup(const std::string& vm_name) {
 }
 
 void CrostiniManager::OnGetTerminaVmKernelVersion(
-    GetTerminaVmKernelVersionCallback callback,
     absl::optional<vm_tools::concierge::GetVmEnterpriseReportingInfoResponse>
         response) {
+  // If there is an error, (re)set the kernel version pref to the empty string.
+  std::string kernel_version;
   if (!response) {
     LOG(ERROR) << "No reply to GetVmEnterpriseReportingInfo";
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  if (!response->success()) {
+  } else if (!response->success()) {
     LOG(ERROR) << "Error response for GetVmEnterpriseReportingInfo: "
                << response->failure_reason();
-    std::move(callback).Run(absl::nullopt);
-    return;
+  } else {
+    kernel_version = response->vm_kernel_version();
   }
 
-  std::move(callback).Run(response->vm_kernel_version());
+  WriteTerminaVmKernelVersionToPrefsForReporting(profile_->GetPrefs(),
+                                                 kernel_version);
 }
 
 void CrostiniManager::OnContainerStarted(
