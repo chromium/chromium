@@ -488,6 +488,13 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
   size_t number_of_visible_elements = 0;
   for (size_t i = 0; i < number_of_elements; ++i) {
     if (form_data.fields[i].IsVisible()) {
+      // Don't treat a checkbox (e.g. "remember me") as an input field that may
+      // block a form submission. Note: Don't use |check_status !=
+      // kNotCheckable|, a radio button is considered a "checkable" element too,
+      // but it should block a submission.
+      if (form_data.fields[i].form_control_type == "checkbox")
+        continue;
+
       if (username_index != i && password_index != i &&
           form_data.fields[i].value.empty()) {
         return mojom::SubmissionReadinessState::kEmptyFields;
