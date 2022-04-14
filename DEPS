@@ -1811,7 +1811,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/assistant/ambient',
-        'version': 'version:float_on_by_rounded_corners_and_shadows',
+        'version': 'version:float_on_by_slower',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
