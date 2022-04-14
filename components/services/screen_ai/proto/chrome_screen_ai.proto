@@ -1,4 +1,6 @@
-// Screen AI for Chrome
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 // This proto should be in sync in the following two locations:
 // https://source.chromium.org/chromium/chromium/src/+/main:components/services/screen_ai/proto/chrome_screen_ai.proto
@@ -190,7 +192,7 @@ message UIComponent {
     ROW_HEADER = 147;
     RUBY = 148;
     RUBY_ANNOTATION = 149;
-    SCROLLBAR = 150;
+    SCROLL_BAR = 150;
     SCROLL_VIEW = 151;
     SEARCH = 152;
     SEARCHBOX = 153;
