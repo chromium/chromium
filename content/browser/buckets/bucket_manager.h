@@ -22,10 +22,10 @@ namespace content {
 class BucketManagerHost;
 
 // One instance of BucketManager exists per StoragePartition, and is created and
-// owned by the BucketContext. This class creates and destroys BucketManagerHost
-// instances per origin as a centeralized host for an origin's I/O operations
-// so all frames & workers can be notified when a bucket is deleted, and have
-// them mark their Bucket instance as closed.
+// owned by the `RenderProcessHostImpl`. This class creates and destroys
+// BucketManagerHost instances per origin as a centeralized host for an origin's
+// I/O operations so all frames & workers can be notified when a bucket is
+// deleted, and have them mark their Bucket instance as closed.
 class CONTENT_EXPORT BucketManager {
  public:
   explicit BucketManager(

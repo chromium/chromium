@@ -70,7 +70,7 @@ class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
 class BroadcastChannelService;
-class BucketContext;
+class BucketManager;
 class CacheStorageControlWrapper;
 class ComputePressureManager;
 class CookieStoreManager;
@@ -246,7 +246,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   PrefetchURLLoaderService* GetPrefetchURLLoaderService();
   CookieStoreManager* GetCookieStoreManager();
   FileSystemAccessManagerImpl* GetFileSystemAccessManager();
-  BucketContext* GetBucketContext();
+  BucketManager* GetBucketManager();
   QuotaContext* GetQuotaContext();
   AttributionManagerImpl* GetAttributionManager();
   void SetFontAccessManagerForTesting(
@@ -645,7 +645,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<storage::BlobUrlRegistry> blob_url_registry_;
   std::unique_ptr<PrefetchURLLoaderService> prefetch_url_loader_service_;
   std::unique_ptr<CookieStoreManager> cookie_store_manager_;
-  scoped_refptr<BucketContext> bucket_context_;
+  std::unique_ptr<BucketManager> bucket_manager_;
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
   scoped_refptr<DevToolsBackgroundServicesContextImpl>
       devtools_background_services_context_;

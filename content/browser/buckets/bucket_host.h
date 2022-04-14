@@ -18,10 +18,10 @@ class BucketManagerHost;
 
 // Implements a Storage Bucket object in the browser process.
 //
-// BucketManagerHost owns all BucketHost instances for an origin.
+// `BucketManagerHost` owns all `BucketHost` instances for an origin.
 // A new instance is created for every request to open or create a
 // StorageBucket. Instances are destroyed when all corresponding mojo
-// connections are closed, or when BucketContext is destroyed.
+// connections are closed or when the owning `BucketManager` is destroyed.
 class BucketHost : public blink::mojom::BucketHost {
  public:
   BucketHost(BucketManagerHost* bucket_manager_host,

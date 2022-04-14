@@ -83,7 +83,7 @@
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/buckets/bucket_context.h"
+#include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -1944,8 +1944,8 @@ void RenderProcessHostImpl::BindBucketManagerHost(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  storage_partition_impl_->GetBucketContext()->BindBucketManagerHost(
-      origin, std::move(receiver));
+  storage_partition_impl_->GetBucketManager()->BindReceiver(
+      origin, std::move(receiver), mojo::GetBadMessageCallback());
 }
 
 void RenderProcessHostImpl::ForceCrash() {

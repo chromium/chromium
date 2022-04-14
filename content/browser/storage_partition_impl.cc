@@ -54,7 +54,7 @@
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 #include "content/browser/browsing_data/storage_partition_code_cache_data_remover.h"
 #include "content/browser/browsing_topics/browsing_topics_site_data_manager_impl.h"
-#include "content/browser/buckets/bucket_context.h"
+#include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -1302,8 +1302,7 @@ void StoragePartitionImpl::Initialize(
   // behavior when restoring the state fails.
   cookie_store_manager_->LoadAllSubscriptions(base::DoNothing());
 
-  bucket_context_ = base::MakeRefCounted<BucketContext>();
-  bucket_context_->Initialize(quota_manager_proxy);
+  bucket_manager_ = std::make_unique<BucketManager>(quota_manager_proxy);
 
   // The Conversion Measurement API is not available in Incognito mode.
   if (!is_in_memory() &&
@@ -1614,9 +1613,9 @@ CookieStoreManager* StoragePartitionImpl::GetCookieStoreManager() {
   return cookie_store_manager_.get();
 }
 
-BucketContext* StoragePartitionImpl::GetBucketContext() {
+BucketManager* StoragePartitionImpl::GetBucketManager() {
   DCHECK(initialized_);
-  return bucket_context_.get();
+  return bucket_manager_.get();
 }
 
 GeneratedCodeCacheContext*
