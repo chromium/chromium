@@ -142,9 +142,7 @@ bool LinkToTextTabHelper::ShouldOffer() {
 
 void LinkToTextTabHelper::GetLinkToText(
     base::OnceCallback<void(LinkToTextResponse*)> callback) {
-  GetJSFeature()->GetLinkToText(
-      web_state_, web_state_->GetWebFramesManager()->GetMainWebFrame(),
-      std::move(callback));
+  GetJSFeature()->GetLinkToText(web_state_, std::move(callback));
 }
 
 void LinkToTextTabHelper::SetJSFeatureForTesting(

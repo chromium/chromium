@@ -72,7 +72,6 @@ class FakeJSFeature : public LinkToTextJavaScriptFeature {
  public:
   void GetLinkToText(
       web::WebState* web_state,
-      web::WebFrame* frame,
       base::OnceCallback<void(LinkToTextResponse*)> callback) override {
     std::move(callback).Run([LinkToTextResponse
         linkToTextResponseWithValue:response_

@@ -60,6 +60,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/shared_highlighting/core/common",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/web/public/test:test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",

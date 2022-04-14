@@ -28,16 +28,24 @@ class LinkToTextJavaScriptFeature : public web::JavaScriptFeature {
   static LinkToTextJavaScriptFeature* GetInstance();
 
   // Invokes JS-side handlers to grab the current selected text, and generate a
-  // text fragment pointing to this selection.
+  // text fragment pointing to this selection. Will attempt on the main frame
+  // first, and may subsequently attempt on certain iframes.
   virtual void GetLinkToText(
       web::WebState* state,
-      web::WebFrame* frame,
       base::OnceCallback<void(LinkToTextResponse*)> callback);
 
  protected:
   // Protected to allow faking/mocking in tests.
   LinkToTextJavaScriptFeature();
   ~LinkToTextJavaScriptFeature() override;
+
+  // Invokes the JavaScript for link generation. This is a simple wrapper around
+  // CallJavaScriptFunction with a few common params included, so it is safe to
+  // override in tests where JavaScript execution should be faked without
+  // affecting the rest of the logic in this class.
+  virtual void RunGenerationJS(
+      web::WebFrame* frame,
+      base::OnceCallback<void(const base::Value*)> callback);
 
  private:
   friend class base::NoDestructor<LinkToTextJavaScriptFeature>;
@@ -48,6 +56,10 @@ class LinkToTextJavaScriptFeature : public web::JavaScriptFeature {
                       base::ElapsedTimer link_generation_timer,
                       base::OnceCallback<void(LinkToTextResponse*)> callback,
                       const base::Value* value);
+
+  void HandleResponseFromSubframe(
+      base::OnceCallback<void(LinkToTextResponse*)> final_callback,
+      std::vector<LinkToTextResponse*> responses);
 
   static bool ShouldAttemptIframeGeneration(
       absl::optional<shared_highlighting::LinkGenerationError> error,

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 
+#import "base/barrier_callback.h"
 #import "base/no_destructor.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"
@@ -18,8 +19,27 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
 const char kScriptName[] = "link_to_text";
 const char kGetLinkToTextFunction[] = "linkToText.getLinkToText";
+
+bool IsKnownAmpCache(web::WebFrame* frame) {
+  GURL origin = frame->GetSecurityOrigin();
+
+  // Source:
+  // https://github.com/ampproject/amphtml/blob/main/build-system/global-configs/caches.json
+  return origin.DomainIs("ampproject.org") || origin.DomainIs("bing-amp.com");
+}
+
+LinkToTextResponse* ParseResponse(web::WebState* web_state,
+                                  const base::ElapsedTimer& timer,
+                                  const base::Value* value) {
+  return [LinkToTextResponse linkToTextResponseWithValue:value
+                                                webState:web_state
+                                                 latency:timer.Elapsed()];
+}
+
+}  // namespace
 
 LinkToTextJavaScriptFeature::LinkToTextJavaScriptFeature()
     : JavaScriptFeature(
@@ -27,7 +47,7 @@ LinkToTextJavaScriptFeature::LinkToTextJavaScriptFeature()
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
-              FeatureScript::TargetFrames::kMainFrame,
+              FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}),
       weak_ptr_factory_(this) {}
 
@@ -41,15 +61,21 @@ LinkToTextJavaScriptFeature* LinkToTextJavaScriptFeature::GetInstance() {
 
 void LinkToTextJavaScriptFeature::GetLinkToText(
     web::WebState* web_state,
-    web::WebFrame* frame,
     base::OnceCallback<void(LinkToTextResponse*)> callback) {
   base::ElapsedTimer link_generation_timer;
 
-  CallJavaScriptFunction(
-      frame, kGetLinkToTextFunction, /* parameters= */ {},
+  RunGenerationJS(
+      web_state->GetWebFramesManager()->GetMainWebFrame(),
       base::BindOnce(&LinkToTextJavaScriptFeature::HandleResponse,
                      weak_ptr_factory_.GetWeakPtr(), web_state,
-                     std::move(link_generation_timer), std::move(callback)),
+                     std::move(link_generation_timer), std::move(callback)));
+}
+
+void LinkToTextJavaScriptFeature::RunGenerationJS(
+    web::WebFrame* frame,
+    base::OnceCallback<void(const base::Value*)> callback) {
+  CallJavaScriptFunction(
+      frame, kGetLinkToTextFunction, /* parameters= */ {}, std::move(callback),
       base::Milliseconds(link_to_text::kLinkGenerationTimeoutInMs));
 }
 
@@ -72,7 +98,7 @@ bool LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
 void LinkToTextJavaScriptFeature::HandleResponse(
     web::WebState* web_state,
     base::ElapsedTimer link_generation_timer,
-    base::OnceCallback<void(LinkToTextResponse*)> callback,
+    base::OnceCallback<void(LinkToTextResponse*)> final_callback,
     const base::Value* response) {
   auto* parsed_response = [LinkToTextResponse
       linkToTextResponseWithValue:response
@@ -80,10 +106,68 @@ void LinkToTextJavaScriptFeature::HandleResponse(
                           latency:link_generation_timer.Elapsed()];
   auto error = [parsed_response error];
 
+  std::vector<web::WebFrame*> amp_frames;
   if (ShouldAttemptIframeGeneration(error, web_state->GetLastCommittedURL())) {
-    // TODO(crbug.com/1313162): Try to find an AMP frame and reinvoke
-    // generation.
+    std::set<web::WebFrame*> all_frames =
+        web_state->GetWebFramesManager()->GetAllWebFrames();
+    std::copy_if(all_frames.begin(), all_frames.end(),
+                 std::back_inserter(amp_frames), IsKnownAmpCache);
   }
 
-  std::move(callback).Run(parsed_response);
+  // Empty indicates we're not attempting AMP generation (e.g., succeeded or
+  // conclusively failed on main frame, feature is disabled, no AMP frames
+  // found, etc.) so run the callback immediately.
+  if (amp_frames.empty()) {
+    std::move(final_callback).Run(parsed_response);
+    return;
+  }
+
+  // The response will be parsed immediately after the call finishes, and the
+  // result will be held on to by the BarrierCallback until all the calls have
+  // returned. Because LinkToTextResponse* is managed by ARC, this is OK even
+  // though the original base::Value* will go out of scope.
+  const auto parse_value = base::BindRepeating(
+      &ParseResponse, web_state, std::move(link_generation_timer));
+  const auto accumulate_subframe_results =
+      base::BarrierCallback<LinkToTextResponse*>(
+          amp_frames.size(),
+          base::BindOnce(
+              &LinkToTextJavaScriptFeature::HandleResponseFromSubframe,
+              weak_ptr_factory_.GetWeakPtr(), std::move(final_callback)));
+
+  for (auto* frame : amp_frames) {
+    RunGenerationJS(frame, parse_value.Then(accumulate_subframe_results));
+  }
+}
+
+void LinkToTextJavaScriptFeature::HandleResponseFromSubframe(
+    base::OnceCallback<void(LinkToTextResponse*)> final_callback,
+    std::vector<LinkToTextResponse*> parsed_responses) {
+  DCHECK(!parsed_responses.empty());
+
+  // First, see if we succeeded in any frame.
+  auto success_response = std::find_if(
+      parsed_responses.begin(), parsed_responses.end(),
+      [](LinkToTextResponse* response) { return response.payload != nil; });
+  if (success_response != parsed_responses.end()) {
+    std::move(final_callback).Run(*success_response);
+    return;
+  }
+
+  // If not, look for a frame where we failed with an error other than Incorrect
+  // Selector. There should be at most one of these (since every frame with no
+  // user selection should return Incorrect Selector).
+  auto error_response = std::find_if(
+      parsed_responses.begin(), parsed_responses.end(),
+      [](LinkToTextResponse* response) {
+        return [response error].value() !=
+               shared_highlighting::LinkGenerationError::kIncorrectSelector;
+      });
+  if (error_response != parsed_responses.end()) {
+    std::move(final_callback).Run(*error_response);
+    return;
+  }
+
+  // All the frames have Incorrect Selector, so just use the first one.
+  std::move(final_callback).Run(parsed_responses[0]);
 }
