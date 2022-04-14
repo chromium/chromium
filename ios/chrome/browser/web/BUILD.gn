@@ -154,9 +154,7 @@ source_set("unit_tests") {
     ":delegate",
     ":page_placeholder",
     ":tab_helper_delegates",
-    ":test_support",
     ":web",
-    ":web_internal",
     "//base",
     "//base/test:test_support",
     "//components/search_engines",
@@ -280,26 +278,6 @@ source_set("web_internal") {
   ]
 }
 
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "chrome_test.h",
-    "chrome_test.mm",
-    "chrome_web_test.h",
-    "chrome_web_test.mm",
-  ]
-  deps = [
-    "//components/password_manager/core/browser:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/web",
-    "//ios/web",
-    "//ios/web/public/test",
-    "//ios/web/public/test:test_fixture",
-  ]
-}
-
 source_set("unit_tests_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -309,7 +287,6 @@ source_set("unit_tests_internal") {
   ]
   deps = [
     ":feature_flags",
-    ":test_support",
     ":web_internal",
     "//base",
     "//base/test:test_support",

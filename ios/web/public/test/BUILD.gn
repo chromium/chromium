@@ -61,10 +61,7 @@ source_set("test_fixture") {
     "//ios/web_view/*",
 
     # Do not add new targets from //ios/chrome here. If you want to do it,
-    # please contact sdefresne@ or rohitrao@ to check with them. If you just
-    # want to use WebTest or WebTestWithWebState in //ios/chrome, instead use
-    # ChromeTest or ChromeWebTest respectively.
-    "//ios/chrome/browser/web:test_support",
+    # please contact sdefresne@ or rohitrao@ to check with them.
     "//ios/chrome/test:ios_chrome_unit_test_suite",
   ]
 
