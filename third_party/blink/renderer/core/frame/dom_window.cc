@@ -440,9 +440,6 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   if (!page)
     return;
 
-  if (!frame->ShouldAllowScriptFocus())
-    return;
-
   RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessFocus,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFocus);
