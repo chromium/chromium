@@ -106,7 +106,7 @@ const displayInfocard = (() => {
       const elements = [];
 
       // srcPath is set only for leaf nodes.
-      if (node.srcPath) {
+      if (typeof node.srcPath !== 'undefined') {
         const add_field = (title, text) => {
           const div = document.createElement('div');
           div.appendChild(dom.textElement('span', title, 'symbol-name-info'));
@@ -114,7 +114,7 @@ const displayInfocard = (() => {
           elements.push(div);
         };
         if (node.container !== '') add_field('Container: ', node.container);
-        add_field('Path: ', node.srcPath);
+        add_field('Path: ', node.srcPath || '(No path)');
         add_field('Component: ', node.component || '(No component)');
         add_field('Full Name: ', node.fullName || '');
         if (node.disassembly && node.disassembly !== '') {
