@@ -126,14 +126,20 @@ enum LayoutInset {
   // (e.g. does not highlight on hover).
   LOCATION_BAR_ICON_INTERIOR_PADDING,
 
-  // The padding inside the border of a toolbar button (around the image).
-  TOOLBAR_BUTTON,
-
   // The padding inside the border of a toolbar action view button.
   TOOLBAR_ACTION_VIEW,
 
+  // The padding inside the border of a toolbar button (around the image).
+  TOOLBAR_BUTTON,
+
   // The padding between the edges of the toolbar and its content.
   TOOLBAR_INTERIOR_MARGIN,
+
+  // The padding between the edges of the toolbar and its content when the webui
+  // tab strip is enabled. Special handling is needed as when the browser is
+  // maximized and the tabstrip is collapsed the toolbar will sit flush with the
+  // edge of the screen.
+  WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN,
 };
 
 int GetLayoutConstant(LayoutConstant constant);

@@ -99,11 +99,11 @@ int GetLayoutConstant(LayoutConstant constant) {
 gfx::Insets GetLayoutInsets(LayoutInset inset) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (inset) {
+    case DOWNLOAD_ICON:
+      return gfx::Insets(4);
+
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
       return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
-
-    case TOOLBAR_BUTTON:
-      return gfx::Insets(touch_ui ? 12 : 6);
 
     case TOOLBAR_ACTION_VIEW: {
       // TODO(afakhry): Unify all toolbar button sizes on all platforms.
@@ -111,11 +111,14 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
       return gfx::Insets(touch_ui ? 10 : 0);
     }
 
+    case TOOLBAR_BUTTON:
+      return gfx::Insets(touch_ui ? 12 : 6);
+
     case TOOLBAR_INTERIOR_MARGIN:
       return touch_ui ? gfx::Insets() : gfx::Insets::VH(4, 8);
 
-    case DOWNLOAD_ICON:
-      return gfx::Insets(4);
+    case WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN:
+      return gfx::Insets::VH(4, 0);
   }
   NOTREACHED();
   return gfx::Insets();

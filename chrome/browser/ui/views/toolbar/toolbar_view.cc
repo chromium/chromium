@@ -774,7 +774,9 @@ void ToolbarView::LayoutCommon() {
   DCHECK(display_mode_ == DisplayMode::NORMAL);
 
   const gfx::Insets interior_margin =
-      GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
+      GetLayoutInsets(browser_view_->webui_tab_strip()
+                          ? LayoutInset::WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN
+                          : LayoutInset::TOOLBAR_INTERIOR_MARGIN);
   layout_manager_->SetInteriorMargin(interior_margin);
 
   // Extend buttons to the window edge if we're either in a maximized or
