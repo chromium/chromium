@@ -350,6 +350,11 @@ class ProfileManager : public Profile::Delegate {
     do_final_services_init_ = do_final_services_init;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetAccountProfileMapperForTests(
+      std::unique_ptr<AccountProfileMapper> mapper);
+#endif
+
  private:
   friend class TestingProfileManager;
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, DeleteAllProfiles);

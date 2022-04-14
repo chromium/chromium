@@ -1441,6 +1441,15 @@ bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
   return info->keep_alives[origin] > 0;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ProfileManager::SetAccountProfileMapperForTests(
+    std::unique_ptr<AccountProfileMapper> mapper) {
+  DCHECK(!account_profile_mapper_)
+      << "AccountProfileMapper must be set before the first usage";
+  account_profile_mapper_ = std::move(mapper);
+}
+#endif
+
 void ProfileManager::DisableProfileMetricsForTesting() {
   zombie_metrics_timer_.Stop();
 }

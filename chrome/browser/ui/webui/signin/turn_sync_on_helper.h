@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -31,6 +32,10 @@ class SigninUIError;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class DiceSignedInProfileCreator;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class ProfilePickerLacrosSignInProvider;
 #endif
 
 namespace signin {
@@ -262,6 +267,9 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
 #endif
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;

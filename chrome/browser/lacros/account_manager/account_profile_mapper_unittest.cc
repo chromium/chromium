@@ -1013,6 +1013,48 @@ TEST_F(AccountProfileMapperTest, RemoveAllAccountsFromPrimaryProfile) {
   VerifyAccountsInStorage({{main_path(), {"A", "B"}}});
 }
 
+// Tests removing accounts from secondary profile.
+TEST_F(AccountProfileMapperTest, RemoveAccountSecondaryProfile) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  SetPrimaryAccountForProfile(other_path, "B");
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+  // Remove account C (secondary account).
+  ExpectOnAccountRemoved(&mock_observer, {{other_path, {"C"}}});
+  mapper->RemoveAccount(other_path, AccountFromGaiaID("C").key);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  VerifyAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B"}}});
+  // Remove account B (main account).
+  ExpectOnAccountRemoved(&mock_observer, {{other_path, {"B"}}});
+  mapper->RemoveAccount(other_path, AccountFromGaiaID("B").key);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  VerifyAccountsInStorage({{main_path(), {"A"}}, {other_path, {}}});
+}
+
+// Tests removing accounts from main profile.
+TEST_F(AccountProfileMapperTest, RemoveAccountPrimaryProfile) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A", "B"}}, {other_path, {"B"}}});
+  SetPrimaryAccountForProfile(main_path(), "A");
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+  // Remove account B.
+  ExpectOnAccountRemoved(&mock_observer, {{main_path(), {"B"}}});
+  mapper->RemoveAccount(main_path(), AccountFromGaiaID("B").key);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  VerifyAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B"}}});
+  // Try removing account A: this does nothing.
+  mapper->RemoveAccount(main_path(), AccountFromGaiaID("A").key);
+  VerifyAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B"}}});
+}
+
 // Tests removing all accounts from profile before initialization but profile
 // is deleted during initialization.
 TEST_F(

@@ -18,13 +18,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -57,6 +58,11 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
 #endif
 
 namespace {
@@ -425,7 +431,13 @@ void TurnSyncOnHelper::CreateNewSignedInProfile() {
           base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
                          base::Unretained(this)));
 #else
-  NOTIMPLEMENTED() << "Creating profiles is not yet supported on lacros.";
+  DCHECK(!profile_->IsMainProfile());
+  lacros_sign_in_provider_ =
+      std::make_unique<ProfilePickerLacrosSignInProvider>();
+  lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
+      account_info_.gaia,
+      base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
+                     base::Unretained(this)));
 #endif
 }
 
@@ -439,8 +451,23 @@ void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
-  ProfileMetrics::LogProfileAddNewUser(ProfileMetrics::ADD_NEW_USER_SYNC_FLOW);
+#else
+  DCHECK(lacros_sign_in_provider_);
+  DCHECK(!profile_->IsMainProfile());
+  lacros_sign_in_provider_.reset();
+  if (new_profile) {
+    // The `dice_signed_in_profile_creator_` removes the account from the source
+    // profile as part of its run, but `lacros_sign_in_provider_` does not.
+    // Remove the account now.
+    g_browser_process->profile_manager()
+        ->GetAccountProfileMapper()
+        ->RemoveAccount(
+            profile_->GetPath(),
+            {account_info_.gaia, account_manager::AccountType::kGaia});
+  }
+#endif
 
+  ProfileMetrics::LogProfileAddNewUser(ProfileMetrics::ADD_NEW_USER_SYNC_FLOW);
   if (!new_profile) {
     // TODO(atwilson): On error, unregister the client to release the DMToken
     // and surface a better error for the user.
@@ -461,9 +488,6 @@ void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
     // No policy to load - simply complete the signin process.
     SigninAndShowSyncConfirmationUI();
   }
-#else
-  NOTIMPLEMENTED() << "Creating profiles is not yet supported for lacros.";
-#endif
 }
 
 void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
