@@ -181,59 +181,85 @@ suite('AccessCodeCastAppTest', () => {
     }
   );
 
-  test('addSinkAndCast surfaces errors', async () => {
-    let testProxy = createTestProxy(
-      AddSinkResultCode.UNKNOWN_ERROR,
-      RouteRequestResultCode.OK,
-      () => {}
-    );
-    BrowserProxy.setInstance(testProxy);
-    app.setAccessCodeForTest('qwerty');
+  test(
+      'addSinkAndCast surfaces errors and hides errors when user starts ' +
+          'editing',
+      async () => {
+        let testProxy = createTestProxy(
+            AddSinkResultCode.UNKNOWN_ERROR, RouteRequestResultCode.OK,
+            () => {});
+        BrowserProxy.setInstance(testProxy);
+        app.setAccessCodeForTest('qwerty');
 
-    assertEquals(0, app.$.errorMessage.getMessageCode());
-    await app.addSinkAndCast();
-    assertEquals(1, app.$.errorMessage.getMessageCode());
+        assertEquals(0, app.$.errorMessage.getMessageCode());
+        await app.addSinkAndCast();
+        assertEquals(1, app.$.errorMessage.getMessageCode());
 
-    testProxy = createTestProxy(
-      AddSinkResultCode.INVALID_ACCESS_CODE,
-      RouteRequestResultCode.OK,
-      () => {}
-    );
-    BrowserProxy.setInstance(testProxy);
+        app.setAccessCodeForTest('qwert');
+        assertEquals(0, app.$.errorMessage.getMessageCode());
 
-    await app.addSinkAndCast();
-    assertEquals(2, app.$.errorMessage.getMessageCode());
+        testProxy = createTestProxy(
+            AddSinkResultCode.INVALID_ACCESS_CODE, RouteRequestResultCode.OK,
+            () => {});
+        BrowserProxy.setInstance(testProxy);
 
-    testProxy = createTestProxy(
-      AddSinkResultCode.SERVICE_NOT_PRESENT,
-      RouteRequestResultCode.OK,
-      () => {}
-    );
-    BrowserProxy.setInstance(testProxy);
+        app.setAccessCodeForTest('qwerty');
+        await app.addSinkAndCast();
+        assertEquals(2, app.$.errorMessage.getMessageCode());
 
-    await app.addSinkAndCast();
-    assertEquals(3, app.$.errorMessage.getMessageCode());
+        app.setAccessCodeForTest('qwert');
+        assertEquals(0, app.$.errorMessage.getMessageCode());
 
-    testProxy = createTestProxy(
-      AddSinkResultCode.AUTH_ERROR,
-      RouteRequestResultCode.OK,
-      () => {}
-    );
-    BrowserProxy.setInstance(testProxy);
+        testProxy = createTestProxy(
+            AddSinkResultCode.SERVICE_NOT_PRESENT, RouteRequestResultCode.OK,
+            () => {});
+        BrowserProxy.setInstance(testProxy);
 
-    await app.addSinkAndCast();
-    assertEquals(4, app.$.errorMessage.getMessageCode());
+        app.setAccessCodeForTest('qwerty');
+        await app.addSinkAndCast();
+        assertEquals(3, app.$.errorMessage.getMessageCode());
 
-    testProxy = createTestProxy(
-      AddSinkResultCode.TOO_MANY_REQUESTS,
-      RouteRequestResultCode.OK,
-      () => {}
-    );
-    BrowserProxy.setInstance(testProxy);
+        app.setAccessCodeForTest('qwert');
+        assertEquals(0, app.$.errorMessage.getMessageCode());
 
-    await app.addSinkAndCast();
-    assertEquals(5, app.$.errorMessage.getMessageCode());
-  });
+        testProxy = createTestProxy(
+            AddSinkResultCode.AUTH_ERROR, RouteRequestResultCode.OK, () => {});
+        BrowserProxy.setInstance(testProxy);
+
+        app.setAccessCodeForTest('qwerty');
+        await app.addSinkAndCast();
+        assertEquals(4, app.$.errorMessage.getMessageCode());
+
+        app.setAccessCodeForTest('qwert');
+        assertEquals(0, app.$.errorMessage.getMessageCode());
+
+        testProxy = createTestProxy(
+            AddSinkResultCode.TOO_MANY_REQUESTS, RouteRequestResultCode.OK,
+            () => {});
+        BrowserProxy.setInstance(testProxy);
+
+        app.setAccessCodeForTest('qwerty');
+        await app.addSinkAndCast();
+        assertEquals(5, app.$.errorMessage.getMessageCode());
+      });
+
+  test(
+      'addSinkAndCast hides errors when user removes all access code',
+      async () => {
+        let testProxy = createTestProxy(
+            AddSinkResultCode.UNKNOWN_ERROR, RouteRequestResultCode.OK,
+            () => {});
+        BrowserProxy.setInstance(testProxy);
+        app.setAccessCodeForTest('qwerty');
+
+        assertEquals(0, app.$.errorMessage.getMessageCode());
+        await app.addSinkAndCast();
+        assertEquals(1, app.$.errorMessage.getMessageCode());
+
+        app.setAccessCodeForTest('');
+        assertEquals(0, app.$.errorMessage.getMessageCode());
+      });
+
 
   test('enter key press can cast', async () => {
     let visited = false;
