@@ -2397,7 +2397,7 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2421,7 +2421,7 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2447,7 +2447,7 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2471,7 +2471,7 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
+          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },

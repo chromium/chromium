@@ -2773,28 +2773,8 @@
           'has_native_resultdb_integration',
         ],
         'swarming': {
-          'shards': 4,
+          'shards': 14,
         },
-      },
-    },
-
-    'gpu_dawn_telemetry_cts_tests_with_partial_validation': {
-      'webgpu_cts_with_validation': {
-        'args': [
-          '--extra-browser-args=--force_high_performance_gpu',
-          '--enable-dawn-backend-validation',
-          '--retry-limit=3',
-        ],
-        'linux_args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer,Vulkan',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 4,
-        },
-        'telemetry_test_name': 'webgpu_cts',
       },
     },
 
@@ -2812,7 +2792,7 @@
           'has_native_resultdb_integration',
         ],
         'swarming': {
-          'shards': 4,
+          'shards': 14,
         },
         'telemetry_test_name': 'webgpu_cts',
       },
@@ -6294,11 +6274,6 @@
 
     'gpu_dawn_telemetry_cts_regular': [
       'gpu_dawn_telemetry_cts_tests',
-    ],
-
-    'gpu_dawn_telemetry_cts_regular_and_partial_validation': [
-      'gpu_dawn_telemetry_cts_tests',
-      'gpu_dawn_telemetry_cts_tests_with_partial_validation',
     ],
 
     'gpu_dawn_telemetry_cts_regular_and_validation': [
