@@ -60,6 +60,9 @@ ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
   ProcessMonitor::Metrics metrics;
 
   metrics.cpu_usage = process_metrics.GetPlatformIndependentCPUUsage();
+#if BUILDFLAG(IS_WIN)
+  metrics.precise_cpu_usage = process_metrics.GetPreciseCPUUsage();
+#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
   metrics.idle_wakeups = process_metrics.GetIdleWakeupsPerSecond();
@@ -110,6 +113,10 @@ ProcessSubtypes GetProcessSubtypeForRenderProcess(
 ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
                                     const ProcessMonitor::Metrics& rhs) {
   lhs.cpu_usage += rhs.cpu_usage;
+
+#if BUILDFLAG(IS_WIN)
+  lhs.precise_cpu_usage += rhs.precise_cpu_usage;
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)

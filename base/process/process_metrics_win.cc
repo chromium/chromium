@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace {
@@ -158,6 +159,28 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
 
   return TimeDelta::FromFileTime(kernel_time) +
          TimeDelta::FromFileTime(user_time);
+}
+
+TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
+#if defined(ARCH_CPU_ARM64)
+  // Precise CPU usage is not available on Arm CPUs because they don't support
+  // constant rate TSC.
+  return GetCumulativeCPUUsage();
+#else   // !defined(ARCH_CPU_ARM64)
+  ULONG64 process_cycle_time = 0;
+  if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
+    NOTREACHED();
+    return TimeDelta();
+  }
+
+  const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
+  if (tsc_ticks_per_second == 0) {
+    return TimeDelta();
+  }
+
+  const double process_time_seconds = process_cycle_time / tsc_ticks_per_second;
+  return Seconds(process_time_seconds);
+#endif  // !defined(ARCH_CPU_ARM64)
 }
 
 bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
