@@ -6302,7 +6302,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
             GetSupportedPatternsFromNodeId(table_without_header_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
-                        UIA_TextChildPatternId}),
+                        UIA_TableItemPatternId, UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(table_without_header_cell_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridPatternId,
@@ -6323,8 +6323,8 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
             GetSupportedPatternsFromNodeId(grid_without_header_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_GridItemPatternId, UIA_TextChildPatternId,
-                        UIA_SelectionItemPatternId}),
+                        UIA_GridItemPatternId, UIA_TableItemPatternId,
+                        UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_without_header_cell_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
