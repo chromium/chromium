@@ -81,7 +81,9 @@ class FullRestoreService : public KeyedService,
   FullRestoreService& operator=(const FullRestoreService&) = delete;
   ~FullRestoreService() override;
 
-  void Init();
+  // Initialize the full restore service. |show_notification| indicates whether
+  // a full restore notification has been shown.
+  void Init(bool& show_notification);
 
   void OnTransitionedToNewActiveUser(Profile* profile);
 
@@ -124,7 +126,8 @@ class FullRestoreService : public KeyedService,
   bool CanBeInited();
 
   // Show the restore notification on startup.
-  void MaybeShowRestoreNotification(const std::string& id);
+  void MaybeShowRestoreNotification(const std::string& id,
+                                    bool& show_notification);
 
   // Implement the restoration.
   void Restore();

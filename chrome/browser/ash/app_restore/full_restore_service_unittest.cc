@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -30,6 +32,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
@@ -46,6 +49,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -68,7 +72,7 @@ void SetPrefValue(const std::string& name,
 syncer::SyncData CreateRestoreOnStartupPrefSyncData(
     SessionStartupPref::PrefValue value) {
   sync_pb::EntitySpecifics specifics;
-  SetPrefValue(prefs::kRestoreOnStartup, base::Value(static_cast<int>(value)),
+  SetPrefValue(::prefs::kRestoreOnStartup, base::Value(static_cast<int>(value)),
                specifics.mutable_preference());
   return syncer::SyncData::CreateRemoteData(
       specifics, syncer::ClientTagHash::FromHashed("unused"));
@@ -158,17 +162,36 @@ class FullRestoreServiceTest : public testing::Test {
     return message_center_notification.has_value();
   }
 
+  void VerifyRestoreNotificationTitle(const std::string& notification_id,
+                                      bool is_reboot_notification) {
+    absl::optional<message_center::Notification> message_center_notification =
+        display_service()->GetNotification(notification_id);
+    ASSERT_TRUE(message_center_notification.has_value());
+    const std::u16string& title = message_center_notification.value().title();
+    if (is_reboot_notification) {
+      EXPECT_EQ(title,
+                l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_POST_REBOOT_TITLE));
+    } else {
+      EXPECT_EQ(title,
+                l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_TITLE));
+    }
+  }
+
   void VerifyNotification(bool has_crash_notification,
-                          bool has_restore_notification) {
+                          bool has_restore_notification,
+                          bool is_reboot_notification = false) {
     if (has_crash_notification)
       EXPECT_TRUE(HasNotificationFor(kRestoreForCrashNotificationId));
     else
       EXPECT_FALSE(HasNotificationFor(kRestoreForCrashNotificationId));
 
-    if (has_restore_notification)
+    if (has_restore_notification) {
       EXPECT_TRUE(HasNotificationFor(kRestoreNotificationId));
-    else
+      VerifyRestoreNotificationTitle(kRestoreNotificationId,
+                                     is_reboot_notification);
+    } else {
       EXPECT_FALSE(HasNotificationFor(kRestoreNotificationId));
+    }
   }
 
   void SimulateClick(const std::string& notification_id,
@@ -549,7 +572,7 @@ TEST_F(FullRestoreServiceTest, ReImage) {
 // and don't show notifications, don't restore
 TEST_F(FullRestoreServiceTest, Upgrading) {
   profile()->GetPrefs()->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
   CreateFullRestoreServiceForTesting();
 
@@ -562,7 +585,7 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
 
   // Simulate the Chrome restore setting is changed.
   profile()->GetPrefs()->SetInteger(
-      prefs::kRestoreOnStartup,
+      ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueLast));
 
   // The OS restore setting should not change.
@@ -651,6 +674,25 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
   EXPECT_TRUE(allow_save());
 
   VerifyNotification(false, false);
+}
+
+// If the OS restore setting is 'Ask every time' and the reboot occurred due to
+// DeviceScheduledReboot policy, after reboot show the restore notification with
+// post reboot notification title.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       AskEveryTimeWithPostRebootNotification) {
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  profile()->GetPrefs()->SetBoolean(prefs::kShowPostRebootNotification, true);
+  CreateFullRestoreServiceForTesting();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+
+  VerifyNotification(false /* has_crash_notification */,
+                     true /* has_restore_notification */,
+                     true /* is_reboot_notification*/);
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, close the

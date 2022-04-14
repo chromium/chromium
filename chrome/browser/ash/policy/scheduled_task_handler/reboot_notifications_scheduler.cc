@@ -44,13 +44,23 @@ RebootNotificationsScheduler::~RebootNotificationsScheduler() {
   RebootNotificationsScheduler::SetInstance(nullptr);
 }
 
+// static
 RebootNotificationsScheduler* RebootNotificationsScheduler::Get() {
   return RebootNotificationsScheduler::instance;
 }
 
+// static
 void RebootNotificationsScheduler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ash::prefs::kShowPostRebootNotification, false);
+}
+
+// static
+bool RebootNotificationsScheduler::ShouldShowPostRebootNotification(
+    Profile* profile) {
+  DCHECK(profile);
+  PrefService* prefs = user_prefs::UserPrefs::Get(profile);
+  return IsPostRebootPrefSet(prefs);
 }
 
 void RebootNotificationsScheduler::SchedulePendingRebootNotifications(
@@ -107,7 +117,7 @@ void RebootNotificationsScheduler::MaybeShowPostRebootNotification(
     bool show_simple_notification) {
   PrefService* prefs = GetPrefsForActiveProfile();
   // Return if the pref is not set for the profile.
-  if (!prefs->GetBoolean(ash::prefs::kShowPostRebootNotification))
+  if (!IsPostRebootPrefSet(prefs))
     return;
 
   if (show_simple_notification) {
@@ -187,6 +197,12 @@ bool RebootNotificationsScheduler::ShouldWaitFullRestoreInit() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   return ash::full_restore::FullRestoreServiceFactory::
       IsFullRestoreAvailableForProfile(profile);
+}
+
+bool RebootNotificationsScheduler::IsPostRebootPrefSet(PrefService* prefs) {
+  if (!prefs)
+    return false;
+  return prefs->GetBoolean(ash::prefs::kShowPostRebootNotification);
 }
 
 }  // namespace policy
