@@ -63,7 +63,7 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kMessagesEnabledPrefName, true);
   registry->RegisterBooleanPref(kSmartLockEnabledDeprecatedPrefName, true);
   registry->RegisterBooleanPref(kSmartLockEnabledPrefName, true);
-  registry->RegisterBooleanPref(kEcheEnabledPrefName, true);
+  registry->RegisterBooleanPref(kEcheEnabledPrefName, false);
 
   // This pref should be disabled for existing Better Together users;
   // they must go to settings to explicitly enable PhoneHub.

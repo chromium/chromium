@@ -980,6 +980,7 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, Eche) {
 
   // The top-level Phone Hub enabled pref is disabled for existing Better
   // Together users; they must go to settings to explicitly enable PhoneHub.
+  test_pref_service()->SetBoolean(kEcheEnabledPrefName, true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kEcheHost,
                           multidevice::SoftwareFeatureState::kSupported);
