@@ -494,7 +494,6 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::str_format_internal
-    absl::core_headers
     absl::raw_logging_internal
     absl::int128
     GTest::gmock_main

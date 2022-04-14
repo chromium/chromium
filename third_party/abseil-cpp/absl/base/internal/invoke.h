@@ -14,8 +14,6 @@
 //
 // absl::base_internal::invoke(f, args...) is an implementation of
 // INVOKE(f, args...) from section [func.require] of the C++ standard.
-// When compiled as C++17 and later versions, it is implemented as an alias of
-// std::invoke.
 //
 // [func.require]
 // Define INVOKE (f, t1, t2, ..., tN) as follows:
@@ -36,25 +34,6 @@
 
 #ifndef ABSL_BASE_INTERNAL_INVOKE_H_
 #define ABSL_BASE_INTERNAL_INVOKE_H_
-
-#include "absl/base/config.h"
-
-#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
-
-#include <functional>
-
-namespace absl {
-ABSL_NAMESPACE_BEGIN
-namespace base_internal {
-
-using std::invoke;
-using std::invoke_result_t;
-
-}  // namespace base_internal
-ABSL_NAMESPACE_END
-}  // namespace absl
-
-#else  // __cplusplus >= 201703L
 
 #include <algorithm>
 #include <type_traits>
@@ -204,7 +183,5 @@ invoke_result_t<F, Args...> invoke(F&& f, Args&&... args) {
 }  // namespace base_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
-
-#endif  // __cplusplus >= 201703L
 
 #endif  // ABSL_BASE_INTERNAL_INVOKE_H_

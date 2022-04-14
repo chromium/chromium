@@ -124,6 +124,7 @@ int Win32NumCPUs() {
 
 }  // namespace
 
+
 static int GetNumCPUs() {
 #if defined(__myriad2__)
   return 1;

@@ -47,10 +47,8 @@ struct UDT {
   UDT(const UDT&) = default;
   UDT& operator=(const UDT&) = default;
 };
-static bool AbslParseFlag(absl::string_view, UDT*, std::string*) {
-  return true;
-}
-static std::string AbslUnparseFlag(const UDT&) { return "UDT{}"; }
+bool AbslParseFlag(absl::string_view, UDT*, std::string*) { return true; }
+std::string AbslUnparseFlag(const UDT&) { return "UDT{}"; }
 
 ABSL_FLAG(UDT, usage_reporting_test_flag_05, {},
           "usage_reporting_test_flag_05 help message");
