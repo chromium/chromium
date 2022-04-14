@@ -133,9 +133,9 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
     // will not be filled. When this happens, the custom input processor
     // will either use the default values to generate an input tensor or
     // fail the model execution.
-    tensor_result =
-        std::vector<ProcessedValue>(custom_input.default_value().begin(),
-                                    custom_input.default_value().end());
+    tensor_result = std::vector<ProcessedValue>(
+        custom_input.default_value().begin(),
+        custom_input.default_value().begin() + custom_input.tensor_length());
   } else if (custom_input.fill_policy() ==
              proto::CustomInput::FILL_PREDICTION_TIME) {
     if (!AddPredictionTime(custom_input, tensor_result))

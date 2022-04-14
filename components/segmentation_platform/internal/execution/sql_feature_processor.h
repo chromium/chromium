@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "components/segmentation_platform/internal/database/ukm_types.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
@@ -25,7 +25,9 @@ class SqlFeatureProcessor : public QueryProcessor {
  public:
   using QueryList = base::flat_map<FeatureIndex, proto::SqlFeature>;
 
-  explicit SqlFeatureProcessor(QueryList&& queries, base::Time prediction_time);
+  SqlFeatureProcessor(QueryList&& queries,
+                      base::Time prediction_time,
+                      UkmDatabase* ukm_database);
   ~SqlFeatureProcessor() override;
 
   // QueryProcessor implementation.
@@ -36,18 +38,17 @@ class SqlFeatureProcessor : public QueryProcessor {
   using SqlFeatureAndBindValueIndices =
       std::pair</*sql feature index*/ int, /*bind value index*/ int>;
 
-  // Struct responsible for storing a sql query and its bind values.
-  struct CustomSqlQuery;
-
   // Callback method for when all relevant bind values have been processed.
   void OnCustomInputProcessed(
       std::unique_ptr<CustomInputProcessor> custom_input_processor,
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
       base::flat_map<SqlFeatureAndBindValueIndices, Tensor> result);
 
-  // Helper method for setting the error state and returning result to the
-  // feature processor.
-  void RunErrorCallback();
+  // Callback method for when all queries have been processed by the ukm
+  // database.
+  void OnQueriesRun(
+      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      IndexedTensors result);
 
   // List of sql features to process into input tensors.
   QueryList queries_;
@@ -55,8 +56,8 @@ class SqlFeatureProcessor : public QueryProcessor {
   // Time at which we expect the model execution to run.
   const base::Time prediction_time_;
 
-  // Temporary storage of the processing state object.
-  std::unique_ptr<FeatureProcessorState> feature_processor_state_;
+  // Main database for fetching data.
+  const raw_ptr<UkmDatabase> ukm_database_;
 
   // Callback for sending the resulting indexed tensors to the feature list
   // processor.
@@ -66,7 +67,7 @@ class SqlFeatureProcessor : public QueryProcessor {
 
   // List of sql queries and bind values ready to be sent to the ukm database
   // for processing.
-  base::flat_map<FeatureIndex, CustomSqlQuery> processed_queries_;
+  base::flat_map<FeatureIndex, UkmDatabase::CustomSqlQuery> processed_queries_;
 
   // List of resulting input tensors.
   IndexedTensors result_;

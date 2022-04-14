@@ -28,6 +28,7 @@ SignalFilterProcessorTest.*
 SignalKeyInternalTest.*
 SignalKeyTest.*
 SignalStorageConfigTest.*
+SqlFeatureProcessorTest.*
 StatsTest.*
 TrainingDataCollectorImplTest.*
 UkmConfigTest.*

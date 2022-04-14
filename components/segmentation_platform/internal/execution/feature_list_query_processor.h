@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/execution/query_processor.h"
@@ -29,6 +30,7 @@ class FeatureListQueryProcessor {
  public:
   FeatureListQueryProcessor(
       SignalDatabase* signal_database,
+      UkmDatabase* ukm_database,
       std::unique_ptr<FeatureAggregator> feature_aggregator);
   virtual ~FeatureListQueryProcessor();
 
@@ -69,6 +71,9 @@ class FeatureListQueryProcessor {
 
   // Signal database for uma features.
   const raw_ptr<SignalDatabase> signal_database_;
+
+  // Ukm database for sql features.
+  const raw_ptr<UkmDatabase> ukm_database_;
 
   // Feature aggregator that aggregates data for uma features.
   const std::unique_ptr<FeatureAggregator> feature_aggregator_;

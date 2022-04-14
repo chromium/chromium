@@ -43,7 +43,7 @@ void ExecutionService::Initialize(
     std::vector<ModelExecutionScheduler::Observer*>&& observers,
     const PlatformOptions& platform_options) {
   feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-      signal_database, std::make_unique<FeatureAggregatorImpl>());
+      signal_database, nullptr, std::make_unique<FeatureAggregatorImpl>());
 
   training_data_collector_ = TrainingDataCollector::Create(
       segment_info_database, feature_list_query_processor_.get(),

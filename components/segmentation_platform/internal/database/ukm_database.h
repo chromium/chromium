@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "url/gurl.h"
@@ -57,6 +58,36 @@ class UkmDatabase {
   // metrics table, on best effort. Any new metrics added with the URL will
   // still be stored in metrics table (without URLs).
   virtual void RemoveUrls(const std::vector<GURL>& urls);
+
+  // Struct responsible for storing a sql query and its bind values.
+  struct CustomSqlQuery {
+    CustomSqlQuery();
+    CustomSqlQuery(CustomSqlQuery&&);
+    CustomSqlQuery(const base::StringPiece& query,
+                   const std::vector<ProcessedValue>& bind_values);
+    ~CustomSqlQuery();
+
+    bool operator==(const CustomSqlQuery& rhs) const {
+      return query == rhs.query && bind_values == rhs.bind_values;
+    }
+    CustomSqlQuery& operator=(CustomSqlQuery&&) = default;
+
+    std::string query;
+    std::vector<ProcessedValue> bind_values;
+  };
+
+  // TODO(haileywang): move all the using associated with feature processing to
+  // one place.
+  using FeatureIndex = int;
+  using Tensor = std::vector<ProcessedValue>;
+  using IndexedTensors = base::flat_map<FeatureIndex, Tensor>;
+  using QueryList = base::flat_map<FeatureIndex, CustomSqlQuery>;
+  using QueryCallback = base::OnceCallback<void(IndexedTensors)>;
+
+  // Called to query data from the ukm database. The result is returned in the
+  // |callback| as a mapping of indexed vectors of ProcessedValue.
+  virtual void RunReadonlyQueries(const QueryList& queries,
+                                  QueryCallback callback);
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

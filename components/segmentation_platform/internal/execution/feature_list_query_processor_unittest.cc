@@ -52,7 +52,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
     auto feature_aggregator = std::make_unique<MockFeatureAggregator>();
     feature_aggregator_ = feature_aggregator.get();
     feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-        signal_database_.get(), std::move(feature_aggregator));
+        signal_database_.get(), nullptr, std::move(feature_aggregator));
   }
 
   void SetBucketDuration(uint64_t bucket_duration, proto::TimeUnit time_unit) {

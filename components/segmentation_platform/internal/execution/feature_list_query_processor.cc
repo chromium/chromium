@@ -27,8 +27,10 @@ const int kIndexNotUsed = 0;
 
 FeatureListQueryProcessor::FeatureListQueryProcessor(
     SignalDatabase* signal_database,
+    UkmDatabase* ukm_database,
     std::unique_ptr<FeatureAggregator> feature_aggregator)
     : signal_database_(signal_database),
+      ukm_database_(ukm_database),
       feature_aggregator_(std::move(feature_aggregator)) {}
 
 FeatureListQueryProcessor::~FeatureListQueryProcessor() = default;
@@ -95,7 +97,8 @@ void FeatureListQueryProcessor::ProcessNextInputFeature(
     SqlFeatureProcessor::QueryList queries = {
         {kIndexNotUsed, input_feature.sql_feature()}};
     processor = std::make_unique<SqlFeatureProcessor>(
-        std::move(queries), feature_processor_state->prediction_time());
+        std::move(queries), feature_processor_state->prediction_time(),
+        ukm_database_);
   }
 
   auto* processor_ptr = processor.get();

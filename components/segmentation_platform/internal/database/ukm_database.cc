@@ -54,4 +54,20 @@ void UkmDatabase::RemoveUrls(const std::vector<GURL>& urls) {
                                                 backend_->GetWeakPtr(), urls));
 }
 
+UkmDatabase::CustomSqlQuery::CustomSqlQuery() = default;
+
+UkmDatabase::CustomSqlQuery::CustomSqlQuery(CustomSqlQuery&&) = default;
+
+UkmDatabase::CustomSqlQuery::CustomSqlQuery(
+    const base::StringPiece& query,
+    const std::vector<ProcessedValue>& bind_values)
+    : query(query), bind_values(bind_values) {}
+
+UkmDatabase::CustomSqlQuery::~CustomSqlQuery() = default;
+
+void UkmDatabase::RunReadonlyQueries(const QueryList& queries,
+                                     QueryCallback callback) {
+  // TODO(haileywang): Implement.
+}
+
 }  // namespace segmentation_platform
