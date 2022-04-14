@@ -17,6 +17,7 @@ constexpr char kAssistantDisplayEventName[] = "AssistantDisplayEvent";
 constexpr char kConversationStateEventName[] = "ConversationStateEvent";
 constexpr char kDeviceStateEventName[] = "DeviceStateEvent";
 constexpr char kMediaActionFallbackEventName[] = "MediaActionFallbackEvent";
+constexpr char kSpeakerIdEnrollmentEventName[] = "SpeakerIdEnrollmentEvent";
 constexpr char kHandlerMethodName[] = "OnEventFromLibas";
 
 template <typename EventSelection>
@@ -84,6 +85,17 @@ template <>
   PopulateRequest(assistant_service_address, kMediaActionFallbackEventName,
                   &request,
                   request.mutable_media_action_fallback_events_to_handle());
+  return request;
+}
+
+template <>
+::assistant::api::RegisterEventHandlerRequest CreateRegistrationRequest<
+    ::assistant::api::SpeakerIdEnrollmentEventHandlerInterface>(
+    const std::string& assistant_service_address) {
+  ::assistant::api::RegisterEventHandlerRequest request;
+  PopulateRequest(assistant_service_address, kSpeakerIdEnrollmentEventName,
+                  &request,
+                  request.mutable_speaker_id_enrollment_events_to_handle());
   return request;
 }
 

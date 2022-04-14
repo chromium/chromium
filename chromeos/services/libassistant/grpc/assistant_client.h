@@ -17,6 +17,7 @@ namespace assistant {
 namespace api {
 class CancelSpeakerIdEnrollmentRequest;
 class GetSpeakerIdEnrollmentInfoRequest;
+class GetSpeakerIdEnrollmentInfoResponse;
 class GetAssistantSettingsResponse;
 class Interaction;
 class OnAlarmTimerEventRequest;
@@ -64,6 +65,8 @@ class AssistantClient {
       ::assistant::api::CancelSpeakerIdEnrollmentRequest;
   using GetSpeakerIdEnrollmentInfoRequest =
       ::assistant::api::GetSpeakerIdEnrollmentInfoRequest;
+  using GetSpeakerIdEnrollmentInfoResponse =
+      ::assistant::api::GetSpeakerIdEnrollmentInfoResponse;
   using StartSpeakerIdEnrollmentRequest =
       ::assistant::api::StartSpeakerIdEnrollmentRequest;
   using SpeakerIdEnrollmentEvent =

@@ -48,8 +48,10 @@ void FakeAssistantClient::CancelSpeakerIdEnrollment(
     const CancelSpeakerIdEnrollmentRequest& request) {}
 
 void FakeAssistantClient::GetSpeakerIdEnrollmentInfo(
-    const ::assistant::api::GetSpeakerIdEnrollmentInfoRequest& request,
-    base::OnceCallback<void(bool user_model_exists)> on_done) {}
+    const GetSpeakerIdEnrollmentInfoRequest& request,
+    base::OnceCallback<void(bool user_model_exists)> on_done) {
+  std::move(on_done).Run(false);
+}
 
 void FakeAssistantClient::ResetAllDataAndShutdown() {}
 

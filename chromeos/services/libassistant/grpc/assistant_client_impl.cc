@@ -24,6 +24,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/experiment_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
@@ -119,29 +120,55 @@ void AssistantClientImpl::AddExperimentIds(
 
 void AssistantClientImpl::AddSpeakerIdEnrollmentEventObserver(
     GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
-  NOTIMPLEMENTED();
+  grpc_services_.AddSpeakerIdEnrollmentEventObserver(observer);
 }
 
 void AssistantClientImpl::RemoveSpeakerIdEnrollmentEventObserver(
     GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
-  NOTIMPLEMENTED();
+  grpc_services_.RemoveSpeakerIdEnrollmentEventObserver(observer);
 }
 
 void AssistantClientImpl::StartSpeakerIdEnrollment(
     const StartSpeakerIdEnrollmentRequest& request) {
-  NOTIMPLEMENTED();
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::StartSpeakerIdEnrollmentResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::CancelSpeakerIdEnrollment(
     const CancelSpeakerIdEnrollmentRequest& request) {
-  NOTIMPLEMENTED();
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::CancelSpeakerIdEnrollmentResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::GetSpeakerIdEnrollmentInfo(
-    const ::assistant::api::GetSpeakerIdEnrollmentInfoRequest& request,
+    const GetSpeakerIdEnrollmentInfoRequest& request,
     base::OnceCallback<void(bool user_model_exists)> on_done) {
-  NOTIMPLEMENTED();
-  std::move(on_done).Run(/*user_model_exists=*/false);
+  libassistant_client_.CallServiceMethod(
+      request,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool user_model_exists)> on_done,
+             const grpc::Status& status,
+             const ::assistant::api::GetSpeakerIdEnrollmentInfoResponse&
+                 response) {
+            bool has_model = false;
+            //  `response` could have an error field.
+            // Treat any error as no existing model.
+            if (response.has_cloud_enrollment_status_response()) {
+              has_model = response.cloud_enrollment_status_response()
+                              .utterance_status() ==
+                          ::assistant::api::CloudEnrollmentStatusResponse::
+                              HAS_UTTERANCES;
+            }
+            std::move(on_done).Run(has_model);
+          },
+          std::move(on_done)),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::ResetAllDataAndShutdown() {

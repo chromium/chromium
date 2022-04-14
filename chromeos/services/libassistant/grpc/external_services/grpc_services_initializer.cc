@@ -104,6 +104,18 @@ void GrpcServicesInitializer::AddMediaActionFallbackEventObserver(
   media_action_fallback_event_handler_driver_->AddObserver(observer);
 }
 
+void GrpcServicesInitializer::AddSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<::assistant::api::OnSpeakerIdEnrollmentEventRequest>*
+        observer) {
+  speaker_id_enrollment_event_handler_driver_->AddObserver(observer);
+}
+
+void GrpcServicesInitializer::RemoveSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<::assistant::api::OnSpeakerIdEnrollmentEventRequest>*
+        observer) {
+  speaker_id_enrollment_event_handler_driver_->RemoveObserver(observer);
+}
+
 ActionService* GrpcServicesInitializer::GetActionService() {
   return action_handler_driver_.get();
 }
@@ -154,6 +166,14 @@ void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
           assistant_service_address_);
   service_drivers_.emplace_back(
       media_action_fallback_event_handler_driver_.get());
+
+  speaker_id_enrollment_event_handler_driver_ =
+      std::make_unique<EventHandlerDriver<
+          ::assistant::api::SpeakerIdEnrollmentEventHandlerInterface>>(
+          &server_builder_, libassistant_client_.get(),
+          assistant_service_address_);
+  service_drivers_.emplace_back(
+      speaker_id_enrollment_event_handler_driver_.get());
 }
 
 void GrpcServicesInitializer::InitLibassistGrpcClient() {
@@ -187,6 +207,7 @@ void GrpcServicesInitializer::RegisterEventHandlers() {
   conversation_state_event_handler_driver_->StartRegistration();
   device_state_event_handler_driver_->StartRegistration();
   media_action_fallback_event_handler_driver_->StartRegistration();
+  speaker_id_enrollment_event_handler_driver_->StartRegistration();
 }
 
 }  // namespace libassistant

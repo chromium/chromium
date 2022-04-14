@@ -18,6 +18,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/experiment_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -177,6 +178,27 @@ template <>
 std::string GetLibassistGrpcMethodName<::assistant::api::GetTimersRequest>() {
   return chromeos::assistant::GetLibassistGrpcMethodName("AlarmTimerService",
                                                          "GetTimers");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<
+    ::assistant::api::StartSpeakerIdEnrollmentRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "SpeakerIdEnrollmentService", "StartSpeakerIdEnrollment");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<
+    ::assistant::api::CancelSpeakerIdEnrollmentRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "SpeakerIdEnrollmentService", "CancelSpeakerIdEnrollment");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<
+    ::assistant::api::GetSpeakerIdEnrollmentInfoRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "SpeakerIdEnrollmentService", "GetSpeakerIdEnrollmentInfo");
 }
 
 GrpcLibassistantClient::GrpcLibassistantClient(

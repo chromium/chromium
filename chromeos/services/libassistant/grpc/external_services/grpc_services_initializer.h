@@ -25,6 +25,7 @@ class AssistantDisplayEventHandlerInterface;
 class ConversationStateEventHandlerInterface;
 class DeviceStateEventHandlerInterface;
 class MediaActionFallbackEventHandlerInterface;
+class SpeakerIdEnrollmentEventHandlerInterface;
 }  // namespace api
 }  // namespace assistant
 
@@ -66,6 +67,13 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
           observer);
   void AddMediaActionFallbackEventObserver(
       GrpcServicesObserver<::assistant::api::OnMediaActionFallbackEventRequest>*
+          observer);
+  void AddSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<::assistant::api::OnSpeakerIdEnrollmentEventRequest>*
+          observer);
+  // SpeakerIdEnrollmentEvent requires a remove function because its lifecycle.
+  void RemoveSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<::assistant::api::OnSpeakerIdEnrollmentEventRequest>*
           observer);
 
   ActionService* GetActionService();
@@ -141,6 +149,10 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   std::unique_ptr<EventHandlerDriver<
       ::assistant::api::MediaActionFallbackEventHandlerInterface>>
       media_action_fallback_event_handler_driver_;
+
+  std::unique_ptr<EventHandlerDriver<
+      ::assistant::api::SpeakerIdEnrollmentEventHandlerInterface>>
+      speaker_id_enrollment_event_handler_driver_;
 };
 
 }  // namespace libassistant
