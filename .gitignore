@@ -192,6 +192,7 @@ vs-chromium-project.txt
 /chromeos/profiles/*.afdo.prof
 /cipd_cache/
 /clank
+/components/autofill/core/browser/form_parsing/internal_resources
 /components/chrome_settings_proto_generated_compile.xml
 /components/cloud_policy_proto_generated_compile.xml
 /components/gcm_driver.xml
