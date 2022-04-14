@@ -1239,6 +1239,8 @@ int DownloadManagerImpl::InProgressCount() {
 int DownloadManagerImpl::NonMaliciousInProgressCount() {
   int count = 0;
   for (const auto& it : downloads_) {
+    if (it.second->IsTransient())
+      continue;
     if (it.second->GetState() == download::DownloadItem::IN_PROGRESS &&
         it.second->GetDangerType() !=
             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL &&
