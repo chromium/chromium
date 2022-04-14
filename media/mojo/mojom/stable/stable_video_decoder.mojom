@@ -78,6 +78,13 @@ interface StableVideoDecoder {
 
   // Initialize the decoder. This must be called before any method other than
   // GetSupportedConfigs().
+  // StableVideoDecoder may hold onto references to VideoFrames sent to the
+  // client. However, it shall not re-use those frames until the client calls
+  // ReleaseVideoFrame() on |video_frame_handle_releaser|. The
+  // StableVideoDecoder may, however, release those references at any time.
+  // Therefore, VideoFrames sent to the client shall contain resources whose
+  // lifetime is independent of the StableVideoDecoder's lifetime, e.g., file
+  // descriptors.
   Construct@1(
       pending_associated_remote<VideoDecoderClient> client,
       pending_remote<MediaLog> media_log,
