@@ -441,7 +441,7 @@ ci.builder(
                         "resources.pak",
                         "snapshot_blob.bin",
                     ],
-                    "dirs": ["locales", "swiftshader"],
+                    "dirs": ["locales"],
                     "gcs_bucket": "chromium-lacros-fishfood",
                     "gcs_path": "x86_64/{%position%}/lacros.zip",
                     "archive_type": "ARCHIVE_TYPE_ZIP",

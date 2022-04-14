@@ -4,8 +4,7 @@
       {
         "archive_type": "ARCHIVE_TYPE_ZIP",
         "dirs": [
-          "locales",
-          "swiftshader"
+          "locales"
         ],
         "files": [
           "chrome",

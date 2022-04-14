@@ -115,7 +115,6 @@ _TRACKED_GROUPS = [
            title='Group: Other PAKs'),
     _Group(paths=['snapshot_blob.bin'], title='Group: Misc'),
     _Group(paths=['locales/'], title='Dir: locales'),
-    _Group(paths=['swiftshader/'], title='Dir: swiftshader'),
     _Group(paths=['WidevineCdm/'], title='Dir: WidevineCdm'),
 ]
 
