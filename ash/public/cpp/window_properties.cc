@@ -39,9 +39,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInShelfKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDraggingTabsKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInDeskMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kForceVisibleInMiniViewKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
-                             kPrePipWindowStateTypeKey,
-                             chromeos::WindowStateType::kDefault)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(bool, kMinimizeOnBackKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPipOriginalWindowKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(float, kPipSnapFractionKey, nullptr)

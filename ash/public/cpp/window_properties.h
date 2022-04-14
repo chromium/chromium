@@ -102,10 +102,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool*>* const
     kMinimizeOnBackKey;
 
-// A property key to store the window state the window had before entering PIP.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
-    chromeos::WindowStateType>* const kPrePipWindowStateTypeKey;
-
 // If true, the current PIP window is spawned from this window.
 // Android PIP has two types of behavior depending on how many activities the
 // original task has before entering PIP.

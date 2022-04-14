@@ -950,8 +950,6 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     // There may already be a system ui window on the initial position.
     UpdatePipBounds();
     if (!was_pip) {
-      window()->SetProperty(kPrePipWindowStateTypeKey, old_window_state_type);
-
       if (widget && widget->GetContentsView()) {
         widget->GetContentsView()->GetViewAccessibility().AnnounceText(
             l10n_util::GetStringUTF16(IDS_ENTER_PIP_A11Y_NOTIFICATION));
