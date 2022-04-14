@@ -2061,6 +2061,9 @@ extern const char kWebNotesDynamicTemplatesDescription[];
 extern const char kOmniboxPedalsAndroidBatch1Name[];
 extern const char kOmniboxPedalsAndroidBatch1Description[];
 
+extern const char kPasswordEditDialogWithDetailsName[];
+extern const char kPasswordEditDialogWithDetailsDescription[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !BUILDFLAG(IS_ANDROID)

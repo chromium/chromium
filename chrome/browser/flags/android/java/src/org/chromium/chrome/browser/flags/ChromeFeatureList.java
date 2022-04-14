@@ -423,6 +423,7 @@ public abstract class ChromeFeatureList {
     public static final String PAINT_PREVIEW_DEMO = "PaintPreviewDemo";
     public static final String PAINT_PREVIEW_SHOW_ON_STARTUP = "PaintPreviewShowOnStartup";
     public static final String PASSWORD_CHANGE = "PasswordChange";
+    public static final String PASSWORD_EDIT_DIALOG_WITH_DETAILS = "PasswordEditDialogWithDetails";
     public static final String PASSWORD_SCRIPTS_FETCHING = "PasswordScriptsFetching";
     public static final String PERMISSION_DELEGATION = "PermissionDelegation";
     public static final String PERSIST_SHARE_HUB_ON_APP_SWITCH = "PersistShareHubOnAppSwitch";

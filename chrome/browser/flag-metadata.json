@@ -4675,6 +4675,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "password-edit-dialog-with-details",
+    "owners": ["atsvirchkova"],
+    "expiry_milestone": 106
+  },
+  {
     "name": "password-import",
     "owners": [ "//components/password_manager/OWNERS" ],
     // The feature is already extensively used externally.

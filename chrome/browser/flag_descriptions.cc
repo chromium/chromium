@@ -3615,6 +3615,12 @@ const char kOmniboxPedalsAndroidBatch1Name[] = "Omnibox Pedals Android batch 1";
 const char kOmniboxPedalsAndroidBatch1Description[] =
     "Enable the first batch of Omnibox Pedals on Android.";
 
+const char kPasswordEditDialogWithDetailsName[] =
+    "Password edit dialog with details UI";
+const char kPasswordEditDialogWithDetailsDescription[] =
+    "Enables UI which shows the dialog after clicking on save/update password"
+    " with the functionality to choose user account and edit the password.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // BUILDFLAG(IS_ANDROID)

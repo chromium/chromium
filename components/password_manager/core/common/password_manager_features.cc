@@ -192,6 +192,9 @@ const base::Feature kUnifiedPasswordManagerAndroid{
 const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly{
     "UnifiedPasswordManagerSyncUsingAndroidBackendOnly",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPasswordEditDialogWithDetails{
+    "PasswordEditDialogWithDetails", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kUnifiedPasswordManagerDesktop = {
