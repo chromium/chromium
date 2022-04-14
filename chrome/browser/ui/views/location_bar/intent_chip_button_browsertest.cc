@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -40,6 +41,9 @@ class IntentChipButtonBrowserTest
 
   void TearDownOnMainThread() override {
     web_app::test::UninstallWebApp(profile(), test_web_app_id());
+    if (!overlapping_app_id_.empty()) {
+      web_app::test::UninstallWebApp(profile(), overlapping_app_id_);
+    }
     web_app::WebAppNavigationBrowserTest::TearDownOnMainThread();
   }
 
@@ -90,11 +94,13 @@ class IntentChipButtonBrowserTest
     web_app_info->description = u"Test description";
     web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
-    web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    overlapping_app_id_ =
+        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  web_app::AppId overlapping_app_id_;
 };
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
@@ -280,14 +286,7 @@ class IntentChipButtonAppIconBrowserTest : public IntentChipButtonBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1314260): Fix test flakiness on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowsAppIconInChip DISABLED_ShowsAppIconInChip
-#else
-#define MAYBE_ShowsAppIconInChip ShowsAppIconInChip
-#endif
-IN_PROC_BROWSER_TEST_F(IntentChipButtonAppIconBrowserTest,
-                       MAYBE_ShowsAppIconInChip) {
+IN_PROC_BROWSER_TEST_F(IntentChipButtonAppIconBrowserTest, ShowsAppIconInChip) {
   if (!HasRequiredAshVersionForLacros())
     GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
