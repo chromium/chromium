@@ -74,6 +74,8 @@ void SetAppAllowed(apps::mojom::App* app, bool allowed) {
 }
 
 void SetAppAllowed(bool allowed, apps::App& app) {
+  app.readiness =
+      allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy;
   app.recommendable = allowed;
   app.searchable = allowed;
   app.show_in_launcher = allowed;
