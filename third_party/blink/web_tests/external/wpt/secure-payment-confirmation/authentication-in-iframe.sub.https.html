@@ -60,7 +60,8 @@ promise_test(async t => {
       });
   });
 
-  frame.contentWindow.postMessage(credential.rawId, '*');
+  const rpId = window.location.hostname;
+  frame.contentWindow.postMessage([credential.rawId, rpId], '*');
 
   const result = await resultPromise;
 

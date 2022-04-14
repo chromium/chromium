@@ -328188,7 +328188,7 @@
     ],
     "resources": {
      "iframe-authenticate.html": [
-      "d41700224fd01ede58fd372a3866dd69761cf047",
+      "067cb588087124a422a2d3861334b410dd64ac60",
       []
      ],
      "iframe-enroll.html": [
@@ -518987,7 +518987,7 @@
    },
    "secure-payment-confirmation": {
     "authentication-accepted.https.html": [
-     "b62716e0ccb9dfbf84a26b5ce3bdd6fe27d30e48",
+     "2e9611f4cc4ffe5905dde5d84f4b10827c7de38a",
      [
       null,
       {
@@ -519005,7 +519005,7 @@
      ]
     ],
     "authentication-cross-origin.sub.https.html": [
-     "6237fe0e5bf99033c47e100001f5e17641bca8c4",
+     "a9be91b824ca2a3648c74c6a25149b86c1cf61fb",
      [
       null,
       {
@@ -519014,7 +519014,7 @@
      ]
     ],
     "authentication-icon-data-url.https.html": [
-     "bdc1bd938de828ccb5d3bc11bb33c58b353ced8a",
+     "b4c01f34af202e143708bb6236e2bb5df2557546",
      [
       null,
       {
@@ -519023,7 +519023,7 @@
      ]
     ],
     "authentication-in-iframe.sub.https.html": [
-     "53274963f45b01ed1a1faa14b990b2a87e843178",
+     "b3a01e33d1a6be3a7a042db4b6a4ebbd9d326d1d",
      [
       null,
       {
@@ -519032,7 +519032,7 @@
      ]
     ],
     "authentication-invalid-icon.https.html": [
-     "b94c57c6deb0958bd0285ecfd5b345c7e13cd509",
+     "8987c7b28f93e94b665d78f90f00f63b8b55af96",
      [
       null,
       {
@@ -519041,7 +519041,7 @@
      ]
     ],
     "authentication-rejected.https.html": [
-     "22432b88161d5fa9b34fa1a3dad23cfac96db749",
+     "4973748b3ad27e27d0e28f340ca9c494254c0edc",
      [
       null,
       {
@@ -519050,7 +519050,7 @@
      ]
     ],
     "constructor.https.html": [
-     "b19670ff1398f508223a94b6ba318a7f2f55375f",
+     "623732b066d503c4d2649f80c1896647bb865213",
      [
       null,
       {

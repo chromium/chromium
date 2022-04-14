@@ -109,8 +109,8 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        payeeOrigin: window.location.origin,
         // Omitted challenge field.
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
@@ -169,9 +169,9 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        payeeOrigin: window.location.origin,
         // Empty challenge fields.
         challenge: [],
+        payeeOrigin: window.location.origin,
         timeout: 60000,
         instrument: {
           displayName: 'X',
