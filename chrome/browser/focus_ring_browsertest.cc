@@ -111,9 +111,8 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/1222757): Flaky on Mac
-// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1222757): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Checkbox DISABLED_Checkbox
 #else
 #define MAYBE_Checkbox Checkbox
@@ -131,9 +130,8 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Checkbox) {
           /* screenshot_height */ 40, comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac
-// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1222757): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Radio DISABLED_Radio
 #else
 #define MAYBE_Radio Radio
@@ -151,9 +149,8 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Radio) {
           /* screenshot_height */ 40, comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac
-// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1222757): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Button DISABLED_Button
 #else
 #define MAYBE_Button Button
@@ -173,9 +170,8 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Button) {
           /* screenshot_height */ 80, comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac
-// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1222757): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Anchor DISABLED_Anchor
 #else
 #define MAYBE_Anchor Anchor
@@ -198,9 +194,8 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Anchor) {
           /* screenshot_height */ 130, comparator);
 }
 
-// TODO(crbug.com/1222757): Flaky on Mac
-// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1222757): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DarkModeButton DISABLED_DarkModeButton
 #else
 #define MAYBE_DarkModeButton DarkModeButton

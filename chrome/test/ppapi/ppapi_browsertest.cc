@@ -217,10 +217,9 @@ TEST_PPAPI_NACL(Graphics2D_BindNull)
 #define MAYBE_OUT_Graphics3D Graphics3D
 #define MAYBE_NACL_Graphics3D DISABLED_Graphics3D
 #endif  // defined(USE_AURA)
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_MAC)
 // These tests fail when using the legacy software mode. Reenable when the
 // software compositor is enabled crbug.com/286038
-// TODO(crbug.com/1313907): Fails on ash-chrome w/ SwANGLE.
 #define MAYBE_OUT_Graphics3D DISABLED_Graphics3D
 #define MAYBE_NACL_Graphics3D DISABLED_Graphics3D
 #else
