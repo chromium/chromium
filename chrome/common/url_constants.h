@@ -419,8 +419,8 @@ extern const char kFingerprintLearnMoreURL[];
 // "Learn more" URL for the enterprise sign-in confirmation dialog.
 extern const char kChromeEnterpriseSignInLearnMoreURL[];
 
-// The URL for the "learn more" link on the 10.10 obsolescence infobar.
-extern const char kMac10_10_ObsoleteURL[];
+// The URL for the "learn more" link on the macOS version obsolescence infobar.
+extern const char kMacOsObsoleteURL[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

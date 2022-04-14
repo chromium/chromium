@@ -928,13 +928,6 @@ const base::Feature kSharesheetCopyToClipboard{
     "SharesheetCopyToClipboard", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// Enables the "this OS is obsolete" infobar on Mac 10.10.
-// TODO(ellyjones): Remove this after the last 10.10 release.
-const base::Feature kShow10_10ObsoleteInfobar{
-    "Show1010ObsoleteInfobar", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_MAC)
-
 // Alternative to switches::kSitePerProcess, for turning on full site isolation.
 // Launch bug: https://crbug.com/810843.  This is a //chrome-layer feature to
 // avoid turning on site-per-process by default for *all* //content embedders

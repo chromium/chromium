@@ -15,7 +15,13 @@
 
 namespace {
 
-bool IsObsoleteOsVersion() {
+enum class Obsoleteness {
+  MacOS1011Obsolete,
+  MacOS1012Obsolete,
+  NotObsolete,
+};
+
+Obsoleteness OsObsoleteness() {
   // Use base::SysInfo::OperatingSystemVersionNumbers() here rather than the
   // preferred base::mac::IsOS*() function because the IsOS functions for
   // obsolete system versions are removed to help prevent obsolete code from
@@ -23,28 +29,40 @@ bool IsObsoleteOsVersion() {
   int32_t major, minor, bugfix;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
 
-  return ((major < 10) || (major == 10 && minor <= 10)) &&
-         base::FeatureList::IsEnabled(features::kShow10_10ObsoleteInfobar);
+  if (major < 10 || (major == 10 && minor <= 11))
+    return Obsoleteness::MacOS1011Obsolete;
+
+  if (major == 10 && minor == 12)
+    return Obsoleteness::MacOS1012Obsolete;
+
+  return Obsoleteness::NotObsolete;
 }
 
 }  // namespace
 
 // static
 bool ObsoleteSystem::IsObsoleteNowOrSoon() {
-  return IsObsoleteOsVersion();
+  return OsObsoleteness() != Obsoleteness::NotObsolete;
 }
 
 // static
 std::u16string ObsoleteSystem::LocalizedObsoleteString() {
-  return l10n_util::GetStringUTF16(IDS_MAC_10_10_OBSOLETE_SOON);
+  switch (OsObsoleteness()) {
+    case Obsoleteness::MacOS1011Obsolete:
+      return l10n_util::GetStringUTF16(IDS_MAC_10_11_OBSOLETE);
+    case Obsoleteness::MacOS1012Obsolete:
+      return l10n_util::GetStringUTF16(IDS_MAC_10_12_OBSOLETE);
+    default:
+      return std::u16string();
+  }
 }
 
 // static
 bool ObsoleteSystem::IsEndOfTheLine() {
-  return true;
+  return false;
 }
 
 // static
 const char* ObsoleteSystem::GetLinkURL() {
-  return chrome::kMac10_10_ObsoleteURL;
+  return chrome::kMacOsObsoleteURL;
 }

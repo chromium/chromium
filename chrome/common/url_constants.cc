@@ -449,7 +449,7 @@ extern const char kFingerprintLearnMoreURL[] =
 const char kChromeEnterpriseSignInLearnMoreURL[] =
     "https://support.google.com/chromebook/answer/1331549";
 
-const char kMac10_10_ObsoleteURL[] =
+const char kMacOsObsoleteURL[] =
     "https://support.google.com/chrome/?p=unsupported_mac";
 #endif
 
