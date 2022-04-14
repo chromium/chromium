@@ -19,6 +19,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/help_app_ui/url_constants.h"
+#endif
+
 namespace {
 
 const char kPrivacySandboxDialogDisplayHostHistogram[] =
@@ -36,6 +40,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               DialogActionOccurred,
               (PrivacySandboxService::DialogAction),
               (override));
+  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
 };
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
@@ -161,6 +166,38 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
+                       DialogOpensOnSettings) {
+  // Check when a navigation to the Chrome settings occurs, which is a
+  // suitable location, a dialog is shown.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              DialogOpenedForBrowser(browser()))
+      .Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISettingsURL)));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      kPrivacySandboxDialogDisplayHostHistogram,
+      static_cast<base::HistogramBase::Sample>(base::Hash("settings")), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
+                       DialogOpensOnHistory) {
+  // Check when a navigation to the Chrome history occurs, which is a
+  // suitable location, a dialog is shown.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              DialogOpenedForBrowser(browser()))
+      .Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIHistoryURL)));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      kPrivacySandboxDialogDisplayHostHistogram,
+      static_cast<base::HistogramBase::Sample>(base::Hash("history")), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        NoDialogNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default
   // NTP is used, do not show a dialog.
@@ -201,12 +238,22 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
       .Times(0);
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIWelcomeURL)));
-  base::RunLoop().RunUntilIdle();
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAutofillSubPage)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(ash::kChromeUIHelpAppURL)));
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOSSettingsURL)));
+#endif
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kPrivacySandboxDialogDisplayHostHistogram,
                                     0);

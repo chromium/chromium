@@ -202,7 +202,7 @@ class PrivacySandboxService : public KeyedService,
   // Returns whether the Privacy Sandbox is currently restricted for the
   // profile. UI code should consult this to ensure that when restricted,
   // Privacy Sandbox related UI is updated appropriately.
-  bool IsPrivacySandboxRestricted();
+  virtual bool IsPrivacySandboxRestricted();
 
   // Called when a preference relevant to the the V1 Privacy Sandbox page is
   // changed.

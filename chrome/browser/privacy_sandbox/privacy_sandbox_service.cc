@@ -283,26 +283,23 @@ void PrivacySandboxService::DialogActionOccurred(
 
 // static
 bool PrivacySandboxService::IsUrlSuitableForDialog(const GURL& url) {
+  // The dialog should be shown on a limited list of pages:
+
   // about:blank is valid.
   if (url.IsAboutBlank())
     return true;
+  // Chrome settings page is valid. The subpages aren't as most of them are not
+  // related to the dialog.
+  if (url == GURL(chrome::kChromeUISettingsURL))
+    return true;
+  // Chrome history is valid as the dialog mentions history.
+  if (url == GURL(chrome::kChromeUIHistoryURL))
+    return true;
+  // Only a Chrome controlled New Tab Page is valid.
+  if (url == GURL(chrome::kChromeUINewTabPageURL))
+    return true;
 
-  // Other than about:blank, only chrome:// urls are valid. This check is early
-  // in processing to immediately exclude most URLs.
-  if (!url.SchemeIs(content::kChromeUIScheme))
-    return false;
-
-  // The welcome page is never valid.
-  if (url.host() == chrome::kChromeUIWelcomeHost)
-    return false;
-
-  // The generic new tab is never valid, only NTPs known to be Chrome controlled
-  // are valid.
-  if (url.host() == chrome::kChromeUINewTabHost)
-    return false;
-
-  // All remaining chrome:// pages are considered valid.
-  return true;
+  return false;
 }
 
 void PrivacySandboxService::DialogOpenedForBrowser(Browser* browser) {
