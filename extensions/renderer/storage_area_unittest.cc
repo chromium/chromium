@@ -148,10 +148,10 @@ TEST_F(StorageAreaTest, HasOnChanged) {
         FunctionFromString(context, kRegisterListener);
     RunFunctionOnGlobal(add_listener, context, 0, nullptr);
 
+    base::Value::List value = ListValueFromString("['foo']");
     bindings_system()->DispatchEventInContext(
-        base::StringPrintf("storage.%s.onChanged", kStorage).c_str(),
-        DeprecatedListValueFromString("['foo']").get(), nullptr,
-        script_context);
+        base::StringPrintf("storage.%s.onChanged", kStorage).c_str(), value,
+        nullptr, script_context);
 
     EXPECT_EQ("\"foo\"", GetStringPropertyFromObject(context->Global(), context,
                                                      "change"));

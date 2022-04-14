@@ -767,14 +767,14 @@ void Dispatcher::RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) {
 void Dispatcher::DispatchEventHelper(
     const std::string& extension_id,
     const std::string& event_name,
-    const base::ListValue& event_args,
+    const base::Value::List& event_args,
     mojom::EventFilteringInfoPtr filtering_info) const {
   script_context_set_->ForEach(
       extension_id, nullptr,
       base::BindRepeating(
           &NativeExtensionBindingsSystem::DispatchEventInContext,
-          base::Unretained(bindings_system_.get()), event_name, &event_args,
-          base::OwnedRef(std::move(filtering_info))));
+          base::Unretained(bindings_system_.get()), event_name,
+          std::cref(event_args), base::OwnedRef(std::move(filtering_info))));
 }
 
 void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
@@ -1176,14 +1176,14 @@ void Dispatcher::SuspendExtension(
   // the browser know when we are starting and stopping the event dispatch, so
   // that it still considers the extension idle despite any activity the suspend
   // event creates.
-  DispatchEventHelper(extension_id, kOnSuspendEvent, base::ListValue(),
+  DispatchEventHelper(extension_id, kOnSuspendEvent, base::Value::List(),
                       nullptr);
   std::move(callback).Run();
 }
 
 void Dispatcher::CancelSuspendExtension(const std::string& extension_id) {
-  DispatchEventHelper(extension_id, kOnSuspendCanceledEvent, base::ListValue(),
-                      nullptr);
+  DispatchEventHelper(extension_id, kOnSuspendCanceledEvent,
+                      base::Value::List(), nullptr);
 }
 
 void Dispatcher::SetSystemFont(const std::string& font_family,
@@ -1300,7 +1300,7 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
 }
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                               base::Value event_args) {
+                               base::Value::List event_args) {
   if (params->worker_thread_id != kMainThreadId) {
     WorkerThreadDispatcher::Get()->DispatchEvent(std::move(params),
                                                  std::move(event_args));
@@ -1328,8 +1328,7 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
     }
   }
 
-  DispatchEventHelper(params->extension_id, params->event_name,
-                      base::Value::AsListValue(event_args),
+  DispatchEventHelper(params->extension_id, params->event_name, event_args,
                       std::move(params->filtering_info));
 
   if (background_frame) {

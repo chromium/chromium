@@ -1642,7 +1642,7 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
       continue;
 
     // Filter out the optional keys that this listener didn't request.
-    std::unique_ptr<base::ListValue> args_filtered(new base::ListValue);
+    base::Value::List args_filtered;
 
     // In Public Sessions we want to restrict access to security or privacy
     // sensitive data. Data is filtered for *all* listeners, not only extensions
@@ -1658,7 +1658,7 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
       }
       custom_event_details = event_details_filtered_copy.get();
     }
-    args_filtered->Append(
+    args_filtered.Append(
         base::Value::FromUniquePtrValue(custom_event_details->GetFilteredDict(
             listener->extra_info_spec, PermissionHelper::Get(browser_context),
             listener->id.extension_id, crosses_incognito)));

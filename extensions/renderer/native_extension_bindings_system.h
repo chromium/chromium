@@ -59,7 +59,7 @@ class NativeExtensionBindingsSystem {
   // |filtering_info| in the given |context|.
   void DispatchEventInContext(
       const std::string& event_name,
-      const base::ListValue* event_args,
+      const base::Value::List& event_args,
       const mojom::EventFilteringInfoPtr& filtering_info,
       ScriptContext* context);
 

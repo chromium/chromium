@@ -15,10 +15,6 @@
 #include "extensions/renderer/bindings/listener_tracker.h"
 #include "v8/include/v8.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace extensions {
 class ExceptionHandler;
 
@@ -71,7 +67,7 @@ class APIEventHandler {
   // after this!
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
-                          const base::ListValue& arguments,
+                          const base::Value::List& arguments,
                           mojom::EventFilteringInfoPtr filter);
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,

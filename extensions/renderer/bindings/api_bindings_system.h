@@ -78,7 +78,7 @@ class APIBindingsSystem {
   // listeners.
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
-                          const base::ListValue& response,
+                          const base::Value::List& response,
                           mojom::EventFilteringInfoPtr filter);
 
   // Returns the APIBindingHooks object for the given api to allow for

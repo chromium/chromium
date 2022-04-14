@@ -179,9 +179,9 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Events) {
 
   {
     TestJSRunner::AllowErrors allow_errors;
-    bindings_system()->DispatchEventInContext(
-        "idle.onStateChanged", DeprecatedListValueFromString("['idle']").get(),
-        nullptr, script_context);
+    base::Value::List value = ListValueFromString("['idle']");
+    bindings_system()->DispatchEventInContext("idle.onStateChanged", value,
+                                              nullptr, script_context);
   }
 
   EXPECT_EQ("\"idle\"", GetStringPropertyFromObject(context->Global(), context,

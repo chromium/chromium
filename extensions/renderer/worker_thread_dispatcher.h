@@ -152,14 +152,14 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   // Mojo interface implementation, called from the main thread.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value event_args) override;
+                     base::Value::List event_args) override;
 
  private:
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
   static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
   static void UpdateBindingsOnWorkerThread(const ExtensionId& extension_id);
   static void DispatchEventOnWorkerThread(mojom::DispatchEventParamsPtr params,
-                                          base::Value event_args);
+                                          base::Value::List event_args);
 
   void OnMessageReceivedOnWorkerThread(int worker_thread_id,
                                        const IPC::Message& message);
@@ -186,7 +186,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                               const std::string& error_message);
 
   void DispatchEventHelper(mojom::DispatchEventParamsPtr params,
-                           base::Value event_args);
+                           base::Value::List event_args);
 
   // IPC sender. Belongs to the render thread, but thread safe.
   scoped_refptr<IPC::SyncMessageFilter> message_filter_;

@@ -238,7 +238,7 @@ TEST_F(APIEventHandlerTest, FiringEvents) {
   EXPECT_EQ(0, get_fired_count("alphaCount2"));
   EXPECT_EQ(0, get_fired_count("betaCount"));
 
-  handler()->FireEventInContext(kAlphaName, context, base::ListValue(),
+  handler()->FireEventInContext(kAlphaName, context, base::Value::List(),
                                 nullptr);
   EXPECT_EQ(2u, handler()->GetNumEventListenersForTesting(kAlphaName, context));
   EXPECT_EQ(1u, handler()->GetNumEventListenersForTesting(kBetaName, context));
@@ -247,13 +247,14 @@ TEST_F(APIEventHandlerTest, FiringEvents) {
   EXPECT_EQ(1, get_fired_count("alphaCount2"));
   EXPECT_EQ(0, get_fired_count("betaCount"));
 
-  handler()->FireEventInContext(kAlphaName, context, base::ListValue(),
+  handler()->FireEventInContext(kAlphaName, context, base::Value::List(),
                                 nullptr);
   EXPECT_EQ(2, get_fired_count("alphaCount1"));
   EXPECT_EQ(2, get_fired_count("alphaCount2"));
   EXPECT_EQ(0, get_fired_count("betaCount"));
 
-  handler()->FireEventInContext(kBetaName, context, base::ListValue(), nullptr);
+  handler()->FireEventInContext(kBetaName, context, base::Value::List(),
+                                nullptr);
   EXPECT_EQ(2, get_fired_count("alphaCount1"));
   EXPECT_EQ(2, get_fired_count("alphaCount2"));
   EXPECT_EQ(1, get_fired_count("betaCount"));
@@ -278,10 +279,8 @@ TEST_F(APIEventHandlerTest, EventArguments) {
   AddListener(context, listener_function, event);
 
   const char kArguments[] = "['foo',1,{'prop1':'bar'}]";
-  std::unique_ptr<base::ListValue> event_args =
-      DeprecatedListValueFromString(kArguments);
-  ASSERT_TRUE(event_args);
-  handler()->FireEventInContext(kEventName, context, *event_args, nullptr);
+  base::Value::List event_args = ListValueFromString(kArguments);
+  handler()->FireEventInContext(kEventName, context, event_args, nullptr);
 
   EXPECT_EQ(
       ReplaceSingleQuotes(kArguments),
@@ -328,11 +327,8 @@ TEST_F(APIEventHandlerTest, MultipleContexts) {
 
   // Dispatch the event in context_a - the listener in context_b should not be
   // notified.
-  std::unique_ptr<base::ListValue> arguments_a =
-      DeprecatedListValueFromString("['result_a:']");
-  ASSERT_TRUE(arguments_a);
-
-  handler()->FireEventInContext(kEventName, context_a, *arguments_a, nullptr);
+  base::Value::List arguments_a = ListValueFromString("['result_a:']");
+  handler()->FireEventInContext(kEventName, context_a, arguments_a, nullptr);
   {
     EXPECT_EQ("\"result_a:alpha\"",
               GetStringPropertyFromObject(context_a->Global(), context_a,
@@ -345,10 +341,8 @@ TEST_F(APIEventHandlerTest, MultipleContexts) {
 
   // Dispatch the event in context_b - the listener in context_a should not be
   // notified.
-  std::unique_ptr<base::ListValue> arguments_b =
-      DeprecatedListValueFromString("['result_b:']");
-  ASSERT_TRUE(arguments_b);
-  handler()->FireEventInContext(kEventName, context_b, *arguments_b, nullptr);
+  base::Value::List arguments_b = ListValueFromString("['result_b:']");
+  handler()->FireEventInContext(kEventName, context_b, arguments_b, nullptr);
   {
     EXPECT_EQ("\"result_a:alpha\"",
               GetStringPropertyFromObject(context_a->Global(), context_a,
@@ -483,7 +477,7 @@ TEST_F(APIEventHandlerTest, RemovingListenersWhileHandlingEvent) {
   // Fire the event. All listeners should be removed (and we shouldn't crash).
   EXPECT_EQ(kNumListeners,
             handler()->GetNumEventListenersForTesting(kEventName, context));
-  handler()->FireEventInContext(kEventName, context, base::ListValue(),
+  handler()->FireEventInContext(kEventName, context, base::Value::List(),
                                 nullptr);
   EXPECT_EQ(0u, handler()->GetNumEventListenersForTesting(kEventName, context));
 
@@ -531,13 +525,11 @@ TEST_F(APIEventHandlerTest, TestEventListenersThrowingExceptions) {
   }
   EXPECT_EQ(2u, handler()->GetNumEventListenersForTesting(kEventName, context));
 
-  std::unique_ptr<base::ListValue> event_args =
-      DeprecatedListValueFromString("[42]");
-  ASSERT_TRUE(event_args);
+  base::Value::List event_args = ListValueFromString("[42]");
 
   {
     TestJSRunner::AllowErrors allow_errors;
-    handler()->FireEventInContext(kEventName, context, *event_args, nullptr);
+    handler()->FireEventInContext(kEventName, context, event_args, nullptr);
   }
 
   // An exception should have been thrown by the first listener and the second
@@ -706,10 +698,8 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagers) {
   AddListener(context, listener_function, event);
 
   const char kArguments[] = "['first','second']";
-  std::unique_ptr<base::ListValue> event_args =
-      DeprecatedListValueFromString(kArguments);
-  ASSERT_TRUE(event_args);
-  handler()->FireEventInContext(kEventName, context, *event_args, nullptr);
+  base::Value::List event_args = ListValueFromString(kArguments);
+  handler()->FireEventInContext(kEventName, context, event_args, nullptr);
 
   EXPECT_EQ(
       "[\"first\",\"second\"]",
@@ -748,10 +738,8 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagersAsyncDispatch) {
   AddListener(context, listener_function, event);
 
   const char kArguments[] = "['first','second']";
-  std::unique_ptr<base::ListValue> event_args =
-      DeprecatedListValueFromString(kArguments);
-  ASSERT_TRUE(event_args);
-  handler()->FireEventInContext(kEventName, context, *event_args, nullptr);
+  base::Value::List event_args = ListValueFromString(kArguments);
+  handler()->FireEventInContext(kEventName, context, event_args, nullptr);
 
   // The massager should have been triggered, but since it doesn't call
   // dispatch(), the listener shouldn't have been notified.
@@ -800,7 +788,7 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagersNeverDispatch) {
 
   AddListener(context, listener_function, event);
 
-  handler()->FireEventInContext(kEventName, context, base::ListValue(),
+  handler()->FireEventInContext(kEventName, context, base::Value::List(),
                                 nullptr);
 
   // Nothing should blow up. (We tested in the previous test that the event
@@ -838,7 +826,7 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagersDispatchResult) {
   ASSERT_FALSE(listener_function.IsEmpty());
   AddListener(context, listener_function, event);
 
-  handler()->FireEventInContext(kEventName, context, base::ListValue(),
+  handler()->FireEventInContext(kEventName, context, base::Value::List(),
                                 nullptr);
 
   EXPECT_EQ(
@@ -942,8 +930,7 @@ TEST_F(APIEventHandlerTest, TestUnmanagedEvents) {
   EXPECT_EQ(1u, handler.GetNumEventListenersForTesting(kEventName, context));
 
   handler.FireEventInContext(kEventName, context,
-                             *DeprecatedListValueFromString("[1, 'foo']"),
-                             nullptr);
+                             ListValueFromString("[1, 'foo']"), nullptr);
 
   EXPECT_EQ("[1,\"foo\"]", GetStringPropertyFromObject(context->Global(),
                                                        context, "eventArgs"));
@@ -1040,7 +1027,7 @@ TEST_F(APIEventHandlerTest, TestDispatchingEventsWhileScriptSuspended) {
     // Suspend script and fire an event. The listener should *not* be notified
     // while script is suspended.
     TestJSRunner::Suspension script_suspension;
-    handler()->FireEventInContext(kEventName, context, base::ListValue(),
+    handler()->FireEventInContext(kEventName, context, base::Value::List(),
                                   nullptr);
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ("undefined", GetStringPropertyFromObject(context->Global(),
@@ -1089,7 +1076,7 @@ TEST_F(APIEventHandlerTest,
     // Suspend script and fire an event. The listener should not be notified,
     // and no errors should be logged.
     TestJSRunner::Suspension script_suspension;
-    handler()->FireEventInContext(kEventName, context, base::ListValue(),
+    handler()->FireEventInContext(kEventName, context, base::Value::List(),
                                   nullptr);
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ("undefined", GetStringPropertyFromObject(context->Global(),
@@ -1147,7 +1134,7 @@ TEST_F(APIEventHandlerTest,
     // neither should have been notified.
     EXPECT_EQ(2u,
               handler()->GetNumEventListenersForTesting(kEventName, context));
-    handler()->FireEventInContext(kEventName, context, base::ListValue(),
+    handler()->FireEventInContext(kEventName, context, base::Value::List(),
                                   nullptr);
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ("undefined", GetStringPropertyFromObject(context->Global(),

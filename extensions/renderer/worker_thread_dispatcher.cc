@@ -186,7 +186,7 @@ void WorkerThreadDispatcher::UpdateBindingsOnWorkerThread(
 // static
 void WorkerThreadDispatcher::DispatchEventOnWorkerThread(
     mojom::DispatchEventParamsPtr params,
-    base::Value event_args) {
+    base::Value::List event_args) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->DispatchEventHelper(std::move(params), std::move(event_args));
 }
@@ -359,7 +359,7 @@ void WorkerThreadDispatcher::OnResponseWorker(int worker_thread_id,
 
 void WorkerThreadDispatcher::DispatchEventHelper(
     mojom::DispatchEventParamsPtr params,
-    base::Value event_args) {
+    base::Value::List event_args) {
   DCHECK_EQ(params->worker_thread_id, content::WorkerThread::GetCurrentId());
 
   ServiceWorkerData* data = g_data_tls.Pointer()->Get();
@@ -382,8 +382,8 @@ void WorkerThreadDispatcher::DispatchEventHelper(
   }
 
   data->bindings_system()->DispatchEventInContext(
-      params->event_name, &base::Value::AsListValue(event_args),
-      std::move(params->filtering_info), data->context());
+      params->event_name, event_args, std::move(params->filtering_info),
+      data->context());
   const int worker_thread_id = content::WorkerThread::GetCurrentId();
   Send(new ExtensionHostMsg_EventAckWorker(data->context()->GetExtensionID(),
                                            data->service_worker_version_id(),
@@ -391,7 +391,7 @@ void WorkerThreadDispatcher::DispatchEventHelper(
 }
 
 void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                                           base::Value event_args) {
+                                           base::Value::List event_args) {
   DCHECK(!worker_thread_util::IsWorkerThread());
   const int worker_thread_id = params->worker_thread_id;
   PostTaskToWorkerThread(

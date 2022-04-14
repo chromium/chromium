@@ -49,7 +49,6 @@ class WebServiceWorkerContextProxy;
 }
 
 namespace base {
-class ListValue;
 class SingleThreadTaskRunner;
 }
 
@@ -175,7 +174,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // Dispatches the event named |event_name| to all render views.
   void DispatchEventHelper(const std::string& extension_id,
                            const std::string& event_name,
-                           const base::ListValue& event_args,
+                           const base::Value::List& event_args,
                            mojom::EventFilteringInfoPtr filtering_info) const;
 
   // Shared implementation of the various MessageInvoke IPCs.
@@ -287,7 +286,7 @@ class Dispatcher : public content::RenderThreadObserver,
 
   // mojom::EventDispatcher implementation.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value event_args) override;
+                     base::Value::List event_args) override;
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;

@@ -127,7 +127,7 @@ class EventRouter : public KeyedService,
                                     int render_process_id,
                                     int worker_thread_id,
                                     int64_t service_worker_version_id,
-                                    std::unique_ptr<base::ListValue> event_args,
+                                    base::Value::List event_args,
                                     mojom::EventFilteringInfoPtr info);
 
   // Returns false when the event is scoped to a context and the listening
@@ -365,7 +365,7 @@ class EventRouter : public KeyedService,
       const std::string& extension_id,
       int event_id,
       const std::string& event_name,
-      base::ListValue* event_args,
+      base::Value::List event_args,
       UserGestureState user_gesture,
       extensions::mojom::EventFilteringInfoPtr info);
 
@@ -417,7 +417,7 @@ class EventRouter : public KeyedService,
                               content::RenderProcessHost* process,
                               int64_t service_worker_version_id,
                               int worker_thread_id,
-                              Event* event,
+                              const Event& event,
                               const base::DictionaryValue* listener_filter,
                               bool did_enqueue);
 
@@ -450,7 +450,7 @@ class EventRouter : public KeyedService,
 
   void RouteDispatchEvent(content::RenderProcessHost* rph,
                           mojom::DispatchEventParamsPtr params,
-                          base::ListValue& event_args);
+                          base::Value::List event_args);
 
   // static
   static void DoDispatchEventToSenderBookkeeping(

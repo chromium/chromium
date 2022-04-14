@@ -321,10 +321,9 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
     CallFunctionOnObject(context, alpha_api, kTestCall);
 
     const char kResponseArgsJson[] = R"(["response",1,{"key":42}])";
-    std::unique_ptr<base::ListValue> expected_args =
-        DeprecatedListValueFromString(kResponseArgsJson);
+    base::Value::List expected_args = ListValueFromString(kResponseArgsJson);
     bindings_system()->FireEventInContext("alpha.alphaEvent", context,
-                                          *expected_args, nullptr);
+                                          expected_args, nullptr);
 
     EXPECT_EQ(kResponseArgsJson,
               GetStringPropertyFromObject(context->Global(), context,

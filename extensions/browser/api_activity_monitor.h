@@ -8,12 +8,9 @@
 #include <memory>
 #include <string>
 
-class GURL;
+#include "base/values.h"
 
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
+class GURL;
 
 namespace content {
 class BrowserContext;
@@ -25,7 +22,12 @@ namespace activity_monitor {
 using Monitor = void (*)(content::BrowserContext* browser_context,
                          const std::string& extension_id,
                          const std::string& activity_name,
-                         const base::ListValue& event_args);
+                         const base::Value::List& event_args);
+// DEPRECATED. Use Monitor(see crbug.com/1303949)
+using MonitorListValue = void (*)(content::BrowserContext* browser_context,
+                                  const std::string& extension_id,
+                                  const std::string& activity_name,
+                                  const base::ListValue& event_args);
 using WebRequestMonitor =
     void (*)(content::BrowserContext* browser_context,
              const std::string& extension_id,
@@ -39,10 +41,10 @@ using WebRequestMonitor =
 // Additionally, since this may be called on any thead, |browser_context| is
 // unsafe to use unless posted to the UI thread.
 Monitor GetApiEventMonitor();
-Monitor GetApiFunctionMonitor();
+MonitorListValue GetApiFunctionMonitor();
 WebRequestMonitor GetWebRequestMonitor();
 void SetApiEventMonitor(Monitor event_monitor);
-void SetApiFunctionMonitor(Monitor function_monitor);
+void SetApiFunctionMonitor(MonitorListValue function_monitor);
 void SetWebRequestMonitor(WebRequestMonitor web_request_monitor);
 
 // Called when an API event is dispatched to an extension. May be called on any
@@ -50,7 +52,7 @@ void SetWebRequestMonitor(WebRequestMonitor web_request_monitor);
 void OnApiEventDispatched(content::BrowserContext* browser_context,
                           const std::string& extension_id,
                           const std::string& event_name,
-                          const base::ListValue& event_args);
+                          const base::Value::List& event_args);
 
 // Called when an extension calls an API function. May be called on any thread.
 // |browser_context| is unsafe to use.

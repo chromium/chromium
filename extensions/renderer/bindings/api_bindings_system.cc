@@ -125,7 +125,7 @@ void APIBindingsSystem::CompleteRequest(int request_id,
 void APIBindingsSystem::FireEventInContext(
     const std::string& event_name,
     v8::Local<v8::Context> context,
-    const base::ListValue& response,
+    const base::Value::List& response,
     mojom::EventFilteringInfoPtr filter) {
   event_handler_.FireEventInContext(event_name, context, response,
                                     std::move(filter));

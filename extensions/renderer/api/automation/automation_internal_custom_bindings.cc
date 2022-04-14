@@ -2443,11 +2443,11 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
 
   if (!tree_wrapper->OnAccessibilityEvents(event_bundle, is_active_profile)) {
     DLOG(ERROR) << tree_wrapper->tree()->error();
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append(tree_id.ToString());
     bindings_system_->DispatchEventInContext(
-        "automationInternal.onAccessibilityTreeSerializationError",
-        &base::Value::AsListValue(args), nullptr, context());
+        "automationInternal.onAccessibilityTreeSerializationError", args,
+        nullptr, context());
     return;
   }
 }
@@ -2558,14 +2558,13 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
     }
 
     did_send_event = true;
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     args.Append(observer.id);
     args.Append(tree_id.ToString());
     args.Append(node->id());
     args.Append(ToString(change_type));
     bindings_system_->DispatchEventInContext("automationInternal.onTreeChange",
-                                             &base::Value::AsListValue(args),
-                                             nullptr, context());
+                                             args, nullptr, context());
   }
 
   return did_send_event;
@@ -2640,11 +2639,10 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
 
   event_params.SetKey("intents", std::move(value_intents));
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(std::move(event_params));
   bindings_system_->DispatchEventInContext(
-      "automationInternal.onAccessibilityEvent",
-      &base::Value::AsListValue(args), nullptr, context());
+      "automationInternal.onAccessibilityEvent", args, nullptr, context());
 }
 
 void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
@@ -2771,18 +2769,17 @@ void AutomationInternalCustomBindings::SendAccessibilityFocusedLocationChange(
 
 void AutomationInternalCustomBindings::SendChildTreeIDEvent(
     ui::AXTreeID child_tree_id) {
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(child_tree_id.ToString());
   bindings_system_->DispatchEventInContext("automationInternal.onChildTreeID",
-                                           &base::Value::AsListValue(args),
-                                           nullptr, context());
+                                           args, nullptr, context());
 }
 
 void AutomationInternalCustomBindings::SendNodesRemovedEvent(
     ui::AXTree* tree,
     const std::vector<int>& ids) {
   ui::AXTreeID tree_id = tree->GetAXTreeID();
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(tree_id.ToString());
   {
     base::Value nodes(base::Value::Type::LIST);
@@ -2792,8 +2789,7 @@ void AutomationInternalCustomBindings::SendNodesRemovedEvent(
   }
 
   bindings_system_->DispatchEventInContext("automationInternal.onNodesRemoved",
-                                           &base::Value::AsListValue(args),
-                                           nullptr, context());
+                                           args, nullptr, context());
 }
 
 std::string
