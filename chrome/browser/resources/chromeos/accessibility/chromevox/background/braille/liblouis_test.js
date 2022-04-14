@@ -11,6 +11,13 @@
 GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
 ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'BrailleTable', '/chromevox/background/braille/braille_table.js');
+  }
+
   createLiblouis() {
     return new LibLouis(
         chrome.extension.getURL(

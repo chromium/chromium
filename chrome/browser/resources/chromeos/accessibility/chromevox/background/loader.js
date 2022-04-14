@@ -15,7 +15,6 @@ goog.require('BrailleDisplayState');
 goog.require('BrailleInterface');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
-goog.require('BrailleTable');
 goog.require('ChromeVox');
 goog.require('ChromeVoxState');
 goog.require('ChromeVoxStateObserver');

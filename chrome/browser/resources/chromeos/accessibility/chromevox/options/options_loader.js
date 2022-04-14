@@ -8,7 +8,6 @@
 
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
-goog.require('BrailleTable');
 goog.require('ChromeVox');
 goog.require('EventStreamLogger');
 goog.require('ExtensionBridge');

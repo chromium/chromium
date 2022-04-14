@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox options page.
  */
 import {BluetoothBrailleDisplayUI} from '../background/braille/bluetooth_braille_display_ui.js';
+import {BrailleTable} from '../background/braille/braille_table.js';
 import {BrailleTranslatorManager} from '../background/braille/braille_translator_manager.js';
 import {ConsoleTts} from '../background/console_tts.js';
 import {ChromeVoxPrefs} from '../background/prefs.js';

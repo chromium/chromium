@@ -6,8 +6,7 @@
  * @fileoverview Holds information about a braille table.
  */
 
-goog.provide('BrailleTable');
-
+export const BrailleTable = {};
 
 /**
  * @typedef {{

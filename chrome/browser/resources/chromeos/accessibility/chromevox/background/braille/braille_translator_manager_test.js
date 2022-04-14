@@ -15,6 +15,8 @@ ChromeVoxBrailleTranslatorManagerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
+        'BrailleTable', '/chromevox/background/braille/braille_table.js');
+    await importModule(
         'BrailleTranslatorManager',
         '/chromevox/background/braille/braille_translator_manager.js');
 
