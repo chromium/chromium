@@ -169,6 +169,9 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Used when processing a Chrome tab drag from a WebUI tab strip.
   std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate_;
 
+  // Used when processing a normal drag and drop with touch.
+  std::unique_ptr<DragDropCaptureDelegate> touch_drag_drop_delegate_;
+
   // Window that is currently under the drag cursor.
   aura::Window* drag_window_ = nullptr;
 

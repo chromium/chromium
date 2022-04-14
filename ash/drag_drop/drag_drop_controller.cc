@@ -154,11 +154,14 @@ DragOperation DragDropController::StartDragAndDrop(
   current_drag_event_source_ = source;
   capture_delegate_ = nullptr;
 
+  bool touch_captured = false;
+
   // When an extended drag is started, a capture window will be created to
   // handle moving gestures between different wl surfaces to support dragging
   // chrome tabs into and out of browsers.
   if (source == ui::mojom::DragEventSource::kTouch &&
       toplevel_window_drag_delegate_) {
+    touch_captured = true;
     toplevel_window_drag_delegate_->TakeCapture(
         root_window, source_window,
         base::BindRepeating(&DragDropController::CancelIfInProgress,
@@ -201,9 +204,9 @@ DragOperation DragDropController::StartDragAndDrop(
         root_window, drag_source_window_, start_location_);
     static_cast<DragImageView*>(drag_image_widget_->GetContentsView())
         ->SetTouchDragOperationHintOff();
-    // Avoid taking capture twice if the toplevel drag delegate is being used.
-    if (!toplevel_window_drag_delegate_ &&
-        source == ui::mojom::DragEventSource::kTouch) {
+    // Avoid taking capture twice.
+    if (!touch_captured && source == ui::mojom::DragEventSource::kTouch) {
+      touch_captured = true;
       tab_drag_drop_delegate_->TakeCapture(
           root_window, source_window,
           base::BindRepeating(&DragDropController::CancelIfInProgress,
@@ -211,6 +214,19 @@ DragOperation DragDropController::StartDragAndDrop(
           ui::TransferTouchesBehavior::kDontCancel);
       capture_delegate_ = tab_drag_drop_delegate_.get();
     }
+  }
+  // If touch is not captured by either extended drag nor tab drag, start
+  // a normal drag-and-drop using DragDropCaptureDelegate.
+  if (!touch_captured && source == ui::mojom::DragEventSource::kTouch) {
+    touch_captured = true;
+    // For other type of touch drag, use normal DDCaptureDelegate;
+    touch_drag_drop_delegate_ = std::make_unique<DragDropCaptureDelegate>();
+    touch_drag_drop_delegate_->TakeCapture(
+        root_window, source_window,
+        base::BindRepeating(&DragDropController::CancelIfInProgress,
+                            base::Unretained(this)),
+        ui::TransferTouchesBehavior::kDontCancel);
+    capture_delegate_ = touch_drag_drop_delegate_.get();
   }
 
   if (test_loop_closure_) {
@@ -743,6 +759,7 @@ void DragDropController::Cleanup() {
   drag_data_.reset();
   allowed_operations_ = 0;
   tab_drag_drop_delegate_.reset();
+  touch_drag_drop_delegate_.reset();
   capture_delegate_ = nullptr;
 }
 
