@@ -22,8 +22,13 @@
 namespace content {
 
 bool HasWebUIScheme(const GURL& url) {
-  return url.SchemeIs(kChromeDevToolsScheme) || url.SchemeIs(kChromeUIScheme) ||
-         url.SchemeIs(kChromeUIUntrustedScheme);
+  return HasWebUIOrigin(url::Origin::Create(url));
+}
+
+bool HasWebUIOrigin(const url::Origin& origin) {
+  return origin.scheme() == content::kChromeUIScheme ||
+         origin.scheme() == content::kChromeUIUntrustedScheme ||
+         origin.scheme() == content::kChromeDevToolsScheme;
 }
 
 bool IsSavableURL(const GURL& url) {
