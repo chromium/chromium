@@ -1716,7 +1716,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // Only propagate baselines from children on the first flex-line.
     if ((!is_wrap_reverse && flex_line_idx == 0) ||
         (is_wrap_reverse && flex_line_idx == flex_line_outputs->size() - 1)) {
-      // TODO(almaher): How will this work with fragmentation?
       PropagateBaselineFromChild(flex_item->Style(), fragment,
                                  offset.block_offset, &fallback_baseline);
     }
