@@ -6,26 +6,26 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
+import org.chromium.components.omnibox.action.OmniboxPedal;
 
 /**
- * An interface for handling interactions for Omnibox Pedals.
+ * An interface for handling interactions for Omnibox Pedals and actions.
  */
 public interface OmniboxPedalDelegate {
     /**
      * Call this method when the pedal is clicked.
      *
-     * @param omniboxActionType the {@link OmniboxActionType} related to the clicked pedal.
+     * @param omniboxPedal the {@link OmniboxPedal} whose action we want to execute.
      */
-    void executeAction(@OmniboxPedalType int omniboxActionType);
+    void execute(OmniboxPedal omniboxPedal);
 
     /**
-     * Call this method when request the pedal's icon.
+     * Call this method to request the pedal's icon.
      *
-     * @param omniboxActionType the {@link OmniboxActionType} for the request pedal.
+     * @param omniboxPedal the {@link OmniboxPedal} whose icon we want.
      * @return The icon's information.
      */
     @NonNull
-    PedalIcon getPedalIcon(@OmniboxPedalType int omniboxActionType);
+    PedalIcon getIcon(OmniboxPedal omniboxPedal);
 }

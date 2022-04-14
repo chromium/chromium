@@ -95,16 +95,13 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     protected void setPedal(PropertyModel model, @NonNull OmniboxPedal omniboxPedal) {
         model.set(PedalSuggestionViewProperties.PEDAL, omniboxPedal);
         model.set(PedalSuggestionViewProperties.PEDAL_ICON, getPedalIcon(omniboxPedal));
-        final int pedalID = omniboxPedal.getPedalID();
-        model.set(PedalSuggestionViewProperties.ON_PEDAL_CLICK, v -> {
-            SuggestionsMetrics.recordPedalUsed(pedalID);
-            mOmniboxPedalDelegate.executeAction(pedalID);
-            mAutocompleteDelegate.clearOmniboxFocus();
-        });
+        model.set(PedalSuggestionViewProperties.ON_PEDAL_CLICK, v -> executeAction(omniboxPedal));
         model.set(
                 BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.COMPACT);
 
-        mLastVisiblePedals.add(pedalID);
+        if (omniboxPedal.hasPedalId()) {
+            mLastVisiblePedals.add(omniboxPedal.getPedalID());
+        }
     }
 
     /**
@@ -114,7 +111,12 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     PedalIcon getPedalIcon(@NonNull OmniboxPedal omniboxPedal) {
-        return mOmniboxPedalDelegate.getPedalIcon(omniboxPedal.getPedalID());
+        return mOmniboxPedalDelegate.getIcon(omniboxPedal);
+    }
+
+    void executeAction(@NonNull OmniboxPedal omniboxPedal) {
+        mAutocompleteDelegate.clearOmniboxFocus();
+        mOmniboxPedalDelegate.execute(omniboxPedal);
     }
 
     /**
