@@ -15,6 +15,7 @@ namespace weblayer {
 class WebLayerMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
  private:
   friend class WebLayerSafeBrowsingUIManagerDelegate;
+  friend class WebLayerAssistantFieldTrialUtil;
 
   WebLayerMetricsServiceAccessor() = delete;
   WebLayerMetricsServiceAccessor(const WebLayerMetricsServiceAccessor&) =

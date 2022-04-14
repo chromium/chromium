@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/autofill_assistant/weblayer_dependencies.h"
 
+#include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
 #include "weblayer/browser/java/jni/WebLayerAssistantStaticDependencies_jni.h"
 
 using ::autofill_assistant::Dependencies;
@@ -27,7 +28,7 @@ WebLayerDependencies::WebLayerDependencies(
 
 std::unique_ptr<::autofill_assistant::AssistantFieldTrialUtil>
 WebLayerDependencies::CreateFieldTrialUtil() const {
-  return nullptr;
+  return std::make_unique<WebLayerAssistantFieldTrialUtil>();
 }
 
 autofill::PersonalDataManager* WebLayerDependencies::GetPersonalDataManager()

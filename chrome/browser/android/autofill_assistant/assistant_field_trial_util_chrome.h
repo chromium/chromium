@@ -8,8 +8,6 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 
-using ::base::StringPiece;
-
 namespace autofill_assistant {
 
 // Provides field trial utils for Chrome.
