@@ -25,6 +25,8 @@ ALLOWED_LICENSES = [
     ("Apache-2.0 OR BSL-1.0", "Apache 2.0"),
     ("BSD-3-Clause", "BSD 3-Clause"),
     ("ISC", "ISC"),
+    ("MIT OR Zlib OR Apache-2.0", "Apache 2.0"),
+    ("0BSD OR MIT OR Apache-2.0", "Apache 2.0"),
 ]
 
 # The subdirectory where crates are found, relative to the current working
