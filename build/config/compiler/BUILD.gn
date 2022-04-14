@@ -1416,6 +1416,7 @@ config("default_warnings") {
       cflags += [ "/WX" ]
     }
     if (fatal_linker_warnings) {
+      arflags = [ "/WX" ]
       ldflags = [ "/WX" ]
     }
     defines = [
