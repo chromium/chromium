@@ -47,7 +47,6 @@
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "printing/buildflags/buildflags.h"
@@ -837,11 +836,7 @@ bool PrintViewManagerBase::RenderAllMissingPagesNow() {
   }
 
   // We can't print if there is no renderer.
-  if (!web_contents() || !web_contents()->GetMainFrame()->GetRenderViewHost() ||
-      !web_contents()
-           ->GetMainFrame()
-           ->GetRenderViewHost()
-           ->IsRenderViewLive()) {
+  if (!web_contents() || !web_contents()->GetMainFrame()->IsRenderFrameLive()) {
     return false;
   }
 
@@ -888,11 +883,7 @@ bool PrintViewManagerBase::CreateNewPrintJob(
     return false;
 
   // We can't print if there is no renderer.
-  if (!web_contents()->GetMainFrame()->GetRenderViewHost() ||
-      !web_contents()
-           ->GetMainFrame()
-           ->GetRenderViewHost()
-           ->IsRenderViewLive()) {
+  if (!web_contents()->GetMainFrame()->IsRenderFrameLive()) {
     return false;
   }
 

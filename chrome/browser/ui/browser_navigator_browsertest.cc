@@ -1845,7 +1845,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
   new_contents->GetController().GoBack();
   back_load_observer.Wait();
   EXPECT_EQ(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
-  EXPECT_TRUE(webui_rvh->IsRenderViewLive());
+  EXPECT_TRUE(webui_rvh->IsRenderViewLiveForTesting());
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
               new_contents->GetMainFrame()->GetEnabledBindings());
 }
