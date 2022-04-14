@@ -42,7 +42,7 @@ bool BrowserSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
     gfx::NativeWindow window,
     const gfx::Rect& snapshot_bounds,
     gfx::Image* image) const {
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 #if defined(USE_AURA)
   ui::GrabWindowSnapshotAsyncAura(
 #else

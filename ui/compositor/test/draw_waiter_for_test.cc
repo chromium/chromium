@@ -33,7 +33,8 @@ DrawWaiterForTest::~DrawWaiterForTest() {}
 
 void DrawWaiterForTest::WaitImpl(Compositor* compositor) {
   compositor->AddObserver(this);
-  wait_run_loop_ = std::make_unique<base::RunLoop>();
+  wait_run_loop_ = std::make_unique<base::RunLoop>(
+      base::RunLoop::Type::kNestableTasksAllowed);
   wait_run_loop_->Run();
   compositor->RemoveObserver(this);
 }
