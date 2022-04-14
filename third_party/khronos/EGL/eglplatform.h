@@ -2,36 +2,17 @@
 #define __eglplatform_h_
 
 /*
-** Copyright (c) 2007-2016 The Khronos Group Inc.
-**
-** Permission is hereby granted, free of charge, to any person obtaining a
-** copy of this software and/or associated documentation files (the
-** "Materials"), to deal in the Materials without restriction, including
-** without limitation the rights to use, copy, modify, merge, publish,
-** distribute, sublicense, and/or sell copies of the Materials, and to
-** permit persons to whom the Materials are furnished to do so, subject to
-** the following conditions:
-**
-** The above copyright notice and this permission notice shall be included
-** in all copies or substantial portions of the Materials.
-**
-** THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-** IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-** CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-** TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-** MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+** Copyright 2007-2020 The Khronos Group Inc.
+** SPDX-License-Identifier: Apache-2.0
 */
 
 /* Platform-specific types and definitions for egl.h
- * $Revision: 30994 $ on $Date: 2015-04-30 13:36:48 -0700 (Thu, 30 Apr 2015) $
  *
  * Adopters may modify khrplatform.h and this file to suit their platform.
  * You are encouraged to submit all modifications to the Khronos group so that
  * they can be included in future versions of this file.  Please submit changes
- * by sending them to the public Khronos Bugzilla (http://khronos.org/bugzilla)
- * by filing a bug against product "EGL" component "Registry".
+ * by filing an issue or pull request on the public Khronos EGL Registry, at
+ * https://www.github.com/KhronosGroup/EGL-Registry/
  */
 
 #include <KHR/khrplatform.h>
@@ -67,7 +48,13 @@
  * implementations.
  */
 
-#if defined(_WIN32) || defined(__VC32__) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__) /* Win32 and WinCE */
+#if defined(EGL_NO_PLATFORM_SPECIFIC_TYPES)
+
+typedef void *EGLNativeDisplayType;
+typedef void *EGLNativePixmapType;
+typedef void *EGLNativeWindowType;
+
+#elif defined(_WIN32) || defined(__VC32__) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__) /* Win32 and WinCE */
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
@@ -77,39 +64,80 @@ typedef HDC     EGLNativeDisplayType;
 typedef HBITMAP EGLNativePixmapType;
 typedef HWND    EGLNativeWindowType;
 
-#elif defined(__APPLE__) || defined(__WINSCW__) || \
-    defined(__SYMBIAN32__) /* Symbian */
+#elif defined(__EMSCRIPTEN__)
+
+typedef int EGLNativeDisplayType;
+typedef int EGLNativePixmapType;
+typedef int EGLNativeWindowType;
+
+#elif defined(__WINSCW__) || defined(__SYMBIAN32__)  /* Symbian */
 
 typedef int   EGLNativeDisplayType;
-typedef void *EGLNativeWindowType;
 typedef void *EGLNativePixmapType;
+typedef void *EGLNativeWindowType;
+
+#elif defined(WL_EGL_PLATFORM)
+
+typedef struct wl_display     *EGLNativeDisplayType;
+typedef struct wl_egl_pixmap  *EGLNativePixmapType;
+typedef struct wl_egl_window  *EGLNativeWindowType;
+
+#elif defined(__GBM__)
+
+typedef struct gbm_device  *EGLNativeDisplayType;
+typedef struct gbm_bo      *EGLNativePixmapType;
+typedef void               *EGLNativeWindowType;
 
 #elif defined(__ANDROID__) || defined(ANDROID)
 
 struct ANativeWindow;
 struct egl_native_pixmap_t;
 
-typedef struct ANativeWindow*           EGLNativeWindowType;
-typedef struct egl_native_pixmap_t*     EGLNativePixmapType;
 typedef void*                           EGLNativeDisplayType;
+typedef struct egl_native_pixmap_t*     EGLNativePixmapType;
+typedef struct ANativeWindow*           EGLNativeWindowType;
 
 #elif defined(USE_OZONE)
 
 typedef intptr_t EGLNativeDisplayType;
-typedef intptr_t EGLNativeWindowType;
 typedef intptr_t EGLNativePixmapType;
+typedef intptr_t EGLNativeWindowType;
 
-#elif defined(__unix__)
+#elif defined(USE_X11)
 
 /* X11 (tentative)  */
-typedef unsigned long XID;
-typedef XID Pixmap;
-typedef XID Window;
-typedef struct _XDisplay Display;
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 typedef Display *EGLNativeDisplayType;
 typedef Pixmap   EGLNativePixmapType;
 typedef Window   EGLNativeWindowType;
+
+#elif defined(__unix__)
+
+typedef void             *EGLNativeDisplayType;
+typedef khronos_uintptr_t EGLNativePixmapType;
+typedef khronos_uintptr_t EGLNativeWindowType;
+
+#elif defined(__APPLE__)
+
+typedef int   EGLNativeDisplayType;
+typedef void *EGLNativePixmapType;
+typedef void *EGLNativeWindowType;
+
+#elif defined(__HAIKU__)
+
+#include <kernel/image.h>
+
+typedef void              *EGLNativeDisplayType;
+typedef khronos_uintptr_t  EGLNativePixmapType;
+typedef khronos_uintptr_t  EGLNativeWindowType;
+
+#elif defined(__Fuchsia__)
+
+typedef void              *EGLNativeDisplayType;
+typedef khronos_uintptr_t  EGLNativePixmapType;
+typedef khronos_uintptr_t  EGLNativeWindowType;
 
 #else
 #error "Platform not recognized"
