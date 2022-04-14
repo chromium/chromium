@@ -94,7 +94,14 @@ class TargetProcess {
                               const void* address,
                               size_t size);
 
+  // Creates a mock TargetProcess used for testing interceptions.
+  static std::unique_ptr<TargetProcess> MakeTargetProcessForTesting(
+      HANDLE process,
+      HMODULE base_address);
+
  private:
+  // Verify the target process looks the same as the broker process.
+  ResultCode VerifySentinels();
   // Details of the target process.
   base::win::ScopedProcessInformation sandbox_process_info_;
   // The token associated with the process. It provides the core of the
@@ -123,16 +130,7 @@ class TargetProcess {
   std::unique_ptr<wchar_t, base::FreeDeleter> exe_name_;
   /// List of capability sids for use when impersonating in an AC process.
   std::vector<base::win::Sid> impersonation_capabilities_;
-
-  // Function used for testing.
-  friend std::unique_ptr<TargetProcess> MakeTestTargetProcess(
-      HANDLE process,
-      HMODULE base_address);
 };
-
-// Creates a mock TargetProcess used for testing interceptions.
-std::unique_ptr<TargetProcess> MakeTestTargetProcess(HANDLE process,
-                                                     HMODULE base_address);
 
 }  // namespace sandbox
 

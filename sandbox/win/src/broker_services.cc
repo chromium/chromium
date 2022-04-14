@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
+#include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
@@ -27,10 +28,6 @@
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
-
-#if DCHECK_IS_ON()
-#include "base/win/current_module.h"
-#endif
 
 namespace {
 
@@ -434,16 +431,15 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
                                            ResultCode* last_warning,
                                            DWORD* last_error,
                                            PROCESS_INFORMATION* target_info) {
-#if DCHECK_IS_ON()
+  if (!exe_path)
+    return SBOX_ERROR_BAD_PARAMS;
+
   // This code should only be called from the exe, ensure that this is always
   // the case.
   HMODULE exe_module = nullptr;
   CHECK(::GetModuleHandleEx(NULL, exe_path, &exe_module));
-  DCHECK_EQ(CURRENT_MODULE(), exe_module);
-#endif
-
-  if (!exe_path)
-    return SBOX_ERROR_BAD_PARAMS;
+  if (CURRENT_MODULE() != exe_module)
+    return SBOX_ERROR_INVALID_LINK_STATE;
 
   if (!policy)
     return SBOX_ERROR_BAD_PARAMS;

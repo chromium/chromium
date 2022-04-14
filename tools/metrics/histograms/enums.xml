@@ -50576,6 +50576,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="61" label="SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN"/>
   <int value="62" label="SBOX_ERROR_UNSANDBOXED_PROCESS"/>
   <int value="63" label="SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS"/>
+  <int value="64" label="SBOX_ERROR_INVALID_LINK_STATE"/>
+  <int value="65" label="SBOX_ERROR_INVALID_TARGET_BASE_ADDRESS"/>
+  <int value="66" label="SBOX_ERROR_CANNOT_READ_SENTINEL_VALUE"/>
+  <int value="67" label="SBOX_ERROR_INVALID_READ_SENTINEL_SIZE"/>
+  <int value="68" label="SBOX_ERROR_MISMATCH_SENTINEL_VALUE"/>
   <int value="1002" label="LAUNCH_RESULT_SUCCESS"/>
   <int value="1003" label="LAUNCH_RESULT_FAILURE"/>
 </enum>

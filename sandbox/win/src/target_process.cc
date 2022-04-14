@@ -16,6 +16,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/win/access_token.h"
+#include "base/win/current_module.h"
 #include "base/win/security_util.h"
 #include "base/win/startup_information.h"
 #include "base/win/windows_version.h"
@@ -71,9 +72,13 @@ bool GetAppContainerImpersonationToken(
 
 }  // namespace
 
+// 'SAND'
+SANDBOX_INTERCEPT DWORD g_sentinel_value_start = 0x53414E44;
 SANDBOX_INTERCEPT HANDLE g_shared_section;
 SANDBOX_INTERCEPT size_t g_shared_IPC_size;
 SANDBOX_INTERCEPT size_t g_shared_policy_size;
+// 'BOXY'
+SANDBOX_INTERCEPT DWORD g_sentinel_value_end = 0x424F5859;
 
 TargetProcess::TargetProcess(
     base::win::ScopedHandle initial_token,
@@ -201,6 +206,11 @@ ResultCode TargetProcess::Create(
     return SBOX_ERROR_CANNOT_FIND_BASE_ADDRESS;
   }
 
+  if (base_address_ != CURRENT_MODULE()) {
+    ::TerminateProcess(process_info.process_handle(), 0);
+    return SBOX_ERROR_INVALID_TARGET_BASE_ADDRESS;
+  }
+
   sandbox_process_info_.Set(process_info.Take());
   return SBOX_ALL_OK;
 }
@@ -230,6 +240,10 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
                                uint32_t shared_IPC_size,
                                uint32_t shared_policy_size,
                                DWORD* win_error) {
+  ResultCode ret = VerifySentinels();
+  if (ret != SBOX_ALL_OK)
+    return ret;
+
   // We need to map the shared memory on the target. This is necessary for
   // any IPC that needs to take place, even if the target has not yet hit
   // the main( ) function or even has initialized the CRT. So here we set
@@ -257,7 +271,6 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
   CopyPolicyToTarget(policy, shared_policy_size,
                      reinterpret_cast<char*>(shared_memory) + shared_IPC_size);
 
-  ResultCode ret;
   // Set the global variables in the target. These are not used on the broker.
   g_shared_IPC_size = shared_IPC_size;
   ret = TransferVariable("g_shared_IPC_size", &g_shared_IPC_size,
@@ -332,8 +345,38 @@ ResultCode TargetProcess::AssignLowBoxToken(
   return SBOX_ALL_OK;
 }
 
-std::unique_ptr<TargetProcess> MakeTestTargetProcess(HANDLE process,
-                                                     HMODULE base_address) {
+ResultCode TargetProcess::VerifySentinels() {
+  if (!sandbox_process_info_.IsValid())
+    return SBOX_ERROR_UNEXPECTED_CALL;
+  DWORD value = 0;
+  SIZE_T read;
+
+  if (!::ReadProcessMemory(sandbox_process_info_.process_handle(),
+                           &g_sentinel_value_start, &value, sizeof(DWORD),
+                           &read)) {
+    return SBOX_ERROR_CANNOT_READ_SENTINEL_VALUE;
+  }
+  if (read != sizeof(DWORD))
+    return SBOX_ERROR_INVALID_READ_SENTINEL_SIZE;
+  if (value != g_sentinel_value_start)
+    return SBOX_ERROR_MISMATCH_SENTINEL_VALUE;
+  if (!::ReadProcessMemory(sandbox_process_info_.process_handle(),
+                           &g_sentinel_value_end, &value, sizeof(DWORD),
+                           &read)) {
+    return SBOX_ERROR_CANNOT_READ_SENTINEL_VALUE;
+  }
+  if (read != sizeof(DWORD))
+    return SBOX_ERROR_INVALID_READ_SENTINEL_SIZE;
+  if (value != g_sentinel_value_end)
+    return SBOX_ERROR_MISMATCH_SENTINEL_VALUE;
+
+  return SBOX_ALL_OK;
+}
+
+// static
+std::unique_ptr<TargetProcess> TargetProcess::MakeTargetProcessForTesting(
+    HANDLE process,
+    HMODULE base_address) {
   auto target = std::make_unique<TargetProcess>(
       base::win::ScopedHandle(), base::win::ScopedHandle(), nullptr, nullptr,
       std::vector<base::win::Sid>());
