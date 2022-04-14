@@ -34,6 +34,7 @@ TEST(KeyEventStructTraitsTest, Convert) {
       {ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN},
       {ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B, ui::EF_SHIFT_DOWN},
       {ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_CAPS_LOCK_ON},
+      {ui::ET_KEY_PRESSED, ui::VKEY_C, ui::DomCode::US_C, ui::EF_ALTGR_DOWN},
   };
   for (size_t idx = 0; idx < std::size(kTestData); ++idx) {
     auto copy = std::make_unique<ui::KeyEvent>(kTestData[idx]);

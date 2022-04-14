@@ -32,6 +32,8 @@ bool StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr>::Read(
     flags |= ui::EF_ALT_DOWN;
   if (data.is_capslock_on())
     flags |= ui::EF_CAPS_LOCK_ON;
+  if (data.is_alt_gr_down())
+    flags |= ui::EF_ALTGR_DOWN;
 
   ui::KeyboardCode key_code;
   ui::DomKey dom_key;
