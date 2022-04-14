@@ -227,6 +227,12 @@ const base::Feature kAutofillEnableSupportForHonorificPrefixes{
     "AutofillEnableSupportForHonorificPrefixes",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, trunk prefix-related phone number types are added to the
+// supported and matching types of |PhoneNumber|.
+const base::Feature kAutofillEnableSupportForPhoneNumberTrunkTypes{
+    "AutofillEnableSupportForPhoneNumberTrunkTypes",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables autofill to function within a FencedFrame, and is disabled by
 // default.
 // TODO(crbug.com/1294378): Remove once launched.

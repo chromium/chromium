@@ -601,10 +601,6 @@ class BrowserAutofillManager : public AutofillManager,
   static void DisambiguateAddressUploadTypes(FormStructure* form,
                                              size_t current_index);
 
-  // Disambiguates phone field upload types.
-  static void DisambiguatePhoneUploadTypes(FormStructure* form,
-                                           size_t current_index);
-
   // Disambiguates name field upload types.
   static void DisambiguateNameUploadTypes(
       FormStructure* form,

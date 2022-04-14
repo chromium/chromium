@@ -6539,126 +6539,113 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
   credit_card.set_guid("00000000-0000-0000-0000-000000000003");
   credit_cards.push_back(credit_card);
 
-  typedef struct {
+  struct TestFieldData {
     std::u16string input_value;
     ServerFieldType predicted_type;
     bool expect_disambiguation;
     ServerFieldType expected_upload_type;
-  } TestFieldData;
+  };
+  using TestCase = std::vector<TestFieldData>;
 
-  std::vector<TestFieldData> test_cases[13];
+  std::vector<TestCase> test_cases;
 
   // Address disambiguation.
   // An ambiguous address line followed by a field predicted as a line 2 and
   // that is empty should be disambiguated as an ADDRESS_HOME_LINE1.
-  test_cases[0].push_back({u"3734 Elvis Presley Blvd.", ADDRESS_HOME_LINE1,
-                           true, ADDRESS_HOME_LINE1});
-  test_cases[0].push_back({u"", ADDRESS_HOME_LINE2, true, EMPTY_TYPE});
+  test_cases.push_back({{u"3734 Elvis Presley Blvd.", ADDRESS_HOME_LINE1, true,
+                         ADDRESS_HOME_LINE1},
+                        {u"", ADDRESS_HOME_LINE2, true, EMPTY_TYPE}});
 
   // An ambiguous address line followed by a field predicted as a line 2 but
   // filled with another know profile value should be disambiguated as an
   // ADDRESS_HOME_STREET_ADDRESS.
-  test_cases[1].push_back({u"3734 Elvis Presley Blvd.",
-                           ADDRESS_HOME_STREET_ADDRESS, true,
-                           ADDRESS_HOME_STREET_ADDRESS});
-  test_cases[1].push_back(
-      {u"38116", ADDRESS_HOME_LINE2, true, ADDRESS_HOME_ZIP});
+  test_cases.push_back(
+      {{u"3734 Elvis Presley Blvd.", ADDRESS_HOME_STREET_ADDRESS, true,
+        ADDRESS_HOME_STREET_ADDRESS},
+       {u"38116", ADDRESS_HOME_LINE2, true, ADDRESS_HOME_ZIP}});
 
   // An ambiguous address line followed by an empty field predicted as
   // something other than a line 2 should be disambiguated as an
   // ADDRESS_HOME_STREET_ADDRESS.
-  test_cases[2].push_back({u"3734 Elvis Presley Blvd.",
-                           ADDRESS_HOME_STREET_ADDRESS, true,
-                           ADDRESS_HOME_STREET_ADDRESS});
-  test_cases[2].push_back({u"", ADDRESS_HOME_ZIP, true, EMPTY_TYPE});
+  test_cases.push_back(
+      {{u"3734 Elvis Presley Blvd.", ADDRESS_HOME_STREET_ADDRESS, true,
+        ADDRESS_HOME_STREET_ADDRESS},
+       {u"", ADDRESS_HOME_ZIP, true, EMPTY_TYPE}});
 
   // An ambiguous address line followed by no other field should be
   // disambiguated as an ADDRESS_HOME_STREET_ADDRESS.
-  test_cases[3].push_back({u"3734 Elvis Presley Blvd.",
-                           ADDRESS_HOME_STREET_ADDRESS, true,
-                           ADDRESS_HOME_STREET_ADDRESS});
-
-  // Phone number disambiguation.
-  // A field with possible types PHONE_HOME_CITY_AND_NUMBER and
-  // PHONE_HOME_WHOLE_NUMBER should be disambiguated as
-  // PHONE_HOME_CITY_AND_NUMBER
-  test_cases[4].push_back({u"2345678901", PHONE_HOME_WHOLE_NUMBER, true,
-                           PHONE_HOME_CITY_AND_NUMBER});
+  test_cases.push_back(
+      {{u"3734 Elvis Presley Blvd.", ADDRESS_HOME_STREET_ADDRESS, true,
+        ADDRESS_HOME_STREET_ADDRESS}});
 
   // Name disambiguation.
   // An ambiguous name field that has no next field and that is preceded by
   // a non credit card field should be disambiguated as a non credit card
   // name.
-  test_cases[5].push_back(
-      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
-  test_cases[5].push_back({u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
-  test_cases[5].push_back({u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
+  test_cases.push_back(
+      {{u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY},
+       {u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST},
+       {u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST}});
 
   // An ambiguous name field that has no next field and that is preceded by
   // a credit card field should be disambiguated as a credit card name.
-  test_cases[6].push_back(
-      {u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
-  test_cases[6].push_back({u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
-  test_cases[6].push_back({u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
+  test_cases.push_back(
+      {{u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER},
+       {u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST},
+       {u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST}});
 
   // An ambiguous name field that has no previous field and that is
   // followed by a non credit card field should be disambiguated as a non
   // credit card name.
-  test_cases[7].push_back({u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
-  test_cases[7].push_back({u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
-  test_cases[7].push_back(
-      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
+  test_cases.push_back(
+      {{u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST},
+       {u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST},
+
+       {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY}});
 
   // An ambiguous name field that has no previous field and that is followed
   // by a credit card field should be disambiguated as a credit card name.
-  test_cases[8].push_back({u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
-  test_cases[8].push_back({u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
-  test_cases[8].push_back(
-      {u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
+  test_cases.push_back(
+      {{u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST},
+       {u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST},
+       {u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER}});
 
   // An ambiguous name field that is preceded and followed by non credit
   // card fields should be disambiguated as a non credit card name.
-  test_cases[9].push_back(
-      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
-  test_cases[9].push_back({u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST});
-  test_cases[9].push_back({u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST});
-  test_cases[9].push_back(
-      {u"Tennessee", ADDRESS_HOME_STATE, true, ADDRESS_HOME_STATE});
+  test_cases.push_back(
+      {{u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY},
+       {u"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST},
+       {u"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST},
+       {u"Tennessee", ADDRESS_HOME_STATE, true, ADDRESS_HOME_STATE}});
 
   // An ambiguous name field that is preceded and followed by credit card
   // fields should be disambiguated as a credit card name.
-  test_cases[10].push_back(
-      {u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER});
-  test_cases[10].push_back(
-      {u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST});
-  test_cases[10].push_back(
-      {u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST});
-  test_cases[10].push_back({u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
-                            CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  test_cases.push_back(
+      {{u"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER},
+       {u"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST},
+       {u"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST},
+       {u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
+        CREDIT_CARD_EXP_4_DIGIT_YEAR}});
 
   // An ambiguous name field that is preceded by a non credit card field and
   // followed by a credit card field should not be disambiguated.
-  test_cases[11].push_back(
-      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
-  test_cases[11].push_back(
-      {u"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST});
-  test_cases[11].push_back(
-      {u"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST});
-  test_cases[11].push_back({u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
-                            CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  test_cases.push_back(
+      {{u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY},
+       {u"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST},
+       {u"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST},
+       {u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
+        CREDIT_CARD_EXP_4_DIGIT_YEAR}});
 
   // An ambiguous name field that is preceded by a credit card field and
   // followed by a non credit card field should not be disambiguated.
-  test_cases[12].push_back({u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
-                            CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  test_cases[12].push_back(
-      {u"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST});
-  test_cases[12].push_back(
-      {u"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST});
-  test_cases[12].push_back(
-      {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY});
+  test_cases.push_back(
+      {{u"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
+        CREDIT_CARD_EXP_4_DIGIT_YEAR},
+       {u"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST},
+       {u"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST},
+       {u"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY}});
 
-  for (const std::vector<TestFieldData>& test_fields : test_cases) {
+  for (const TestCase& test_fields : test_cases) {
     FormData form;
     form.name = u"MyForm";
     form.url = GURL("https://myform.com/form.html");
