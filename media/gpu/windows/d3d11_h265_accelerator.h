@@ -59,6 +59,9 @@ class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
                      const H265SliceHeader* slice_hdr,
                      const H265Picture::Vector& ref_pic_list0,
                      const H265Picture::Vector& ref_pic_list1,
+                     const H265Picture::Vector& ref_pic_set_lt_curr,
+                     const H265Picture::Vector& ref_pic_set_st_curr_after,
+                     const H265Picture::Vector& ref_pic_set_st_curr_before,
                      scoped_refptr<H265Picture> pic,
                      const uint8_t* data,
                      size_t size,
@@ -88,10 +91,13 @@ class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
   // Populate the pic params with fields from the picture passed in.
   void PicParamsFromPic(DXVA_PicParams_HEVC* pic_param, D3D11H265Picture* pic);
 
-  // Populate the pic params with fields from ref_pic_list{0,1}
-  bool PicParamsFromRefLists(DXVA_PicParams_HEVC* pic_param,
-                             const H265Picture::Vector& ref_pic_list0,
-                             const H265Picture::Vector& ref_pic_list1);
+  // Populate the pic params with fields from ref_pic_set_lt_curr,
+  // ref_pic_set_st_curr_after and ref_pic_set_st_curr_before
+  bool PicParamsFromRefLists(
+      DXVA_PicParams_HEVC* pic_param,
+      const H265Picture::Vector& ref_pic_set_lt_curr,
+      const H265Picture::Vector& ref_pic_set_st_curr_after,
+      const H265Picture::Vector& ref_pic_set_st_curr_before);
 
   void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
 

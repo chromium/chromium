@@ -387,14 +387,9 @@ void D3D11H265Accelerator::PicParamsFromPic(DXVA_PicParams_HEVC* pic_param,
 
 bool D3D11H265Accelerator::PicParamsFromRefLists(
     DXVA_PicParams_HEVC* pic_param,
-    const H265Picture::Vector& ref_pic_list0,
-    const H265Picture::Vector& ref_pic_list1) {
-  if (ref_pic_list0.size() > kMaxRefPicListSize ||
-      ref_pic_list1.size() > kMaxRefPicListSize) {
-    DLOG(ERROR) << "Invalid ref lists size.";
-    return false;
-  }
-
+    const H265Picture::Vector& ref_pic_set_lt_curr,
+    const H265Picture::Vector& ref_pic_set_st_curr_after,
+    const H265Picture::Vector& ref_pic_set_st_curr_before) {
   constexpr int kDxvaInvalidRefPicIndex = 0xFF;
   constexpr unsigned kStLtRpsSize = 8;
 
@@ -407,87 +402,55 @@ bool D3D11H265Accelerator::PicParamsFromRefLists(
   std::copy(ref_frame_pocs_, ref_frame_pocs_ + kMaxRefPicListSize - 1,
             pic_param->PicOrderCntValList);
 
-  // They store the indices into pic_param->RefPicList, not poc.
-  std::vector<int> pocs_st_curr_before, pocs_st_curr_after, pocs_lt_curr;
-  // Picture in list0 and list1 may overlap and should
-  // not be added duplicated.
-#define ADD_IF_ABSENT(vec, elem)                              \
-  do {                                                        \
-    if (std::find(vec.begin(), vec.end(), elem) == vec.end()) \
-      vec.push_back(elem);                                    \
-  } while (0)
-
-  for (auto& it : ref_pic_list0) {
+  size_t idx = 0;
+  for (auto& it : ref_pic_set_st_curr_before) {
     if (!it)
       continue;
     auto poc = it->pic_order_cnt_val_;
-    auto idx = poc_index_into_ref_pic_list_[poc];
-    if (idx < 0) {
-      DLOG(ERROR) << "Invalid index of POC for ref list0.";
+    auto poc_index = poc_index_into_ref_pic_list_[poc];
+    if (poc_index < 0) {
+      DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrBefore.";
       return false;
     }
-    switch (it->ref_) {
-      case H265Picture::kShortTermCurrBefore:
-        ADD_IF_ABSENT(pocs_st_curr_before, idx);
-        break;
-      case H265Picture::kShortTermCurrAfter:
-        ADD_IF_ABSENT(pocs_st_curr_after, idx);
-        break;
-      case H265Picture::kLongTermCurr:
-        ADD_IF_ABSENT(pocs_lt_curr, idx);
-        break;
-      case H265Picture::kUnused:
-      case H265Picture::kShortTermFoll:
-      case H265Picture::kLongTermFoll:
-        break;
+    if (idx > kStLtRpsSize - 1) {
+      DLOG(ERROR) << "Invalid RefPicSetStCurrBefore size.";
+      return false;
     }
+    pic_param->RefPicSetStCurrBefore[idx++] = poc_index;
   }
-  for (auto& it : ref_pic_list1) {
+  idx = 0;
+  for (auto& it : ref_pic_set_st_curr_after) {
     if (!it)
       continue;
     auto poc = it->pic_order_cnt_val_;
-    auto idx = poc_index_into_ref_pic_list_[poc];
-    if (idx < 0) {
-      DLOG(ERROR) << "Invalid index of POC for ref list1.";
+    auto poc_index = poc_index_into_ref_pic_list_[poc];
+    if (poc_index < 0) {
+      DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrAfter.";
       return false;
     }
-    switch (it->ref_) {
-      case H265Picture::kShortTermCurrBefore:
-        ADD_IF_ABSENT(pocs_st_curr_before, idx);
-        break;
-      case H265Picture::kShortTermCurrAfter:
-        ADD_IF_ABSENT(pocs_st_curr_after, idx);
-        break;
-      case H265Picture::kLongTermCurr:
-        ADD_IF_ABSENT(pocs_lt_curr, idx);
-        break;
-      case H265Picture::kUnused:
-      case H265Picture::kShortTermFoll:
-      case H265Picture::kLongTermFoll:
-        break;
+    if (idx > kStLtRpsSize - 1) {
+      DLOG(ERROR) << "Invalid RefPicSetStCurrAfter size.";
+      return false;
     }
-  }
-#undef ADD_IF_ABSENT
-
-  if (pocs_st_curr_before.size() > kStLtRpsSize ||
-      pocs_st_curr_after.size() > kStLtRpsSize ||
-      pocs_lt_curr.size() > kStLtRpsSize) {
-    DLOG(ERROR) << "Invalid current short/long term ref pic set.";
-    return false;
-  }
-
-  int idx = 0;
-  for (auto poc : pocs_st_curr_before) {
-    pic_param->RefPicSetStCurrBefore[idx++] = poc;
+    pic_param->RefPicSetStCurrAfter[idx++] = poc_index;
   }
   idx = 0;
-  for (auto poc : pocs_st_curr_after) {
-    pic_param->RefPicSetStCurrAfter[idx++] = poc;
+  for (auto& it : ref_pic_set_lt_curr) {
+    if (!it)
+      continue;
+    auto poc = it->pic_order_cnt_val_;
+    auto poc_index = poc_index_into_ref_pic_list_[poc];
+    if (poc_index < 0) {
+      DLOG(ERROR) << "Invalid index of POC for RefPicSetLtCurr.";
+      return false;
+    }
+    if (idx > kStLtRpsSize - 1) {
+      DLOG(ERROR) << "Invalid RefPicSetLtCurr size.";
+      return false;
+    }
+    pic_param->RefPicSetLtCurr[idx++] = poc_index;
   }
-  idx = 0;
-  for (auto poc : pocs_lt_curr) {
-    pic_param->RefPicSetLtCurr[idx++] = poc;
-  }
+
   return true;
 }
 
@@ -497,6 +460,9 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
     const H265SliceHeader* slice_hdr,
     const H265Picture::Vector& ref_pic_list0,
     const H265Picture::Vector& ref_pic_list1,
+    const H265Picture::Vector& ref_pic_set_lt_curr,
+    const H265Picture::Vector& ref_pic_set_st_curr_after,
+    const H265Picture::Vector& ref_pic_set_st_curr_before,
     scoped_refptr<H265Picture> pic,
     const uint8_t* data,
     size_t size,
@@ -515,7 +481,9 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
   PicParamsFromPic(&pic_param, d3d11_pic);
   memcpy(pic_param.RefPicList, ref_frame_list_, sizeof pic_param.RefPicList);
 
-  if (!PicParamsFromRefLists(&pic_param, ref_pic_list0, ref_pic_list1)) {
+  if (!PicParamsFromRefLists(&pic_param, ref_pic_set_lt_curr,
+                             ref_pic_set_st_curr_after,
+                             ref_pic_set_st_curr_before)) {
     return DecoderStatus::kFail;
   }
 

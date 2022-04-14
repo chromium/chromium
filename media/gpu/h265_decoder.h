@@ -98,9 +98,9 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
 
     // Submit one slice for the current frame, passing the current |pps| and
     // |pic| (same as in SubmitFrameMetadata()), the parsed header for the
-    // current slice in |slice_hdr|, and the |ref_pic_listX|, as per H265 spec.
-    // |data| pointing to the full slice (including the unparsed header) of
-    // |size| in bytes.
+    // current slice in |slice_hdr|, the |ref_pic_listX| and |ref_pic_set_XX|,
+    // as per H265 spec. |data| pointing to the full slice (including the
+    // unparsed header) of |size| in bytes.
     // |subsamples| specifies which part of the slice data is encrypted.
     // This must be called one or more times per frame, before SubmitDecode().
     // Note that |data| does not have to remain valid after this call returns.
@@ -112,6 +112,9 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
         const H265SliceHeader* slice_hdr,
         const H265Picture::Vector& ref_pic_list0,
         const H265Picture::Vector& ref_pic_list1,
+        const H265Picture::Vector& ref_pic_set_lt_curr,
+        const H265Picture::Vector& ref_pic_set_st_curr_after,
+        const H265Picture::Vector& ref_pic_set_st_curr_before,
         scoped_refptr<H265Picture> pic,
         const uint8_t* data,
         size_t size,
@@ -300,6 +303,9 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   int poc_lt_foll_[kMaxDpbSize];
   H265Picture::Vector ref_pic_list0_;
   H265Picture::Vector ref_pic_list1_;
+  H265Picture::Vector ref_pic_set_lt_curr_;
+  H265Picture::Vector ref_pic_set_st_curr_after_;
+  H265Picture::Vector ref_pic_set_st_curr_before_;
 
   // |ref_pic_list_| is the collection of all pictures from StCurrBefore,
   // StCurrAfter, StFoll, LtCurr and LtFoll.
