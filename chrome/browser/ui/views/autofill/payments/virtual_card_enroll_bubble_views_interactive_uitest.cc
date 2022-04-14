@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(GetBubbleViews());
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardEnroll.CardArtImageUsed." +
+      "Autofill.VirtualCardEnroll.CardArtImageAvailable." +
           VirtualCardEnrollmentSourceToMetricSuffix(
               virtual_card_enrollment_source),
       true, 1);
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(GetBubbleViews());
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardEnroll.CardArtImageUsed." +
+      "Autofill.VirtualCardEnroll.CardArtImageAvailable." +
           VirtualCardEnrollmentSourceToMetricSuffix(
               virtual_card_enrollment_source),
       false, 1);

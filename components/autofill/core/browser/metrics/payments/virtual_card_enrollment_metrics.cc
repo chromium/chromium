@@ -126,7 +126,7 @@ void LogVirtualCardEnrollBubbleCardArtAvailable(
     bool card_art_available,
     VirtualCardEnrollmentSource source) {
   base::UmaHistogramBoolean(
-      "Autofill.VirtualCardEnroll.CardArtImageUsed." +
+      "Autofill.VirtualCardEnroll.CardArtImageAvailable." +
           VirtualCardEnrollmentSourceToMetricSuffix(source),
       card_art_available);
 }
