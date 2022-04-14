@@ -484,6 +484,10 @@ LoginDisplay* LoginDisplayHostWebUI::GetLoginDisplay() {
 }
 
 ExistingUserController* LoginDisplayHostWebUI::GetExistingUserController() {
+  if (!existing_user_controller_) {
+    LOG(WARNING) << "Triggered crbug/1307919 in WebUI host";
+    CreateExistingUserController();
+  }
   return existing_user_controller_.get();
 }
 
