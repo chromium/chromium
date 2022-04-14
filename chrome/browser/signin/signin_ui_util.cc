@@ -174,12 +174,27 @@ GetAccountReauthSourceFromAccessPoint(
   }
 }
 
-void OnExtensionSigninAccountAdded(
-    bool enable_sync,
-    signin_ui_util::internal::CreateTurnSyncOnHelperCallback
-        create_turn_sync_on_helper_callback,
-    const base::FilePath& profile_path,
-    const CoreAccountId& account_id) {
+base::OnceCallback<void(signin_ui_util::internal::OnAccountAddedCallback)>
+GetAddAccountCallback(Profile* profile) {
+  return base::BindOnce(
+      &SigninManager::StartWebSigninFlow,
+      // base::Unretained() is fine because this callback is called
+      // synchronously
+      base::Unretained(SigninManagerFactory::GetForProfile(profile)),
+      profile->GetPath(),
+      g_browser_process->profile_manager()->GetAccountProfileMapper(),
+      AccountReconcilorFactory::GetForProfile(profile)
+          ->GetConsistencyCookieManager());
+}
+
+void OnAccountAdded(bool enable_sync,
+                    signin_ui_util::internal::CreateTurnSyncOnHelperCallback
+                        create_turn_sync_on_helper_callback,
+                    base::WeakPtr<Browser> browser_weak,
+                    const base::FilePath& profile_path,
+                    signin_metrics::AccessPoint access_point,
+                    signin_metrics::PromoAction promo_action,
+                    const CoreAccountId& account_id) {
   if (!enable_sync || account_id.empty())
     return;
 
@@ -188,17 +203,24 @@ void OnExtensionSigninAccountAdded(
   if (!profile)
     return;
 
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  Browser* browser = displayer.browser();
+  std::unique_ptr<chrome::ScopedTabbedBrowserDisplayer> displayer;
+  Browser* browser = browser_weak.get();
+  if (!browser) {
+    displayer = std::make_unique<chrome::ScopedTabbedBrowserDisplayer>(profile);
+    browser = displayer->browser();
+  }
+  if (!browser)
+    return;
+  DCHECK_EQ(browser->profile(), profile);
 
+  // TODO(https://crbug.com/1260291): Change SigninAbortedMode to REMOVE_ACCOUNT
+  // once it is supported on Lacros.
   std::move(create_turn_sync_on_helper_callback)
-      .Run(profile, browser,
-           signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
-           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+      .Run(profile, browser, access_point, promo_action,
            signin_metrics::Reason::kSigninPrimaryAccount, account_id,
-           TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+           TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -258,6 +280,22 @@ void ShowReauthForPrimaryAccountWithAuthError(
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShowSigninPromptAndMaybeEnableSync(
+    Browser* browser,
+    Profile* profile,
+    bool enable_sync,
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::PromoAction promo_action) {
+  // TODO(https://crbug.com/1260291): Do not show accounts that are already
+  // syncing if `enable_sync` is true.
+  internal::ShowSigninPromptAndMaybeEnableSync(
+      browser, profile, GetAddAccountCallback(profile),
+      base::BindOnce(&CreateTurnSyncOnHelper), enable_sync, access_point,
+      promo_action);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint) {
@@ -268,16 +306,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
       profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       ::GetAccountManagerFacade(profile->GetPath().value()),
-      base::BindOnce(
-          &SigninManager::StartWebSigninFlow,
-          // base::Unretained() is fine because this callback is called
-          // synchronously
-          base::Unretained(SigninManagerFactory::GetForProfile(profile)),
-          profile->GetPath(),
-          g_browser_process->profile_manager()->GetAccountProfileMapper(),
-          AccountReconcilorFactory::GetForProfile(profile)
-              ->GetConsistencyCookieManager()),
-      base::BindOnce(&CreateTurnSyncOnHelper),
+      GetAddAccountCallback(profile), base::BindOnce(&CreateTurnSyncOnHelper),
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       enable_sync, email_hint);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -335,10 +364,11 @@ void ShowExtensionSigninPrompt(
 
   if (email_hint.empty()) {
     // Add a new account.
-    std::move(add_account_callback)
-        .Run(base::BindOnce(&OnExtensionSigninAccountAdded, enable_sync,
-                            std::move(create_turn_sync_on_helper_callback),
-                            profile->GetPath()));
+    ShowSigninPromptAndMaybeEnableSync(
+        nullptr, profile, std::move(add_account_callback),
+        std::move(create_turn_sync_on_helper_callback), enable_sync,
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
     return;
   }
 
@@ -368,6 +398,25 @@ void ShowExtensionSigninPrompt(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShowSigninPromptAndMaybeEnableSync(
+    Browser* browser,
+    Profile* profile,
+    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback,
+    bool enable_sync,
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::PromoAction promo_action) {
+  DCHECK(!browser || browser->profile() == profile);
+  DCHECK(profile);
+  std::move(add_account_callback)
+      .Run(base::BindOnce(&OnAccountAdded, enable_sync,
+                          std::move(create_turn_sync_on_helper_callback),
+                          browser ? browser->AsWeakPtr() : nullptr,
+                          profile->GetPath(), access_point, promo_action));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace internal
 
