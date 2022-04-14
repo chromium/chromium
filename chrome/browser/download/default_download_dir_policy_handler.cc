@@ -46,16 +46,22 @@ void DefaultDownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
 
   base::FilePath::StringType expanded_value =
       download_dir_util::ExpandDownloadDirectoryPath(string_value, parameters);
-
+  bool has_valid_download_dir_policy =
+      policies.GetValue(policy::key::kDownloadDirectory,
+                        base::Value::Type::STRING) != nullptr;
   if (policies.Get(policy_name())->level == policy::POLICY_LEVEL_RECOMMENDED) {
 #if BUILDFLAG(IS_WIN)
-    prefs->SetValue(prefs::kDownloadDefaultDirectory,
-                    base::Value(base::WideToUTF8(expanded_value)));
+    if (!has_valid_download_dir_policy) {
+      prefs->SetValue(prefs::kDownloadDefaultDirectory,
+                      base::Value(base::WideToUTF8(expanded_value)));
+    }
     prefs->SetValue(prefs::kSaveFileDefaultDirectory,
                     base::Value(base::WideToUTF8(expanded_value)));
 #else
-    prefs->SetValue(prefs::kDownloadDefaultDirectory,
-                    base::Value(expanded_value));
+    if (!has_valid_download_dir_policy) {
+      prefs->SetValue(prefs::kDownloadDefaultDirectory,
+                      base::Value(expanded_value));
+    }
     prefs->SetValue(prefs::kSaveFileDefaultDirectory,
                     base::Value(expanded_value));
 #endif

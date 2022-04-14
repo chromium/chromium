@@ -4635,6 +4635,8 @@
       'tags': ['local-data-access'],
       'desc': '''Setting the policy sets up the directory Chrome uses for downloading files. It uses the provided directory, whether or not users specify one or turned on the flag to be prompted for download location every time.
 
+      This policy overrides the <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME">DefaultDownloadDirectory</ph> policy.
+
       Leaving the policy unset means Chrome uses the default download directory, and users can change it.
 
       Note: See a list of variables you can use ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).''',
@@ -20405,6 +20407,8 @@
       'desc': '''Setting the policy changes the default directory that Chrome downloads files to, but users can change the directory.
 
       Leaving the policy unset means Chrome uses its platform-specific default directory.
+
+      This policy has no effect if the policy <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME">DownloadDirectory</ph> is set.
 
       Note: See a list of variables you can use ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).''',
     },
