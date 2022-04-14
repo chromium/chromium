@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.url.GURL;
@@ -20,7 +21,8 @@ public class PasswordStoreBridge {
     }
 
     private long mNativePasswordStoreBridge;
-    private final PasswordStoreObserver mPasswordStoreObserver;
+    private final ObserverList<PasswordStoreObserver> mObserverList;
+    private int mPasswordsCount = -1;
 
     /**
      * Observer listening to messages relevant to password store changes.
@@ -44,19 +46,24 @@ public class PasswordStoreBridge {
     /**
      * Initializes its native counterpart.
      */
-    public PasswordStoreBridge(PasswordStoreObserver passwordStoreObserver) {
+    public PasswordStoreBridge() {
         mNativePasswordStoreBridge = PasswordStoreBridgeJni.get().init(this);
-        mPasswordStoreObserver = passwordStoreObserver;
+        mObserverList = new ObserverList<>();
     }
 
     @CalledByNative
     private void passwordListAvailable(int count) {
-        mPasswordStoreObserver.onSavedPasswordsChanged(count);
+        mPasswordsCount = count;
+        for (PasswordStoreObserver obs : mObserverList) {
+            obs.onSavedPasswordsChanged(count);
+        }
     }
 
     @CalledByNative
     private void onEditCredential(PasswordStoreCredential credential) {
-        mPasswordStoreObserver.onEdit(credential);
+        for (PasswordStoreObserver obs : mObserverList) {
+            obs.onEdit(credential);
+        }
     }
 
     @CalledByNative
@@ -116,6 +123,27 @@ public class PasswordStoreBridge {
             PasswordStoreBridgeJni.get().destroy(mNativePasswordStoreBridge);
             mNativePasswordStoreBridge = 0;
         }
+    }
+
+    /**
+     * Adds a new observer to the list of observers.
+     * @param obs An {@link PasswordStoreObserver} implementation instance.
+     * @param callImmediatelyIfReady Invokes {@link PasswordStoreObserver#onSavedPasswordsChanged}
+     *   on the observer if passwords are already fetched when this is true.
+     */
+    public void addObserver(PasswordStoreObserver obs, boolean callImmediatelyIfReady) {
+        mObserverList.addObserver(obs);
+        if (callImmediatelyIfReady && mPasswordsCount != -1) {
+            obs.onSavedPasswordsChanged(mPasswordsCount);
+        }
+    }
+
+    /**
+     * Removes a given observer from the observers list.
+     * @param obs An {@link PasswordStoreObserver} implementation instance.
+     */
+    public void removeObserver(PasswordStoreObserver obs) {
+        mObserverList.removeObserver(obs);
     }
 
     /**

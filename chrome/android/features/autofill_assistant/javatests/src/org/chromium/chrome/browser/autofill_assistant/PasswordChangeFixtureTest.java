@@ -100,7 +100,8 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
          * request needs to be posted from the main thread.
          */
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPasswordStoreBridge = new PasswordStoreBridge(this);
+            mPasswordStoreBridge = new PasswordStoreBridge();
+            mPasswordStoreBridge.addObserver(this, false);
             // Load initial credentials.
             PasswordStoreCredential[] seedCredentials = mParameters.getSeedCredentials();
             for (int i = 0; i < seedCredentials.length; i++) {
@@ -114,7 +115,10 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mPasswordStoreBridge.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPasswordStoreBridge.removeObserver(this);
+            mPasswordStoreBridge.destroy();
+        });
     }
 
     /**
