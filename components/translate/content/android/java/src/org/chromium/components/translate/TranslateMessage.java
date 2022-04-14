@@ -10,6 +10,8 @@ import android.content.Context;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -17,6 +19,7 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.messages.SecondaryMenuMaxSize;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,7 +31,26 @@ import java.lang.ref.WeakReference;
  * Manages the translate message UI.
  */
 @JNINamespace("translate")
-class TranslateMessage {
+class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
+    public static class MenuItem {
+        // If |title| is an empty string, then a divider will be shown.
+        public final String title;
+        // If |subtitle| is an empty string, then no subtitle will be shown.
+        public final String subtitle;
+        public final boolean hasCheckmark;
+        public final int overflowMenuItemId;
+        public final String languageCode;
+
+        public MenuItem(String title, String subtitle, boolean hasCheckmark, int overflowMenuItemId,
+                String languageCode) {
+            this.title = title;
+            this.subtitle = subtitle;
+            this.hasCheckmark = hasCheckmark;
+            this.overflowMenuItemId = overflowMenuItemId;
+            this.languageCode = languageCode;
+        }
+    }
+
     private final WebContents mWebContents;
     private final Context mContext;
     private long mNativeTranslateMessage;
@@ -95,6 +117,7 @@ class TranslateMessage {
         mMessageProperties.set(MessageBannerProperties.DESCRIPTION,
                 mContext.getString(R.string.translate_message_description,
                         sourceLanguageDisplayName, targetLanguageDisplayName));
+
         // TODO(crbug.com/1304118): Once the functionality exists, this should show a progress
         // indicator spinner in place of the primary button.
         mMessageProperties.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "");
@@ -129,10 +152,12 @@ class TranslateMessage {
                                 R.drawable.infobar_translate_compact)
                         .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
                                 R.drawable.settings_cog)
+                        .with(MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
+                                new SecondaryMenuButtonDelegate())
+                        .with(MessageBannerProperties.SECONDARY_MENU_MAX_SIZE,
+                                SecondaryMenuMaxSize.LARGE)
                         .with(MessageBannerProperties.DISMISSAL_DURATION, mDismissalDurationSeconds)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::handlePrimaryAction)
-                        .with(MessageBannerProperties.ON_SECONDARY_ACTION,
-                                this::handleSecondaryAction)
                         .with(MessageBannerProperties.ON_DISMISSED, this::handleDismiss)
                         .build();
 
@@ -149,11 +174,6 @@ class TranslateMessage {
             TranslateMessageJni.get().handlePrimaryAction(mNativeTranslateMessage);
         }
         return PrimaryActionClickBehavior.DO_NOT_DISMISS;
-    }
-
-    private void handleSecondaryAction() {
-        // TODO(crbug.com/1304121): Instead of performing an action, the secondary button should
-        // show the translate secondary menu.
     }
 
     private void handleDismiss(int dismissReason) {
@@ -178,9 +198,44 @@ class TranslateMessage {
         return ref.get();
     }
 
+    @CalledByNative
+    public static MenuItem[] constructMenuItemArray(String[] titles, String[] subtitles,
+            boolean[] hasCheckmarks, int[] overflowMenuItemIds, String[] languageCodes) {
+        assert titles.length == subtitles.length && titles.length == hasCheckmarks.length
+                && titles.length == overflowMenuItemIds.length
+                && titles.length == languageCodes.length;
+        MenuItem[] menuItems = new MenuItem[titles.length];
+        for (int i = 0; i < titles.length; ++i) {
+            menuItems[i] = new MenuItem(titles[i], subtitles[i], hasCheckmarks[i],
+                    overflowMenuItemIds[i], languageCodes[i]);
+        }
+        return menuItems;
+    }
+
+    // TranslateMessageSecondaryMenu.Handler implementation:
+    @Override
+    public MenuItem[] handleSecondaryMenuItemClicked(MenuItem menuItem) {
+        if (mNativeTranslateMessage == 0) return null;
+        return TranslateMessageJni.get().handleSecondaryMenuItemClicked(mNativeTranslateMessage,
+                menuItem.overflowMenuItemId, menuItem.languageCode, menuItem.hasCheckmark);
+    }
+
+    private final class SecondaryMenuButtonDelegate implements ListMenuButtonDelegate {
+        @Override
+        public ListMenu getListMenu() {
+            return new TranslateMessageSecondaryMenu(mContext, TranslateMessage.this,
+                    mNativeTranslateMessage == 0
+                            ? null
+                            : TranslateMessageJni.get().buildOverflowMenu(mNativeTranslateMessage));
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void handlePrimaryAction(long nativeTranslateMessage);
         void handleDismiss(long nativeTranslateMessage, int dismissReason);
+        MenuItem[] buildOverflowMenu(long nativeTranslateMessage);
+        MenuItem[] handleSecondaryMenuItemClicked(long nativeTranslateMessage,
+                int overflowMenuItemId, String languageCode, boolean hadCheckmark);
     }
 }

@@ -52,6 +52,12 @@
   <message name="IDS_TRANSLATE_INFOBAR_RETRY" desc="Text to show for translate infobar to retry translation of page">
     Try again
   </message>
+  <message name="IDS_TRANSLATE_MESSAGE_ALWAYS_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Always Translate' option to indicate that they want the app to translate pages in this language automatically. Imperative.">
+    Always translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
+  </message>
+  <message name="IDS_TRANSLATE_MESSAGE_NEVER_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Never Translate' option to indicate that they never want the app to translate pages in this language. Imperative.">
+    Never translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
+  </message>
 
   <if expr="is_android">
       <message name="IDS_TRANSLATE_INFOBAR_ERROR" formatter_data="android_java">

@@ -3,6 +3,7 @@ include_rules = [
   "+components/messages/android",
   "+components/metrics",
   "+components/translate/core/browser",
+  "+components/translate/core/common",
   "+content/public/android",
   "+content/public/browser",
 ]

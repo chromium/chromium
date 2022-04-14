@@ -164,9 +164,8 @@ TranslateUIDelegate::TranslateUIDelegate(
   // Add unknown language option to the front of the list on all platforms
   // except iOS.
 #if !BUILDFLAG(IS_IOS)
-  std::u16string unknown_language_string =
-      l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE);
-  languages_.emplace_back(kUnknownLanguageCode, unknown_language_string);
+  languages_.emplace_back(kUnknownLanguageCode,
+                          GetUnknownLanguageDisplayName());
   std::rotate(languages_.rbegin(), languages_.rbegin() + 1, languages_.rend());
 #endif
 
@@ -478,6 +477,11 @@ void TranslateUIDelegate::ReportUIInteraction(UIInteraction ui_interaction) {
     translate_manager_->GetActiveTranslateMetricsLogger()->LogUIInteraction(
         ui_interaction);
   }
+}
+
+// static
+std::u16string TranslateUIDelegate::GetUnknownLanguageDisplayName() {
+  return l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE);
 }
 
 }  // namespace translate

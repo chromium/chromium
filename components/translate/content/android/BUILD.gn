@@ -31,6 +31,8 @@ android_library("java") {
     "java/src/org/chromium/components/translate/TranslateMenu.java",
     "java/src/org/chromium/components/translate/TranslateMenuHelper.java",
     "java/src/org/chromium/components/translate/TranslateMessage.java",
+    "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenu.java",
+    "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenuAdapter.java",
     "java/src/org/chromium/components/translate/TranslateOptions.java",
     "java/src/org/chromium/components/translate/TranslateTabContent.java",
     "java/src/org/chromium/components/translate/TranslateTabLayout.java",
@@ -66,8 +68,11 @@ static_library("android") {
     "//components/language/core/common",
     "//components/messages/android",
     "//components/metrics",
+    "//components/strings:components_strings_grit",
     "//components/translate/core/browser",
+    "//components/translate/core/common",
     "//content/public/browser",
+    "//ui/base",
   ]
 }
 
@@ -114,6 +119,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     "//base",
+    "//base/test:test_support",
     "//components/infobars/core",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
@@ -126,8 +132,10 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/translate/core/browser",
     "//components/translate/core/browser:test_support",
+    "//components/translate/core/common",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
+    "//url",
   ]
 }

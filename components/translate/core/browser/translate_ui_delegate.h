@@ -157,6 +157,8 @@ class TranslateUIDelegate {
   // languages data.
   void MaybeSetContentLanguages();
 
+  static std::u16string GetUnknownLanguageDisplayName();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TranslateUIDelegateTest, GetPageHost);
   FRIEND_TEST_ALL_PREFIXES(TranslateUIDelegateTest, MaybeSetContentLanguages);
