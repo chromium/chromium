@@ -87,22 +87,15 @@ void OpenTabResult::UpdateText() {
   SetTitle(match_.description);
 
   std::u16string url = base::UTF8ToUTF16(match_.destination_url.spec());
-  // TODO(crbug.com/1293702): This displays
-  //   Go to tab - [url]
-  // which should be switched to
-  //   [url] - Go to tab
-  // once the SetElidable behavior is implemented in ash. The accessible name
-  // should also be updated accordingly.
   SetDetailsTextVector(
-      {CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT).SetElidable(false),
+      {CreateStringTextItem(url).SetTextTags({Tag(Tag::URL, 0, url.length())}),
        CreateStringTextItem(kUrlDelimiter),
-       CreateStringTextItem(url).SetTextTags(
-           {Tag(Tag::URL, 0, url.length())})});
+       CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT).SetElidable(false)});
 
-  SetAccessibleName(base::JoinString(
-      {match_.description,
-       l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT), url},
-      kA11yDelimiter));
+  SetAccessibleName(
+      base::JoinString({match_.description, url,
+                        l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)},
+                       kA11yDelimiter));
 }
 
 void OpenTabResult::UpdateIcon() {
