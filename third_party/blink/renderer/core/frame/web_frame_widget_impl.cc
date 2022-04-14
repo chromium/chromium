@@ -4147,6 +4147,7 @@ HitTestResult WebFrameWidgetImpl::HitTestResultForRootFramePos(
   HitTestResult result =
       LocalRootImpl()->GetFrame()->View()->HitTestWithThrottlingAllowed(
           location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
+  result.SetToShadowHostIfInRestrictedShadowRoot();
   return result;
 }
 

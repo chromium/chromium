@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
-#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -523,46 +522,6 @@ TEST_P(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
               !!(context_menu_data.media_flags & expected_media_flag.first))
         << "Flag 0x" << std::hex << expected_media_flag.first;
   }
-}
-
-TEST_P(ContextMenuControllerTest, HitTestVideoChildElements) {
-  // Test that hit tests on parts of a video element result in hits on the video
-  // element itself as opposed to its child elements.
-
-  ContextMenuAllowedScope context_menu_allowed_scope;
-  HitTestResult hit_test_result;
-  const char video_url[] = "https://example.com/foo.webm";
-
-  // Setup video element.
-  Persistent<HTMLVideoElement> video =
-      MakeGarbageCollected<HTMLVideoElement>(*GetDocument());
-  video->SetSrc(video_url);
-  video->setAttribute(
-      html_names::kStyleAttr,
-      "position: absolute; left: 0; top: 0; width: 200px; height: 200px");
-  GetDocument()->body()->AppendChild(video);
-  test::RunPendingTasks();
-  SetReadyState(video.Get(), HTMLMediaElement::kHaveMetadata);
-  test::RunPendingTasks();
-
-  auto check_location = [&](PhysicalOffset location) {
-    EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
-
-    ContextMenuData context_menu_data =
-        GetWebFrameClient().GetContextMenuData();
-    EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kVideo,
-              context_menu_data.media_type);
-    EXPECT_EQ(video_url, context_menu_data.src_url.spec());
-  };
-
-  // Center of video.
-  check_location(PhysicalOffset(100, 100));
-
-  // Play button.
-  check_location(PhysicalOffset(10, 195));
-
-  // Timeline bar.
-  check_location(PhysicalOffset(100, 195));
 }
 
 TEST_P(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
