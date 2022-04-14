@@ -324,8 +324,10 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case EMAIL_ADDRESS:
         case PHONE_HOME_NUMBER:
         case PHONE_HOME_CITY_CODE:
+        case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
         case PHONE_HOME_COUNTRY_CODE:
         case PHONE_HOME_CITY_AND_NUMBER:
+        case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
         case PHONE_HOME_WHOLE_NUMBER:
         case PHONE_FAX_NUMBER:
         case PHONE_FAX_CITY_CODE:

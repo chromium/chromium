@@ -40,8 +40,12 @@ enum ServerFieldType {
   NAME_SUFFIX = 8,
   EMAIL_ADDRESS = 9,
   PHONE_HOME_NUMBER = 10,
+  // Never includes a trunk prefix. Used in combination with a
+  // PHONE_HOME_COUNTRY_CODE field.
   PHONE_HOME_CITY_CODE = 11,
   PHONE_HOME_COUNTRY_CODE = 12,
+  // A number in national format and with a trunk prefix, if applicable in the
+  // number's region. Used when no PHONE_HOME_COUNTRY_CODE field is present.
   PHONE_HOME_CITY_AND_NUMBER = 13,
   PHONE_HOME_WHOLE_NUMBER = 14,
 
@@ -244,9 +248,17 @@ enum ServerFieldType {
   BIRTHDATE_MONTH = 119,
   BIRTHDATE_YEAR_4_DIGITS = 120,
 
+  // Types for better trunk prefix support for phone numbers.
+  // Like PHONE_HOME_CITY_CODE, but with a trunk prefix, if applicable in the
+  // number's region. Used when no PHONE_HOME_COUNTRY_CODE field is present.
+  PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX = 121,
+  // Like PHONE_HOME_CITY_AND_NUMBER, but never includes a trunk prefix. Used in
+  // combination with a PHONE_HOME_COUNTRY_CODE field.
+  PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX = 122,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  MAX_VALID_FIELD_TYPE = 121,
+  MAX_VALID_FIELD_TYPE = 123,
 };
 
 // The list of all HTML autocomplete field type hints supported by Chrome.

@@ -6545,6 +6545,12 @@ others/histograms.xml -->
   <int value="1905" label="BIRTHDATE_MONTH: accepted"/>
   <int value="1920" label="BIRTHDATE_YEAR_4_DIGITS: edited"/>
   <int value="1921" label="BIRTHDATE_YEAR_4_DIGITS: accepted"/>
+  <int value="1936" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: edited"/>
+  <int value="1937" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: accepted"/>
+  <int value="1952"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: edited"/>
+  <int value="1953"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -7461,6 +7467,8 @@ others/histograms.xml -->
   <int value="118" label="BIRTHDATE_DAY"/>
   <int value="119" label="BIRTHDATE_MONTH"/>
   <int value="120" label="BIRTHDATE_YEAR_4_DIGITS"/>
+  <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
+  <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">
