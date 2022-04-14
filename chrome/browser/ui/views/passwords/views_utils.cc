@@ -7,9 +7,8 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/view.h"
 
-std::unique_ptr<views::View> CreateGooglePasswordManagerFooterView(
+std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
     const std::u16string& email,
@@ -33,7 +32,7 @@ std::unique_ptr<views::View> CreateGooglePasswordManagerFooterView(
   return label;
 }
 
-std::unique_ptr<views::View> CreateGooglePasswordManagerFooterView(
+std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
     base::RepeatingClosure open_link_closure) {

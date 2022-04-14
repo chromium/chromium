@@ -58,6 +58,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -652,14 +653,14 @@ std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
       },
       base::Unretained(this));
   if (controller_.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount()) {
-    return CreateGooglePasswordManagerFooterView(
+    return CreateGooglePasswordManagerLabel(
         /*text_message_id=*/
         IDS_PASSWORD_BUBBLES_FOOTER_SYNCED_TO_ACCOUNT,
         /*link_message_id=*/
         IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
         controller_.GetPrimaryAccountEmail(), open_password_manager_closure);
   }
-  return CreateGooglePasswordManagerFooterView(
+  return CreateGooglePasswordManagerLabel(
       /*text_message_id=*/
       IDS_PASSWORD_BUBBLES_FOOTER_SAVING_ON_DEVICE,
       /*link_message_id=*/

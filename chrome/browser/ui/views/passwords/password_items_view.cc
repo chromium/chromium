@@ -362,7 +362,7 @@ std::unique_ptr<views::View> PasswordItemsView::CreateFooterView() {
 
   switch (controller_.GetPasswordSyncState()) {
     case password_manager::SyncState::kNotSyncing:
-      return CreateGooglePasswordManagerFooterView(
+      return CreateGooglePasswordManagerLabel(
           /*text_message_id=*/
           IDS_PASSWORD_BUBBLES_FOOTER_SAVING_ON_DEVICE,
           /*link_message_id=*/
@@ -370,7 +370,7 @@ std::unique_ptr<views::View> PasswordItemsView::CreateFooterView() {
           open_password_manager_closure);
     case password_manager::SyncState::kSyncingNormalEncryption:
     case password_manager::SyncState::kSyncingWithCustomPassphrase:
-      return CreateGooglePasswordManagerFooterView(
+      return CreateGooglePasswordManagerLabel(
           /*text_message_id=*/
           IDS_PASSWORD_BUBBLES_FOOTER_SYNCED_TO_ACCOUNT,
           /*link_message_id=*/
@@ -379,7 +379,7 @@ std::unique_ptr<views::View> PasswordItemsView::CreateFooterView() {
     case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
       // Account store users have a special footer in the management bubble
       // since they might have a mix of synced and non-synced passwords.
-      return CreateGooglePasswordManagerFooterView(
+      return CreateGooglePasswordManagerLabel(
           /*text_message_id=*/
           IDS_PASSWORD_MANAGEMENT_BUBBLE_FOOTER_ACCOUNT_STORE_USERS,
           /*link_message_id=*/
