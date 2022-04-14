@@ -63,8 +63,7 @@ class SendTabToSelfBubbleController
   // Handles the action when the user click on one valid device. Sends tab to
   // the target device.
   // Virtual for testing.
-  virtual void OnDeviceSelected(const std::string& target_device_name,
-                                const std::string& target_device_guid);
+  virtual void OnDeviceSelected(const std::string& target_device_guid);
 
   // Handler for when user clicks the link to manage their available devices.
   void OnManageDevicesClicked(const ui::Event& event);
@@ -74,9 +73,6 @@ class SendTabToSelfBubbleController
 
   // Close the bubble when the user clicks on the back button.
   void OnBackButtonPressed();
-
-  // Shows the confirmation message in the omnibox.
-  void ShowConfirmationMessage();
 
   // Returns true if the initial "Send" animation that's displayed once per
   // profile was shown.

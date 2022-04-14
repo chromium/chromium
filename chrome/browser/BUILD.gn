@@ -4210,8 +4210,6 @@ static_library("browser") {
       "search/search_engine_base_url_tracker.h",
       "send_tab_to_self/desktop_notification_handler.cc",
       "send_tab_to_self/desktop_notification_handler.h",
-      "send_tab_to_self/send_tab_to_self_desktop_util.cc",
-      "send_tab_to_self/send_tab_to_self_desktop_util.h",
       "serial/chrome_serial_delegate.cc",
       "serial/chrome_serial_delegate.h",
       "serial/serial_blocklist.cc",

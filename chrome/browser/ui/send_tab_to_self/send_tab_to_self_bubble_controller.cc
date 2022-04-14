@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
+#include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -27,6 +27,8 @@
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -96,13 +98,34 @@ Profile* SendTabToSelfBubbleController::GetProfile() {
 }
 
 void SendTabToSelfBubbleController::OnDeviceSelected(
-    const std::string& target_device_name,
     const std::string& target_device_guid) {
   // TODO(crbug.com/1288843): This is being recorded for entry points other
   // than the omnibox. Make the entry point a ShowBubble() argument.
   send_tab_to_self::RecordDeviceClicked(ShareEntryPoint::kOmniboxIcon);
-  CreateNewEntry(&GetWebContents(), target_device_name, target_device_guid,
-                 GURL());
+
+  SendTabToSelfModel* model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
+          ->GetSendTabToSelfModel();
+  content::NavigationEntry* navigation_entry =
+      GetWebContents().GetController().GetLastCommittedEntry();
+  // TODO(crbug.com/1288843): This duplicates the ShouldOfferFeature() check,
+  // instead the 2 codepaths should share code.
+  DCHECK(navigation_entry);
+  if (!model->IsReady()) {
+    // TODO(https://crbug.com/1280681): Is this legit? In STTSv2, there may not
+    // *be* a DesktopNotificationHandler for profile, and we're violating the
+    // lifetime rules of DesktopNotificationHandler here I think.
+    DesktopNotificationHandler(GetProfile())
+        .DisplayFailureMessage(navigation_entry->GetURL());
+    return;
+  }
+
+  model->AddEntry(navigation_entry->GetURL(),
+                  base::UTF16ToUTF8(navigation_entry->GetTitle()),
+                  navigation_entry->GetTimestamp(), target_device_guid);
+  // Show confirmation message.
+  show_message_ = true;
+  UpdateIcon();
 }
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
@@ -130,11 +153,6 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           &GetWebContents());
   controller->ShowBubble();
-}
-
-void SendTabToSelfBubbleController::ShowConfirmationMessage() {
-  show_message_ = true;
-  UpdateIcon();
 }
 
 bool SendTabToSelfBubbleController::InitialSendAnimationShown() {

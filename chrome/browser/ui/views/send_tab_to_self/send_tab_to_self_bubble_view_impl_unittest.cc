@@ -53,9 +53,10 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
     return info;
   }
 
-  MOCK_METHOD2(OnDeviceSelected,
-               void(const std::string& target_device_name,
-                    const std::string& target_device_guid));
+  MOCK_METHOD(void,
+              OnDeviceSelected,
+              (const std::string& target_device_guid),
+              (override));
 };
 
 }  // namespace
@@ -111,7 +112,7 @@ TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
 }
 
 TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
-  EXPECT_CALL(*controller_, OnDeviceSelected("Device_3", "device_guid_3"));
+  EXPECT_CALL(*controller_, OnDeviceSelected("device_guid_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, button_container->children().size());
   bubble_->DeviceButtonPressed(static_cast<SendTabToSelfBubbleDeviceButton*>(
