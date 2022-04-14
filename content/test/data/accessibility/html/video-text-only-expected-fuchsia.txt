@@ -23,7 +23,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++++BUTTON hidden
 ++++++++++++++++BUTTON hidden
 ++++++++++++++++++UNKNOWN hidden
-++++++++++++++++BUTTON hidden
+++++++++++++++++UNKNOWN hidden
 ++++++++++++++++++UNKNOWN hidden
 ++++++++++++++SLIDER hidden
 ++++++++++UNKNOWN hidden
@@ -93,7 +93,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++++BUTTON hidden
 ++++++++++++++++BUTTON hidden
 ++++++++++++++++++UNKNOWN hidden
-++++++++++++++++BUTTON hidden
+++++++++++++++++UNKNOWN hidden
 ++++++++++++++++++UNKNOWN hidden
 ++++++++++++++SLIDER hidden
 ++++++++++UNKNOWN hidden
