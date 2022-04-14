@@ -1182,9 +1182,6 @@
       name: "ForceReduceMotion",
     },
     {
-      name: "ForceSynchronousHTMLParsing",
-    },
-    {
       name: "ForceTallerSelectPopup",
       status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
     },

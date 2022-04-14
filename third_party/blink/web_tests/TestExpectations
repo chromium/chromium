@@ -138,18 +138,15 @@ crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
 
 # ====== Synchronous, budgeted HTML parser tests from here ========================
-
-# See crbug.com/1254921 for details!
-#
-# These tests either fail outright, or become flaky, when these two flags/parameters are enabled:
-#   --enable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning:allocation_size_bytes/2097152/loader_chunk_size/1048576
+# See crbug.com/1254921 for details.
+# These tests either started failing outright, or became flaky, when the new HTML
+# parser was enabled. All of these are bugs/issues with the test itself.
 
 # Extra line info appears in the output in some cases.
 crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 
 # Extra box in the output:
 crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
-
 
 # Script preloaded: No
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]

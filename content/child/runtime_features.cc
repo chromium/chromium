@@ -355,8 +355,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"FontAccess", blink::features::kFontAccess},
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching},
-          {"ForceSynchronousHTMLParsing",
-           blink::features::kForceSynchronousHTMLParsing},
           {"HTMLParamElementUrlSupport",
            blink::features::kHTMLParamElementUrlSupport},
           {"LayoutNG", blink::features::kLayoutNG},
