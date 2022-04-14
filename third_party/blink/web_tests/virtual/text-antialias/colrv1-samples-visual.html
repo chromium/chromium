@@ -13,12 +13,27 @@
   font: 40px/1 colrv1_samples, monospace;
   word-break: break-all;
 }
+
+.two_columns {
+    display: flex;
+}
+
+.column {
+    flex: 1;
+}
 </style>
 Test passes if only color glyphs are seen below. Basic sanity check for COLRv1 rendering, additional testing is done in
 the Skia GM test for COLRv1, see Skia's gm/colrv1.cpp for details.
 
-<div class="colrv1">adefg<br>hijklm<br>nopqrs<br>tuvw<br>xyzABC<br>DEFG<br>HIJKL<br>MNOPQRS</div>
+<div class="two_columns">
+  <div class="column">
+    <div class="colrv1">adefg<br>hijklm<br>nopqrs<br>tuvw<br>xyzABC<br>DEFG<br>HIJKL<br>MNOPQRS<br></div>
 
-The following two rows must feature purple (first row) and green (second row) in the glyph gradients.
-<div class="colrv1" style="color: purple;">TUVWXYZ</div>
-<div class="colrv1" style="color: green;">TUVWXYZ</div>
+    The following two rows must feature purple (first row) and green (second row) in the glyph gradients.
+    <div class="colrv1" style="color: purple;">TUVWXYZ</div>
+    <div class="colrv1" style="color: green;">TUVWXYZ</div>
+  </div>
+  <div class="column">
+    <div class="colrv1">a456789α<br>βγδεζηθι<br>κλμνξοπρ</div>
+  </div>
+</div>
