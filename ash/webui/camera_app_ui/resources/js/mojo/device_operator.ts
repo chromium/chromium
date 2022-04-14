@@ -694,9 +694,12 @@ export class DeviceOperator {
   async isBlobVideoSnapshotEnabled(deviceId: string): Promise<boolean> {
     const level = (await this.getStaticMetadata(
         deviceId, CameraMetadataTag.ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL))[0];
-    return level ===
-        AndroidInfoSupportedHardwareLevel
-            .ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_FULL;
+    const supportedLevel = [
+      AndroidInfoSupportedHardwareLevel
+          .ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_FULL,
+      AndroidInfoSupportedHardwareLevel.ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_3,
+    ];
+    return supportedLevel.includes(level);
   }
 
   /**
