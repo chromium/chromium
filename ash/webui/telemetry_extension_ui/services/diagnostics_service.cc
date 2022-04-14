@@ -251,4 +251,15 @@ void DiagnosticsService::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
       std::move(callback)));
 }
 
+void DiagnosticsService::RunLanConnectivityRoutine(
+    RunLanConnectivityRoutineCallback callback) {
+  GetService()->RunLanConnectivityRoutine(base::BindOnce(
+      [](health::mojom::DiagnosticsService::RunLanConnectivityRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 }  // namespace ash

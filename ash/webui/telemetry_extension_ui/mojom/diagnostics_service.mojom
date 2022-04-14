@@ -257,6 +257,16 @@ interface DiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunMemoryRoutine() => (RunRoutineResponse response);
+
+  // Requests that the LanConnectivity routine is created and started on the
+  // platform. This routine checks whether the device is connected to a LAN.
+  // This routine is only available if GetAvailableRoutines returned
+  // kLanConnectivity.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunLanConnectivityRoutine() => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
@@ -276,6 +286,7 @@ enum DiagnosticRoutineEnum {
   kBatteryDischarge = 11,
   kBatteryCharge = 12,
   kMemory = 13,
+  kLanConnectivity = 14,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.
