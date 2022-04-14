@@ -70,6 +70,7 @@
 #include "printing/printing_context.h"
 #include "printing/printing_context_factory_for_test.h"
 #include "printing/printing_features.h"
+#include "printing/printing_utils.h"
 #include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -647,6 +648,7 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
 
  private:
   void RejectPrintPreviewRequestIfRestricted(
+      content::GlobalRenderFrameHostId rfh_id,
       base::OnceCallback<void(bool)> callback) override {
     switch (restriction_level_) {
       case RestrictionLevel::kNotSet:
@@ -710,9 +712,19 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     PrintViewManager::SetReceiverImplForTesting(nullptr);
   }
 
-  void WaitOnScanning() { run_loop_.Run(); }
+  void WaitOnScanning() { scanning_run_loop_.Run(); }
+
+  void WaitOnPreview() { preview_run_loop_.Run(); }
 
   bool print_now_called() const { return observer_.print_now_called(); }
+
+  const absl::optional<bool>& preview_allowed() const {
+    return preview_allowed_;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void set_allowed_by_dlp(bool allowed) { allowed_by_dlp_ = allowed; }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   void OnGotSnapshotCallback(
@@ -746,30 +758,51 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
               enterprise_connectors::BlockUntilVerdict::BLOCK);
     EXPECT_TRUE(data.settings.block_large_files);
 
-    // The snapshot should be valid and populated. Asserting on the exact
-    // content of the page is not possible due to things like timestamps, so
-    // instead the first few bytes and a minimum size for a PDF are validated.
-    // TODO(domfc): Move the PDF validation logic to a helper function for reuse
-    // in tests and DCHECKs.
-    EXPECT_TRUE(page_region.IsValid());
-    EXPECT_GE(page_region.GetSize(), 50u);
-    std::string first_bytes =
-        std::string(page_region.Map().GetMemoryAs<char>(), 5);
-    EXPECT_EQ(first_bytes, "%PDF-");
+    // The snapshot should be valid and populated.
+    EXPECT_TRUE(LooksLikePdf(page_region.Map().GetMemoryAsSpan<char>()));
 
     PrintViewManager::OnCompositedForContentAnalysis(
         base::BindOnce(
             [](base::OnceCallback<void(bool should_proceed)> callback,
-               base::RunLoop* run_loop, bool allowed) {
+               base::RunLoop* scanning_run_loop, bool allowed) {
               std::move(callback).Run(allowed);
-              run_loop->Quit();
+              scanning_run_loop->Quit();
             },
-            std::move(callback), &run_loop_),
+            std::move(callback), &scanning_run_loop_),
         std::move(data), rfh_id, status, std::move(page_region));
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnDlpPrintingRestrictionsChecked(
+      content::GlobalRenderFrameHostId rfh_id,
+      base::OnceCallback<void(bool should_proceed)> callback,
+      bool should_proceed) override {
+    PrintViewManager::OnDlpPrintingRestrictionsChecked(
+        rfh_id, std::move(callback), allowed_by_dlp_);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
-  base::RunLoop run_loop_;
+  void PrintPreviewRejectedForTesting() override {
+    preview_allowed_ = false;
+    preview_run_loop_.Quit();
+  }
+
+  void PrintPreviewAllowedForTesting() override {
+    preview_allowed_ = true;
+    preview_run_loop_.Quit();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  bool allowed_by_dlp_ = true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Indicates whether the preview was allowed after checking against content
+  // analysis and DLP (if on CrOS). This is unpopulated until then.
+  absl::optional<bool> preview_allowed_;
+
+  base::RunLoop preview_run_loop_;
+  base::RunLoop scanning_run_loop_;
   Observer observer_;
 };
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -3218,7 +3251,7 @@ class ContentAnalysisPrintBrowserTest
     PrintBrowserTest::SetUpOnMainThread();
   }
 
-  bool scanning_allows_print() const { return GetParam(); }
+  bool content_analysis_allows_print() const { return GetParam(); }
 
   enterprise_connectors::ContentAnalysisResponse ScanningResponse(
       const base::FilePath& path) {
@@ -3229,7 +3262,7 @@ class ContentAnalysisPrintBrowserTest
     result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
-    if (!scanning_allows_print()) {
+    if (!content_analysis_allows_print()) {
       auto* rule = result->add_triggered_rules();
       rule->set_rule_name("blocking_rule_name");
       rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
@@ -3262,12 +3295,65 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
              /*has_selection=*/false);
 
   print_view_manager->WaitOnScanning();
-  ASSERT_EQ(print_view_manager->print_now_called(), scanning_allows_print());
+  ASSERT_EQ(print_view_manager->print_now_called(),
+            content_analysis_allows_print());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto* print_view_manager =
+      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
+          web_contents);
+
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/false,
+             /*has_selection=*/false);
+
+  print_view_manager->WaitOnScanning();
+  ASSERT_TRUE(print_view_manager->preview_allowed().has_value());
+  ASSERT_EQ(print_view_manager->preview_allowed().value(),
+            content_analysis_allows_print());
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
+                       BlockedByDLPThenNoContentAnalysis) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto* print_view_manager =
+      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
+          web_contents);
+  print_view_manager->set_allowed_by_dlp(false);
+
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/false,
+             /*has_selection=*/false);
+
+  print_view_manager->WaitOnPreview();
+  ASSERT_TRUE(print_view_manager->preview_allowed().has_value());
+  ASSERT_FALSE(print_view_manager->preview_allowed().value());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// TODO(crbug.com/1256506): Re-enable test on Windows
+#if !BUILDFLAG(IS_WIN)
+INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
+#endif  // !BUILDFLAG(IS_WIN)
+
+#endif  // BUILDFLAG(ENABLE_PRINT_SCANNING)
 
 }  // namespace printing
