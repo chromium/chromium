@@ -1,6 +1,6 @@
 {
   "name": "Login screen APIs in-session test extension",
-  "version": "0.6",
+  "version": "0.7",
   "manifest_version": 2,
   "description": "In session extension for testing the chrome.login extension API",
   "background": {

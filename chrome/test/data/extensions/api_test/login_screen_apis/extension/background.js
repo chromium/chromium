@@ -175,6 +175,18 @@ const tests = {
       chrome.test.succeed();
     });
   },
+  'LoginRequestExternalLogout': () => {
+    chrome.login.requestExternalLogout();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+  'LoginOnExternalLogoutDone': () => {
+    chrome.login.onExternalLogoutDone.addListener(() => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+    chrome.test.sendMessage('onExternalLogoutDoneLoginScreenMessage');
+  },
   /* I18n *********************************************************************/
   'I18nGetMessage': () => {
     chrome.test.getConfig(config => {

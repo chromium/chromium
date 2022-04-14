@@ -73,6 +73,14 @@ constexpr char kFetchDataForNextLoginAttempt[] =
 // lockManagedGuestSession tests.
 constexpr char kLockManagedGuestSessionNotActive[] =
     "LoginLockManagedGuestSessionNotActive";
+// onExternalLogoutDone tests.
+constexpr char kLoginOnExternalLogoutDone[] = "LoginOnExternalLogoutDone";
+constexpr char kInSessionLoginNotifyExternalLogoutDone[] =
+    "InSessionLoginNotifyExternalLogoutDone";
+// onRequestExternalLogout tests.
+constexpr char kLoginRequestExternalLogout[] = "LoginRequestExternalLogout";
+constexpr char kInSessionLoginOnRequestExternalLogout[] =
+    "InSessionLoginOnRequestExternalLogout";
 // unlockManagedGuestSession tests.
 constexpr char kUnlockManagedGuestSession[] = "LoginUnlockManagedGuestSession";
 constexpr char kUnlockManagedGuestSessionWrongPassword[] =
@@ -82,6 +90,12 @@ constexpr char kUnlockManagedGuestSessionNotLocked[] =
 // In-session extension tests.
 constexpr char kInSessionLoginLockManagedGuestSession[] =
     "InSessionLoginLockManagedGuestSession";
+
+// External logout listener set up messages.
+constexpr char kOnExternalLogoutDoneLoginScreenMessage[] =
+    "onExternalLogoutDoneLoginScreenMessage";
+constexpr char kOnRequestExternalLogoutInSessionMessage[] =
+    "onRequestExternalLogoutInSessionMessage";
 
 }  // namespace
 
@@ -329,6 +343,74 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionNotLocked) {
   // remain in this state during the login process.
   SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   RunTest(kUnlockManagedGuestSessionNotLocked);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginApitest, ExternalLogoutRequestExternalLogout) {
+  SetUpDeviceLocalAccountPolicy();
+  LogInWithPassword();
+  SetUpInSessionExtension();
+  LockScreen();
+
+  ClearTestListeners();
+  extensions::ResultCatcher catcher;
+  ExtensionTestMessageListener login_screen_listener(listener_message(),
+                                                     /*will_reply=*/true);
+  login_screen_listener.set_extension_id(extension_id());
+  ExtensionTestMessageListener in_session_listener(listener_message(),
+                                                   /*will_reply=*/true);
+  in_session_listener.set_extension_id(kInSessionExtensionId);
+
+  // Set up a `login.onRequestExternalLogout` listener on the in-session
+  // extension.
+  ExtensionTestMessageListener in_session_message_listener(
+      kOnRequestExternalLogoutInSessionMessage,
+      /*will_reply=*/false);
+  in_session_message_listener.set_extension_id(kInSessionExtensionId);
+  ASSERT_TRUE(in_session_listener.WaitUntilSatisfied());
+  in_session_listener.Reply(kInSessionLoginOnRequestExternalLogout);
+  // Confirm the in-session listener was set up.
+  ASSERT_TRUE(in_session_message_listener.WaitUntilSatisfied());
+
+  // Request external logout from the login screen extension.
+  ASSERT_TRUE(login_screen_listener.WaitUntilSatisfied());
+  login_screen_listener.Reply(kLoginRequestExternalLogout);
+  // Request and listener trigger succeeded.
+  ASSERT_TRUE(catcher.GetNextResult());
+  ASSERT_TRUE(catcher.GetNextResult());
+}
+
+IN_PROC_BROWSER_TEST_F(LoginApitest, ExternalLogoutNotifyExternalLogoutDone) {
+  SetUpDeviceLocalAccountPolicy();
+  LogInWithPassword();
+  SetUpInSessionExtension();
+  LockScreen();
+
+  ClearTestListeners();
+  extensions::ResultCatcher catcher;
+  ExtensionTestMessageListener login_screen_listener(listener_message(),
+                                                     /*will_reply=*/true);
+  login_screen_listener.set_extension_id(extension_id());
+  ExtensionTestMessageListener in_session_listener(listener_message(),
+                                                   /*will_reply=*/true);
+  in_session_listener.set_extension_id(kInSessionExtensionId);
+
+  // Set up a `login.onExternalLogoutDone` listener on the login screen
+  // extension.
+  ExtensionTestMessageListener login_screen_message_listener(
+      kOnExternalLogoutDoneLoginScreenMessage,
+      /*will_reply=*/false);
+  login_screen_message_listener.set_extension_id(extension_id());
+  ASSERT_TRUE(login_screen_listener.WaitUntilSatisfied());
+  login_screen_listener.Reply(kLoginOnExternalLogoutDone);
+  // Confirm the login screen listener was set up.
+  ASSERT_TRUE(login_screen_message_listener.WaitUntilSatisfied());
+
+  // Notify the external logout is done from the in-session extension.
+  ASSERT_TRUE(in_session_listener.WaitUntilSatisfied());
+  in_session_listener.Reply(kInSessionLoginNotifyExternalLogoutDone);
+  // Notify and listener trigger succeeded.
+  ASSERT_TRUE(catcher.GetNextResult());
+  ASSERT_TRUE(catcher.GetNextResult());
 }
 
 class LoginApitestWithEnterpriseUser : public LoginApitest {

@@ -30564,6 +30564,8 @@ Called by update_extension_histograms.py.-->
   <int value="490" label="TERMINAL_PRIVATE_ON_PREF_CHANGED"/>
   <int value="491"
       label="WEB_AUTHENTICATION_PROXY_ON_REMOTE_SESSION_STATE_CHANGE"/>
+  <int value="492" label="LOGIN_ON_REQUEST_EXTERNAL_LOGOUT"/>
+  <int value="493" label="LOGIN_ON_EXTERNAL_LOGOUT_DONE"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -32289,6 +32291,8 @@ Called by update_extension_histograms.py.-->
   <int value="1645" label="OS_TELEMETRY_GETBATTERYINFO"/>
   <int value="1646" label="FILEMANAGERPRIVATE_POLLDRIVEHOSTEDFILEPINSTATES"/>
   <int value="1647" label="OS_DIAGNOSTICS_RUNLANCONNECTIVITYROUTINE"/>
+  <int value="1648" label="LOGIN_REQUESTEXTERNALLOGOUT"/>
+  <int value="1649" label="LOGIN_NOTIFYEXTERNALLOGOUTDONE"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "components/user_manager/user_type.h"
@@ -22,6 +24,11 @@ namespace crosapi {
 // The ash-chrome implementation of the Login crosapi interface.
 class LoginAsh : public mojom::Login {
  public:
+  class ExternalLogoutDoneObserver : public base::CheckedObserver {
+   public:
+    virtual void OnExternalLogoutDone() {}
+  };
+
   LoginAsh();
   LoginAsh(const LoginAsh&) = delete;
   LoginAsh& operator=(const LoginAsh&) = delete;
@@ -62,6 +69,20 @@ class LoginAsh : public mojom::Login {
   void AddLacrosCleanupTriggeredObserver(
       mojo::PendingRemote<mojom::LacrosCleanupTriggeredObserver> observer)
       override;
+  void AddExternalLogoutRequestObserver(
+      mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer)
+      override;
+  void NotifyOnExternalLogoutDone() override;
+
+  // Adds an observer for the external logout done events.
+  void AddExternalLogoutDoneObserver(ExternalLogoutDoneObserver* observer);
+  // Required for the below `base::ObserverList`:
+  void RemoveExternalLogoutDoneObserver(ExternalLogoutDoneObserver* observer);
+  // Notifies the external logout observers with the
+  // `login.onRequestExternalLogout` event. It is called from the login screen
+  // extension running on the lock screen (ash-chrome). The in-session extension
+  // (lacros/ash-chrome) listens for the dispatched event.
+  void NotifyOnRequestExternalLogout();
 
   mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>&
   GetCleanupTriggeredObservers();
@@ -87,6 +108,10 @@ class LoginAsh : public mojom::Login {
   // Support any number of observers.
   mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>
       lacros_cleanup_triggered_observers_;
+  mojo::RemoteSet<mojom::ExternalLogoutRequestObserver>
+      external_logout_request_observers_;
+  base::ObserverList<ExternalLogoutDoneObserver>
+      external_logout_done_observers_;
 
   base::WeakPtrFactory<LoginAsh> weak_factory_{this};
 };
