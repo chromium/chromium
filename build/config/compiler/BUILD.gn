@@ -1546,12 +1546,6 @@ config("default_warnings") {
         ]
       }
 
-
-      if (is_chromeos || default_toolchain == "//build/toolchain/cros:target") {
-        # TODO(https://crbug.com/1016945): Re-enable once ChromeOS toolchain is up to date
-        cflags += [ "-Wno-builtin-assume-aligned-alignment" ]
-      }
-
       if (is_fuchsia) {
         # TODO(https://bugs.chromium.org/p/fuchsia/issues/detail?id=77383)
         cflags += [ "-Wno-deprecated-copy" ]
