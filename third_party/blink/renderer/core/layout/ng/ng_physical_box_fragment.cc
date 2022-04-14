@@ -1293,8 +1293,13 @@ void NGPhysicalBoxFragment::AddOutlineRects(
         rect.offset += additional_offset;
     }
     outline_rects->AppendVector(children_rects);
-    // LayoutBlock::AddOutlineRects also adds out of flow objects here.
-    // In LayoutNG out of flow objects are not part of the outline.
+    for (const auto& child : PostLayoutChildren()) {
+      if (child->IsOutOfFlowPositioned()) {
+        AddOutlineRectsForDescendant(
+            child, outline_rects, additional_offset, outline_type,
+            To<LayoutBoxModelObject>(GetLayoutObject()));
+      }
+    }
   }
   // TODO(kojii): Needs inline_element_continuation logic from
   // LayoutBlockFlow::AddOutlineRects?

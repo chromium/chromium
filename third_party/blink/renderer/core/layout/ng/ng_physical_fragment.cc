@@ -944,7 +944,7 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
     if (descendant_box->HasLayer()) {
       DCHECK(descendant_layout_object);
       Vector<PhysicalRect> layer_outline_rects;
-      descendant_box->AddOutlineRects(PhysicalOffset(), outline_type,
+      descendant_box->AddOutlineRects(additional_offset, outline_type,
                                       &layer_outline_rects);
 
       // Don't pass additional_offset because LocalToAncestorRects will itself
