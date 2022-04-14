@@ -525,8 +525,9 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
       ShowNonMacOverlayScrollbars();
     GetScrollAnchor()->Clear();
   }
-  if (ContentCaptureManager* manager =
-          frame_view->GetFrame().LocalFrameRoot().GetContentCaptureManager()) {
+  if (ContentCaptureManager* manager = frame_view->GetFrame()
+                                           .LocalFrameRoot()
+                                           .GetOrResetContentCaptureManager()) {
     manager->OnScrollPositionChanged();
   }
   if (AXObjectCache* cache =

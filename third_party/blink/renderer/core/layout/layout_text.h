@@ -576,7 +576,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   unsigned is_text_fragment_ : 1;
 
  private:
-  ContentCaptureManager* GetContentCaptureManager();
+  ContentCaptureManager* GetOrResetContentCaptureManager();
   void DetachAbstractInlineTextBoxes();
 
   // Used for LayoutNG with accessibility. True if inline fragments are

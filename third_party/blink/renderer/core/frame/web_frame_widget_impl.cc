@@ -2513,7 +2513,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
   Frame* frame = FocusedCoreFrame();
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     if (auto* content_capture_manager =
-            local_frame->LocalFrameRoot().GetContentCaptureManager()) {
+            local_frame->LocalFrameRoot().GetOrResetContentCaptureManager()) {
       content_capture_manager->NotifyInputEvent(input_event.GetType(),
                                                 *local_frame);
     }
