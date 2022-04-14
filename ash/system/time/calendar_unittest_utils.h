@@ -37,6 +37,9 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 // Checks if the two exploded are in the same month.
 bool IsTheSameMonth(const base::Time& date_a, const base::Time& date_b);
 
+// Returns the `base:Time` from the given string.
+base::Time GetTimeFromString(const char* start_time);
+
 }  // namespace calendar_test_utils
 
 }  // namespace ash

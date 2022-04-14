@@ -236,6 +236,8 @@ void CalendarModel::OnEventsFetched(
     // TODO: https://crbug.com/1298187 We need to respond further based on the
     // specific error code, retry in some cases, etc.
     pending_fetches_.erase(start_of_month);
+    // TODO: https://crbug.com/1298187 maybe notify observers.
+    // e.g. observer.OnEventsFetched(kError, start_of_month, events);
     return;
   }
 
@@ -245,12 +247,18 @@ void CalendarModel::OnEventsFetched(
   // Clear out this month's events, we're about replace them.
   event_months_.erase(start_of_month);
 
-  // Store the incoming events.
-  InsertEvents(events);
+  if (!events || events->items().empty()) {
+    SingleMonthEventMap empty_event_list;
+    event_months_.emplace(start_of_month, empty_event_list);
+    PromoteMonth(start_of_month);
+  } else {
+    // Store the incoming events.
+    InsertEvents(events);
+  }
 
   // Notify observers.
   for (auto& observer : observers_)
-    observer.OnEventsFetched(events);
+    observer.OnEventsFetched(kSuccess, start_of_month, events);
 
   // Month has officially been fetched.
   months_fetched_.emplace(start_of_month);
@@ -386,6 +394,17 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
     return event_list;
 
   return it2->second;
+}
+
+CalendarModel::FetchingStatus CalendarModel::FindFetchingStaus(
+    base::Time start_time) const {
+  if (pending_fetches_.count(start_time))
+    return kFetching;
+
+  if (event_months_.count(start_time))
+    return kSuccess;
+
+  return kNever;
 }
 
 void CalendarModel::RedistributeEvents(int time_difference_minutes) {

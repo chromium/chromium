@@ -58,6 +58,13 @@ ASH_EXPORT bool IsTheSameMonth(const base::Time& date_a,
          base::TimeFormatWithPattern(date_b, "MM YYYY");
 }
 
+base::Time GetTimeFromString(const char* start_time) {
+  base::Time date;
+  bool result = base::Time::FromString(start_time, &date);
+  DCHECK(result);
+  return date;
+}
+
 }  // namespace calendar_test_utils
 
 }  // namespace ash

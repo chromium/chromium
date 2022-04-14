@@ -919,6 +919,8 @@ void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
 }
 
 void CalendarView::OnEventsFetched(
+    const CalendarModel::FetchingStatus status,
+    const base::Time start_time,
     const google_apis::calendar::EventList* events) {
   // No need to store the events, but we need to notify the month views that
   // something may have changed and they need to refresh.

@@ -33,6 +33,8 @@ using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarModel : public SessionObserver {
  public:
+  enum FetchingStatus { kNever, kFetching, kSuccess, kError };
+
   CalendarModel();
   CalendarModel(const CalendarModel& other) = delete;
   CalendarModel& operator=(const CalendarModel& other) = delete;
@@ -54,6 +56,8 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
    public:
     // Invoked when a set of events has been fetched.
     virtual void OnEventsFetched(
+        const FetchingStatus status,
+        const base::Time start_time,
         const google_apis::calendar::EventList* events) {}
   };
 
@@ -100,6 +104,9 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // likely to be pruned if we need to trim down to stay within storage limits.
   SingleDayEventList FindEvents(base::Time day) const;
 
+  // Checks the `FetchingStatus` of a given start time.
+  FetchingStatus FindFetchingStaus(base::Time start_time) const;
+
   // Redistributes all the fetched events to the date map with the
   // `time_difference_minutes_`. This only happens once per calendar view's life
   // cycle.
@@ -120,6 +127,7 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarModelTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarMonthViewTest;
+  friend class CalendarModelFunctionTest;
 
   // Inserts a single `event` in the EventCache.
   void InsertEvent(const google_apis::calendar::CalendarEvent* event);

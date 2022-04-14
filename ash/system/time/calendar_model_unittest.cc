@@ -11,13 +11,17 @@
 #include <string>
 #include <utility>
 
+#include "ash/calendar/calendar_client.h"
+#include "ash/calendar/calendar_controller.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -114,10 +118,10 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
 
   // Set current date.
   base::Time current_date, start_of_month;
-  bool result = base::Time::FromString("23 Oct 2009 11:30 GMT", &current_date);
-  DCHECK(result);
-  result = base::Time::FromString("01 Oct 2009 00:00 GMT", &start_of_month);
-  DCHECK(result);
+  current_date =
+      calendar_test_utils::GetTimeFromString("23 Oct 2009 11:30 GMT");
+  start_of_month =
+      calendar_test_utils::GetTimeFromString("01 Oct 2009 00:00 GMT");
   CalendarModelUtilsTest::SetFakeNow(current_date);
   base::subtle::ScopedTimeClockOverrides time_override(
       &CalendarModelUtilsTest::FakeTimeNow,
@@ -130,14 +134,10 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
   EXPECT_TRUE(months.find(start_of_month) != months.end());
 
   // 1 month out.
-  base::Time start_of_previous_month;
-  result =
-      base::Time::FromString("01 Sep 2009 00:00 GMT", &start_of_previous_month);
-  DCHECK(result);
-  base::Time start_of_next_month;
-  result =
-      base::Time::FromString("01 Nov 2009 00:00 GMT", &start_of_next_month);
-  DCHECK(result);
+  base::Time start_of_previous_month =
+      calendar_test_utils::GetTimeFromString("01 Sep 2009 00:00 GMT");
+  base::Time start_of_next_month =
+      calendar_test_utils::GetTimeFromString("01 Nov 2009 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 1);
   EXPECT_EQ(3UL, months.size());
   EXPECT_TRUE(months.find(start_of_month) != months.end());
@@ -145,14 +145,10 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
   EXPECT_TRUE(months.find(start_of_next_month) != months.end());
 
   // 2 months out.
-  base::Time start_of_previous_month_2;
-  result = base::Time::FromString("01 Aug 2009 00:00 GMT",
-                                  &start_of_previous_month_2);
-  DCHECK(result);
-  base::Time start_of_next_month_2;
-  result =
-      base::Time::FromString("01 Dec 2009 00:00 GMT", &start_of_next_month_2);
-  DCHECK(result);
+  base::Time start_of_previous_month_2 =
+      calendar_test_utils::GetTimeFromString("01 Aug 2009 00:00 GMT");
+  base::Time start_of_next_month_2 =
+      calendar_test_utils::GetTimeFromString("01 Dec 2009 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 2);
   EXPECT_EQ(5UL, months.size());
   EXPECT_TRUE(months.find(start_of_month) != months.end());
@@ -162,14 +158,10 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
   EXPECT_TRUE(months.find(start_of_next_month_2) != months.end());
 
   // 3 months out, which takes us into the next year.
-  base::Time start_of_previous_month_3;
-  result = base::Time::FromString("01 Jul 2009 00:00 GMT",
-                                  &start_of_previous_month_3);
-  DCHECK(result);
-  base::Time start_of_next_month_3;
-  result =
-      base::Time::FromString("01 Jan 2010 00:00 GMT", &start_of_next_month_3);
-  DCHECK(result);
+  base::Time start_of_previous_month_3 =
+      calendar_test_utils::GetTimeFromString("01 Jul 2009 00:00 GMT");
+  base::Time start_of_next_month_3 =
+      calendar_test_utils::GetTimeFromString("01 Jan 2010 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 3);
   EXPECT_EQ(7UL, months.size());
   EXPECT_TRUE(months.find(start_of_month) != months.end());
@@ -292,10 +284,7 @@ class CalendarModelTest : public AshTestBase {
   }
 
   int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
-    base::Time day_base;
-
-    bool result = base::Time::FromString(day, &day_base);
-    DCHECK(result);
+    base::Time day_base = calendar_test_utils::GetTimeFromString(day);
 
     if (events)
       events->clear();
@@ -305,10 +294,7 @@ class CalendarModelTest : public AshTestBase {
 
   int EventsNumberOfDayInternal(const char* day,
                                 SingleDayEventList* events) const {
-    base::Time day_base;
-
-    bool result = base::Time::FromString(day, &day_base);
-    DCHECK(result);
+    base::Time day_base = calendar_test_utils::GetTimeFromString(day);
 
     if (events)
       events->clear();
@@ -380,34 +366,26 @@ class CalendarModelTest : public AshTestBase {
   // Being within a range means >= start && < end.
   struct SlidingWindowRanges {
     SlidingWindowRanges(int index, int total_size) {
-      // The ranges don't change when we're within
-      // calendar_utils::kNumSurroundingMonthsCached months of the last cached
-      // month, because at that point there's nothing more to cache-ahead.
-      int clamped_index = std::min(
-          total_size - calendar_utils::kNumSurroundingMonthsCached, index);
-
       // "Preceding" range always starts at 0, and only ends meaningfully (and
       // we only bother testing it) if anything's been pruned, i.e. the only
       // reason the end index would be > 0.
       preceding_start = 0;
-      preceding_end = std::max(
-          0, clamped_index + calendar_utils::kNumSurroundingMonthsCached -
-                 calendar_utils::kMaxNumPrunableMonths);
+      preceding_end =
+          std::max(0, index + calendar_utils::kNumSurroundingMonthsCached -
+                          calendar_utils::kMaxNumPrunableMonths);
 
       // "Active" range is where we have cached months. Starts at 0 or the
       // bottom of a full cache, whichever is larger.
-      active_start = std::max(
-          0, clamped_index + calendar_utils::kNumSurroundingMonthsCached -
-                 calendar_utils::kMaxNumPrunableMonths);
-      active_end =
-          std::min(clamped_index + calendar_utils::kNumSurroundingMonthsCached,
-                   total_size);
+      active_start =
+          std::max(0, index + calendar_utils::kNumSurroundingMonthsCached -
+                          calendar_utils::kMaxNumPrunableMonths);
+      active_end = std::min(index + calendar_utils::kNumSurroundingMonthsCached,
+                            total_size);
 
       // "Following" range. The smaller of the very end of the cache and our
       // current position + surrounding.
       following_start = std::min(
-          clamped_index + calendar_utils::kNumSurroundingMonthsCached + 1,
-          total_size);
+          index + calendar_utils::kNumSurroundingMonthsCached + 1, total_size);
       following_end = total_size;
     }
 
@@ -1018,9 +996,7 @@ TEST_F(CalendarModelTest, ClearEvents) {
   EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime5, &events));
 
   // Move forward to `kStartTime4`.
-  base::Time current_date;
-  bool result = base::Time::FromString(kStartTime4, &current_date);
-  DCHECK(result);
+  base::Time current_date = calendar_test_utils::GetTimeFromString(kStartTime4);
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 1);
 
   // Fetch events for `kStartTime4` and the two surrounding months.
@@ -1056,6 +1032,140 @@ TEST_F(CalendarModelTest, ClearEvents) {
   EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime3, &events));
   EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime4, &events));
   EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime5, &events));
+}
+
+// A mock `CalendarClient`. This mock client's `GetEventList` waits for a short
+// duration to mock the fetching process.
+class CalendarClientTestImpl : public CalendarClient {
+ public:
+  CalendarClientTestImpl() = default;
+  CalendarClientTestImpl(const CalendarClientTestImpl& other) = delete;
+  CalendarClientTestImpl& operator=(const CalendarClientTestImpl& other) =
+      delete;
+  ~CalendarClientTestImpl() override = default;
+
+  // CalendarClient:
+  base::OnceClosure GetEventList(
+      google_apis::calendar::CalendarEventListCallback callback,
+      const base::Time& start_time,
+      const base::Time& end_time) override {
+    // Give it a little bit of time to mock the api calling.
+    base::PlatformThread::Sleep(base::Seconds(1));
+    std::move(callback).Run(google_apis::HTTP_SUCCESS, nullptr);
+    return base::DoNothing();
+  }
+};
+
+class CalendarModelFunctionTest : public AshTestBase {
+ public:
+  CalendarModelFunctionTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  CalendarModelFunctionTest(const CalendarModelFunctionTest& other) = delete;
+  CalendarModelFunctionTest& operator=(const CalendarModelFunctionTest& other) =
+      delete;
+  ~CalendarModelFunctionTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    // Register a mock `CalendarClient` to the `CalendarController`.
+    const std::string email = "user1@email.com";
+    AccountId account_id = AccountId::FromUserEmail(email);
+    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
+        account_id);
+    calendar_model_ = std::make_unique<CalendarModel>();
+    calendar_client_ = std::make_unique<CalendarClientTestImpl>();
+    Shell::Get()->calendar_controller()->RegisterClientForUser(
+        account_id, calendar_client_.get());
+  }
+
+  void TearDown() override {
+    calendar_model_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  void InsertEvents(const google_apis::calendar::EventList* events) {
+    calendar_model_->InsertEventsForTesting(events);
+  }
+
+  void FetchEvents(base::Time fetching_date) {
+    calendar_model_->MaybeFetchMonth(fetching_date);
+  }
+
+  CalendarModel* calendar_model() { return calendar_model_.get(); }
+
+ private:
+  std::unique_ptr<CalendarModel> calendar_model_;
+  std::unique_ptr<CalendarClientTestImpl> calendar_client_;
+};
+
+TEST_F(CalendarModelFunctionTest, FindFetchingStaus) {
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
+      calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
+      calendar_test_utils::CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event2 =
+      calendar_test_utils::CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event3 =
+      calendar_test_utils::CreateEvent(kId3, kSummary3, kStartTime3, kEndTime3);
+
+  auto event_list = std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("Greenwich Mean Time");
+  event_list->InjectItemForTesting(std::move(event0));
+  event_list->InjectItemForTesting(std::move(event1));
+  event_list->InjectItemForTesting(std::move(event2));
+  event_list->InjectItemForTesting(std::move(event3));
+
+  // Injects the above events.
+  InsertEvents(event_list.get());
+
+  // Starts fetching a date that is not in the cache.
+  base::Time fetching_date =
+      calendar_test_utils::GetTimeFromString("1 Apr 2022 00:00 GMT");
+  FetchEvents(fetching_date);
+
+  // The request for `fetching_date` is just sent out.
+  EXPECT_EQ(CalendarModel::kFetching,
+            calendar_model()->FindFetchingStaus(
+                calendar_utils::GetStartOfMonthUTC(fetching_date)));
+
+  // The request for kStartTime 0,1,2,3 are already finished (since the results
+  // are injected).
+  EXPECT_EQ(
+      CalendarModel::kSuccess,
+      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+          calendar_test_utils::GetTimeFromString(kStartTime0))));
+  EXPECT_EQ(
+      CalendarModel::kSuccess,
+      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+          calendar_test_utils::GetTimeFromString(kStartTime1))));
+  EXPECT_EQ(
+      CalendarModel::kSuccess,
+      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+          calendar_test_utils::GetTimeFromString(kStartTime2))));
+  EXPECT_EQ(
+      CalendarModel::kSuccess,
+      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+          calendar_test_utils::GetTimeFromString(kStartTime3))));
+
+  // The result of `kStartTime4` has never been injected. And the request has
+  // never been sent either.
+  EXPECT_EQ(
+      CalendarModel::kNever,
+      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+          calendar_test_utils::GetTimeFromString(kStartTime4))));
+
+  // Wait until the response is back. The sleep duration may be in `base::Time`
+  // or `base::TimeTicks`, depending on platform in the platform threads. So
+  // using a relatively longer waiting duration to make sure the platform thread
+  // sleeping ends.
+  task_environment()->FastForwardBy(base::Minutes(10));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(CalendarModel::kSuccess,
+            calendar_model()->FindFetchingStaus(
+                calendar_utils::GetStartOfMonthUTC(fetching_date)));
 }
 
 }  // namespace ash
