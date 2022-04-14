@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {fakeFeedbackContext} from './fake_data.js';
 import {FakeFeedbackServiceProvider} from './fake_feedback_service_provider.js';
-import {FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './feedback_types.js';
+import {FeedbackServiceProvider, FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -43,11 +43,7 @@ export function setHelpContentProviderForTesting(testProvider) {
  */
 export function getFeedbackServiceProvider() {
   if (!feedbackServiceProvider) {
-    // TODO(xiangdongkong): Instantiate a real mojo interface here.
-    const fakeProvider = /** @type {FeedbackServiceProviderInterface} */ (
-        new FakeFeedbackServiceProvider());
-    fakeProvider.setFakeFeedbackContext(fakeFeedbackContext);
-    setFeedbackServiceProviderForTesting(fakeProvider);
+    feedbackServiceProvider = FeedbackServiceProvider.getRemote();
   }
   assert(!!feedbackServiceProvider);
   return feedbackServiceProvider;

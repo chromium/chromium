@@ -9,6 +9,7 @@
 
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/grit/ash_os_feedback_resources_map.h"
+#include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
 #include "ash/webui/os_feedback_ui/backend/help_content_provider.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "ash/webui/os_feedback_ui/os_feedback_delegate.h"
@@ -77,10 +78,17 @@ OSFeedbackUI::OSFeedbackUI(
 
   helpContentProvider_ = std::make_unique<feedback::HelpContentProvider>(
       feedback_delegate_->GetApplicationLocale(), browser_context);
+  feedbackServiceProvider_ =
+      std::make_unique<feedback::FeedbackServiceProvider>();
 }
 
 OSFeedbackUI::~OSFeedbackUI() = default;
 
+void OSFeedbackUI::BindInterface(
+    mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
+        receiver) {
+  feedbackServiceProvider_->BindInterface(std::move(receiver));
+}
 void OSFeedbackUI::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::HelpContentProvider>
         receiver) {

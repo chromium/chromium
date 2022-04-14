@@ -1048,6 +1048,9 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::os_feedback_ui::mojom::HelpContentProvider, ash::OSFeedbackUI>(
         map);
+    RegisterWebUIControllerInterfaceBinder<
+        ash::os_feedback_ui::mojom::FeedbackServiceProvider, ash::OSFeedbackUI>(
+        map);
   }
 
   // TODO(crbug.com/1218492): When boot RMA state is available disable this when
