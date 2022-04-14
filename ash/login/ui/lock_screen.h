@@ -72,6 +72,7 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   void FocusNextUser();
   void FocusPreviousUser();
   void ShowParentAccessDialog();
+  void SetKioskAppsButtonPresence(bool has_kiosk_apps);
 
   // TrayActionObserver:
   void OnLockScreenNoteStateChanged(mojom::TrayActionState state) override;

@@ -46,6 +46,7 @@ class BoxLayout;
 
 namespace ash {
 
+class KioskAppDefaultMessage;
 class LockScreenMediaControlsView;
 class LoginAuthUserView;
 class LoginBigUserView;
@@ -89,6 +90,7 @@ class ASH_EXPORT LockContentsView
     explicit TestApi(LockContentsView* view);
     ~TestApi();
 
+    KioskAppDefaultMessage* kiosk_default_message() const;
     LoginBigUserView* primary_big_view() const;
     LoginBigUserView* opt_secondary_big_view() const;
     AccountId focused_user() const;
@@ -152,6 +154,7 @@ class ASH_EXPORT LockContentsView
   void ShowAdbEnabled();
   void ToggleSystemInfo();
   void ShowParentAccessDialog();
+  void SetKioskAppsButtonPresence(bool is_kiosk_apps_button_present);
 
   // views::View:
   void Layout() override;
@@ -252,6 +255,9 @@ class ASH_EXPORT LockContentsView
 
   // Called for debugging to remove forced online sign-in form |user|.
   void UndoForceOnlineSignInForUserForDebug(const AccountId& user);
+
+  // Test API. Set device to have kiosk license.
+  void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode);
 
   // Called by LockScreenMediaControlsView.
   void CreateMediaControlsLayout();
@@ -487,6 +493,10 @@ class ASH_EXPORT LockContentsView
   // Contains authentication user and the additional user views.
   NonAccessibleView* main_view_ = nullptr;
 
+  // If the kiosk app button is not visible, the kiosk app default message would
+  // be shown.
+  raw_ptr<KioskAppDefaultMessage> kiosk_default_message_ = nullptr;
+
   // Actions that should be executed before a new layout happens caused by a
   // display change (eg. screen rotation). A full layout pass is performed after
   // all actions are executed.
@@ -531,6 +541,10 @@ class ASH_EXPORT LockContentsView
   // Whether the lock screen note is disabled. Used to override the actual lock
   // screen note state.
   bool disable_lock_screen_note_ = false;
+
+  // TODO(1307303): Change it to the real function that checks if device is with
+  // Kiosk License
+  bool kiosk_license_mode_ = false;
 
   // Whether the system information should be displayed or not be displayed
   // forcedly according to policy settings.
