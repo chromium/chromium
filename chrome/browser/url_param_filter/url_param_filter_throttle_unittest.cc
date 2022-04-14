@@ -133,7 +133,8 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
   GURL expected_url = GURL("https://no-rule.xyz?asdf=1");
-  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(absl::nullopt);
+  UrlParamFilterThrottle throttle =
+      UrlParamFilterThrottle(absl::nullopt, nullptr);
   resource_request->url = expected_url;
 
   bool defer = false;
@@ -157,7 +158,7 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
   GURL expected_url = GURL("https://no-rule.xyz?asdf=1");
   absl::optional<url::Origin> initiator =
       absl::make_optional(url::Origin::Create(GURL("https://source.xyz")));
-  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(initiator);
+  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(initiator, nullptr);
   resource_request->url = destination_url;
 
   bool defer = false;
@@ -178,7 +179,8 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
       std::make_unique<network::ResourceRequest>();
   GURL destination_url = GURL("https://destination.xyz?asdf=1&plzblock1=1");
   GURL expected_url = GURL("https://destination.xyz?asdf=1");
-  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(absl::nullopt);
+  UrlParamFilterThrottle throttle =
+      UrlParamFilterThrottle(absl::nullopt, nullptr);
   resource_request->url = destination_url;
 
   bool defer = false;
@@ -199,7 +201,8 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
   std::unique_ptr<net::RedirectInfo> redirect_info =
       std::make_unique<net::RedirectInfo>();
   GURL expected_url = GURL("https://no-rule.xyz?asdf=1");
-  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(absl::nullopt);
+  UrlParamFilterThrottle throttle =
+      UrlParamFilterThrottle(absl::nullopt, nullptr);
   redirect_info->new_url = expected_url;
 
   bool defer = false;
@@ -227,7 +230,7 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
   GURL expected_url = GURL("https://no-rule.xyz?asdf=1");
   absl::optional<url::Origin> initiator =
       absl::make_optional(url::Origin::Create(GURL("https://source.xyz")));
-  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(initiator);
+  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(initiator, nullptr);
   redirect_info->new_url = destination_url;
 
   bool defer = false;
@@ -252,7 +255,8 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest,
       std::make_unique<net::RedirectInfo>();
   GURL destination_url = GURL("https://destination.xyz?asdf=1&plzblock1=1");
   GURL expected_url = GURL("https://destination.xyz?asdf=1");
-  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(absl::nullopt);
+  UrlParamFilterThrottle throttle =
+      UrlParamFilterThrottle(absl::nullopt, nullptr);
   redirect_info->new_url = destination_url;
 
   bool defer = false;
@@ -285,8 +289,8 @@ TEST_F(UrlParamFilterThrottleFilteringEnabledTest, MultipleRedirects) {
   GURL destination_url =
       GURL("https://destination.xyz?asdf=1&plzblockredirect2=1");
   GURL expected_url = GURL("https://destination.xyz?asdf=1");
-  UrlParamFilterThrottle throttle =
-      UrlParamFilterThrottle(url::Origin::Create(GURL("https://source.xyz")));
+  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(
+      url::Origin::Create(GURL("https://source.xyz")), nullptr);
   redirect_info->new_url = redirect_url;
 
   bool defer = false;
@@ -338,8 +342,8 @@ TEST_F(UrlParamFilterThrottleFilteringDisabledTest,
   GURL redirect_url = GURL("https://redirect2.abc?plzblockredirect=1");
   GURL destination_url =
       GURL("https://destination.xyz?asdf=1&plzblockredirect2=1");
-  UrlParamFilterThrottle throttle =
-      UrlParamFilterThrottle(url::Origin::Create(GURL("https://source.xyz")));
+  UrlParamFilterThrottle throttle = UrlParamFilterThrottle(
+      url::Origin::Create(GURL("https://source.xyz")), nullptr);
   redirect_info->new_url = redirect_url;
 
   bool defer = false;

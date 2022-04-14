@@ -107,6 +107,10 @@ TEST_F(CrossOtrObserverTest, HandleRedirects) {
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -121,7 +125,61 @@ TEST_F(CrossOtrObserverTest, HandleRedirects) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(302),
       1);
 }
+TEST_F(CrossOtrObserverTest, HandleRedirectsNoParamsFiltering) {
+  base::HistogramTester histogram_tester;
+  NavigateParams params(profile(), GURL("https://www.foo.com"),
+                        ui::PAGE_TRANSITION_LINK);
+
+  params.started_from_context_menu = true;
+  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
+  content::WebContents* contents = web_contents();
+  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  ASSERT_NE(observer, nullptr);
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+  scoped_refptr<net::HttpResponseHeaders> response =
+      base::MakeRefCounted<net::HttpResponseHeaders>(
+          "HTTP/1.1 302 Moved Temporarily");
+  handle->set_response_headers(response);
+  observer->DidRedirectNavigation(handle.get());
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 0);
+  histogram_tester.ExpectUniqueSample(
+      kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(302),
+      0);
+}
 TEST_F(CrossOtrObserverTest, FinishedNavigation) {
+  base::HistogramTester histogram_tester;
+  NavigateParams params(profile(), GURL("https://www.foo.com"),
+                        ui::PAGE_TRANSITION_LINK);
+
+  params.started_from_context_menu = true;
+  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
+  content::WebContents* contents = web_contents();
+  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
+  ASSERT_NE(observer, nullptr);
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+  scoped_refptr<net::HttpResponseHeaders> response =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+
+  ASSERT_TRUE(observer->IsCrossOtrState());
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 1);
+  histogram_tester.ExpectUniqueSample(
+      kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
+      1);
+}
+TEST_F(CrossOtrObserverTest, FinishedNavigationNoParamsFiltering) {
   base::HistogramTester histogram_tester;
   NavigateParams params(profile(), GURL("https://www.foo.com"),
                         ui::PAGE_TRANSITION_LINK);
@@ -142,10 +200,10 @@ TEST_F(CrossOtrObserverTest, FinishedNavigation) {
   observer->DidFinishNavigation(handle.get());
 
   ASSERT_TRUE(observer->IsCrossOtrState());
-  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 1);
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 0);
   histogram_tester.ExpectUniqueSample(
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
-      1);
+      0);
 }
 TEST_F(CrossOtrObserverTest, BadRedirectResponse) {
   base::HistogramTester histogram_tester;
@@ -157,6 +215,10 @@ TEST_F(CrossOtrObserverTest, BadRedirectResponse) {
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -175,6 +237,10 @@ TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -199,6 +265,10 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -221,7 +291,93 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
 }
+TEST_F(CrossOtrObserverTest, RefreshedAfterNavigationNoParamsFiltering) {
+  base::HistogramTester histogram_tester;
+  NavigateParams params(profile(), GURL("https://www.foo.com"),
+                        ui::PAGE_TRANSITION_LINK);
+
+  params.started_from_context_menu = true;
+  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
+  content::WebContents* contents = web_contents();
+  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  ASSERT_NE(observer, nullptr);
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+  scoped_refptr<net::HttpResponseHeaders> response =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+
+  handle->set_reload_type(content::ReloadType::NORMAL);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+  observer->WebContentsDestroyed();
+
+  histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 0);
+  ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 0);
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 0);
+  histogram_tester.ExpectUniqueSample(
+      kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
+      0);
+}
 TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
+  base::HistogramTester histogram_tester;
+  NavigateParams params(profile(), GURL("https://www.foo.com"),
+                        ui::PAGE_TRANSITION_LINK);
+
+  params.started_from_context_menu = true;
+  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
+  content::WebContents* contents = web_contents();
+  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
+  ASSERT_NE(observer, nullptr);
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+  scoped_refptr<net::HttpResponseHeaders> response =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+  ASSERT_TRUE(observer->IsCrossOtrState());
+
+  // Finish a non-reload navigation, but one that isn't committed (so no actual
+  // navigation away from the monitored page)
+  handle->set_reload_type(content::ReloadType::NONE);
+  handle->set_is_in_primary_main_frame(true);
+  handle->set_is_same_document(false);
+  handle->set_has_committed(false);
+
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+  // We just observed another navigation not due to a client redirect, so should
+  // no longer be in the cross-OTR state.
+  ASSERT_FALSE(observer->IsCrossOtrState());
+
+  // After that uncommitted navigation, trigger a redirect, then destroy.
+  handle->set_reload_type(content::ReloadType::NORMAL);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+  observer->WebContentsDestroyed();
+
+  // We had 1 relevant refresh.
+  histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 1);
+  ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 1);
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 1);
+  histogram_tester.ExpectUniqueSample(
+      kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
+      1);
+}
+TEST_F(CrossOtrObserverTest,
+       UncommittedNavigationWithRefreshNoParamsFiltering) {
   base::HistogramTester histogram_tester;
   NavigateParams params(profile(), GURL("https://www.foo.com"),
                         ui::PAGE_TRANSITION_LINK);
@@ -262,12 +418,12 @@ TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
   observer->WebContentsDestroyed();
 
   // We had 1 relevant refresh.
-  histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 1);
-  ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 1);
-  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 1);
+  histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 0);
+  ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 0);
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 0);
   histogram_tester.ExpectUniqueSample(
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
-      1);
+      0);
 }
 TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   base::HistogramTester histogram_tester;
@@ -279,6 +435,10 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -325,6 +485,10 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+
+  // Simulate params filtering, making it okay to collect metrics.
+  observer->SetDidFilterParams(true);
+
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -355,6 +519,47 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
   histogram_tester.ExpectUniqueSample(
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
+}
+TEST_F(CrossOtrObserverTest, RedirectsAfterNavigationNoParamsFiltering) {
+  base::HistogramTester histogram_tester;
+  NavigateParams params(profile(), GURL("https://www.foo.com"),
+                        ui::PAGE_TRANSITION_LINK);
+
+  params.started_from_context_menu = true;
+  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
+  content::WebContents* contents = web_contents();
+  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  ASSERT_NE(observer, nullptr);
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
+
+  scoped_refptr<net::HttpResponseHeaders> response =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  handle->set_response_headers(response);
+  observer->DidStartNavigation(handle.get());
+  observer->DidFinishNavigation(handle.get());
+  // The first navigation has finished, but we remain cross-OTR until either
+  // user activation or a non-client redirect navigation begins
+  ASSERT_TRUE(observer->IsCrossOtrState());
+
+  // Redirects observed on navigations after the first should not
+  // write responses.
+  observer->DidStartNavigation(handle.get());
+
+  // A new, non-client redirect navigation began, so we should no longer be
+  // filtering.
+  ASSERT_FALSE(observer->IsCrossOtrState());
+
+  response = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 302 Moved Temporarily");
+  handle->set_response_headers(response);
+  observer->DidRedirectNavigation(handle.get());
+
+  histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 0);
+  histogram_tester.ExpectUniqueSample(
+      kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
+      0);
 }
 TEST_F(CrossOtrObserverTest, ClientRedirectCrossOtr) {
   base::HistogramTester histogram_tester;

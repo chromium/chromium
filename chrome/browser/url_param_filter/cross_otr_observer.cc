@@ -39,7 +39,10 @@ void CrossOtrObserver::MaybeCreateForWebContents(
 
 CrossOtrObserver::CrossOtrObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<CrossOtrObserver>(*web_contents) {}
+      content::WebContentsUserData<CrossOtrObserver>(*web_contents),
+      weak_factory_(this) {}
+
+CrossOtrObserver::~CrossOtrObserver() = default;
 
 bool CrossOtrObserver::IsCrossOtrState() {
   return protecting_navigations_;
@@ -76,9 +79,14 @@ void CrossOtrObserver::DidFinishNavigation(
   // refreshes on the first page.
   if (protecting_navigations_) {
     observed_response_ = true;
+    // Metrics will not be collected for non intervened navigation chains and
+    // navigations occurring prior to params filtering.
     const net::HttpResponseHeaders* headers =
         navigation_handle->GetResponseHeaders();
-    if (headers) {
+
+    // Metrics will not be collected for non intervened navigation chains and
+    // navigations occurring prior to params filtering.
+    if (headers && did_filter_params_) {
       base::UmaHistogramSparse(
           kCrossOtrResponseCodeMetricName,
           net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));
@@ -105,7 +113,9 @@ void CrossOtrObserver::DidRedirectNavigation(
   // After the first full navigation has committed, including any client
   // redirects that occur without user activation, we no longer want to track
   // redirects.
-  if (protecting_navigations_ && headers) {
+  // Metrics will not be collected for non intervened navigation chains and
+  // navigations occurring prior to params filtering.
+  if (protecting_navigations_ && headers && did_filter_params_) {
     base::UmaHistogramSparse(
         kCrossOtrResponseCodeMetricName,
         net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));
@@ -128,9 +138,22 @@ void CrossOtrObserver::FrameReceivedUserActivation(
 }
 
 void CrossOtrObserver::Detach() {
-  base::UmaHistogramCounts100(kCrossOtrRefreshCountMetricName, refresh_count_);
+  // Metrics will not be collected for non intervened navigation chains and
+  // navigations occurring prior to params filtering.
+  if (did_filter_params_) {
+    base::UmaHistogramCounts100(kCrossOtrRefreshCountMetricName,
+                                refresh_count_);
+  }
   web_contents()->RemoveUserData(CrossOtrObserver::UserDataKey());
   // DO NOT add code past this point. `this` is destroyed.
+}
+
+base::WeakPtr<CrossOtrObserver> CrossOtrObserver::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void CrossOtrObserver::SetDidFilterParams(bool value) {
+  did_filter_params_ = value;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CrossOtrObserver);

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_URL_PARAM_FILTER_CROSS_OTR_OBSERVER_H_
 #define CHROME_BROWSER_URL_PARAM_FILTER_CROSS_OTR_OBSERVER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -23,6 +24,8 @@ namespace url_param_filter {
 class CrossOtrObserver : public content::WebContentsObserver,
                          public content::WebContentsUserData<CrossOtrObserver> {
  public:
+  ~CrossOtrObserver() override;
+
   // Attaches the observer in cases where it should do so; leaves `web_contents`
   // unchanged otherwise.
   static void MaybeCreateForWebContents(content::WebContents* web_contents,
@@ -43,6 +46,10 @@ class CrossOtrObserver : public content::WebContentsObserver,
   // used instead.
   using content::WebContentsUserData<CrossOtrObserver>::CreateForWebContents;
 
+  base::WeakPtr<CrossOtrObserver> GetWeakPtr();
+
+  void SetDidFilterParams(bool value);
+
  private:
   explicit CrossOtrObserver(content::WebContents* web_contents);
 
@@ -62,8 +69,10 @@ class CrossOtrObserver : public content::WebContentsObserver,
   // user interaction is observed or a new navigation starts that is not a
   // client redirect.
   bool protecting_navigations_ = true;
+  bool did_filter_params_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<CrossOtrObserver> weak_factory_;
 };
 
 }  // namespace url_param_filter

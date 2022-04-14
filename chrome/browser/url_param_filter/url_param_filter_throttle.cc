@@ -47,13 +47,14 @@ void UrlParamFilterThrottle::MaybeCreateThrottle(
   }
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(web_contents);
   if (observer && observer->IsCrossOtrState()) {
-    throttle_list->push_back(
-        std::make_unique<UrlParamFilterThrottle>(request.request_initiator));
+    throttle_list->push_back(std::make_unique<UrlParamFilterThrottle>(
+        request.request_initiator, observer->GetWeakPtr()));
   }
 }
 
 UrlParamFilterThrottle::UrlParamFilterThrottle(
-    const absl::optional<url::Origin>& request_initiator_origin)
+    const absl::optional<url::Origin>& request_initiator_origin,
+    base::WeakPtr<CrossOtrObserver> observer)
     : should_filter_(base::GetFieldTrialParamByFeatureAsBool(
           features::kIncognitoParamFilterEnabled,
           "should_filter",
@@ -61,6 +62,7 @@ UrlParamFilterThrottle::UrlParamFilterThrottle(
   last_hop_initiator_ = request_initiator_origin.has_value()
                             ? request_initiator_origin->GetURL()
                             : GURL();
+  observer_ = observer;
 }
 UrlParamFilterThrottle::~UrlParamFilterThrottle() = default;
 
@@ -71,9 +73,14 @@ void UrlParamFilterThrottle::WillStartRequest(network::ResourceRequest* request,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   FilterResult result = FilterUrl(last_hop_initiator_, request->url);
+
   if (should_filter_) {
     request->url = result.filtered_url;
     WriteMetrics(result);
+  }
+
+  if (observer_ && result.filtered_param_count) {
+    observer_->SetDidFilterParams(true);
   }
   last_hop_initiator_ = request->url;
 }
@@ -87,10 +94,16 @@ void UrlParamFilterThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   FilterResult result = FilterUrl(last_hop_initiator_, redirect_info->new_url);
+
   if (should_filter_) {
     redirect_info->new_url = result.filtered_url;
     WriteMetrics(result);
   }
+
+  if (observer_ && result.filtered_param_count) {
+    observer_->SetDidFilterParams(true);
+  }
+
   // Future redirects should use the redirect's domain as the navigation
   // source.
   last_hop_initiator_ = redirect_info->new_url;
