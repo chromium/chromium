@@ -128,10 +128,8 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   const GURL& getUrl() const { return url_; }
 
   // Records that the action was shown at index `position` in the popup.
-  virtual void RecordActionShown(size_t position) const {}
-
-  // Records that the action was executed at index `position` in the popup.
-  virtual void RecordActionExecuted(size_t position) const {}
+  // `executed` is set to true if the action was also executed by the user.
+  virtual void RecordActionShown(size_t position, bool executed) const {}
 
   // Takes the action associated with this Action.  Non-navigation
   // Actions must override the default, but Navigation Actions don't need to.

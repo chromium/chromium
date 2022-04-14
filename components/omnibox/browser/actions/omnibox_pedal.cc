@@ -306,14 +306,13 @@ bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
   return match_sequence.IsFullyConsumed();
 }
 
-void OmniboxPedal::RecordActionShown(size_t /*position*/) const {
+void OmniboxPedal::RecordActionShown(size_t /*position*/, bool executed) const {
   base::UmaHistogramEnumeration("Omnibox.PedalShown", GetMetricsId(),
                                 OmniboxPedalId::TOTAL_COUNT);
-}
-
-void OmniboxPedal::RecordActionExecuted(size_t /*position*/) const {
-  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal", GetMetricsId(),
-                                OmniboxPedalId::TOTAL_COUNT);
+  if (executed) {
+    base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
+                                  GetMetricsId(), OmniboxPedalId::TOTAL_COUNT);
+  }
 }
 
 size_t OmniboxPedal::EstimateMemoryUsage() const {

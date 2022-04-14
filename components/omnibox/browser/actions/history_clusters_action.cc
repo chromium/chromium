@@ -50,16 +50,19 @@ class HistoryClustersAction : public OmniboxAction {
 #endif
   }
 
-  void RecordActionShown(size_t position) const override {
+  void RecordActionShown(size_t position, bool executed) const override {
     base::UmaHistogramExactLinear(
         "Omnibox.ResumeJourneyShown", position,
         AutocompleteResult::kMaxAutocompletePositionValue);
-  }
 
-  void RecordActionExecuted(size_t position) const override {
-    base::UmaHistogramExactLinear(
-        "Omnibox.SuggestionUsed.ResumeJourney", position,
-        AutocompleteResult::kMaxAutocompletePositionValue);
+    if (executed) {
+      base::UmaHistogramExactLinear(
+          "Omnibox.SuggestionUsed.ResumeJourney", position,
+          AutocompleteResult::kMaxAutocompletePositionValue);
+    }
+
+    base::UmaHistogramBoolean("Omnibox.SuggestionUsed.ResumeJourneyCTR",
+                              executed);
   }
 
   int32_t GetID() const override {

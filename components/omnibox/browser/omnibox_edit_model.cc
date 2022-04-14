@@ -42,6 +42,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -122,12 +123,16 @@ void EmitKeywordHistogram(
       static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
 }
 
-void RecordActionShownForAllActions(const AutocompleteResult& result) {
+// `executed_position` should be set to the position of the executed
+// OmniboxAction, or left as `kNoMatch` if no action was executed.
+void RecordActionShownForAllActions(
+    const AutocompleteResult& result,
+    size_t executed_position = OmniboxPopupSelection::kNoMatch) {
   // Record the presence of any actions in the result set.
   for (size_t i = 0; i < result.size(); ++i) {
     const AutocompleteMatch& match_in_result = result.match_at(i);
     if (match_in_result.action) {
-      match_in_result.action->RecordActionShown(i);
+      match_in_result.action->RecordActionShown(i, i == executed_position);
     }
   }
 }
@@ -777,9 +782,7 @@ void OmniboxEditModel::ExecuteAction(const AutocompleteMatch& match,
                                      size_t match_position,
                                      base::TimeTicks match_selection_timestamp,
                                      WindowOpenDisposition disposition) {
-  RecordActionShownForAllActions(result());
-
-  match.action->RecordActionExecuted(match_position);
+  RecordActionShownForAllActions(result(), match_position);
   OmniboxAction::ExecutionContext context(
       *(autocomplete_controller()->autocomplete_provider_client()),
       base::BindOnce(&OmniboxEditController::OnAutocompleteAccept,
@@ -815,7 +818,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;
 
-  RecordActionShownForAllActions(result());
+  RecordActionShownForAllActions(result(), OmniboxPopupSelection::kNoMatch);
 
   std::u16string input_text(pasted_text);
   if (input_text.empty())

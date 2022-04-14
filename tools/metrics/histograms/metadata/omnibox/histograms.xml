@@ -1000,6 +1000,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SuggestionUsed.ResumeJourneyCTR"
+    units="BooleanSelected" expires_after="2022-12-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    Emitted when the user uses the omnibox to go somewhere AND the &quot;Resume
+    Journey&quot; chip was offered in any position.
+
+    This metric records &quot;Selected&quot; if the offered action chip was
+    selected, and records &quot;Not Selected&quot; if the offered action chip
+    was not selected.
+
+    Therefore the &quot;Selected&quot; bucket proportion is the CTR of the
+    action chip. Higher is better. The count of this bucket matches the sum of
+    Omnibox.SuggestionUsed.ResumeJourney.
+
+    The total count of both buckets is how many times we've offered the chip
+    total, and matches the sum of Omnibox.ResumeJourneyShown.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.SuggestionUsed.Search.Experimental.NavigationToFirstMeaningfulPaint"
     units="ms" expires_after="2022-10-09">

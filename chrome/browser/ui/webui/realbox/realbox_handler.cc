@@ -725,7 +725,9 @@ void RealboxHandler::ExecuteAction(uint8_t line,
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
 
-  match.action->RecordActionExecuted(line);
+  // TODO(tommycli): Add recording of action shown in the realbox when the user
+  //  uses the realbox to go somewhere OTHER than executing an action.
+  match.action->RecordActionShown(line, /*executed=*/true);
   OmniboxAction::ExecutionContext context(
       *(autocomplete_controller_->autocomplete_provider_client()),
       base::BindOnce(&RealboxHandler::OpenURL, weak_ptr_factory_.GetWeakPtr()),

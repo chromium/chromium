@@ -224,8 +224,7 @@ class OmniboxPedal : public OmniboxAction {
   bool IsConceptMatch(TokenSequence& match_sequence) const;
 
   // OmniboxAction overrides:
-  void RecordActionShown(size_t position) const override;
-  void RecordActionExecuted(size_t position) const override;
+  void RecordActionShown(size_t position, bool executed) const override;
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
