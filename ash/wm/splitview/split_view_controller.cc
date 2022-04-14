@@ -810,11 +810,11 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
 
   // Windows created by window restore are not activatable while being restored.
   // However, we still want to be able to snap these windows at this point.
-  bool restoring_snap_state =
-      WindowRestoreController::Get()->is_restoring_snap_state();
+  const bool is_to_be_restored_window =
+      window == WindowRestoreController::Get()->to_be_snapped_window();
 
   // TODO(sammiequon): Investigate if we need to check for window activation.
-  if (!restoring_snap_state && !wm::CanActivateWindow(window))
+  if (!is_to_be_restored_window && !wm::CanActivateWindow(window))
     return false;
 
   return GetMinimumWindowLength(window, IsLayoutHorizontal(window)) <=
@@ -877,9 +877,8 @@ void SplitViewController::OnWindowSnapWMEvent(aura::Window* window,
   const int32_t window_id =
       window->GetProperty(app_restore::kRestoreWindowIdKey);
   if (in_overview &&
-      WindowRestoreController::Get()->IsRestoringWindow(window) &&
+      window == WindowRestoreController::Get()->to_be_snapped_window() &&
       app_restore::DeskTemplateReadHandler::Get()->GetWindowInfo(window_id)) {
-    DCHECK(WindowRestoreController::Get()->is_restoring_snap_state());
     return;
   }
 
@@ -1038,7 +1037,7 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInParent(
     aura::Window* window_for_minimum_size) {
   gfx::Rect bounds =
       GetSnappedWindowBoundsInScreen(snap_position, window_for_minimum_size);
-  ::wm::ConvertRectFromScreen(root_window_, &bounds);
+  wm::ConvertRectFromScreen(root_window_, &bounds);
   return bounds;
 }
 
@@ -1053,7 +1052,7 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
 
   if (window_for_minimum_size && ShouldUseWindowBoundsDuringFastResize()) {
     gfx::Rect bounds = window_for_minimum_size->bounds();
-    ::wm::ConvertRectToScreen(window_for_minimum_size->parent(), &bounds);
+    wm::ConvertRectToScreen(window_for_minimum_size->parent(), &bounds);
     return bounds;
   }
   const bool horizontal = IsLayoutHorizontal(root_window_);
@@ -1066,8 +1065,25 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   // mode to `GetSnappedWindowBounds()` in window_positioning_utils.cc.
   const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
   const int work_area_size = GetDividerEndPosition();
-  const int divider_position =
+  int divider_position =
       divider_position_ < 0 ? GetDefaultDividerPosition() : divider_position_;
+
+  // Edit `divider_position` if window restore is currently restoring a snapped
+  // window; take into account the snap percentage saved by the window. Only do
+  // this for clamshell mode; in tablet mode we are OK with restoring to the
+  // default half snap state.
+  if (divider_position_ < 0 && !in_tablet) {
+    if (auto* window = WindowRestoreController::Get()->to_be_snapped_window()) {
+      app_restore::WindowInfo* window_info =
+          window->GetProperty(app_restore::kWindowInfoKey);
+      if (window_info && window_info->snap_percentage) {
+        const int snap_percentage = *window_info->snap_percentage;
+        divider_position = snap_percentage * work_area_size / 100;
+        if (!snap_left_or_top)
+          divider_position = work_area_size - divider_position;
+      }
+    }
+  }
 
   int window_size;
   if (snap_left_or_top) {

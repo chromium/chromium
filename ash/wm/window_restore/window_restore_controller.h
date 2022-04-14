@@ -108,7 +108,9 @@ class ASH_EXPORT WindowRestoreController
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  bool is_restoring_snap_state() const { return is_restoring_snap_state_; }
+  const aura::Window* to_be_snapped_window() const {
+    return to_be_snapped_window_;
+  }
 
  private:
   friend class WindowRestoreControllerTest;
@@ -147,7 +149,9 @@ class ASH_EXPORT WindowRestoreController
   void SetSaveWindowCallbackForTesting(SaveWindowCallback callback);
 
   // True whenever we are attempting to restore snap state.
-  bool is_restoring_snap_state_ = false;
+  // The window that is about to be snapped by window restore. Reset to nullptr
+  // if we aren't directly working with the window anymore.
+  aura::Window* to_be_snapped_window_ = nullptr;
 
   // The set of windows that have had their widgets initialized and will be
   // shown later.

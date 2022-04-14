@@ -101,8 +101,15 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
         window->GetProperty(aura::client::kPreMinimizedShowStateKey);
   }
 
-  if (window_state->IsSnapped())
-    window_info->snap_percentage = window_state->snap_ratio().value_or(0);
+  if (window_state->IsSnapped()) {
+    // `WindowState::snap_ratio_` is stored as a float between 0 and 1. Convert
+    // it to a percentage here.
+    absl::optional<float> snap_ratio = window_state->snap_ratio();
+    window_info->snap_percentage =
+        snap_ratio.has_value() ? absl::make_optional(std::round(
+                                     100 * window_state->snap_ratio().value()))
+                               : absl::nullopt;
+  }
 
   window_info->display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();

@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -78,6 +79,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -243,7 +245,7 @@ void ClickButton(const views::Button* button) {
   aura::Window* root_window =
       button->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
-  event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  event_generator.MoveMouseToInHost(button->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
 }
 
@@ -1174,6 +1176,112 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `desk_template`.
   EXPECT_EQ(data->urls.value(), urls);
+}
+
+// Tests that snapped window's snap ratio/percentage is maintained when
+// launching a desk template.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchSnappedWindow) {
+  const int shelf_height = ash::ShelfConfig::Get()->shelf_size();
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      ash::Shell::Get()->display_manager());
+  display_manager_test_api.UpdateDisplay(
+      "2000x" + base::NumberToString(1000 + shelf_height));
+
+  aura::Window* window = browser()->window()->GetNativeWindow();
+
+  // Snap the window to the left.
+  const ash::WMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
+  ash::WindowState::Get(window)->OnWMEvent(&left_snap_event);
+  ASSERT_EQ(gfx::Rect(1000, 1000), window->GetBoundsInScreen());
+
+  // Drag the window so it is now 60% of the work area.
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  event_generator.set_current_screen_location(gfx::Point(1000, 500));
+  event_generator.DragMouseBy(200, 0);
+  ASSERT_EQ(gfx::Rect(1200, 1000), window->GetBoundsInScreen());
+
+  // Enter overview and save our snapped window as a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickSaveDeskAsTemplateButton();
+
+  // Launch our template and then exit overview.
+  ClickFirstTemplateItem();
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  // Our snapped window should have the similar bounds as it did when it was
+  // saved. We may lose some precision when saving a float as a percentage.
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  aura::Window* new_browser_window =
+      BrowserList::GetInstance()->get(1)->window()->GetNativeWindow();
+  gfx::Rect new_bounds = new_browser_window->GetBoundsInScreen();
+  EXPECT_EQ(0, new_bounds.x());
+  EXPECT_EQ(0, new_bounds.y());
+  EXPECT_NEAR(1200, new_bounds.width(), 5);
+  EXPECT_EQ(1000, new_bounds.height());
+
+  // Launches the first template on the template grid.
+  auto launch_first_template = []() {
+    // Remove a desk first, otherwise we will run into an accessibility error
+    // with `DeskPreviewView` upon entering overview.
+    auto* desks_controller = ash::DesksController::Get();
+    RemoveDesk(desks_controller->desks()[1].get());
+
+    // Enter overview and launch the same template.
+    ash::ToggleOverview();
+    ash::WaitForOverviewEnterAnimation();
+    ClickZeroStateTemplatesButton();
+    ClickFirstTemplateItem();
+    ash::ToggleOverview();
+    ash::WaitForOverviewExitAnimation();
+  };
+
+  // Tests the bounds of the window if we launch it while the display is upside
+  // down.
+  display_manager_test_api.UpdateDisplay(
+      "2000x" + base::NumberToString(1000 + shelf_height) + "/u");
+  launch_first_template();
+
+  // The window is physically on the left, but the coordinates system is as if
+  // it were on the right.
+  new_browser_window =
+      BrowserList::GetInstance()->get(2)->window()->GetNativeWindow();
+  new_bounds = new_browser_window->GetBoundsInScreen();
+  EXPECT_EQ(800, new_bounds.x());
+  EXPECT_EQ(0, new_bounds.y());
+  EXPECT_NEAR(1200, new_bounds.width(), 5);
+  EXPECT_EQ(1000, new_bounds.height());
+
+  // Change to portrait mode, work area is 1000x2000.
+  display_manager_test_api.UpdateDisplay(
+      "1000x" + base::NumberToString(2000 + shelf_height));
+  launch_first_template();
+
+  // The window is at the top of the screen since we are in portrait
+  // orientation, and its height is 60% of the work area height.
+  new_browser_window =
+      BrowserList::GetInstance()->get(3)->window()->GetNativeWindow();
+  new_bounds = new_browser_window->GetBoundsInScreen();
+  EXPECT_EQ(0, new_bounds.x());
+  EXPECT_EQ(0, new_bounds.y());
+  EXPECT_EQ(1000, new_bounds.width());
+  EXPECT_NEAR(1200, new_bounds.height(), 5);
+
+  // Launch the window in upside down portrait mode. The height is 60% of the
+  // work area height and the window is physically on the top, but the
+  // coordinate system is as if it were on the bottom.
+  display_manager_test_api.UpdateDisplay(
+      "1000x" + base::NumberToString(2000 + shelf_height) + "/u");
+  launch_first_template();
+
+  new_browser_window =
+      BrowserList::GetInstance()->get(4)->window()->GetNativeWindow();
+  new_bounds = new_browser_window->GetBoundsInScreen();
+  EXPECT_EQ(0, new_bounds.x());
+  EXPECT_EQ(800, new_bounds.y());
+  EXPECT_EQ(1000, new_bounds.width());
+  EXPECT_NEAR(1200, new_bounds.height(), 5);
 }
 
 // Tests that incognito browser windows will NOT be captured in the desk
