@@ -74,6 +74,10 @@ public class CustomTabActivityTabControllerTest {
     @Feature({"CustomTabs"})
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testUseStartupPreloaderTab() throws TimeoutException {
+        // TODO(https://crbug.com/1314766): Resolve the flake that occurs when running this test
+        // within the context of Custom Tabs.
+        if (mActivityType == ActivityType.CUSTOM_TAB) return;
+
         CustomTabActivityTypeTestUtils.launchActivity(
                 mActivityType, mActivityTestRule, "about:blank");
         CustomTabActivityTabProvider tabProvider = getActivityTabProvider();
