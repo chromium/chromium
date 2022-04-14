@@ -658,8 +658,6 @@ def main():
       '-DLLVM_ENABLE_CURL=OFF',
       # Build libclang.a as well as libclang.so
       '-DLIBCLANG_BUILD_STATIC=ON',
-      # TODO(https://crbug.com/1312610): remove once we figure out what's going on
-      '-DLLVM_DISABLE_ASSEMBLY_FILES=ON',
   ]
 
   if sys.platform.startswith('linux'):
