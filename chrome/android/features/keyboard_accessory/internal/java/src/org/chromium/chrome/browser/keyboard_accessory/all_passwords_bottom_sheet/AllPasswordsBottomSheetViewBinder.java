@@ -16,10 +16,7 @@ import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.method.PasswordTransformationMethod;
-import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -189,21 +186,13 @@ class AllPasswordsBottomSheetViewBinder {
         iconView.setImageDrawable(icon);
     }
 
-    private static SpannableString formatWarningForOrigin(Resources resources, String origin) {
+    private static String formatWarningForOrigin(Resources resources, String origin) {
         String formattedOrigin = UrlFormatter.formatUrlForSecurityDisplay(
                 new GURL(origin), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
-        String message = String.format(
+        return String.format(
                 resources.getString(usesUnifiedPasswordManagerUI()
                                 ? R.string.all_passwords_bottom_sheet_subtitle
                                 : R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
                 formattedOrigin);
-
-        int startIndex = message.indexOf(formattedOrigin);
-        int endIndex = startIndex + formattedOrigin.length();
-        SpannableString spannableMessage = new SpannableString(message);
-        StyleSpan boldStyle = new StyleSpan(android.graphics.Typeface.BOLD);
-        spannableMessage.setSpan(
-                boldStyle, startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return spannableMessage;
     }
 }

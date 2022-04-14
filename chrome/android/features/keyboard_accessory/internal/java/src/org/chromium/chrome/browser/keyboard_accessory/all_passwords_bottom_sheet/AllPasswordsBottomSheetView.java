@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_shee
 import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
 
 import android.content.Context;
-import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -104,9 +103,9 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
         }
     }
 
-    void setWarning(Spannable spannableWarningMessage) {
+    void setWarning(CharSequence warningMessage) {
         final TextView warningTextView = mContentView.findViewById(R.id.sheet_warning);
-        warningTextView.setText(spannableWarningMessage);
+        warningTextView.setText(warningMessage);
         if (usesUnifiedPasswordManagerUI()) {
             // TODO(crbug.com/1217070): remove from the layout xml once feature roll out
             final TextView warningSecondTextView =
