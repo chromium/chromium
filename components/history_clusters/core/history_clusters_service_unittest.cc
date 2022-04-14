@@ -184,9 +184,19 @@ class HistoryClustersServiceTestBase : public testing::Test {
     std::vector<history::AnnotatedVisit> visits =
         test_clustering_backend_->LastClusteredVisits();
 
-    ASSERT_EQ(visits.size(), 3u);
+    // Visits 2, 3, and 5 are 1-day-old; visit 3 is a synced visit and therefore
+    // excluded.
+    ASSERT_EQ(visits.size(), 2u);
 
     auto& visit = visits[0];
+    EXPECT_EQ(visit.visit_row.visit_id, 5);
+    EXPECT_EQ(visit.visit_row.visit_time,
+              GetHardcodedTestVisits()[4].visit_row.visit_time);
+    EXPECT_EQ(visit.visit_row.visit_duration, base::Seconds(20));
+    EXPECT_EQ(visit.url_row.url(), "https://second-1-day-old-visit.com/");
+    EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
+
+    visit = visits[1];
     EXPECT_EQ(visit.visit_row.visit_id, 2);
     EXPECT_EQ(visit.visit_row.visit_time,
               GetHardcodedTestVisits()[1].visit_row.visit_time);
@@ -194,24 +204,13 @@ class HistoryClustersServiceTestBase : public testing::Test {
     EXPECT_EQ(visit.url_row.url(), "https://github.com/");
     EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
 
-    visit = visits[1];
-    EXPECT_EQ(visit.visit_row.visit_id, 1);
-    EXPECT_EQ(visit.visit_row.visit_time,
-              GetHardcodedTestVisits()[0].visit_row.visit_time);
-    EXPECT_EQ(visit.visit_row.visit_duration, base::Milliseconds(5600));
-    EXPECT_EQ(visit.url_row.url(), "https://google.com/");
-    EXPECT_EQ(visit.context_annotations.page_end_reason, 3);
-
-    visit = visits[2];
-    EXPECT_EQ(visit.visit_row.visit_id, 4);
-
     // TODO(tommycli): Add back visit.referring_visit_id() check after updating
     //  the HistoryService test methods to support that field.
   }
 
  protected:
   // ScopedFeatureList needs to be declared before TaskEnvironment, so that it
-  // it is destroyed after the TaskEnvironment is destroyed, preventing other
+  // is destroyed after the TaskEnvironment is destroyed, preventing other
   // threads from accessing the feature list while it's being destroyed.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -297,44 +296,72 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
-  // Create persisted visits 1, 2, 3.
+  // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
   AddHardcodedTestDataToHistoryService();
 
   auto days_ago = [](int days) { return base::Time::Now() - base::Days(days); };
 
   // Create incomplete visits; only 3 & 4 should be returned by the query.
-  AddIncompleteVisit(4, 4, days_ago(1));
+  AddIncompleteVisit(6, 6, days_ago(1));
   AddIncompleteVisit(0, 0, days_ago(1));  // Missing history rows.
-  AddIncompleteVisit(5, 5, days_ago(90));
-  AddIncompleteVisit(6, 6, days_ago(0));   // Too recent.
-  AddIncompleteVisit(7, 7, days_ago(93));  // Too old.
+  AddIncompleteVisit(7, 7, days_ago(90));
+  AddIncompleteVisit(8, 8, days_ago(0));   // Too recent.
+  AddIncompleteVisit(9, 9, days_ago(93));  // Too old.
   AddIncompleteVisit(3, 3, days_ago(90));  // Visit 3 was added to the history
-                                           // database with source synched.
+                                           // database with source synced.
   AddIncompleteVisit(
       10, 10, days_ago(1),
-      ui::PageTransitionFromInt(
-          805306372));  // Visit 10 was added to the history database with
-                        // a non-visible page transition.
+      ui::PageTransitionFromInt(805306372));  // Non-visible page transition.
 
-  history_clusters_service_->QueryClusters(
-      ClusteringRequestSource::kJourneysPage,
-      /*begin_time=*/base::Time(), /*end_time=*/base::Time::Now(),
-      base::DoNothing(),  // Only need to verify the correct request is sent.
-      &task_tracker_);
+  // Helper to repeatedly call `QueryClusters()`, with the continuation time
+  // returned from the previous call, and return the visits sent to the
+  // clustering backend.
+  base::Time continuation_end_time = base::Time::Now();
+  const auto next_query_clusters = [&]() {
+    history_clusters_service_->QueryClusters(
+        ClusteringRequestSource::kJourneysPage,
+        /*begin_time=*/base::Time(), continuation_end_time,
+        base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters,
+                                       base::Time continuation_end_time_temp) {
+          continuation_end_time = continuation_end_time_temp;
+        }),
+        &task_tracker_);
 
-  test_clustering_backend_->WaitForGetClustersCall();
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+    test_clustering_backend_->WaitForGetClustersCall();
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
-  // Persisted visits are ordered before incomplete visits. Persisted visits are
-  // ordered newest first. Incomplete visits are ordered the same as they were
-  // sent to the `HistoryClustersService`.
-  std::vector<history::AnnotatedVisit> visits =
-      test_clustering_backend_->LastClusteredVisits();
-  ASSERT_EQ(visits.size(), 4u);
-  EXPECT_EQ(visits[0].visit_row.visit_id, 2);
-  EXPECT_EQ(visits[1].visit_row.visit_id, 1);
-  EXPECT_EQ(visits[2].visit_row.visit_id, 4);
-  EXPECT_EQ(visits[3].visit_row.visit_id, 5);
+    // Persisted visits are ordered before incomplete visits. Persisted visits
+    // are ordered newest first. Incomplete visits are ordered the same as they
+    // were sent to the `HistoryClustersService`.
+    test_clustering_backend_->FulfillCallback({});
+    return test_clustering_backend_->LastClusteredVisits();
+  };
+
+  // 1st query should return visits 2, 5, & 6, the good, 1-day-old visits.
+  // Visits 3, 0, and 10, also 1-day-old, are excluded since they're synced,
+  // missing history rows, and non-visible transition respectively.
+  auto visits = next_query_clusters();
+  ASSERT_EQ(visits.size(), 3u);
+  EXPECT_EQ(visits[0].visit_row.visit_id, 5);
+  EXPECT_EQ(visits[1].visit_row.visit_id, 2);
+  EXPECT_EQ(visits[2].visit_row.visit_id, 6);
+
+  // 2nd query should return visit 1, a 2-day-old complete visit.
+  visits = next_query_clusters();
+  ASSERT_EQ(visits.size(), 1u);
+  EXPECT_EQ(visits[0].visit_row.visit_id, 1);
+
+  // 3rd query should return visit 4, a 30-day-old complete visit, since there
+  // are no 3-to-29-day-old visits.
+  visits = next_query_clusters();
+  ASSERT_EQ(visits.size(), 1u);
+  EXPECT_EQ(visits[0].visit_row.visit_id, 4);
+
+  // 4th query should return visit 7, a 90-day-old incomplete visit, since there
+  // are no 31-to-89-day-old visits.
+  visits = next_query_clusters();
+  ASSERT_EQ(visits.size(), 1u);
+  EXPECT_EQ(visits[0].visit_row.visit_id, 7);
 }
 
 TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
@@ -371,11 +398,11 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
             EXPECT_FLOAT_EQ(visits[0].score, 0.5);
 
             EXPECT_EQ(visits[1].annotated_visit.url_row.url(),
-                      "https://google.com/");
+                      "https://second-1-day-old-visit.com/");
             EXPECT_EQ(visits[1].annotated_visit.visit_row.visit_time,
-                      GetHardcodedTestVisits()[0].visit_row.visit_time);
+                      GetHardcodedTestVisits()[4].visit_row.visit_time);
             EXPECT_EQ(visits[1].annotated_visit.url_row.title(),
-                      u"Search Engine Title");
+                      u"second-1-day-old-visit");
             EXPECT_TRUE(
                 visits[1].annotated_visit.context_annotations.is_new_bookmark);
             EXPECT_FALSE(visits[1]
@@ -409,7 +436,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
       history::Cluster(0,
                        {
                            test_clustering_backend_->GetVisitById(2),
-                           test_clustering_backend_->GetVisitById(1),
+                           test_clustering_backend_->GetVisitById(5),
                        },
                        {u"apples", u"Red Oranges"},
                        /*should_show_on_prominent_ui_surfaces=*/true));
@@ -429,7 +456,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.NumClustersReturned", 2, 1);
   histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.NumVisitsToCluster", 3, 1);
+      "History.Clusters.Backend.NumVisitsToCluster", 2, 1);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.Backend.GetClustersLatency", 1);
 }
@@ -570,36 +597,55 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   // query should have kicked off a cache population request.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 
-  // Providing the response and running the task loop should populate the cache.
-  // This also verifies that visits older than 30 days are also included.
-  AwaitAndVerifyTestClusteringBackendRequest();
+  // Helper to flush out the multiple history and cluster backend requests made
+  // by `DoesQueryMatchAnyCluster()`. It won't populate the cache until all its
+  // requests have been completed. It makes 1 request (to each) per unique day
+  // with at least 1 visit; i.e. `number_of_days_with_visits`.
+  const auto flush_keyword_requests = [&](size_t number_of_days_with_visits) {
+    test_clustering_backend_->WaitForGetClustersCall();
 
-  std::vector<history::Cluster> clusters;
-  clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(1),
-                           test_clustering_backend_->GetVisitById(2),
-                       },
-                       {u"apples", u"oranges", u"z", u"apples bananas"},
-                       /*should_show_on_prominent_ui_surfaces=*/true));
-  clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(1),
-                           test_clustering_backend_->GetVisitById(2),
-                       },
-                       {u"sensitive"},
-                       /*should_show_on_prominent_ui_surfaces=*/false));
-  clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(1),
-                       },
-                       {u"singlevisit"},
-                       /*should_show_on_prominent_ui_surfaces=*/true));
-  test_clustering_backend_->FulfillCallback(clusters);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+    std::vector<history::Cluster> clusters;
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(5),
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {u"apples", u"oranges", u"z", u"apples bananas"},
+                         /*should_show_on_prominent_ui_surfaces=*/true));
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(5),
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {u"sensitive"},
+                         /*should_show_on_prominent_ui_surfaces=*/false));
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(5),
+                         },
+                         {u"singlevisit"},
+                         /*should_show_on_prominent_ui_surfaces=*/true));
+
+    test_clustering_backend_->FulfillCallback(clusters);
+
+    // `DoesQueryMatchAnyCluster()` will continue making history and cluster
+    // backend requests until it has exhausted history. We have to flush out
+    // these requests before it will populate the cache.
+    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
+      test_clustering_backend_->WaitForGetClustersCall();
+      history::BlockUntilHistoryProcessesPendingRequests(
+          history_service_.get());
+      test_clustering_backend_->FulfillCallback({});
+    }
+    // One last wait to flush out the last, empty history request.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  };
+
+  // Hardcoded test visits span 3 days (1-day-old, 2-days-old, and 60-day-old).
+  flush_keyword_requests(3);
 
   // Now the exact query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
@@ -641,10 +687,11 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 
+  // Visits now span 2 days (1-day-old and 60-day-old) since we deleted the only
+  // 2-day-old visit.
+  flush_keyword_requests(2);
+
   // The keyword cache should be repopulated.
-  test_clustering_backend_->WaitForGetClustersCall();
-  test_clustering_backend_->FulfillCallback(clusters);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 }
 

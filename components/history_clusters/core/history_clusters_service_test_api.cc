@@ -48,7 +48,7 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
     }
 
     {
-      // Synched visits should not be included when fetching visits to cluster.
+      // Synced visits should not be included when fetching visits to cluster.
       history::AnnotatedVisit visit;
       visit.url_row.set_id(3);
       visit.url_row.set_url(GURL("https://synched-visit.com/"));
@@ -65,7 +65,7 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
     {
       // Visits older than 30 days should not be included in keyword requests.
       history::AnnotatedVisit visit;
-      visit.url_row.set_id(2);
+      visit.url_row.set_id(4);
       visit.url_row.set_url(GURL("https://31-day-old-visit.com/"));
       visit.url_row.set_title(u"31 day old visit");
       visit.visit_row.visit_id = 4;
@@ -75,6 +75,23 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       visit.visit_row.referring_visit = 1;
       visit.context_annotations.page_end_reason = 5;
       visit.context_annotations.is_existing_part_of_tab_group = true;
+      visit.source = history::VisitSource::SOURCE_BROWSED;
+      visits.push_back(visit);
+    }
+
+    {
+      // A second 1-day-old visit.
+      history::AnnotatedVisit visit;
+      visit.url_row.set_id(5);
+      visit.url_row.set_url(GURL("https://second-1-day-old-visit.com/"));
+      visit.url_row.set_title(u"second-1-day-old-visit");
+      visit.visit_row.visit_id = 5;
+      // Choose a recent time, as otherwise History will discard the visit.
+      visit.visit_row.visit_time = base::Time::Now() - base::Days(1);
+      visit.visit_row.visit_duration = base::Seconds(20);
+      visit.visit_row.referring_visit = 1;
+      visit.context_annotations.page_end_reason = 5;
+      visit.context_annotations.is_new_bookmark = true;
       visit.source = history::VisitSource::SOURCE_BROWSED;
       visits.push_back(visit);
     }

@@ -66,12 +66,9 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
   // Accumulate 1 day at a time of visits to avoid breaking up clusters.
-  // We stop once we meet `visit_soft_cap_`. Also hard cap at
-  // `options.max_count` which is enforced at the database level to avoid any
-  // one day blasting past the hard cap, causing OOM errors.
-  bool limited_by_max_count = false;
-  while (!exhausted_history_ && !limited_by_max_count &&
-         annotated_visits_.size() < visit_soft_cap_) {
+  // We hard cap at `options.max_count` which is enforced at the database level
+  // to avoid any one day blasting past the hard cap, causing OOM errors.
+  while (annotated_visits_.empty() && !exhausted_history_) {
     // Provide a parameter-controlled hard-cap of the max visits to fetch.
     // Note in most cases we stop fetching visits far before reaching this
     // number. This is to prevent OOM errors. See https://crbug.com/1262016.
@@ -85,7 +82,7 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
                                   GetBeginTimeOnDayBoundary(options.end_time));
 
     // Tack on all the newly fetched visits onto our accumulator vector.
-    AddUnclusteredVisits(backend, options, &limited_by_max_count);
+    bool limited_by_max_count = AddUnclusteredVisits(backend, options);
 
     // If we didn't get enough visits, ask for another day's worth from History
     // and call this method again when done.
@@ -120,12 +117,14 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
   return true;
 }
 
-void GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
+bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     history::HistoryBackend* backend,
-    history::QueryOptions options,
-    bool* limited_by_max_count) {
-  base::ranges::move(backend->GetAnnotatedVisits(options, limited_by_max_count),
-                     std::back_inserter(annotated_visits_));
+    history::QueryOptions options) {
+  bool limited_by_max_count = false;
+  base::ranges::move(
+      backend->GetAnnotatedVisits(options, &limited_by_max_count),
+      std::back_inserter(annotated_visits_));
+  return limited_by_max_count;
 }
 
 void GetAnnotatedVisitsToCluster::AddIncompleteVisits(

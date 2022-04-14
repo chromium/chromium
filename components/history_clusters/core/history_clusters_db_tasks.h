@@ -47,10 +47,10 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
 
  private:
   // Helper for `RunOnDBThread()` that adds complete but unclustered visits
-  // from `backend` to `annotated_visits_`.
-  void AddUnclusteredVisits(history::HistoryBackend* backend,
-                            history::QueryOptions options,
-                            bool* limited_by_max_count);
+  // from `backend` to `annotated_visits_`. Returns whether the visits were
+  // limited by `options.max_count`.
+  bool AddUnclusteredVisits(history::HistoryBackend* backend,
+                            history::QueryOptions options);
 
   // Helper for `RunOnDBThread()` that adds incomplete visits from
   // `incomplete_visit_map_` to `annotated_visits_`.
@@ -79,11 +79,6 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // True if we have exhausted history up to `begin_time_limit_` or all of
   // History; i.e., we didn't hit the visit count cap.
   bool exhausted_history_ = false;
-  // This task stops fetching days of History once we've hit this soft cap.
-  // Note there is a separate parameter-controlled hard cap to prevent OOM
-  // errors if a single day has too many visits. We chose this value fairly
-  // arbitrarily, but in practice it fills the WebUI above-the-fold area well.
-  const size_t visit_soft_cap_ = 30;
   // Persisted visits retrieved from the history DB thread and returned through
   // the callback on the main thread.
   std::vector<history::AnnotatedVisit> annotated_visits_;
