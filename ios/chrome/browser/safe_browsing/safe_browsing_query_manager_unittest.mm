@@ -7,8 +7,10 @@
 #import <Foundation/Foundation.h>
 
 #include "components/security_interstitials/core/unsafe_resource.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -78,7 +80,7 @@ class SafeBrowsingQueryManagerTest
  protected:
   SafeBrowsingQueryManagerTest()
       : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
-        browser_state_(TestChromeBrowserState::Builder().Build()),
+        browser_state_(new web::FakeBrowserState()),
         web_state_(std::make_unique<web::FakeWebState>()),
         http_method_("GET"),
         navigation_item_id_(
@@ -87,6 +89,14 @@ class SafeBrowsingQueryManagerTest
     SafeBrowsingQueryManager::CreateForWebState(web_state_.get());
     manager()->AddObserver(&observer_);
     web_state_->SetBrowserState(browser_state_.get());
+
+    // Set up the test safe browsing client factory.
+    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
+        browser_state_.get(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakeSafeBrowsingClient>();
+            }));
   }
 
   SafeBrowsingQueryManager* manager() {
@@ -95,7 +105,7 @@ class SafeBrowsingQueryManagerTest
 
   web::WebTaskEnvironment task_environment_;
   MockQueryManagerObserver observer_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::string http_method_;
   int navigation_item_id_ = 0;
@@ -207,9 +217,17 @@ class WebStateDestroyingQueryManagerObserver
     : public SafeBrowsingQueryManager::Observer {
  public:
   WebStateDestroyingQueryManagerObserver()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : browser_state_(new web::FakeBrowserState()),
         web_state_(std::make_unique<web::FakeWebState>()) {
     web_state_->SetBrowserState(browser_state_.get());
+
+    // Set up the test safe browsing client factory.
+    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
+        browser_state_.get(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakeSafeBrowsingClient>();
+            }));
   }
   ~WebStateDestroyingQueryManagerObserver() override {}
 
@@ -228,7 +246,7 @@ class WebStateDestroyingQueryManagerObserver
   web::WebState* web_state() { return web_state_.get(); }
 
  private:
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
 }  // namespace

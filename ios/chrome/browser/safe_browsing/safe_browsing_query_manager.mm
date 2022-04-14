@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
