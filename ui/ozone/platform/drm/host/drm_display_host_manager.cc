@@ -109,8 +109,12 @@ base::FilePath GetPrimaryDisplayCardPath() {
   for (int i = 0; /* end on first card# that does not exist */; i++) {
     std::string card_path = base::StringPrintf(kDefaultGraphicsCardPattern, i);
 
-    if (access(card_path.c_str(), F_OK) != 0)
-      break;
+    if (access(card_path.c_str(), F_OK) != 0) {
+      if (i == 0) /* card paths may start with 0 or 1 */
+        continue;
+      else
+        break;
+    }
 
     base::ScopedFD fd(open(card_path.c_str(), O_RDWR | O_CLOEXEC));
     if (!fd.is_valid()) {
