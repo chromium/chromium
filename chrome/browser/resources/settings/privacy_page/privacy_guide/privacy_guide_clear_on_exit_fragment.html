@@ -1,13 +1,22 @@
 <style include="privacy-guide-fragment-shared"></style>
-<div class="header" tabindex="-1">
-  <picture>
-    <source
-        srcset="./images/privacy_guide/clear_on_exit_graphic_dark.svg"
-        media="(prefers-color-scheme: dark)">
-    <img alt="" src="./images/privacy_guide/clear_on_exit_graphic.svg">
-  </picture>
-  <h2 class="header-label">$i18n{privacyGuideClearOnExitCardHeader}</h2>
-</div>
+<template is="dom-if" if="[[enablePrivacyGuide2_]]">
+  <div class="header-phase2" focus-element tabindex="-1">
+    <h2 class="header-label-phase2">
+      $i18n{privacyGuideClearOnExitCardHeader}
+    </h2>
+  </div>
+</template>
+<template is="dom-if" if="[[!enablePrivacyGuide2_]]">
+  <div class="header" focus-element tabindex="-1">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/clear_on_exit_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/clear_on_exit_graphic.svg">
+    </picture>
+    <h2 class="header-label">$i18n{privacyGuideClearOnExitCardHeader}</h2>
+  </div>
+</template>
 <div class="embedded-setting-wrapper">
   <settings-toggle-button id="clearOnExit"
       pref="{{prefs.generated.cookie_session_only}}"

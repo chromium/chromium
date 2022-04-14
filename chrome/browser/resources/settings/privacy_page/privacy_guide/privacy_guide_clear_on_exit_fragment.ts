@@ -13,6 +13,9 @@ import './privacy_guide_description_item.js';
 import './privacy_guide_fragment_shared_css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+
 import {getTemplate} from './privacy_guide_clear_on_exit_fragment.html.js';
 
 export class PrivacyGuideClearOnExitFragmentElement extends PolymerElement {
@@ -33,11 +36,16 @@ export class PrivacyGuideClearOnExitFragmentElement extends PolymerElement {
         type: Object,
         notify: true,
       },
+
+      enablePrivacyGuide2_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacyGuide2Enabled'),
+      },
     };
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 }
 

@@ -1,13 +1,22 @@
 <style include="privacy-guide-fragment-shared"></style>
-<div class="header" tabindex="-1">
-  <picture>
-    <source
-        srcset="./images/privacy_guide/safe_browsing_graphic_dark.svg"
-        media="(prefers-color-scheme: dark)">
-    <img alt="" src="./images/privacy_guide/safe_browsing_graphic.svg">
-  </picture>
-  <h2 class="header-label">$i18n{privacyGuideSafeBrowsingCardHeader}</h2>
-</div>
+<template is="dom-if" if="[[enablePrivacyGuide2_]]">
+  <div class="header-phase2" focus-element tabindex="-1">
+    <h2 class="header-label-phase2">
+      $i18n{privacyGuideSafeBrowsingCardHeader}
+    </h2>
+  </div>
+</template>
+<template is="dom-if" if="[[!enablePrivacyGuide2_]]">
+  <div class="header" focus-element tabindex="-1">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/safe_browsing_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/safe_browsing_graphic.svg">
+    </picture>
+    <h2 class="header-label">$i18n{privacyGuideSafeBrowsingCardHeader}</h2>
+  </div>
+</template>
 <settings-radio-group id="safeBrowsingRadioGroup"
     pref="{{prefs.generated.safe_browsing}}"
     selectable-elements="settings-collapse-radio-button"

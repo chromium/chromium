@@ -18,6 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BaseMixin} from '../../base_mixin.js';
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from '../../people_page/sync_browser_proxy.js';
 import {routes} from '../../route.js';
@@ -69,6 +70,11 @@ export class PrivacyGuideHistorySyncFragmentElement extends
           };
         },
       },
+
+      enablePrivacyGuide2_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacyGuide2Enabled'),
+      },
     };
   }
 
@@ -102,7 +108,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
   private onViewExitFinish_() {

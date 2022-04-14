@@ -14,6 +14,7 @@ import './privacy_guide_fragment_shared_css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
@@ -40,6 +41,11 @@ export class PrivacyGuideMsbbFragmentElement extends
         type: Object,
         notify: true,
       },
+
+      enablePrivacyGuide2_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacyGuide2Enabled'),
+      },
     };
   }
 
@@ -54,7 +60,7 @@ export class PrivacyGuideMsbbFragmentElement extends
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
   private onViewEnterStart_() {

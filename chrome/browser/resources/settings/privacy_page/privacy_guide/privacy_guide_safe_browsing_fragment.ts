@@ -15,6 +15,7 @@ import '../../privacy_page/collapse_radio_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
@@ -50,6 +51,11 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
         type: Object,
         value: SafeBrowsingSetting,
       },
+
+      enablePrivacyGuide2_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacyGuide2Enabled'),
+      },
     };
   }
 
@@ -64,7 +70,7 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
   private onViewEnterStart_() {
