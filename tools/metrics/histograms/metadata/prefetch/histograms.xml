@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.SpareRenderer.CountStartedOnSRP" units="count"
-    expires_after="2022-08-07">
+    expires_after="2022-10-09">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>

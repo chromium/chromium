@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered"
-    enum="BooleanFound" expires_after="2022-08-07">
+    enum="BooleanFound" expires_after="2022-10-09">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
