@@ -48,30 +48,22 @@ class TypedQuicheFlagHelper : public QuicheFlagHelper {
 
 // SetFlag specializations. Implementations in .cc file.
 template <>
-QUICHE_EXPORT_PRIVATE bool TypedQuicheFlagHelper<bool>::SetFlag(
-    const std::string&) const;
+bool TypedQuicheFlagHelper<bool>::SetFlag(const std::string&) const;
 template <>
-QUICHE_EXPORT_PRIVATE bool TypedQuicheFlagHelper<uint16_t>::SetFlag(
-    const std::string&) const;
+bool TypedQuicheFlagHelper<uint16_t>::SetFlag(const std::string&) const;
 template <>
-QUICHE_EXPORT_PRIVATE bool TypedQuicheFlagHelper<int32_t>::SetFlag(
-    const std::string&) const;
+bool TypedQuicheFlagHelper<int32_t>::SetFlag(const std::string&) const;
 template <>
-QUICHE_EXPORT_PRIVATE bool TypedQuicheFlagHelper<std::string>::SetFlag(
-    const std::string&) const;
+bool TypedQuicheFlagHelper<std::string>::SetFlag(const std::string&) const;
 
 // TypedQuicheFlagHelper instantiations are in .cc file.
-extern template class EXPORT_TEMPLATE_DECLARE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<bool>;
-extern template class EXPORT_TEMPLATE_DECLARE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<uint16_t>;
-extern template class EXPORT_TEMPLATE_DECLARE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<int32_t>;
-extern template class EXPORT_TEMPLATE_DECLARE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<std::string>;
+extern template class TypedQuicheFlagHelper<bool>;
+extern template class TypedQuicheFlagHelper<uint16_t>;
+extern template class TypedQuicheFlagHelper<int32_t>;
+extern template class TypedQuicheFlagHelper<std::string>;
 
 // Registry of QuicheFlagHelpers.
-class QUICHE_EXPORT_PRIVATE QuicheFlagRegistry {
+class QuicheFlagRegistry {
  public:
   ~QuicheFlagRegistry();
 
@@ -130,14 +122,14 @@ class QuicheFlagSetup {
   bool FLAGS_no##name =                                                       \
       quiche::QuicheFlagSetup<type>(&FLAGS_##name, #name, default_value, help)
 
-QUICHE_EXPORT_PRIVATE std::vector<std::string> QuicheParseCommandLineFlagsImpl(
+std::vector<std::string> QuicheParseCommandLineFlagsImpl(
     const char* usage,
     int argc,
     const char* const* argv);
 
 // Used internally by QuicheParseCommandLineFlagsImpl(), but exposed here for
 // testing.
-struct QUICHE_EXPORT_PRIVATE QuicheParseCommandLineFlagsResult {
+struct QuicheParseCommandLineFlagsResult {
   QuicheParseCommandLineFlagsResult();
   QuicheParseCommandLineFlagsResult(const QuicheParseCommandLineFlagsResult&);
   ~QuicheParseCommandLineFlagsResult();
@@ -146,12 +138,11 @@ struct QUICHE_EXPORT_PRIVATE QuicheParseCommandLineFlagsResult {
   absl::optional<int> exit_status;
 };
 
-QUICHE_EXPORT_PRIVATE QuicheParseCommandLineFlagsResult
-QuicheParseCommandLineFlagsHelper(const char* usage,
-                                  const base::CommandLine& command_line);
+QuicheParseCommandLineFlagsResult QuicheParseCommandLineFlagsHelper(
+    const char* usage,
+    const base::CommandLine& command_line);
 
-QUICHE_EXPORT_PRIVATE void QuichePrintCommandLineFlagHelpImpl(
-    const char* usage);
+void QuichePrintCommandLineFlagHelpImpl(const char* usage);
 
 }  // namespace quiche
 

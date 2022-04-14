@@ -195,14 +195,10 @@ bool TypedQuicheFlagHelper<std::string>::SetFlag(const std::string& s) const {
   return true;
 }
 
-template class EXPORT_TEMPLATE_DEFINE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<bool>;
-template class EXPORT_TEMPLATE_DEFINE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<uint16_t>;
-template class EXPORT_TEMPLATE_DEFINE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<int32_t>;
-template class EXPORT_TEMPLATE_DEFINE(QUICHE_EXPORT_PRIVATE)
-    TypedQuicheFlagHelper<std::string>;
+template class TypedQuicheFlagHelper<bool>;
+template class TypedQuicheFlagHelper<uint16_t>;
+template class TypedQuicheFlagHelper<int32_t>;
+template class TypedQuicheFlagHelper<std::string>;
 
 QuicheFlagRegistry::QuicheFlagRegistry() = default;
 QuicheFlagRegistry::~QuicheFlagRegistry() = default;

@@ -828,9 +828,6 @@ component("net") {
     "quic/web_transport_client.h",
     "quic/web_transport_error.cc",
     "quic/web_transport_error.h",
-    "quiche/common/platform/impl/quiche_flag_utils_impl.h",
-    "quiche/common/platform/impl/quiche_flags_impl.cc",
-    "quiche/common/platform/impl/quiche_flags_impl.h",
     "socket/client_socket_factory.cc",
     "socket/client_socket_factory.h",
     "socket/client_socket_handle.cc",
@@ -2458,40 +2455,6 @@ if (is_linux || is_chromeos || is_mac) {
   }
 }
 
-if (is_linux || is_chromeos) {
-  static_library("epoll_server") {
-    sources = []
-    deps = [
-      ":net",
-      "//base",
-    ]
-    public_deps = [ "//net/third_party/quiche:epoll_server_core" ]
-    allow_circular_includes_from =
-        [ "//net/third_party/quiche:epoll_server_core" ]
-  }
-
-  source_set("epoll_quic_tools") {
-    testonly = true
-    sources = [
-      "quic/platform/impl/quic_epoll_clock.cc",
-      "quic/platform/impl/quic_epoll_clock.h",
-    ]
-    deps = [
-      ":epoll_server",
-      ":net",
-      ":simple_quic_tools",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//crypto",
-      "//third_party/boringssl",
-      "//url",
-    ]
-    public_deps = [ "//net/third_party/quiche:epoll_quic_tools_core" ]
-    allow_circular_includes_from =
-        [ "//net/third_party/quiche:epoll_quic_tools_core" ]
-  }
-}
-
 if (is_android) {
   generate_jni("net_jni_headers") {
     sources = [
@@ -2533,21 +2496,6 @@ if (is_android || is_linux || is_chromeos) {
   }
 }
 
-source_set("epoll_server_test_tools") {
-  testonly = true
-  sources = []
-  deps = [
-    ":net",
-    ":test_support",
-    "//base",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  public_deps = [ "//net/third_party/quiche:epoll_server_test_tools_core" ]
-  allow_circular_includes_from =
-      [ "//net/third_party/quiche:epoll_server_test_tools_core" ]
-}
-
 source_set("spdy_test_tools") {
   testonly = true
   sources = [
@@ -2560,21 +2508,6 @@ source_set("spdy_test_tools") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-}
-
-source_set("quiche_test_tools") {
-  testonly = true
-  sources = []
-  deps = [
-    ":net",
-    ":quic_test_flags_utils",
-    ":test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  public_deps = [ "//net/third_party/quiche:quiche_test_tools_core" ]
-  allow_circular_includes_from =
-      [ "//net/third_party/quiche:quiche_test_tools_core" ]
 }
 
 source_set("quic_test_flags_utils") {
@@ -2602,15 +2535,14 @@ source_set("quic_test_tools") {
     "quic/mock_quic_context.h",
     "quic/test_task_runner.cc",
     "quic/test_task_runner.h",
-    "third_party/quiche/src/quiche/quic/test_tools/test_ticket_crypter.cc",
   ]
   deps = [
     ":net",
-    ":quiche_test_tools",
     ":simple_quic_tools",
     ":test_support",
     "//base",
     "//crypto:test_support",
+    "//net/third_party/quiche:quiche_test_tools",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/boringssl",
@@ -4471,7 +4403,6 @@ test("net_unittests") {
     ":net",
     ":preload_decoder",
     ":quic_test_tools",
-    ":quiche_test_tools",
     ":simple_quic_tools",
     ":spdy_test_tools",
     ":test_support",
@@ -4489,6 +4420,7 @@ test("net_unittests") {
     "//net/dns/public:tests",
     "//net/http:transport_security_state_unittest_data",
     "//net/http:transport_security_state_unittest_data_default",
+    "//net/third_party/quiche:quiche_test_tools",
     "//net/third_party/quiche:quiche_tests",
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
     "//sql",
@@ -4572,9 +4504,7 @@ test("net_unittests") {
 
   if (is_linux || is_chromeos) {
     sources += [
-      "quic/platform/impl/quic_epoll_clock_test.cc",
       "quic/platform/impl/quic_flags_test.cc",
-      "quiche/common/platform/impl/quiche_command_line_flags_test.cc",
       "tools/quic/quic_http_proxy_backend_stream_test.cc",
       "tools/quic/quic_http_proxy_backend_test.cc",
       "tools/quic/quic_simple_server_test.cc",

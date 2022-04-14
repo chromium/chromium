@@ -35,12 +35,8 @@ source_set("quiche") {
     "overrides/quiche_platform_impl/quic_flags_impl.h",
     "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
     "overrides/quiche_platform_impl/quiche_client_stats_impl.h",
-    "overrides/quiche_platform_impl/quiche_command_line_flags_impl.cc",
-    "overrides/quiche_platform_impl/quiche_command_line_flags_impl.h",
     "overrides/quiche_platform_impl/quiche_containers_impl.h",
     "overrides/quiche_platform_impl/quiche_export_impl.h",
-    "overrides/quiche_platform_impl/quiche_hostname_utils_impl.cc",
-    "overrides/quiche_platform_impl/quiche_hostname_utils_impl.h",
     "overrides/quiche_platform_impl/quiche_iovec_impl.h",
     "overrides/quiche_platform_impl/quiche_logging_impl.h",
     "overrides/quiche_platform_impl/quiche_mutex_impl.cc",
@@ -74,6 +70,8 @@ source_set("quiche") {
     "src/quiche/common/platform/api/quiche_thread_local.h",
     "src/quiche/common/platform/api/quiche_time_utils.h",
     "src/quiche/common/platform/api/quiche_url_utils.h",
+    "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.cc",
+    "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.h",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_prefetch_impl.h",
     "src/quiche/common/print_elements.h",
     "src/quiche/common/quiche_buffer_allocator.cc",
@@ -714,7 +712,7 @@ proto_library("net_quic_test_tools_proto") {
 }
 
 if (is_linux || is_chromeos) {
-  source_set("epoll_server_core") {
+  source_set("epoll_server") {
     sources = [
       "overrides/quiche_platform_impl/epoll_bug_impl.h",
       "overrides/quiche_platform_impl/epoll_export_impl.h",
@@ -737,7 +735,7 @@ if (is_linux || is_chromeos) {
     ]
   }
 
-  source_set("epoll_quic_tools_core") {
+  source_set("epoll_quic_tools") {
     testonly = true
     sources = [
       "overrides/quiche_platform_impl/quiche_udp_socket_platform_impl.h",
@@ -749,6 +747,8 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/core/quic_default_packet_writer.h",
       "src/quiche/quic/core/quic_epoll_alarm_factory.cc",
       "src/quiche/quic/core/quic_epoll_alarm_factory.h",
+      "src/quiche/quic/core/quic_epoll_clock.cc",
+      "src/quiche/quic/core/quic_epoll_clock.h",
       "src/quiche/quic/core/quic_epoll_connection_helper.cc",
       "src/quiche/quic/core/quic_epoll_connection_helper.h",
       "src/quiche/quic/core/quic_packet_reader.cc",
@@ -766,9 +766,9 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/tools/quic_server.h",
     ]
     deps = [
+      ":epoll_server",
       "//base",
       "//net",
-      "//net:epoll_server",
       "//net:simple_quic_tools",
       "//third_party/boringssl",
     ]
@@ -784,10 +784,10 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/tools/quic_toy_client.h",
     ]
     deps = [
+      ":epoll_quic_tools",
+      ":epoll_server",
       "//base",
       "//net",
-      "//net:epoll_quic_tools",
-      "//net:epoll_server",
       "//net:quic_test_tools",
       "//net:simple_quic_tools",
       "//third_party/boringssl",
@@ -804,10 +804,10 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/tools/quic_toy_server.h",
     ]
     deps = [
+      ":epoll_quic_tools",
+      ":epoll_server",
       "//base",
       "//net",
-      "//net:epoll_quic_tools",
-      "//net:epoll_server",
       "//net:simple_quic_tools",
       "//third_party/boringssl",
     ]
@@ -817,8 +817,8 @@ if (is_linux || is_chromeos) {
     testonly = true
     sources = [ "src/quiche/quic/tools/quic_client_interop_test_bin.cc" ]
     deps = [
+      ":epoll_quic_tools",
       "//net",
-      "//net:epoll_quic_tools",
       "//net:quic_test_tools",
       "//net:simple_quic_tools",
     ]
@@ -851,8 +851,8 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/masque/masque_utils.h",
     ]
     deps = [
+      ":epoll_quic_tools",
       "//net",
-      "//net:epoll_quic_tools",
       "//net:simple_quic_tools",
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
@@ -863,9 +863,9 @@ if (is_linux || is_chromeos) {
     testonly = true
     sources = [ "src/quiche/quic/masque/masque_client_bin.cc" ]
     deps = [
+      ":epoll_quic_tools",
       ":masque_tools",
       "//net",
-      "//net:epoll_quic_tools",
       "//net:simple_quic_tools",
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
@@ -876,9 +876,9 @@ if (is_linux || is_chromeos) {
     testonly = true
     sources = [ "src/quiche/quic/masque/masque_server_bin.cc" ]
     deps = [
+      ":epoll_quic_tools",
       ":masque_tools",
       "//net",
-      "//net:epoll_quic_tools",
       "//net:simple_quic_tools",
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
@@ -886,7 +886,7 @@ if (is_linux || is_chromeos) {
   }
 }
 
-source_set("epoll_server_test_tools_core") {
+source_set("epoll_server_test_tools") {
   testonly = true
   sources = [
     "overrides/quiche_platform_impl/epoll_address_test_utils_impl.h",
@@ -905,7 +905,7 @@ source_set("epoll_server_test_tools_core") {
   ]
 }
 
-source_set("quiche_test_tools_core") {
+source_set("quiche_test_tools") {
   testonly = true
   sources = [
     "overrides/quiche_platform_impl/quiche_test_helpers_impl.cc",
@@ -1079,6 +1079,8 @@ source_set("quic_test_tools_core") {
     "src/quiche/quic/test_tools/simulator/traffic_policer.h",
     "src/quiche/quic/test_tools/test_certificates.cc",
     "src/quiche/quic/test_tools/test_certificates.h",
+    "src/quiche/quic/test_tools/test_ticket_crypter.cc",
+    "src/quiche/quic/test_tools/test_ticket_crypter.h",
     "src/quiche/quic/test_tools/web_transport_resets_backend.cc",
     "src/quiche/quic/test_tools/web_transport_resets_backend.h",
     "src/quiche/quic/tools/quic_tcp_like_trace_converter.cc",
@@ -1087,11 +1089,10 @@ source_set("quic_test_tools_core") {
 
   deps = [
     ":quiche_file_utils",
-    ":quiche_test_tools_core",
+    ":quiche_test_tools",
     "//base",
     "//crypto:test_support",
     "//net",
-    "//net:quiche_test_tools",
     "//net:simple_quic_tools",
     "//net:test_support",
     "//testing/gmock",
@@ -1125,14 +1126,16 @@ source_set("quic_test_tools_core") {
       "src/quiche/quic/test_tools/server_thread.h",
     ]
     deps += [
-      "//net:epoll_quic_tools",
-      "//net:epoll_server",
+      ":epoll_quic_tools",
+      ":epoll_server",
     ]
   }
 }
 
 source_set("simple_quic_tools_core") {
   sources = [
+    "overrides/quiche_platform_impl/quiche_command_line_flags_impl.cc",
+    "overrides/quiche_platform_impl/quiche_command_line_flags_impl.h",
     "overrides/quiche_platform_impl/quiche_default_proof_providers_impl.cc",
     "overrides/quiche_platform_impl/quiche_default_proof_providers_impl.h",
     "overrides/quiche_platform_impl/quiche_system_event_loop_impl.h",
@@ -1549,9 +1552,9 @@ source_set("quiche_tests") {
 
   deps = [
     ":quiche_file_utils",
+    ":quiche_test_tools",
     "//net",
     "//net:quic_test_tools",
-    "//net:quiche_test_tools",
     "//net:simple_quic_tools",
     "//net:spdy_test_tools",
     "//testing/gmock",
@@ -1560,10 +1563,11 @@ source_set("quiche_tests") {
   public_deps = []
 
   if (is_linux || is_chromeos_lacros) {
-    public_deps += [ "//net:epoll_quic_tools" ]
+    public_deps += [ ":epoll_quic_tools" ]
   }
   if (is_linux || is_chromeos) {
     sources += [
+      "overrides/quiche_platform_impl/quiche_command_line_flags_test.cc",
       "src/quiche/epoll_server/simple_epoll_server_test.cc",
       "src/quiche/quic/core/chlo_extractor_test.cc",
       "src/quiche/quic/core/http/end_to_end_test.cc",
@@ -1571,6 +1575,7 @@ source_set("quiche_tests") {
       "src/quiche/quic/core/http/quic_spdy_client_stream_test.cc",
       "src/quiche/quic/core/http/quic_spdy_server_stream_base_test.cc",
       "src/quiche/quic/core/quic_epoll_alarm_factory_test.cc",
+      "src/quiche/quic/core/quic_epoll_clock_test.cc",
       "src/quiche/quic/core/quic_epoll_connection_helper_test.cc",
       "src/quiche/quic/tools/quic_client_test.cc",
       "src/quiche/quic/tools/quic_server_test.cc",
@@ -1579,9 +1584,9 @@ source_set("quiche_tests") {
       "src/quiche/quic/tools/quic_url_test.cc",
     ]
     public_deps += [
-      "//net:epoll_quic_tools",
-      "//net:epoll_server",
-      "//net:epoll_server_test_tools",
+      ":epoll_quic_tools",
+      ":epoll_server",
+      ":epoll_server_test_tools",
     ]
   }
 }
