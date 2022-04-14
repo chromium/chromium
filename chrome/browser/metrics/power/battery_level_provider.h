@@ -58,6 +58,7 @@ class BatteryLevelProvider {
   BatteryLevelProvider& operator=(const BatteryLevelProvider& other) = delete;
 
   // Queries the current battery state and returns it to |callback| when ready.
+  // |callback| will not be invoked if the BatteryLevelProvider is destroyed.
   virtual void GetBatteryState(
       base::OnceCallback<void(const BatteryState&)> callback) = 0;
 

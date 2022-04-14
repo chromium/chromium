@@ -14,6 +14,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -129,7 +130,8 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
               GetBatteryInterfaceList();
           return BatteryLevelProvider::MakeBatteryState(battery_interfaces);
         }),
-        std::move(callback));
+        base::BindOnce(&BatteryLevelProviderWin::OnBatteryStateObtained,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
  private:
@@ -139,11 +141,19 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
       HDEVINFO devices,
       SP_DEVICE_INTERFACE_DATA* interface_data);
 
+  void OnBatteryStateObtained(
+      base::OnceCallback<void(const BatteryState&)> callback,
+      const BatteryState& battery_state) {
+    std::move(callback).Run(battery_state);
+  }
+
   // TaskRunner used to run blocking GetBatteryInterfaceList queries, sequenced
   // to avoid the performance cost of concurrent calls.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
     base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})};
+
+  base::WeakPtrFactory<BatteryLevelProviderWin> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {

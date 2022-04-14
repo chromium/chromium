@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
@@ -248,8 +247,6 @@ class PowerMetricsReporter
 #endif  // BUILDFLAG(IS_MAC)
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<PowerMetricsReporter> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_METRICS_POWER_POWER_METRICS_REPORTER_H_
