@@ -12,7 +12,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -97,8 +96,8 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
   script_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   service_->GetKeyboardLayoutMap(
-      WTF::Bind(&KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this),
-                WrapPersistent(script_promise_resolver_.Get())));
+      script_promise_resolver_->WrapCallbackInScriptScope(WTF::Bind(
+          &KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this))));
   return script_promise_resolver_->Promise();
 }
 
@@ -122,15 +121,6 @@ void KeyboardLayout::GotKeyboardLayoutMap(
     ScriptPromiseResolver* resolver,
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
   DCHECK(script_promise_resolver_);
-  DCHECK(resolver == script_promise_resolver_);
-
-  ScriptState* script_state = resolver->GetScriptState();
-
-  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                     script_state))
-    return;
-
-  ScriptState::Scope script_state_scope(script_state);
 
   bool instrumentation_on =
       IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
@@ -150,13 +140,14 @@ void KeyboardLayout::GotKeyboardLayoutMap(
         RecordGetLayoutMapResult(GetExecutionContext(), IdentifiableToken());
 
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+          resolver->GetScriptState()->GetIsolate(),
+          DOMExceptionCode::kInvalidStateError,
           kKeyboardMapRequestFailedErrorMsg));
       break;
     case mojom::blink::GetKeyboardLayoutMapStatus::kDenied:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          script_state->GetIsolate(), DOMExceptionCode::kSecurityError,
-          kFeaturePolicyBlocked));
+          resolver->GetScriptState()->GetIsolate(),
+          DOMExceptionCode::kSecurityError, kFeaturePolicyBlocked));
       break;
   }
 
