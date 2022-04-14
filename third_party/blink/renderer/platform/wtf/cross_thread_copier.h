@@ -62,12 +62,6 @@ namespace gpu {
 struct SyncToken;
 }
 
-namespace media {
-class VideoFrame;
-struct VideoCaptureFeedback;
-struct VideoTransformation;
-}  // namespace media
-
 namespace WTF {
 
 template <typename T>
@@ -271,25 +265,6 @@ struct CrossThreadCopier<gfx::Rect>
 template <>
 struct CrossThreadCopier<gfx::ColorSpace>
     : public CrossThreadCopierPassThrough<gfx::ColorSpace> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::VideoCaptureFeedback>
-    : public CrossThreadCopierPassThrough<media::VideoCaptureFeedback> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<std::vector<scoped_refptr<media::VideoFrame>>>
-    : public CrossThreadCopierPassThrough<
-          std::vector<scoped_refptr<media::VideoFrame>>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::VideoTransformation>
-    : public CrossThreadCopierPassThrough<media::VideoTransformation> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

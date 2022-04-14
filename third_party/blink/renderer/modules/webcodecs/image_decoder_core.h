@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
+namespace media {
+class VideoFrame;
+}  // namespace media
+
 namespace blink {
 class SegmentReader;
 

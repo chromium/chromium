@@ -43,6 +43,10 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
+namespace media {
+class VideoFrame;
+}  // namespace media
+
 namespace blink {
 
 class CanvasImageSource;
