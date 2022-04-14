@@ -11,8 +11,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
-#include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/scopes_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
@@ -84,13 +84,13 @@ class LevelDBScopesTestBase : public testing::Test {
 
   // Creates a shared lock request from |simple_lock_begin_| to
   // |simple_lock_end_|.
-  ScopesLockManager::ScopeLockRequest CreateSimpleSharedLock();
+  LeveledLockManager::LeveledLockRequest CreateSimpleSharedLock();
   // Creates a exclusive lock request from |simple_lock_begin_| to
   // |simple_lock_end_|.
-  ScopesLockManager::ScopeLockRequest CreateSimpleExclusiveLock();
+  LeveledLockManager::LeveledLockRequest CreateSimpleExclusiveLock();
 
-  ScopesLockManager::ScopeLockRequest CreateSharedLock(int i);
-  ScopesLockManager::ScopeLockRequest CreateExclusiveLock(int i);
+  LeveledLockManager::LeveledLockRequest CreateSharedLock(int i);
+  LeveledLockManager::LeveledLockRequest CreateExclusiveLock(int i);
 
   const base::FilePath& DatabaseDirFilePath();
 

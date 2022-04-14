@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 
 #include <utility>
 
@@ -16,7 +16,7 @@ namespace content {
 DisjointRangeLockManager::LockRequest::LockRequest() = default;
 DisjointRangeLockManager::LockRequest::LockRequest(
     LockType type,
-    base::WeakPtr<ScopesLocksHolder> locks_holder,
+    base::WeakPtr<LeveledLockHolder> locks_holder,
     base::OnceClosure acquired_callback)
     : requested_type(type),
       locks_holder(std::move(locks_holder)),
@@ -59,8 +59,8 @@ int64_t DisjointRangeLockManager::RequestsWaitingForTesting() const {
 }
 
 bool DisjointRangeLockManager::AcquireLocks(
-    base::flat_set<ScopeLockRequest> lock_requests,
-    base::WeakPtr<ScopesLocksHolder> locks_holder,
+    base::flat_set<LeveledLockRequest> lock_requests,
+    base::WeakPtr<LeveledLockHolder> locks_holder,
     LocksAcquiredCallback callback) {
   if (!locks_holder)
     return false;
@@ -80,7 +80,7 @@ bool DisjointRangeLockManager::AcquireLocks(
       base::BindOnce(
           [](scoped_refptr<base::SequencedTaskRunner> runner,
              scoped_refptr<base::RefCountedData<bool>> run_synchronously,
-             base::WeakPtr<ScopesLocksHolder> holder,
+             base::WeakPtr<LeveledLockHolder> holder,
              LocksAcquiredCallback callback) {
             // All locks have been acquired.
             if (!holder || callback.IsCancelled() || callback.is_null())
@@ -92,7 +92,7 @@ bool DisjointRangeLockManager::AcquireLocks(
           },
           task_runner_, run_callback_synchonously, locks_holder,
           std::move(callback)));
-  for (ScopeLockRequest& request : lock_requests) {
+  for (LeveledLockRequest& request : lock_requests) {
     bool success = AcquireLock(std::move(request), locks_holder,
                                all_locks_acquired_barrier);
     if (!success) {
@@ -106,7 +106,7 @@ bool DisjointRangeLockManager::AcquireLocks(
 }
 
 void DisjointRangeLockManager::RemoveLockRange(int level,
-                                               const ScopeLockRange& range) {
+                                               const LeveledLockRange& range) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LT(level, static_cast<int>(locks_.size()));
   auto& level_locks = locks_[level];
@@ -118,8 +118,8 @@ void DisjointRangeLockManager::RemoveLockRange(int level,
 }
 
 bool DisjointRangeLockManager::AcquireLock(
-    ScopeLockRequest request,
-    base::WeakPtr<ScopesLocksHolder> locks_holder,
+    LeveledLockRequest request,
+    base::WeakPtr<LeveledLockHolder> locks_holder,
     base::OnceClosure acquired_callback) {
   DCHECK(locks_holder);
   if (request.level < 0 || static_cast<size_t>(request.level) >= locks_.size())
@@ -162,7 +162,7 @@ bool DisjointRangeLockManager::AcquireLock(
   return true;
 }
 
-void DisjointRangeLockManager::LockReleased(int level, ScopeLockRange range) {
+void DisjointRangeLockManager::LockReleased(int level, LeveledLockRange range) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LT(level, static_cast<int>(locks_.size()));
   auto& level_locks = locks_[level];
@@ -206,7 +206,7 @@ void DisjointRangeLockManager::LockReleased(int level, ScopeLockRange range) {
 // static
 bool DisjointRangeLockManager::IsRangeDisjointFromNeighbors(
     const LockLevelMap& map,
-    const ScopeLockRange& range) {
+    const LeveledLockRange& range) {
   DCHECK_EQ(map.count(range), 1ull);
   auto it = map.find(range);
   auto next_it = it;

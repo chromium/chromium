@@ -125,7 +125,7 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
     FakeTransaction(const FakeTransaction&) = delete;
     FakeTransaction& operator=(const FakeTransaction&) = delete;
 
-    void Begin(std::vector<ScopeLock> locks) override;
+    void Begin(std::vector<LeveledLock> locks) override;
     leveldb::Status CommitPhaseOne(BlobWriteCallback) override;
     leveldb::Status CommitPhaseTwo() override;
     uint64_t GetTransactionSize() override;

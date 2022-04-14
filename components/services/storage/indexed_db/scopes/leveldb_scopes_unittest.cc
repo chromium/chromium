@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,7 +103,7 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
 
   // Verify that the lock was grabbed.
   bool lock_grabbed = false;
-  ScopesLocksHolder locks_receiver;
+  LeveledLockHolder locks_receiver;
   lock_manager.AcquireLocks(
       {CreateSimpleExclusiveLock()}, locks_receiver.AsWeakPtr(),
       base::BindLambdaForTesting([&]() { lock_grabbed = true; }));

@@ -3046,7 +3046,7 @@ IndexedDBBackingStore::Transaction::~Transaction() {
   DCHECK(!committing_);
 }
 
-void IndexedDBBackingStore::Transaction::Begin(std::vector<ScopeLock> locks) {
+void IndexedDBBackingStore::Transaction::Begin(std::vector<LeveledLock> locks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backing_store_->sequence_checker_);
   DCHECK(backing_store_);

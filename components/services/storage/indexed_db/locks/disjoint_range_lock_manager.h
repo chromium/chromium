@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_DISJOINT_RANGE_LOCK_MANAGER_H_
-#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_DISJOINT_RANGE_LOCK_MANAGER_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_DISJOINT_RANGE_LOCK_MANAGER_H_
+#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_DISJOINT_RANGE_LOCK_MANAGER_H_
 
 #include <list>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
-#include "third_party/leveldatabase/src/include/leveldb/comparator.h"
-#include "third_party/leveldatabase/src/include/leveldb/slice.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 
 namespace content {
 
@@ -34,7 +33,8 @@ namespace content {
 //   needed (where old locks will continue to be held), then all locks must be
 //   released first, and then all necessary locks acquired in one acquisition
 //   call.
-class DisjointRangeLockManager : public ScopesLockManager {
+class COMPONENT_EXPORT(LOCK_MANAGER) DisjointRangeLockManager
+    : public LeveledLockManager {
  public:
   // Creates a lock manager with the given number of levels, the comparator for
   // leveldb keys, and the current task runner that we are running on. The task
@@ -54,13 +54,13 @@ class DisjointRangeLockManager : public ScopesLockManager {
   // * |range.begin| < |range.end| using the |comparator| above,
   // * range disjoint from other lock ranges (which is an implementation
   //   invariant).
-  bool AcquireLocks(base::flat_set<ScopeLockRequest> lock_requests,
-                    base::WeakPtr<ScopesLocksHolder> locks_holder,
+  bool AcquireLocks(base::flat_set<LeveledLockRequest> lock_requests,
+                    base::WeakPtr<LeveledLockHolder> locks_holder,
                     LocksAcquiredCallback callback) override;
 
   // Remove the given lock range at the given level. The lock range must not be
   // in use. Use this if the lock will never be used again.
-  void RemoveLockRange(int level, const ScopeLockRange& range);
+  void RemoveLockRange(int level, const LeveledLockRange& range);
 
  private:
   struct LockRequest {
@@ -68,12 +68,12 @@ class DisjointRangeLockManager : public ScopesLockManager {
     LockRequest();
     LockRequest(LockRequest&&) noexcept;
     LockRequest(LockType type,
-                base::WeakPtr<ScopesLocksHolder> locks_holder,
+                base::WeakPtr<LeveledLockHolder> locks_holder,
                 base::OnceClosure callback);
     ~LockRequest();
 
     LockType requested_type = LockType::kShared;
-    base::WeakPtr<ScopesLocksHolder> locks_holder;
+    base::WeakPtr<LeveledLockHolder> locks_holder;
     base::OnceClosure acquired_callback;
   };
 
@@ -99,16 +99,16 @@ class DisjointRangeLockManager : public ScopesLockManager {
     std::list<LockRequest> queue;
   };
 
-  using LockLevelMap = base::flat_map<ScopeLockRange, Lock>;
+  using LockLevelMap = base::flat_map<LeveledLockRange, Lock>;
 
-  bool AcquireLock(ScopeLockRequest request,
-                   base::WeakPtr<ScopesLocksHolder> locks_holder,
+  bool AcquireLock(LeveledLockRequest request,
+                   base::WeakPtr<LeveledLockHolder> locks_holder,
                    base::OnceClosure acquired_callback);
 
-  void LockReleased(int level, ScopeLockRange range);
+  void LockReleased(int level, LeveledLockRange range);
 
   static bool IsRangeDisjointFromNeighbors(const LockLevelMap& map,
-                                           const ScopeLockRange& range);
+                                           const LeveledLockRange& range);
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // This vector should never be modified after construction.
@@ -120,4 +120,4 @@ class DisjointRangeLockManager : public ScopesLockManager {
 
 }  // namespace content
 
-#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_DISJOINT_RANGE_LOCK_MANAGER_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_DISJOINT_RANGE_LOCK_MANAGER_H_

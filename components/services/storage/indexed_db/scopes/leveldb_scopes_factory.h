@@ -18,7 +18,7 @@
 namespace content {
 class LevelDBScopes;
 class LevelDBState;
-class ScopesLockManager;
+class LeveledLockManager;
 
 struct LevelDBScopesOptions {
   LevelDBScopesOptions();
@@ -33,7 +33,7 @@ struct LevelDBScopesOptions {
 
   std::vector<uint8_t> metadata_key_prefix;
   size_t max_write_batch_size = 1 * 1024 * 1024;
-  raw_ptr<ScopesLockManager> lock_manager = nullptr;
+  raw_ptr<LeveledLockManager> lock_manager = nullptr;
   base::RepeatingCallback<void(leveldb::Status)> failure_callback;
 };
 

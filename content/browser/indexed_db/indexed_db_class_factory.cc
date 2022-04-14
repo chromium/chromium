@@ -97,7 +97,7 @@ IndexedDBClassFactory::CreateIndexedDBDatabase(
     TasksAvailableCallback tasks_available_callback,
     std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
     const IndexedDBDatabase::Identifier& unique_identifier,
-    ScopesLockManager* transaction_lock_manager) {
+    LeveledLockManager* transaction_lock_manager) {
   DCHECK(backing_store);
   DCHECK(factory);
   std::unique_ptr<IndexedDBDatabase> database =

@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
-#include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -354,11 +354,11 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
   EXPECT_FALSE(factory->IsBackingStoreOpen(kTestStorageKey));
 }
 
-TEST(ScopesLockManager, TestRangeDifferences) {
-  ScopeLockRange range_db1;
-  ScopeLockRange range_db2;
-  ScopeLockRange range_db1_os1;
-  ScopeLockRange range_db1_os2;
+TEST(LeveledLockManager, TestRangeDifferences) {
+  LeveledLockRange range_db1;
+  LeveledLockRange range_db2;
+  LeveledLockRange range_db1_os1;
+  LeveledLockRange range_db1_os2;
   for (int64_t i = 0; i < 512; ++i) {
     range_db1 = GetDatabaseLockRange(i);
     range_db2 = GetDatabaseLockRange(i + 1);

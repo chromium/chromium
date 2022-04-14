@@ -15,7 +15,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "components/services/storage/indexed_db/scopes/scope_lock_range.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_range.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -121,9 +121,9 @@ const constexpr int kDatabaseRangeLockLevel = 0;
 const constexpr int kObjectStoreRangeLockLevel = 1;
 const constexpr int kIndexedDBLockLevelCount = 2;
 
-CONTENT_EXPORT ScopeLockRange GetDatabaseLockRange(int64_t database_id);
-CONTENT_EXPORT ScopeLockRange GetObjectStoreLockRange(int64_t database_id,
-                                                      int64_t object_store_id);
+CONTENT_EXPORT LeveledLockRange GetDatabaseLockRange(int64_t database_id);
+CONTENT_EXPORT LeveledLockRange
+GetObjectStoreLockRange(int64_t database_id, int64_t object_store_id);
 
 // TODO(dmurph): Modify all decoding methods to return something more sensible,
 // as it is not obvious that they modify the input slice to remove the decoded

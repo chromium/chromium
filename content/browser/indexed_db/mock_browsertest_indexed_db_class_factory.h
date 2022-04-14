@@ -11,7 +11,7 @@
 #include <memory>
 #include <set>
 
-#include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/public/mojom/indexed_db_control_test.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
@@ -49,7 +49,7 @@ class MockBrowserTestIndexedDBClassFactory
       TasksAvailableCallback tasks_available_callback,
       std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
       const IndexedDBDatabase::Identifier& unique_identifier,
-      ScopesLockManager* transaction_lock_manager) override;
+      LeveledLockManager* transaction_lock_manager) override;
   std::unique_ptr<IndexedDBTransaction> CreateIndexedDBTransaction(
       int64_t id,
       IndexedDBConnection* connection,

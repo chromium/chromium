@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -12,8 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/services/storage/indexed_db/scopes/scope_lock.h"
-#include "components/services/storage/indexed_db/scopes/scope_lock_range.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_range.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -74,27 +74,27 @@ TEST_F(DisjointRangeLockManagerTest, BasicAcquisition) {
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
   base::RunLoop loop;
-  ScopesLocksHolder holder1;
-  ScopesLocksHolder holder2;
+  LeveledLockHolder holder1;
+  LeveledLockHolder holder2;
   {
     BarrierBuilder barrier(loop.QuitClosure());
 
-    std::vector<ScopesLockManager::ScopeLockRequest> locks1_requests;
+    std::vector<LeveledLockManager::LeveledLockRequest> locks1_requests;
     for (size_t i = 0; i < kTotalLocks / 2; ++i) {
-      ScopeLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
+      LeveledLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
       locks1_requests.emplace_back(0, std::move(range),
-                                   ScopesLockManager::LockType::kExclusive);
+                                   LeveledLockManager::LockType::kExclusive);
     }
     EXPECT_TRUE(lock_manager.AcquireLocks(locks1_requests, holder1.AsWeakPtr(),
                                           barrier.AddClosure()));
 
     // Now acquire kTotalLocks/2 locks starting at (kTotalLocks-1) to verify
     // they acquire in the correct order.
-    std::vector<ScopesLockManager::ScopeLockRequest> locks2_requests;
+    std::vector<LeveledLockManager::LeveledLockRequest> locks2_requests;
     for (size_t i = kTotalLocks - 1; i >= kTotalLocks / 2; --i) {
-      ScopeLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
+      LeveledLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
       locks2_requests.emplace_back(0, std::move(range),
-                                   ScopesLockManager::LockType::kExclusive);
+                                   LeveledLockManager::LockType::kExclusive);
     }
     EXPECT_TRUE(lock_manager.AcquireLocks(locks2_requests, holder2.AsWeakPtr(),
                                           barrier.AddClosure()));
@@ -131,18 +131,18 @@ TEST_F(DisjointRangeLockManagerTest, Shared) {
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
-  ScopeLockRange range = {IntegerKey(0), IntegerKey(1)};
+  LeveledLockRange range = {IntegerKey(0), IntegerKey(1)};
 
-  ScopesLocksHolder locks_holder1;
-  ScopesLocksHolder locks_holder2;
+  LeveledLockHolder locks_holder1;
+  LeveledLockHolder locks_holder2;
   base::RunLoop loop;
   {
     BarrierBuilder barrier(loop.QuitClosure());
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, ScopesLockManager::LockType::kShared}},
+        {{0, range, LeveledLockManager::LockType::kShared}},
         locks_holder1.AsWeakPtr(), barrier.AddClosure()));
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, ScopesLockManager::LockType::kShared}},
+        {{0, range, LeveledLockManager::LockType::kShared}},
         locks_holder2.AsWeakPtr(), barrier.AddClosure()));
   }
   loop.Run();
@@ -157,22 +157,22 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
-  ScopeLockRange range = {IntegerKey(0), IntegerKey(1)};
+  LeveledLockRange range = {IntegerKey(0), IntegerKey(1)};
 
-  ScopesLocksHolder shared_lock1_holder;
-  ScopesLocksHolder shared_lock2_holder;
-  ScopesLocksHolder exclusive_lock3_holder;
-  ScopesLocksHolder shared_lock3_holder;
+  LeveledLockHolder shared_lock1_holder;
+  LeveledLockHolder shared_lock2_holder;
+  LeveledLockHolder exclusive_lock3_holder;
+  LeveledLockHolder shared_lock3_holder;
 
   {
     base::RunLoop loop;
     {
       BarrierBuilder barrier(loop.QuitClosure());
       EXPECT_TRUE(lock_manager.AcquireLocks(
-          {{0, range, ScopesLockManager::LockType::kShared}},
+          {{0, range, LeveledLockManager::LockType::kShared}},
           shared_lock1_holder.AsWeakPtr(), barrier.AddClosure()));
       EXPECT_TRUE(lock_manager.AcquireLocks(
-          {{0, range, ScopesLockManager::LockType::kShared}},
+          {{0, range, LeveledLockManager::LockType::kShared}},
           shared_lock2_holder.AsWeakPtr(), barrier.AddClosure()));
     }
     loop.Run();
@@ -183,10 +183,10 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   // Both of the following locks should be queued - the exclusive is next in
   // line, then the shared lock will come after it.
   EXPECT_TRUE(lock_manager.AcquireLocks(
-      {{0, range, ScopesLockManager::LockType::kExclusive}},
+      {{0, range, LeveledLockManager::LockType::kExclusive}},
       exclusive_lock3_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(lock_manager.AcquireLocks(
-      {{0, range, ScopesLockManager::LockType::kShared}},
+      {{0, range, LeveledLockManager::LockType::kShared}},
       shared_lock3_holder.AsWeakPtr(), base::DoNothing()));
   // Flush the task queue.
   {
@@ -235,16 +235,16 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
 TEST_F(DisjointRangeLockManagerTest, LevelsOperateSeparately) {
   DisjointRangeLockManager lock_manager(2);
   base::RunLoop loop;
-  ScopesLocksHolder l0_lock_holder;
-  ScopesLocksHolder l1_lock_holder;
+  LeveledLockHolder l0_lock_holder;
+  LeveledLockHolder l1_lock_holder;
   {
     BarrierBuilder barrier(loop.QuitClosure());
-    ScopeLockRange range = {IntegerKey(0), IntegerKey(1)};
+    LeveledLockRange range = {IntegerKey(0), IntegerKey(1)};
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, ScopesLockManager::LockType::kExclusive}},
+        {{0, range, LeveledLockManager::LockType::kExclusive}},
         l0_lock_holder.AsWeakPtr(), barrier.AddClosure()));
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{1, range, ScopesLockManager::LockType::kExclusive}},
+        {{1, range, LeveledLockManager::LockType::kExclusive}},
         l1_lock_holder.AsWeakPtr(), barrier.AddClosure()));
   }
   loop.Run();
@@ -259,14 +259,14 @@ TEST_F(DisjointRangeLockManagerTest, LevelsOperateSeparately) {
 
 TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   DisjointRangeLockManager lock_manager(2);
-  ScopesLocksHolder locks_holder;
-  ScopeLockRange range1 = {IntegerKey(0), IntegerKey(2)};
-  ScopeLockRange range2 = {IntegerKey(1), IntegerKey(3)};
+  LeveledLockHolder locks_holder;
+  LeveledLockRange range1 = {IntegerKey(0), IntegerKey(2)};
+  LeveledLockRange range2 = {IntegerKey(1), IntegerKey(3)};
 
   // Invalid because the ranges intersect.
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{0, range1, ScopesLockManager::LockType::kShared},
-       {0, range2, ScopesLockManager::LockType::kShared}},
+      {{0, range1, LeveledLockManager::LockType::kShared},
+       {0, range2, LeveledLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
@@ -274,7 +274,7 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
 
   // Invalid level.
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{-1, range1, ScopesLockManager::LockType::kShared}},
+      {{-1, range1, LeveledLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
@@ -282,16 +282,16 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
 
   // Invalid level.
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{4, range1, ScopesLockManager::LockType::kShared}},
+      {{4, range1, LeveledLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
   // Invalid range.
-  ScopeLockRange range3 = {IntegerKey(2), IntegerKey(1)};
+  LeveledLockRange range3 = {IntegerKey(2), IntegerKey(1)};
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{0, range3, ScopesLockManager::LockType::kShared}},
+      {{0, range3, LeveledLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());

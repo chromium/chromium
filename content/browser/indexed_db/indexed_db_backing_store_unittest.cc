@@ -31,7 +31,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -356,11 +356,11 @@ class IndexedDBBackingStoreTest : public testing::Test {
         storage_key_state_handle_.storage_key_state()->lock_manager();
   }
 
-  std::vector<ScopeLock> CreateDummyLock() {
+  std::vector<LeveledLock> CreateDummyLock() {
     base::RunLoop loop;
-    ScopesLocksHolder locks_receiver;
+    LeveledLockHolder locks_receiver;
     bool success = lock_manager_->AcquireLocks(
-        {{0, {"01", "11"}, ScopesLockManager::LockType::kShared}},
+        {{0, {"01", "11"}, LeveledLockManager::LockType::kShared}},
         locks_receiver.AsWeakPtr(),
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     EXPECT_TRUE(success);

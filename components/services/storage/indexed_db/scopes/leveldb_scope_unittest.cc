@@ -15,7 +15,7 @@
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
@@ -30,11 +30,11 @@ class LevelDBScopeTest : public LevelDBScopesTestBase {
   LevelDBScopeTest() = default;
   ~LevelDBScopeTest() override = default;
 
-  std::vector<ScopeLock> AcquireLocksSync(
-      ScopesLockManager* lock_manager,
-      base::flat_set<ScopesLockManager::ScopeLockRequest> lock_requests) {
+  std::vector<LeveledLock> AcquireLocksSync(
+      LeveledLockManager* lock_manager,
+      base::flat_set<LeveledLockManager::LeveledLockRequest> lock_requests) {
     base::RunLoop loop;
-    ScopesLocksHolder locks_receiver;
+    LeveledLockHolder locks_receiver;
     bool success = lock_manager->AcquireLocks(
         lock_requests, locks_receiver.AsWeakPtr(),
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));

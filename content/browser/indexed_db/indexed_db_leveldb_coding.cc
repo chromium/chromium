@@ -1211,7 +1211,7 @@ std::string IndexedDBKeyToDebugString(base::StringPiece key) {
   return result.str();
 }
 
-ScopeLockRange GetDatabaseLockRange(int64_t database_id) {
+LeveledLockRange GetDatabaseLockRange(int64_t database_id) {
   // The numbers are transformed into big-endian to make them
   // bytewise-comparable. Eventually, these lock ranges should just match the
   // leveldb keys when they are bytewise-comparable.
@@ -1221,8 +1221,8 @@ ScopeLockRange GetDatabaseLockRange(int64_t database_id) {
           std::string(reinterpret_cast<char*>(&next), sizeof(next))};
 }
 
-ScopeLockRange GetObjectStoreLockRange(int64_t database_id,
-                                       int64_t object_store_id) {
+LeveledLockRange GetObjectStoreLockRange(int64_t database_id,
+                                         int64_t object_store_id) {
   // The numbers are transformed into big-endian to make them
   // bytewise-comparable. Eventually, these lock ranges should just match the
   // leveldb keys when they are bytewise-comparable.

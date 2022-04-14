@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 #include "content/browser/indexed_db/fake_indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -543,13 +543,13 @@ TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
 
   // Acquire a lock to block the transaction's lock acquisition.
   bool locks_recieved = false;
-  std::vector<ScopesLockManager::ScopeLockRequest> lock_requests;
+  std::vector<LeveledLockManager::LeveledLockRequest> lock_requests;
   lock_requests.emplace_back(kDatabaseRangeLockLevel, GetDatabaseLockRange(id),
-                             ScopesLockManager::LockType::kShared);
+                             LeveledLockManager::LockType::kShared);
   lock_requests.emplace_back(kObjectStoreRangeLockLevel,
                              GetObjectStoreLockRange(id, object_store_id),
-                             ScopesLockManager::LockType::kExclusive);
-  ScopesLocksHolder temp_lock_receiver;
+                             LeveledLockManager::LockType::kExclusive);
+  LeveledLockHolder temp_lock_receiver;
   lock_manager()->AcquireLocks(lock_requests,
                                temp_lock_receiver.weak_factory.GetWeakPtr(),
                                base::BindOnce(SetToTrue, &locks_recieved));

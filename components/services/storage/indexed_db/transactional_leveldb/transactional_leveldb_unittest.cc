@@ -20,7 +20,7 @@
 #include "base/test/task_environment.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"

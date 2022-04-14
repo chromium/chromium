@@ -16,7 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
@@ -68,7 +68,7 @@ class CONTENT_EXPORT IndexedDBClassFactory {
       TasksAvailableCallback tasks_available_callback,
       std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
       const IndexedDBDatabase::Identifier& unique_identifier,
-      ScopesLockManager* transaction_lock_manager);
+      LeveledLockManager* transaction_lock_manager);
 
   // |tasks_available_callback| is called when the transaction has tasks to run.
   virtual std::unique_ptr<IndexedDBTransaction> CreateIndexedDBTransaction(

@@ -21,7 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
@@ -80,8 +80,8 @@ class CONTENT_EXPORT IndexedDBDatabase {
   const blink::StorageKey& storage_key() const { return identifier_.first; }
   const blink::IndexedDBDatabaseMetadata& metadata() const { return metadata_; }
 
-  ScopesLockManager* transaction_lock_manager() { return lock_manager_; }
-  const ScopesLockManager* transaction_lock_manager() const {
+  LeveledLockManager* transaction_lock_manager() { return lock_manager_; }
+  const LeveledLockManager* transaction_lock_manager() const {
     return lock_manager_;
   }
 
@@ -324,7 +324,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
                     TasksAvailableCallback tasks_available_callback,
                     std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
                     const Identifier& unique_identifier,
-                    ScopesLockManager* transaction_lock_manager);
+                    LeveledLockManager* transaction_lock_manager);
 
   // May be overridden in tests.
   virtual size_t GetUsableMessageSizeInBytes() const;
@@ -383,7 +383,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   const raw_ptr<IndexedDBClassFactory> class_factory_;
   std::unique_ptr<IndexedDBMetadataCoding> metadata_coding_;
 
-  raw_ptr<ScopesLockManager> lock_manager_;
+  raw_ptr<LeveledLockManager> lock_manager_;
   int64_t transaction_count_ = 0;
 
   list_set<IndexedDBConnection*> connections_;

@@ -19,9 +19,9 @@
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope_deletion_mode.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
-#include "components/services/storage/indexed_db/scopes/scope_lock.h"
 #include "components/services/storage/indexed_db/scopes/scopes_metadata.pb.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -66,7 +66,7 @@ class LevelDBScope {
  public:
   using RollbackCallback =
       base::OnceCallback<leveldb::Status(int64_t scope_id,
-                                         std::vector<ScopeLock> locks)>;
+                                         std::vector<LeveledLock> locks)>;
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using CleanupCallback = base::OnceCallback<void(int64_t scope_id)>;
 
@@ -138,7 +138,7 @@ class LevelDBScope {
                std::vector<uint8_t> prefix,
                size_t write_batch_size,
                scoped_refptr<LevelDBState> level_db,
-               std::vector<ScopeLock> locks,
+               std::vector<LeveledLock> locks,
                std::vector<EmptyRange> empty_ranges,
                RollbackCallback rollback_callback,
                TearDownCallback tear_down_callback);
@@ -200,7 +200,7 @@ class LevelDBScope {
   const std::vector<uint8_t> prefix_;
   const size_t write_batch_size_;
   const scoped_refptr<LevelDBState> level_db_;
-  std::vector<ScopeLock> locks_;
+  std::vector<LeveledLock> locks_;
   base::flat_map<EmptyRange, bool, EmptyRangeLessThan> empty_ranges_;
   RollbackCallback rollback_callback_;
   // Warning: Calling this callback can destroy this scope.
