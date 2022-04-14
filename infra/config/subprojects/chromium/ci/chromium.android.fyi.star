@@ -191,6 +191,9 @@ ci.builder(
         category = "emulator|x86|rel",
         short_name = "11",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
