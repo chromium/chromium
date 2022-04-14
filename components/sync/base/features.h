@@ -84,7 +84,7 @@ inline constexpr base::Feature kSyncSettingsShowLacrosSideBySideWarning{
 
 // Whether explicit passphrase sharing between Ash and Lacros is enabled.
 inline constexpr base::Feature kSyncChromeOSExplicitPassphraseSharing{
-    "SyncChromeOSExplicitPassphraseSharing", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SyncChromeOSExplicitPassphraseSharing", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_IOS)
