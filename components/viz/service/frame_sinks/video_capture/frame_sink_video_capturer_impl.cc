@@ -46,11 +46,27 @@ using media::VideoCaptureOracle;
 using media::VideoFrame;
 using media::VideoFrameMetadata;
 
-#define UMA_HISTOGRAM_CAPTURE_DURATION_CUSTOM_TIMES(name, sample)         \
-  UMA_HISTOGRAM_CUSTOM_TIMES(                                             \
-      base::StringPrintf("Viz.FrameSinkVideoCapturer.%s.CaptureDuration", \
-                         name),                                           \
-      sample, base::Milliseconds(1), base::Seconds(1), 50)
+// Helper macro to log ".CaptureDuration" histograms. |format| needs to be a
+// string literal, |sample| is a sample that will be logged.
+#define UMA_HISTOGRAM_CAPTURE_DURATION(format, sample)                       \
+  do {                                                                       \
+    UMA_HISTOGRAM_CUSTOM_TIMES(                                              \
+        "Viz.FrameSinkVideoCapturer." format ".CaptureDuration", sample,     \
+        base::Milliseconds(1), base::Seconds(1), 50);                        \
+    UMA_HISTOGRAM_CUSTOM_TIMES("Viz.FrameSinkVideoCapturer.CaptureDuration", \
+                               sample, base::Milliseconds(1),                \
+                               base::Seconds(1), 50);                        \
+  } while (false)
+
+// Helper macro to log ".CaptureSucceeded" histograms. |format| needs to be a
+// string literal, |success| is a boolean that will be logged.
+#define UMA_HISTOGRAM_CAPTURE_SUCCEEDED(format, success)                    \
+  do {                                                                      \
+    UMA_HISTOGRAM_BOOLEAN(                                                  \
+        "Viz.FrameSinkVideoCapturer." format ".CaptureSucceeded", success); \
+    UMA_HISTOGRAM_BOOLEAN("Viz.FrameSinkVideoCapturer.CaptureSucceeded",    \
+                          success);                                         \
+  } while (false)
 
 namespace viz {
 
@@ -691,8 +707,18 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     frame = ResurrectFrame();
   } else {
     TRACE_EVENT0("gpu.capture", "ReservingVideoFrame");
+    auto reserve_start_time = base::TimeTicks::Now();
+
     frame = frame_pool_->ReserveVideoFrame(pixel_format_, capture_size);
+
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Viz.FrameSinkVideoCapturer.ReserveFrameDuration",
+        base::TimeTicks::Now() - reserve_start_time, base::Milliseconds(1),
+        base::Milliseconds(250), 50);
   }
+
+  UMA_HISTOGRAM_BOOLEAN("Viz.FrameSinkVideoCapturer.FrameResurrected",
+                        can_resurrect_content);
 
   // Compute the current in-flight utilization and attenuate it: The utilization
   // reported to the oracle is in terms of a maximum sustainable amount (not the
@@ -1052,13 +1078,13 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       // Per CopyOutputResult header comments, I420_PLANES results are always in
       // the Rec.709 color space.
       frame->set_color_space(gfx::ColorSpace::CreateREC709());
-      UMA_HISTOGRAM_CAPTURE_DURATION_CUSTOM_TIMES(
+      UMA_HISTOGRAM_CAPTURE_DURATION(
           "I420", base::TimeTicks::Now() - properties.request_time);
     } else {
       frame = nullptr;
     }
-    UMA_HISTOGRAM_BOOLEAN("Viz.FrameSinkVideoCapturer.I420.CaptureSucceeded",
-                          success);
+
+    UMA_HISTOGRAM_CAPTURE_SUCCEEDED("I420", success);
   } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
     int stride = frame->stride(VideoFrame::kARGBPlane);
     DCHECK_EQ(media::PIXEL_FORMAT_ARGB, pixel_format_);
@@ -1067,29 +1093,29 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     bool success = result->ReadRGBAPlane(pixels, stride);
     if (success) {
       frame->set_color_space(result->GetRGBAColorSpace());
-      UMA_HISTOGRAM_CAPTURE_DURATION_CUSTOM_TIMES(
+      UMA_HISTOGRAM_CAPTURE_DURATION(
           "RGBA", base::TimeTicks::Now() - properties.request_time);
     } else {
       frame = nullptr;
     }
-    UMA_HISTOGRAM_BOOLEAN("Viz.FrameSinkVideoCapturer.RGBA.CaptureSucceeded",
-                          success);
+
+    UMA_HISTOGRAM_CAPTURE_SUCCEEDED("RGBA", success);
   } else {
     DCHECK_EQ(pixel_format_, media::PIXEL_FORMAT_NV12);
     // NV12 is only supported for GMBs for now, in which case there is nothing
     // for us to do since the CopyOutputResults are already available in the
     // video frame (assuming that we got the results).
 
-    UMA_HISTOGRAM_CAPTURE_DURATION_CUSTOM_TIMES(
-        "NV12", base::TimeTicks::Now() - properties.request_time);
-
-    frame->set_color_space(gfx::ColorSpace::CreateREC709());
-
-    UMA_HISTOGRAM_BOOLEAN("Viz.FrameSinkVideoCapturer.NV12.CaptureSucceeded",
-                          !result->IsEmpty());
     if (result->IsEmpty()) {
       frame = nullptr;
+    } else {
+      frame->set_color_space(gfx::ColorSpace::CreateREC709());
+
+      UMA_HISTOGRAM_CAPTURE_DURATION(
+          "NV12", base::TimeTicks::Now() - properties.request_time);
     }
+
+    UMA_HISTOGRAM_CAPTURE_SUCCEEDED("NV12", !result->IsEmpty());
   }
 
   scoped_refptr<media::VideoFrame> wrapped_frame;
@@ -1161,6 +1187,10 @@ void FrameSinkVideoCapturerImpl::OnFrameReadyForDelivery(
           "Viz.FrameSinkVideoCapturer.NV12.TotalDuration", sample,
           base::Milliseconds(1), base::Seconds(1), 50);
     }
+
+    UMA_HISTOGRAM_CUSTOM_TIMES("Viz.FrameSinkVideoCapturer.TotalDuration",
+                               sample, base::Milliseconds(1), base::Seconds(1),
+                               50);
   }
 
   // Ensure frames are delivered in-order by using a min-heap, and only
