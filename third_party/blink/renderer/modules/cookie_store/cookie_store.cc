@@ -163,12 +163,23 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     cookie_partition_key = net::CookiePartitionKey::FromScript();
   }
 
-  return net::CanonicalCookie::CreateSanitizedCookie(
-      cookie_url, name.Utf8(), value.Utf8(), domain.Utf8(), path.Utf8(),
-      base::Time() /*creation*/, expires, base::Time() /*last_access*/,
-      true /*secure*/, false /*http_only*/, same_site,
-      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, options->sameParty(),
-      cookie_partition_key, &status_out);
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateSanitizedCookie(
+          cookie_url, name.Utf8(), value.Utf8(), domain.Utf8(), path.Utf8(),
+          base::Time() /*creation*/, expires, base::Time() /*last_access*/,
+          true /*secure*/, false /*http_only*/, same_site,
+          net::CookiePriority::COOKIE_PRIORITY_DEFAULT, options->sameParty(),
+          cookie_partition_key, &status_out);
+
+  // TODO(crbug.com/1310444): Improve serialization validation comments and
+  // associate them with ExceptionState codes.
+  if (!status_out.IsInclude()) {
+    exception_state.ThrowTypeError(
+        "Cookie was malformed and could not be stored, due to problem(s) while "
+        "parsing.");
+  }
+
+  return cookie;
 }
 
 const KURL DefaultCookieURL(ExecutionContext* execution_context) {
