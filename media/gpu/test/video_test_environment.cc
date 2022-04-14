@@ -50,20 +50,20 @@ VideoTestEnvironment::VideoTestEnvironment(
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   // Perform all static initialization that is required when running video
-  // decoders in a test environment.
-#if BUILDFLAG(USE_VAAPI)
-  media::VaapiWrapper::PreSandboxInitialization();
-#endif
-
+  // codecs in a test environment.
 #if defined(USE_OZONE)
   // Initialize Ozone. This is necessary to gain access to the GPU for hardware
-  // video decode acceleration.
+  // video acceleration.
   LOG(WARNING) << "Initializing Ozone Platform...\n"
                   "If this hangs indefinitely please call 'stop ui' first!";
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForUI(params);
   ui::OzonePlatform::InitializeForGPU(params);
+#endif
+
+#if BUILDFLAG(USE_VAAPI)
+  media::VaapiWrapper::PreSandboxInitialization();
 #endif
 }
 
