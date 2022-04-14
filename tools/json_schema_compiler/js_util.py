@@ -28,7 +28,7 @@ class JsUtil(object):
   def GetInfo(self, tool):
     """Returns text describing how the file was generated.
     """
-    return (INFO % tool)
+    return (INFO % tool.replace('\\', '/'))
 
   def AppendObjectDefinition(self, c, namespace_name, properties,
                                new_line=True):

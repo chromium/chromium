@@ -109,7 +109,8 @@ FakeApi.prototype = {
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/fakeApi#event-onTrapDetected
  */
-FakeApi.prototype.onTrapDetected;""" % (datetime.now().year, sys.argv[0]))
+FakeApi.prototype.onTrapDetected;""" % (datetime.now().year,
+                                        sys.argv[0].replace('\\', '/')))
 
 class JsExternGeneratorTest(unittest.TestCase):
   def _GetNamespace(self, fake_content, filename):
