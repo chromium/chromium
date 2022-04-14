@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -645,14 +646,25 @@ std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     return label;
   }
+  base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
+      [](PasswordSaveUpdateView* dialog) {
+        dialog->controller_.OnGooglePasswordManagerLinkClicked();
+      },
+      base::Unretained(this));
+  if (controller_.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount()) {
+    return CreateGooglePasswordManagerFooterView(
+        /*text_message_id=*/
+        IDS_PASSWORD_BUBBLES_FOOTER_SYNCED_TO_ACCOUNT,
+        /*link_message_id=*/
+        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+        controller_.GetPrimaryAccountEmail(), open_password_manager_closure);
+  }
   return CreateGooglePasswordManagerFooterView(
-      controller_.GetPrimaryAccountEmail(),
-      controller_.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount(),
-      base::BindRepeating(
-          [](PasswordSaveUpdateView* dialog) {
-            dialog->controller_.OnGooglePasswordManagerLinkClicked();
-          },
-          base::Unretained(this)));
+      /*text_message_id=*/
+      IDS_PASSWORD_BUBBLES_FOOTER_SAVING_ON_DEVICE,
+      /*link_message_id=*/
+      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE,
+      open_password_manager_closure);
 }
 
 bool PasswordSaveUpdateView::ShouldShowFailedReauthIPH() {

@@ -15,11 +15,23 @@ class View;
 }
 
 // Returns the view should be used as a footer for Password Manager bubbles on
-// Desktop. `synced_to_account` indicates whether the user is syncing this
-// credentials to their Google account.
+// Desktop. `text_message_id` is the message id of the whole text displayed in
+// the footer which should have two place holders. One for `link_message_id`
+// that's when clicked, `open_link_closure` will invoked. The other placeholder
+// will carry the `email`.
 std::unique_ptr<views::View> CreateGooglePasswordManagerFooterView(
+    int text_message_id,
+    int link_message_id,
     const std::u16string& email,
-    bool synced_to_account,
-    base::RepeatingClosure open_google_password_manager_closure);
+    base::RepeatingClosure open_link_closure);
+
+// Returns the view should be used as a footer for Password Manager bubbles on
+// Desktop. `text_message_id` is the message id of the whole text displayed in
+// the footer which should have one place holder for `link_message_id` that's
+// when clicked, `open_link_closure` will invoked.
+std::unique_ptr<views::View> CreateGooglePasswordManagerFooterView(
+    int text_message_id,
+    int link_message_id,
+    base::RepeatingClosure open_link_closure);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_
