@@ -69,6 +69,26 @@ const char kDeviceActiveClientTransitionOutOfIdleMinute[] =
 const char kDeviceActiveClientTransitionToCheckInMinute[] =
     "Ash.DeviceActiveClient.RecordedTransitionToCheckInMinute";
 
+// Traffic annotation for check device activity status
+const net::NetworkTrafficAnnotationTag check_membership_traffic_annotation =
+      net::DefineNetworkTrafficAnnotation(
+          "device_activity_client_check_membership",R"(
+        semantics {
+          sender: "Device Activity"
+          description:
+            "Check the status of the Chrome OS devices in a private "
+            "set, through Private Set Membership (PSM) services."
+          trigger: "Chrome OS client makes this network request and records "
+                   "the device activity when the default network changes"
+          data: "Google API Key."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot be disabled in settings."
+          policy_exception_justification: "Not implemented."
+        })");
+
 // Generates the full histogram name for histogram variants based on state.
 std::string HistogramVariantName(const std::string& histogram_prefix,
                                  DeviceActivityClient::State state) {
@@ -422,6 +442,29 @@ void DeviceActivityClient::TransitionToHealthCheck() {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!url_loader_);
 
+  const net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("device_activity_client_health_check", R"(
+        semantics {
+          sender: "Device Activity Health Check"
+          description:
+            "Send Health Check network request of Chrome OS device. "
+            "Provide a health check service for client. "
+            "The health check will include cpu utilization, "
+            "memory usage and disk space. "
+            "The server will return health status of the service immediately. "
+            "The health status will include if the device is actively running "
+            "or the device is not successfully sending heartbeats to servers "
+            "or the device is not eligible for health monitoring. "
+          trigger: "This request is deprecated, and never happens."
+          data: "Google API Key."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot be disabled in settings."
+          policy_exception_justification: "Not implemented."
+        })");
+
   state_timer_ = base::ElapsedTimer();
 
   // |state_| must be set correctly in order to generate correct URL.
@@ -436,7 +479,7 @@ void DeviceActivityClient::TransitionToHealthCheck() {
   // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
   // call to a shared helper method.
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 MISSING_TRAFFIC_ANNOTATION);
+                                                 traffic_annotation);
 
   url_loader_->SetTimeoutDuration(kHealthCheckRequestTimeout);
   url_loader_->DownloadToString(
@@ -509,8 +552,10 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf(
 
   // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
   // call to a shared helper method.
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 MISSING_TRAFFIC_ANNOTATION);
+  url_loader_ = network
+      ::SimpleURLLoader
+      ::Create(std::move(resource_request),
+               check_membership_traffic_annotation);
   url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
   url_loader_->SetTimeoutDuration(kOprfRequestTimeout);
   url_loader_->DownloadToString(
@@ -601,8 +646,10 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
 
   // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
   // call to a shared helper method.
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 MISSING_TRAFFIC_ANNOTATION);
+  url_loader_ = network
+      ::SimpleURLLoader
+      ::Create(std::move(resource_request),
+               check_membership_traffic_annotation);
   url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
   url_loader_->SetTimeoutDuration(kQueryRequestTimeout);
   url_loader_->DownloadToString(
@@ -701,6 +748,32 @@ void DeviceActivityClient::TransitionToCheckIn(
 
   DCHECK(!url_loader_);
 
+  const net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("device_activity_client_check_in", R"(
+        semantics {
+          sender: "Device Activity"
+          description:
+                  "After checking that the Chrome device doesn't have the "
+                  "membership of PSM, Chrome devices make an 'import network' "
+                  "request which lets Fresnel Service import data into "
+                  "PSM storage and Google web server Logs. Fresnel Service "
+                  "is operating system images to be retrieved and provisioned "
+                  "from anywhere internet access is available. So when a new "
+                  "Chrome OS device joins a LAN, it gets added to the Private "
+                  "Set of that LAN. After that, it can view the health status "
+                  "(CPU/RAM/disk usage) of other Chrome OS devices "
+                  "on the same LAN."
+          trigger: "Chrome OS client makes this network request and records "
+                   "the device activity when the default network changes"
+          data: "Google API Key."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot be disabled in settings."
+          policy_exception_justification: "Not implemented."
+        })");
+
   state_timer_ = base::ElapsedTimer();
 
   // |state_| must be set correctly in order to generate correct URL.
@@ -722,7 +795,7 @@ void DeviceActivityClient::TransitionToCheckIn(
   // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
   // call to a shared helper method.
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 MISSING_TRAFFIC_ANNOTATION);
+                                                 traffic_annotation);
   url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
   url_loader_->SetTimeoutDuration(kImportRequestTimeout);
   url_loader_->DownloadToString(

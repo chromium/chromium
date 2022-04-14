@@ -113,6 +113,12 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="printing_oauth2_registration_request"/>
       <traffic_annotation unique_id="printing_oauth2_token_exchange_request"/>
     </sender>
+    <sender name="Device Activity">
+      <traffic_annotation unique_id="device_activity_client_health_check"/>
+      <traffic_annotation unique_id=
+          "device_activity_client_check_membership"/>
+      <traffic_annotation unique_id="device_activity_client_check_in"/>
+    </sender>
   </group>
   <group name="Unsorted" hidden="true">
     <!-- Unsorted annotations go here. -->
