@@ -1315,6 +1315,7 @@ virtual/text-antialias/whitespace/025.html [ Pass ]
 virtual/text-antialias/whitespace/nowrap-clear-float.html [ Pass ]
 virtual/text-antialias/whitespace/pre-newline-box-test.html [ Pass ]
 virtual/layout_ng_table_frag/external/wpt/css/css-break/table/table-cell-expansion-003.html [ Pass ]
+virtual/threaded-composited-iframes/external/wpt/is-input-pending/tentative/same-origin-subframe.sub.html [ Pass ]
 
 # Layout tests significatly differ from non scale baseline
 crbug.com/1105168 fast/sub-pixel/sub-pixel-accumulates-to-layers.html [ Failure ]
@@ -1818,8 +1819,6 @@ crbug.com/1316080 external/wpt/css/css-backgrounds/background-size/vector/tall--
 crbug.com/1316081 external/wpt/css/css-borders/subpixel-borders-with-child-border-box-sizing.html [ Failure ]
 # Perspective scaling issue.
 crbug.com/1316082 external/wpt/css/css-transforms/animation/transform-interpolation-perspective.html [ Failure ]
-# IsInputPending event issue?
-crbug.com/1316086 external/wpt/is-input-pending/tentative/same-origin-subframe.sub.html [ Failure ]
 # WebXR overlay event issue?
 crbug.com/1316087 external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Failure ]
 
