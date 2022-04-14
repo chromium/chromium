@@ -28,8 +28,10 @@ class BluetoothHidDetectorImpl
 
   // BluetoothHidDetector:
   void StartBluetoothHidDetection(
+      Delegate* delegate,
       InputDevicesStatus input_devices_status) override;
   void StopBluetoothHidDetection() override;
+  const BluetoothHidDetectionStatus GetBluetoothHidDetectionStatus() override;
 
  private:
   // States used for internal state machine.
@@ -108,6 +110,7 @@ class BluetoothHidDetectorImpl
       chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
       current_pairing_device_;
 
+  Delegate* delegate_ = nullptr;
   InputDevicesStatus input_devices_status_;
   State state_ = kNotStarted;
 
