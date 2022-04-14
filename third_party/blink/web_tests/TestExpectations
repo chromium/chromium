@@ -3321,8 +3321,6 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 virtual/document-transition/wpt_internal/document-transition/content-with-transform-old-image.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/phrasing-content-0/br-wbr-content/content-property.tentative.html [ Failure ]
@@ -7742,3 +7740,6 @@ crbug.com/1315753 virtual/selectmenu-new-popup/the-selectmenu-element/selectmenu
 
 # HighlightOverlayPainting: decoration painting hasn’t landed yet.
 crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
+
+crbug.com/1295980 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Pass Timeout ]
+crbug.com/1295980 [ Mac ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Pass Timeout ]
