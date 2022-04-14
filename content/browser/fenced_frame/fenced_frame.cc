@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "url/gurl.h"
 
@@ -87,6 +88,14 @@ void FencedFrame::Navigate(const GURL& url,
   // we wouldn't even establish the mojo connection in that case.
   DCHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
             owner_render_frame_host_->GetLifecycleState());
+
+  if (mode_ == blink::mojom::FencedFrameMode::kDefault &&
+      !network::IsUrlPotentiallyTrustworthy(url)) {
+    bad_message::ReceivedBadMessage(
+        owner_render_frame_host_->GetProcess(),
+        bad_message::FF_NAVIGATION_UNTRUSTWORTHY_URL);
+    return;
+  }
 
   FrameTreeNode* inner_root = frame_tree_->root();
 
