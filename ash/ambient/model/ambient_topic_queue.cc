@@ -200,7 +200,12 @@ void AmbientTopicQueue::FetchTopics() {
                      weak_factory_.GetWeakPtr()));
   for (const gfx::Size& requested_topic_size : topic_sizes) {
     backend_controller_->FetchScreenUpdateInfo(
-        num_topics_per_request, requested_topic_size,
+        num_topics_per_request,
+        // If |should_split_topics_| is true, it does not make sense to ever
+        // request paired personal portrait topics since they will ultimately
+        // just be unpaired on the client anyways.
+        /*show_pair_personal_portraits=*/!should_split_topics_,
+        requested_topic_size,
         base::BindOnce(&AmbientTopicQueue::OnScreenUpdateInfoFetched,
                        weak_factory_.GetWeakPtr(), barrier_closure,
                        requested_topic_size));

@@ -348,12 +348,13 @@ AmbientBackendControllerImpl::~AmbientBackendControllerImpl() = default;
 
 void AmbientBackendControllerImpl::FetchScreenUpdateInfo(
     int num_topics,
+    bool show_pair_personal_portraits,
     const gfx::Size& screen_size,
     OnScreenUpdateInfoFetchedCallback callback) {
   Shell::Get()->ambient_controller()->RequestAccessToken(base::BindOnce(
       &AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal,
-      weak_factory_.GetWeakPtr(), num_topics, screen_size,
-      std::move(callback)));
+      weak_factory_.GetWeakPtr(), num_topics, show_pair_personal_portraits,
+      screen_size, std::move(callback)));
 }
 
 void AmbientBackendControllerImpl::GetSettings(GetSettingsCallback callback) {
@@ -443,6 +444,7 @@ AmbientBackendControllerImpl::GetBackupPhotoUrls() const {
 
 void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     int num_topics,
+    bool show_pair_personal_portraits,
     const gfx::Size& screen_size,
     OnScreenUpdateInfoFetchedCallback callback,
     const std::string& gaia_id,
@@ -454,10 +456,14 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     return;
   }
 
-  std::string client_id = GetClientId();
   BackdropClientConfig::Request request =
-      backdrop_client_config_.CreateFetchScreenUpdateRequest(
-          num_topics, gaia_id, access_token, client_id);
+      backdrop_client_config_.CreateFetchScreenUpdateRequest({
+          {/*gaia_id*/ gaia_id,
+           /*token*/ access_token,
+           /*client_id*/ GetClientId()},
+          /*num_topics*/ num_topics,
+          /*show_pair_personal_portraits*/ show_pair_personal_portraits,
+      });
   auto resource_request = CreateResourceRequest(request);
 
   DCHECK(!screen_size.IsEmpty());

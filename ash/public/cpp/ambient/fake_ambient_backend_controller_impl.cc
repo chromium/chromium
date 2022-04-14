@@ -85,6 +85,7 @@ FakeAmbientBackendControllerImpl::~FakeAmbientBackendControllerImpl() = default;
 
 void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
     int num_topics,
+    bool show_pair_personal_portraits,
     const gfx::Size& screen_size,
     OnScreenUpdateInfoFetchedCallback callback) {
   ash::ScreenUpdate update;
@@ -101,8 +102,11 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
       topic.url = kFakeUrl;
       topic.details = kFakeDetails;
       topic.is_portrait = is_portrait_;
-      if (has_related_image_)
+      if ((show_pair_personal_portraits &&
+           topic_type_ == ::ambient::kPersonal && is_portrait_) ||
+          has_related_image_) {
         topic.related_image_url = kFakeUrl;
+      }
       topic.topic_type = topic_type_;
 
       update.next_topics.emplace_back(topic);

@@ -30,6 +30,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   // AmbientBackendController:
   void FetchScreenUpdateInfo(
       int num_topics,
+      bool show_pair_personal_portraits,
       const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) override;
   void GetSettings(GetSettingsCallback callback) override;
@@ -53,6 +54,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   void RequestAccessToken(AmbientClient::GetAccessTokenCallback callback);
 
   void FetchScreenUpdateInfoInternal(int num_topics,
+                                     bool show_pair_personal_portraits,
                                      const gfx::Size& screen_size,
                                      OnScreenUpdateInfoFetchedCallback callback,
                                      const std::string& gaia_id,

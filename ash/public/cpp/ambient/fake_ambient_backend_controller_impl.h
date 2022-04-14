@@ -28,6 +28,7 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   // AmbientBackendController:
   void FetchScreenUpdateInfo(
       int num_topics,
+      bool show_pair_personal_portraits,
       const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) override;
   void GetSettings(GetSettingsCallback callback) override;

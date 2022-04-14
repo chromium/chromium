@@ -265,6 +265,40 @@ TEST_F(AmbientTopicQueuePairedTopicTest, SplitsIncomingTopics) {
               Each(Field(&AmbientModeTopic::related_image_url, IsEmpty())));
 }
 
+TEST_F(AmbientTopicQueueTest, RequestsPairedPersonalPortraits) {
+  backend_controller()->SetPhotoTopicType(::ambient::TopicType::kPersonal);
+  backend_controller()->SetPhotoOrientation(/*portrait=*/true);
+  AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/1,
+                          kDefaultTopicFetchInterval,
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
+
+  ASSERT_THAT(WaitForTopicsAvailable(queue),
+              Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
+  ASSERT_FALSE(queue.IsEmpty());
+  AmbientModeTopic topic = queue.Pop();
+  EXPECT_THAT(topic.url, Not(IsEmpty()));
+  EXPECT_THAT(topic.related_image_url, Not(IsEmpty()));
+}
+
+TEST_F(AmbientTopicQueueTest, DoesNotRequestPairedPersonalPortraits) {
+  backend_controller()->SetPhotoTopicType(::ambient::TopicType::kPersonal);
+  backend_controller()->SetPhotoOrientation(/*portrait=*/true);
+  AmbientTopicQueue queue(/*topic_fetch_limit=*/10, /*topic_fetch_size=*/1,
+                          kDefaultTopicFetchInterval,
+                          /*should_split_topics=*/true,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
+
+  ASSERT_THAT(WaitForTopicsAvailable(queue),
+              Eq(AmbientTopicQueue::WaitResult::kTopicsAvailable));
+  ASSERT_FALSE(queue.IsEmpty());
+  AmbientModeTopic topic = queue.Pop();
+  EXPECT_THAT(topic.url, Not(IsEmpty()));
+  EXPECT_THAT(topic.related_image_url, IsEmpty());
+}
+
 TEST_F(AmbientTopicQueueTest, ShouldPairLandscapeImages) {
   backend_controller()->set_custom_topic_generator(
       base::BindLambdaForTesting([](int, const gfx::Size&) {

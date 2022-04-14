@@ -116,11 +116,17 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
 
   // Sends request to retrieve |num_topics| of |ScreenUpdate| from the backdrop
   // server with the specified |screen_size|.
+  //
+  // |show_pair_personal_portraits|: Whether IMAX should serve paired or single
+  // personal portrait photos returned by the Photos backend. Ignored for
+  // non-personal topic types.
+  //
   // Upon completion, |callback| is run with the parsed |ScreenUpdate|. If any
   // errors happened during the process, e.g. failed to fetch access token, a
   // default instance will be returned.
   virtual void FetchScreenUpdateInfo(
       int num_topics,
+      bool show_pair_personal_portraits,
       const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) = 0;
 
