@@ -332,11 +332,26 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
 #endif
 
   SetPrintingRFH(rfh);
-  GetPrintRenderFrame(rfh)->PrintRequestedPages();
 
-  for (auto& observer : GetObservers())
-    observer.OnPrintNow(rfh);
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
+  if (base::FeatureList::IsEnabled(features::kEnablePrintContentAnalysis) &&
+      enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+          web_contents()->GetLastCommittedURL(), &scanning_data,
+          enterprise_connectors::AnalysisConnector::PRINT)) {
+    auto scanning_done_cb =
+        base::BindOnce(&PrintViewManagerBase::CompleteContentAnalysis,
+                       weak_ptr_factory_.GetWeakPtr());
+    GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(
+        &PrintViewManagerBase::OnGotSnapshotCallback,
+        weak_ptr_factory_.GetWeakPtr(), std::move(scanning_done_cb),
+        std::move(scanning_data), rfh_id));
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
+  CompletePrintNow(rfh);
   return true;
 }
 
@@ -1112,5 +1127,82 @@ void PrintViewManagerBase::SendPrintingEnabled(bool enabled,
     GetPrintRenderFrame(rfh)->SetPrintingEnabled(enabled);
   }
 }
+
+void PrintViewManagerBase::CompletePrintNow(content::RenderFrameHost* rfh) {
+  GetPrintRenderFrame(rfh)->PrintRequestedPages();
+
+  for (auto& observer : GetObservers())
+    observer.OnPrintNow(rfh);
+}
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+void PrintViewManagerBase::CompleteContentAnalysis(bool allowed) {
+  if (!allowed || !printing_rfh_ || IsCrashed() ||
+      !printing_rfh_->IsRenderFrameLive()) {
+    return;
+  }
+
+  CompletePrintNow(printing_rfh_);
+}
+
+void PrintViewManagerBase::OnGotSnapshotCallback(
+    base::OnceCallback<void(bool should_proceed)> callback,
+    enterprise_connectors::ContentAnalysisDelegate::Data data,
+    content::GlobalRenderFrameHostId rfh_id,
+    mojom::DidPrintDocumentParamsPtr params) {
+  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+  if (!params || !rfh || !PrintJobHasDocument(params->document_cookie) ||
+      !params->content->metafile_data_region.IsValid()) {
+    TerminatePrintJob(/*cancel=*/true);
+    std::move(callback).Run(/*allowed=*/true);
+    return;
+  }
+
+  if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
+    auto* client = PrintCompositeClient::FromWebContents(web_contents());
+    client->DoCompositeDocumentToPdf(
+        params->document_cookie, rfh, *params->content,
+        base::BindOnce(&PrintViewManagerBase::OnCompositedForContentAnalysis,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(data), rfh_id));
+    return;
+  }
+  OnCompositedForContentAnalysis(
+      std::move(callback), std::move(data), rfh_id,
+      mojom::PrintCompositor::Status::kSuccess,
+      std::move(params->content->metafile_data_region));
+}
+
+void PrintViewManagerBase::OnCompositedForContentAnalysis(
+    base::OnceCallback<void(bool should_proceed)> callback,
+    enterprise_connectors::ContentAnalysisDelegate::Data data,
+    content::GlobalRenderFrameHostId rfh_id,
+    mojom::PrintCompositor::Status status,
+    base::ReadOnlySharedMemoryRegion page_region) {
+  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+  if (!rfh || status != mojom::PrintCompositor::Status::kSuccess ||
+      !page_region.IsValid()) {
+    TerminatePrintJob(/*cancel=*/true);
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // Reset the print job and `rfh` so the snapshotting doesn't affect the actual
+  // printing later.
+  TerminatePrintJob(/*cancel=*/true);
+  SetPrintingRFH(rfh);
+  data.page = std::move(page_region);
+
+  enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+      web_contents(), std::move(data),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool should_proceed)> callback,
+             const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+             const enterprise_connectors::ContentAnalysisDelegate::Result&
+                 result) { std::move(callback).Run(result.page_result); },
+          std::move(callback)),
+      safe_browsing::DeepScanAccessPoint::PRINT);
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace printing

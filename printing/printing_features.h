@@ -51,6 +51,11 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kEnablePrintContentAnalysis;
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+
 }  // namespace features
 }  // namespace printing
 

@@ -68,5 +68,12 @@ const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint{
     &kEnableOopPrintDrivers, "JobPrint", false};
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+// Enables scanning of to-be-printed pages and documents for sensitive data if
+// the OnPrintEnterpriseConnector policy is enabled.
+const base::Feature kEnablePrintContentAnalysis{
+    "EnablePrintContentAnalysis", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+
 }  // namespace features
 }  // namespace printing

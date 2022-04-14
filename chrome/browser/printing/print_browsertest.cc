@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -85,6 +86,13 @@
 #include "chrome/browser/printing/print_job_worker_oop.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 namespace printing {
 
@@ -166,6 +174,10 @@ const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 constexpr int kDefaultDocumentCookie = 1234;
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+constexpr char kFakeDmToken[] = "fake-dm-token";
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 mojom::PrintParamsPtr GetPrintParams() {
   auto params = mojom::PrintParams::New();
@@ -661,6 +673,106 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
   RestrictionLevel restriction_level_ = RestrictionLevel::kNotSet;
   PrintAllowance allowance_ = PrintAllowance::kUnknown;
 };
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
+ public:
+  class Observer : public PrintViewManagerBase::Observer {
+   public:
+    void OnPrintNow(const content::RenderFrameHost* rfh) override {
+      print_now_called_ = true;
+    }
+
+    bool print_now_called() const { return print_now_called_; }
+
+   private:
+    bool print_now_called_ = false;
+  };
+
+  static TestPrintViewManagerForContentAnalysis* CreateForWebContents(
+      content::WebContents* web_contents) {
+    auto manager =
+        std::make_unique<TestPrintViewManagerForContentAnalysis>(web_contents);
+    auto* manager_ptr = manager.get();
+    web_contents->SetUserData(PrintViewManager::UserDataKey(),
+                              std::move(manager));
+    return manager_ptr;
+  }
+
+  explicit TestPrintViewManagerForContentAnalysis(
+      content::WebContents* web_contents)
+      : TestPrintViewManager(web_contents) {
+    AddObserver(observer_);
+    PrintViewManager::SetReceiverImplForTesting(this);
+  }
+
+  ~TestPrintViewManagerForContentAnalysis() override {
+    PrintViewManager::SetReceiverImplForTesting(nullptr);
+  }
+
+  void WaitOnScanning() { run_loop_.Run(); }
+
+  bool print_now_called() const { return observer_.print_now_called(); }
+
+ protected:
+  void OnGotSnapshotCallback(
+      base::OnceCallback<void(bool should_proceed)> callback,
+      enterprise_connectors::ContentAnalysisDelegate::Data data,
+      content::GlobalRenderFrameHostId rfh_id,
+      mojom::DidPrintDocumentParamsPtr params) override {
+    ASSERT_TRUE(web_contents());
+    ASSERT_TRUE(params);
+    EXPECT_TRUE(params->content->metafile_data_region.IsValid());
+
+    PrintViewManager::OnGotSnapshotCallback(
+        std::move(callback), std::move(data), rfh_id, std::move(params));
+  }
+
+  void OnCompositedForContentAnalysis(
+      base::OnceCallback<void(bool should_proceed)> callback,
+      enterprise_connectors::ContentAnalysisDelegate::Data data,
+      content::GlobalRenderFrameHostId rfh_id,
+      mojom::PrintCompositor::Status status,
+      base::ReadOnlySharedMemoryRegion page_region) override {
+    EXPECT_TRUE(content::RenderFrameHost::FromID(rfh_id));
+    EXPECT_EQ(status, mojom::PrintCompositor::Status::kSuccess);
+
+    // The settings passed to this function should match the content of the
+    // print Connector policy.
+    EXPECT_EQ(data.settings.tags.size(), 1u);
+    EXPECT_TRUE(base::Contains(data.settings.tags, "dlp"));
+    EXPECT_EQ(data.settings.dm_token, kFakeDmToken);
+    EXPECT_EQ(data.settings.block_until_verdict,
+              enterprise_connectors::BlockUntilVerdict::BLOCK);
+    EXPECT_TRUE(data.settings.block_large_files);
+
+    // The snapshot should be valid and populated. Asserting on the exact
+    // content of the page is not possible due to things like timestamps, so
+    // instead the first few bytes and a minimum size for a PDF are validated.
+    // TODO(domfc): Move the PDF validation logic to a helper function for reuse
+    // in tests and DCHECKs.
+    EXPECT_TRUE(page_region.IsValid());
+    EXPECT_GE(page_region.GetSize(), 50u);
+    std::string first_bytes =
+        std::string(page_region.Map().GetMemoryAs<char>(), 5);
+    EXPECT_EQ(first_bytes, "%PDF-");
+
+    PrintViewManager::OnCompositedForContentAnalysis(
+        base::BindOnce(
+            [](base::OnceCallback<void(bool should_proceed)> callback,
+               base::RunLoop* run_loop, bool allowed) {
+              std::move(callback).Run(allowed);
+              run_loop->Quit();
+            },
+            std::move(callback), &run_loop_),
+        std::move(data), rfh_id, status, std::move(page_region));
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  Observer observer_;
+};
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 class PrintBrowserTest : public InProcessBrowserTest {
  public:
@@ -3067,5 +3179,95 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 #endif  //  BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+class ContentAnalysisPrintBrowserTest
+    : public PrintBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContentAnalysisPrintBrowserTest() {
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting(kFakeDmToken));
+    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::FakeContentAnalysisDelegate::Create,
+            base::DoNothing(),
+            base::BindRepeating(
+                &ContentAnalysisPrintBrowserTest::ScanningResponse,
+                base::Unretained(this)),
+            /*file_encrypted=*/
+            base::BindRepeating([](const base::FilePath& path) {
+              NOTREACHED();
+              return false;
+            }),
+            kFakeDmToken));
+
+    feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);
+  }
+
+  void SetUpOnMainThread() override {
+    safe_browsing::SetAnalysisConnector(
+        browser()->profile()->GetPrefs(),
+        enterprise_connectors::AnalysisConnector::PRINT,
+        R"({
+          "service_provider": "google",
+          "enable": [ {"url_list": ["*"], "tags": ["dlp"]} ],
+          "block_until_verdict": 1,
+          "block_large_files": true
+        })");
+    PrintBrowserTest::SetUpOnMainThread();
+  }
+
+  bool scanning_allows_print() const { return GetParam(); }
+
+  enterprise_connectors::ContentAnalysisResponse ScanningResponse(
+      const base::FilePath& path) {
+    enterprise_connectors::ContentAnalysisResponse response;
+
+    auto* result = response.add_results();
+    result->set_tag("dlp");
+    result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+    if (!scanning_allows_print()) {
+      auto* rule = result->add_triggered_rules();
+      rule->set_rule_name("blocking_rule_name");
+      rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    }
+
+    return response;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/1256506): Re-enable test on Windows
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto* print_view_manager =
+      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
+          web_contents);
+
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/true,
+             /*has_selection=*/false);
+
+  print_view_manager->WaitOnScanning();
+  ASSERT_EQ(print_view_manager->print_now_called(), scanning_allows_print());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
+
+#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace printing
