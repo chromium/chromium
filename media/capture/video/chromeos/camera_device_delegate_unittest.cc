@@ -147,10 +147,9 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         &mock_gpu_memory_buffer_manager_);
     hal_delegate_thread_.Start();
     camera_hal_delegate_ =
-        std::make_unique<CameraHalDelegate>(hal_delegate_thread_.task_runner());
-    auto get_camera_info =
-        base::BindRepeating(&CameraHalDelegate::GetCameraInfoFromDeviceId,
-                            base::Unretained(camera_hal_delegate_.get()));
+        new CameraHalDelegate(hal_delegate_thread_.task_runner());
+    auto get_camera_info = base::BindRepeating(
+        &CameraHalDelegate::GetCameraInfoFromDeviceId, camera_hal_delegate_);
     camera_hal_delegate_->SetCameraModule(
         mock_camera_module_.GetPendingRemote());
   }
@@ -177,7 +176,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
     device_delegate_thread_.Start();
 
     camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
-        devices_info[0].descriptor, camera_hal_delegate_.get(),
+        devices_info[0].descriptor, camera_hal_delegate_,
         device_delegate_thread_.task_runner());
   }
 
@@ -518,7 +517,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<CameraHalDelegate> camera_hal_delegate_;
+  scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
   std::unique_ptr<CameraDeviceDelegate> camera_device_delegate_;
 
   testing::StrictMock<unittest_internal::MockCameraModule> mock_camera_module_;

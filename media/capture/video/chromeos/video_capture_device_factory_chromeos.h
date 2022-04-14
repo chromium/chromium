@@ -56,7 +56,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   // created on the thread on which Init is called.  All the Mojo communication
   // that |camera_hal_delegate_| issues and receives must be sequenced through
   // |camera_hal_ipc_thread_|.
-  std::unique_ptr<CameraHalDelegate> camera_hal_delegate_;
+  scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
 
   bool initialized_;
 

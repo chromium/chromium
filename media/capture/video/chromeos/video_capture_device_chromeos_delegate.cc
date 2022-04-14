@@ -106,10 +106,10 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
 VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     const VideoCaptureDeviceDescriptor& device_descriptor,
-    CameraHalDelegate* camera_hal_delegate,
+    scoped_refptr<CameraHalDelegate> camera_hal_delegate,
     base::OnceClosure cleanup_callback)
     : device_descriptor_(device_descriptor),
-      camera_hal_delegate_(camera_hal_delegate),
+      camera_hal_delegate_(std::move(camera_hal_delegate)),
       capture_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       camera_device_ipc_thread_(std::string("CameraDeviceIpcThread") +
                                 device_descriptor.device_id),

@@ -42,11 +42,12 @@ class LocalCameraClientObserver : public CameraClientObserver {
  public:
   LocalCameraClientObserver() = delete;
 
-  explicit LocalCameraClientObserver(CameraHalDelegate* camera_hal_delegate,
-                                     cros::mojom::CameraClientType type,
-                                     base::UnguessableToken auth_token)
+  explicit LocalCameraClientObserver(
+      scoped_refptr<CameraHalDelegate> camera_hal_delegate,
+      cros::mojom::CameraClientType type,
+      base::UnguessableToken auth_token)
       : CameraClientObserver(type, std::move(auth_token)),
-        camera_hal_delegate_(camera_hal_delegate) {}
+        camera_hal_delegate_(std::move(camera_hal_delegate)) {}
 
   LocalCameraClientObserver(const LocalCameraClientObserver&) = delete;
   LocalCameraClientObserver& operator=(const LocalCameraClientObserver&) =
@@ -58,7 +59,7 @@ class LocalCameraClientObserver : public CameraClientObserver {
   }
 
  private:
-  CameraHalDelegate* camera_hal_delegate_;
+  scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
 };
 
 // chromeos::system::StatisticsProvider::IsRunningOnVM() is not available in
@@ -147,19 +148,17 @@ CameraHalDelegate::CameraHalDelegate(
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-CameraHalDelegate::~CameraHalDelegate() {}
+CameraHalDelegate::~CameraHalDelegate() = default;
 
 bool CameraHalDelegate::RegisterCameraClient() {
   auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
   auto type = cros::mojom::CameraClientType::CHROME;
-  auto client_observer = std::make_unique<LocalCameraClientObserver>(
-      this, type, dispatcher->GetTokenForTrustedClient(type));
   dispatcher->AddClientObserver(
-      client_observer.get(),
+      std::make_unique<LocalCameraClientObserver>(
+          this, type, dispatcher->GetTokenForTrustedClient(type)),
       base::BindOnce(&CameraHalDelegate::OnRegisteredCameraHalClient,
                      base::Unretained(this)));
   camera_hal_client_registered_.Wait();
-  local_client_observers_.emplace_back(std::move(client_observer));
   return authenticated_;
 }
 
@@ -177,24 +176,14 @@ void CameraHalDelegate::OnRegisteredCameraHalClient(int32_t result) {
 void CameraHalDelegate::SetCameraModule(
     mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
   ipc_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CameraHalDelegate::SetCameraModuleOnIpcThread,
-                     base::Unretained(this), std::move(camera_module)));
+      FROM_HERE, base::BindOnce(&CameraHalDelegate::SetCameraModuleOnIpcThread,
+                                this, std::move(camera_module)));
 }
 
 void CameraHalDelegate::Reset() {
   ipc_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                     base::Unretained(this)));
-
-  std::vector<CameraClientObserver*> observers;
-  for (auto& client_observer : local_client_observers_) {
-    observers.emplace_back(client_observer.get());
-  }
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  dispatcher->RemoveClientObservers(observers);
-  local_client_observers_.clear();
+      base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread, this));
 }
 
 std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
@@ -501,8 +490,7 @@ void CameraHalDelegate::OpenDevice(
   camera_module_has_been_set_.Wait();
   ipc_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDelegate::OpenDeviceOnIpcThread,
-                     base::Unretained(this), camera_id,
+      base::BindOnce(&CameraHalDelegate::OpenDeviceOnIpcThread, this, camera_id,
                      std::move(device_ops_receiver), std::move(callback)));
 }
 
@@ -545,9 +533,8 @@ void CameraHalDelegate::SetCameraModuleOnIpcThread(
   }
   if (camera_module.is_valid()) {
     camera_module_.Bind(std::move(camera_module));
-    camera_module_.set_disconnect_handler(
-        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                       base::Unretained(this)));
+    camera_module_.set_disconnect_handler(base::BindOnce(
+        &CameraHalDelegate::ResetMojoInterfaceOnIpcThread, this));
   }
   camera_module_has_been_set_.Signal();
 }
@@ -581,7 +568,7 @@ bool CameraHalDelegate::UpdateBuiltInCameraInfo() {
   ipc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDelegate::UpdateBuiltInCameraInfoOnIpcThread,
-                     base::Unretained(this)));
+                     this));
   if (!builtin_camera_info_updated_.TimedWait(kEventWaitTimeoutSecs)) {
     LOG(ERROR) << "Timed out getting camera info";
     return false;
@@ -591,9 +578,8 @@ bool CameraHalDelegate::UpdateBuiltInCameraInfo() {
 
 void CameraHalDelegate::UpdateBuiltInCameraInfoOnIpcThread() {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  camera_module_->GetNumberOfCameras(
-      base::BindOnce(&CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread,
-                     base::Unretained(this)));
+  camera_module_->GetNumberOfCameras(base::BindOnce(
+      &CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread, this));
 }
 
 void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
@@ -612,13 +598,11 @@ void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
   // functions are called.
   camera_module_->SetCallbacksAssociated(
       camera_module_callbacks_.BindNewEndpointAndPassRemote(),
-      base::BindOnce(&CameraHalDelegate::OnSetCallbacksOnIpcThread,
-                     base::Unretained(this)));
+      base::BindOnce(&CameraHalDelegate::OnSetCallbacksOnIpcThread, this));
 
   camera_module_->GetVendorTagOps(
       vendor_tag_ops_delegate_.MakeReceiver(),
-      base::BindOnce(&CameraHalDelegate::OnGotVendorTagOpsOnIpcThread,
-                     base::Unretained(this)));
+      base::BindOnce(&CameraHalDelegate::OnGotVendorTagOpsOnIpcThread, this));
 }
 
 void CameraHalDelegate::OnSetCallbacksOnIpcThread(int32_t result) {
@@ -641,8 +625,8 @@ void CameraHalDelegate::OnSetCallbacksOnIpcThread(int32_t result) {
   for (size_t camera_id = 0; camera_id < num_builtin_cameras_; ++camera_id) {
     GetCameraInfoOnIpcThread(
         camera_id,
-        base::BindOnce(&CameraHalDelegate::OnGotCameraInfoOnIpcThread,
-                       base::Unretained(this), camera_id));
+        base::BindOnce(&CameraHalDelegate::OnGotCameraInfoOnIpcThread, this,
+                       camera_id));
   }
 }
 
@@ -733,8 +717,8 @@ void CameraHalDelegate::CameraDeviceStatusChange(
         }
         GetCameraInfoOnIpcThread(
             camera_id,
-            base::BindOnce(&CameraHalDelegate::OnGotCameraInfoOnIpcThread,
-                           base::Unretained(this), camera_id));
+            base::BindOnce(&CameraHalDelegate::OnGotCameraInfoOnIpcThread, this,
+                           camera_id));
       } else {
         LOG(WARNING) << "Ignore duplicated camera_id = " << camera_id;
       }
