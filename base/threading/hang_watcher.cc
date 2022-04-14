@@ -18,6 +18,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -510,6 +511,22 @@ HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
 }
 #endif
 
+std::string HangWatcher::GetTimeSinceLastSystemPowerResumeCrashKeyValue()
+    const {
+  DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
+
+  const TimeTicks last_system_power_resume_time =
+      PowerMonitor::GetLastSystemResumeTime();
+  if (last_system_power_resume_time.is_null())
+    return "Never suspended";
+  if (last_system_power_resume_time == TimeTicks::Max())
+    return "Power suspended";
+
+  const TimeDelta time_since_last_system_resume =
+      TimeTicks::Now() - last_system_power_resume_time;
+  return NumberToString(time_since_last_system_resume.InSeconds());
+}
+
 void HangWatcher::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   if (memory_pressure_level ==
@@ -875,6 +892,9 @@ void HangWatcher::DoDumpWithoutCrashing(
   const debug::ScopedCrashKeyString
       time_since_last_critical_memory_pressure_crash_key_string =
           GetTimeSinceLastCriticalMemoryPressureCrashKey();
+
+  SCOPED_CRASH_KEY_STRING32("HangWatcher", "seconds-since-last-resume",
+                            GetTimeSinceLastSystemPowerResumeCrashKeyValue());
 #endif
 
   // To avoid capturing more than one hang that blames a subset of the same

@@ -104,6 +104,12 @@ bool PowerMonitor::IsOnBatteryPower() {
   return power_monitor->on_battery_power_;
 }
 
+TimeTicks PowerMonitor::GetLastSystemResumeTime() {
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
+  return power_monitor->last_system_resume_time_;
+}
+
 void PowerMonitor::ShutdownForTesting() {
   GetInstance()->source_ = nullptr;
 
@@ -111,6 +117,7 @@ void PowerMonitor::ShutdownForTesting() {
   {
     AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
     power_monitor->is_system_suspended_ = false;
+    power_monitor->last_system_resume_time_ = TimeTicks();
   }
   {
     AutoLock auto_lock(power_monitor->on_battery_power_lock_);
@@ -168,6 +175,7 @@ void PowerMonitor::NotifySuspend() {
   AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
   if (!power_monitor->is_system_suspended_) {
     power_monitor->is_system_suspended_ = true;
+    power_monitor->last_system_resume_time_ = TimeTicks::Max();
     GetInstance()->power_suspend_observers_->Notify(
         FROM_HERE, &PowerSuspendObserver::OnSuspend);
   }
@@ -179,10 +187,13 @@ void PowerMonitor::NotifyResume() {
                        TRACE_EVENT_SCOPE_PROCESS);
   DVLOG(1) << "Power Resuming";
 
+  TimeTicks resume_time = TimeTicks::Now();
+
   PowerMonitor* power_monitor = GetInstance();
   AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
   if (power_monitor->is_system_suspended_) {
     power_monitor->is_system_suspended_ = false;
+    power_monitor->last_system_resume_time_ = resume_time;
     GetInstance()->power_suspend_observers_->Notify(
         FROM_HERE, &PowerSuspendObserver::OnResume);
   }

@@ -243,6 +243,10 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Begin executing the monitoring loop on the HangWatcher thread.
   void Start();
 
+  // Returns the value of the crash key with the time since last system power
+  // resume.
+  std::string GetTimeSinceLastSystemPowerResumeCrashKeyValue() const;
+
  private:
   // See comment of ::RegisterThread() for details.
   [[nodiscard]] ScopedClosureRunner RegisterThreadInternal(

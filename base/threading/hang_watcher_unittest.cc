@@ -17,6 +17,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -587,6 +588,8 @@ class HangWatcherSnapshotTest : public testing::Test {
   // actually took place.
   int reference_capture_count_ = 0;
 
+  std::string seconds_since_last_power_resume_crash_key_;
+
   base::test::ScopedFeatureList feature_list_;
 
   // Used exclusively for MOCK_TIME.
@@ -708,6 +711,60 @@ TEST_F(HangWatcherSnapshotTest, MAYBE_HungThreadIDs) {
   // trigger a hang detection.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
   TestIDList(ConcatenateThreadIds({test_thread_id_}));
+}
+
+TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
+  // Override the capture of hangs. Simulate a crash key capture.
+  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this]() {
+    ++hang_capture_count_;
+    seconds_since_last_power_resume_crash_key_ =
+        hang_watcher_.GetTimeSinceLastSystemPowerResumeCrashKeyValue();
+  }));
+
+  // When hang capture is over, unblock the main thread.
+  hang_watcher_.SetAfterMonitorClosureForTesting(
+      base::BindLambdaForTesting([this]() { monitor_event_.Signal(); }));
+
+  hang_watcher_.Start();
+
+  // Register the main test thread for hang watching.
+  auto unregister_thread_closure =
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
+
+  {
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
+    task_environment_.AdvanceClock(kSmallCPUQuantum);
+
+    TriggerMonitorAndWaitForCompletion();
+    EXPECT_EQ(1, hang_capture_count_);
+    EXPECT_EQ("Never suspended", seconds_since_last_power_resume_crash_key_);
+  }
+
+  {
+    test::ScopedPowerMonitorTestSource power_monitor_source;
+    power_monitor_source.Suspend();
+    task_environment_.AdvanceClock(kSmallCPUQuantum);
+
+    {
+      WatchHangsInScope expires_instantly(base::TimeDelta{});
+      task_environment_.AdvanceClock(kSmallCPUQuantum);
+      TriggerMonitorAndWaitForCompletion();
+      EXPECT_EQ(2, hang_capture_count_);
+      EXPECT_EQ("Power suspended", seconds_since_last_power_resume_crash_key_);
+    }
+
+    power_monitor_source.Resume();
+    constexpr TimeDelta kAfterResumeTime{base::Seconds(5)};
+    task_environment_.AdvanceClock(kAfterResumeTime);
+
+    {
+      WatchHangsInScope expires_instantly(base::TimeDelta{});
+      TriggerMonitorAndWaitForCompletion();
+      EXPECT_EQ(3, hang_capture_count_);
+      EXPECT_EQ(base::NumberToString(kAfterResumeTime.InSeconds()),
+                seconds_since_last_power_resume_crash_key_);
+    }
+  }
 }
 
 namespace {
