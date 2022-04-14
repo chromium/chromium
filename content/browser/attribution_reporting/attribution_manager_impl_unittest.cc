@@ -77,6 +77,8 @@ using ::testing::UnorderedElementsAre;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
+constexpr size_t kMaxPendingEvents = 5;
+
 constexpr AttributionStorageDelegate::OfflineReportDelayConfig
     kDefaultOfflineReportDelay{
         .min = base::Minutes(0),
@@ -273,8 +275,9 @@ class AttributionManagerImplTest : public testing::Test {
     report_sender_ = report_sender.get();
 
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
-        dir_.GetPath(), mock_storage_policy_, std::move(storage_delegate),
-        std::move(cookie_checker), std::move(report_sender),
+        dir_.GetPath(), kMaxPendingEvents, mock_storage_policy_,
+        std::move(storage_delegate), std::move(cookie_checker),
+        std::move(report_sender),
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()));
   }
@@ -1950,6 +1953,34 @@ TEST_F(AttributionManagerImplTest, GetFailedReportDelay) {
     EXPECT_EQ(test_case.expected,
               GetFailedReportDelay(test_case.failed_send_attempts))
         << "failed_send_attempts=" << test_case.failed_send_attempts;
+  }
+}
+
+TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
+  base::HistogramTester histograms;
+
+  // Prevent sources from being removed from the queue.
+  cookie_checker_->DeferCallbacks();
+
+  for (size_t i = 0; i <= kMaxPendingEvents; i++) {
+    attribution_manager_->HandleSource(
+        SourceBuilder().SetDebugKey(i).SetExpiry(kImpressionExpiry).Build());
+  }
+
+  histograms.ExpectBucketCount("Conversions.EnqueueEventAllowed", true,
+                               kMaxPendingEvents);
+  histograms.ExpectBucketCount("Conversions.EnqueueEventAllowed", false, 1);
+
+  // Unblock the cookie checks. Only the first `kMaxPendingEvents` sources
+  // should be stored.
+  for (size_t i = 0; i <= kMaxPendingEvents; i++) {
+    cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/true);
+  }
+
+  std::vector<StoredSource> sources = StoredSources();
+  ASSERT_THAT(sources, SizeIs(kMaxPendingEvents));
+  for (size_t i = 0; i < kMaxPendingEvents; i++) {
+    EXPECT_THAT(sources[i], SourceDebugKeyIs(i));
   }
 }
 

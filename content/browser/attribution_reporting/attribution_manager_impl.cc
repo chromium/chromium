@@ -247,15 +247,16 @@ bool AttributionManagerImpl::IsReportAllowed(
 std::unique_ptr<AttributionManagerImpl>
 AttributionManagerImpl::CreateForTesting(
     const base::FilePath& user_data_directory,
+    size_t max_pending_events,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     StoragePartitionImpl* storage_partition) {
   return absl::WrapUnique(new AttributionManagerImpl(
-      storage_partition, user_data_directory, std::move(special_storage_policy),
-      std::move(storage_delegate), std::move(cookie_checker),
-      std::move(report_sender),
+      storage_partition, user_data_directory, max_pending_events,
+      std::move(special_storage_policy), std::move(storage_delegate),
+      std::move(cookie_checker), std::move(report_sender),
       /*data_host_manager=*/nullptr));
 }
 
@@ -266,6 +267,7 @@ AttributionManagerImpl::AttributionManagerImpl(
     : AttributionManagerImpl(
           storage_partition,
           user_data_directory,
+          /*max_pending_events=*/1000,
           std::move(special_storage_policy),
           MakeStorageDelegate(),
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
@@ -275,12 +277,14 @@ AttributionManagerImpl::AttributionManagerImpl(
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
     const base::FilePath& user_data_directory,
+    size_t max_pending_events,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionDataHostManager> data_host_manager)
     : storage_partition_(storage_partition),
+      max_pending_events_(max_pending_events),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
           user_data_directory,
@@ -293,6 +297,7 @@ AttributionManagerImpl::AttributionManagerImpl(
       cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)) {
   DCHECK(storage_partition_);
+  DCHECK_GT(max_pending_events_, 0u);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
 }
@@ -374,10 +379,9 @@ void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
   const size_t size_before_push = pending_events_.size();
 
   // Avoid unbounded memory growth with adversarial input.
-  // TODO(apaseltiner): Consider logging UMA / surfacing DevTools issue, since
-  // this will cause data loss.
-  constexpr size_t kMaxPendingEvents = 1000;
-  if (size_before_push == kMaxPendingEvents)
+  bool allowed = size_before_push < max_pending_events_;
+  base::UmaHistogramBoolean("Conversions.EnqueueEventAllowed", allowed);
+  if (!allowed)
     return;
 
   pending_events_.push_back(std::move(event));

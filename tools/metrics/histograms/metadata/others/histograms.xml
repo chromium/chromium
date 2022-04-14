@@ -3329,6 +3329,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.EnqueueEventAllowed" enum="BooleanAllowed"
+    expires_after="2022-10-04">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often sources and triggers are allowed to be enqueued for
+    processing in the attribution manager. If the queue reaches a maximum size,
+    additional sources and triggers are dropped. Events are enqueued while
+    waiting for a previous debug-cookie check to complete.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ExtraReportDelay" units="ms"
     expires_after="2021-12-19">
   <obsolete>
