@@ -67,9 +67,11 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
 
   std::vector<gfx::GpuFenceHandle> fences;
   bool need_end_fence;
-  ozone_backing()->BeginAccess(
-      /*readonly=*/false, SharedImageBackingOzone::AccessStream::kWebGPU,
-      &fences, need_end_fence);
+  if (!ozone_backing()->BeginAccess(
+          /*readonly=*/false, SharedImageBackingOzone::AccessStream::kWebGPU,
+          &fences, need_end_fence)) {
+    return nullptr;
+  }
   DCHECK(need_end_fence);
 
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
@@ -113,6 +115,9 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
 
   texture_ = dawn::native::vulkan::WrapVulkanImage(device_, &descriptor);
   if (!texture_) {
+    ozone_backing()->EndAccess(/*readonly=*/false,
+                               SharedImageBackingOzone::AccessStream::kWebGPU,
+                               gfx::GpuFenceHandle());
     close(fd);
   }
 

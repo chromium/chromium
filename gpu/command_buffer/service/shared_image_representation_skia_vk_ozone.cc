@@ -75,6 +75,9 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
   auto* gr_context = context_state_->gr_context();
   if (gr_context->abandoned()) {
     LOG(ERROR) << "GrContext is abandoned.";
+    ozone_backing()->EndAccess(/*readonly=*/false,
+                               SharedImageBackingOzone::AccessStream::kVulkan,
+                               gfx::GpuFenceHandle());
     return nullptr;
   }
 
@@ -88,6 +91,9 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
         &surface_props);
     if (!surface_) {
       LOG(ERROR) << "MakeFromBackendTexture() failed.";
+      ozone_backing()->EndAccess(/*readonly=*/false,
+                                 SharedImageBackingOzone::AccessStream::kVulkan,
+                                 gfx::GpuFenceHandle());
       return nullptr;
     }
     surface_msaa_count_ = final_msaa_count;
@@ -189,6 +195,9 @@ bool SharedImageRepresentationSkiaVkOzone::BeginAccess(
 
     if (end_access_semaphore_ == VK_NULL_HANDLE) {
       DLOG(ERROR) << "Failed to create the external semaphore.";
+      ozone_backing()->EndAccess(readonly,
+                                 SharedImageBackingOzone::AccessStream::kVulkan,
+                                 gfx::GpuFenceHandle());
       return false;
     }
 
