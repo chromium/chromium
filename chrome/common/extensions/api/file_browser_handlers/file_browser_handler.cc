@@ -131,11 +131,20 @@ FileBrowserHandler::GetHandlers(const extensions::Extension* extension) {
   return &info->file_browser_handlers;
 }
 
-FileBrowserHandlerParser::FileBrowserHandlerParser() {
+// static
+const FileBrowserHandler* FileBrowserHandler::FindForActionId(
+    const extensions::Extension* extension,
+    const std::string& action_id) {
+  for (const auto& handler : *FileBrowserHandler::GetHandlers(extension)) {
+    if (handler->id() == action_id)
+      return handler.get();
+  }
+  return nullptr;
 }
 
-FileBrowserHandlerParser::~FileBrowserHandlerParser() {
-}
+FileBrowserHandlerParser::FileBrowserHandlerParser() = default;
+
+FileBrowserHandlerParser::~FileBrowserHandlerParser() = default;
 
 namespace {
 

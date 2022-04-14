@@ -61,23 +61,6 @@ namespace file_manager {
 namespace file_browser_handlers {
 namespace {
 
-// Finds a file browser handler that matches |action_id|. Returns NULL if not
-// found.
-const FileBrowserHandler* FindFileBrowserHandlerForActionId(
-    const Extension* extension,
-    const std::string& action_id) {
-  FileBrowserHandler::List* handler_list =
-      FileBrowserHandler::GetHandlers(extension);
-  for (FileBrowserHandler::List::const_iterator handler_iter =
-           handler_list->begin();
-       handler_iter != handler_list->end();
-       ++handler_iter) {
-    if (handler_iter->get()->id() == action_id)
-      return handler_iter->get();
-  }
-  return nullptr;
-}
-
 std::string EscapedUtf8ToLower(const std::string& str) {
   std::u16string utf16 = base::UTF8ToUTF16(
       net::UnescapeURLComponent(str, net::UnescapeRule::NORMAL));
@@ -381,7 +364,7 @@ void FileBrowserHandlerExecutor::SetupHandlerHostFileAccessPermissions(
     const Extension* extension,
     int handler_pid) {
   const FileBrowserHandler* action =
-      FindFileBrowserHandlerForActionId(extension_.get(), action_id_);
+      FileBrowserHandler::FindForActionId(extension_.get(), action_id_);
   for (FileDefinitionList::const_iterator iter = file_definition_list->begin();
        iter != file_definition_list->end();
        ++iter) {
@@ -406,7 +389,7 @@ bool ExecuteFileBrowserHandler(Profile* profile,
                                const std::vector<FileSystemURL>& file_urls,
                                file_tasks::FileTaskFinishedCallback done) {
   // Forbid calling undeclared handlers.
-  if (!FindFileBrowserHandlerForActionId(extension, action_id))
+  if (!FileBrowserHandler::FindForActionId(extension, action_id))
     return false;
 
   // The executor object will be self deleted on completion.

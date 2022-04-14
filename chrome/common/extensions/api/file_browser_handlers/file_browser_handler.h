@@ -74,6 +74,12 @@ class FileBrowserHandler {
   // Returns the file browser handlers associated with the |extension|.
   static List* GetHandlers(const extensions::Extension* extension);
 
+  // Returns file browser handler in |extension| matching |action_id|, or
+  // nullptr if not found.
+  static const FileBrowserHandler* FindForActionId(
+      const extensions::Extension* extension,
+      const std::string& action_id);
+
  private:
   // The id for the extension this action belongs to (as defined in the
   // extension manifest).

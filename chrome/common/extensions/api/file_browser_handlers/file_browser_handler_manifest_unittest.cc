@@ -144,6 +144,11 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandler) {
   EXPECT_FALSE(action->HasCreateAccessPermission());
   EXPECT_TRUE(action->CanRead());
   EXPECT_TRUE(action->CanWrite());
+
+  EXPECT_EQ(action, FileBrowserHandler::FindForActionId(extension.get(),
+                                                        "ExtremelyCoolAction"));
+  EXPECT_EQ(nullptr, FileBrowserHandler::FindForActionId(extension.get(),
+                                                         "(does not exist)"));
 }
 
 TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
@@ -184,6 +189,10 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
   ASSERT_EQ(1U, patterns.patterns().size());
   EXPECT_TRUE(action->MatchesURL(
       GURL("filesystem:chrome-extension://foo/local/test.txt")));
+
+  EXPECT_EQ(action, FileBrowserHandler::FindForActionId(extension.get(), "ID"));
+  EXPECT_EQ(nullptr, FileBrowserHandler::FindForActionId(extension.get(),
+                                                         "(does not exist)"));
 }
 
 TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
@@ -227,6 +236,10 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
   EXPECT_TRUE(action->HasCreateAccessPermission());
   EXPECT_FALSE(action->CanRead());
   EXPECT_FALSE(action->CanWrite());
+
+  EXPECT_EQ(action, FileBrowserHandler::FindForActionId(extension.get(), "ID"));
+  EXPECT_EQ(nullptr, FileBrowserHandler::FindForActionId(extension.get(),
+                                                         "(does not exist)"));
 }
 
 }  // namespace
