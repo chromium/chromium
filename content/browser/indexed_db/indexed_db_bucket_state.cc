@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/indexed_db_storage_key_state.h"
+#include "content/browser/indexed_db/indexed_db_bucket_state.h"
 
 #include <list>
 #include <utility>
@@ -44,62 +44,58 @@ const int kTombstoneSweeperRoundIterations = 1000;
 // The maximum total iterations for the tombstone sweeper.
 const int kTombstoneSweeperMaxIterations = 10 * 1000 * 1000;
 
-constexpr const base::TimeDelta kMinEarliestStorageKeySweepFromNow =
-    base::Days(1);
-static_assert(kMinEarliestStorageKeySweepFromNow <
-                  IndexedDBStorageKeyState::kMaxEarliestStorageKeySweepFromNow,
+constexpr const base::TimeDelta kMinEarliestBucketSweepFromNow = base::Days(1);
+static_assert(kMinEarliestBucketSweepFromNow <
+                  IndexedDBBucketState::kMaxEarliestBucketSweepFromNow,
               "Min < Max");
 
 constexpr const base::TimeDelta kMinEarliestGlobalSweepFromNow =
     base::Minutes(5);
 static_assert(kMinEarliestGlobalSweepFromNow <
-                  IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow,
+                  IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow,
               "Min < Max");
 
-base::Time GenerateNextStorageKeySweepTime(base::Time now) {
-  uint64_t range = IndexedDBStorageKeyState::kMaxEarliestStorageKeySweepFromNow
-                       .InMilliseconds() -
-                   kMinEarliestStorageKeySweepFromNow.InMilliseconds();
-  int64_t rand_millis = kMinEarliestStorageKeySweepFromNow.InMilliseconds() +
+base::Time GenerateNextBucketSweepTime(base::Time now) {
+  uint64_t range =
+      IndexedDBBucketState::kMaxEarliestBucketSweepFromNow.InMilliseconds() -
+      kMinEarliestBucketSweepFromNow.InMilliseconds();
+  int64_t rand_millis = kMinEarliestBucketSweepFromNow.InMilliseconds() +
                         static_cast<int64_t>(base::RandGenerator(range));
   return now + base::Milliseconds(rand_millis);
 }
 
 base::Time GenerateNextGlobalSweepTime(base::Time now) {
-  uint64_t range = IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow
-                       .InMilliseconds() -
-                   kMinEarliestGlobalSweepFromNow.InMilliseconds();
+  uint64_t range =
+      IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow.InMilliseconds() -
+      kMinEarliestGlobalSweepFromNow.InMilliseconds();
   int64_t rand_millis = kMinEarliestGlobalSweepFromNow.InMilliseconds() +
                         static_cast<int64_t>(base::RandGenerator(range));
   return now + base::Milliseconds(rand_millis);
 }
 
-constexpr const base::TimeDelta kMinEarliestStorageKeyCompactionFromNow =
+constexpr const base::TimeDelta kMinEarliestBucketCompactionFromNow =
     base::Days(1);
-static_assert(
-    kMinEarliestStorageKeyCompactionFromNow <
-        IndexedDBStorageKeyState::kMaxEarliestStorageKeyCompactionFromNow,
-    "Min < Max");
+static_assert(kMinEarliestBucketCompactionFromNow <
+                  IndexedDBBucketState::kMaxEarliestBucketCompactionFromNow,
+              "Min < Max");
 
 constexpr const base::TimeDelta kMinEarliestGlobalCompactionFromNow =
     base::Minutes(5);
 static_assert(kMinEarliestGlobalCompactionFromNow <
-                  IndexedDBStorageKeyState::kMaxEarliestGlobalCompactionFromNow,
+                  IndexedDBBucketState::kMaxEarliestGlobalCompactionFromNow,
               "Min < Max");
 
-base::Time GenerateNextStorageKeyCompactionTime(base::Time now) {
-  uint64_t range =
-      IndexedDBStorageKeyState::kMaxEarliestStorageKeyCompactionFromNow
-          .InMilliseconds() -
-      kMinEarliestStorageKeyCompactionFromNow.InMilliseconds();
-  int64_t rand_millis =
-      kMinEarliestStorageKeyCompactionFromNow.InMilliseconds() +
-      static_cast<int64_t>(base::RandGenerator(range));
+base::Time GenerateNextBucketCompactionTime(base::Time now) {
+  uint64_t range = IndexedDBBucketState::kMaxEarliestBucketCompactionFromNow
+                       .InMilliseconds() -
+                   kMinEarliestBucketCompactionFromNow.InMilliseconds();
+  int64_t rand_millis = kMinEarliestBucketCompactionFromNow.InMilliseconds() +
+                        static_cast<int64_t>(base::RandGenerator(range));
   return now + base::Milliseconds(rand_millis);
 }
 
 base::Time GenerateNextGlobalCompactionTime(base::Time now) {
-  uint64_t range = IndexedDBStorageKeyState::kMaxEarliestGlobalCompactionFromNow
+  uint64_t range = IndexedDBBucketState::kMaxEarliestGlobalCompactionFromNow
                        .InMilliseconds() -
                    kMinEarliestGlobalCompactionFromNow.InMilliseconds();
   int64_t rand_millis = kMinEarliestGlobalCompactionFromNow.InMilliseconds() +
@@ -113,16 +109,16 @@ const base::Feature kCompactIDBOnClose{"CompactIndexedDBOnClose",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 constexpr const base::TimeDelta
-    IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow;
+    IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow;
 constexpr const base::TimeDelta
-    IndexedDBStorageKeyState::kMaxEarliestStorageKeySweepFromNow;
+    IndexedDBBucketState::kMaxEarliestBucketSweepFromNow;
 
 constexpr const base::TimeDelta
-    IndexedDBStorageKeyState::kMaxEarliestGlobalCompactionFromNow;
+    IndexedDBBucketState::kMaxEarliestGlobalCompactionFromNow;
 constexpr const base::TimeDelta
-    IndexedDBStorageKeyState::kMaxEarliestStorageKeyCompactionFromNow;
+    IndexedDBBucketState::kMaxEarliestBucketCompactionFromNow;
 
-IndexedDBStorageKeyState::IndexedDBStorageKeyState(
+IndexedDBBucketState::IndexedDBBucketState(
     blink::StorageKey storage_key,
     bool persist_for_incognito,
     base::Clock* clock,
@@ -153,7 +149,7 @@ IndexedDBStorageKeyState::IndexedDBStorageKeyState(
         GenerateNextGlobalCompactionTime(clock_->Now());
 }
 
-IndexedDBStorageKeyState::~IndexedDBStorageKeyState() {
+IndexedDBBucketState::~IndexedDBBucketState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!backing_store_)
     return;
@@ -167,7 +163,7 @@ IndexedDBStorageKeyState::~IndexedDBStorageKeyState() {
   leveldb_destruct_event.Wait();
 }
 
-void IndexedDBStorageKeyState::AbortAllTransactions(bool compact) {
+void IndexedDBBucketState::AbortAllTransactions(bool compact) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Because finishing all transactions could cause a database to be destructed
@@ -179,7 +175,7 @@ void IndexedDBStorageKeyState::AbortAllTransactions(bool compact) {
     database_names.push_back(pair.first);
   }
 
-  base::WeakPtr<IndexedDBStorageKeyState> weak_ptr = AsWeakPtr();
+  base::WeakPtr<IndexedDBBucketState> weak_ptr = AsWeakPtr();
   for (const std::u16string& database_name : database_names) {
     auto it = databases_.find(database_name);
     if (it == databases_.end())
@@ -212,13 +208,13 @@ void IndexedDBStorageKeyState::AbortAllTransactions(bool compact) {
     backing_store_->Compact();
 }
 
-void IndexedDBStorageKeyState::ForceClose() {
+void IndexedDBBucketState::ForceClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // To avoid re-entry, the |db_destruction_weak_factory_| is invalidated so
+  // To avoid re-entry, the `db_destruction_weak_factory_` is invalidated so
   // that of the deletions closures returned by CreateDatabaseDeleteClosure will
   // no-op. This allows force closing all of the databases without having the
   // map mutate. Afterwards the map is manually deleted.
-  IndexedDBStorageKeyStateHandle handle = CreateHandle();
+  IndexedDBBucketStateHandle handle = CreateHandle();
   for (const auto& pair : databases_) {
     // Note: We purposefully ignore the result here as force close needs to
     // continue tearing things down anyways.
@@ -242,20 +238,20 @@ void IndexedDBStorageKeyState::ForceClose() {
   skip_closing_sequence_ = true;
 }
 
-void IndexedDBStorageKeyState::ReportOutstandingBlobs(bool blobs_outstanding) {
+void IndexedDBBucketState::ReportOutstandingBlobs(bool blobs_outstanding) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_blobs_outstanding_ = blobs_outstanding;
   MaybeStartClosing();
 }
 
-void IndexedDBStorageKeyState::StopPersistingForIncognito() {
+void IndexedDBBucketState::StopPersistingForIncognito() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   persist_for_incognito_ = false;
   MaybeStartClosing();
 }
 
-std::tuple<IndexedDBStorageKeyState::RunTasksResult, leveldb::Status>
-IndexedDBStorageKeyState::RunTasks() {
+std::tuple<IndexedDBBucketState::RunTasksResult, leveldb::Status>
+IndexedDBBucketState::RunTasks() {
   task_run_scheduled_ = false;
   running_tasks_ = true;
   leveldb::Status status;
@@ -282,7 +278,7 @@ IndexedDBStorageKeyState::RunTasks() {
   return {RunTasksResult::kDone, leveldb::Status::OK()};
 }
 
-IndexedDBDatabase* IndexedDBStorageKeyState::AddDatabase(
+IndexedDBDatabase* IndexedDBBucketState::AddDatabase(
     const std::u16string& name,
     std::unique_ptr<IndexedDBDatabase> database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -290,7 +286,7 @@ IndexedDBDatabase* IndexedDBStorageKeyState::AddDatabase(
   return databases_.emplace(name, std::move(database)).first->second.get();
 }
 
-IndexedDBStorageKeyStateHandle IndexedDBStorageKeyState::CreateHandle() {
+IndexedDBBucketStateHandle IndexedDBBucketState::CreateHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++open_handles_;
   if (closing_stage_ != ClosingState::kNotClosing) {
@@ -302,30 +298,30 @@ IndexedDBStorageKeyStateHandle IndexedDBStorageKeyState::CreateHandle() {
       pre_close_task_queue_.reset();
     }
   }
-  return IndexedDBStorageKeyStateHandle(weak_factory_.GetWeakPtr());
+  return IndexedDBBucketStateHandle(weak_factory_.GetWeakPtr());
 }
 
-void IndexedDBStorageKeyState::OnHandleDestruction() {
+void IndexedDBBucketState::OnHandleDestruction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(open_handles_, 0ll);
   --open_handles_;
   MaybeStartClosing();
 }
 
-bool IndexedDBStorageKeyState::CanCloseFactory() {
+bool IndexedDBBucketState::CanCloseFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(open_handles_, 0);
   return !has_blobs_outstanding_ && open_handles_ <= 0 &&
          !persist_for_incognito_;
 }
 
-void IndexedDBStorageKeyState::MaybeStartClosing() {
+void IndexedDBBucketState::MaybeStartClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsClosing() && CanCloseFactory())
     StartClosing();
 }
 
-void IndexedDBStorageKeyState::StartClosing() {
+void IndexedDBBucketState::StartClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(CanCloseFactory());
   DCHECK(!IsClosing());
@@ -347,7 +343,7 @@ void IndexedDBStorageKeyState::StartClosing() {
   close_timer_.Start(
       FROM_HERE, base::Seconds(kBackingStoreGracePeriodSeconds),
       base::BindOnce(
-          [](base::WeakPtr<IndexedDBStorageKeyState> factory) {
+          [](base::WeakPtr<IndexedDBBucketState> factory) {
             if (!factory ||
                 factory->closing_stage_ != ClosingState::kPreCloseGracePeriod)
               return;
@@ -356,14 +352,14 @@ void IndexedDBStorageKeyState::StartClosing() {
           weak_factory_.GetWeakPtr()));
 }
 
-void IndexedDBStorageKeyState::StartPreCloseTasks() {
+void IndexedDBBucketState::StartPreCloseTasks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(closing_stage_ == ClosingState::kPreCloseGracePeriod);
   closing_stage_ = ClosingState::kRunningPreCloseTasks;
 
   // The callback will run on all early returns in this function.
   base::ScopedClosureRunner maybe_close_backing_store_runner(base::BindOnce(
-      [](base::WeakPtr<IndexedDBStorageKeyState> factory) {
+      [](base::WeakPtr<IndexedDBBucketState> factory) {
         if (!factory ||
             factory->closing_stage_ != ClosingState::kRunningPreCloseTasks)
           return;
@@ -398,21 +394,21 @@ void IndexedDBStorageKeyState::StartPreCloseTasks() {
   }
 }
 
-bool IndexedDBStorageKeyState::ShouldRunTombstoneSweeper() {
+bool IndexedDBBucketState::ShouldRunTombstoneSweeper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Time now = clock_->Now();
   // Check that the last sweep hasn't run too recently.
   if (*earliest_global_sweep_time_ > now)
     return false;
 
-  base::Time storage_key_earliest_sweep;
-  leveldb::Status s = indexed_db::GetEarliestSweepTime(
-      backing_store_->db(), &storage_key_earliest_sweep);
+  base::Time bucket_earliest_sweep;
+  leveldb::Status s = indexed_db::GetEarliestSweepTime(backing_store_->db(),
+                                                       &bucket_earliest_sweep);
   // TODO(dmurph): Log this or report to UMA.
   if (!s.ok() && !s.IsNotFound())
     return false;
 
-  if (storage_key_earliest_sweep > now)
+  if (bucket_earliest_sweep > now)
     return false;
 
   // A sweep will happen now, so reset the sweep timers.
@@ -421,7 +417,7 @@ bool IndexedDBStorageKeyState::ShouldRunTombstoneSweeper() {
       transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
           backing_store_->db());
   s = indexed_db::SetEarliestSweepTime(txn.get(),
-                                       GenerateNextStorageKeySweepTime(now));
+                                       GenerateNextBucketSweepTime(now));
   // TODO(dmurph): Log this or report to UMA.
   if (!s.ok())
     return false;
@@ -433,7 +429,7 @@ bool IndexedDBStorageKeyState::ShouldRunTombstoneSweeper() {
   return true;
 }
 
-bool IndexedDBStorageKeyState::ShouldRunCompaction() {
+bool IndexedDBBucketState::ShouldRunCompaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(kCompactIDBOnClose))
     return false;
@@ -443,14 +439,14 @@ bool IndexedDBStorageKeyState::ShouldRunCompaction() {
   if (*earliest_global_compaction_time_ > now)
     return false;
 
-  base::Time storage_key_earliest_compaction;
+  base::Time bucket_earliest_compaction;
   leveldb::Status s = indexed_db::GetEarliestCompactionTime(
-      backing_store_->db(), &storage_key_earliest_compaction);
+      backing_store_->db(), &bucket_earliest_compaction);
   // TODO(dmurph): Log this or report to UMA.
   if (!s.ok() && !s.IsNotFound())
     return false;
 
-  if (storage_key_earliest_compaction > now)
+  if (bucket_earliest_compaction > now)
     return false;
 
   // A compaction will happen now, so reset the compaction timers.
@@ -459,7 +455,7 @@ bool IndexedDBStorageKeyState::ShouldRunCompaction() {
       transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
           backing_store_->db());
   s = indexed_db::SetEarliestCompactionTime(
-      txn.get(), GenerateNextStorageKeyCompactionTime(now));
+      txn.get(), GenerateNextBucketCompactionTime(now));
   // TODO(dmurph): Log this or report to UMA.
   if (!s.ok())
     return false;

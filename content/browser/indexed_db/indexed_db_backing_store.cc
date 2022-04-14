@@ -758,7 +758,7 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   found = false;
   if (db_data_version.blink_version() == 0 &&
       db_data_version.v8_version() == 0) {
-    // We didn't read |db_data_version| yet.
+    // We didn't read `db_data_version` yet.
     int64_t raw_db_data_version = 0;
     s = GetInt(db_.get(), data_version_key, &raw_db_data_version, &found);
     if (!s.ok()) {
@@ -778,7 +778,7 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     std::ignore =
         PutInt(write_batch.get(), data_version_key, db_data_version.Encode());
   } else {
-    // |db_data_version| is in the future according to at least one component.
+    // `db_data_version` is in the future according to at least one component.
     INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
     return InternalInconsistencyStatus();
   }
@@ -3026,7 +3026,7 @@ IndexedDBBackingStore::Transaction::BlobWriteState::BlobWriteState(
 
 IndexedDBBackingStore::Transaction::BlobWriteState::~BlobWriteState() = default;
 
-// |backing_store| can be null in unittests (see FakeTransaction).
+// `backing_store` can be null in unittests (see FakeTransaction).
 IndexedDBBackingStore::Transaction::Transaction(
     base::WeakPtr<IndexedDBBackingStore> backing_store,
     blink::mojom::IDBTransactionDurability durability,
@@ -3628,8 +3628,8 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
                      base::OnceCallback<void(
                          storage::mojom::WriteBlobToFileResult)> callback,
                      const std::vector<uint8_t>& serialized_token) {
-                    // |object| is owned by |transaction|, so make sure
-                    // |transaction| is still valid before doing anything else.
+                    // `object` is owned by `transaction`, so make sure
+                    // `transaction` is still valid before doing anything else.
                     if (!transaction)
                       return;
                     if (serialized_token.empty()) {
@@ -3673,7 +3673,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::Rollback() {
   if (!transaction_)
     return leveldb::Status::OK();
   // The RollbackAndMaybeTearDown method could tear down the
-  // IndexedDBStorageKeyState, which would destroy |this|.
+  // IndexedDBBucketState, which would destroy `this`.
   scoped_refptr<TransactionalLevelDBTransaction> transaction =
       std::move(transaction_);
   return transaction->Rollback();

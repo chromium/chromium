@@ -14,8 +14,7 @@ MockIndexedDBFactory::MockIndexedDBFactory() {
 MockIndexedDBFactory::~MockIndexedDBFactory() {
 }
 
-std::vector<IndexedDBDatabase*>
-MockIndexedDBFactory::GetOpenDatabasesForStorageKey(
+std::vector<IndexedDBDatabase*> MockIndexedDBFactory::GetOpenDatabasesForBucket(
     const blink::StorageKey& storage_key) const {
   return std::vector<IndexedDBDatabase*>();
 }

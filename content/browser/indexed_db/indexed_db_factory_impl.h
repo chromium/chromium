@@ -30,7 +30,6 @@
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
-#include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -42,12 +41,13 @@ class SequencedTaskRunner;
 }
 
 namespace content {
-class TransactionalLevelDBFactory;
-class TransactionalLevelDBDatabase;
+class IndexedDBBucketState;
+class IndexedDBBucketStateHandle;
 class IndexedDBClassFactory;
 class IndexedDBContextImpl;
 class IndexedDBFactoryImpl;
-class IndexedDBStorageKeyState;
+class TransactionalLevelDBFactory;
+class TransactionalLevelDBDatabase;
 
 class CONTENT_EXPORT IndexedDBFactoryImpl
     : public IndexedDBFactory,
@@ -89,7 +89,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       const blink::StorageKey& storage_key,
       const IndexedDBDatabaseError& error) override;
 
-  std::vector<IndexedDBDatabase*> GetOpenDatabasesForStorageKey(
+  std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
       const blink::StorageKey& storage_key) const override;
 
   // TODO(dmurph): This eventually needs to be async, to support scopes
@@ -125,22 +125,22 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   base::Time GetLastModified(
       const blink::StorageKey& storage_key) const override;
 
-  std::vector<blink::StorageKey> GetOpenStorageKeys() const;
+  std::vector<blink::StorageKey> GetOpenBuckets() const;
 
-  IndexedDBStorageKeyState* GetStorageKeyFactory(
+  IndexedDBBucketState* GetBucketFactory(
       const blink::StorageKey& storage_key) const;
 
   // On an OK status, the factory handle is populated. Otherwise (when status is
-  // not OK), the |IndexedDBDatabaseError| will be populated. If the status was
-  // corruption, the |IndexedDBDataLossInfo| will also be populated.
-  std::tuple<IndexedDBStorageKeyStateHandle,
+  // not OK), the `IndexedDBDatabaseError` will be populated. If the status was
+  // corruption, the `IndexedDBDataLossInfo` will also be populated.
+  std::tuple<IndexedDBBucketStateHandle,
              leveldb::Status,
              IndexedDBDatabaseError,
              IndexedDBDataLossInfo,
              /*was_cold_open=*/bool>
-  GetOrOpenStorageKeyFactory(const blink::StorageKey& storage_key,
-                             const base::FilePath& data_directory,
-                             bool create_if_missing);
+  GetOrOpenBucketFactory(const blink::StorageKey& storage_key,
+                         const base::FilePath& data_directory,
+                         bool create_if_missing);
 
   void OnDatabaseError(const blink::StorageKey& storage_key,
                        leveldb::Status s,
@@ -168,7 +168,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
 
  private:
   friend class IndexedDBBrowserTest;
-  friend class IndexedDBStorageKeyState;
+  friend class IndexedDBBucketState;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
                            BackingStoreReleasedOnForcedClose);
@@ -188,10 +188,10 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest,
                            ForceCloseOpenDatabasesOnCommitFailure);
 
-  // |path_base| is the directory that will contain the database directory, the
-  // blob directory, and any data loss info. |database_path| is the directory
-  // for the leveldb database, and |blob_path| is the directory to store blob
-  // files. If |path_base| is empty, then an in-memory database is opened.
+  // `path_base` is the directory that will contain the database directory, the
+  // blob directory, and any data loss info. `database_path` is the directory
+  // for the leveldb database, and `blob_path` is the directory to store blob
+  // files. If `path_base` is empty, then an in-memory database is opened.
   std::tuple<std::unique_ptr<IndexedDBBackingStore>,
              leveldb::Status,
              IndexedDBDataLossInfo,
@@ -207,14 +207,13 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       bool is_first_attempt,
       bool create_if_missing);
 
-  void RemoveStorageKeyState(const blink::StorageKey& storage_key);
+  void RemoveBucketState(const blink::StorageKey& storage_key);
 
   // Called when the database has been deleted on disk.
   void OnDatabaseDeleted(const blink::StorageKey& storage_key);
 
-  void MaybeRunTasksForStorageKey(const blink::StorageKey& storage_key);
-  void RunTasksForStorageKey(
-      base::WeakPtr<IndexedDBStorageKeyState> storage_key_state);
+  void MaybeRunTasksForBucket(const blink::StorageKey& storage_key);
+  void RunTasksForBucket(base::WeakPtr<IndexedDBBucketState> bucket_state);
 
   // Testing helpers, so unit tests don't need to grovel through internal
   // state.
@@ -234,20 +233,20 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   base::Time earliest_sweep_;
   base::Time earliest_compaction_;
 
-  base::flat_map<blink::StorageKey, std::unique_ptr<IndexedDBStorageKeyState>>
-      factories_per_storage_key_;
+  base::flat_map<blink::StorageKey, std::unique_ptr<IndexedDBBucketState>>
+      factories_per_bucket_;
 
   std::set<blink::StorageKey> backends_opened_since_startup_;
 
   OnDatabaseDeletedCallback call_on_database_deleted_for_testing_;
 
   // Weak pointers from this factory are used to bind the
-  // RemoveStorageKeyState() function, which deletes the
-  // IndexedDBStorageKeyState object. This allows those weak pointers to be
+  // RemoveBucketState() function, which deletes the
+  // IndexedDBBucketState object. This allows those weak pointers to be
   // invalidated during force close & shutdown to prevent re-entry (see
   // ContextDestroyed()).
   base::WeakPtrFactory<IndexedDBFactoryImpl>
-      storage_key_state_destruction_weak_factory_{this};
+      bucket_state_destruction_weak_factory_{this};
   base::WeakPtrFactory<IndexedDBFactoryImpl> weak_factory_{this};
 };
 

@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
-#include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
@@ -22,11 +22,11 @@ namespace content {
 class IndexedDBDatabaseCallbacks;
 class IndexedDBDatabaseError;
 class IndexedDBTransaction;
-class IndexedDBStorageKeyStateHandle;
+class IndexedDBBucketStateHandle;
 
 class CONTENT_EXPORT IndexedDBConnection {
  public:
-  IndexedDBConnection(IndexedDBStorageKeyStateHandle storage_key_state_handle,
+  IndexedDBConnection(IndexedDBBucketStateHandle bucket_state_handle,
                       IndexedDBClassFactory* indexed_db_class_factory,
                       base::WeakPtr<IndexedDBDatabase> database,
                       base::RepeatingClosure on_version_change_ignored,
@@ -96,8 +96,8 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   const int32_t id_;
 
-  // Keeps the factory for this storage key alive.
-  IndexedDBStorageKeyStateHandle storage_key_state_handle_;
+  // Keeps the factory for this bucket alive.
+  IndexedDBBucketStateHandle bucket_state_handle_;
   const raw_ptr<IndexedDBClassFactory> indexed_db_class_factory_;
 
   base::WeakPtr<IndexedDBDatabase> database_;
@@ -105,7 +105,7 @@ class CONTENT_EXPORT IndexedDBConnection {
   base::OnceCallback<void(IndexedDBConnection*)> on_close_;
 
   // The connection owns transactions created on this connection.
-  // This is |flat_map| to preserve ordering, and because the vast majority of
+  // This is `flat_map` to preserve ordering, and because the vast majority of
   // users have less than 200 transactions.
   base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>> transactions_;
 

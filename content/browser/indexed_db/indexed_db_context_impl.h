@@ -63,12 +63,12 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // The indexed db directory.
   static const base::FilePath::CharType kIndexedDBDirectory[];
 
-  // Release |context| on the IDBTaskRunner.
+  // Release `context` on the IDBTaskRunner.
   static void ReleaseOnIDBSequence(
       scoped_refptr<IndexedDBContextImpl>&& context);
 
-  // If |data_path| is empty, nothing will be saved to disk.
-  // |task_runner| is optional, and only set during testing.
+  // If `data_path` is empty, nothing will be saved to disk.
+  // `task_runner` is optional, and only set during testing.
   // This is *not* called on the IDBTaskRunner, unlike most other functions.
   IndexedDBContextImpl(
       const base::FilePath& data_path,
@@ -91,17 +91,16 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
-  void DeleteForStorageKey(const blink::StorageKey& storage_key,
-                           DeleteForStorageKeyCallback callback) override;
+  void DeleteForBucket(const blink::StorageKey& storage_key,
+                       DeleteForBucketCallback callback) override;
   void ForceClose(const blink::StorageKey& storage_key,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
   void GetConnectionCount(const blink::StorageKey& storage_key,
                           GetConnectionCountCallback callback) override;
-  void DownloadStorageKeyData(const blink::StorageKey& storage_key,
-                              DownloadStorageKeyDataCallback callback) override;
-  void GetAllStorageKeysDetails(
-      GetAllStorageKeysDetailsCallback callback) override;
+  void DownloadBucketData(const blink::StorageKey& storage_key,
+                          DownloadBucketDataCallback callback) override;
+  void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;
   void SetForceKeepSessionState() override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override;
@@ -156,7 +155,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // *not* called on the IDBTaskRunner.
   void Shutdown();
 
-  int64_t GetStorageKeyDiskUsage(const blink::StorageKey& storage_key);
+  int64_t GetBucketDiskUsage(const blink::StorageKey& storage_key);
 
   // This getter is thread-safe.
   base::SequencedTaskRunner* IDBTaskRunner() { return idb_task_runner_.get(); }
@@ -180,11 +179,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   }
 
   // Returns a list of all storage_keys with backing stores.
-  std::vector<blink::StorageKey> GetAllStorageKeys();
-  bool HasStorageKey(const blink::StorageKey& storage_key);
+  std::vector<blink::StorageKey> GetAllBuckets();
+  bool HasBucket(const blink::StorageKey& storage_key);
 
   // Used by IndexedDBInternalsUI to populate internals page.
-  base::Value* GetAllStorageKeysDetails();
+  base::Value* GetAllBucketsDetails();
 
   // GetStoragePaths returns all paths owned by this database, in arbitrary
   // order.
@@ -194,7 +193,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   const base::FilePath& data_path() const { return data_path_; }
   bool IsInMemoryContext() const { return data_path_.empty(); }
   size_t GetConnectionCountSync(const blink::StorageKey& storage_key);
-  int GetStorageKeyBlobFileCount(const blink::StorageKey& storage_key);
+  int GetBucketBlobFileCount(const blink::StorageKey& storage_key);
 
   bool is_incognito() const { return data_path_.empty(); }
 
@@ -238,36 +237,36 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   int64_t ReadUsageFromDisk(const blink::StorageKey& storage_key) const;
   void EnsureDiskUsageCacheInitialized(const blink::StorageKey& storage_key);
-  // Compares the disk usage stored in `storage_key_size_map_` with disk. If
-  // there is a difference, it updates `storage_key_size_map_` and notifies the
+  // Compares the disk usage stored in `bucket_size_map_` with disk. If
+  // there is a difference, it updates `bucket_size_map_` and notifies the
   // quota system.
   void QueryDiskAndUpdateQuotaUsage(const blink::StorageKey& storage_key);
-  base::Time GetStorageKeyLastModified(const blink::StorageKey& storage_key);
+  base::Time GetBucketLastModified(const blink::StorageKey& storage_key);
 
-  // Returns `storage_key_set_` (this context's in-memory cache of storage_keys
+  // Returns `bucket_set_` (this context's in-memory cache of buckets
   // with backing stores); the cache will be primed as needed by checking disk.
-  std::set<blink::StorageKey>* GetStorageKeySet();
+  std::set<blink::StorageKey>* GetBucketSet();
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   IndexedDBDispatcherHost dispatcher_host_;
 
-  // Bound and accessed on the |idb_task_runner_|.
+  // Bound and accessed on the `idb_task_runner_`.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
   mojo::Remote<storage::mojom::FileSystemAccessContext>
       file_system_access_context_;
   std::unique_ptr<IndexedDBFactoryImpl> indexeddb_factory_;
 
-  // If |data_path_| is empty then this is an incognito session and the backing
+  // If `data_path_` is empty then this is an incognito session and the backing
   // store will be held in-memory rather than on-disk.
   const base::FilePath data_path_;
 
   // If true, nothing (not even session-only data) should be deleted on exit.
   bool force_keep_session_state_;
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
-  std::unique_ptr<std::set<blink::StorageKey>> storage_key_set_;
-  std::map<blink::StorageKey, int64_t> storage_key_size_map_;
-  // The set of storage_keys whose storage should be cleared on shutdown.
-  std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
+  std::unique_ptr<std::set<blink::StorageKey>> bucket_set_;
+  std::map<blink::StorageKey, int64_t> bucket_size_map_;
+  // The set of buckets whose storage should be cleared on shutdown.
+  std::set<blink::StorageKey> buckets_to_purge_on_shutdown_;
   const raw_ptr<base::Clock> clock_;
 
   const std::unique_ptr<IndexedDBQuotaClient> quota_client_;

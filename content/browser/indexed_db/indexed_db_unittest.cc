@@ -17,12 +17,12 @@
 #include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
+#include "content/browser/indexed_db/indexed_db_bucket_state.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
-#include "content/browser/indexed_db/indexed_db_storage_key_state.h"
 #include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -121,20 +121,20 @@ class IndexedDBTest : public testing::Test {
     if (context_ && !context_->IsInMemoryContext()) {
       IndexedDBFactoryImpl* factory = context_->GetIDBFactory();
 
-      // Loop through all open storage_keys, and force close them, and request
+      // Loop through all open buckets, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
-      auto open_factory_storage_keys = factory->GetOpenStorageKeys();
-      for (const auto& storage_key : open_factory_storage_keys) {
+      auto open_factory_buckets = factory->GetOpenBuckets();
+      for (const auto& storage_key : open_factory_buckets) {
         context_->ForceCloseSync(
             storage_key,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.
-      for (auto storage_key : context_->GetAllStorageKeys()) {
+      for (auto storage_key : context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForStorageKey(storage_key, &success);
+        waiter.DeleteForBucket(storage_key, &success);
         EXPECT_TRUE(success);
       }
     }
@@ -288,7 +288,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
 
   bool success = false;
   storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-  waiter.DeleteForStorageKey(kTestStorageKey, &success);
+  waiter.DeleteForBucket(kTestStorageKey, &success);
   EXPECT_TRUE(success);
 
   EXPECT_FALSE(base::DirectoryExists(test_path));
@@ -309,7 +309,7 @@ TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
   context()->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-        waiter.DeleteForStorageKey(kTestStorageKey, &success);
+        waiter.DeleteForBucket(kTestStorageKey, &success);
         loop.Quit();
       }));
   loop.Run();

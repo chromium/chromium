@@ -61,12 +61,12 @@ void IndexedDBControlWrapper::GetUsage(GetUsageCallback usage_callback) {
   indexed_db_control_->GetUsage(std::move(usage_callback));
 }
 
-void IndexedDBControlWrapper::DeleteForStorageKey(
+void IndexedDBControlWrapper::DeleteForBucket(
     const blink::StorageKey& storage_key,
-    DeleteForStorageKeyCallback callback) {
+    DeleteForBucketCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  indexed_db_control_->DeleteForStorageKey(storage_key, std::move(callback));
+  indexed_db_control_->DeleteForBucket(storage_key, std::move(callback));
 }
 
 void IndexedDBControlWrapper::ForceClose(
@@ -86,19 +86,19 @@ void IndexedDBControlWrapper::GetConnectionCount(
   indexed_db_control_->GetConnectionCount(storage_key, std::move(callback));
 }
 
-void IndexedDBControlWrapper::DownloadStorageKeyData(
+void IndexedDBControlWrapper::DownloadBucketData(
     const blink::StorageKey& storage_key,
-    DownloadStorageKeyDataCallback callback) {
+    DownloadBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  indexed_db_control_->DownloadStorageKeyData(storage_key, std::move(callback));
+  indexed_db_control_->DownloadBucketData(storage_key, std::move(callback));
 }
 
-void IndexedDBControlWrapper::GetAllStorageKeysDetails(
-    GetAllStorageKeysDetailsCallback callback) {
+void IndexedDBControlWrapper::GetAllBucketsDetails(
+    GetAllBucketsDetailsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  indexed_db_control_->GetAllStorageKeysDetails(std::move(callback));
+  indexed_db_control_->GetAllBucketsDetails(std::move(callback));
 }
 
 void IndexedDBControlWrapper::SetForceKeepSessionState() {

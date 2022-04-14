@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_H_
-#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_STATE_H_
+#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_STATE_H_
 
 #include <stdint.h>
 #include <memory>
@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
-#include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -38,20 +38,20 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // shut off.
 CONTENT_EXPORT extern const base::Feature kCompactIDBOnClose;
 
-// IndexedDBStorageKeyState manages the per-storage_key IndexedDB state, and
-// contains the backing store for the storage_key.
+// IndexedDBBucketState manages the per-bucket IndexedDB state, and
+// contains the backing store for the bucket.
 //
 // This class is expected to manage its own lifetime by using the
-// |destruct_myself_| closure, which is expected to destroy this object in the
+// `destruct_myself_` closure, which is expected to destroy this object in the
 // parent IndexedDBFactoryImpl (and remove it from any collections, etc).
-// However, IndexedDBStorageKeyState should still handle destruction without the
+// However, IndexedDBBucketState should still handle destruction without the
 // use of that closure when the storage partition is destructed.
 //
-// IndexedDBStorageKeyState will keep itself alive while:
+// IndexedDBBucketState will keep itself alive while:
 // * There are handles referencing the factory,
 // * There are outstanding blob references to this database's blob files, and
 // * The factory is in an incognito profile.
-class CONTENT_EXPORT IndexedDBStorageKeyState {
+class CONTENT_EXPORT IndexedDBBucketState {
  public:
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using DBMap =
@@ -63,9 +63,9 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   static constexpr const base::TimeDelta kMaxEarliestGlobalSweepFromNow =
       base::Hours(1);
   // Maximum time interval between runs of the IndexedDBSweeper for a given
-  // storage_key. Sweeping only occurs after backing store close.
+  // bucket. Sweeping only occurs after backing store close.
   // Visible for testing.
-  static constexpr const base::TimeDelta kMaxEarliestStorageKeySweepFromNow =
+  static constexpr const base::TimeDelta kMaxEarliestBucketSweepFromNow =
       base::Days(3);
 
   // Maximum time interval between runs of the IndexedDBCompactionTask.
@@ -74,27 +74,27 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   static constexpr const base::TimeDelta kMaxEarliestGlobalCompactionFromNow =
       base::Hours(1);
   // Maximum time interval between runs of the IndexedDBCompactionTask for a
-  // given storage_key. Compaction only occurs after backing store close.
+  // given bucket. Compaction only occurs after backing store close.
   // Visible for testing.
-  static constexpr const base::TimeDelta
-      kMaxEarliestStorageKeyCompactionFromNow = base::Days(3);
+  static constexpr const base::TimeDelta kMaxEarliestBucketCompactionFromNow =
+      base::Days(3);
 
   enum class ClosingState {
-    // IndexedDBStorageKeyState isn't closing.
+    // IndexedDBBucketState isn't closing.
     kNotClosing,
-    // IndexedDBStorageKeyState is pausing for kBackingStoreGracePeriodSeconds
-    // to
-    // allow new references to open before closing the backing store.
+    // IndexedDBBucketState is pausing for kBackingStoreGracePeriodSeconds
+    // to allow new references to open before closing the backing store.
     kPreCloseGracePeriod,
-    // The |pre_close_task_queue| is running any pre-close tasks.
+    // The `pre_close_task_queue` is running any pre-close tasks.
     kRunningPreCloseTasks,
     kClosed,
   };
 
-  // Calling |destruct_myself| should destruct this object.
-  // |earliest_global_sweep_time| and |earliest_global_compaction_time| are
+  // Calling `destruct_myself` should destruct this object.
+  // `earliest_global_sweep_time` and `earliest_global_compaction_time` are
   // expected to outlive this object.
-  IndexedDBStorageKeyState(
+  IndexedDBBucketState(
+      // TODO(crbug.com/1218100): This needs a BucketInfo
       blink::StorageKey storage_key,
       bool persist_for_incognito,
       base::Clock* clock,
@@ -106,10 +106,10 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
       TearDownCallback tear_down_callback,
       std::unique_ptr<IndexedDBBackingStore> backing_store);
 
-  IndexedDBStorageKeyState(const IndexedDBStorageKeyState&) = delete;
-  IndexedDBStorageKeyState& operator=(const IndexedDBStorageKeyState&) = delete;
+  IndexedDBBucketState(const IndexedDBBucketState&) = delete;
+  IndexedDBBucketState& operator=(const IndexedDBBucketState&) = delete;
 
-  ~IndexedDBStorageKeyState();
+  ~IndexedDBBucketState();
 
   void AbortAllTransactions(bool compact);
 
@@ -151,7 +151,7 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
     return notify_tasks_callback_;
   }
 
-  // Note: calling this callback will destroy the IndexedDBStorageKeyState.
+  // Note: calling this callback will destroy the IndexedDBBucketState.
   const TearDownCallback& tear_down_callback() { return tear_down_callback_; }
 
   bool is_running_tasks() const { return running_tasks_; }
@@ -166,13 +166,13 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
   std::tuple<RunTasksResult, leveldb::Status> RunTasks();
 
-  base::WeakPtr<IndexedDBStorageKeyState> AsWeakPtr() {
+  base::WeakPtr<IndexedDBBucketState> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
   friend IndexedDBFactoryImpl;
-  friend IndexedDBStorageKeyStateHandle;
+  friend IndexedDBBucketStateHandle;
 
   // Test needs access to ShouldRunTombstoneSweeper.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithMockTime,
@@ -190,7 +190,7 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
 
   // Returns a new handle to this factory. If this object was in its closing
   // sequence, then that sequence will be halted by this call.
-  [[nodiscard]] IndexedDBStorageKeyStateHandle CreateHandle();
+  [[nodiscard]] IndexedDBBucketStateHandle CreateHandle();
 
   void OnHandleDestruction();
 
@@ -202,12 +202,12 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   void StartClosing();
   void StartPreCloseTasks();
 
-  // Executes database operations, and if |true| is returned by this function,
+  // Executes database operations, and if `true` is returned by this function,
   // then the current time will be written to the database as the last sweep
   // time.
   bool ShouldRunTombstoneSweeper();
 
-  // Executes database operations, and if |true| is returned by this function,
+  // Executes database operations, and if `true` is returned by this function,
   // then the current time will be written to the database as the last
   // compaction time.
   bool ShouldRunCompaction();
@@ -241,7 +241,7 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
 
   DBMap databases_;
-  // This is the refcount for the number of IndexedDBStorageKeyStateHandle's
+  // This is the refcount for the number of IndexedDBBucketStateHandle's
   // given out for this factory using OpenReference. This is used as closing
   // criteria for this object, see CanCloseFactory.
   int64_t open_handles_ = 0;
@@ -251,9 +251,9 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   TasksAvailableCallback notify_tasks_callback_;
   TearDownCallback tear_down_callback_;
 
-  base::WeakPtrFactory<IndexedDBStorageKeyState> weak_factory_{this};
+  base::WeakPtrFactory<IndexedDBBucketState> weak_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_STATE_H_

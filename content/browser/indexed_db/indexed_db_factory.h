@@ -64,11 +64,11 @@ class CONTENT_EXPORT IndexedDBFactory {
       const blink::StorageKey& storage_key,
       const IndexedDBDatabaseError& error) = 0;
 
-  virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForStorageKey(
+  virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
       const blink::StorageKey& storage_key) const = 0;
 
   // Close all connections to all databases within the storage key. If
-  // |delete_in_memory_store| is true, references to in-memory databases will be
+  // `delete_in_memory_store` is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
   // the lifetime of the factory).
   virtual void ForceClose(const blink::StorageKey& storage_key,

@@ -120,7 +120,7 @@ class IndexedDBTransactionTest : public testing::Test {
 
   std::unique_ptr<IndexedDBConnection> CreateConnection() {
     auto connection = std::make_unique<IndexedDBConnection>(
-        IndexedDBStorageKeyStateHandle(), IndexedDBClassFactory::Get(),
+        IndexedDBBucketStateHandle(), IndexedDBClassFactory::Get(),
         db_->AsWeakPtr(), base::DoNothing(), base::DoNothing(),
         base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>());
     db_->AddConnectionForTesting(connection.get());
@@ -556,7 +556,7 @@ TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
   EXPECT_TRUE(locks_recieved);
 
   // Register the transaction, which should request locks and wait for
-  // |temp_lock_receiver| to release the locks.
+  // `temp_lock_receiver` to release the locks.
   db_->RegisterAndScheduleTransaction(transaction);
   EXPECT_EQ(transaction->state(), IndexedDBTransaction::CREATED);
 
@@ -566,7 +566,7 @@ TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
       IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError));
   EXPECT_EQ(transaction->state(), IndexedDBTransaction::FINISHED);
 
-  // Clear |temp_lock_receiver| so we can test later that all locks have
+  // Clear `temp_lock_receiver` so we can test later that all locks have
   // cleared.
   temp_lock_receiver.locks.clear();
 
