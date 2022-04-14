@@ -521,8 +521,6 @@ void OverviewGrid::PrepareForOverview() {
 
   grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
   Shell::Get()->wallpaper_controller()->AddObserver(this);
-
-  UpdateSaveDeskButtons();
 }
 
 void OverviewGrid::PositionWindows(
@@ -1889,7 +1887,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       overview_session_, visibility_changed));
 
   if (!target_visible) {
-    if (save_desk_button_container_widget_) {
+    if (visibility_changed && save_desk_button_container_widget_) {
       PerformFadeOutLayer(
           save_desk_button_container_widget_->GetLayer(),
           /*animate=*/true,
@@ -1918,12 +1916,14 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // animation end. Stop animating so that the callbacks associated get fired,
   // otherwise we may end up trying to show a widget that's already shown.
   // `StopAnimating()` is a no-op if there is no animation in progress.
-  save_desk_button_container_widget_->GetLayer()
-      ->GetAnimator()
-      ->StopAnimating();
-  save_desk_button_container_widget_->Show();
-  PerformFadeInLayer(save_desk_button_container_widget_->GetLayer(),
-                     /*animate=*/true);
+  if (visibility_changed) {
+    save_desk_button_container_widget_->GetLayer()
+        ->GetAnimator()
+        ->StopAnimating();
+    save_desk_button_container_widget_->Show();
+    PerformFadeInLayer(save_desk_button_container_widget_->GetLayer(),
+                       /*animate=*/true);
+  }
 
   // Enable/disable button and update tooltip.
   const DesksTemplatesPresenter* desk_templates_presenter =
@@ -1953,6 +1953,17 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   } else {
     first_overview_item_bounds = window_list_.front()->target_bounds();
   }
+
+  // Animate the widget so it moves with the items. The widget's size isn't
+  // changing, so its ok to use a bounds animation as opposed to a transform
+  // animation. If the visibility has changed, skip the bounds animation and use
+  // the fade animation from above. Align the widget so it is visually aligned
+  // with the first overview item, which has an invisible border of
+  // `kWindowMargin` thickness.
+  ScopedOverviewAnimationSettings settings(
+      visibility_changed ? OVERVIEW_ANIMATION_NONE
+                         : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
+      save_desk_button_container_widget_->GetNativeWindow());
   gfx::Point available_origin =
       gfx::ToRoundedPoint(first_overview_item_bounds.origin()) +
       gfx::Vector2d(kWindowMargin, -kSaveDeskAsTemplateOverviewItemSpacingDp);
