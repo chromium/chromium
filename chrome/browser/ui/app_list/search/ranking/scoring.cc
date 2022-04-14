@@ -12,18 +12,18 @@ void SortCategories(CategoriesList& categories) {
             [](const auto& a, const auto& b) {
               const int a_burnin = a.burnin_iteration;
               const int b_burnin = b.burnin_iteration;
-              if (a.category == Category::kSearchAndAssistant ||
-                  b.category == Category::kSearchAndAssistant) {
-                // Special-case the search and assistant category, which should
-                // always be sorted last.
-                return b.category == Category::kSearchAndAssistant;
-              } else if (a_burnin != b_burnin) {
+              if (a_burnin != b_burnin) {
                 // Sort order: 0, 1, 2, 3, ... then -1.
                 // The effect of this is to sort by arrival order, with unseen
                 // categories ranked last.
                 // N.B. (a ^ b) < 0 checks for opposite sign.
                 return (a_burnin ^ b_burnin) < 0 ? a_burnin > b_burnin
                                                  : a_burnin < b_burnin;
+              } else if (a.category == Category::kSearchAndAssistant ||
+                         b.category == Category::kSearchAndAssistant) {
+                // Special-case the search and assistant category, which should
+                // be sorted last, when burn-in iteration numbers are equal.
+                return b.category == Category::kSearchAndAssistant;
               } else {
                 return a.score > b.score;
               }

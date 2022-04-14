@@ -475,6 +475,49 @@ TEST_F(
   ExpectIdOrder({"b", "c", "d", "e", "a"});
 }
 
+// Tests that the Search and Assistant category is ordered correctly when it
+// arrives pre-burn-in, and remains correctly ordered when further categories
+// arrive.
+//
+// At the time of its arrival, Search and Assistant should initially be pinned
+// to the bottom of the categories list, but later-arriving categories should
+// appear below Search and Assistant.
+TEST_F(SearchControllerImplNewTest,
+       CategoriesOrderedCorrectly_SearchAndAssistantPinnedToBottomOfPreBurnIn) {
+  ranker_delegate_->SetCategoryRanks({{Category::kFiles, 0.3},
+                                      {Category::kSearchAndAssistant, 0.2},
+                                      {Category::kApps, 0.1}});
+  auto search_and_assistant_results =
+      MakeResults({"a", "b", "c"},
+                  {Category::kSearchAndAssistant, Category::kSearchAndAssistant,
+                   Category::kSearchAndAssistant},
+                  {-1, -1, -1}, {0.3, 0.5, 0.4});
+  auto file_results = MakeResults({"d"}, {Category::kFiles}, {-1}, {0.2});
+  auto app_results = MakeResults({"e"}, {Category::kApps}, {-1}, {0.1});
+
+  // Simulate starting a search.
+  search_controller_->StartSearch(u"abc");
+
+  // Simulate two providers (including Search and Assistant) returning within
+  // the burn-in period.
+  search_controller_->SetResults(SimpleProvider(Result::kAssistantText),
+                                 std::move(search_and_assistant_results));
+  search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
+                                 std::move(file_results));
+  ExpectIdOrder({});
+
+  // Expect results to appear after burn-in period has elapsed. Expect the
+  // Search and Assistant category to appear at the bottom.
+  ElapseBurnInPeriod();
+  ExpectIdOrder({"d", "b", "c", "a"});
+
+  // Simulate a provider returning results after the burn-in period. Expect the
+  // new category to appear below Search and Assistant.
+  search_controller_->SetResults(SimpleProvider(Result::kInstalledApp),
+                                 std::move(app_results));
+  ExpectIdOrder({"d", "b", "c", "a", "e"});
+}
+
 // Tests that results are ordered correctly, where results are of a single
 // category, and originate from a single provider which returns multiple times
 // both pre- and post-burn-in.
