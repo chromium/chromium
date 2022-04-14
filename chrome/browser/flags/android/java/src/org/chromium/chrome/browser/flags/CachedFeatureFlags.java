@@ -64,6 +64,7 @@ public class CachedFeatureFlags {
                                     .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY,
                             false)
                     .put(ChromeFeatureList.IMMERSIVE_UI_MODE, false)
+                    .put(ChromeFeatureList.OMNIBOX_ANDROID_AUXILIARY_SEARCH, false)
                     .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true)
                     .put(ChromeFeatureList.START_SURFACE_ANDROID, false)
                     .put(ChromeFeatureList.PAINT_PREVIEW_DEMO, false)

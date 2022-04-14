@@ -98,6 +98,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.INSTANCE_SWITCHER);
                 add(ChromeFeatureList.INTEREST_FEED_V2);
                 add(ChromeFeatureList.NEW_WINDOW_APP_MENU);
+                add(ChromeFeatureList.OMNIBOX_ANDROID_AUXILIARY_SEARCH);
                 add(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS);
                 add(ChromeFeatureList.PAINT_PREVIEW_DEMO);
                 add(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
