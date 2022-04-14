@@ -5,14 +5,11 @@
 #include "chrome/browser/ash/web_applications/projector_system_web_app_info.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -90,25 +87,5 @@ gfx::Size ProjectorSystemWebAppDelegate::GetMinimumWindowSize() const {
 }
 
 bool ProjectorSystemWebAppDelegate::IsAppEnabled() const {
-  if (!IsProjectorAllowedForProfile(profile_))
-    return false;
-
-  // Projector for regular consumer users is controlled by a feature flag.
-  if (!profile_->GetProfilePolicyConnector()->IsManaged())
-    return ash::features::IsProjectorAllUserEnabled();
-
-  // Projector dogfood for supervised users is controlled by an enterprise
-  // policy. When the feature is out of dogfood phase the policy will be
-  // deprecated and the feature will be enabled by default.
-  if (profile_->IsChild()) {
-    return profile_->GetPrefs()->GetBoolean(
-        ash::prefs::kProjectorDogfoodForFamilyLinkEnabled);
-  }
-
-  // Projector for enterprise users is controlled by a combination fo a feature
-  // flag and an enterprise policy.
-  return ash::features::IsProjectorEnabled() &&
-         (ash::features::IsProjectorManagedUserIgnorePolicyEnabled() ||
-          profile_->GetPrefs()->GetBoolean(
-              ash::prefs::kProjectorAllowByPolicy));
+  return IsProjectorAppEnabled(profile_);
 }

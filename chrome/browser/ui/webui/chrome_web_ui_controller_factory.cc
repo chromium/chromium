@@ -1032,13 +1032,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
   if (url.host_piece() == ash::kChromeUIProjectorAppHost &&
-      ash::features::IsProjectorEnabled() &&
-      IsProjectorAllowedForProfile(profile)) {
+      IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorUI>;
   }
   if (url.host_piece() == ash::kChromeUIProjectorAnnotatorHost &&
       ash::features::IsProjectorAnnotatorEnabled() &&
-      IsProjectorAllowedForProfile(profile)) {
+      IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
