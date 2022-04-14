@@ -61,7 +61,7 @@ ClassificationMap ClassificationsLoader::GetSourceClassifications() {
   base::FieldTrialParams params;
   bool has_feature_params = base::GetFieldTrialParamsByFeature(
       features::kIncognitoParamFilterEnabled, &params);
-  if (has_feature_params) {
+  if (has_feature_params && params.find("classifications") != params.end()) {
     return GetClassificationsFromFeature(
         params,
         FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
@@ -80,7 +80,7 @@ ClassificationMap ClassificationsLoader::GetDestinationClassifications() {
   base::FieldTrialParams params;
   bool has_feature_params = base::GetFieldTrialParamsByFeature(
       features::kIncognitoParamFilterEnabled, &params);
-  if (has_feature_params) {
+  if (has_feature_params && params.find("classifications") != params.end()) {
     return GetClassificationsFromFeature(
         params, FilterClassification_SiteRole::
                     FilterClassification_SiteRole_DESTINATION);

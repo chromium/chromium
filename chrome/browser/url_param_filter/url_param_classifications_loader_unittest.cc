@@ -4,6 +4,7 @@
 
 #include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -52,14 +53,14 @@ class UrlParamClassificationsLoaderTest : public ::testing::Test {
       FilterClassification_SiteRole_DESTINATION;
 
  protected:
-  void SetFeatureParams(std::string param) {
+  void SetFeatureParams(const std::map<std::string, std::string>& params_map) {
     // Note, we can initialize the ScopedFeatureList this way since this
     // unittest is single threaded. If the test is multi-threaded, this would
     // have to be initialized in the tests constructor.
 
     // With the flag set, the URL should be filtered using this param.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIncognitoParamFilterEnabled, {{"classifications", param}});
+        features::kIncognitoParamFilterEnabled, params_map);
   }
 
   void SetComponentFileContents(base::StringPiece content) {
@@ -181,8 +182,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
 TEST_F(UrlParamClassificationsLoaderTest,
        GetSourceClassifications_FeatureOnly) {
   // Provide classifications using the feature flag.
-  SetFeatureParams(CreateBase64EncodedFilterParamClassificationForTesting(
-      {{kSourceSite, {"plzblock1", "plzblock2"}}}, {}));
+  SetFeatureParams({{"classifications",
+                     CreateBase64EncodedFilterParamClassificationForTesting(
+                         {{kSourceSite, {"plzblock1", "plzblock2"}}}, {})}});
 
   FilterClassification expected = MakeFilterClassification(
       kSourceSite, kSourceSiteRole, {"plzblock1", "plzblock2"});
@@ -203,8 +205,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
   loader()->ReadClassifications(test_file_contents());
 
   // Provide classifications using the feature flag.
-  SetFeatureParams(CreateBase64EncodedFilterParamClassificationForTesting(
-      {{kSourceSite, {"plzblockA", "plzblockB"}}}, {}));
+  SetFeatureParams({{"classifications",
+                     CreateBase64EncodedFilterParamClassificationForTesting(
+                         {{kSourceSite, {"plzblockA", "plzblockB"}}}, {})}});
 
   FilterClassification expected = MakeFilterClassification(
       kSourceSite, kSourceSiteRole, {"plzblockA", "plzblockB"});
@@ -221,8 +224,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
       {{kDestinationSite, {"plzblock3", "plzblock4"}}});
 
   // Provide classifications using the feature flag.
-  SetFeatureParams(CreateBase64EncodedFilterParamClassificationForTesting(
-      {{kSourceSite, {"plzblockA", "plzblockB"}}}, {}));
+  SetFeatureParams({{"classifications",
+                     CreateBase64EncodedFilterParamClassificationForTesting(
+                         {{kSourceSite, {"plzblockA", "plzblockB"}}}, {})}});
 
   // Provide classifications from the Component.
   SetComponentFileContents(classifications.SerializeAsString());
@@ -230,6 +234,52 @@ TEST_F(UrlParamClassificationsLoaderTest,
 
   FilterClassification expected = MakeFilterClassification(
       kSourceSite, kSourceSiteRole, {"plzblockA", "plzblockB"});
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(Pair(Eq(kSourceSite), EqualsProto(expected))));
+}
+
+TEST_F(UrlParamClassificationsLoaderTest,
+       GetSourceClassifications_ComponentAndFeatureWithoutParams) {
+  // Create proto with both Source + Destination Classifications
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{kSourceSite, {"plzblock1", "plzblock2"}}},
+      {{kDestinationSite, {"plzblock3", "plzblock4"}}});
+
+  // Don't provide classifications using the feature flag.
+  SetFeatureParams({{}});
+
+  // Provide classifications from the Component.
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // Expect that Component classifications are returned since no feature
+  // classifications were provided.
+  FilterClassification expected = MakeFilterClassification(
+      kSourceSite, kSourceSiteRole, {"plzblock1", "plzblock2"});
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(Pair(Eq(kSourceSite), EqualsProto(expected))));
+}
+
+TEST_F(UrlParamClassificationsLoaderTest,
+       GetSourceClassifications_ComponentAndFeatureWithShouldFilterParamOnly) {
+  // Create proto with both Source + Destination Classifications
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{kSourceSite, {"plzblock1", "plzblock2"}}},
+      {{kDestinationSite, {"plzblock3", "plzblock4"}}});
+
+  // Don't provide classifications using the feature flag.
+  SetFeatureParams({{"should_filter", "true"}});
+
+  // Provide classifications from the Component.
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // Expect that Component classifications are returned since no feature
+  // classifications were provided.
+  FilterClassification expected = MakeFilterClassification(
+      kSourceSite, kSourceSiteRole, {"plzblock1", "plzblock2"});
   EXPECT_THAT(
       loader()->GetSourceClassifications(),
       UnorderedElementsAre(Pair(Eq(kSourceSite), EqualsProto(expected))));
@@ -256,8 +306,10 @@ TEST_F(UrlParamClassificationsLoaderTest,
 TEST_F(UrlParamClassificationsLoaderTest,
        GetDestinationClassifications_FeatureOnly) {
   // Provide classifications using the feature flag.
-  SetFeatureParams(CreateBase64EncodedFilterParamClassificationForTesting(
-      {}, {{kDestinationSite, {"plzblock3", "plzblock4"}}}));
+  SetFeatureParams(
+      {{"classifications",
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {}, {{kDestinationSite, {"plzblock3", "plzblock4"}}})}});
 
   FilterClassification expected = MakeFilterClassification(
       kDestinationSite, kDestinationSiteRole, {"plzblock3", "plzblock4"});
@@ -278,8 +330,10 @@ TEST_F(UrlParamClassificationsLoaderTest,
   loader()->ReadClassifications(test_file_contents());
 
   // Provide classifications using the feature flag.
-  SetFeatureParams(CreateBase64EncodedFilterParamClassificationForTesting(
-      {}, {{kDestinationSite, {"plzblockA", "plzblockB"}}}));
+  SetFeatureParams(
+      {{"classifications",
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {}, {{kDestinationSite, {"plzblockA", "plzblockB"}}})}});
 
   FilterClassification expected = MakeFilterClassification(
       kDestinationSite, kDestinationSiteRole, {"plzblockA", "plzblockB"});
@@ -296,8 +350,10 @@ TEST_F(UrlParamClassificationsLoaderTest,
       {{kDestinationSite, {"plzblock3", "plzblock4"}}});
 
   // Provide classifications using the feature flag.
-  SetFeatureParams(CreateBase64EncodedFilterParamClassificationForTesting(
-      {}, {{kDestinationSite, {"plzblockA", "plzblockB"}}}));
+  SetFeatureParams(
+      {{"classifications",
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {}, {{kDestinationSite, {"plzblockA", "plzblockB"}}})}});
 
   // Provide classifications from the Component.
   SetComponentFileContents(classifications.SerializeAsString());
@@ -305,6 +361,53 @@ TEST_F(UrlParamClassificationsLoaderTest,
 
   FilterClassification expected = MakeFilterClassification(
       kDestinationSite, kDestinationSiteRole, {"plzblockA", "plzblockB"});
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(Pair(Eq(kDestinationSite), EqualsProto(expected))));
+}
+
+TEST_F(UrlParamClassificationsLoaderTest,
+       GetDestinationClassifications_ComponentAndFeatureWithoutParams) {
+  // Create proto with both Source + Destination Classifications
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{kSourceSite, {"plzblock1", "plzblock2"}}},
+      {{kDestinationSite, {"plzblock3", "plzblock4"}}});
+
+  // Don't provide classifications using the feature flag.
+  SetFeatureParams({{}});
+
+  // Provide classifications from the Component.
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // Expect that Component classifications are returned since no feature
+  // classifications were provided.
+  FilterClassification expected = MakeFilterClassification(
+      kDestinationSite, kDestinationSiteRole, {"plzblock3", "plzblock4"});
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(Pair(Eq(kDestinationSite), EqualsProto(expected))));
+}
+
+TEST_F(
+    UrlParamClassificationsLoaderTest,
+    GetDestinationClassifications_ComponentAndFeatureWithShouldFilterParamOnly) {
+  // Create proto with both Source + Destination Classifications
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{kSourceSite, {"plzblock1", "plzblock2"}}},
+      {{kDestinationSite, {"plzblock3", "plzblock4"}}});
+
+  // Don't provide classifications using the feature flag.
+  SetFeatureParams({{"should_filter", "true"}});
+
+  // Provide classifications from the Component.
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // Expect that Component classifications are returned since no feature
+  // classifications were provided.
+  FilterClassification expected = MakeFilterClassification(
+      kDestinationSite, kDestinationSiteRole, {"plzblock3", "plzblock4"});
   EXPECT_THAT(
       loader()->GetDestinationClassifications(),
       UnorderedElementsAre(Pair(Eq(kDestinationSite), EqualsProto(expected))));
