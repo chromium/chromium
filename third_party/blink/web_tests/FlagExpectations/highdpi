@@ -1255,6 +1255,7 @@ virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky
 virtual/eye-dropper/fast/forms/color-scheme/color/color-picker-appearance.html [ Pass ]
 virtual/eye-dropper/fast/forms/color-scheme/color/color-suggestion-picker-appearance-with-scrollbar.html [ Pass ]
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/backplate/forced-colors-mode-backplate-11.html [ Pass ]
+virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-03.html [ Pass ]
 virtual/forced-high-contrast-colors/html/details_summary/color-scheme-validation/details-with-summary-open.html [ Pass ]
 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-image.html [ Pass ]
 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/jpeg-missing-eoi.html [ Pass ]
@@ -1816,8 +1817,6 @@ crbug.com/1316080 external/wpt/css/css-backgrounds/background-size/vector/tall--
 crbug.com/1316081 external/wpt/css/css-borders/subpixel-borders-with-child-border-box-sizing.html [ Failure ]
 # Perspective scaling issue.
 crbug.com/1316082 external/wpt/css/css-transforms/animation/transform-interpolation-perspective.html [ Failure ]
-# Missing backplate.
-crbug.com/1316085 external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-03.html [ Failure ]
 # IsInputPending event issue?
 crbug.com/1316086 external/wpt/is-input-pending/tentative/same-origin-subframe.sub.html [ Failure ]
 # WebXR overlay event issue?
