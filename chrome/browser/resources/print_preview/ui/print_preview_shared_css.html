@@ -36,18 +36,6 @@
       min-height: var(--print-preview-row-height);
     }
 
-    a[href],
-    a[is='action-link'] {
-      color: var(--google-blue-600);  /* Same in light and dark mode. */
-      text-decoration: none;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :-webkit-any(a[href], a[is='action-link']) {
-        color: var(--cr-link-color);
-      }
-    }
-
     print-preview-settings-section [slot=controls] > * {
       margin: 0 var(--print-preview-sidebar-margin);
     }

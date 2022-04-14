@@ -13,7 +13,7 @@ import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../nat
 
 // </if>
 import {Cdd, MediaSizeOption} from './cdd.js';
-import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, PrinterType, RecentDestination} from './destination.js';
+import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, isPdfPrinter, PDF_DESTINATION_KEY, PrinterType, RecentDestination} from './destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {DestinationProvisionalType} from './destination.js';
 // </if>
@@ -207,12 +207,6 @@ export class DestinationStore extends EventTarget {
    */
   private pdfPrinterEnabled_: boolean = false;
 
-  /**
-   * Local destinations are CROS destinations on ChromeOS because they
-   * require extra setup.
-   */
-  private platformOrigin_: DestinationOrigin;
-
   private recentDestinationKeys_: string[] = [];
 
   /**
@@ -260,11 +254,6 @@ export class DestinationStore extends EventTarget {
       [PrinterType.LOCAL_PRINTER, DestinationStorePrinterSearchStatus.START],
     ]);
 
-    this.platformOrigin_ = DestinationOrigin.LOCAL;
-    // <if expr="chromeos_ash or chromeos_lacros">
-    this.platformOrigin_ = DestinationOrigin.CROS;
-    // </if>
-
     this.useSystemDefaultAsDefault_ =
         loadTimeData.getBoolean('useSystemDefaultPrinter');
 
@@ -304,13 +293,7 @@ export class DestinationStore extends EventTarget {
 
   private getPrinterTypeForRecentDestination_(destination: RecentDestination):
       PrinterType {
-    // <if expr="chromeos_ash or chromeos_lacros">
-    if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
-      return PrinterType.PDF_PRINTER;
-    }
-    // </if>
-
-    if (destination.id === GooglePromotedDestinationId.SAVE_AS_PDF) {
+    if (isPdfPrinter(destination.id)) {
       return PrinterType.PDF_PRINTER;
     }
 
@@ -349,18 +332,18 @@ export class DestinationStore extends EventTarget {
       serializedDefaultDestinationSelectionRulesStr: string|null,
       recentDestinations: RecentDestination[]) {
     if (systemDefaultDestinationId) {
-      let systemDefaultVirtual = systemDefaultDestinationId ===
-          GooglePromotedDestinationId.SAVE_AS_PDF;
-      // <if expr="chromeos_ash or chromeos_lacros">
-      systemDefaultVirtual = systemDefaultVirtual ||
-          systemDefaultDestinationId ===
-              GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
-      // </if>
+      const systemDefaultVirtual = isPdfPrinter(systemDefaultDestinationId);
       const systemDefaultType = systemDefaultVirtual ?
           PrinterType.PDF_PRINTER :
           PrinterType.LOCAL_PRINTER;
-      const systemDefaultOrigin =
-          systemDefaultVirtual ? DestinationOrigin.LOCAL : this.platformOrigin_;
+      // <if expr="not chromeos_ash and not chromeos_lacros">
+      const systemDefaultOrigin = DestinationOrigin.LOCAL;
+      // </if>
+      // <if expr="chromeos_ash or chromeos_lacros">
+      const systemDefaultOrigin = systemDefaultVirtual ?
+          DestinationOrigin.LOCAL :
+          DestinationOrigin.CROS;
+      // </if>
       this.systemDefaultDestinationKey_ =
           createDestinationKey(systemDefaultDestinationId, systemDefaultOrigin);
       this.typesToSearch_.add(systemDefaultType);
@@ -512,16 +495,6 @@ export class DestinationStore extends EventTarget {
       return true;
     }
     return false;
-  }
-
-  private isDestinationLocal_(destinationId: string|null): boolean {
-    // <if expr="chromeos_ash or chromeos_lacros">
-    if (destinationId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
-      return true;
-    }
-    // </if>
-
-    return destinationId === GooglePromotedDestinationId.SAVE_AS_PDF;
   }
 
   /** Removes all events being tracked from the tracker. */
@@ -697,9 +670,7 @@ export class DestinationStore extends EventTarget {
   private selectFinalFallbackDestination_(): boolean {
     // Save as PDF should always exist if it is enabled.
     if (this.pdfPrinterEnabled_) {
-      const saveToPdfKey = createDestinationKey(
-          GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL);
-      const destination = this.destinationMap_.get(saveToPdfKey);
+      const destination = this.destinationMap_.get(PDF_DESTINATION_KEY);
       assert(destination);
       this.selectDestination(destination);
       return true;
@@ -934,9 +905,7 @@ export class DestinationStore extends EventTarget {
       dest = parseDestination(typeToParse, settingsInfo.printer);
     }
     if (dest) {
-      if ((origin === DestinationOrigin.LOCAL ||
-           origin === DestinationOrigin.CROS) &&
-          dest.capabilities) {
+      if (dest.type !== PrinterType.EXTENSION_PRINTER && dest.capabilities) {
         // If capabilities are already set for this destination ignore new
         // results. This prevents custom margins from being cleared as long
         // as the user does not change to a new non-recent destination.

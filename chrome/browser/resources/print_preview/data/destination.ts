@@ -77,6 +77,16 @@ export type RecentDestination = {
   icon?: string,
 };
 
+export function isPdfPrinter(id: string): boolean {
+  // <if expr="chromeos_ash or chromeos_lacros">
+  if (id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
+    return true;
+  }
+  // </if>
+
+  return id === GooglePromotedDestinationId.SAVE_AS_PDF;
+}
+
 /**
  * Creates a |RecentDestination| to represent |destination| in the app
  * state.
@@ -247,13 +257,7 @@ export class Destination {
   }
 
   private computeType_(id: string, origin: DestinationOrigin): PrinterType {
-    // <if expr="chromeos_ash or chromeos_lacros">
-    if (id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
-      return PrinterType.PDF_PRINTER;
-    }
-    // </if>
-
-    if (id === GooglePromotedDestinationId.SAVE_AS_PDF) {
+    if (isPdfPrinter(id)) {
       return PrinterType.PDF_PRINTER;
     }
 

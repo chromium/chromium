@@ -23,7 +23,7 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, GooglePromotedDestinationId, PDF_DESTINATION_KEY} from '../data/destination.js';
+import {Destination, PDF_DESTINATION_KEY} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
 import {getTemplate} from './destination_select.html.js';
@@ -110,9 +110,8 @@ export class PrintPreviewDestinationSelectElement extends
       return this.destination.icon;
     }
 
-    // Check for the Docs or Save as PDF ids first.
-    const keyParams = this.selectedValue.split('/');
-    if (keyParams[0] === GooglePromotedDestinationId.SAVE_AS_PDF) {
+    // Check for the Save as PDF id first.
+    if (this.selectedValue === PDF_DESTINATION_KEY) {
       return 'cr:insert-drive-file';
     }
 
