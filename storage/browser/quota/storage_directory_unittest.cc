@@ -23,8 +23,6 @@ class StorageDirectoryTest : public testing::Test {
   }
   void TearDown() override { ASSERT_TRUE(temp_directory_.Delete()); }
 
-  base::FilePath ProfilePath() { return temp_directory_.GetPath(); }
-
  protected:
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<StorageDirectory> storage_directory_;
@@ -55,12 +53,11 @@ TEST_F(StorageDirectoryTest, DoomAndClearStorage) {
   EXPECT_FALSE(base::PathExists(storage_path));
 
   std::set<base::FilePath> directories =
-      storage_directory_->EnumerateDoomedDirectoriesForTesting(ProfilePath());
+      storage_directory_->EnumerateDoomedDirectoriesForTesting();
   EXPECT_EQ(directories.size(), 1u);
 
   storage_directory_->ClearDoomed();
-  directories =
-      storage_directory_->EnumerateDoomedDirectoriesForTesting(ProfilePath());
+  directories = storage_directory_->EnumerateDoomedDirectoriesForTesting();
   EXPECT_EQ(directories.size(), 0u);
 }
 
@@ -74,12 +71,11 @@ TEST_F(StorageDirectoryTest, ClearDoomedMultiple) {
   }
 
   std::set<base::FilePath> directories =
-      storage_directory_->EnumerateDoomedDirectoriesForTesting(ProfilePath());
+      storage_directory_->EnumerateDoomedDirectoriesForTesting();
   EXPECT_EQ(directories.size(), 5u);
 
   storage_directory_->ClearDoomed();
-  directories =
-      storage_directory_->EnumerateDoomedDirectoriesForTesting(ProfilePath());
+  directories = storage_directory_->EnumerateDoomedDirectoriesForTesting();
   EXPECT_EQ(directories.size(), 0u);
 }
 

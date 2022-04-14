@@ -36,14 +36,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) StorageDirectory {
   // for incognito.
   const base::FilePath& path() const { return web_storage_path_; }
 
-  std::set<base::FilePath> EnumerateDoomedDirectoriesForTesting(
-      const base::FilePath& profile_path) {
-    return EnumerateDoomedDirectories(profile_path);
+  std::set<base::FilePath> EnumerateDoomedDirectoriesForTesting() {
+    return EnumerateDoomedDirectories();
   }
 
  private:
-  std::set<base::FilePath> EnumerateDoomedDirectories(
-      const base::FilePath& profile_path);
+  std::set<base::FilePath> EnumerateDoomedDirectories();
 
   const base::FilePath web_storage_path_;
 };

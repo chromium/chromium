@@ -39,17 +39,16 @@ bool StorageDirectory::Doom() {
 }
 
 void StorageDirectory::ClearDoomed() {
-  std::set<base::FilePath> paths =
-      EnumerateDoomedDirectories(web_storage_path_.DirName());
+  std::set<base::FilePath> paths = EnumerateDoomedDirectories();
 
   for (const base::FilePath& path : paths)
     base::DeletePathRecursively(path);
 }
 
-std::set<base::FilePath> StorageDirectory::EnumerateDoomedDirectories(
-    const base::FilePath& profile_path) {
+std::set<base::FilePath> StorageDirectory::EnumerateDoomedDirectories() {
   base::FileEnumerator enumerator(
-      profile_path, /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+      web_storage_path_.DirName(), /*recursive=*/false,
+      base::FileEnumerator::DIRECTORIES,
       base::StrCat(
           {kWebStorageDirectory, kDoomedPathName, FILE_PATH_LITERAL("*")}));
 
