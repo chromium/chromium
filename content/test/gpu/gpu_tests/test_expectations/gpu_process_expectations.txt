@@ -103,9 +103,6 @@ crbug.com/1084794 [ chromeos ] GpuProcess_swiftshader_for_webgl [ Skip ]
 # Seems to kill the system UI/otherwise make the device unusable.
 crbug.com/1294065 [ android android-shield-android-tv ] GpuProcess_visibility [ Skip ]
 
-# Passes, but then causes crash in the test that runs in the same WebEngine instance.
-crbug.com/1284820 [ fuchsia ] GpuProcess_video [ Skip ]
-
 ###################
 # Failures/Flakes #
 ###################
