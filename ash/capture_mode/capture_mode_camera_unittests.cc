@@ -2475,6 +2475,8 @@ TEST_P(CaptureModeCameraPreviewTest, MultiDisplayResize) {
 
 // Tests the visibility of the resize button on mouse events.
 TEST_P(CaptureModeCameraPreviewTest, ResizeButtonVisibilityOnMouseEvents) {
+  UpdateDisplay("1380x768");
+
   StartCaptureSessionWithParam();
   CaptureModeCameraController* camera_controller = GetCameraController();
   AddDefaultCamera();
@@ -2552,6 +2554,49 @@ TEST_P(CaptureModeCameraPreviewTest, ResizeButtonVisibilityOnTapEvents) {
     waiter.Wait();
     EXPECT_FALSE(resize_button->GetVisible());
   }
+}
+
+// Tests the visibility of the resize button on camera preview drag to snap.
+TEST_P(CaptureModeCameraPreviewTest,
+       ResizeButtonVisibilityOnCameraPreviewDragToSnap) {
+  StartCaptureSessionWithParam();
+  CaptureModeCameraController* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  views::Widget* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Rect preview_bounds = preview_widget->GetWindowBoundsInScreen();
+
+  CaptureModeButton* resize_button = GetPreviewResizeButton();
+  auto* event_generator = GetEventGenerator();
+
+  // Tests that the resize button is hidden by default.
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Tests that the resize button will show up when the mouse is entering the
+  // bounds of the preview widget.
+  event_generator->MoveMouseTo(preview_bounds.CenterPoint());
+  EXPECT_TRUE(resize_button->GetVisible());
+
+  // Tests that when start dragging camera preview, resize button will be
+  // hidden.
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Drag camera preview, test that resize button is still hidden.
+  event_generator->MoveMouseBy(-300, -300);
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Now release drag, verify that resize button is still hidden since cursor is
+  // not on top of camera preview after it's snapped.
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Now drag camera preview with a small distance, make sure when it's snapped
+  // cursor is still on top of it. Verify that resize button is shown after
+  // camera preview is snapped.
+  const gfx::Vector2d delta(-30, -30);
+  DragPreviewToPoint(preview_widget, preview_bounds.CenterPoint() + delta);
+  EXPECT_TRUE(resize_button->GetVisible());
 }
 
 TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDeintersectsWithSystemTray) {

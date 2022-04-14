@@ -506,6 +506,8 @@ void CaptureModeCameraController::StartDraggingPreview(
   is_drag_in_progress_ = true;
   previous_location_in_screen_ = screen_location;
 
+  camera_preview_view_->RefreshResizeButtonVisibility();
+
   auto* controller = CaptureModeController::Get();
   if (controller->IsActive())
     controller->capture_mode_session()->OnCameraPreviewDragStarted();
@@ -537,6 +539,8 @@ void CaptureModeCameraController::EndDraggingPreview(
   MaybeUpdatePreviewWidgetBounds(/*animate=*/true);
 
   is_drag_in_progress_ = false;
+  camera_preview_view_->RefreshResizeButtonVisibility();
+
   // Disable cursor compositing at the end of the drag.
   Shell::Get()->UpdateCursorCompositingEnabled();
 

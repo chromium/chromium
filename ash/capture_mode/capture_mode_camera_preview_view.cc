@@ -118,6 +118,17 @@ bool CameraPreviewView::MaybeHandleKeyEvent(const ui::KeyEvent* event) {
   return true;
 }
 
+void CameraPreviewView::RefreshResizeButtonVisibility() {
+  const float target_opacity = CalculateResizeButtonTargetOpacity();
+  if (target_opacity == resize_button_->layer()->GetTargetOpacity())
+    return;
+
+  if (target_opacity == 1.f)
+    FadeInResizeButton();
+  else
+    FadeOutResizeButton();
+}
+
 void CameraPreviewView::AddedToWidget() {
   camera_video_host_view_->Attach(camera_video_renderer_.host_window());
   // This must be called after the renderer's `host_window()` has been attached
@@ -184,12 +195,11 @@ void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 
 void CameraPreviewView::OnMouseEntered(const ui::MouseEvent& event) {
   resize_button_hide_timer_.Stop();
-  FadeInResizeButton();
+  RefreshResizeButtonVisibility();
 }
 
 void CameraPreviewView::OnMouseExited(const ui::MouseEvent& event) {
-  if (!resize_button_->IsMouseHovered())
-    ScheduleRefreshResizeButtonVisibility();
+  ScheduleRefreshResizeButtonVisibility();
 }
 
 void CameraPreviewView::Layout() {
@@ -265,16 +275,6 @@ void CameraPreviewView::DisableEventHandlingInCameraVideoHostHierarchy() {
   }
 }
 
-void CameraPreviewView::RefreshResizeButtonVisibility() {
-  if (IsMouseHovered() || resize_button_->IsMouseHovered()) {
-    DCHECK(resize_button_->GetVisible());
-    DCHECK_EQ(1.0f, resize_button_->layer()->GetTargetOpacity());
-    return;
-  }
-
-  FadeOutResizeButton();
-}
-
 void CameraPreviewView::FadeInResizeButton() {
   resize_button_->SetVisible(true);
 
@@ -305,6 +305,16 @@ void CameraPreviewView::ScheduleRefreshResizeButtonVisibility() {
   resize_button_hide_timer_.Start(
       FROM_HERE, capture_mode::kResizeButtonShowDuration, this,
       &CameraPreviewView::RefreshResizeButtonVisibility);
+}
+
+float CameraPreviewView::CalculateResizeButtonTargetOpacity() {
+  if (camera_controller_->is_drag_in_progress())
+    return 0.f;
+
+  if (IsMouseHovered() || resize_button_->IsMouseHovered())
+    return 1.f;
+
+  return 0.f;
 }
 
 BEGIN_METADATA(CameraPreviewView, views::View)

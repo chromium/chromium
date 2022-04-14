@@ -57,6 +57,9 @@ class CameraPreviewView
   // preview to different snap positions.
   bool MaybeHandleKeyEvent(const ui::KeyEvent* event);
 
+  // Called to update visibility of the `resize_button_` when necessary.
+  void RefreshResizeButtonVisibility();
+
   // views::View:
   void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -96,10 +99,6 @@ class CameraPreviewView
   // `camera_video_host_view_` and all the native windows it is hosting.
   void DisableEventHandlingInCameraVideoHostHierarchy();
 
-  // Gets called by the `resize_button_hide_timer_` to refresh the visibility of
-  // the `resize_button_` when necessary.
-  void RefreshResizeButtonVisibility();
-
   // Fades in or out the `resize_button_` and updates its visibility
   // accordingly.
   void FadeInResizeButton();
@@ -108,6 +107,9 @@ class CameraPreviewView
   // Called when the mouse exits the camera preview or after the latest tap
   // inside the camera preview to start the `resize_button_hide_timer_`.
   void ScheduleRefreshResizeButtonVisibility();
+
+  // Returns the target opacity for resize button.
+  float CalculateResizeButtonTargetOpacity();
 
   CaptureModeCameraController* const camera_controller_;
 
