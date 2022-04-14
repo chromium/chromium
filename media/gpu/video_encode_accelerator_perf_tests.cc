@@ -419,7 +419,8 @@ void BitstreamQualityMetrics::WriteToConsole(
     uint32_t actual_bitrate) const {
   const auto default_ssize = std::cout.precision();
   std::cout << "[ Result " << svc_text << "]" << std::endl;
-  std::cout << "Bitrate: " << actual_bitrate << std::endl;
+  std::cout << "Bitrate: " << actual_bitrate << " (target:  " << target_bitrate
+            << ")" << std::endl;
   std::cout << "Bitrate deviation: " << std::fixed << std::setprecision(2)
             << (actual_bitrate * 100.0 / target_bitrate) - 100.0 << " %"
             << std::endl;
@@ -459,7 +460,7 @@ void BitstreamQualityMetrics::WriteToFile(
   metrics.SetKey("Bitrate",
                  base::Value(base::checked_cast<int>(actual_bitrate)));
   metrics.SetKey(
-      "Bitrate deviation",
+      "BitrateDeviation",
       base::Value((actual_bitrate * 100.0 / target_bitrate) - 100.0));
   metrics.SetKey("SSIMAverage", base::Value(ssim_stats.avg));
   metrics.SetKey("PSNRAverage", base::Value(psnr_stats.avg));
@@ -709,9 +710,12 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
       actual_bitrate = stats.Bitrate();
     } else {
       CHECK(spatial_idx && temporal_idx);
-      target_bitrate =
-          g_env->Bitrate().GetBitrateBps(*spatial_idx, *temporal_idx);
-      actual_bitrate = stats.LayerBitrate(*spatial_idx, *temporal_idx);
+      // Target and actual bitrates in temporal layer encoding are the sum of
+      // bitrates of the temporal layers in the spatial layer.
+      for (size_t tid = 0; tid <= *temporal_idx; ++tid) {
+        target_bitrate += g_env->Bitrate().GetBitrateBps(*spatial_idx, tid);
+        actual_bitrate += stats.LayerBitrate(*spatial_idx, tid);
+      }
     }
 
     metrics.Output(target_bitrate, actual_bitrate);
