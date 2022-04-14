@@ -686,28 +686,16 @@ void AttributionManagerImpl::MarkReportCompleted(
 void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
                                                  bool is_debug_report,
                                                  ReportSentCallback callback) {
-  using DispatchFunc = void (AttributionManagerImpl::*)(AttributionReport, bool,
-                                                        ReportSentCallback);
-
-  struct Visitor {
-    DispatchFunc operator()(const AttributionReport::EventLevelData&) {
-      return &AttributionManagerImpl::SendReport;
-    }
-    DispatchFunc operator()(
-        const AttributionReport::AggregatableAttributionData&) {
-      return &AttributionManagerImpl::AssembleAggregatableReport;
-    }
-  };
-
-  DispatchFunc func = absl::visit(Visitor{}, report.data());
-  (this->*func)(std::move(report), is_debug_report, std::move(callback));
-}
-
-void AttributionManagerImpl::SendReport(AttributionReport report,
-                                        bool is_debug_report,
-                                        ReportSentCallback callback) {
-  report_sender_->SendReport(std::move(report), is_debug_report,
-                             std::move(callback));
+  switch (report.GetReportType()) {
+    case AttributionReport::ReportType::kEventLevel:
+      report_sender_->SendReport(std::move(report), is_debug_report,
+                                 std::move(callback));
+      break;
+    case AttributionReport::ReportType::kAggregatableAttribution:
+      AssembleAggregatableReport(std::move(report), is_debug_report,
+                                 std::move(callback));
+      break;
+  }
 }
 
 void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
@@ -877,7 +865,8 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
   DCHECK(aggregate_data);
   aggregate_data->assembled_report = std::move(*assembled_report);
 
-  SendReport(std::move(report), is_debug_report, std::move(callback));
+  report_sender_->SendReport(std::move(report), is_debug_report,
+                             std::move(callback));
 }
 
 void AttributionManagerImpl::NotifySourcesChanged() {

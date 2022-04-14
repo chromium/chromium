@@ -690,7 +690,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   }
 
   // Otherwise, delete the existing report with the lowest priority.
-  if (!DeleteEventLevelReport(conversion_id_with_min_priority)) {
+  if (!DeleteReportInternal(conversion_id_with_min_priority)) {
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
 
@@ -1351,26 +1351,15 @@ std::vector<AttributionReport> AttributionStorageSql::GetReports(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
-  struct Visitor {
-    raw_ptr<AttributionStorageSql> storage;
-
-    absl::optional<AttributionReport> operator()(
-        AttributionReport::EventLevelData::Id id) {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
-      return storage->GetReport(id);
-    }
-
-    absl::optional<AttributionReport> operator()(
-        AttributionReport::AggregatableAttributionData::Id id) {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
-      return storage->GetReport(id);
-    }
-  };
-
   std::vector<AttributionReport> reports;
   for (AttributionReport::Id id : ids) {
-    absl::optional<AttributionReport> report =
-        absl::visit(Visitor{.storage = this}, id);
+    absl::optional<AttributionReport> report = absl::visit(
+        [&](auto id) {
+          DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+          return GetReport(id);
+        },
+        id);
+
     if (report.has_value())
       reports.push_back(std::move(*report));
   }
@@ -1464,24 +1453,15 @@ bool AttributionStorageSql::DeleteReport(AttributionReport::Id report_id) {
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return true;
 
-  struct Visitor {
-    raw_ptr<AttributionStorageSql> storage;
-
-    bool operator()(AttributionReport::EventLevelData::Id id) {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
-      return storage->DeleteEventLevelReport(id);
-    }
-
-    bool operator()(AttributionReport::AggregatableAttributionData::Id id) {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
-      return storage->DeleteAggregatableAttributionReport(id);
-    }
-  };
-
-  return absl::visit(Visitor{.storage = this}, report_id);
+  return absl::visit(
+      [&](auto id) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+        return DeleteReportInternal(id);
+      },
+      report_id);
 }
 
-bool AttributionStorageSql::DeleteEventLevelReport(
+bool AttributionStorageSql::DeleteReportInternal(
     AttributionReport::EventLevelData::Id report_id) {
   static constexpr char kDeleteReportSql[] =
       "DELETE FROM event_level_reports WHERE report_id = ?";
@@ -1637,7 +1617,7 @@ void AttributionStorageSql::ClearData(
         filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
       if (statement.GetColumnType(4) != sql::ColumnType::kNull) {
-        if (!DeleteEventLevelReport(AttributionReport::EventLevelData::Id(
+        if (!DeleteReportInternal(AttributionReport::EventLevelData::Id(
                 statement.ColumnInt64(4)))) {
           return;
         }
@@ -2422,7 +2402,7 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
         filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
       if (statement.GetColumnType(4) != sql::ColumnType::kNull &&
-          !DeleteAggregatableAttributionReport(
+          !DeleteReportInternal(
               AttributionReport::AggregatableAttributionData::Id(
                   statement.ColumnInt64(4)))) {
         return false;
@@ -2436,7 +2416,7 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
   return transaction.Commit();
 }
 
-bool AttributionStorageSql::DeleteAggregatableAttributionReport(
+bool AttributionStorageSql::DeleteReportInternal(
     AttributionReport::AggregatableAttributionData::Id aggregation_id) {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())

@@ -141,9 +141,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void PrepareToSendReport(AttributionReport report,
                            bool is_debug_report,
                            ReportSentCallback callback);
-  void SendReport(AttributionReport report,
-                  bool is_debug_report,
-                  ReportSentCallback callback);
   void OnReportSent(base::OnceClosure done,
                     AttributionReport report,
                     SendResult info);

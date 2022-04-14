@@ -125,20 +125,15 @@ GURL AttributionReport::ReportURL(bool debug) const {
   static constexpr char kBasePath[] = "/.well-known/attribution-reporting/";
   static constexpr char kDebugPath[] = "debug/";
 
-  struct Visitor {
-    const char* operator()(const EventLevelData&) {
-      static constexpr char kEventEndpointPath[] = "report-event-attribution";
-      return kEventEndpointPath;
-    }
-
-    const char* operator()(const AggregatableAttributionData&) {
-      static constexpr char kAggregateEndpointPath[] =
-          "report-aggregate-attribution";
-      return kAggregateEndpointPath;
-    }
-  };
-
-  const char* endpoint_path = absl::visit(Visitor{}, data_);
+  const char* endpoint_path;
+  switch (GetReportType()) {
+    case ReportType::kEventLevel:
+      endpoint_path = "report-event-attribution";
+      break;
+    case ReportType::kAggregatableAttribution:
+      endpoint_path = "report-aggregate-attribution";
+      break;
+  }
 
   std::string path =
       base::StrCat({kBasePath, debug ? kDebugPath : "", endpoint_path});

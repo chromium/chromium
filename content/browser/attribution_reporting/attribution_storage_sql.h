@@ -144,7 +144,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  [[nodiscard]] bool DeleteEventLevelReport(
+  [[nodiscard]] bool DeleteReportInternal(
       AttributionReport::EventLevelData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -312,7 +312,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  [[nodiscard]] bool DeleteAggregatableAttributionReport(
+  [[nodiscard]] bool DeleteReportInternal(
       AttributionReport::AggregatableAttributionData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
