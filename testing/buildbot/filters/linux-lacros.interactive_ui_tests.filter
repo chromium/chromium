@@ -59,3 +59,5 @@
 -ExtensionsToolbarInteractiveUiTest.DoubleClickToolbarActionToClose
 -OmniboxViewViewsTest.TextElideStatus
 -TabDragCaptureLostTest.ReleaseCaptureOnDrag
+-PrivacySandboxDialogViewInteractiveUiTest.EscapeClosesNotice
+-PrivacySandboxDialogViewInteractiveUiTest.EscapeDoesntCloseConsent
