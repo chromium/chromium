@@ -4059,7 +4059,7 @@
             ]
         }
     ],
-    "IncognitoParamFilterExperiment": [
+    "IncognitoParamFilterExperimentv2": [
         {
             "platforms": [
                 "android",
@@ -4073,7 +4073,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "classifications": "H4sIAEkgDGIC%2F+NS4uJKz89Pz0nVS87PFWCS4uXizk0sKSlPLM5ILUqVYuZiLAQAaThOnyQAAAA=",
+                        "classifications": "H4sIAEkgDGIC/+NS4uJKz89Pz0nVS87PFWCS4uXizk0sKSlPLM5ILUqVYuZiLAQAaThOnyQAAAA=",
                         "should_filter": "true"
                     },
                     "enable_features": [
