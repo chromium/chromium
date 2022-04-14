@@ -4341,6 +4341,11 @@ const char kBruschettaName[] = "Enable the third party VMs feature";
 const char kBruschettaDescription[] =
     "Enables UI support for third party/generic VMs";
 
+const char kCompactBubbleLauncherName[] = "Make bubble launcher more compact";
+
+const char kCompactBubbleLauncherDescription[] =
+    "Decreases the width of clamshell mode productivity (bubble) launcher.";
+
 const char kCryptAuthV2DedupDeviceLastActivityTimeName[] =
     "Dedup devices by last activity time";
 const char kCryptAuthV2DedupDeviceLastActivityTimeDescription[] =

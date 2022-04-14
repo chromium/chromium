@@ -15,6 +15,7 @@
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -74,13 +75,16 @@ gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
 gfx::Size ComputeBubbleSize(aura::Window* root_window,
                             AppListBubbleView* bubble_view) {
   const int default_height = 688;
-  // As of August 2021 the assistant cards require a minimum width of 640. If
-  // the cards become narrower then this could be reduced.
-  const int default_width = 640;
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const gfx::Rect work_area = GetWorkAreaForBubble(root_window);
   int height = default_height;
 
+  // As of August 2021 the assistant cards require a minimum width of 640. If
+  // the cards become narrower then this could be reduced.
+  const int width = app_list_features::IsCompactBubbleLauncherEnabled() &&
+                            work_area.width() < 1200
+                        ? 544
+                        : 640;
   // If the work area height is too small to fit the default size bubble, then
   // calculate a smaller height to fit in the work area. Otherwise, if the work
   // area height is tall enough to fit at least two default sized bubbles, then
@@ -100,7 +104,7 @@ gfx::Size ComputeBubbleSize(aura::Window* root_window,
     height = base::clamp(height_to_fit_all_apps, default_height, max_height);
   }
 
-  return gfx::Size(default_width, height);
+  return gfx::Size(width, height);
 }
 
 // Returns the bounds in root window coordinates for the bubble widget.

@@ -2492,6 +2492,9 @@ extern const char kCrostiniVirtualKeyboardSupportDescription[];
 extern const char kBruschettaName[];
 extern const char kBruschettaDescription[];
 
+extern const char kCompactBubbleLauncherName[];
+extern const char kCompactBubbleLauncherDescription[];
+
 extern const char kCryptAuthV2DedupDeviceLastActivityTimeName[];
 extern const char kCryptAuthV2DedupDeviceLastActivityTimeDescription[];
 

@@ -81,6 +81,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kLauncherLacrosIntegration;
 // Shows a feedback dialog when removing a continue section suggestion.
 ASH_PUBLIC_EXPORT extern const base::Feature kFeedbackOnContinueSectionRemove;
 
+// Controls the bubble launcher (productivity launcher in clamshell) width. When
+// enabled, the bubble UI will be narrower.
+ASH_PUBLIC_EXPORT extern const base::Feature kCompactBubbleLauncher;
+
 ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsQueryBasedMixedTypesRankerEnabled();
@@ -101,6 +105,7 @@ ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
 ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsLauncherLacrosIntegrationEnabled();
 ASH_PUBLIC_EXPORT bool IsFeedbackOnContinueSectionRemoveEnabled();
+ASH_PUBLIC_EXPORT bool IsCompactBubbleLauncherEnabled();
 
 ASH_PUBLIC_EXPORT std::string AnswerServerUrl();
 ASH_PUBLIC_EXPORT std::string AnswerServerQuerySuffix();

@@ -53197,6 +53197,7 @@ from previous Chrome versions.
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
   <int value="-1399419572" label="enable-app-list"/>
+  <int value="-1397387245" label="CompactBubbleLauncher:disabled"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
   <int value="-1396595854"
       label="PrivateNetworkAccessRespectPreflightResults:enabled"/>
@@ -53915,6 +53916,7 @@ from previous Chrome versions.
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
   <int value="-936652950"
       label="AutofillEnableManualFallbackForVirtualCards:disabled"/>
+  <int value="-936308513" label="CompactBubbleLauncher:enabled"/>
   <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:enabled"/>
