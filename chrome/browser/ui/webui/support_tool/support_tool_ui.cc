@@ -342,7 +342,7 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   SupportToolMessageHandler& operator=(const SupportToolMessageHandler&) =
       delete;
 
-  ~SupportToolMessageHandler() override = default;
+  ~SupportToolMessageHandler() override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
@@ -383,6 +383,12 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::WeakPtrFactory<SupportToolMessageHandler> weak_ptr_factory_{this};
 };
+
+SupportToolMessageHandler::~SupportToolMessageHandler() {
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
 void SupportToolMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -506,6 +512,10 @@ void SupportToolMessageHandler::HandleStartDataExport(
   CHECK_EQ(1U, args.size());
   const base::Value::List* pii_items = args[0].GetIfList();
   DCHECK(pii_items);
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   selected_pii_to_keep_ = GetSelectedPIIToKeep(pii_items);
 
   AllowJavascript();
