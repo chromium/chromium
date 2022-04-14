@@ -82,6 +82,8 @@ void DownloadBubbleSecurityView::CloseBubble() {
 
 void DownloadBubbleSecurityView::OnCheckboxClicked() {
   first_button_->SetEnabled(checkbox_->GetChecked());
+  first_button_->SetEnabledTextColors(
+      GetColorProvider()->GetColor(info_.secondary_color));
 }
 
 void DownloadBubbleSecurityView::AddIconAndText() {
@@ -199,11 +201,13 @@ void DownloadBubbleSecurityView::AddButtons() {
   }
 
   if (info_.has_second_button) {
-    button_row->AddChildView(std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&DownloadBubbleSecurityView::ProcessButtonClick,
-                            base::Unretained(this),
-                            info_.second_button_command),
-        info_.second_button_label));
+    raw_ptr<views::MdTextButton> second_button =
+        button_row->AddChildView(std::make_unique<views::MdTextButton>(
+            base::BindRepeating(&DownloadBubbleSecurityView::ProcessButtonClick,
+                                base::Unretained(this),
+                                info_.second_button_command),
+            info_.second_button_label));
+    second_button->SetProminent(true);
   }
 }
 
