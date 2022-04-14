@@ -65,10 +65,21 @@ class CustomInputProcessor : public QueryProcessor {
       TemplateCallback<IndexType> callback);
 
  private:
-  // Helper function for parsing a single custom input and return the result
+  // Helper function for parsing a single custom input and insert the result
   // along with the corresponding feature index.
   QueryProcessor::Tensor ProcessSingleCustomInput(
-      const proto::CustomInput& custom_input);
+      const proto::CustomInput& custom_input,
+      FeatureProcessorState* feature_processor_state);
+
+  // Add a tensor value for CustomInput::FILL_PREDICTION_TIME type and return
+  // whether it succeeded.
+  bool AddPredictionTime(const proto::CustomInput& custom_input,
+                         std::vector<ProcessedValue>& out_tensor);
+
+  // Add a tensor value for CustomInput::TIME_RANGE_BEFORE_PREDICTION type and
+  // return whether it succeeded.
+  bool AddTimeRangeBeforePrediction(const proto::CustomInput& custom_input,
+                                    std::vector<ProcessedValue>& out_tensor);
 
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, proto::CustomInput> custom_inputs_;

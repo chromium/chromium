@@ -13,6 +13,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/query_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -24,10 +25,7 @@ class CustomInputProcessorTest : public testing::Test {
 
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
-    feature_processor_state_ = std::make_unique<FeatureProcessorState>(
-        base::Time(), base::TimeDelta(),
-        OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN, nullptr,
-        base::BindOnce([](bool, const std::vector<float>&) {}));
+    feature_processor_state_ = std::make_unique<FeatureProcessorState>();
     custom_input_processor_sql_ =
         std::make_unique<CustomInputProcessor>(clock_.Now());
   }
@@ -37,20 +35,47 @@ class CustomInputProcessorTest : public testing::Test {
     custom_input_processor_sql_.reset();
   }
 
-  proto::CustomInput CreateCustomInputQuery(
-      size_t tensor_length,
+  proto::CustomInput CreateCustomInput(
+      int tensor_length,
       proto::CustomInput::FillPolicy fill_policy,
-      const std::vector<float>& default_values) {
+      const std::vector<float>& default_values,
+      const std::vector<std::pair<std::string, std::string>>& additional_args) {
     proto::CustomInput custom_input;
     custom_input.set_fill_policy(fill_policy);
     custom_input.set_tensor_length(tensor_length);
+
+    // Set default values.
     for (float default_value : default_values)
       custom_input.add_default_value(default_value);
+
+    // Add additional arguments.
+    custom_input.mutable_additional_args()->insert(additional_args.begin(),
+                                                   additional_args.end());
+
     return custom_input;
   }
 
+  void ExpectProcessedCustomInput(
+      base::flat_map<int, proto::CustomInput>&& data,
+      bool expected_error,
+      const base::flat_map<int, QueryProcessor::Tensor>& expected_result) {
+    std::unique_ptr<CustomInputProcessor> custom_input_processor =
+        std::make_unique<CustomInputProcessor>(std::move(data), clock_.Now());
+    std::unique_ptr<FeatureProcessorState> feature_processor_state =
+        std::make_unique<FeatureProcessorState>();
+
+    base::RunLoop loop;
+    custom_input_processor->Process(
+        std::move(feature_processor_state),
+        base::BindOnce(
+            &CustomInputProcessorTest::OnProcessingFinishedCallback<int>,
+            base::Unretained(this), loop.QuitClosure(), expected_error,
+            expected_result));
+    loop.Run();
+  }
+
   template <typename IndexType>
-  void ExpectProcessedCustomInputs(
+  void ExpectProcessedCustomInputsForSql(
       const base::flat_map<IndexType, proto::CustomInput>& data,
       bool expected_error,
       const base::flat_map<IndexType, QueryProcessor::Tensor>&
@@ -78,8 +103,9 @@ class CustomInputProcessorTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::SimpleTestClock clock_;
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FeatureProcessorState> feature_processor_state_;
   std::unique_ptr<CustomInputProcessor> custom_input_processor_sql_;
 };
@@ -89,13 +115,12 @@ TEST_F(CustomInputProcessorTest, IntTypeIndex) {
   IndexType index = 0;
   base::flat_map<IndexType, proto::CustomInput> data;
   data[index] =
-      CreateCustomInputQuery(1, proto::CustomInput::FILL_PREDICTION_TIME, {});
+      CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {}, {});
 
   base::flat_map<IndexType, QueryProcessor::Tensor> expected_result;
   expected_result[index] = {ProcessedValue(clock_.Now())};
-  ExpectProcessedCustomInputs<IndexType>(data, /*expected_error=*/false,
-                                         expected_result);
-  task_environment_.RunUntilIdle();
+  ExpectProcessedCustomInputsForSql<IndexType>(data, /*expected_error=*/false,
+                                               expected_result);
 }
 
 TEST_F(CustomInputProcessorTest, IntPairTypeIndex) {
@@ -103,13 +128,100 @@ TEST_F(CustomInputProcessorTest, IntPairTypeIndex) {
   IndexType index = std::make_pair(0, 0);
   base::flat_map<IndexType, proto::CustomInput> data;
   data[index] =
-      CreateCustomInputQuery(1, proto::CustomInput::FILL_PREDICTION_TIME, {});
+      CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {}, {});
 
   base::flat_map<IndexType, QueryProcessor::Tensor> expected_result;
   expected_result[index] = {ProcessedValue(clock_.Now())};
-  ExpectProcessedCustomInputs<IndexType>(data, /*expected_error=*/false,
-                                         expected_result);
-  task_environment_.RunUntilIdle();
+  ExpectProcessedCustomInputsForSql<IndexType>(data, /*expected_error=*/false,
+                                               expected_result);
+};
+
+TEST_F(CustomInputProcessorTest, DefaultValueCustomInput) {
+  // Create custom inputs data.
+  int index = 0;
+  base::flat_map<int, proto::CustomInput> data;
+  data[index] =
+      CreateCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY, {1, 2}, {});
+
+  // Set expected tensor result.
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+  expected_result[index] = {ProcessedValue(static_cast<float>(1)),
+                            ProcessedValue(static_cast<float>(2))};
+
+  // Process the custom inputs and verify using expected result.
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
+                             expected_result);
+}
+
+TEST_F(CustomInputProcessorTest, PredictionTimeCustomInput) {
+  // Create custom inputs data.
+  int index = 0;
+  base::flat_map<int, proto::CustomInput> data;
+  data[index] =
+      CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {}, {});
+
+  // Set expected tensor result.
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+  expected_result[index] = {ProcessedValue(clock_.Now())};
+
+  // Process the custom inputs and verify using expected result.
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
+                             expected_result);
+}
+
+TEST_F(CustomInputProcessorTest, TimeRangeBeforePredictionCustomInput) {
+  // Create custom inputs data.
+  int index = 0;
+  base::flat_map<int, proto::CustomInput> data;
+  data[index] =
+      CreateCustomInput(2, proto::CustomInput::TIME_RANGE_BEFORE_PREDICTION, {},
+                        {{"bucket_count", "1"}});
+
+  // Set expected tensor result.
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+  expected_result[index] = {ProcessedValue(clock_.Now() - base::Days(1)),
+                            ProcessedValue(clock_.Now())};
+
+  // Process the custom inputs and verify using expected result.
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
+                             expected_result);
+}
+
+TEST_F(CustomInputProcessorTest, InvalidTimeRangeBeforePredictionCustomInput) {
+  // Create custom inputs data.
+  int index = 0;
+  base::flat_map<int, proto::CustomInput> data;
+  data[index] = CreateCustomInput(
+      2, proto::CustomInput::TIME_RANGE_BEFORE_PREDICTION, {}, {});
+
+  // Set expected tensor result.
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+
+  // Process the custom inputs and verify using expected result.
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/true,
+                             expected_result);
+}
+
+TEST_F(CustomInputProcessorTest, MultipleFillTypesCustomInputs) {
+  // Create custom inputs data.
+  base::flat_map<int, proto::CustomInput> data;
+  data[0] =
+      CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {}, {});
+  data[1] =
+      CreateCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY, {1, 2}, {});
+  data[2] =
+      CreateCustomInput(1, proto::CustomInput::UNKNOWN_FILL_POLICY, {3}, {});
+
+  // Set expected tensor result.
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+  expected_result[0] = {ProcessedValue(clock_.Now())};
+  expected_result[1] = {ProcessedValue(static_cast<float>(1)),
+                        ProcessedValue(static_cast<float>(2))};
+  expected_result[2] = {ProcessedValue(static_cast<float>(3))};
+
+  // Process the custom inputs and verify using expected result.
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
+                             expected_result);
 }
 
 }  // namespace segmentation_platform

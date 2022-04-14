@@ -5,9 +5,15 @@
 #include "components/segmentation_platform/internal/execution/feature_processor_state.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 
 namespace segmentation_platform {
+
+FeatureProcessorState::FeatureProcessorState()
+    : prediction_time_(base::Time::Now()),
+      bucket_duration_(base::TimeDelta()),
+      segment_id_(OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {}
 
 FeatureProcessorState::FeatureProcessorState(
     base::Time prediction_time,

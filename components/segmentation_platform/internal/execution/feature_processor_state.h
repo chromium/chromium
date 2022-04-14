@@ -21,6 +21,7 @@ namespace segmentation_platform {
 // the processing of a model's metadata.
 class FeatureProcessorState {
  public:
+  FeatureProcessorState();
   FeatureProcessorState(
       base::Time prediction_time,
       base::TimeDelta bucket_duration,

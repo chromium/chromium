@@ -87,7 +87,16 @@ message CustomInput {
     UNKNOWN_FILL_POLICY = 0;
     // Output is the time at which model prediction is needed. Can be used to
     // bind TIME type param to queries.
+    // Output type: Time
+    // Output length: 1
     FILL_PREDICTION_TIME = 1;
+    // Output is two timestamps, the beginning and the end of last x days. Can
+    // be used to bind TIME type param to query within a time interval.
+    // Output type: Time
+    // Output length: 2
+    // Additional arg:
+    //   `bucket_count`: Required. Number of buckets to include in the result.
+    TIME_RANGE_BEFORE_PREDICTION = 2;
   }
 
   // The fill type of the custom input.
@@ -98,6 +107,9 @@ message CustomInput {
   // will not run due to missing input. The number of entries should be equal to
   // the |tensor_length|.
   repeated float default_value = 3;
+
+  // If the fill type need additional arguments, use this value.
+  map<string, string> additional_args = 4;
 }
 
 // Configuration for storing signals in the SQL database.

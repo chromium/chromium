@@ -179,7 +179,7 @@ TEST_F(FeatureListQueryProcessorTest, InvalidMetadata) {
   ExpectProcessedFeatureList(true, std::vector<float>{});
 }
 
-TEST_F(FeatureListQueryProcessorTest, SingleCustomInput) {
+TEST_F(FeatureListQueryProcessorTest, PredictionTimeCustomInput) {
   CreateFeatureListQueryProcessor();
 
   // Initialize with required metadata.

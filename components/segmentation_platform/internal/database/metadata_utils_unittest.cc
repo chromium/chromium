@@ -237,8 +237,8 @@ TEST_F(MetadataUtilsTest, MetadataCustomInputValidation) {
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
             metadata_utils::ValidateMetadataCustomInput(custom_input));
 
-  // When fill policy is current time, the custom input is invalid if the tensor
-  // length is bigger than 1.
+  // When default value is filled, tensor length must be smaller or equal than
+  // the default value list size.
   custom_input.set_fill_policy(proto::CustomInput::FILL_PREDICTION_TIME);
   custom_input.set_tensor_length(2);
   EXPECT_EQ(metadata_utils::ValidationResult::kCustomInputInvalid,

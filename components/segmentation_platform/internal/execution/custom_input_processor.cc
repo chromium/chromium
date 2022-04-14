@@ -4,16 +4,37 @@
 
 #include "components/segmentation_platform/internal/execution/custom_input_processor.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/feature_processor_state.h"
+#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 
 namespace {
 // Index not actually used for legacy code in FeatureQueryProcessor.
 const int kIndexNotUsed = 0;
+
+absl::optional<int> GetArgAsInt(
+    const google::protobuf::Map<std::string, std::string>& args,
+    const std::string& key) {
+  int value;
+  auto iter = args.find(key);
+
+  // Did not find target key.
+  if (iter == args.end())
+    return absl::optional<int>();
+
+  // Perform string to int conversion, return empty value if the conversion
+  // failed.
+  if (!base::StringToInt(base::StringPiece(iter->second), &value))
+    return absl::optional<int>();
+
+  return absl::optional<int>(value);
+}
+
 }  // namespace
 
 CustomInputProcessor::CustomInputProcessor() = default;
@@ -80,14 +101,15 @@ void CustomInputProcessor::ProcessIndexType(
         metadata_utils::ValidationResult::kValidationSuccess) {
       success = false;
     } else {
-      result[current.first] = ProcessSingleCustomInput(custom_input);
+      result[current.first] =
+          ProcessSingleCustomInput(custom_input, feature_processor_state.get());
     }
   }
 
   // Processing of the feature list has completed.
   custom_inputs_.clear();
-  if (!success) {
-    custom_inputs_.clear();
+  if (!success || feature_processor_state->error()) {
+    result.clear();
     feature_processor_state->SetError();
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -102,7 +124,8 @@ template void CustomInputProcessor::ProcessIndexType(
     TemplateCallback<std::pair<int, int>> callback);
 
 QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
-    const proto::CustomInput& custom_input) {
+    const proto::CustomInput& custom_input,
+    FeatureProcessorState* feature_processor_state) {
   std::vector<ProcessedValue> tensor_result;
   if (custom_input.fill_policy() == proto::CustomInput::UNKNOWN_FILL_POLICY) {
     // When parsing a CustomInput object, if the fill policy is not
@@ -115,9 +138,46 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
                                     custom_input.default_value().end());
   } else if (custom_input.fill_policy() ==
              proto::CustomInput::FILL_PREDICTION_TIME) {
-    tensor_result.emplace_back(ProcessedValue(prediction_time_));
+    if (!AddPredictionTime(custom_input, tensor_result))
+      feature_processor_state->SetError();
+  } else if (custom_input.fill_policy() ==
+             proto::CustomInput::TIME_RANGE_BEFORE_PREDICTION) {
+    if (!AddTimeRangeBeforePrediction(custom_input, tensor_result))
+      feature_processor_state->SetError();
   }
   return tensor_result;
+}
+
+bool CustomInputProcessor::AddPredictionTime(
+    const proto::CustomInput& custom_input,
+    std::vector<ProcessedValue>& out_tensor) {
+  if (custom_input.tensor_length() != 1) {
+    return false;
+  }
+  out_tensor.emplace_back(prediction_time_);
+  return true;
+}
+
+bool CustomInputProcessor::AddTimeRangeBeforePrediction(
+    const proto::CustomInput& custom_input,
+    std::vector<ProcessedValue>& out_tensor) {
+  if (custom_input.tensor_length() != 2) {
+    return false;
+  }
+
+  constexpr char kBucketCountArg[] = "bucket_count";
+  absl::optional<int> bucket_count =
+      GetArgAsInt(custom_input.additional_args(), kBucketCountArg);
+
+  if (bucket_count.has_value()) {
+    out_tensor.emplace_back(prediction_time_ -
+                            base::Days(bucket_count.value()));
+    out_tensor.emplace_back(prediction_time_);
+  } else {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace segmentation_platform

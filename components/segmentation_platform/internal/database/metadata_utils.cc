@@ -157,12 +157,11 @@ ValidationResult ValidateMetadataCustomInput(
     // provide enough input values as specified by tensor length.
     if (custom_input.tensor_length() > custom_input.default_value_size())
       return ValidationResult::kCustomInputInvalid;
-  } else if (custom_input.fill_policy() ==
-             proto::CustomInput::FILL_PREDICTION_TIME) {
-    // Current time can only provide up to one input tensor value, so column
-    // weight must not exceed 1.
-    if (custom_input.tensor_length() > 1)
+  } else if (custom_input.default_value_size() != 0) {
+    // The default value should be longer than the tensor length.
+    if (custom_input.tensor_length() > custom_input.default_value_size()) {
       return ValidationResult::kCustomInputInvalid;
+    }
   }
   return ValidationResult::kValidationSuccess;
 }
