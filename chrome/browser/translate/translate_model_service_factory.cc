@@ -33,7 +33,10 @@ TranslateModelServiceFactory* TranslateModelServiceFactory::GetInstance() {
 TranslateModelServiceFactory::TranslateModelServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "TranslateModelService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  if (translate::IsTFLiteLanguageDetectionEnabled())
+    DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 TranslateModelServiceFactory::~TranslateModelServiceFactory() = default;
 
