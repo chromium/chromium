@@ -1,13 +1,13 @@
 # So, you want to do MVC...
 
 ### Overview
-A full explanation of the MVC framework can be found [here](https://docs.google.com/document/d/1nP9NjTvsSMZvkR_aWRZPdy67wRINomgQ7AfEtbsIwzg). This document is intended to go over the logistics of the most basic implementation of the framework in Chrome’s codebase.
+A full explanation of the MVC framework can be found [here](mvc_overview.md). This document is intended to go over the logistics of the most basic implementation of the framework in Chrome’s codebase.
 
 For this example, we’ll be implementing a simple progress bar; a rectangle that changes length based on the loading state of the underlying webpage.
 
 #### Additional Resources
-* [Simple MVC lists](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md)
-* [Testing MVC primer doc](https://docs.google.com/document/d/1Mel7f4lE_osFjnttkxu1wcUf_k9CmIzPv6oxwCw9tx4/edit#)
+* [Simple MVC lists](mvc_simple_list_tutorial.md)
+* [Testing MVC primer doc](mvc_testing.md)
 
 #### File Structure
 The file structure of our component will be the following:
