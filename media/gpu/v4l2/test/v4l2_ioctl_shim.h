@@ -5,7 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 #define MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 
-#include <linux/media/vp9-ctrls.h>
+#include <linux/media/vp9-ctrls-upstream.h>
 #include <linux/videodev2.h>
 
 #include "base/files/memory_mapped_file.h"
@@ -179,9 +179,8 @@ class V4L2IoctlShim {
 
   // Sets the value of a control which specifies VP9 decoding parameters
   // for each frame.
-  [[nodiscard]] bool SetExtCtrls(
-      const std::unique_ptr<V4L2Queue>& queue,
-      v4l2_ctrl_vp9_frame_decode_params& frame_params) const;
+  [[nodiscard]] bool SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
+                                 v4l2_ctrl_vp9_frame& v4l2_frame_params) const;
 
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.

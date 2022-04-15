@@ -59,9 +59,8 @@ class Vp9Decoder : public VideoDecoder {
 
   // Sets up per frame parameters |v4l2_frame_params| needed for VP9 decoding
   // with VIDIOC_S_EXT_CTRLS ioctl call.
-  void SetupFrameParams(
-      const Vp9FrameHeader& frame_hdr,
-      struct v4l2_ctrl_vp9_frame_decode_params* v4l2_frame_params);
+  void SetupFrameParams(const Vp9FrameHeader& frame_hdr,
+                        struct v4l2_ctrl_vp9_frame* v4l2_frame_params);
 
   // Refreshes |ref_frames_| slots with the current |buffer| and returns
   // |reusable_buffer_slots| to indicate which CAPTURE buffers can be reused

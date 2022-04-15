@@ -4,7 +4,7 @@
 
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
-#include <linux/media/vp9-ctrls.h>
+#include <linux/media/vp9-ctrls-upstream.h>
 #include <sys/ioctl.h>
 
 #include "base/bits.h"
@@ -27,10 +27,9 @@ static_assert(kNumberOfBuffersInCaptureQueue <= 16,
 
 #define SET_IF(bit_field, cond, mask) (bit_field) |= ((cond) ? (mask) : 0)
 
-inline void conditionally_set_flag(
-    struct v4l2_ctrl_vp9_frame_decode_params& params,
-    bool condition,
-    enum v4l2_vp9_frame_flags flag) {
+inline void conditionally_set_flag(struct v4l2_ctrl_vp9_frame& params,
+                                   const bool condition,
+                                   const __u32 flag) {
   params.flags |= condition ? flag : 0;
 }
 
@@ -47,39 +46,6 @@ void FillV4L2VP9QuantizationParams(
       base::checked_cast<__s8>(vp9_quant_params.delta_q_uv_ac);
 }
 
-void FillV4L2VP9MvProbsParams(const Vp9FrameContext& vp9_ctx,
-                              struct v4l2_vp9_mv_probabilities* v4l2_mv_probs) {
-  SafeArrayMemcpy(v4l2_mv_probs->joint, vp9_ctx.mv_joint_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->sign, vp9_ctx.mv_sign_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->class_, vp9_ctx.mv_class_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->class0_bit, vp9_ctx.mv_class0_bit_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->bits, vp9_ctx.mv_bits_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->class0_fr, vp9_ctx.mv_class0_fr_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->fr, vp9_ctx.mv_fr_probs);
-  SafeArrayMemcpy(v4l2_mv_probs->class0_hp, vp9_ctx.mv_class0_hp_prob);
-  SafeArrayMemcpy(v4l2_mv_probs->hp, vp9_ctx.mv_hp_prob);
-}
-
-void FillV4L2VP9ProbsParams(const Vp9FrameContext& vp9_ctx,
-                            struct v4l2_vp9_probabilities* v4l2_probs) {
-  SafeArrayMemcpy(v4l2_probs->tx8, vp9_ctx.tx_probs_8x8);
-  SafeArrayMemcpy(v4l2_probs->tx16, vp9_ctx.tx_probs_16x16);
-  SafeArrayMemcpy(v4l2_probs->tx32, vp9_ctx.tx_probs_32x32);
-  SafeArrayMemcpy(v4l2_probs->coef, vp9_ctx.coef_probs);
-  SafeArrayMemcpy(v4l2_probs->skip, vp9_ctx.skip_prob);
-  SafeArrayMemcpy(v4l2_probs->inter_mode, vp9_ctx.inter_mode_probs);
-  SafeArrayMemcpy(v4l2_probs->interp_filter, vp9_ctx.interp_filter_probs);
-  SafeArrayMemcpy(v4l2_probs->is_inter, vp9_ctx.is_inter_prob);
-  SafeArrayMemcpy(v4l2_probs->comp_mode, vp9_ctx.comp_mode_prob);
-  SafeArrayMemcpy(v4l2_probs->single_ref, vp9_ctx.single_ref_prob);
-  SafeArrayMemcpy(v4l2_probs->comp_ref, vp9_ctx.comp_ref_prob);
-  SafeArrayMemcpy(v4l2_probs->y_mode, vp9_ctx.y_mode_probs);
-  SafeArrayMemcpy(v4l2_probs->uv_mode, vp9_ctx.uv_mode_probs);
-  SafeArrayMemcpy(v4l2_probs->partition, vp9_ctx.partition_probs);
-
-  FillV4L2VP9MvProbsParams(vp9_ctx, &v4l2_probs->mv);
-}
-
 void FillV4L2VP9LoopFilterParams(const Vp9LoopFilterParams& vp9_lf_params,
                                  struct v4l2_vp9_loop_filter* v4l2_lf) {
   SET_IF(v4l2_lf->flags, vp9_lf_params.delta_enabled,
@@ -92,7 +58,6 @@ void FillV4L2VP9LoopFilterParams(const Vp9LoopFilterParams& vp9_lf_params,
   v4l2_lf->sharpness = vp9_lf_params.sharpness;
   SafeArrayMemcpy(v4l2_lf->ref_deltas, vp9_lf_params.ref_deltas);
   SafeArrayMemcpy(v4l2_lf->mode_deltas, vp9_lf_params.mode_deltas);
-  SafeArrayMemcpy(v4l2_lf->level_lookup, vp9_lf_params.lvl);
 }
 
 void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
@@ -112,7 +77,7 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
   SafeArrayMemcpy(v4l2_seg->pred_probs, vp9_seg_params.pred_probs);
 
   static_assert(static_cast<size_t>(Vp9SegmentationParams::SEG_LVL_MAX) ==
-                    static_cast<size_t>(V4L2_VP9_SEGMENT_FEATURE_CNT),
+                    static_cast<size_t>(V4L2_VP9_SEG_LVL_MAX),
                 "mismatch in number of segmentation features");
 
   for (size_t j = 0;
@@ -232,6 +197,7 @@ void ConvertMM21ToYUV(std::vector<char>& dest_y,
   UnpackUVPlane(dest_u, dest_v, detiled_uv, size);
 }
 
+// TODO(b/228876644): assert that |parsing_compressed_header| is indeed false.
 Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                        std::unique_ptr<V4L2Queue> OUTPUT_queue,
@@ -382,7 +348,7 @@ Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
 
 void Vp9Decoder::SetupFrameParams(
     const Vp9FrameHeader& frame_hdr,
-    struct v4l2_ctrl_vp9_frame_decode_params* v4l2_frame_params) {
+    struct v4l2_ctrl_vp9_frame* v4l2_frame_params) {
   conditionally_set_flag(*v4l2_frame_params,
                          frame_hdr.frame_type == Vp9FrameHeader::KEYFRAME,
                          V4L2_VP9_FRAME_FLAG_KEY_FRAME);
@@ -436,14 +402,13 @@ void Vp9Decoder::SetupFrameParams(
   v4l2_frame_params->interpolation_filter = frame_hdr.interpolation_filter;
   v4l2_frame_params->tile_cols_log2 = frame_hdr.tile_cols_log2;
   v4l2_frame_params->tile_rows_log2 = frame_hdr.tile_rows_log2;
-  v4l2_frame_params->tx_mode = frame_hdr.compressed_header.tx_mode;
   v4l2_frame_params->reference_mode =
       frame_hdr.compressed_header.reference_mode;
-  static_assert(VP9_FRAME_LAST + (V4L2_REF_ID_CNT - 1) <
+  static_assert(Vp9RefType::VP9_FRAME_MAX - VP9_FRAME_LAST <
                     std::extent<decltype(frame_hdr.ref_frame_sign_bias)>::value,
                 "array sizes are incompatible");
-  for (size_t i = 0; i < V4L2_REF_ID_CNT; i++) {
-    v4l2_frame_params->ref_frame_sign_biases |=
+  for (size_t i = 0; i < Vp9RefType::VP9_FRAME_MAX - VP9_FRAME_LAST; i++) {
+    v4l2_frame_params->ref_frame_sign_bias |=
         (frame_hdr.ref_frame_sign_bias[i + VP9_FRAME_LAST] ? (1 << i) : 0);
   }
   v4l2_frame_params->frame_width_minus_1 = frame_hdr.frame_width - 1;
@@ -458,12 +423,6 @@ void Vp9Decoder::SetupFrameParams(
 
     LOG_ASSERT(idx < kVp9NumRefFrames) << "Invalid reference frame index.\n";
 
-    static_assert(
-        std::extent<decltype(frame_hdr.ref_frame_idx)>::value ==
-            std::extent<decltype(v4l2_frame_params->refs)>::value,
-        "The number of reference frames in |Vp9FrameHeader| does not match "
-        "|v4l2_ctrl_vp9_frame_decode_params|. Fix |Vp9FrameHeader|.");
-
     // We need to convert a reference frame's frame_number() (in  microseconds)
     // to reference ID (in nanoseconds). Technically, v4l2_timeval_to_ns() is
     // suggested to be used to convert timestamp to nanoseconds, but multiplying
@@ -473,15 +432,30 @@ void Vp9Decoder::SetupFrameParams(
     // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
     constexpr size_t kTimestampToNanoSecs = 1000;
 
-    v4l2_frame_params->refs[i] =
+    const auto reference_id =
         ref_frames_[idx]
             ? ref_frames_[idx]->frame_number() * kTimestampToNanoSecs
             : kInvalidSurface;
+
+    // Only partially/indirectly documented in the VP9 spec, but this array
+    // contains LAST, GOLDEN, and ALT, in that order.
+    switch (i) {
+      case 0:
+        v4l2_frame_params->last_frame_ts = reference_id;
+        break;
+      case 1:
+        v4l2_frame_params->golden_frame_ts = reference_id;
+        break;
+      case 2:
+        v4l2_frame_params->alt_frame_ts = reference_id;
+        break;
+      default:
+        NOTREACHED() << "Invalid reference frame index";
+    }
   }
   // TODO(stevecho): fill in the rest of |v4l2_frame_params| fields.
   FillV4L2VP9QuantizationParams(frame_hdr.quant_params,
                                 &v4l2_frame_params->quant);
-  FillV4L2VP9ProbsParams(frame_hdr.frame_context, &v4l2_frame_params->probs);
 
   const Vp9Parser::Context& context = vp9_parser_->context();
   const Vp9LoopFilterParams& lf_params = context.loop_filter();
@@ -541,7 +515,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
-  struct v4l2_ctrl_vp9_frame_decode_params v4l2_frame_params;
+  struct v4l2_ctrl_vp9_frame v4l2_frame_params;
   memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params));
 
   SetupFrameParams(frame_hdr, &v4l2_frame_params);

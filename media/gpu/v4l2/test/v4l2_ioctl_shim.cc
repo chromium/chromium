@@ -458,13 +458,14 @@ bool V4L2IoctlShim::StreamOn(const enum v4l2_buf_type type) const {
   return Ioctl(VIDIOC_STREAMON, &arg);
 }
 
-bool V4L2IoctlShim::SetExtCtrls(
-    const std::unique_ptr<V4L2Queue>& queue,
-    v4l2_ctrl_vp9_frame_decode_params& frame_params) const {
-  struct v4l2_ext_control ctrl = {
-      .id = V4L2_CID_MPEG_VIDEO_VP9_FRAME_DECODE_PARAMS,
-      .size = sizeof(frame_params),
-      .ptr = &frame_params};
+bool V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
+                                v4l2_ctrl_vp9_frame& v4l2_frame_params) const {
+  struct v4l2_ext_control ctrl = {.id = V4L2_CID_STATELESS_VP9_FRAME,
+                                  .size = sizeof(v4l2_frame_params),
+                                  .ptr = &v4l2_frame_params};
+
+  // TODO(b/228876644): update VIDIOC_S_EXT_CTRLS setup
+  // to support VP9 stable API
 
   // "If |request_fd| is set to a not-yet-queued request file descriptor
   // and |which| is set to V4L2_CTRL_WHICH_REQUEST_VAL, then the controls
