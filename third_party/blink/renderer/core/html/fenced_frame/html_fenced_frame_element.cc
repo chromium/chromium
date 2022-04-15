@@ -397,7 +397,7 @@ void HTMLFencedFrameElement::Navigate() {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "A fenced frame whose mode is" + FencedFrameModeToString(mode_) +
+        "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
             " must be navigated to a potentially-trustworthy URL. See "
             "https://www.w3.org/TR/secure-contexts/#is-url-trustworthy."));
     return;
