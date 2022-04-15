@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_MODAL_TRANSLATE_INFOBAR_MODAL_OVERLAY_REQUEST_CONFIG_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_MODAL_TRANSLATE_INFOBAR_MODAL_OVERLAY_REQUEST_CONFIG_H_
 
+#include <string>
+#include <vector>
+
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 
 #include "components/translate/core/browser/translate_step.h"
