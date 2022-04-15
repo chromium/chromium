@@ -55,11 +55,11 @@ class NetworkContext;
 
 namespace update_client {
 class UpdateClient;
-}
+}  // namespace update_client
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace extensions {
 
