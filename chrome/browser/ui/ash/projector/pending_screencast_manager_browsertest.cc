@@ -65,7 +65,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     pending_screencast_manager_ = std::make_unique<
-        PendingSreencastManager>(base::BindRepeating(
+        PendingScreencastManager>(base::BindRepeating(
         &PendingScreencastMangerBrowserTest::PendingScreencastChangeCallback,
         base::Unretained(this)));
   }
@@ -169,7 +169,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
   MOCK_METHOD1(PendingScreencastChangeCallback,
                void(const PendingScreencastSet&));
 
-  PendingSreencastManager* pending_screencast_manager() {
+  PendingScreencastManager* pending_screencast_manager() {
     return pending_screencast_manager_.get();
   }
 
@@ -180,7 +180,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
       service_factory_for_test_;
 
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  std::unique_ptr<PendingSreencastManager> pending_screencast_manager_;
+  std::unique_ptr<PendingScreencastManager> pending_screencast_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
@@ -555,7 +555,7 @@ class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {
     LoginManagerTest::SetUpOnMainThread();
 
     pending_screencast_manager_ =
-        std::make_unique<PendingSreencastManager>(base::BindLambdaForTesting(
+        std::make_unique<PendingScreencastManager>(base::BindLambdaForTesting(
             [&](const PendingScreencastSet& set) { base::DoNothing(); }));
   }
 
@@ -568,7 +568,7 @@ class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {
   AccountId account_id1_;
   AccountId account_id2_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
-  std::unique_ptr<PendingSreencastManager> pending_screencast_manager_;
+  std::unique_ptr<PendingScreencastManager> pending_screencast_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerMultiProfileTest,

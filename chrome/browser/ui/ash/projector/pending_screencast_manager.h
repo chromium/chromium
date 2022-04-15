@@ -30,21 +30,21 @@ class FilePath;
 
 // A callback to notify the change of pending screencasts to
 // ProjectorAppClient::Observer. The argument is the set of pending screencasts
-// owned by PendingSreencastManager.
+// owned by PendingScreencastManager.
 using PendingScreencastChangeCallback =
     base::RepeatingCallback<void(const ash::PendingScreencastSet&)>;
 
 // A class that handles pending screencast events.
-class PendingSreencastManager
+class PendingScreencastManager
     : public drivefs::DriveFsHostObserver,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver {
  public:
-  explicit PendingSreencastManager(
+  explicit PendingScreencastManager(
       PendingScreencastChangeCallback pending_screencast_change_callback);
-  PendingSreencastManager(const PendingSreencastManager&) = delete;
-  PendingSreencastManager& operator=(const PendingSreencastManager&) = delete;
-  ~PendingSreencastManager() override;
+  PendingScreencastManager(const PendingScreencastManager&) = delete;
+  PendingScreencastManager& operator=(const PendingScreencastManager&) = delete;
+  ~PendingScreencastManager() override;
 
   // Test only:
   bool IsDriveFsObservationObservingSource(drivefs::DriveFsHost* source) const;
@@ -100,7 +100,7 @@ class PendingSreencastManager
       &user_manager::UserManager::RemoveSessionStateObserver>
       session_state_observation_{this};
 
-  base::WeakPtrFactory<PendingSreencastManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PendingScreencastManager> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PENDING_SCREENCAST_MANAGER_H_

@@ -56,7 +56,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
 
   std::unique_ptr<ProjectorSodaInstallationController>
       soda_installation_controller_;
-  PendingSreencastManager pending_screencast_manager_;
+  PendingScreencastManager pending_screencast_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_
