@@ -1922,33 +1922,33 @@
     ],
 
     'chromeos_amd64-generic_lacros_official': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+      'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
 
     # This is the same as 'chromeos_amd64-generic_lacros_official', except for
     # the 'is_skylab' arg. Please keep them in sync.
     'chromeos_amd64-generic_lacros_official_skylab': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
+      'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_lacros_rel': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'release',
+      'chromeos_amd64-generic-crostoolchain', 'lacros', 'release',
     ],
 
     'chromeos_amd64-generic_lacros_rel_fyi': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'release', 'is_skylab',
+      'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_lacros_rel_dchecks': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'release', 'dcheck_always_on',
+      'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
     ],
 
     'chromeos_amd64-generic-vm_lacros_rel_reclient': [
-      'chromeos_amd64-generic-vm_reclient', 'amd64-lacros',
+      'chromeos_amd64-generic-vm_reclient', 'lacros',
     ],
 
     'chromeos_amd64-generic_lacros_dbg': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'debug', 'static',
+      'chromeos_amd64-generic-crostoolchain', 'lacros', 'debug', 'static',
     ],
 
     'chromeos_amd64-generic_dbg': [
@@ -2008,19 +2008,19 @@
     ],
 
     'chromeos_arm-generic_lacros_official': [
-      'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+      'chromeos_arm-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
 
     'chromeos_arm-generic_lacros_official_skylab': [
-      'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
+      'chromeos_arm-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_arm-generic_lacros_rel': [
-      'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'release',
+      'chromeos_arm-generic-crostoolchain', 'lacros', 'release',
     ],
 
     'chromeos_arm-generic_lacros_rel_dchecks': [
-      'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'release', 'dcheck_always_on',
+      'chromeos_arm-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
     ],
 
     'chromeos_asan_lsan_fuzzer_v8_heap_release_bot': [
@@ -3408,14 +3408,6 @@
       'args_file': '//build/args/chromeos/amd64-generic-crostoolchain.gni',
     },
 
-    'amd64-lacros': {
-      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_bullseye_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_bullseye_amd64-sysroot"'
-    },
-
-    'arm-lacros': {
-      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_bullseye_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_bullseye_i386-sysroot"'
-    },
-
     # We build Android with codecs on most bots to ensure maximum test
     # coverage, but use 'android_without_codecs' on bots responsible for
     # building publicly advertised non-Official Android builds --
@@ -3908,6 +3900,10 @@
 
     'jacuzzi': {
       'args_file': '//build/args/chromeos/jacuzzi.gni',
+    },
+
+    'lacros': {
+      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true'
     },
 
     'mbi_mode_per_render_process_host': {
