@@ -27,13 +27,13 @@ class TensorImageTest(tf.test.TestCase, parameterized.TestCase):
 
   def test_from_file(self):
     image_file = test_util.get_test_data_path('burger.jpg')
-    image = tensor_image.TensorImage.from_file(image_file)
+    image = tensor_image.TensorImage.create_from_file(image_file)
     self.assertIsInstance(image._image_data, image_utils.ImageData)
-    self.assertEqual(image.get_height(), 325)
-    self.assertEqual(image.get_width(), 480)
-    self.assertEqual(image.get_color_space_type(),
+    self.assertEqual(image.height, 325)
+    self.assertEqual(image.width, 480)
+    self.assertEqual(image.color_space_type,
                      color_space_type.ColorSpaceType.RGB)
-    self.assertIsInstance(image.get_buffer(), np.ndarray)
+    self.assertIsInstance(image.buffer, np.ndarray)
 
   @parameterized.parameters(
       (1, color_space_type.ColorSpaceType.GRAYSCALE),
@@ -45,13 +45,13 @@ class TensorImageTest(tf.test.TestCase, parameterized.TestCase):
     width = 300
     array = np.random.randint(
         low=0, high=256, size=(height, width, channels), dtype=np.uint8)
-    image = tensor_image.TensorImage.from_array(array)
+    image = tensor_image.TensorImage.create_from_array(array)
     self.assertIsInstance(image._image_data, image_utils.ImageData)
-    self.assertEqual(image.get_height(), height)
-    self.assertEqual(image.get_width(), width)
-    self.assertEqual(image.get_color_space_type(), color_type)
-    self.assertIsInstance(image.get_buffer(), np.ndarray)
-    self.assertAllEqual(image.get_buffer(), array)
+    self.assertEqual(image.height, height)
+    self.assertEqual(image.width, width)
+    self.assertEqual(image.color_space_type, color_type)
+    self.assertIsInstance(image.buffer, np.ndarray)
+    self.assertAllEqual(image.buffer, array)
 
 
 if __name__ == '__main__':

@@ -13,12 +13,11 @@
  limitations under the License.
  ==============================================================================*/
 #import "tensorflow_lite_support/ios/task/vision/sources/TFLObjectDetector.h"
-#import "tensorflow_lite_support/ios/sources/TFLCommon.h"
 #import "tensorflow_lite_support/ios/sources/TFLCommonUtils.h"
 #import "tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions+Helpers.h"
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationOptions+Helpers.h"
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLDetectionResult+Helpers.h"
-#import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImageUtils.h"
+#import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h"
 
 #include "tensorflow_lite_support/c/task/vision/object_detector.h"
 
@@ -68,7 +67,7 @@
   TfLiteObjectDetectorOptions cOptions = TfLiteObjectDetectorOptionsCreate();
   if (![options.classificationOptions
           copyToCOptions:&(cOptions.classification_options)
-                                 error:error])
+                   error:error])
     return nil;
 
   [options.baseOptions copyToCOptions:&(cOptions.base_options)];
@@ -80,10 +79,8 @@
   [options.classificationOptions
       deleteCStringArraysOfClassificationOptions:&(cOptions.classification_options)];
 
-  if (!objectDetector) {
-    if (error) {
-      *error = [TFLCommonUtils errorWithCError:createObjectDetectorError];
-    }
+  if (!objectDetector || ![TFLCommonUtils checkCError:createObjectDetectorError
+                                              toError:error]) {
     TfLiteSupportErrorDelete(createObjectDetectorError);
     return nil;
   }
@@ -93,7 +90,7 @@
 
 - (nullable TFLDetectionResult *)detectWithGMLImage:(GMLImage *)image
                                               error:(NSError *_Nullable *)error {
-  TfLiteFrameBuffer *cFrameBuffer = [GMLImageUtils cFrameBufferWithGMLImage:image error:error];
+  TfLiteFrameBuffer* cFrameBuffer = [image cFrameBufferWithError:error];
 
   if (!cFrameBuffer) {
     return nil;
@@ -109,10 +106,8 @@
   free(cFrameBuffer);
   cFrameBuffer = nil;
 
-  if (!cDetectionResult) {
-    if (error) {
-      *error = [TFLCommonUtils errorWithCError:detectError];
-    }
+  if (!cDetectionResult || ![TFLCommonUtils checkCError:detectError
+                                                toError:error]) {
     TfLiteSupportErrorDelete(detectError);
     return nil;
   }

@@ -1,6 +1,6 @@
-From c2a246349d5b24fead94f71e4168fbff17e5d156 Mon Sep 17 00:00:00 2001
+From 758683d39012410890eb4599e1df5d315e76361e Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Wed, 9 Mar 2022 10:29:00 -0800
+Date: Wed, 13 Apr 2022 10:56:42 -0700
 Subject: [PATCH 3/9] rm noop deprecated attribute
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH 3/9] rm noop deprecated attribute
  1 file changed, 3 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
-index d92a274f85a68..ab5126348f380 100644
+index 7c2143201daa9..b7af66044b129 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
 @@ -43,9 +43,6 @@ namespace text {
@@ -22,5 +22,5 @@ index d92a274f85a68..ab5126348f380 100644
    int input_tensor_index = 0;
    int output_score_tensor_index = 0;
 -- 
-2.35.1.616.g0bdcbb4464-goog
+2.35.1.1178.g4f1659d476-goog
 

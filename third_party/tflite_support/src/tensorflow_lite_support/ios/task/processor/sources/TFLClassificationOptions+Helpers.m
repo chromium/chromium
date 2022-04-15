@@ -20,33 +20,31 @@
 
 + (char **)cStringArrayFromNSArray:(NSArray<NSString *> *)strings error:(NSError **)error {
   if (strings.count <= 0) {
-    if (error) {
-      *error = [TFLCommonUtils
-          customErrorWithCode:TFLSupportErrorCodeInvalidArgumentError
-                  description:@"Invalid length of strings found for list type options."];
-    }
-    return NULL;
-  }
-
-  char **cStrings = (char **)calloc(strings.count, sizeof(char *));
-
-  if (!cStrings) {
-    if (error) {
-      *error = [TFLCommonUtils customErrorWithCode:TFLSupportErrorCodeInternalError
-                                       description:@"Could not initialize list type options."];
-    }
+    [TFLCommonUtils
+        createCustomError:error
+                 withCode:TFLSupportErrorCodeInvalidArgumentError
+              description:
+                  @"Invalid length of strings found for list type options."];
     return nil;
   }
 
+  char** cStrings = [TFLCommonUtils mallocWithSize:strings.count * sizeof(char*)
+                                             error:error];
+  if (!cStrings)
+    return NULL;
+
   for (NSInteger i = 0; i < strings.count; i++) {
-    char *cString = [TFLCommonUtils
-        mallocWithSize:[strings[i] lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1
+    cStrings[i] = [TFLCommonUtils
+        mallocWithSize:([strings[i]
+                            lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
+                        1) *
+                       sizeof(char)
                  error:error];
-    if (!cString) return nil;
+    if (!cStrings[i])
+      return NULL;
 
-    strcpy(cString, strings[i].UTF8String);
+    strcpy(cStrings[i], strings[i].UTF8String);
   }
-
   return cStrings;
 }
 
@@ -84,8 +82,20 @@
     cClassificationOptions->label_allowlist.length = (int)self.labelAllowList.count;
   }
 
-  if (self.displayNamesLocal) {
-    cClassificationOptions->display_names_local = (char *)self.displayNamesLocal.UTF8String;
+  if (self.displayNamesLocale) {
+    if (self.displayNamesLocale.UTF8String) {
+      cClassificationOptions->display_names_local =
+          strdup(self.displayNamesLocale.UTF8String);
+      if (!cClassificationOptions->display_names_local) {
+        exit(-1);  // Memory Allocation Failed.
+      }
+    } else {
+      [TFLCommonUtils
+          createCustomError:error
+                   withCode:TFLSupportErrorCodeInvalidArgumentError
+                description:@"Could not convert (NSString *) to (char *)."];
+      return NO;
+    }
   }
 
   return YES;

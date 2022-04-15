@@ -14,8 +14,7 @@ limitations under the License.
 ==============================================================================*/
 #import <XCTest/XCTest.h>
 
-#import "third_party/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImageUtils.h"
-#import "third_party/tensorflow_lite_support/ios/test/task/vision/utils/sources/GMLImage+Helpers.h"
+#import "third_party/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h"
 
 #include "third_party/tensorflow_lite_support/c/task/vision/utils/frame_buffer_cpp_c_utils.h"
 #include "third_party/tensorflow_lite_support/cc/task/vision/image_classifier.h"
@@ -69,8 +68,8 @@ using ClassificationResult = ::tflite::task::vision::ClassificationResult;
   XCTAssertNotNil(gmlImage);
 
   // Converts the test image to a frame buffer.
-  NSError* error;
-  TfLiteFrameBuffer* cFrameBuffer = [GMLImageUtils cFrameBufferWithGMLImage:gmlImage error:&error];
+  NSError* error = nullptr;
+  TfLiteFrameBuffer* cFrameBuffer = [gmlImage cFrameBufferWithError:&error];
   XCTAssertNotEqual(cFrameBuffer, nullptr);
   tflite::support::StatusOr<std::unique_ptr<::tflite::task::vision::FrameBuffer>>
       frame_buffer_status = ::tflite::task::vision::CreateCppFrameBuffer(cFrameBuffer);

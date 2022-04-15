@@ -58,7 +58,7 @@ py_binary(
     name = "image_embedder_demo",
     srcs = ["image_embedder_demo.py"],
     deps = [
-        "//tensorflow_lite_support/python/task/core:task_options",
+        "//tensorflow_lite_support/python/task/core/proto:base_options_py_pb2",
         "//tensorflow_lite_support/python/task/processor/proto:embedding_options_pb2",
         "//tensorflow_lite_support/python/task/vision:image_embedder",
         "//tensorflow_lite_support/python/task/vision/core:tensor_image",

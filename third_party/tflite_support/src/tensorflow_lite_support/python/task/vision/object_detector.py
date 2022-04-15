@@ -14,40 +14,24 @@
 """Object detector task."""
 
 import dataclasses
-from typing import Any, Optional
 
-from tensorflow_lite_support.python.task.core import task_options
-from tensorflow_lite_support.python.task.core import task_utils
+from tensorflow_lite_support.python.task.core.proto import base_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import detection_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import detections_pb2
 from tensorflow_lite_support.python.task.vision.core import tensor_image
 from tensorflow_lite_support.python.task.vision.core.pybinds import image_utils
 from tensorflow_lite_support.python.task.vision.pybinds import _pywrap_object_detector
-from tensorflow_lite_support.python.task.vision.pybinds import object_detector_options_pb2
 
-_ProtoObjectDetectorOptions = object_detector_options_pb2.ObjectDetectorOptions
 _CppObjectDetector = _pywrap_object_detector.ObjectDetector
+_BaseOptions = base_options_pb2.BaseOptions
+_DetectionOptions = detection_options_pb2.DetectionOptions
 
 
 @dataclasses.dataclass
 class ObjectDetectorOptions:
   """Options for the object detector task."""
-  base_options: task_options.BaseOptions
-  detection_options: Optional[detection_options_pb2.DetectionOptions] = None
-
-  def __eq__(self, other: Any) -> bool:
-    if (not isinstance(other, self.__class__) or
-        self.base_options != other.base_options):
-      return False
-
-    if self.detection_options is None and other.detection_options is None:
-      return True
-    elif (self.detection_options and other.detection_options and
-          self.detection_options.SerializeToString()
-          == self.detection_options.SerializeToString()):
-      return True
-    else:
-      return False
+  base_options: _BaseOptions
+  detection_options: _DetectionOptions = _DetectionOptions()
 
 
 class ObjectDetector(object):
@@ -61,6 +45,25 @@ class ObjectDetector(object):
     self._detector = detector
 
   @classmethod
+  def create_from_file(cls, file_path: str) -> "ObjectDetector":
+    """Creates the `ObjectDetector` object from a TensorFlow Lite model.
+
+    Args:
+      file_path: Path to the model.
+
+    Returns:
+      `ObjectDetector` object that's created from the model file.
+
+    Raises:
+      ValueError: if failed to create `ObjectDetector` object from the provided
+        file such as invalid file.
+      RuntimeError: If other types of error occurred.
+    """
+    base_options = _BaseOptions(file_name=file_path)
+    options = ObjectDetectorOptions(base_options=base_options)
+    return cls.create_from_options(options)
+
+  @classmethod
   def create_from_options(cls,
                           options: ObjectDetectorOptions) -> "ObjectDetector":
     """Creates the `ObjectDetector` object from object detector options.
@@ -70,35 +73,14 @@ class ObjectDetector(object):
 
     Returns:
       `ObjectDetector` object that's created from `options`.
+
     Raises:
-      TODO(b/220931229): Raise RuntimeError instead of status.StatusNotOk.
-      status.StatusNotOk if failed to create `ObjectDetector` object from
-        `ObjectDetectorOptions` such as missing the model. Need to import the
-        module to catch this error: `from pybind11_abseil
-        import status`, see
-        https://github.com/pybind/pybind11_abseil#abslstatusor.
+      ValueError: If failed to create `ObjectDetector` object from
+        `ObjectDetectorOptions` such as missing the model.
+      RuntimeError: If other types of error occurred.
     """
-    proto_options = _ProtoObjectDetectorOptions()
-    proto_options.base_options.CopyFrom(
-        task_utils.ConvertToProtoBaseOptions(options.base_options))
-
-    # Updates values from detection_options.
-    if options.detection_options:
-      if options.detection_options.display_names_locale:
-        proto_options.display_names_locale = options.detection_options.display_names_locale
-      if options.detection_options.max_results:
-        proto_options.max_results = options.detection_options.max_results
-      if options.detection_options.score_threshold:
-        proto_options.score_threshold = options.detection_options.score_threshold
-      if options.detection_options.class_name_allowlist:
-        proto_options.class_name_whitelist.extend(
-            options.detection_options.class_name_allowlist)
-      if options.detection_options.class_name_denylist:
-        proto_options.class_name_blacklist.extend(
-            options.detection_options.class_name_denylist)
-
-    detector = _CppObjectDetector.create_from_options(proto_options)
-
+    detector = _CppObjectDetector.create_from_options(options.base_options,
+                                                      options.detection_options)
     return cls(options, detector)
 
   def detect(self,
@@ -110,12 +92,11 @@ class ObjectDetector(object):
 
     Returns:
       detection result.
+
     Raises:
-      status.StatusNotOk if failed to get the feature vector. Need to import the
-        module to catch this error: `from pybind11_abseil
-        import status`, see
-        https://github.com/pybind/pybind11_abseil#abslstatusor.
+      ValueError: If any of the input arguments is invalid.
+      RuntimeError: If object detection failed to run.
     """
-    image_data = image_utils.ImageData(image.get_buffer())
+    image_data = image_utils.ImageData(image.buffer)
 
     return self._detector.detect(image_data)

@@ -22,6 +22,10 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "tensorflow_lite_support/cc/task/processor/bert_preprocessor.h"
 #include "tensorflow_lite_support/cc/task/processor/regex_preprocessor.h"
+#include "tensorflow_lite_support/cc/task/processor/text_preprocessor.h"
+#include "tensorflow_lite_support/cc/task/processor/universal_sentence_encoder_preprocessor.h"
+#include "tensorflow_lite_support/cc/task/text/utils/bert_utils.h"
+#include "tensorflow_lite_support/cc/task/text/utils/universal_sentence_encoder_utils.h"
 
 namespace tflite {
 namespace task {
@@ -31,10 +35,15 @@ namespace {
 
 using ::absl::StatusCode;
 using ::tflite::support::CreateStatusWithPayload;
+using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
 using ::tflite::task::core::TaskAPIFactory;
 using ::tflite::task::processor::EmbeddingResult;
 using ::tflite::task::processor::FeatureVector;
+
+// Expected index of the response encoding output tensor in Universal Sentence
+// Encoder models, as returned by GetUniversalSentenceEncoderOutputIndices().
+constexpr int kUSEResponseEncodingIndex = 1;
 
 absl::Status SanityCheckOptions(const TextEmbedderOptions& options) {
   if (!options.has_base_options()) {
@@ -75,28 +84,54 @@ absl::Status TextEmbedder::Init(std::unique_ptr<TextEmbedderOptions> options) {
   // Set options.
   options_ = std::move(options);
 
-  // Assuming have only 1 input tensor for RegexPreprocessor and 3 input tensors
-  // for BertPreprocessor.
-
-  int32_t input_count = GetInputCount();
+  int input_count = GetInputCount();
+  std::vector<int> output_tensor_indices;
   if (input_count == 1) {
+    // Assume Regex-based model.
     ASSIGN_OR_RETURN(preprocessor_, processor::RegexPreprocessor::Create(
                                         GetTfLiteEngine(), 0));
+    // All output tensors are assumed to be embeddings.
+    for (int i = 0; i < GetTfLiteEngine()->GetOutputs().size(); ++i) {
+      output_tensor_indices.push_back(i);
+    }
   } else if (input_count == 3) {
-    ASSIGN_OR_RETURN(preprocessor_, processor::BertPreprocessor::Create(
-                                        GetTfLiteEngine(), {0, 1, 2}));
+    // Check if BertTokenizer is present.
+    if (GetMetadataExtractor()->GetInputProcessUnitsCount() > 0) {
+      // Assume Bert-based model.
+      ASSIGN_OR_RETURN(auto input_indices,
+                       GetBertInputTensorIndices(GetTfLiteEngine()));
+      ASSIGN_OR_RETURN(preprocessor_, processor::BertPreprocessor::Create(
+                                          GetTfLiteEngine(),
+                                          {input_indices[0], input_indices[1],
+                                           input_indices[2]}));
+      // All input tensors are assumed to be embeddings.
+      for (int i = 0; i < GetTfLiteEngine()->GetOutputs().size(); ++i) {
+        output_tensor_indices.push_back(i);
+      }
+    } else {
+      // Assume Universal Sentence Encoder-based model.
+      ASSIGN_OR_RETURN(
+          auto input_indices,
+          GetUniversalSentenceEncoderInputTensorIndices(GetTfLiteEngine()));
+      ASSIGN_OR_RETURN(
+          auto output_indices,
+          GetUniversalSentenceEncoderOutputTensorIndices(GetTfLiteEngine()));
+      ASSIGN_OR_RETURN(
+          preprocessor_,
+          processor::UniversalSentenceEncoderPreprocessor::Create(
+              GetTfLiteEngine(),
+              {input_indices[0], input_indices[1], input_indices[2]}));
+      // Only use the response encoding output.
+      output_tensor_indices.push_back(
+          output_indices[kUSEResponseEncodingIndex]);
+    }
   } else {
     return support::CreateStatusWithPayload(
         absl::StatusCode::kInvalidArgument,
-        absl::StrFormat("Processor can handle 1 tensor or 3 tensors, "
-                        "got: %d tensors.",
-                        input_count));
+        absl::StrFormat("Expected 1 or 3 input tensors, got %d.", input_count));
   }
 
-  // Create postprocessors, assuming that all output tensors are embedding
-  // outputs.
-  int post_processors_count =
-      GetTfLiteEngine()->interpreter()->outputs().size();
+  int post_processors_count = output_tensor_indices.size();
   postprocessors_.reserve(post_processors_count);
 
   for (int i = 0; i < post_processors_count; i++) {
@@ -115,13 +150,15 @@ absl::Status TextEmbedder::Init(std::unique_ptr<TextEmbedderOptions> options) {
     } else {
       return support::CreateStatusWithPayload(
           absl::StatusCode::kInvalidArgument,
-          "Invalid embedding_options. It should have size of either 0, 1 or "
+          "Invalid embedding_options. It should have size of either 0, 1 "
+          "or "
           "number of output tensors.",
           support::TfLiteSupportStatus::kInvalidArgumentError);
     }
-    ASSIGN_OR_RETURN(auto processor,
-                     processor::EmbeddingPostprocessor::Create(
-                         GetTfLiteEngine(), {i}, std::move(option)));
+    ASSIGN_OR_RETURN(
+        auto processor,
+        processor::EmbeddingPostprocessor::Create(
+            GetTfLiteEngine(), {output_tensor_indices[i]}, std::move(option)));
     postprocessors_.emplace_back(std::move(processor));
   }
 

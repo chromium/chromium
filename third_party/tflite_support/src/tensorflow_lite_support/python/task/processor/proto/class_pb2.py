@@ -13,6 +13,6 @@
 # limitations under the License.
 """Class protobuf."""
 
-from tensorflow_lite_support.cc.task.vision.proto import class_pb2
+from tensorflow_lite_support.cc.task.processor.proto import class_pb2
 
 Category = class_pb2.Class

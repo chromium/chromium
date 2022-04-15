@@ -126,17 +126,26 @@ public class TensorAudioTest {
                     .usingTolerance(0.001f)
                     .containsExactly(new float[] {2.f, 0, 2.f, 3.f});
 
+            tensor.load(new float[] {2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f}, 1, 6);
+            // The sequence is longer than the ring buffer size so it's expected to keep only the
+            // last 4 numbers (index 3 to 6) of the load target sub-sequence (index 1 to 6).
+            assertThat(tensor.getTensorBuffer().getFloatArray())
+                    .usingTolerance(0.001f)
+                    .containsExactly(new float[] {5.f, 6.f, 7.f, 8.f});
+
             tensor.load(new short[] {Short.MAX_VALUE, Short.MIN_VALUE});
             assertThat(tensor.getTensorBuffer().getFloatArray())
                     .usingTolerance(0.001f)
-                    .containsExactly(new float[] {2.f, 3.f, 1.f, -1.f});
+                    .containsExactly(new float[] {7.f, 8.f, 1.f, -1.f});
 
-            tensor.load(new short[] {1, 2, 3, 0, 1, Short.MIN_VALUE, 3, 4, 5}, 3, 6);
-            // The entire sequence becomes {2.f, 0, 2.f, 3.f, 1.f, -1.f, 0, 0, -1.f, 0, 0, 0} but
-            // the ring buffer is only keep the last 4 results.
+            tensor.load(new short[] {1000, 2000, 3000, 0, 1000, Short.MIN_VALUE, 4000, 5000, 6000},
+                    3, 6);
+            // The sequence is longer than the ring buffer size so it's expected to keep only the
+            // last 4 numbers.
             assertThat(tensor.getTensorBuffer().getFloatArray())
                     .usingTolerance(0.001f)
-                    .containsExactly(new float[] {-1.f, 0, 0, 0});
+                    .containsExactly(new float[] {-1.f, 4000.f / Short.MAX_VALUE,
+                            5000.f / Short.MAX_VALUE, 6000.f / Short.MAX_VALUE});
         }
 
         @Test

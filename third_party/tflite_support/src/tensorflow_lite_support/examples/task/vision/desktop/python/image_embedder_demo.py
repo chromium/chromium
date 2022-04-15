@@ -18,12 +18,13 @@ import os
 from absl import app
 from absl import flags
 
-from tensorflow_lite_support.python.task.core import task_options
+from tensorflow_lite_support.python.task.core.proto import base_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
 from tensorflow_lite_support.python.task.vision import image_embedder
 from tensorflow_lite_support.python.task.vision.core import tensor_image
 
 FLAGS = flags.FLAGS
+_BaseOptions = base_options_pb2.BaseOptions
 
 flags.DEFINE_string("model_path", None,
                     "Absolute path to the \".tflite\" image embedder model.")
@@ -56,9 +57,8 @@ flags.DEFINE_bool(
 
 
 def build_options():
-  base_options = task_options.BaseOptions(
-      model_file=task_options.ExternalFile(file_name=FLAGS.model_path),
-      use_coral=FLAGS.use_coral)
+  base_options = _BaseOptions(
+      file_name=FLAGS.model_path, use_coral=FLAGS.use_coral)
   embedding_options = embedding_options_pb2.EmbeddingOptions(
       l2_normalize=FLAGS.l2_normalize, quantize=FLAGS.quantize)
   return image_embedder.ImageEmbedderOptions(

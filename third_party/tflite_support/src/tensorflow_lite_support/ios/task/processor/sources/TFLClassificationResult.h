@@ -25,18 +25,49 @@ NS_ASSUME_NONNULL_BEGIN
  * The index of the image classifier head these classes refer to. This is useful
  * for multi-head models.
  */
-@property(nonatomic, assign) int headIndex;
+@property(nonatomic, assign, readonly) NSInteger headIndex;
 
 /** The array of predicted classes, usually sorted by descending scores
  * (e.g.from high to low probability). */
-@property(nonatomic, copy) NSArray<TFLCategory*>* categories;
+@property(nonatomic, copy, readonly) NSArray<TFLCategory*>* categories;
+
+/**
+ * Initializes TFLClassifications.
+ *
+ * @param categories Array of TFLCategory objects encapsulating a list of
+ * predictions usually sorted by descending scores (e.g. from high to low
+ * probability).
+ * @seealso TFLCategory
+ *
+ * @return An instance of TFLClassifications initialized to
+ * the specified values.
+ */
+- (instancetype)initWithHeadIndex:(NSInteger)headIndex
+                       categories:(NSArray<TFLCategory*>*)categories;
 
 @end
 
 /** Encapsulates results of any classification task. */
 @interface TFLClassificationResult : NSObject
 
-@property(nonatomic, copy) NSArray<TFLClassifications*>* classifications;
+/** Array of TFLClassifications objects containing image classifier predictions
+ * per image classifier head.
+ */
+@property(nonatomic, copy, readonly)
+    NSArray<TFLClassifications*>* classifications;
+
+/**
+ * Initializes TFLClassificationResult.
+ *
+ * @param classifications Array of TFLClassifications objects containing image
+ * classifier predictions per image classifier head.
+ * @seealso TFLClassifications
+ *
+ * @return An instance of TFLClassificationResult initialized to the specified
+ * values.
+ */
+- (instancetype)initWithClassifications:
+    (NSArray<TFLClassifications*>*)classifications;
 
 @end
 

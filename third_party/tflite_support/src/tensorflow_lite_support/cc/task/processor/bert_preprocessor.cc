@@ -26,19 +26,17 @@ namespace tflite {
 namespace task {
 namespace processor {
 
-using ::absl::StatusCode;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
 using ::tflite::support::text::tokenizer::CreateTokenizerFromProcessUnit;
 using ::tflite::support::text::tokenizer::TokenizerResult;
-using ::tflite::task::core::FindTensorIndexByMetadataName;
 using ::tflite::task::core::PopulateTensor;
 
 constexpr int kTokenizerProcessUnitIndex = 0;
-constexpr char kIdsTensorName[] = "ids";
-constexpr char kMaskTensorName[] = "mask";
-constexpr char kSegmentIdsTensorName[] = "segment_ids";
+constexpr int kIdsTensorIndex = 0;
+constexpr int kSegmentIdsTensorIndex = 1;
+constexpr int kMaskTensorIndex = 2;
 constexpr char kClassificationToken[] = "[CLS]";
 constexpr char kSeparator[] = "[SEP]";
 
@@ -56,53 +54,37 @@ StatusOr<std::unique_ptr<BertPreprocessor>> BertPreprocessor::Create(
 
 absl::Status BertPreprocessor::Init() {
   // Try if RegexTokenzier can be found.
-  // BertTokenzier is packed in the processing unit of the InputTensors in
-  // SubgraphMetadata.
-  const tflite::ProcessUnit* tokenzier_metadata =
+  // BertTokenzier is packed in the processing unit SubgraphMetadata.
+  const tflite::ProcessUnit* tokenizer_metadata =
       GetMetadataExtractor()->GetInputProcessUnit(kTokenizerProcessUnitIndex);
-  // Identify the tensor index for three Bert input tensors.
-  auto tensors_metadata = GetMetadataExtractor()->GetInputTensorMetadata();
-  int ids_tensor_index =
-      FindTensorIndexByMetadataName(tensors_metadata, kIdsTensorName);
-  ids_tensor_index_ =
-      ids_tensor_index == -1 ? tensor_indices_[0] : ids_tensor_index;
-  int mask_tensor_index =
-      FindTensorIndexByMetadataName(tensors_metadata, kMaskTensorName);
-  mask_tensor_index_ =
-      mask_tensor_index == -1 ? tensor_indices_[1] : mask_tensor_index;
-  int segment_ids_tensor_index =
-      FindTensorIndexByMetadataName(tensors_metadata, kSegmentIdsTensorName);
-  segment_ids_tensor_index_ = segment_ids_tensor_index == -1
-                                  ? tensor_indices_[2]
-                                  : segment_ids_tensor_index;
+  ASSIGN_OR_RETURN(tokenizer_, CreateTokenizerFromProcessUnit(
+                                   tokenizer_metadata, GetMetadataExtractor()));
 
-  if (GetLastDimSize(ids_tensor_index_) != GetLastDimSize(mask_tensor_index_) ||
-      GetLastDimSize(ids_tensor_index_) !=
-          GetLastDimSize(segment_ids_tensor_index_)) {
+  // Sanity check and assign max sequence length.
+  if (GetLastDimSize(tensor_indices_[kIdsTensorIndex]) !=
+          GetLastDimSize(tensor_indices_[kMaskTensorIndex]) ||
+      GetLastDimSize(tensor_indices_[kIdsTensorIndex]) !=
+          GetLastDimSize(tensor_indices_[kSegmentIdsTensorIndex])) {
     return CreateStatusWithPayload(
         absl::StatusCode::kInternal,
-        absl::StrFormat("The three input tensors in Bert models are "
-                        "expected to have same length, but got ids_tensor "
-                        "(%d), mask_tensor (%d), segment_ids_tensor (%d).",
-                        GetLastDimSize(ids_tensor_index_),
-                        GetLastDimSize(mask_tensor_index_),
-                        GetLastDimSize(segment_ids_tensor_index_)),
+        absl::StrFormat(
+            "The three input tensors in Bert models are "
+            "expected to have same length, but got ids_tensor "
+            "(%d), mask_tensor (%d), segment_ids_tensor (%d).",
+            GetLastDimSize(tensor_indices_[kIdsTensorIndex]),
+            GetLastDimSize(tensor_indices_[kMaskTensorIndex]),
+            GetLastDimSize(tensor_indices_[kSegmentIdsTensorIndex])),
         TfLiteSupportStatus::kInvalidNumOutputTensorsError);
   }
-  bert_max_seq_len_ = GetLastDimSize(ids_tensor_index_);
+  bert_max_seq_len_ = GetLastDimSize(tensor_indices_[kIdsTensorIndex]);
 
-  ASSIGN_OR_RETURN(tokenizer_, CreateTokenizerFromProcessUnit(
-                                   tokenzier_metadata, GetMetadataExtractor()));
   return absl::OkStatus();
 }
 
 absl::Status BertPreprocessor::Preprocess(const std::string& input_text) {
-  auto* ids_tensor =
-      engine_->GetInput(engine_->interpreter(), ids_tensor_index_);
-  auto* mask_tensor =
-      engine_->GetInput(engine_->interpreter(), mask_tensor_index_);
-  auto* segment_ids_tensor =
-      engine_->GetInput(engine_->interpreter(), segment_ids_tensor_index_);
+  auto* ids_tensor = GetTensor(kIdsTensorIndex);
+  auto* mask_tensor = GetTensor(kMaskTensorIndex);
+  auto* segment_ids_tensor = GetTensor(kSegmentIdsTensorIndex);
 
   std::string processed_input = input_text;
   absl::AsciiStrToLower(&processed_input);

@@ -19,10 +19,11 @@ set -ex
 
 bash tensorflow_lite_support/custom_ops/tf_configure.sh
 
-# TODO(b/200756963): Make it possible to build flatbuffer schema libraries with
-# more jobs.
+# Break down metadata builds and avoid the flacky issue when building schema
+# with Bazel. See b/200756963.
 bazel build -c opt --config=monolithic \
-    //tensorflow_lite_support/metadata/java:tensorflowlite_support_metadata_lib \
+    //tensorflow_lite_support/metadata/java:tensorflowlite_support_metadata_lib
+bazel build -c opt --config=monolithic \
     //tensorflow_lite_support/metadata/cc:metadata_extractor
 
 export BAZEL_PARALLEL="-j 32"
@@ -39,8 +40,10 @@ bazel build -c opt ${BAZEL_PARALLEL} --config=monolithic \
     --config=android_arm64 --fat_apk_cpu=x86,x86_64,arm64-v8a,armeabi-v7a \
     //tensorflow_lite_support/java:tensorflowlite_support \
     //tensorflow_lite_support/cc/task/vision:image_embedder \
+    //tensorflow_lite_support/cc/task/vision:image_searcher \
     //tensorflow_lite_support/cc/task/audio:audio_embedder \
     //tensorflow_lite_support/cc/task/processor:all \
+    //tensorflow_lite_support/cc/task/text:text_searcher \
     //tensorflow_lite_support/odml/java/image \
     //tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/core:base-task-api.aar \
     //tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/text:task-library-text \
@@ -64,7 +67,8 @@ bazel test -c opt $BAZEL_PARALLEL --test_output=all \
     //tensorflow_lite_support/custom_ops/kernel/sentencepiece:all \
     //tensorflow_lite_support/metadata/python/tests:metadata_test \
     //tensorflow_lite_support/metadata/python/tests/metadata_writers:all \
-    //tensorflow_lite_support/python/test/task/...
+    //tensorflow_lite_support/python/test/task/... \
+    //tensorflow_lite_support/scann_ondevice/cc/...
 
 bazel test -c opt $BAZEL_PARALLEL --test_output=all --build_tests_only \
     --build_tag_filters=-tflite_emulator_test_android \

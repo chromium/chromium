@@ -81,7 +81,7 @@ struct TfLiteImageSegmenter {
   std::unique_ptr<ImageSegmenterCpp> impl;
 };
 
-TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate() {
+TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate(void) {
   // Use brace-enclosed initializer list will break the Kokoro test.
   TfLiteImageSegmenterOptions options;
   options.base_options = tflite::task::core::CreateDefaultBaseOptions();

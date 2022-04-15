@@ -13,7 +13,8 @@ py_test(
         "//tensorflow_lite_support/cc/test/testdata/task/text:regex_embedding_with_metadata",
     ],
     deps = [
-        "//tensorflow_lite_support/python/task/core:task_options",
+        # build rule placeholder: tensorflow dep,
+        "//tensorflow_lite_support/python/task/core/proto:base_options_py_pb2",
         "//tensorflow_lite_support/python/task/processor/proto:embedding_options_pb2",
         "//tensorflow_lite_support/python/task/text:text_embedder",
         "//tensorflow_lite_support/python/test:test_util",

@@ -15,7 +15,7 @@
 #import <XCTest/XCTest.h>
 
 #import "tensorflow_lite_support/ios/task/vision/sources/TFLImageClassifier.h"
-#import "tensorflow_lite_support/ios/test/task/vision/utils/sources/GMLImage+Helpers.h"
+#import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,8 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
   // Put setup code here. This method is called before the invocation of each test method in the
   // class.
   [super setUp];
-  self.modelPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"mobilenet_v2_1.0_224"
-                                                                    ofType:@"tflite"];
+  self.modelPath = [[NSBundle bundleForClass:self.class]
+      pathForResource:@"mobilenet_v2_1.0_224"
+               ofType:@"tflite"];
   XCTAssertNotNil(self.modelPath);
 }
 
@@ -42,15 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
       [TFLImageClassifier imageClassifierWithOptions:imageClassifierOptions error:nil];
   XCTAssertNotNil(imageClassifier);
 
-  GMLImage *gmlImage = [GMLImage imageFromBundleWithClass:[self class]
+  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
                                                  fileName:@"burger"
                                                    ofType:@"jpg"];
   XCTAssertNotNil(gmlImage);
 
   TFLClassificationResult *classificationResults = [imageClassifier classifyWithGMLImage:gmlImage
                                                                                    error:nil];
-  XCTAssertTrue([classificationResults.classifications count] > 0);
-  XCTAssertTrue([classificationResults.classifications[0].categories count] > 0);
+  XCTAssertTrue(classificationResults.classifications.count > 0);
+  XCTAssertTrue(classificationResults.classifications[0].categories.count > 0);
 
   TFLCategory *category = classificationResults.classifications[0].categories[0];
   XCTAssertTrue([category.label isEqual:@"cheeseburger"]);
@@ -68,15 +69,16 @@ NS_ASSUME_NONNULL_BEGIN
       [TFLImageClassifier imageClassifierWithOptions:imageClassifierOptions error:nil];
   XCTAssertNotNil(imageClassifier);
 
-  GMLImage *gmlImage = [GMLImage imageFromBundleWithClass:[self class]
+  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
                                                  fileName:@"burger"
                                                    ofType:@"jpg"];
   XCTAssertNotNil(gmlImage);
 
   TFLClassificationResult *classificationResults = [imageClassifier classifyWithGMLImage:gmlImage
                                                                                    error:nil];
-  XCTAssertTrue([classificationResults.classifications count] > 0);
-  XCTAssertLessThanOrEqual([classificationResults.classifications[0].categories count], maxResults);
+  XCTAssertTrue(classificationResults.classifications.count > 0);
+  XCTAssertLessThanOrEqual(
+      classificationResults.classifications[0].categories.count, maxResults);
 
   TFLCategory *category = classificationResults.classifications[0].categories[0];
   XCTAssertTrue([category.label isEqual:@"cheeseburger"]);
@@ -94,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
       [TFLImageClassifier imageClassifierWithOptions:imageClassifierOptions error:nil];
   XCTAssertNotNil(imageClassifier);
 
-  GMLImage *gmlImage = [GMLImage imageFromBundleWithClass:[self class]
+  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
                                                  fileName:@"multi_objects"
                                                    ofType:@"jpg"];
   XCTAssertNotNil(gmlImage);
@@ -103,8 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
   TFLClassificationResult *classificationResults = [imageClassifier classifyWithGMLImage:gmlImage
                                                                         regionOfInterest:roi
                                                                                    error:nil];
-  XCTAssertTrue([classificationResults.classifications count] > 0);
-  XCTAssertTrue([classificationResults.classifications[0].categories count] > 0);
+  XCTAssertTrue(classificationResults.classifications.count > 0);
+  XCTAssertTrue(classificationResults.classifications[0].categories.count > 0);
 
   TFLCategory *category = classificationResults.classifications[0].categories[0];
   // TODO: match the label and score as image_classifier_test.cc
@@ -120,15 +122,15 @@ NS_ASSUME_NONNULL_BEGIN
       [TFLImageClassifier imageClassifierWithOptions:imageClassifierOptions error:nil];
   XCTAssertNotNil(imageClassifier);
 
-  GMLImage *gmlImage = [GMLImage imageFromBundleWithClass:[self class]
+  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
                                                  fileName:@"sparrow"
                                                    ofType:@"png"];
   XCTAssertNotNil(gmlImage);
 
   TFLClassificationResult *classificationResults = [imageClassifier classifyWithGMLImage:gmlImage
                                                                                    error:nil];
-  XCTAssertTrue([classificationResults.classifications count] > 0);
-  XCTAssertTrue([classificationResults.classifications[0].categories count] > 0);
+  XCTAssertTrue(classificationResults.classifications.count > 0);
+  XCTAssertTrue(classificationResults.classifications[0].categories.count > 0);
 
   TFLCategory *category = classificationResults.classifications[0].categories[0];
   XCTAssertTrue([category.label isEqual:@"junco"]);

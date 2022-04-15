@@ -13,7 +13,7 @@
 # limitations under the License.
 """Classifications protobuf."""
 
-from tensorflow_lite_support.cc.task.vision.proto import classifications_pb2
+from tensorflow_lite_support.cc.task.processor.proto import classifications_pb2
 
 Classifications = classifications_pb2.Classifications
 ClassificationResult = classifications_pb2.ClassificationResult

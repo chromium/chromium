@@ -13,7 +13,7 @@
 # limitations under the License.
 """Detections protobuf."""
 
-from tensorflow_lite_support.cc.task.vision.proto import detections_pb2
+from tensorflow_lite_support.cc.task.processor.proto import detections_pb2
 
 Detection = detections_pb2.Detection
 DetectionResult = detections_pb2.DetectionResult

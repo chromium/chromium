@@ -20,34 +20,39 @@ static NSString *const TFLSupportTaskErrorDomain = @"org.tensorflow.lite.tasks";
 
 @implementation TFLCommonUtils
 
-+ (NSError *)customErrorWithCode:(NSInteger)code description:(NSString *)description {
-  return [NSError errorWithDomain:TFLSupportTaskErrorDomain
-                             code:code
-                         userInfo:@{NSLocalizedDescriptionKey : description}];
++ (void)createCustomError:(NSError**)error
+                 withCode:(NSInteger)code
+              description:(NSString*)description {
+  if (error) {
+    *error =
+        [NSError errorWithDomain:TFLSupportTaskErrorDomain
+                            code:code
+                        userInfo:@{NSLocalizedDescriptionKey : description}];
+  }
 }
 
-+ (NSError *)errorWithCError:(TfLiteSupportError *)supportError {
-  return [NSError
-      errorWithDomain:TFLSupportTaskErrorDomain
-                 code:supportError->code
-             userInfo:@{
-               NSLocalizedDescriptionKey : [NSString stringWithCString:supportError->message
-                                                              encoding:NSUTF8StringEncoding]
-             }];
++ (BOOL)checkCError:(TfLiteSupportError*)supportError toError:(NSError**)error {
+  if (!supportError) {
+    return YES;
+  }
+  NSString* description = [NSString stringWithCString:supportError->message
+                                             encoding:NSUTF8StringEncoding];
+  [self createCustomError:error
+                 withCode:supportError->code
+              description:description];
+  return NO;
 }
 
 + (void *)mallocWithSize:(size_t)memSize error:(NSError **)error {
   if (!memSize) {
-    if (error) {
-      *error = [TFLCommonUtils
-          customErrorWithCode:TFLSupportErrorCodeInvalidArgumentError
-                  description:@"Invalid memory size passed for allocation of object."];
-    }
+    [TFLCommonUtils createCustomError:error
+                             withCode:TFLSupportErrorCodeInvalidArgumentError
+                          description:@"memSize cannot be zero."];
     return NULL;
   }
 
   void *allocedMemory = malloc(memSize);
-  if (!allocedMemory && memSize) {
+  if (!allocedMemory) {
     exit(-1);
   }
 

@@ -64,7 +64,11 @@ int main(int argc, char** argv) {
       absl::GetFlag(FLAGS_model_path));
   auto status = UniversalSentenceEncoderQA::CreateFromOption(
       options, CreateQACustomOpResolver());
-  CHECK_OK(status);
+  if (!status.ok()) {
+    std::cerr << "Retrieve failed: " << status.status().message() << std::endl;
+    return 1;
+  }
+
   std::unique_ptr<UniversalSentenceEncoderQA> client =
       std::move(status.value());
 
@@ -75,23 +79,27 @@ int main(int argc, char** argv) {
   // Add candidate responses, and each one contains a sentence of text. (May
   // set context too).
   for (const auto& ans : absl::StrSplit(absl::GetFlag(FLAGS_answers), ':')) {
-    input.add_responses()->mutable_raw_text()->set_text(ans);
+    input.add_responses()->mutable_raw_text()->set_text(std::string(ans));
   }
 
   // Run inference with the Retrieve function.
   const absl::StatusOr<RetrievalOutput>& output_status =
       client->Retrieve(input);
-  CHECK_OK(output_status);  // Check ok
+  if (!output_status.ok()) {
+    std::cerr << "Retrieve failed: " << output_status.status().message()
+              << std::endl;
+    return 1;
+  }
   const RetrievalOutput& output = output_status.value();
 
   // Get top results (may set optional parameter k=? to limit top-K results).
   const std::vector<size_t>& top = client->Top(output);
 
   // Consume the results according to the ranking. Here we just print them out.
-  std::cout << input.query_text() << std::endl;
+  std::cout << "Input questions: " << input.query_text() << std::endl;
   for (size_t k : top) {
-    std::cout << input.responses(k).raw_text().text() << ", "
-              << input.responses(k).raw_text().context() << ", "
-              << output.response_results(k).score() << std::endl;
+    std::cout << "Output answers " << k << ": "
+              << input.responses(k).raw_text().text()
+              << " Score: " << output.response_results(k).score() << std::endl;
   }
 }

@@ -72,6 +72,7 @@ objc_library(
         "Sources/TFLSentencepieceTokenizer.h",
         "Sources/TFLTokenizer.h",
     ],
+    features = ["-layering_check"],
     module_name = "TFLSentencepieceTokenizer",
     deps = [
         ":TFLTokenizerUtil",

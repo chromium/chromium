@@ -55,6 +55,9 @@ objc_library(
 
 objc_library(
     name = "TFLSegmentationResult",
+    srcs = [
+        "sources/TFLSegmentationResult.m",
+    ],
     hdrs = [
         "sources/TFLSegmentationResult.h",
     ],
@@ -127,6 +130,9 @@ objc_library(
 
 objc_library(
     name = "TFLSegmentationResultHelpers",
+    srcs = [
+        "sources/TFLSegmentationResult+Helpers.m",
+    ],
     hdrs = [
         "sources/TFLSegmentationResult+Helpers.h",
     ],

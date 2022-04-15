@@ -90,10 +90,10 @@ cc_library(
     srcs = ["universal_sentence_encoder_qa_op_resolver.cc"],
     hdrs = ["universal_sentence_encoder_qa_op_resolver.h"],
     deps = [
-        "//tensorflow_lite_support/custom_ops/kernel/ragged:py_tflite_registerer",  # fixdeps: keep
-        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece:py_tflite_registerer",  # fixdeps: keep
-        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece:sentencepiece_tokenizer_op",  # fixdeps: keep
+        "//tensorflow_lite_support/custom_ops/kernel/ragged:ragged_tensor_to_tensor_tflite",  # fixdeps: keep
+        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece:sentencepiece_tokenizer_tflite",  # fixdeps: keep
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
         "@org_tensorflow//tensorflow/lite:op_resolver",
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],

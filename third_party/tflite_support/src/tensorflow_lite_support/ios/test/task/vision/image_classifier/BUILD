@@ -19,7 +19,7 @@ swift_library(
     tags = TFL_DEFAULT_TAGS,
     deps = [
         "//tensorflow_lite_support/ios/task/vision:TFLImageClassifier",
-        "//tensorflow_lite_support/ios/test/task/vision/utils:GMLImageHelpers",
+        "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
     ],
 )
 
@@ -44,7 +44,7 @@ objc_library(
     tags = TFL_DEFAULT_TAGS,
     deps = [
         "//tensorflow_lite_support/ios/task/vision:TFLImageClassifier",
-        "//tensorflow_lite_support/ios/test/task/vision/utils:GMLImageHelpers",
+        "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
     ],
 )
 
@@ -71,8 +71,6 @@ objc_library(
         "//tensorflow_lite_support/c/task/vision/utils:frame_buffer_cpp_c_utils",
         "//tensorflow_lite_support/cc/task/vision:image_classifier",
         "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
-        "//tensorflow_lite_support/ios/test/task/vision/utils:GMLImageHelpers",
-        "//third_party/apple_frameworks:XCTest",
         "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:coreml_plugin",
     ],
 )

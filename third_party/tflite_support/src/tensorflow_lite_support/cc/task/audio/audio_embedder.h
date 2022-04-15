@@ -34,6 +34,16 @@ class AudioEmbedder : public tflite::task::core::BaseTaskApi<
   // Use base class constructor.
   using BaseTaskApi::BaseTaskApi;
 
+  // Utility function to compute cosine similarity [1] between two feature
+  // vectors. May return an InvalidArgumentError if e.g. the feature vectors are
+  // of different types (quantized vs. float), have different sizes, or have a
+  // an L2-norm of 0.
+  //
+  // [1]: https://en.wikipedia.org/wiki/Cosine_similarity
+  static tflite::support::StatusOr<double> CosineSimilarity(
+      const processor::FeatureVector& u,
+      const processor::FeatureVector& v);
+
   // Creates an AudioEmbedder from the provided options. A non-default
   // OpResolver can be specified in order to support custom Ops or specify a
   // subset of built-in Ops.
@@ -46,6 +56,13 @@ class AudioEmbedder : public tflite::task::core::BaseTaskApi<
   // Performs actual feature vector extraction on the provided AudioBuffer.
   tflite::support::StatusOr<tflite::task::processor::EmbeddingResult> Embed(
       const AudioBuffer& audio_buffer);
+
+  // Returns the dimensionality of the embedding output by the output_index'th
+  // output layer. Returns -1 if `output_index` is out of bounds.
+  int GetEmbeddingDimension(int output_index) const;
+
+  // Returns the number of output layers of the model.
+  int GetNumberOfOutputLayers() const;
 
   // Returns the required input audio format if it is set. Otherwise, returns
   // kMetadataNotFoundError.

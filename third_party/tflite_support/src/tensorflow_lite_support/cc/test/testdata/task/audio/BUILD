@@ -3,6 +3,10 @@ package(
     licenses = ["notice"],  # Apache 2.0
 )
 
+exports_files([
+    "yamnet_audio_classifier_with_metadata.tflite",
+])
+
 filegroup(
     name = "test_models",
     srcs = glob([

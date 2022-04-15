@@ -1,4 +1,3 @@
-# lint as: python3
 # Copyright 2015 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,6 +54,7 @@ REQUIRED_PACKAGES = [
     # TODO(b/187981032): remove the constraint for 2.0 once the incompatibile
     # issue is resolved.
     'flatbuffers >= 1.12, <2',
+    'protobuf >= 3.18.0',
 ] + SETUP_PACKAGES
 
 project_name = 'tflite-support'

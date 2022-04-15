@@ -192,9 +192,9 @@ public class TensorAudio {
                         "Index out of range. offset (%d) + size (%d) should <= newData.length (%d)",
                         offsetInShort, sizeInShort, src.length));
         float[] floatData = new float[sizeInShort];
-        for (int i = offsetInShort; i < sizeInShort; i++) {
+        for (int i = 0; i < sizeInShort; i++) {
             // Convert the data to PCM Float encoding i.e. values between -1 and 1
-            floatData[i] = src[i] / Short.MAX_VALUE;
+            floatData[i] = src[i + offsetInShort] * 1.f / Short.MAX_VALUE;
         }
         load(floatData);
     }
@@ -304,7 +304,7 @@ public class TensorAudio {
             // If buffer can't hold all the data, only keep the most recent data of size
             // buffer.length
             if (size > buffer.length) {
-                offset = size - buffer.length;
+                offset += (size - buffer.length);
                 size = buffer.length;
             }
             if (nextIndex + size < buffer.length) {

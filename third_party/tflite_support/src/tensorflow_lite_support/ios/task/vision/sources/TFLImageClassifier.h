@@ -52,7 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @return An instance of TFLImageClassifierOptions set to the specified
  * modelPath.
  */
-- (nullable instancetype)initWithModelPath:(nonnull NSString*)modelPath;
+- (nullable instancetype)initWithModelPath:(NSString*)modelPath;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 @end
 
@@ -70,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return A TFLImageClassifier instance.
  */
 + (nullable instancetype)imageClassifierWithOptions:
-                             (nonnull TFLImageClassifierOptions*)options
+                             (TFLImageClassifierOptions*)options
                                               error:(NSError**)error
     NS_SWIFT_NAME(imageClassifier(options:));
 
@@ -78,6 +82,15 @@ NS_ASSUME_NONNULL_BEGIN
  * Performs classification on a GMLImage input, returns an array of
  * categorization results where each member in the array is an array of
  * TFLClass objects for each classification head.
+ * This method currently supports inference on only following type of images:
+ * 1. RGB and RGBA images for GMLImageSourceTypeImage.
+ * 2. kCVPixelFormatType_32RGBA, kCVPixelFormatType_32BGRA,
+ *    kCVPixelFormatType_24RGB for GMLImageSourceTypePixelBuffer and
+ *    GMLImageSourceTypeSampleBuffer. If you are using AVCaptureSession to setup
+ *    camera and get the frames for inference, you must request for one of these
+ *    supported formats from AVCaptureVideoDataOutput. For a sample code
+ *    snippet, please refer to:
+ *       https://github.com/tensorflow/examples/blob/master/lite/examples/image_classification/ios/ImageClassification/Camera%20Feed/CameraFeedManager.swift#L253
  *
  * @param image input to the model.
  * @return An NSArray<NSArray<TFLClass *>*> * of classification results.

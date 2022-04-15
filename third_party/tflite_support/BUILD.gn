@@ -90,6 +90,8 @@ static_library("tflite_support") {
     "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc",
     "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h",
     "src/tensorflow_lite_support/cc/task/text/proto/nl_classifier_options_proto_inc.h",
+    "src/tensorflow_lite_support/cc/task/text/utils/bert_utils.cc",
+    "src/tensorflow_lite_support/cc/task/text/utils/bert_utils.h",
     "src/tensorflow_lite_support/cc/task/vision/core/classification_head.cc",
     "src/tensorflow_lite_support/cc/task/vision/core/classification_head.h",
     "src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.cc",

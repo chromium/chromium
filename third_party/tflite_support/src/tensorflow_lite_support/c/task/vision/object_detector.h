@@ -111,7 +111,7 @@ typedef struct TfLiteObjectDetectorOptions {
 // .classification_options.label_allowlist.list,
 // options.classification_options.label_denylist.list are NULL.
 // 5. All other integer values are initialized to 0.
-TfLiteObjectDetectorOptions TfLiteObjectDetectorOptionsCreate();
+TfLiteObjectDetectorOptions TfLiteObjectDetectorOptionsCreate(void);
 
 // Creates TfLiteObjectDetector from options.
 // .base_options.model_file.file_path in TfLiteObjectDetectorOptions should be

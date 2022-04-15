@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 
-#include <stddef.h>
 #include <memory>
 #include <string>
 
@@ -28,11 +27,14 @@ limitations under the License.
 namespace tflite {
 namespace task {
 namespace core {
+namespace {
 
 using ::absl::StatusCode;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
+
+}  // namespace
 
 /* static */
 StatusOr<std::unique_ptr<ExternalFileHandler>>
@@ -51,11 +53,10 @@ absl::Status ExternalFileHandler::MapExternalFile() {
   if (!external_file_.file_content().empty()) {
     return absl::OkStatus();
   }
-
-  return CreateStatusWithPayload(StatusCode::kInvalidArgument,
-                                 "ExternalFile must specify 'file_content' "
-                                 "to be compatible with Chromium.",
-                                 TfLiteSupportStatus::kInvalidArgumentError);
+  return CreateStatusWithPayload(
+      StatusCode::kInvalidArgument,
+      "ExternalFile must specify 'file_content' in Chromium.",
+      TfLiteSupportStatus::kInvalidArgumentError);
 }
 
 absl::string_view ExternalFileHandler::GetFileContent() {

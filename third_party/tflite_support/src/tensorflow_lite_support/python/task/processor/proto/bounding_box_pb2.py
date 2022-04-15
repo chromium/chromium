@@ -13,6 +13,6 @@
 # limitations under the License.
 """Bounding box protobuf."""
 
-from tensorflow_lite_support.cc.task.vision.proto import bounding_box_pb2
+from tensorflow_lite_support.cc.task.processor.proto import bounding_box_pb2
 
 BoundingBox = bounding_box_pb2.BoundingBox

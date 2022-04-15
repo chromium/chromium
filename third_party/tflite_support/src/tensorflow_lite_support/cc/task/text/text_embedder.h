@@ -36,14 +36,21 @@ namespace text {
 
 // Performs dense feature vector extraction on text.
 //
-// The API expects a Regex/Bert based TFLite model with metadata populated.
-// The metadata should contain the following information:
-// 1. For Bert based TFLite model.
+// The API expects a TFLite model with metadata populated. The metadata should
+// contain the following information:
+// 1. For Bert based TFLite model:
+//   - 3 input tensors of type kTfLiteString with names "ids", "mask" and
+//   "segment_ids".
 //   - input_process_units for Wordpiece/Sentencepiece Tokenizer
-//   - 3 input tensors with names "ids", "mask" and "segment_ids".
-// 2. For Regex based TFLite model.
-//   - input_process_units for RegexTokenizer Tokenizer
+//   - one or more output tensors of type kTfLiteFloat32
+// 2. For Regex based TFLite model:
 //   - 1 input tensor.
+//   - input_process_units for RegexTokenizer Tokenizer
+//   - one or more output tensors of type kTfLiteFloat32
+// 3. For Universal Sentence Encoder based TFLite model:
+//   - 3 input tensors with names "inp_text", "res_context" and "res_text"
+//   - 2 output tensors with names "query_encoding" and "response_encoding" of
+//     type kTfLiteFloat32
 class TextEmbedder
     : public core::BaseTaskApi<processor::EmbeddingResult, const std::string&> {
  public:

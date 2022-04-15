@@ -21,6 +21,7 @@ cc_library_with_tflite(
         "@org_tensorflow//tensorflow/lite/core/shims:builtin_ops",
         "//tensorflow_lite_support/cc/task/core:task_api_factory",
         "//tensorflow_lite_support/cc/task/processor:bert_preprocessor",
+        "//tensorflow_lite_support/cc/task/text/utils:bert_utils",
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
@@ -92,6 +93,7 @@ cc_library_with_tflite(
         "//tensorflow_lite_support/cc/task/core:base_task_api",
         "//tensorflow_lite_support/cc/task/core:task_api_factory",
         "//tensorflow_lite_support/cc/task/core:tflite_engine",
+        "//tensorflow_lite_support/cc/task/text/utils:universal_sentence_encoder_utils",
     ],
     deps = [
         "//tensorflow_lite_support/cc/port:statusor",
@@ -120,6 +122,9 @@ cc_library_with_tflite(
         "//tensorflow_lite_support/cc/task/processor:text_preprocessor",
         "//tensorflow_lite_support/cc/task/processor:bert_preprocessor",
         "//tensorflow_lite_support/cc/task/processor:regex_preprocessor",
+        "//tensorflow_lite_support/cc/task/processor:universal_sentence_encoder_preprocessor",
+        "//tensorflow_lite_support/cc/task/text/utils:bert_utils",
+        "//tensorflow_lite_support/cc/task/text/utils:universal_sentence_encoder_utils",
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
@@ -165,5 +170,37 @@ cc_library(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "text_searcher",
+    srcs = ["text_searcher.cc"],
+    hdrs = ["text_searcher.h"],
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/core/shims:builtin_ops",
+        "//tensorflow_lite_support/cc/task/core:base_task_api",
+        "//tensorflow_lite_support/cc/task/core:task_api_factory",
+        "//tensorflow_lite_support/cc/task/core:tflite_engine",
+        "//tensorflow_lite_support/cc/task/processor:bert_preprocessor",
+        "//tensorflow_lite_support/cc/task/processor:regex_preprocessor",
+        "//tensorflow_lite_support/cc/task/processor:search_postprocessor",
+        "//tensorflow_lite_support/cc/task/processor:text_preprocessor",
+        "//tensorflow_lite_support/cc/task/processor:universal_sentence_encoder_preprocessor",
+        "//tensorflow_lite_support/cc/task/text/utils:bert_utils",
+        "//tensorflow_lite_support/cc/task/text/utils:universal_sentence_encoder_utils",
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
+        "//tensorflow_lite_support/cc/task/text/proto:text_searcher_options_cc_proto",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/lite/c:common",
+        "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
     ],
 )

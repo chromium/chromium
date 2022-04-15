@@ -1,0 +1,53 @@
+/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+syntax = "proto2";
+
+package tflite.task.processor;
+
+import "tensorflow_lite_support/cc/task/processor/proto/bounding_box.proto";
+import "tensorflow_lite_support/cc/task/processor/proto/class.proto";
+
+// A single detected object.
+message Detection {
+  // The bounding box.
+  //
+  // IMPORTANT: when using the Task APIs, the bounding box is expressed in the
+  // unrotated input frame of reference coordinates system, i.e. in `[0,
+  // frame_buffer.width) x [0, frame_buffer.height)`, which are the dimensions
+  // of the underlying `frame_buffer` data before any `Orientation` flag gets
+  // applied.
+  //
+  // In particular, this implies that the returned bounding boxes may not be
+  // directly suitable for display if the input image is displayed *with* the
+  // `Orientation` flag taken into account according to the EXIF specification
+  // (http://jpegclub.org/exif_orientation.html): it may first need to be
+  // rotated.
+  //
+  // For example, if the input `frame_buffer` has its `Orientation` flag set to
+  // `kLeftBottom` (i.e. the image will be rotated 90° clockwise during
+  // preprocessing to make it "upright"), then the same 90° clockwise rotation
+  // needs to be applied to the bounding box for display.
+  optional BoundingBox bounding_box = 2;
+  // The candidate classes, sorted by descending score.
+  repeated Class classes = 3;
+  // Reserved tags.
+  reserved 1, 4;
+}
+
+// List of detected objects.
+message DetectionResult {
+  repeated Detection detections = 1;
+}

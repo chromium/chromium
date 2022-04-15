@@ -26,10 +26,13 @@ namespace processor {
 
 // Processes input text and populates the associated bert input tensors.
 // Requirements for the input tensors:
-//   - The 3 input tensors should be populated with the metadata tensor names,
-//   "ids", "mask", and "segment_ids", respectively.
-//   - The input_process_units metadata should contain WordPiece or
-//   Sentencepiece Tokenizer metadata.
+//   Exactly 3 int32 input tensors of type, kTfLiteInt32: contains respectively
+//   the ids, segment ids and mask. A WordPiece or Sentencepiece Tokenizer needs
+//   to be setup in the subgraph's metadata.
+//
+// Utils to help locate the 3 input tensors for models conforming to certain
+// metadata requirements are available in:
+// https://github.com/tensorflow/tflite-support/tree/master/tensorflow_lite_support/cc/task/text/utils/bert_utils.h
 class BertPreprocessor : public TextPreprocessor {
  public:
   static tflite::support::StatusOr<std::unique_ptr<BertPreprocessor>> Create(
@@ -46,9 +49,6 @@ class BertPreprocessor : public TextPreprocessor {
   int GetLastDimSize(int tensor_index);
 
   std::unique_ptr<tflite::support::text::tokenizer::Tokenizer> tokenizer_;
-  int ids_tensor_index_;
-  int mask_tensor_index_;
-  int segment_ids_tensor_index_;
   int bert_max_seq_len_;
 };
 

@@ -21,18 +21,22 @@
 
   TFLCategory *category = [[TFLCategory alloc] init];
 
+  NSString* displayName;
+  NSString* label;
+
   if (cCategory->display_name != nil) {
-    category.displayName = [NSString stringWithCString:cCategory->display_name
-                                              encoding:NSUTF8StringEncoding];
+    displayName = [NSString stringWithCString:cCategory->display_name
+                                     encoding:NSUTF8StringEncoding];
   }
 
   if (cCategory->label != nil) {
-    category.label = [NSString stringWithCString:cCategory->label encoding:NSUTF8StringEncoding];
+    label = [NSString stringWithCString:cCategory->label
+                               encoding:NSUTF8StringEncoding];
   }
 
-  category.score = cCategory->score;
-  category.classIndex = (NSInteger)cCategory->index;
-
-  return category;
+  return [[TFLCategory alloc] initWithIndex:(NSInteger)cCategory->index
+                                      score:cCategory->score
+                                      label:label
+                                displayName:displayName];
 }
 @end

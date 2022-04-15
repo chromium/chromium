@@ -100,7 +100,7 @@ struct TfLiteImageClassifier {
   std::unique_ptr<ImageClassifierCpp> impl;
 };
 
-TfLiteImageClassifierOptions TfLiteImageClassifierOptionsCreate() {
+TfLiteImageClassifierOptions TfLiteImageClassifierOptionsCreate(void) {
   // Use brace-enclosed initializer list will break the Kokoro test.
   TfLiteImageClassifierOptions options;
   options.classification_options =

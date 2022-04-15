@@ -29,6 +29,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
 #include "tensorflow_lite_support/cc/task/text/proto/retrieval.pb.h"
+#include "tensorflow_lite_support/cc/task/text/utils/universal_sentence_encoder_utils.h"
 
 namespace tflite {
 namespace task {
@@ -40,27 +41,12 @@ using internal::QAInput;
 using internal::QAOutput;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
-using ::tflite::task::core::FindTensorIndexByName;
 using ::tflite::task::core::PopulateTensor;
 using ::tflite::task::core::PopulateVectorToRepeated;
 using ::tflite::task::core::TaskAPIFactory;
 using FeatureVector = UniversalSentenceEncoderQA::FeatureVector;
 
 namespace {
-constexpr char kQueryTextMetadataName[] = "inp_text";
-constexpr char kResponseContextMetadataName[] = "res_context";
-constexpr char kResponseTextMetadataName[] = "res_text";
-constexpr char kQueryEncodingMetadataName[] = "query_encoding";
-constexpr char kResponseEncodingMetadataName[] = "response_encoding";
-
-constexpr char kQueryTextTensorName[] = "ParseExample/ParseExampleV2:1";
-constexpr char kResponseContextTensorName[] = "ParseExample/ParseExampleV2:2";
-constexpr char kResponseTextTensorName[] = "ParseExample/ParseExampleV2:3";
-constexpr char kQueryEncodingTensorName[] = "Final/EncodeQuery/mul";
-constexpr char kResponseEncodingTensorName[] = "Final/EncodeResult/mul";
-
-constexpr int kDefaultInputTensorIndices[3] = {0, 1, 2};
-constexpr int kDefaultOutputTensorIndices[2] = {0, 1};
 
 // Sanity check for options to ensure required fields.
 absl::Status SanityCheckOptions(const RetrievalOptions& options) {
@@ -266,58 +252,12 @@ absl::Status UniversalSentenceEncoderQA::Init(
     std::unique_ptr<RetrievalOptions> options) {
   options_ = std::move(options);
 
-  auto input_tensors = GetInputTensors();
-  if (input_tensors.size() < 3) {
-    return CreateStatusWithPayload(
-        StatusCode::kInvalidArgument,
-        "The number of input tensors should be at least 3, including query text"
-        " input, response context input, response text input.",
-        TfLiteSupportStatus::kInvalidArgumentError);
-  }
-
-  auto* input_tensor_metadatas =
-      GetMetadataExtractor()->GetInputTensorMetadata();
-  input_indices_ = {
-      FindTensorIndexByName(input_tensors, input_tensor_metadatas,
-                            kQueryTextMetadataName, kQueryTextTensorName),
-      FindTensorIndexByName(input_tensors, input_tensor_metadatas,
-                            kResponseContextMetadataName,
-                            kResponseContextTensorName),
-      FindTensorIndexByName(input_tensors, input_tensor_metadatas,
-                            kResponseTextMetadataName,
-                            kResponseTextTensorName)};
-  if (std::find(input_indices_.begin(), input_indices_.end(), -1) !=
-      input_indices_.end()) {
-    // Use the default index if any input tensor is not found.
-    input_indices_ = std::vector<int>(std::begin(kDefaultInputTensorIndices),
-                                      std::end(kDefaultInputTensorIndices));
-  }
-
-  auto output_tensors = GetOutputTensors();
-  if (output_tensors.size() < 2) {
-    return CreateStatusWithPayload(
-        StatusCode::kInvalidArgument,
-        "The number of output tensors should be at least 2, including query "
-        "encoding output, response encoding output.",
-        TfLiteSupportStatus::kInvalidArgumentError);
-  }
-
-  auto* output_tensor_metadatas =
-      GetMetadataExtractor()->GetOutputTensorMetadata();
-  output_indices_ = {
-      FindTensorIndexByName(output_tensors, output_tensor_metadatas,
-                            kQueryEncodingMetadataName,
-                            kQueryEncodingTensorName),
-      FindTensorIndexByName(output_tensors, output_tensor_metadatas,
-                            kResponseEncodingMetadataName,
-                            kResponseEncodingTensorName)};
-
-  if (std::find(output_indices_.begin(), output_indices_.end(), -1) !=
-      output_indices_.end()) {
-    // Use the default index if any output tensor is not found.
-    output_indices_ = std::vector<int>(std::begin(kDefaultOutputTensorIndices),
-                                       std::end(kDefaultOutputTensorIndices));
-  }
+  ASSIGN_OR_RETURN(
+      input_indices_,
+      GetUniversalSentenceEncoderInputTensorIndices(GetTfLiteEngine()));
+  ASSIGN_OR_RETURN(
+      output_indices_,
+      GetUniversalSentenceEncoderOutputTensorIndices(GetTfLiteEngine()));
 
   return absl::OkStatus();
 }  // namespace retrieval

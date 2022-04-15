@@ -47,15 +47,15 @@ struct QAOutput;
 //                    Metadata tensor name   |   Model tensor name
 // Inputs tensors:                           |
 //   - Query text         "inp_text"         | "ParseExample/ParseExampleV2:1"
-//   - Response text:     "res_text"         | "ParseExample/ParseExampleV2:2"
-//   - Response context   "res_context"      | "ParseExample/ParseExampleV2:3"
+//   - Response context   "res_context"      | "ParseExample/ParseExampleV2:2"
+//   - Response text:     "res_text"         | "ParseExample/ParseExampleV2:3"
 // Output tensors:
 //   - Query encoding     "query_encoding"   | "Final/EncodeQuery/mul"
 //   - Response encoding  "response_encoding"| "Final/EncodeResult/mul"
 //
 // Tensors will be matched by first checking the metadata tesnor name and then
 // the Model tensor name. If no matching tensor name is found, the first three
-// input tensors will be used for query text, response text, response context,
+// input tensors will be used for query text, response context, response text,
 // respectively; the first two output tensors will be used for query_encoding
 // and response encoding, respectively. Other input or output tensors will be
 // ignored by `UniversalSentenceEncoderQA`.

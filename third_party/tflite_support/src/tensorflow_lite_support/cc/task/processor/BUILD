@@ -105,7 +105,7 @@ cc_library_with_tflite(
     srcs = ["regex_preprocessor.cc"],
     hdrs = ["regex_preprocessor.h"],
     tflite_deps = [
-        ":text_preprocessor_header",
+        ":text_preprocessor",
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
@@ -122,7 +122,7 @@ cc_library_with_tflite(
     srcs = ["bert_preprocessor.cc"],
     hdrs = ["bert_preprocessor.h"],
     tflite_deps = [
-        ":text_preprocessor_header",
+        ":text_preprocessor",
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
@@ -138,32 +138,66 @@ cc_library_with_tflite(
 )
 
 cc_library_with_tflite(
-    name = "text_preprocessor_header",
-    hdrs = ["text_preprocessor.h"],
+    name = "universal_sentence_encoder_preprocessor",
+    srcs = ["universal_sentence_encoder_preprocessor.cc"],
+    hdrs = ["universal_sentence_encoder_preprocessor.h"],
     tflite_deps = [
         ":processor",
+        ":text_preprocessor",
         "//tensorflow_lite_support/cc/task/core:tflite_engine",
     ],
     deps = [
+        "//tensorflow_lite_support/cc/port:status_macros",
         "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/core:task_utils",
         "@com_google_absl//absl/status",
     ],
 )
 
 cc_library_with_tflite(
     name = "text_preprocessor",
-    srcs = ["text_preprocessor.cc"],
     hdrs = ["text_preprocessor.h"],
     tflite_deps = [
         ":processor",
-        ":bert_preprocessor",
-        ":regex_preprocessor",
+        "//tensorflow_lite_support/cc/task/core:tflite_engine",
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/core:task_utils",
+        "@com_google_absl//absl/status",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "search_postprocessor",
+    srcs = ["search_postprocessor.cc"],
+    hdrs = ["search_postprocessor.h"],
+    tflite_deps = [
+        ":embedding_postprocessor",
+        ":processor",
         "//tensorflow_lite_support/cc/task/core:tflite_engine",
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
         "//tensorflow_lite_support/cc/port:status_macros",
         "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/core:external_file_handler",
+        "//tensorflow_lite_support/cc/task/processor/proto:embedding_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
+        "//tensorflow_lite_support/scann_ondevice/cc:index",
+        "//tensorflow_lite_support/scann_ondevice/cc/core:partitioner",
+        "//tensorflow_lite_support/scann_ondevice/cc/core:processor",
+        "//tensorflow_lite_support/scann_ondevice/cc/core:searcher",
+        "//tensorflow_lite_support/scann_ondevice/cc/core:serialized_searcher_cc_proto",
+        "//tensorflow_lite_support/scann_ondevice/cc/core:top_n_amortized_constant",
+        "//tensorflow_lite_support/scann_ondevice/proto:index_config_cc_proto",
+        "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_absl//absl/types:span",
+        "@eigen//:eigen3",
     ],
 )

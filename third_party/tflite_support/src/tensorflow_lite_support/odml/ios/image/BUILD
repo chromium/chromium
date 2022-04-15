@@ -1,12 +1,12 @@
 # ODML image library for iOS
 
 load(
-    "@org_tensorflow//tensorflow/lite/ios:ios.bzl",
-    "TFL_MINIMUM_OS_VERSION",
-)
-load(
     "@org_tensorflow//tensorflow/lite:special_rules.bzl",
     "tflite_ios_lab_runner",
+)
+load(
+    "@org_tensorflow//tensorflow/lite/ios:ios.bzl",
+    "TFL_MINIMUM_OS_VERSION",
 )
 load(
     "@build_bazel_rules_apple//apple:ios.bzl",

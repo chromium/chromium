@@ -99,7 +99,7 @@ struct TfLiteObjectDetector {
   std::unique_ptr<ObjectDetectorCpp> impl;
 };
 
-TfLiteObjectDetectorOptions TfLiteObjectDetectorOptionsCreate() {
+TfLiteObjectDetectorOptions TfLiteObjectDetectorOptionsCreate(void) {
   // Use brace-enclosed initializer list will break the Kokoro test.
   TfLiteObjectDetectorOptions options;
   options.classification_options =

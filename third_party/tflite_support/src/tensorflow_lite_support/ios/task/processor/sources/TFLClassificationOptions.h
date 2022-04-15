@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) NSArray* labelAllowList;
 
 /** Display names local for display names*/
-@property(nonatomic, copy) NSString* displayNamesLocal;
+@property(nonatomic, copy) NSString* displayNamesLocale;
 
 /** Results with score threshold greater than this value are returned . */
 @property(nonatomic, assign) float scoreThreshold;

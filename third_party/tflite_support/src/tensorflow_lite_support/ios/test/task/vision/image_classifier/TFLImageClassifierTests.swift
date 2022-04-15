@@ -12,7 +12,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  ==============================================================================*/
-import GMLImageHelpers
+import GMLImageUtils
 import XCTest
 
 @testable import TFLImageClassifier
@@ -22,7 +22,7 @@ class TFLImageClassifierTests: XCTestCase {
   static let bundle = Bundle(for: TFLImageClassifierTests.self)
   static let modelPath = bundle.path(
     forResource: "mobilenet_v2_1.0_224",
-    ofType: "tflite")!
+    ofType: "tflite")
 
   func testSuccessfullInferenceOnMLImageWithUIImage() throws {
 

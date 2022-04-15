@@ -28,6 +28,13 @@ namespace task {
 namespace audio {
 
 /* static */
+tflite::support::StatusOr<double> AudioEmbedder::CosineSimilarity(
+    const processor::FeatureVector& u,
+    const processor::FeatureVector& v) {
+  return processor::EmbeddingPostprocessor::CosineSimilarity(u, v);
+}
+
+/* static */
 tflite::support::StatusOr<std::unique_ptr<AudioEmbedder>>
 AudioEmbedder::CreateFromOptions(const AudioEmbedderOptions& options,
                                  std::unique_ptr<tflite::OpResolver> resolver) {
@@ -112,6 +119,17 @@ AudioEmbedder::Postprocess(
 tflite::support::StatusOr<tflite::task::processor::EmbeddingResult>
 AudioEmbedder::Embed(const AudioBuffer& audio_buffer) {
   return InferWithFallback(audio_buffer);
+}
+
+int AudioEmbedder::GetEmbeddingDimension(int output_index) const {
+  if (output_index < 0 || output_index >= postprocessors_.size()) {
+    return -1;
+  }
+  return postprocessors_.at(output_index)->GetEmbeddingDimension();
+}
+
+int AudioEmbedder::GetNumberOfOutputLayers() const {
+  return postprocessors_.size();
 }
 
 }  // namespace audio

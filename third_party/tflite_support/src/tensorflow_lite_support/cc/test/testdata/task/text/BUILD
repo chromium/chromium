@@ -5,6 +5,10 @@ package(
     licenses = ["notice"],  # Apache 2.0
 )
 
+exports_files([
+    "test_model_nl_classifier_with_regex_tokenizer.tflite",
+])
+
 filegroup(
     name = "nl_classifier_models",
     srcs = glob([

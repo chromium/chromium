@@ -16,7 +16,7 @@
 #import <XCTest/XCTest.h>
 
 #import "tensorflow_lite_support/ios/task/vision/sources/TFLObjectDetector.h"
-#import "tensorflow_lite_support/ios/test/task/vision/utils/sources/GMLImage+Helpers.h"
+#import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h"
 
 #define VerifyDetection(detection, expectedBoundingBox, expectedFirstScore, expectedFirstLabel) \
   XCTAssertGreaterThan([detection.categories count], 0);                                        \

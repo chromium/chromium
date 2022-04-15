@@ -1,8 +1,8 @@
 Name: TensorFlow Lite Support
 Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
-Version: 71db695ff9b4118b042892745ae5cdf49420abf8
-Date: 2022/03/09
+Version: cd6760941473a976a78aa33fa199c2058f1441fd
+Date: 2022/04/13
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -26,17 +26,13 @@ isn't worth adding this functionality, esp since no feature team needs it.
 03) Remove the ABSL_DEPRECATED annotation from a deprecated struct since this
 is a no-op in chromium builds and upsets clang.
 04) Do not use absl::any since it is not supported in chromium
-05) Remove memory mapped file support in external_file_handler.cc since it is
-only available on POSIX systems.
-06) Remove an unneeded static initializer.
-07) Surface the error from NLClassifier::Classify.
-08) Remove unbuilt files that triggered checkdeps warnings, and fix file perms.
-  * Note that this patch might not apply cleanly, so just do everything that
-  `git cl presubmit` tells you to do.
-09) Run clang-format.
+05) Remove an unneeded static initializer.
+06) Run clang-format.
   * This patch might not apply cleanly, so run `git cl format` and commit the
   changes.
-10) Check (instead of resetting) the cancel_flag_ before Invoking the model.
+07) Check (instead of resetting) the cancel_flag_ before Invoking the model.
+08) Remove unbuilt files that cause presubmit errors.
+09) Remove support for creating a model handler from a file.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:

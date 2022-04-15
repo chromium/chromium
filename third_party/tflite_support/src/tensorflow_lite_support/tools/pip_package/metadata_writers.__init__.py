@@ -12,7 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""An import entry for the metadata writers library."""
+"""TF Lite Metadata Writer API.
+
+This module provides interfaces for writing metadata for common model types
+supported by the task library, such as:
+
+  * Image classification
+  * Object detection
+  * Image segmentation
+  * Natural language classification
+  * Audio classification
+
+It is provided as part of the `tflite-support` package:
+
+```
+pip install tflite-support
+```
+
+Learn more about this API in the [metadata writer
+tutorial](https://www.tensorflow.org/lite/convert/metadata_writer_tutorial).
+"""
 
 from tensorflow_lite_support.metadata.python.metadata_writers import audio_classifier
 from tensorflow_lite_support.metadata.python.metadata_writers import image_classifier

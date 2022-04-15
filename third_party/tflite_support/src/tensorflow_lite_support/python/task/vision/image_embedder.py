@@ -14,70 +14,26 @@
 """Image embedder task."""
 
 import dataclasses
-from typing import Any, Optional
+from typing import Optional
 
-from tensorflow_lite_support.python.task.core import task_options
-from tensorflow_lite_support.python.task.core.proto import configuration_pb2
+from tensorflow_lite_support.python.task.core.proto import base_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import bounding_box_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
-from tensorflow_lite_support.python.task.processor.proto import embeddings_pb2
+from tensorflow_lite_support.python.task.processor.proto import embedding_pb2
 from tensorflow_lite_support.python.task.vision.core import tensor_image
 from tensorflow_lite_support.python.task.vision.core.pybinds import image_utils
 from tensorflow_lite_support.python.task.vision.pybinds import _pywrap_image_embedder
-from tensorflow_lite_support.python.task.vision.pybinds import image_embedder_options_pb2
 
-_ProtoImageEmbedderOptions = image_embedder_options_pb2.ImageEmbedderOptions
 _CppImageEmbedder = _pywrap_image_embedder.ImageEmbedder
+_BaseOptions = base_options_pb2.BaseOptions
+_EmbeddingOptions = embedding_options_pb2.EmbeddingOptions
 
 
 @dataclasses.dataclass
 class ImageEmbedderOptions:
   """Options for the image embedder task."""
-  base_options: task_options.BaseOptions
-  embedding_options: Optional[embedding_options_pb2.EmbeddingOptions] = None
-
-  def __eq__(self, other: Any) -> bool:
-    if (not isinstance(other, self.__class__) or
-        self.base_options != other.base_options):
-      return False
-
-    if self.embedding_options is None and other.embedding_options is None:
-      return True
-    elif (self.embedding_options and other.embedding_options and
-          self.embedding_options.SerializeToString()
-          == self.embedding_options.SerializeToString()):
-      return True
-    else:
-      return False
-
-
-def _build_proto_options(
-    options: ImageEmbedderOptions) -> _ProtoImageEmbedderOptions:
-  """Builds the protobuf image embdder options."""
-  # Builds the initial proto_options.
-  proto_options = _ProtoImageEmbedderOptions()
-
-  # Updates values from base_options.
-  if options.base_options.model_file.file_content:
-    proto_options.model_file_with_metadata.file_content = (
-        options.base_options.model_file.file_content)
-  elif options.base_options.model_file.file_name:
-    proto_options.model_file_with_metadata.file_name = (
-        options.base_options.model_file.file_name)
-
-  proto_options.num_threads = options.base_options.num_threads
-  if options.base_options.use_coral:
-    proto_options.compute_settings.tflite_settings.delegate = (
-        configuration_pb2.Delegate.EDGETPU_CORAL)
-
-  # Updates values from embedding_options.
-  if options.embedding_options:
-    if options.embedding_options.l2_normalize is not None:
-      proto_options.l2_normalize = options.embedding_options.l2_normalize
-    if options.embedding_options.quantize is not None:
-      proto_options.quantize = options.embedding_options.quantize
-
-  return proto_options
+  base_options: _BaseOptions
+  embedding_options: _EmbeddingOptions = _EmbeddingOptions()
 
 
 class ImageEmbedder(object):
@@ -91,6 +47,25 @@ class ImageEmbedder(object):
     self._embedder = cpp_embedder
 
   @classmethod
+  def create_from_file(cls, file_path: str) -> "ImageEmbedder":
+    """Creates the `ImageEmbedder` object from a TensorFlow Lite model.
+
+    Args:
+      file_path: Path to the model.
+
+    Returns:
+      `ImageEmbedder` object that's created from the model file.
+
+    Raises:
+      ValueError: If failed to create `ImageEmbedder` object from the provided
+        file such as invalid file.
+      RuntimeError: If other types of error occurred.
+    """
+    base_options = _BaseOptions(file_name=file_path)
+    options = ImageEmbedderOptions(base_options=base_options)
+    return cls.create_from_options(options)
+
+  @classmethod
   def create_from_options(cls,
                           options: ImageEmbedderOptions) -> "ImageEmbedder":
     """Creates the `ImageEmbedder` object from image embedder options.
@@ -102,20 +77,19 @@ class ImageEmbedder(object):
       `ImageEmbedder` object that's created from `options`.
 
     Raises:
-      status.StatusNotOk if failed to create `ImageEmbdder` object from
-        `ImageEmbedderOptions` such as missing the model. Need to import the
-        module to catch this error: `from pybind11_abseil import status`, see
-        https://github.com/pybind/pybind11_abseil#abslstatusor.
+      ValueError: If failed to create `ImageEmbdder` object from
+        `ImageEmbedderOptions` such as missing the model.
+      RuntimeError: If other types of error occurred.
     """
-    proto_options = _build_proto_options(options)
-    embedder = _CppImageEmbedder.create_from_options(proto_options)
+    embedder = _CppImageEmbedder.create_from_options(options.base_options,
+                                                     options.embedding_options)
     return cls(options, embedder)
 
   def embed(
       self,
       image: tensor_image.TensorImage,
       bounding_box: Optional[bounding_box_pb2.BoundingBox] = None
-  ) -> embeddings_pb2.EmbeddingResult:
+  ) -> embedding_pb2.EmbeddingResult:
     """Performs actual feature vector extraction on the provided TensorImage.
 
     Args:
@@ -126,21 +100,20 @@ class ImageEmbedder(object):
         out of bounds of the input image.
 
     Returns:
-      embedding result.
+      The embedding result.
 
     Raises:
-      status.StatusNotOk if failed to get the embedding vector. Need to import
-        the module to catch this error: `from pybind11_abseil import status`,
-        see https://github.com/pybind/pybind11_abseil#abslstatusor.
+      ValueError: If any of the input arguments is invalid.
+      RuntimeError: If failed to calculate the embedding vector.
     """
-    image_data = image_utils.ImageData(image.get_buffer())
+    image_data = image_utils.ImageData(image.buffer)
     if bounding_box is None:
       return self._embedder.embed(image_data)
 
     return self._embedder.embed(image_data, bounding_box)
 
-  def get_embedding_by_index(self, result: embeddings_pb2.EmbeddingResult,
-                             output_index: int) -> embeddings_pb2.Embedding:
+  def get_embedding_by_index(self, result: embedding_pb2.EmbeddingResult,
+                             output_index: int) -> embedding_pb2.Embedding:
     """Gets the embedding in the embedding result by `output_index`.
 
     Args:
@@ -160,8 +133,8 @@ class ImageEmbedder(object):
     embedding = self._embedder.get_embedding_by_index(result, output_index)
     return embedding
 
-  def cosine_similarity(self, u: embeddings_pb2.FeatureVector,
-                        v: embeddings_pb2.FeatureVector) -> float:
+  def cosine_similarity(self, u: embedding_pb2.FeatureVector,
+                        v: embedding_pb2.FeatureVector) -> float:
     """Computes cosine similarity [1] between two feature vectors."""
     return self._embedder.cosine_similarity(u, v)
 
@@ -181,10 +154,6 @@ class ImageEmbedder(object):
   def number_of_output_layers(self) -> int:
     """Gets the number of output layers of the model."""
     return self._embedder.get_number_of_output_layers()
-
-  def __eq__(self, other: Any) -> bool:
-    return (isinstance(other, self.__class__) and
-            self._options == other._options)
 
   @property
   def options(self) -> ImageEmbedderOptions:

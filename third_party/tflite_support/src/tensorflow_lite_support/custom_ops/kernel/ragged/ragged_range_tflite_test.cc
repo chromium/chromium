@@ -90,7 +90,7 @@ TEST(RaggedRangeOpTest, IntValues) {
   RaggedRangeOpModel<int32> model({0, 5, 8, 5},    // Starts.
                                   {8, 7, 8, 1},    // Limits.
                                   {2, 1, 1, -1});  // Deltas.
-  model.Invoke();
+  ASSERT_EQ(model.Invoke(), kTfLiteOk);
 
   EXPECT_THAT(model.GetSplits(),
               testing::UnorderedElementsAreArray({0, 4, 6, 6, 10}));
@@ -102,7 +102,7 @@ TEST(RaggedRangeOpTest, FloatValues) {
   RaggedRangeOpModel<float> model({0, 5, 8, 5},    // Starts.
                                   {8, 7, 8, 1},    // Limits.
                                   {2, 1, 1, -1});  // Deltas.
-  model.Invoke();
+  ASSERT_EQ(model.Invoke(), kTfLiteOk);
 
   EXPECT_THAT(model.GetSplits(),
               testing::UnorderedElementsAreArray({0, 4, 6, 6, 10}));
@@ -114,7 +114,7 @@ TEST(RaggedRangeOpTest, BroadcastDelta) {
   RaggedRangeOpModel<int32> model({0, 5, 8},  // Starts.
                                   {8, 7, 8},  // Limits.
                                   {1});       // Deltas.
-  model.Invoke();
+  ASSERT_EQ(model.Invoke(), kTfLiteOk);
 
   EXPECT_THAT(model.GetSplits(),
               testing::UnorderedElementsAreArray({0, 8, 10, 10}));
@@ -126,7 +126,7 @@ TEST(RaggedRangeOpTest, BroadcastStartDeltas) {
   RaggedRangeOpModel<int32> model({0},      // Starts.
                                   {10},     // Limits.
                                   {2, 1});  // Deltas.
-  model.Invoke();
+  ASSERT_EQ(model.Invoke(), kTfLiteOk);
 
   EXPECT_THAT(model.GetSplits(),
               testing::UnorderedElementsAreArray({0, 5, 15}));
@@ -139,14 +139,14 @@ TEST(RaggedRangeOpTest, BadDeltas) {
   RaggedRangeOpModel<int32> model({0, 5, 8, 5},   // Starts.
                                   {8, 7, 7, 9},   // Limits.
                                   {0, 1, 1, 1});  // Deltas.
-  EXPECT_EQ(model.InvokeUnchecked(), kTfLiteError);
+  EXPECT_EQ(model.Invoke(), kTfLiteError);
 }
 
 TEST(RaggedRangeOpTest, ZeroRange) {
   RaggedRangeOpModel<int32> model({0, 7},   // Starts.
                                   {8, 5},   // Limits.
                                   {1, 1});  // Deltas.
-  model.Invoke();
+  ASSERT_EQ(model.Invoke(), kTfLiteOk);
   EXPECT_THAT(model.GetSplits(), testing::UnorderedElementsAreArray({0, 8, 8}));
   EXPECT_THAT(model.GetValues(),
               testing::UnorderedElementsAreArray({0, 1, 2, 3, 4, 5, 6, 7}));

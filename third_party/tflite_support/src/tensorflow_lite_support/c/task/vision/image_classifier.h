@@ -112,7 +112,7 @@ typedef struct TfLiteImageClassifierOptions {
 // .classification_options.label_allowlist.list,
 // options.classification_options.label_denylist.list are NULL.
 // 5. All other integer values are initialized to 0.
-TfLiteImageClassifierOptions TfLiteImageClassifierOptionsCreate();
+TfLiteImageClassifierOptions TfLiteImageClassifierOptionsCreate(void);
 
 // Creates TfLiteImageClassifier from options.
 // .base_options.model_file.file_path in TfLiteImageClassifierOptions should be

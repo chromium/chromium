@@ -32,6 +32,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
+#include "tensorflow_lite_support/cc/task/text/utils/bert_utils.h"
 
 namespace tflite {
 namespace task {
@@ -100,8 +101,12 @@ absl::Status BertNLClassifier::Initialize(
   options_ = std::move(options);
 
   // Create preprocessor.
-  ASSIGN_OR_RETURN(preprocessor_, processor::BertPreprocessor::Create(
-                                      GetTfLiteEngine(), {0, 1, 2}));
+  ASSIGN_OR_RETURN(auto input_indices,
+                   GetBertInputTensorIndices(GetTfLiteEngine()));
+  ASSIGN_OR_RETURN(preprocessor_,
+                   processor::BertPreprocessor::Create(
+                       GetTfLiteEngine(),
+                       {input_indices[0], input_indices[1], input_indices[2]}));
 
   // Set up optional label vector from metadata.
   TrySetLabelFromMetadata(

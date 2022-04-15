@@ -156,10 +156,10 @@ bazel run -c opt \
 In the console, you should get:
 
 ```
-How are you feeling today?
-I'm not feeling very well., , 14.9595
-He looks good., , 8.80944
-Paris is the capital of France., , 5.63753
+Input questions: How are you feeling today?
+Output answers 0: I'm not feeling very well. Score: 14.9595
+Output answers 2: He looks good. Score: 8.80944
+Output answers 1: Paris is the capital of France. Score: 5.63752
 ```
 
 [1]: https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1

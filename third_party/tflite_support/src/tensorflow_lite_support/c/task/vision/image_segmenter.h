@@ -129,7 +129,7 @@ typedef struct TfLiteImageSegmenterOptions {
 // -1, which makes the TFLite runtime choose the value.
 // 2. .output_type = kCategoryMask
 // 3. display_names_locale is NULL.
-TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate();
+TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate(void);
 
 // Creates TfLiteImageSegmenter from options.
 // .base_options.model_file.file_path in TfLiteImageSegmenterOptions should be

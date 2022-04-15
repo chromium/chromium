@@ -1,4 +1,4 @@
-# Placeholder for internal Python strict library compatibility macro.
+load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_cc_proto_library", "support_py_proto_library")
 
 package(
     default_visibility = [
@@ -7,8 +7,21 @@ package(
     licenses = ["notice"],  # Apache 2.0
 )
 
-py_library(
-    name = "configuration_pb2",
-    srcs = ["configuration_pb2.py"],
-    deps = ["@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py"],
+proto_library(
+    name = "base_options_proto",
+    srcs = ["base_options.proto"],
+)
+
+support_cc_proto_library(
+    name = "base_options_cc_proto",
+    deps = [
+        ":base_options_proto",
+    ],
+)
+
+support_py_proto_library(
+    name = "base_options_py_pb2",
+    srcs = ["base_options.proto"],
+    api_version = 2,
+    proto_deps = [":base_options_proto"],
 )

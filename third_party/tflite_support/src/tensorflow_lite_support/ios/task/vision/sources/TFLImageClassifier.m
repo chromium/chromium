@@ -18,7 +18,7 @@
 #import "tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions+Helpers.h"
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationOptions+Helpers.h"
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLClassificationResult+Helpers.h"
-#import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImageUtils.h"
+#import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h"
 
 #include "tensorflow_lite_support/c/task/vision/image_classifier.h"
 
@@ -40,7 +40,7 @@
   return self;
 }
 
-- (nullable instancetype)initWithModelPath:(nonnull NSString *)modelPath {
+- (nullable instancetype)initWithModelPath:(NSString*)modelPath {
   self = [self init];
   if (self) {
     self.baseOptions.modelFile.filePath = modelPath;
@@ -63,12 +63,13 @@
   return self;
 }
 
-+ (nullable instancetype)imageClassifierWithOptions:(nonnull TFLImageClassifierOptions *)options
-                                              error:(NSError **)error {
++ (nullable instancetype)imageClassifierWithOptions:
+                             (TFLImageClassifierOptions*)options
+                                              error:(NSError**)error {
   TfLiteImageClassifierOptions cOptions = TfLiteImageClassifierOptionsCreate();
   if (![options.classificationOptions
           copyToCOptions:&(cOptions.classification_options)
-                                 error:error])
+                   error:error])
     return nil;
 
   [options.baseOptions copyToCOptions:&(cOptions.base_options)];
@@ -80,10 +81,8 @@
   [options.classificationOptions
       deleteCStringArraysOfClassificationOptions:&(cOptions.classification_options)];
 
-  if (!imageClassifier) {
-    if (error) {
-      *error = [TFLCommonUtils errorWithCError:createClassifierError];
-    }
+  if (!imageClassifier || ![TFLCommonUtils checkCError:createClassifierError
+                                               toError:error]) {
     TfLiteSupportErrorDelete(createClassifierError);
     return nil;
   }
@@ -101,7 +100,14 @@
 - (nullable TFLClassificationResult *)classifyWithGMLImage:(GMLImage *)image
                                           regionOfInterest:(CGRect)roi
                                                      error:(NSError *_Nullable *)error {
-  TfLiteFrameBuffer *cFrameBuffer = [GMLImageUtils cFrameBufferWithGMLImage:image error:error];
+  if (!image) {
+    [TFLCommonUtils createCustomError:error
+                             withCode:TFLSupportErrorCodeInvalidArgumentError
+                          description:@"GMLImage argument cannot be nil."];
+    return nil;
+  }
+
+  TfLiteFrameBuffer* cFrameBuffer = [image cFrameBufferWithError:error];
 
   if (!cFrameBuffer) {
     return nil;
@@ -122,10 +128,8 @@
   free(cFrameBuffer);
   cFrameBuffer = nil;
 
-  if (!cClassificationResult) {
-    if (error) {
-      *error = [TFLCommonUtils errorWithCError:classifyError];
-    }
+  if (!cClassificationResult || ![TFLCommonUtils checkCError:classifyError
+                                                     toError:error]) {
     TfLiteSupportErrorDelete(classifyError);
     return nil;
   }
