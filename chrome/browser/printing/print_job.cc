@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -214,6 +215,9 @@ void PrintJob::StartPrinting() {
   // Tell everyone!
   auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::NEW_DOC,
                                                        0, document_.get());
+  print_job_manager_->OnPrintJobEvent(this, *details.get());
+
+  // TODO(crbug.com/796051): Remove.
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_PRINT_JOB_EVENT,
       content::Source<PrintJob>(this),
@@ -517,6 +521,9 @@ void PrintJob::OnFailed() {
   // Make sure a `Cancel()` is broadcast.
   auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::FAILED,
                                                        0, nullptr);
+  print_job_manager_->OnPrintJobEvent(this, *details.get());
+
+  // TODO(crbug.com/796051): Remove.
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
       content::Details<JobEventDetails>(details.get()));
@@ -531,6 +538,9 @@ void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
 
   auto details = base::MakeRefCounted<JobEventDetails>(
       JobEventDetails::DOC_DONE, job_id, document);
+  print_job_manager_->OnPrintJobEvent(this, *details.get());
+
+  // TODO(crbug.com/796051): Remove.
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
       content::Details<JobEventDetails>(details.get()));
@@ -556,6 +566,9 @@ void PrintJob::OnDocumentDone() {
 
   auto details = base::MakeRefCounted<JobEventDetails>(
       JobEventDetails::JOB_DONE, 0, document_.get());
+  print_job_manager_->OnPrintJobEvent(this, *details.get());
+
+  // TODO(crbug.com/796051): Remove.
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_PRINT_JOB_EVENT,
       content::Source<PrintJob>(this),

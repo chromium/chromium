@@ -7,12 +7,10 @@
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/notification_service.h"
 #include "printing/printed_document.h"
 
 // This should be after all other #includes.
@@ -73,13 +71,9 @@ void PrintQueriesQueue::Shutdown() {
   }
 }
 
-PrintJobManager::PrintJobManager() {
-  registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                 content::NotificationService::AllSources());
-}
+PrintJobManager::PrintJobManager() = default;
 
-PrintJobManager::~PrintJobManager() {
-}
+PrintJobManager::~PrintJobManager() = default;
 
 scoped_refptr<PrintQueriesQueue> PrintJobManager::queue() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -98,7 +92,6 @@ void PrintJobManager::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
-  registrar_.RemoveAll();
   StopJobs(true);
   if (queue_) {
     queue_->Shutdown();
@@ -120,19 +113,13 @@ void PrintJobManager::StopJobs(bool wait_for_finish) {
   }
 }
 
-void PrintJobManager::Observe(int type,
-                              const content::NotificationSource& source,
-                              const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(chrome::NOTIFICATION_PRINT_JOB_EVENT, type);
-
-  OnPrintJobEvent(content::Source<PrintJob>(source).ptr(),
-                  *content::Details<JobEventDetails>(details).ptr());
-}
-
 void PrintJobManager::OnPrintJobEvent(
     PrintJob* print_job,
     const JobEventDetails& event_details) {
+  if (is_shutdown_) {
+    return;
+  }
+
   switch (event_details.type()) {
     case JobEventDetails::NEW_DOC: {
       // Causes a AddRef().

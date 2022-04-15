@@ -11,8 +11,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 namespace content {
 struct GlobalRenderFrameHostId;
@@ -60,22 +58,17 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
   PrinterQueries queued_queries_;
 };
 
-class PrintJobManager : public content::NotificationObserver {
+class PrintJobManager {
  public:
   PrintJobManager();
 
   PrintJobManager(const PrintJobManager&) = delete;
   PrintJobManager& operator=(const PrintJobManager&) = delete;
 
-  ~PrintJobManager() override;
+  ~PrintJobManager();
 
   // On browser quit, we should wait to have the print job finished.
   void Shutdown();
-
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // Returns queries queue. Never returns NULL. Must be called on Browser UI
   // Thread. Reference could be stored and used from any thread.
@@ -84,18 +77,16 @@ class PrintJobManager : public content::NotificationObserver {
   // Sets the queries queue for testing.
   void SetQueueForTest(scoped_refptr<PrintQueriesQueue> queue);
 
- private:
-  using PrintJobs = std::set<scoped_refptr<PrintJob>>;
-
-  // Processes a NOTIFY_PRINT_JOB_EVENT notification.
+  // Invoked by PrintJob on any print job event.
   void OnPrintJobEvent(PrintJob* print_job,
                        const JobEventDetails& event_details);
+
+ private:
+  using PrintJobs = std::set<scoped_refptr<PrintJob>>;
 
   // Stops all printing jobs. If wait_for_finish is true, tries to give jobs
   // a chance to complete before stopping them.
   void StopJobs(bool wait_for_finish);
-
-  content::NotificationRegistrar registrar_;
 
   // Current print jobs that are active.
   PrintJobs current_jobs_;

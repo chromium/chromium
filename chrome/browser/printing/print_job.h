@@ -267,6 +267,8 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 };
 
 // Details for a NOTIFY_PRINT_JOB_EVENT notification. The members may be NULL.
+// TODO(crbug.com/796051): Simplify/rename once instances of this struct are
+// passed only to PrintJobManager.
 class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
  public:
   // Event type.
