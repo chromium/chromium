@@ -372,6 +372,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -386,6 +387,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -398,6 +400,7 @@ ci.builder(
         short_name = "dbg",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -410,6 +413,7 @@ ci.builder(
         short_name = "rel",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -421,6 +425,7 @@ ci.builder(
         category = "cronet|asan",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -437,6 +442,7 @@ ci.builder(
     cpu = None,
     executable = "recipe:cronet",
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     os = os.ANDROID,
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
@@ -450,6 +456,7 @@ ci.builder(
         short_name = "dbg",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -462,6 +469,7 @@ ci.builder(
         short_name = "l",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
@@ -472,6 +480,7 @@ ci.builder(
         short_name = "m",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
@@ -482,6 +491,7 @@ ci.builder(
         short_name = "o",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
@@ -492,6 +502,7 @@ ci.builder(
         short_name = "p",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
@@ -502,6 +513,7 @@ ci.builder(
         short_name = "10",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
@@ -512,6 +524,7 @@ ci.builder(
         short_name = "11",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
@@ -522,6 +535,7 @@ ci.builder(
         short_name = "rel",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
@@ -534,6 +548,7 @@ ci.builder(
         short_name = "k",
     ),
     notifies = ["cronet"],
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/android-cronet-x86-rel"],
 )
 
