@@ -197,8 +197,12 @@ WebContents* OpenApplicationTab(Profile* profile,
 
   Browser* browser =
       chrome::FindTabbedBrowser(profile, false, launch_params.display_id);
-  WebContents* contents = NULL;
-  if (!browser) {
+  WebContents* contents = nullptr;
+  if (browser) {
+    // For existing browser, ensure its window is shown and activated.
+    browser->window()->Show();
+    browser->window()->Activate();
+  } else {
     // No browser for this profile, need to open a new one.
     if (Browser::GetCreationStatusForProfile(profile) !=
         Browser::CreationStatus::kOk) {
@@ -212,10 +216,6 @@ WebContents* OpenApplicationTab(Profile* profile,
     browser->window()->Show();
     // There's no current tab in this browser window, so add a new one.
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  } else {
-    // For existing browser, ensure its window is shown and activated.
-    browser->window()->Show();
-    browser->window()->Activate();
   }
 
   extensions::LaunchType launch_type =
@@ -509,4 +509,25 @@ void LaunchAppWithCallback(
   }
   std::move(callback).Run(BrowserList::GetInstance()->GetLastActive(),
                           container);
+}
+
+bool ShowBrowserForProfile(Profile* profile,
+                           const apps::AppLaunchParams& params) {
+  Browser* browser = chrome::FindTabbedBrowser(
+      profile, /*match_original_profiles*/ false, params.display_id);
+  if (browser) {
+    // For existing browser, ensure its window is shown and activated.
+    browser->window()->Show();
+    browser->window()->Activate();
+  } else {
+    // No browser for this profile, need to open a new one.
+    if (Browser::GetCreationStatusForProfile(profile) !=
+        Browser::CreationStatus::kOk) {
+      return false;
+    }
+    browser = Browser::Create(
+        Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+    browser->window()->Show();
+  }
+  return true;
 }

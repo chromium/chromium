@@ -96,6 +96,12 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
                      LaunchCallback callback,
                      crosapi::mojom::LaunchResultPtr result);
 
+  // Callback from extensions::ExecuteFileBrowserHandlerFlow().
+  void OnExecuteFileBrowserHandlerComplete(
+      crosapi::mojom::LaunchResultPtr result,
+      LaunchCallback callback,
+      bool success);
+
   // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
   // to support.
   const ForWhichExtensionType which_type_;
