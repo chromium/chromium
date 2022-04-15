@@ -213,9 +213,8 @@ void ModuleScriptLoader::FetchInternal(
 
   // Module scripts are always defer.
   fetch_params.SetDefer(FetchParameters::kLazyLoad);
-  // TODO(yoav): This is not accurate for module scripts with an async
-  // attribute.
-  fetch_params.SetRenderBlockingBehavior(RenderBlockingBehavior::kNonBlocking);
+  fetch_params.SetRenderBlockingBehavior(
+      module_request.Options().GetRenderBlockingBehavior());
 
   // [nospec] Unlike defer/async classic scripts, module scripts are fetched at
   // High priority.

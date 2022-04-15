@@ -539,9 +539,13 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
   DCHECK(!prepared_pending_script_);
 
+  bool has_render_blocking_attr =
+      RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+      element_->IsRenderBlocking();
   RenderBlockingBehavior render_blocking_behavior =
-      non_blocking_ || dynamic_async_ ? RenderBlockingBehavior::kNonBlocking
-                                      : RenderBlockingBehavior::kBlocking;
+      !has_render_blocking_attr && (non_blocking_ || dynamic_async_)
+          ? RenderBlockingBehavior::kNonBlocking
+          : RenderBlockingBehavior::kBlocking;
 
   // <spec step="22">Let options be a script fetch options whose cryptographic
   // nonce is cryptographic nonce, integrity metadata is integrity metadata,
@@ -638,8 +642,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     }
 
     // If the element is render-blocking, block rendering on the element.
-    if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-        element_->IsRenderBlocking() &&
+    if (has_render_blocking_attr &&
         element_document.GetRenderBlockingResourceManager()) {
       element_document.GetRenderBlockingResourceManager()->AddPendingScript(
           *element_);

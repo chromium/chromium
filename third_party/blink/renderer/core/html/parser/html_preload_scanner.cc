@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
+#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
@@ -303,8 +304,10 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (is_script &&
                (is_module || defer_ == FetchParameters::kLazyLoad)) {
       render_blocking_behavior =
-          is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
-                    : RenderBlockingBehavior::kNonBlocking;
+          BlockingAttribute::IsRenderBlocking(blocking_attribute_value_)
+              ? RenderBlockingBehavior::kBlocking
+              : (is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
+                           : RenderBlockingBehavior::kNonBlocking);
     } else if (is_script || type == ResourceType::kCSSStyleSheet) {
       // CSS here is render blocking, as non blocking doesn't get preloaded.
       // JS here is a blocking one, as others would've been caught by the
@@ -372,6 +375,9 @@ class TokenPreloadScanner::StartTagScanner {
                Match(attribute_name, html_names::kFetchpriorityAttr) &&
                priority_hints_origin_trial_enabled_) {
       SetFetchPriorityHint(attribute_value);
+    } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+               Match(attribute_name, html_names::kBlockingAttr)) {
+      blocking_attribute_value_ = attribute_value;
     }
   }
 
@@ -734,6 +740,7 @@ class TokenPreloadScanner::StartTagScanner {
   String as_attribute_value_;
   String type_attribute_value_;
   String language_attribute_value_;
+  String blocking_attribute_value_;
   AtomicString scopes_attribute_value_;
   AtomicString resources_attribute_value_;
   bool nomodule_attribute_value_ = false;

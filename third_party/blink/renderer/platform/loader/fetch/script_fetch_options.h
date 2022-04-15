@@ -82,6 +82,9 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   RejectCoepUnsafeNone GetRejectCoepUnsafeNone() const {
     return reject_coep_unsafe_none_;
   }
+  RenderBlockingBehavior GetRenderBlockingBehavior() const {
+    return render_blocking_behavior_;
+  }
 
   // https://html.spec.whatwg.org/C/#fetch-a-classic-script
   // Steps 1 and 3.
