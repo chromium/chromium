@@ -10,7 +10,7 @@ import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {eventToPromise, flushTasks, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
 import {assertNotStyle, installMock} from '../../test_support.js';
@@ -738,12 +738,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertTrue(!!moduleElement, 'Module should exist');
       document.body.append(moduleElement);
       moduleElement.$.consentCardElement.render();
-      await whenAttributeIs(moduleElement, 'show-discount-consent', '');
 
       // Assert.
       const consentCard = $$<HTMLElement>(moduleElement, '#consentCard')!;
       const consentToast = moduleElement.$.confirmDiscountConsentToast;
-
       assertEquals(
           true, isVisible(consentCard), 'Consent card should be visible');
       assertEquals(
@@ -765,7 +763,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Act.
       consentCard.querySelector<HTMLElement>('#cancelButton')!.click();
       await flushTasks();
-      await whenAttributeIs(moduleElement, 'show-discount-consent', null);
 
       // Assert.
       assertEquals(
@@ -793,7 +790,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Act.
       moduleElement.showDiscountConsent = true;
       moduleElement.$.consentCardElement.render();
-      await whenAttributeIs(moduleElement, 'show-discount-consent', '');
 
       // Assert.
       assertEquals(
@@ -803,7 +799,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Act.
       consentCard.querySelector<HTMLElement>('#actionButton')!.click();
       await flushTasks();
-      await whenAttributeIs(moduleElement, 'show-discount-consent', null);
 
       // Assert.
       assertEquals(
@@ -1200,12 +1195,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
       nextStep(consentCard);
       await flushTasks();
-      await whenAttributeIs(moduleElement, 'show-discount-consent', '');
 
       // Act.
       clickAcceptButton(consentCard);
       await flushTasks();
-      await whenAttributeIs(moduleElement, 'show-discount-consent', null);
 
       // Assert.
       assertEquals(
@@ -1238,7 +1231,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertTrue(!!moduleElement);
       document.body.append(moduleElement);
       moduleElement.$.consentCardElement.render();
-      await whenAttributeIs(moduleElement, 'show-discount-consent', '');
 
       // Assert.
       const consentCard =
@@ -1274,8 +1266,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         assertTrue(!!moduleElement);
         document.body.append(moduleElement);
         moduleElement.$.consentCardElement.render();
-        await flushTasks();
-        await whenAttributeIs(moduleElement, 'show-discount-consent', '');
 
         consentCard = $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
       });
@@ -1287,11 +1277,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             assertEquals(
                 0, metrics.count('NewTabPage.Carts.DismissDiscountConsent'),
                 'Dismissed count should be 0 before clicking');
-
             // Act.
             clickCloseButton(consentCard);
             await flushTasks();
-            await whenAttributeIs(moduleElement, 'show-discount-consent', null);
 
             // Assert.
             assertEquals(false, isVisible(consentCard));
@@ -1314,7 +1302,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             // Act.
             clickCloseButton(consentCard);
             await flushTasks();
-            await whenAttributeIs(moduleElement, 'show-discount-consent', null);
 
             // Assert.
             assertEquals(false, isVisible(consentCard));
@@ -1374,12 +1361,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
                 0, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
             nextStep(consentCard);
             await flushTasks();
-            await whenAttributeIs(moduleElement, 'show-discount-consent', '');
 
             // Act.
             clickRejectButton(consentCard);
             await flushTasks();
-            await whenAttributeIs(moduleElement, 'show-discount-consent', null);
 
             // Assert.
             assertEquals(false, isVisible(consentCard));
