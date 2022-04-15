@@ -50,7 +50,6 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
-
     network_state_helper()->ClearDevices();
 
     network_state_helper()->manager_test()->AddTechnology(shill::kTypeCellular,

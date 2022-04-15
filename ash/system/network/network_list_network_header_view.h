@@ -59,6 +59,7 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
  private:
   friend class NetworkListNetworkHeaderViewTest;
   friend class NetworkListMobileHeaderViewTest;
+  friend class NetworkListWifiHeaderViewTest;
 
   void ToggleButtonPressed();
 

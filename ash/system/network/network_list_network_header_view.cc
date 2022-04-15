@@ -28,7 +28,6 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(Delegate* delegate,
       label_id);
   toggle_->SetID(kToggleButtonId);
   container()->AddView(TriView::Container::END, toggle_);
-  AddExtraButtons();
 }
 
 void NetworkListNetworkHeaderView::SetToggleState(bool enabled, bool is_on) {

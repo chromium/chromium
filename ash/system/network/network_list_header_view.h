@@ -30,6 +30,7 @@ class ASH_EXPORT NetworkListHeaderView : public views::View {
  private:
   friend class NetworkListNetworkHeaderViewTest;
   friend class NetworkListMobileHeaderViewTest;
+  friend class NetworkListWifiHeaderViewTest;
 
   void AddTitleView(int label_id);
 
