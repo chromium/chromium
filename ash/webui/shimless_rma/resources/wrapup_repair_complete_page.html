@@ -235,3 +235,18 @@
     </cr-button>
   </div>
 </cr-dialog>
+
+<cr-dialog id="batteryCutoffDialog" close-text="close" no-cancel>
+  <div slot="body">
+    [[i18n('repairCompletedBatteryCutoffCountdownDescription')]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="closeBatteryCutoffDialogButton" on-click="onCutoffCancelClick_">
+      [[i18n('cancelButtonLabel')]]
+    </cr-button>
+    <cr-button id="batteryCutoffShutdownButton" class="text-button action-button"
+        on-click="onCutoffShutdownButtonClick_">
+      [[i18n('repairCompletedBatteryCutoffShutdownButton')]]
+    </cr-button>
+  </div>
+</cr-dialog>

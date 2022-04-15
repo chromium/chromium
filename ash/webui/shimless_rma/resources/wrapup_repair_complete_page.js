@@ -78,6 +78,24 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
         type: String,
         value: '',
       },
+
+      /**
+       * This variable needs to remain public because the unit tests need to
+       * check its value.
+       */
+      batteryTimeoutID_: {
+        type: Number,
+        value: -1,
+      },
+
+      /**
+       * This variable needs to remain public because the unit tests need to
+       * set it to 0.
+       */
+      batteryTimeoutInMs_: {
+        type: Number,
+        value: 5000,
+      },
     };
   }
 
@@ -188,9 +206,37 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
 
   /** @protected */
   onBatteryCutButtonClick_() {
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#batteryCutoffDialog'));
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+
+    // This is necessary because after the timeout "this" will be the window,
+    // and not WrapupRepairCompletePage.
+    const cutoffBattery = function(wrapupRepairCompletePage) {
+      executeThenTransitionState(
+          wrapupRepairCompletePage,
+          () => wrapupRepairCompletePage.shimlessRmaService_.endRma(
+              ShutdownMethod.kBatteryCutoff));
+    };
+
+    if (this.batteryTimeoutID_ === -1) {
+      this.batteryTimeoutID_ =
+          setTimeout(() => cutoffBattery(this), this.batteryTimeoutInMs_);
+    }
+  }
+
+  /** @private */
+  cutoffBattery_() {
     executeThenTransitionState(
         this,
         () => this.shimlessRmaService_.endRma(ShutdownMethod.kBatteryCutoff));
+  }
+
+  /** @protected */
+  onCutoffShutdownButtonClick_() {
+    this.cutoffBattery_();
   }
 
   /** @protected */
@@ -202,12 +248,33 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
     });
   }
 
+  /** @protected */
+  onCutoffCancelClick_() {
+    this.cancelBatteryCutoff_();
+  }
+
+  /** @private */
+  cancelBatteryCutoff_() {
+    const batteryCutoffDialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#batteryCutoffDialog'));
+    batteryCutoffDialog.close();
+
+    if (this.batteryTimeoutID_ !== -1) {
+      clearTimeout(this.batteryTimeoutID_);
+      this.batteryTimeoutID_ = -1;
+    }
+  }
+
   /**
    * Implements PowerCableStateObserver.onPowerCableStateChanged()
    * @param {boolean} pluggedIn
    */
   onPowerCableStateChanged(pluggedIn) {
     this.pluggedIn_ = pluggedIn;
+
+    if (this.pluggedIn_) {
+      this.cancelBatteryCutoff_();
+    }
 
     const icon = /** @type {!HTMLElement}*/ (
         this.shadowRoot.querySelector('#batteryCutoffIcon'));

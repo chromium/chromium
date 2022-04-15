@@ -2793,6 +2793,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_BUTTON" translateable="false" desc="Label for the button that starts a powerwash">
         Powerwash
       </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_CUTOFF_COUNTDOWN_DESCRIPTION" translateable="false" desc="Contents of the countdown dialog displayed on repair complete page when trying to cut off the battery">
+        Device is shutting down in 5 seconds...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_SHUTDOWN_BUTTON" translateable="false" desc="Label for the button in the battery cutoff countdown dialog that shuts down the device and cuts off the battery immediately">
+        Shut down
+      </message>
       <!-- Run calibration page -->
       <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when running component calibration steps.">
         Calibrating device components

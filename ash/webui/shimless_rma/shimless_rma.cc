@@ -238,6 +238,10 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_REBOOT_DESCRIPTION},
       {"repairCompletedPowerwashButton",
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_POWERWASH_BUTTON},
+      {"repairCompletedBatteryCutoffCountdownDescription",
+       IDS_SHIMLESS_RMA_REPAIR_COMPLETED_CUTOFF_COUNTDOWN_DESCRIPTION},
+      {"repairCompletedBatteryCutoffShutdownButton",
+       IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_SHUTDOWN_BUTTON},
 
       // Manual disable wp page
       {"manuallyDisableWpTitleText",

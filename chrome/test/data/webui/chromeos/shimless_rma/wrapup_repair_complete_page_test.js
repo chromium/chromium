@@ -224,7 +224,7 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(powerwashDialog.open);
   });
 
-  test('CanCutOffBattery', async () => {
+  test('CutoffBatteryButtonOpensCountdownDialogAndCutsOffBattery', async () => {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();
     let callCount = 0;
@@ -236,10 +236,52 @@ export function wrapupRepairCompletePageTest() {
     };
     await flushTasks();
 
+    component.batteryTimeoutInMs_ = 0;
+
     const cutButton = component.shadowRoot.querySelector('#batteryCutButton');
     cutButton.disabled = false;
 
     await clickButton('#batteryCutButton');
+    await flushTasks();
+
+    // Cut off the battery.
+    assertEquals(1, callCount);
+    assertEquals(ShutdownMethod.kBatteryCutoff, shutdownMethod);
+    // Show the dialog.
+    const batteryCutoffDialog =
+        component.shadowRoot.querySelector('#batteryCutoffDialog');
+    assertTrue(!!batteryCutoffDialog);
+    assertTrue(batteryCutoffDialog.open);
+  });
+
+  test('PowerCableConnectCancelsBatteryCutoff', async () => {
+    await initializeRepairCompletePage();
+    await flushTasks();
+
+    service.triggerPowerCableObserver(false, 0);
+    await flushTasks();
+
+    await clickButton('#batteryCutButton');
+    service.triggerPowerCableObserver(true, 0);
+    await flushTasks();
+
+    assertEquals(-1, component.batteryTimeoutID_);
+  });
+
+  test('ShutdownButtonInBatteryCutoffDialogTriggersBatteryCutoff', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    let callCount = 0;
+    let shutdownMethod;
+    service.endRma = (seenShutdownMethod) => {
+      callCount++;
+      shutdownMethod = seenShutdownMethod;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#batteryCutoffShutdownButton');
     await flushTasks();
 
     assertEquals(1, callCount);
@@ -308,6 +350,37 @@ export function wrapupRepairCompletePageTest() {
 
     await clickButton('#closePowerwashDialogButton');
     assertFalse(powerwashDialog.open);
+  });
+
+  test('CutoffCancelButtonClosesCutoffDialog', async () => {
+    await initializeRepairCompletePage();
+    const batteryCutoffDialog =
+        component.shadowRoot.querySelector('#batteryCutoffDialog');
+    assertTrue(!!batteryCutoffDialog);
+
+    const batteryCutButton =
+        component.shadowRoot.querySelector('#batteryCutButton');
+    batteryCutButton.disabled = false;
+
+    await clickButton('#batteryCutButton');
+    assertTrue(batteryCutoffDialog.open);
+
+    await clickButton('#closeBatteryCutoffDialogButton');
+    assertFalse(batteryCutoffDialog.open);
+  });
+
+  test('CutoffCancelButtonCancelsBatteryCutoff', async () => {
+    await initializeRepairCompletePage();
+    await flushTasks();
+
+    const batteryCutButton =
+        component.shadowRoot.querySelector('#batteryCutButton');
+    batteryCutButton.disabled = false;
+
+    await clickButton('#batteryCutButton');
+
+    await clickButton('#closeBatteryCutoffDialogButton');
+    assertEquals(-1, component.batteryTimeoutID_);
   });
 
   test('AllButtonsDisabled', async () => {
