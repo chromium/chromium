@@ -146,3 +146,92 @@ JSON schema for the input of the simulator.
   ]
 }
 ```
+
+JSON schema for the output of the simulator.
+
+```json
+{
+  // List of zero or more event-level reports.
+  "event_level_reports": [
+    {
+      // Time at which the report would have been sent in seconds since the
+      // UNIX epoch.
+      "report_time": 123,
+
+      // URL to which the report would have been sent.
+      "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
+
+      "test_info": {
+        // Whether fake reports were generated.
+        "randomized_trigger": false
+      },
+
+      // The report itself. See
+      // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports
+      // for details about its fields.
+      "report": {}
+    },
+  ],
+
+  // List of debug event-level reports. Omitted if empty.
+  "debug_event_level_reports": [],
+
+  // List of aggregatable reports. Omitted if empty.
+  "aggregatable_reports": [
+    {
+      // Time at which the report would have been sent in seconds since the
+      // UNIX epoch.
+      "report_time": 123,
+
+      // URL to which the report would have been sent.
+      "report_url": "https://reporting.example/.well-known/attribution-reporting/report-aggregate-attribution",
+
+      "test_info": {
+        // Aggregatable histograms created from the source and trigger.
+        "histograms": [
+          {
+            // The higher 64-bit value of uint128 formatted as a base-10 string.
+            "key_high_bits": "0",
+
+            // The lower 64-bit value of uint128 formatted as a base-10 string.
+            "key_low_bits":  "1369",
+
+            // uint32 formatted as a base-10 string.
+            "value": "123"
+          }
+        ],
+
+        // The report itself. See
+        // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports
+        // for details about its fields.
+        "report": {}
+      }
+    }
+  ],
+
+  // List of debug aggregatable reports. Omitted if empty.
+  "debug_aggregatable_reports": [],
+
+  // List of rejected sources. Omitted if empty.
+  "rejected_sources": [
+    {
+      // Why the source was rejected.
+      "reason": "excessiveReportingOrigins",
+
+      // The original input JSON corresponding to the source.
+      "source": {}
+    }
+  ],
+
+  // List of rejected triggers. Omitted if empty.
+  "rejected_triggers": [
+    {
+      // Why the trigger was rejected.
+      "reason": "deduplicated",
+
+      // The original input JSON corresponding to the trigger.
+      "trigger": {}
+    }
+  ]
+}
+```

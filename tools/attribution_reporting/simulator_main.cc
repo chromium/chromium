@@ -171,52 +171,9 @@ Switches:
 
   --version                 - Outputs the tool version and exits.
 
-See //content/test/data/attribution_reporting/simulator/README.md for input JSON format.
+See //content/test/data/attribution_reporting/simulator/README.md
+for input and output JSON formats.
 
-Output JSON format:
-
-{
-  // List of zero or more reports.
-  "event_level_reports": [
-    {
-      // Time at which the report would have been sent in seconds since the
-      // UNIX epoch.
-      "report_time": 123,
-
-      // URL to which the report would have been sent.
-      "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
-
-      // The report itself. See
-      // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports
-      // for details about its fields.
-      "report": { ... }
-      },
-    },
-    ...
-  ],
-  // List of rejected sources. Omitted if empty.
-  "rejected_sources": [
-    {
-      // Why the source was rejected.
-      "reason": "excessiveReportingOrigins",
-
-      // The original input JSON corresponding to the source.
-      "source": { ... }
-    }
-  ],
-  // List of rejected triggers. Omitted if empty.
-  "rejected_triggers": [
-    {
-      // Why the trigger was rejected.
-      "reason": "deduplicated",
-
-      // The original input JSON corresponding to the trigger.
-      "trigger": { ... }
-    }
-  ],
-  // The original input, if the `copy_input_to_output` switch is present.
-  "input": { ... }
-}
 )";
 
 enum class InputMode { kSingle, kMulti };
