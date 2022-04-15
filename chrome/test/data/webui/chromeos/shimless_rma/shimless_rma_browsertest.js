@@ -31,12 +31,7 @@ this.ShimlessRMABrowserTest = class extends PolymerTest {
 
   /** @override */
   get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kShimlessRMAFlow',
-        'chromeos::features::kShimlessRMAEnableStandalone'
-      ]
-    };
+    return {enabled: ['chromeos::features::kShimlessRMAFlow']};
   }
 };
 
