@@ -57,6 +57,7 @@ KNOWN_MISTAKES = {
     'enable-http2-grease-settings': 'http2-grease-settings',
     'AvoidUnnecessaryBeforeUnloadCheckPostTask': 'AvoidUnnecessaryBeforeUnloadCheck',
     'AutofillShadowDom': 'AutofillShadowDOM',
+    'HtmlParamElementUrlSupport': 'HTMLParamElementUrlSupport',
     # The final entry should have a trailing comma for cleaner diffs. You may
     # remove the entry from this dictionary when it's time to delete the
     # corresponding base::Feature or commandline switch.

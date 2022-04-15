@@ -225,6 +225,10 @@ public final class ProductionSupportedFlagList {
                     "Defers the first commit until FCP or timeout for cross-origin navigations."),
             Flag.baseFeature(BlinkFeatures.EARLY_CODE_CACHE,
                     "Enables fetching the code cache earlier in navigation."),
+            Flag.baseFeature(BlinkFeatures.HTML_PARAM_ELEMENT_URL_SUPPORT,
+                    "Enables the <param> element's URL-setting features (this functionality is"
+                            + " being deprecated and removed, so ENABLED is the safe/current"
+                            + " behavior, and DISABLED is the tested/new behavior)."),
             Flag.baseFeature(ContentFeatures.NAVIGATION_REQUEST_PRECONNECT,
                     "Enables preconnecting for frame requests."),
             Flag.baseFeature(ContentFeatures.NAVIGATION_NETWORK_RESPONSE_QUEUE,
