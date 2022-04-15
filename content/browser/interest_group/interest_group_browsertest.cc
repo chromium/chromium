@@ -950,10 +950,11 @@ class InterestGroupFencedFrameBrowserTest
   void RunBasicAuctionWithAdComponents(const GURL& ad_component_url,
                                        GURL* component_ad_urn = nullptr) {
     GURL test_url =
-        https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+        https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
     ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-    GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+    GURL ad_url =
+        https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
     EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
         /*owner=*/url::Origin::Create(test_url),
         /*name=*/"cars",
@@ -2513,7 +2514,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinner) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -2656,12 +2658,12 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
       base::StringPrintf(
           "/cross_site_iframe_factory.html?a(%s,%s)",
           net::EscapeUrlEncodedData(
-              https_server_->GetURL("a.test", "/fenced_frames/basic.html")
+              https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html")
                   .spec(),
               /*use_plus=*/false)
               .c_str(),
           net::EscapeUrlEncodedData(
-              https_server_->GetURL("b.test", "/fenced_frames/basic.html")
+              https_server_->GetURL("b.test", "/fenced_frames/opaque_ads.html")
                   .spec(),
               /*use_plus=*/false)
               .c_str()));
@@ -2777,7 +2779,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerNestedLeaveGroup) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -3140,7 +3143,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, Iframe) {
       kTopFrameHost,
       base::StringPrintf(
           "/cross_site_iframe_factory.html?%s(%s)", kTopFrameHost,
-          https_server_->GetURL(kIframeHost, "/fenced_frames/basic.html")
+          https_server_->GetURL(kIframeHost, "/fenced_frames/opaque_ads.html")
               .spec()
               .c_str()));
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -3832,14 +3835,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
 // Test that when there are no ad components, an array of ad components is still
 // available, and they're all mapped to about:blank.
 IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
-  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   // Trying to retrieve the adAuctionComponents of the main frame should throw
   // an exception.
   EXPECT_FALSE(GetAdAuctionComponentsInJS(shell(), 1));
 
-  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+  GURL ad_url =
+      https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       /*owner=*/url::Origin::Create(test_url),
       /*name=*/"cars",
@@ -3919,7 +3924,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponents) {
 IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        AdComponentsNotLeaked) {
   GURL ad_component_url =
-      https_server_->GetURL("d.test", "/fenced_frames/nested.html");
+      https_server_->GetURL("d.test", "/fenced_frames/opaque_ads.html");
   ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
 
   // The top frame should have no ad components.
@@ -4007,10 +4012,12 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        AdComponentsMainAdLoadedInMultipleFrames) {
   GURL ad_component_url = https_server_->GetURL(
       "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
-  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+  GURL ad_url =
+      https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       /*owner=*/url::Origin::Create(test_url),
       /*name=*/"cars",
@@ -4042,10 +4049,11 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
   // original fenced frame, the next two use a new one that replaces the first.
   for (int i = 0; i < 4; ++i) {
     if (i == 2) {
-      EXPECT_TRUE(ExecJs(
-          shell(),
-          "document.querySelector('fencedframe').remove();"
-          "document.body.appendChild(document.createElement('fencedframe'));"));
+      EXPECT_TRUE(ExecJs(shell(),
+                         "document.querySelector('fencedframe').remove();"
+                         "const ff = document.createElement('fencedframe');"
+                         "ff.mode = 'opaque-ads';"
+                         "document.body.appendChild(ff);"));
     }
     ClearReceivedRequests();
     NavigateFencedFrameAndWait(urn_url, ad_url, shell());
@@ -4079,7 +4087,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
        "[3, {'4': 'five'}]"},
   };
 
-  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   // Register bidding script that validates interestGroup.adComponents and
@@ -4108,7 +4117,8 @@ return {
       https_server_->GetURL("a.test", "/generated_bidding_logic.js");
   network_responder_->RegisterBidderScript(bidding_url.path(), bidding_script);
 
-  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+  GURL ad_url =
+      https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       /*owner=*/url::Origin::Create(test_url),
       /*name=*/"cars", /*priority=*/0.0, bidding_url,

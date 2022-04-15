@@ -21,7 +21,7 @@ promise_test(async () => {
   let uuid1 = await sharedStorage.runURLSelectionOperation(
     "verify-storage-entries-url-selection-operation", [url0, url1]);
 
-  attachFencedFrame(uuid1);
+  attachFencedFrame(uuid1, 'opaque-ads');
 
   // frame1_loaded implies that the setters and the operations were successful.
   assert_equals(await nextValueFromServer(ancestor_key), "frame1_loaded");

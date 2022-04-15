@@ -711,6 +711,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, MappedURL) {
 
   const char* kScript = R"(
     var ff = document.createElement('fencedframe');
+    ff.mode = 'opaque-ads';
     document.body.appendChild(ff);
   )";
   EXPECT_TRUE(content::ExecJs(rfh, kScript));
