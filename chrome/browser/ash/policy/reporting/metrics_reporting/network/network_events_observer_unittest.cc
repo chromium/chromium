@@ -9,8 +9,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -48,7 +48,7 @@ class NetworkEventsObserverTest
   ~NetworkEventsObserverTest() override = default;
 
   void SetUp() override {
-    ::chromeos::CrosHealthdClient::InitializeFake();
+    ::ash::cros_healthd::CrosHealthdClient::InitializeFake();
     auto* const service_client = network_handler_test_helper_.service_test();
     auto* const device_client = network_handler_test_helper_.device_test();
 
@@ -72,7 +72,9 @@ class NetworkEventsObserverTest
     task_environment_.RunUntilIdle();
   }
 
-  void TearDown() override { ::chromeos::CrosHealthdClient::Shutdown(); }
+  void TearDown() override {
+    ::ash::cros_healthd::CrosHealthdClient::Shutdown();
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;

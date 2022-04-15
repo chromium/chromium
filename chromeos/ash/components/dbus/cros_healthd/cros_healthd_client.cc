@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -16,9 +16,12 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash::cros_healthd {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace mojom = ::chromeos::cros_healthd::mojom;
 
 CrosHealthdClient* g_instance = nullptr;
 
@@ -33,8 +36,7 @@ class CrosHealthdClientImpl : public CrosHealthdClient {
   ~CrosHealthdClientImpl() override = default;
 
   // CrosHealthdClient overrides:
-  mojo::Remote<cros_healthd::mojom::CrosHealthdServiceFactory>
-  BootstrapMojoConnection(
+  mojo::Remote<mojom::CrosHealthdServiceFactory> BootstrapMojoConnection(
       BootstrapMojoConnectionCallback result_callback) override {
     // Invalidate any pending attempts to bootstrap the mojo connection.
     bootstrap_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -51,10 +53,9 @@ class CrosHealthdClientImpl : public CrosHealthdClient {
 
     // Bind our end of |pipe| to our CrosHealthdService remote. The daemon
     // should bind its end to a CrosHealthdService implementation.
-    mojo::Remote<cros_healthd::mojom::CrosHealthdServiceFactory>
-        cros_healthd_service_factory;
+    mojo::Remote<mojom::CrosHealthdServiceFactory> cros_healthd_service_factory;
     cros_healthd_service_factory.Bind(
-        mojo::PendingRemote<cros_healthd::mojom::CrosHealthdServiceFactory>(
+        mojo::PendingRemote<mojom::CrosHealthdServiceFactory>(
             std::move(pipe), 0u /* version */));
 
     cros_healthd_service_proxy_->WaitForServiceToBeAvailable(base::BindOnce(
@@ -133,7 +134,7 @@ void CrosHealthdClient::Initialize(dbus::Bus* bus) {
 
 // static
 void CrosHealthdClient::InitializeFake() {
-  new cros_healthd::FakeCrosHealthdClient();
+  new FakeCrosHealthdClient();
 }
 
 // static
@@ -147,4 +148,4 @@ CrosHealthdClient* CrosHealthdClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash::cros_healthd

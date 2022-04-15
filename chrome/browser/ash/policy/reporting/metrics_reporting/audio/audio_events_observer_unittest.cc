@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -28,10 +28,12 @@ class AudioEventsObserverTest : public ::testing::Test {
 
   ~AudioEventsObserverTest() override = default;
 
-  void SetUp() override { ::chromeos::CrosHealthdClient::InitializeFake(); }
+  void SetUp() override {
+    ::ash::cros_healthd::CrosHealthdClient::InitializeFake();
+  }
 
   void TearDown() override {
-    ::chromeos::CrosHealthdClient::Shutdown();
+    ::ash::cros_healthd::CrosHealthdClient::Shutdown();
 
     // Wait for ServiceConnection to observe the destruction of the client.
     ::chromeos::cros_healthd::ServiceConnection::GetInstance()
@@ -49,7 +51,7 @@ TEST_F(AudioEventsObserverTest, SevereUnderrun) {
   audio_observer.SetOnEventObservedCallback(result_metric_data.cb());
   audio_observer.SetReportingEnabled(true);
 
-  ::chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ::ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->EmitAudioSevereUnderrunEventForTesting();
 
   const auto metric_data = result_metric_data.result();

@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
 
 component("cros_healthd") {
-  defines = [ "IS_CROS_HEALTHD_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_IMPL" ]
 
   deps = [
     "//base",

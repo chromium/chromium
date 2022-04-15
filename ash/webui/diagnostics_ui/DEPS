@@ -11,7 +11,6 @@ include_rules = [
   "+ui/web_dialogs",
 
   # TODO(https://crbug.com/1164001): Remove when migrated to ash.
-  "+chromeos/dbus/cros_healthd",
   "+chromeos/services/cros_healthd/public/cpp",
   "+chromeos/services/cros_healthd/public/mojom",
   "+chromeos/services/network_config",

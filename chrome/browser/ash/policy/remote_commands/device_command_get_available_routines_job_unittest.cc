@@ -13,8 +13,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -72,13 +72,13 @@ class DeviceCommandGetAvailableRoutinesJobTest : public testing::Test {
 
 DeviceCommandGetAvailableRoutinesJobTest::
     DeviceCommandGetAvailableRoutinesJobTest() {
-  chromeos::CrosHealthdClient::InitializeFake();
+  ash::cros_healthd::CrosHealthdClient::InitializeFake();
   test_start_time_ = base::TimeTicks::Now();
 }
 
 DeviceCommandGetAvailableRoutinesJobTest::
     ~DeviceCommandGetAvailableRoutinesJobTest() {
-  chromeos::CrosHealthdClient::Shutdown();
+  ash::cros_healthd::CrosHealthdClient::Shutdown();
 
   // Wait for ServiceConnection to observe the destruction of the client.
   chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
@@ -119,7 +119,7 @@ TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Success) {
           chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom,
           chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
               kBatteryCapacity};
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetAvailableRoutinesForTesting(kAvailableRoutines);
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetAvailableRoutinesJob>();
@@ -140,7 +140,7 @@ TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Success) {
 }
 
 TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Failure) {
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetAvailableRoutinesForTesting({});
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetAvailableRoutinesJob>();

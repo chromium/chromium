@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_service.h"
 
 #include <utility>
 
@@ -12,7 +12,12 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
+namespace ash::cros_healthd {
+
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migration to namespace ash.
+namespace mojom = ::chromeos::cros_healthd::mojom;
 
 // Will destroy `handle` if it's not a valid platform handle.
 mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
@@ -28,9 +33,6 @@ mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
 }
 
 }  // namespace
-
-namespace chromeos {
-namespace cros_healthd {
 
 FakeCrosHealthdService::RoutineUpdateParams::RoutineUpdateParams(
     int32_t id,
@@ -552,5 +554,4 @@ FakeCrosHealthdService::GetRoutineUpdateParams() const {
   return routine_update_params_;
 }
 
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd

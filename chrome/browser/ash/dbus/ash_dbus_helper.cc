@@ -16,6 +16,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -32,7 +33,6 @@
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -118,7 +118,7 @@ void InitializeDBus() {
   // ConciergeClient depends on CiceroneClient.
   InitializeDBusClient<chromeos::ConciergeClient>(bus);
   InitializeDBusClient<chromeos::CrasAudioClient>(bus);
-  InitializeDBusClient<chromeos::CrosHealthdClient>(bus);
+  InitializeDBusClient<cros_healthd::CrosHealthdClient>(bus);
   InitializeDBusClient<chromeos::CryptohomeMiscClient>(bus);
   InitializeDBusClient<chromeos::CryptohomePkcs11Client>(bus);
   InitializeDBusClient<CupsProxyClient>(bus);
@@ -240,7 +240,7 @@ void ShutdownDBus() {
   CupsProxyClient::Shutdown();
   chromeos::CryptohomePkcs11Client::Shutdown();
   chromeos::CryptohomeMiscClient::Shutdown();
-  chromeos::CrosHealthdClient::Shutdown();
+  cros_healthd::CrosHealthdClient::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
   chromeos::ConciergeClient::Shutdown();
   chromeos::CiceroneClient::Shutdown();

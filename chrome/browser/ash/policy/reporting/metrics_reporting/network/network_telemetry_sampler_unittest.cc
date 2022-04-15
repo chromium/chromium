@@ -15,8 +15,8 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
@@ -88,7 +88,7 @@ void SetWifiInterfaceData() {
 
   telemetry_info->network_interface_result =
       std::move(network_interface_result);
-  ::chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ::ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
@@ -99,7 +99,7 @@ std::string DevicePath(const std::string& interface_name) {
 class NetworkTelemetrySamplerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    ::ash::CrosHealthdClient::InitializeFake();
+    ::ash::cros_healthd::CrosHealthdClient::InitializeFake();
     SetWifiInterfaceData();
 
     MetricData metric_data;
@@ -114,7 +114,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    chromeos::CrosHealthdClient::Shutdown();
+    ash::cros_healthd::CrosHealthdClient::Shutdown();
     chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   }
 

@@ -65,12 +65,12 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
@@ -796,7 +796,7 @@ void SetFakeCrosHealthdData() {
     telemetry_info->bus_result = CreateBusResult();
   }
 
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
@@ -923,7 +923,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::AttestationClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
-    chromeos::CrosHealthdClient::InitializeFake();
+    ash::cros_healthd::CrosHealthdClient::InitializeFake();
 
     chromeos::CiceroneClient::InitializeFake();
     chromeos::ConciergeClient::InitializeFake();
@@ -947,7 +947,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::UserDataAuthClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
     ash::KioskAppManager::Shutdown();
-    chromeos::CrosHealthdClient::Shutdown();
+    ash::cros_healthd::CrosHealthdClient::Shutdown();
     chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
@@ -3588,7 +3588,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
   telemetry_info->battery_result = CreateEmptyBatteryResult();
   telemetry_info->backlight_result = CreateEmptyBacklightResult();
   telemetry_info->fan_result = CreateEmptyFanResult();
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   GetStatus();
 

@@ -2,28 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
-#define CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
 
 #include <string>
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_service.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace cros_healthd {
+namespace ash::cros_healthd {
 
 // Fake implementation of CrosHealthdClient.
-class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
-    : public CrosHealthdClient {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD)
+    FakeCrosHealthdClient : public CrosHealthdClient {
  public:
   // FakeCrosHealthdClient can be embedded in unit tests, but the
   // InitializeFake/Shutdown pattern should be preferred. Constructing the
@@ -41,29 +40,35 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   static FakeCrosHealthdClient* Get();
 
   // CrosHealthdClient overrides:
-  mojo::Remote<mojom::CrosHealthdServiceFactory> BootstrapMojoConnection(
+  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdServiceFactory>
+  BootstrapMojoConnection(
       BootstrapMojoConnectionCallback result_callback) override;
 
   // Set the list of routines that will be used in the response to any
   // GetAvailableRoutines IPCs received.
   void SetAvailableRoutinesForTesting(
-      const std::vector<mojom::DiagnosticRoutineEnum>& available_routines);
+      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+          available_routines);
 
   // Set the RunRoutine response that will be used in the response to any
   // RunSomeRoutine IPCs received.
-  void SetRunRoutineResponseForTesting(mojom::RunRoutineResponsePtr& response);
+  void SetRunRoutineResponseForTesting(
+      chromeos::cros_healthd::mojom::RunRoutineResponsePtr& response);
 
   // Set the GetRoutineUpdate response that will be used in the response to any
   // GetRoutineUpdate IPCs received.
-  void SetGetRoutineUpdateResponseForTesting(mojom::RoutineUpdatePtr& response);
+  void SetGetRoutineUpdateResponseForTesting(
+      chromeos::cros_healthd::mojom::RoutineUpdatePtr& response);
 
   // Set the TelemetryInfoPtr that will be used in the response to any
   // ProbeTelemetryInfo IPCs received.
-  void SetProbeTelemetryInfoResponseForTesting(mojom::TelemetryInfoPtr& info);
+  void SetProbeTelemetryInfoResponseForTesting(
+      chromeos::cros_healthd::mojom::TelemetryInfoPtr& info);
 
   // Set the ProcessResultPtr that will be used in the response to any
   // ProbeProcessInfo IPCs received.
-  void SetProbeProcessInfoResponseForTesting(mojom::ProcessResultPtr& result);
+  void SetProbeProcessInfoResponseForTesting(
+      chromeos::cros_healthd::mojom::ProcessResultPtr& result);
 
   // Adds a delay before the passed callback is called.
   void SetCallbackDelay(base::TimeDelta delay);
@@ -146,7 +151,8 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
           RunLanConnectivityCallback);
 
   // Returns the last created routine by any Run*Routine method.
-  absl::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
+  absl::optional<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
+  GetLastRunRoutine() const;
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.
@@ -155,17 +161,15 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
 
  private:
   FakeCrosHealthdService fake_service_;
-  mojo::Receiver<mojom::CrosHealthdServiceFactory> receiver_{&fake_service_};
+  mojo::Receiver<chromeos::cros_healthd::mojom::CrosHealthdServiceFactory>
+      receiver_{&fake_service_};
 };
 
-}  // namespace cros_healthd
-}  // namespace chromeos
+}  // namespace ash::cros_healthd
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace cros_healthd {
-using ::chromeos::cros_healthd::FakeCrosHealthdClient;
-}  // namespace cros_healthd
-}  // namespace ash
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::cros_healthd {
+using ::ash::cros_healthd::FakeCrosHealthdClient;
+}
 
-#endif  // CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_

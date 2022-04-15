@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
-#define CHROMEOS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
@@ -17,11 +17,12 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash::cros_healthd {
 
 // D-Bus client for the cros_healthd service. Its only purpose is to bootstrap a
 // Mojo connection to the cros_healthd daemon.
-class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD)
+    CrosHealthdClient {
  public:
   using BootstrapMojoConnectionCallback =
       base::OnceCallback<void(bool success)>;
@@ -43,7 +44,7 @@ class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
 
   // Uses D-Bus to bootstrap the Mojo connection between the cros_healthd daemon
   // and the browser. Returns a bound remote.
-  virtual mojo::Remote<cros_healthd::mojom::CrosHealthdServiceFactory>
+  virtual mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdServiceFactory>
       BootstrapMojoConnection(BootstrapMojoConnectionCallback) = 0;
 
  protected:
@@ -52,11 +53,11 @@ class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
   virtual ~CrosHealthdClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash::cros_healthd
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::CrosHealthdClient;
-}  // namespace ash
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::cros_healthd {
+using ::ash::cros_healthd::CrosHealthdClient;
+}
 
-#endif  // CHROMEOS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_

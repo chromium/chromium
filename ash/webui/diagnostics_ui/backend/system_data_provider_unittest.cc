@@ -21,8 +21,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -487,13 +487,13 @@ class SystemDataProviderTest : public testing::Test {
  public:
   SystemDataProviderTest() {
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::CrosHealthdClient::InitializeFake();
+    cros_healthd::CrosHealthdClient::InitializeFake();
     system_data_provider_ = std::make_unique<SystemDataProvider>();
   }
 
   ~SystemDataProviderTest() override {
     system_data_provider_.reset();
-    chromeos::CrosHealthdClient::Shutdown();
+    cros_healthd::CrosHealthdClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     base::RunLoop().RunUntilIdle();
   }

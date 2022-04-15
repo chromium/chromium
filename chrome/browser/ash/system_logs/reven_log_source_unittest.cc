@@ -8,8 +8,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
@@ -302,13 +302,13 @@ void SetGraphicsInfo(healthd::TelemetryInfoPtr& telemetry_info,
 class RevenLogSourceTest : public ::testing::Test {
  public:
   RevenLogSourceTest() {
-    chromeos::CrosHealthdClient::InitializeFake();
+    ash::cros_healthd::CrosHealthdClient::InitializeFake();
     source_ = std::make_unique<RevenLogSource>();
   }
 
   ~RevenLogSourceTest() override {
     source_.reset();
-    chromeos::CrosHealthdClient::Shutdown();
+    ash::cros_healthd::CrosHealthdClient::Shutdown();
     base::RunLoop().RunUntilIdle();
   }
 

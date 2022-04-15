@@ -6,8 +6,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -152,7 +152,7 @@ cros_healthd::TelemetryInfoPtr CreateBootPerformanceResult(
 MetricData CollectData(cros_healthd::TelemetryInfoPtr telemetry_info,
                        cros_healthd::ProbeCategoryEnum probe_category,
                        CrosHealthdMetricSampler::MetricType metric_type) {
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   CrosHealthdMetricSampler sampler(probe_category, metric_type);
   test::TestEvent<MetricData> metric_collect_event;
@@ -166,7 +166,7 @@ MetricData CollectError(cros_healthd::TelemetryInfoPtr telemetry_info,
                         CrosHealthdMetricSampler::MetricType metric_type) {
   MetricData data;
   base::RunLoop run_loop;
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   CrosHealthdMetricSampler sampler(probe_category, metric_type);
 
@@ -180,11 +180,11 @@ MetricData CollectError(cros_healthd::TelemetryInfoPtr telemetry_info,
 class CrosHealthdMetricSamplerTest : public testing::Test {
  public:
   CrosHealthdMetricSamplerTest() {
-    chromeos::CrosHealthdClient::InitializeFake();
+    ash::cros_healthd::CrosHealthdClient::InitializeFake();
   }
 
   ~CrosHealthdMetricSamplerTest() override {
-    chromeos::CrosHealthdClient::Shutdown();
+    ash::cros_healthd::CrosHealthdClient::Shutdown();
     chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   }
 

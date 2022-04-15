@@ -19,9 +19,9 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,7 +46,7 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
       delete;
 
   void SetUp() override {
-    CrosHealthdClient::InitializeFake();
+    cros_healthd::CrosHealthdClient::InitializeFake();
     CfmHotlineClient::InitializeFake();
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
@@ -56,7 +56,7 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
   void TearDown() override {
     DiagnosticsService::Shutdown();
     CfmHotlineClient::Shutdown();
-    CrosHealthdClient::Shutdown();
+    cros_healthd::CrosHealthdClient::Shutdown();
 
     // Wait for cros_healthd's ServiceConnection to observe the destruction of
     // the client.

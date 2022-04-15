@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/usb/usb_events_observer.h"
+
 #include <sys/types.h>
+
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -43,10 +45,12 @@ class UsbEventsObserverTest : public ::testing::Test {
 
   ~UsbEventsObserverTest() override = default;
 
-  void SetUp() override { ::chromeos::CrosHealthdClient::InitializeFake(); }
+  void SetUp() override {
+    ::ash::cros_healthd::CrosHealthdClient::InitializeFake();
+  }
 
   void TearDown() override {
-    ::chromeos::CrosHealthdClient::Shutdown();
+    ::ash::cros_healthd::CrosHealthdClient::Shutdown();
 
     // Wait for ServiceConnection to observe the destruction of the client.
     ::chromeos::cros_healthd::ServiceConnection::GetInstance()
@@ -150,7 +154,7 @@ TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthdClient) {
   usb_observer.SetOnEventObservedCallback(result_metric_data.cb());
   usb_observer.SetReportingEnabled(true);
 
-  ::chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+  ::ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->EmitUsbAddEventForTesting();
 
   const auto metric_data = result_metric_data.result();

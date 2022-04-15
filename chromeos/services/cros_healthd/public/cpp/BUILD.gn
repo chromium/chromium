@@ -20,7 +20,7 @@ source_set("cpp") {
   ]
   deps = [
     "//base",
-    "//chromeos/dbus/cros_healthd",
+    "//chromeos/ash/components/dbus/cros_healthd",
     "//chromeos/services/cros_healthd/public/mojom",
     "//ui/events/ozone/evdev:event_device_info",
   ]
@@ -32,7 +32,7 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     "//base/test:test_support",
-    "//chromeos/dbus/cros_healthd",
+    "//chromeos/ash/components/dbus/cros_healthd",
     "//chromeos/services/cros_healthd/public/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",

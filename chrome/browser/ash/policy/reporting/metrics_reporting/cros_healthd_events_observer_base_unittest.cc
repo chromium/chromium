@@ -11,8 +11,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -64,10 +64,12 @@ class CrosHealthdEventsObserverBaseTest : public ::testing::Test {
 
   ~CrosHealthdEventsObserverBaseTest() override = default;
 
-  void SetUp() override { ::chromeos::CrosHealthdClient::InitializeFake(); }
+  void SetUp() override {
+    ::ash::cros_healthd::CrosHealthdClient::InitializeFake();
+  }
 
   void TearDown() override {
-    ::chromeos::CrosHealthdClient::Shutdown();
+    ::ash::cros_healthd::CrosHealthdClient::Shutdown();
 
     // Wait for ServiceConnection to observe the destruction of the client.
     ::chromeos::cros_healthd::ServiceConnection::GetInstance()
@@ -90,7 +92,7 @@ TEST_F(CrosHealthdEventsObserverBaseTest, Default) {
     base::RunLoop run_loop;
 
     audio_observer.SetReportingEnabled(true);
-    ::chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+    ::ash::cros_healthd::FakeCrosHealthdClient::Get()
         ->EmitAudioUnderrunEventForTesting();
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      run_loop.QuitClosure());
@@ -101,10 +103,10 @@ TEST_F(CrosHealthdEventsObserverBaseTest, Default) {
   ASSERT_TRUE(result_metric_data.has_telemetry_data());
 
   // Shutdown cros_healthd to simulate crash.
-  chromeos::CrosHealthdClient::Shutdown();
+  ash::cros_healthd::CrosHealthdClient::Shutdown();
   chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   // Restart cros_healthd.
-  chromeos::CrosHealthdClient::InitializeFake();
+  ash::cros_healthd::CrosHealthdClient::InitializeFake();
   audio_observer.FlushForTesting();
   chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
 
@@ -112,7 +114,7 @@ TEST_F(CrosHealthdEventsObserverBaseTest, Default) {
   {
     base::RunLoop run_loop;
 
-    ::chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+    ::ash::cros_healthd::FakeCrosHealthdClient::Get()
         ->EmitAudioUnderrunEventForTesting();
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      run_loop.QuitClosure());
@@ -127,7 +129,7 @@ TEST_F(CrosHealthdEventsObserverBaseTest, Default) {
     base::RunLoop run_loop;
 
     audio_observer.SetReportingEnabled(false);
-    ::chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+    ::ash::cros_healthd::FakeCrosHealthdClient::Get()
         ->EmitAudioUnderrunEventForTesting();
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      run_loop.QuitClosure());
