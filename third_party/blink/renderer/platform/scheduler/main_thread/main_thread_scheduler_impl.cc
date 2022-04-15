@@ -32,6 +32,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -580,6 +581,9 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
   mbi_compositor_task_runner_per_agent_scheduling_group =
       base::FeatureList::IsEnabled(
           kMbiCompositorTaskRunnerPerAgentSchedulingGroup);
+
+  can_defer_begin_main_frame_during_loading =
+      base::FeatureList::IsEnabled(features::kDeferBeginMainFrameDuringLoading);
 }
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
@@ -1193,6 +1197,7 @@ void MainThreadSchedulerImpl::DidScheduleBeginMainFrame() {
 void MainThreadSchedulerImpl::DidRunBeginMainFrame() {
   base::AutoLock lock(any_thread_lock_);
   any_thread().begin_main_frame_scheduled_count -= 1;
+  any_thread().last_main_frame_time = base::TimeTicks::Now();
 }
 
 void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
@@ -2249,6 +2254,16 @@ MainThreadSchedulerImpl::GetPendingUserInputInfo(
 bool MainThreadSchedulerImpl::IsBeginMainFrameScheduled() const {
   base::AutoLock lock(any_thread_lock_);
   return any_thread().begin_main_frame_scheduled_count.value() > 0;
+}
+
+bool MainThreadSchedulerImpl::DontDeferBeginMainFrame() const {
+  if (!scheduling_settings().can_defer_begin_main_frame_during_loading)
+    return true;
+
+  base::AutoLock lock(any_thread_lock_);
+  return IsAnyMainFrameWaitingForFirstContentfulPaint() ||
+         (base::TimeTicks::Now() - any_thread().last_main_frame_time) >
+             features::kRecentBeginMainFrameCutoff.Get();
 }
 
 void MainThreadSchedulerImpl::RunIdleTask(Thread::IdleTask task,

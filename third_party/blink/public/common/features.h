@@ -714,6 +714,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kClientHintsSaveData;
 // layer tree frame sink.
 BLINK_COMMON_EXPORT extern const base::Feature kEstablishGpuChannelAsync;
 
+// If enabled, the parser may continue parsing if BeginMainFrame was
+// recently called.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kDeferBeginMainFrameDuringLoading;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kRecentBeginMainFrameCutoff;
+
 }  // namespace features
 }  // namespace blink
 

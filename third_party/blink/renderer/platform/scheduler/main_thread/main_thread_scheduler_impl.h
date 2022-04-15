@@ -150,6 +150,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used
     // instead of per-MainThreadScheduler CompositorTaskRunner.
     bool mbi_compositor_task_runner_per_agent_scheduling_group;
+
+    // If enabled, the parser may continue parsing if BeginMainFrame was
+    // recently called.
+    bool can_defer_begin_main_frame_during_loading;
   };
 
   static const char* UseCaseToString(UseCase use_case);
@@ -214,6 +218,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   Vector<WebInputEventAttribution> GetPendingUserInputInfo(
       bool include_continuous) const override;
   bool IsBeginMainFrameScheduled() const override;
+  bool DontDeferBeginMainFrame() const override;
 
   // ThreadScheduler implementation:
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;
@@ -947,6 +952,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         have_seen_input_since_navigation;
     TraceableCounter<uint32_t, TracingCategory::kInfo>
         begin_main_frame_scheduled_count;
+    base::TimeTicks last_main_frame_time;
   };
 
   struct CompositorThreadOnly {
