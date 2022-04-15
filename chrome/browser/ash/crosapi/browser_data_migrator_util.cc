@@ -145,6 +145,18 @@ constexpr char kKeyPrefix[] = "_chrome-extension://";
 constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
 constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
 
+bool ShouldRemoveExtensionByType(const base::StringPiece extension_id,
+                                 ChromeType chrome_type) {
+  switch (chrome_type) {
+    case ChromeType::kAsh:
+      return !base::Contains(kExtensionsAshOnly, extension_id) &&
+             !base::Contains(kExtensionsBothChromes, extension_id);
+
+    case ChromeType::kLacros:
+      return base::Contains(kExtensionsAshOnly, extension_id);
+  }
+}
+
 void UpdatePreferencesDictByType(base::Value::Dict& dict,
                                  ChromeType chrome_type) {
   std::vector<std::string> keys_to_remove;
@@ -152,12 +164,8 @@ void UpdatePreferencesDictByType(base::Value::Dict& dict,
   // Collect keys that don't belong in `chrome_type`.
   for (const auto entry : dict) {
     const base::StringPiece extension_id = entry.first;
-    bool ash_extension = base::Contains(kExtensionsAshOnly, extension_id);
-
-    if (((chrome_type == ChromeType::kLacros) && ash_extension) ||
-        ((chrome_type == ChromeType::kAsh) && !ash_extension)) {
+    if (ShouldRemoveExtensionByType(extension_id, chrome_type))
       keys_to_remove.emplace_back(extension_id);
-    }
   }
 
   // Delete those keys.
@@ -174,10 +182,7 @@ void UpdatePreferencesListByType(base::Value::List& list,
       return false;
 
     const base::StringPiece extension_id = item.GetString();
-    bool ash_extension = base::Contains(kExtensionsAshOnly, extension_id);
-
-    return ((chrome_type == ChromeType::kLacros) && ash_extension) ||
-           ((chrome_type == ChromeType::kAsh) && !ash_extension);
+    return ShouldRemoveExtensionByType(extension_id, chrome_type);
   });
 }
 
@@ -674,7 +679,8 @@ bool MigrateLevelDB(const base::FilePath& original_path,
 
   // Copy all the key-value pairs that need to be kept in Ash.
   for (const auto& [extension_id, keys] : original_keys) {
-    if (base::Contains(kExtensionsAshOnly, extension_id)) {
+    if (base::Contains(kExtensionsAshOnly, extension_id) ||
+        base::Contains(kExtensionsBothChromes, extension_id)) {
       for (const std::string& key : keys) {
         std::string value;
         status = original_db->Get(leveldb::ReadOptions(), key, &value);
@@ -794,6 +800,40 @@ bool MigratePreferences(const base::FilePath& original_path,
     PLOG(ERROR) << "Failure while writing Lacros's Preferences: "
                 << lacros_target_path.value();
     return false;
+  }
+
+  return true;
+}
+
+bool MigrateAshIndexedDB(const base::FilePath& src_profile_dir,
+                         const base::FilePath& target_indexed_db_dir,
+                         const char* extension_id,
+                         bool copy) {
+  auto MigratePath = [&](const base::FilePath& from, const base::FilePath& to) {
+    return copy ? base::CopyDirectory(from, to, /*recursive=*/true)
+                : base::Move(from, to);
+  };
+
+  const auto& [blob_path, leveldb_path] =
+      browser_data_migrator_util::GetIndexedDBPaths(src_profile_dir,
+                                                    extension_id);
+  if (base::PathExists(blob_path)) {
+    const base::FilePath ash_blob_path =
+        target_indexed_db_dir.Append(blob_path.BaseName());
+    if (!MigratePath(blob_path, ash_blob_path)) {
+      PLOG(ERROR) << "Failed migrating " << blob_path.value() << " to "
+                  << ash_blob_path.value();
+      return false;
+    }
+  }
+  if (base::PathExists(leveldb_path)) {
+    const base::FilePath ash_leveldb_path =
+        target_indexed_db_dir.Append(leveldb_path.BaseName());
+    if (!MigratePath(leveldb_path, target_indexed_db_dir)) {
+      PLOG(ERROR) << "Failed migrating " << leveldb_path.value() << " to "
+                  << ash_leveldb_path.value();
+      return false;
+    }
   }
 
   return true;

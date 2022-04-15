@@ -62429,6 +62429,9 @@ Called by update_use_counter_css.py.-->
   <int value="18" label="MoveSplitItemsToOriginalDirMoveExtensionsFailed"/>
   <int value="19" label="MoveSplitItemsToOriginalDirMoveIndexedDBFailed"/>
   <int value="20" label="MoveTmpDirToLacrosDirMoveFailed"/>
+  <int value="21" label="SetupAshDirCreateDirFailed"/>
+  <int value="22" label="SetupAshDirCopyExtensionsFailed"/>
+  <int value="23" label="SetupAshDirCopyIndexedDBFailed"/>
 </enum>
 
 <enum name="MSECodec">

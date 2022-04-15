@@ -169,7 +169,10 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
     kMoveSplitItemsToOriginalDirMoveExtensionsFailed = 18,
     kMoveSplitItemsToOriginalDirMoveIndexedDBFailed = 19,
     kMoveTmpDirToLacrosDirMoveFailed = 20,
-    kMaxValue = kMoveTmpDirToLacrosDirMoveFailed,
+    kSetupAshDirCreateDirFailed = 21,
+    kSetupAshDirCopyExtensionsFailed = 22,
+    kSetupAshDirCopyIndexedDBFailed = 23,
+    kMaxValue = kSetupAshDirCopyIndexedDBFailed,
   };
 
   struct TaskResult {

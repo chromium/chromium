@@ -205,6 +205,13 @@ constexpr const char* const kExtensionsAshOnly[] = {
     "cnbgggchhmkkdmeppjobngjoejnihlei",  // Arc Support (Play Store)
 };
 
+// List of extension ids to be kept in both Ash and Lacros.
+constexpr const char* const kExtensionsBothChromes[] = {
+    "cfmgaohenjcikllcgjpepfadgbflcjof",  // GCSE (Google Corp SSH Extension)
+    "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 (new Gnubby extension)
+    "beknehfpfkghjoafdifaflglpjkojoco",  // gnubbyd
+};
+
 // Extensions path.
 constexpr char kExtensionsFilePath[] = "Extensions";
 
@@ -473,6 +480,12 @@ absl::optional<PreferencesContents> MigratePreferencesContents(
 bool MigratePreferences(const base::FilePath& original_path,
                         const base::FilePath& ash_target_path,
                         const base::FilePath& lacros_target_path);
+
+// Copy or move IndexedDB objects to Ash's profile directory.
+bool MigrateAshIndexedDB(const base::FilePath& src_profile_dir,
+                         const base::FilePath& target_indexed_db_dir,
+                         const char* extension_id,
+                         bool copy);
 
 }  // namespace ash::browser_data_migrator_util
 

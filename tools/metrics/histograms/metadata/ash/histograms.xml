@@ -512,6 +512,9 @@ chromium-metrics-reviews@google.com.
     <variant name="PreMigrationCleanUpDeleteTmpDirFailed"/>
     <variant name="PreMigrationCleanUpDeleteTmpSplitDirFailed"/>
     <variant name="PreMigrationCleanUpNotEnoughSpace"/>
+    <variant name="SetupAshDirCopyExtensionsFailed"/>
+    <variant name="SetupAshDirCopyIndexedDBFailed"/>
+    <variant name="SetupAshDirCreateDirFailed"/>
     <variant name="SetupAshDirCreateSplitDirFailed"/>
     <variant name="SetupAshDirMigrateLevelDBForLocalStateFailed"/>
     <variant name="SetupAshDirMigrateLevelDBForStateFailed"/>
