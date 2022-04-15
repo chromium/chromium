@@ -113,7 +113,8 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   private getPreviewContainerClass_(): string {
-    return this.ambientModeEnabled_ ? 'ambient-enabled' : '';
+    return this.ambientModeEnabled_ || this.loading_ ? 'zero-state-disabled' :
+                                                       '';
   }
 
   private getContainerClass_(): string {

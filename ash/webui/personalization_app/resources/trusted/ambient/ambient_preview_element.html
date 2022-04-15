@@ -14,7 +14,7 @@
     grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
   }
 
-  :host([main-page]) #container.ambient-enabled {
+  :host([main-page]) #container.zero-state-disabled {
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
@@ -154,7 +154,7 @@
     width: 100%;
   }
 </style>
-<div class$="[[getPreviewContainerClass_(ambientModeEnabled_)]]" id="container">
+<div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]" id="container">
   <slot></slot>
   <template is="dom-if" if="[[loading_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
