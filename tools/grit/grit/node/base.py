@@ -656,9 +656,7 @@ class Node(object):
 
     if compress == 'gzip' or compress_by_default:
       # We only use rsyncable compression on Linux.
-      # We exclude ChromeOS since ChromeOS bots are Linux based but do not have
-      # the --rsyncable option built in for gzip. See crbug.com/617950.
-      if sys.platform == 'linux2' and 'chromeos' not in self.GetRoot().defines:
+      if sys.platform == 'linux2':
         return grit.format.gzip_string.GzipStringRsyncable(data)
       return grit.format.gzip_string.GzipString(data)
 
