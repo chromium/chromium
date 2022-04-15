@@ -4457,7 +4457,8 @@ void Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
   shadow_root.ParserTakeAllChildrenFrom(
       *template_element->DeclarativeShadowContent());
   // 13.3. Remove the declarative template element from the document.
-  template_element->parentNode()->ParserRemoveChild(*template_element);
+  if (template_element->parentNode())
+    template_element->parentNode()->ParserRemoveChild(*template_element);
 }
 
 ShadowRoot& Element::CreateUserAgentShadowRoot() {
