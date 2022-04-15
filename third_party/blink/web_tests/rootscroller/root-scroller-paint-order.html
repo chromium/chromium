@@ -53,11 +53,19 @@ if (window.internals)
 
 <script>
   window.onload = function() {
-    if (!window.internals || scroller != internals.effectiveRootScroller(document)) {
-      document.body.innerHTML = "FAIL: #scroller is expected to be the effective rootScroller";
-      return;
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
     }
-    // This is needed to reproduce the bug without the fix.
-    scroller.style.background = 'red';
-  }
+    requestAnimationFrame(() => { setTimeout(() => {
+      if (!window.internals || scroller != internals.effectiveRootScroller(document)) {
+        document.body.innerHTML = "FAIL: #scroller is expected to be the effective rootScroller";
+        return;
+      }
+      // This is needed to reproduce the bug without the fix.
+      scroller.style.background = 'red';
+      if (window.testRunner) {
+        testRunner.notifyDone();
+      }
+    })});
+  };
 </script>
