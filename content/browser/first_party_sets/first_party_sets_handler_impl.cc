@@ -114,10 +114,11 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_sets_ready_ = std::move(on_sets_ready);
   SetPersistedSets(user_data_dir);
-  SetManuallySpecifiedSet(flag_value);
 
   if (!IsEnabled())
     SetCompleteSets({});
+  else
+    sets_loader_->SetManuallySpecifiedSet(flag_value);
 }
 
 bool FirstPartySetsHandlerImpl::IsEnabled() const {
@@ -151,14 +152,6 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
   persisted_sets_path_ = base::FilePath();
   sets_ = absl::nullopt;
   raw_persisted_sets_ = absl::nullopt;
-}
-
-void FirstPartySetsHandlerImpl::SetManuallySpecifiedSet(
-    const std::string& flag_value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsEnabled())
-    return;
-  sets_loader_->SetManuallySpecifiedSet(flag_value);
 }
 
 void FirstPartySetsHandlerImpl::SetPersistedSets(

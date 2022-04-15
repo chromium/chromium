@@ -101,13 +101,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Stores the read persisted sets in `raw_persisted_sets_`.
   void OnReadPersistedSetsFile(const std::string& raw_persisted_sets);
 
-  // Parses and sets the First-Party Set that was provided via the
-  // `kUseFirstPartySet` flag/switch.
-  //
-  // Has no effect if `kFirstPartySets` is disabled, or
-  // `SetPublicFirstPartySets` is not called.
-  void SetManuallySpecifiedSet(const std::string& flag_value);
-
   // Sets the current First-Party Sets data.
   void SetCompleteSets(FlattenedSets sets);
 
