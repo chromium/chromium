@@ -65,7 +65,6 @@
 #import "ios/web/public/browsing_data/browsing_data_removing_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_store.h"
 #include "net/http/transport_security_state.h"

@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//components/proxy_config",
     "//ios/net",
     "//ios/web",
+    "//ios/web:threads",
     "//ios/web/public/test",
     "//net",
     "//net:test_support",

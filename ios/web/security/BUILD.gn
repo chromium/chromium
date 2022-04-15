@@ -48,6 +48,7 @@ source_set("unittests") {
     "//ios/testing:ocmock_support",
     "//ios/web",
     "//ios/web/navigation",
+    "//ios/web/navigation:core",
     "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/test",

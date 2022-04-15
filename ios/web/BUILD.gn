@@ -18,17 +18,12 @@ group("all_tests") {
 source_set("web") {
   public_deps = [
     # TODO(crbug.com/616244): Remove private files from public dependencies.
-    ":threads",
-    "//ios/web/navigation:core",
-    "//ios/web/net",
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/init",
-    "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//ios/web/webui",
-    "//net",
   ]
 
   deps = [
@@ -118,6 +113,7 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public/deprecated",
     "//ios/web/public/test",
     "//ios/web/security",
+    "//ios/web/web_state:web_state_impl_header",
     "//net",
   ]
 
@@ -206,6 +202,7 @@ source_set("ios_web_general_unittests") {
     "//ios/net",
     "//ios/testing:ocmock_support",
     "//ios/web/navigation",
+    "//ios/web/navigation:core",
     "//ios/web/public",
     "//ios/web/public/session",
     "//ios/web/public/test",
@@ -260,6 +257,7 @@ source_set("ios_web_navigation_unittests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
+    "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ios/web/web_state/ui:web_view_handler",
     "//net:test_support",
@@ -390,6 +388,7 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/navigation",
+    "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/deprecated",
@@ -410,7 +409,9 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state:test_util",
+    "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state:web_view_internal_creation_util",
+    "//ios/web/web_state/ui:web_controller_header",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -500,6 +501,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes:fakes",
+    "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/js",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_context_menu_controller",
@@ -539,6 +541,8 @@ source_set("ios_web_webui_unittests") {
     "//ios/web/test:mojo_bindings",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/webui",
     "//net:test_support",
     "//services/network:test_support",
     "//testing/gmock",
@@ -594,7 +598,10 @@ test("ios_web_inttests") {
     "//ios/web/test:test_support",
     "//ios/web/web_state",
     "//ios/web/web_state:test_util",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_context_menu_controller",
+    "//ios/web/web_state/ui:web_controller_header",
     "//mojo/core/embedder",
     "//net:test_support",
     "//services/network/public/cpp",

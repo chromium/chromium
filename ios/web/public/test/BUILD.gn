@@ -25,6 +25,8 @@ source_set("test") {
     "//ios/web/public/deprecated",
     "//ios/web/test:js_test_util_internal",
     "//ios/web/test:test_support",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ui/base",
   ]
 
@@ -79,11 +81,14 @@ source_set("test_fixture") {
     "//ios/web/common:features",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/navigation",
+    "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public/deprecated",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//ios/web/test:js_test_util_internal",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ui/base",
     "//url",
   ]
