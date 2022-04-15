@@ -105,7 +105,8 @@ public class BookmarkUtils {
         // TODO(crbug.com/1252228): Reading list support needs some tests.
         if (BookmarkFeatures.isImprovedSaveFlowEnabled()) {
             BookmarkId newBookmarkId = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
-                    tab.getOriginalUrl(), tab.getWebContents(), /*parent=*/null, bookmarkType);
+                    tab.getOriginalUrl(), tab.getWebContents(),
+                    fromExplicitTrackUi ? bookmarkModel.getMobileFolderId() : null, bookmarkType);
             showSaveFlow(activity, bottomSheetController, fromExplicitTrackUi, newBookmarkId,
                     /*wasBookmarkMoved=*/false);
             callback.onResult(newBookmarkId);
