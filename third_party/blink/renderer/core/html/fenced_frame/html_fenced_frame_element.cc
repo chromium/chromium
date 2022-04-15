@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
@@ -380,6 +379,9 @@ void HTMLFencedFrameElement::Navigate() {
 
   KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
 
+  // TODO(crbug.com/1243568): Convert empty URLs to about:blank, and more
+  // generally implement the navigation restrictions to potentially-trustworthy
+  // URLs + urn:uuids.
   if (url.IsEmpty())
     return;
 
@@ -392,18 +394,11 @@ void HTMLFencedFrameElement::Navigate() {
     return;
   }
 
-  if (mode_ == mojom::blink::FencedFrameMode::kDefault &&
-      !network::IsUrlPotentiallyTrustworthy(url)) {
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "A fenced frame whose mode is" + FencedFrameModeToString(mode_) +
-            " must be navigated to a potentially-trustworthy URL. See "
-            "https://www.w3.org/TR/secure-contexts/#is-url-trustworthy."));
-    return;
-  }
-
   frame_delegate_->Navigate(url);
+
+  // Freeze the `mode` attribute to its current value even if it has never been
+  // explicitly set before, so that it cannot change after the first navigation.
+  freeze_mode_attribute_ = true;
 
   if (!frozen_frame_size_)
     FreezeFrameSize();
@@ -423,11 +418,6 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
                   WrapWeakPersistent(this)));
     return;
   }
-
-  // Freeze the `mode` attribute to its current value even if it has never been
-  // explicitly set before, so that it cannot change after insertion.
-  freeze_mode_attribute_ = true;
-
   frame_delegate_ = FencedFrameDelegate::Create(this);
   Navigate();
 }

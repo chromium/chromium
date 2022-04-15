@@ -11,7 +11,7 @@
 promise_test(async (t) => {
   const key = token();
 
-  attachFencedFrame(await generateURN("resources/embeddee.html", [key]), 'opaque-ads');
+  attachFencedFrame(await generateURN("resources/embeddee.html", [key]));
   result = await nextValueFromServer(key);
 
   assert_equals(result, "PASS",
