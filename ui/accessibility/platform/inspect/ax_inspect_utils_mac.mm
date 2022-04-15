@@ -227,13 +227,24 @@ id AXParameterizedAttributeValueOf(const id node,
     return [node accessibilityAttributeValue:attribute forParameter:parameter];
 
   if (IsAXUIElement(node)) {
+    // Convert NSValue parameter to CFTypeRef if needed.
+    CFTypeRef parameter_ref = static_cast<CFTypeRef>(parameter);
+    if ([parameter isKindOfClass:[NSValue class]] &&
+        !strcmp([static_cast<NSValue*>(parameter) objCType],
+                @encode(NSRange))) {
+      NSRange range = [static_cast<NSValue*>(parameter) rangeValue];
+      parameter_ref = AXValueCreate(kAXValueTypeCFRange, &range);
+    }
+
+    // Get value.
     CFTypeRef value_ref;
     AXError result = AXUIElementCopyParameterizedAttributeValue(
         static_cast<AXUIElementRef>(node), static_cast<CFStringRef>(attribute),
-        static_cast<CFTypeRef>(parameter), &value_ref);
+        parameter_ref, &value_ref);
     if (AXSuccess(result, "AXParameterizedAttributeValueOf(" +
                               base::SysNSStringToUTF8(attribute) + ")"))
       return static_cast<id>(value_ref);
+
     return nil;
   }
 
