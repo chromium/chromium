@@ -74,6 +74,8 @@ using base::Time;
 
 namespace net {
 
+static constexpr int kMinutesInTwelveHours = 12 * 60;
+
 namespace {
 
 // Determine the cookie domain to use for setting the specified cookie.
@@ -494,8 +496,21 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
     // Adjust for clock skew between server and host.
     base::Time parsed_expiry =
         cookie_util::ParseCookieExpirationTime(pc.Expires());
-    if (!parsed_expiry.is_null())
+    if (!parsed_expiry.is_null()) {
+      // Record metrics related to prevalence of clock skew.
+      int clock_skew = (current - server_time).magnitude().InMinutes();
+      if (clock_skew >= 0) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes", clock_skew,
+                                    1, kMinutesInTwelveHours, 100);
+      } else if (clock_skew < 0) {
+        // These histograms only support positive numbers, so negative skews
+        // will be converted to positive before recording.
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.SubtractMinutes",
+                                    -1 * clock_skew, 1, kMinutesInTwelveHours,
+                                    100);
+      }
       return parsed_expiry + (current - server_time);
+    }
   }
 
   // Invalid or no expiration, session cookie.

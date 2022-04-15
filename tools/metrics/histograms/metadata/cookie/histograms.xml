@@ -31,6 +31,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.ClockSkew.{SkewDirection}" units="minutes"
+    expires_after="2022-11-01">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    For each cookie expiry, count the length of the clock skew (current_time -
+    server_time). {SkewDirection} This metric is collected during
+    CanonicalCookie::Create() in a helper function that calculates cookie
+    expiry.
+  </summary>
+  <token key="SkewDirection">
+    <variant name="AddMinutes"
+        summary="The raw clock skew value was positive, so these cookies were
+                 adjusted to expire later."/>
+    <variant name="SubtractMinutes"
+        summary="The raw clock skew value was negative, so these cookies were
+                 adjusted to expire quicker. This histogram can only record
+                 positive values, so all counts are adjusted to their
+                 positive counterparts."/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
     expires_after="2022-08-28">
   <owner>morlovich@chromium.org</owner>
