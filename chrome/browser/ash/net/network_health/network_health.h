@@ -36,8 +36,11 @@ class NetworkHealth
           chromeos::network_health::mojom::NetworkHealthService> receiver);
 
   // Returns the current NetworkHealthState.
-  const chromeos::network_health::mojom::NetworkHealthStatePtr
+  const chromeos::network_health::mojom::NetworkHealthState&
   GetNetworkHealthState();
+
+  // Returns the tracked network guids.
+  const std::map<std::string, base::Time>& GetTrackedGuidsForTest();
 
   // NetworkHealthService
   void AddObserver(mojo::PendingRemote<
@@ -45,6 +48,7 @@ class NetworkHealth
                        observer) override;
   void GetNetworkList(GetNetworkListCallback) override;
   void GetHealthSnapshot(GetHealthSnapshotCallback) override;
+  void GetRecentlyActiveNetworks(GetRecentlyActiveNetworksCallback) override;
 
   // CrosNetworkConfigObserver
   void OnNetworkStateListChanged() override;
@@ -125,6 +129,19 @@ class NetworkHealth
   // statistics over time for each network.
   void AnalyzeSignalStrength();
 
+  // Checks if the network with a matching |guid| exists in the network health
+  // state.
+  bool ExistsInNetworkHealthState(const std::string& guid);
+
+  // Checks if the network is active.
+  bool IsActive(const chromeos::network_health::mojom::NetworkPtr& network);
+
+  // Checks if |network|'s guid is being tracked in |tracked_guids|.
+  bool IsTracked(const chromeos::network_health::mojom::NetworkPtr& network);
+
+  // Updates the timestamp for active networks.
+  void UpdateTrackedGuids();
+
   // Remotes for tracking observers that will be notified of network events in
   // the mojom::NetworkEventsObserver interface.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
@@ -144,7 +161,15 @@ class NetworkHealth
   std::map<std::string, SignalStrengthTracker> signal_strength_trackers_;
   // Timer that triggers the function to analyze the networks' signal strengths.
   std::unique_ptr<base::RepeatingTimer> timer_;
+  // Contains guid to time pairs where each guid represents a network that is
+  // either currently active or has been active within the past hour.
+  std::map<std::string, base::Time> guid_to_active_time_;
+  // Timer that triggers the function to update |tracked_guids_|;
+  base::RepeatingTimer tracked_guids_timer_;
 
+  // Contains a list of networking devices and any associated connections. Only
+  // networking technologies that are present on the device are included.
+  // Networks will be sorted with active connections listed first.
   chromeos::network_health::mojom::NetworkHealthState network_health_state_;
   std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
       device_properties_;

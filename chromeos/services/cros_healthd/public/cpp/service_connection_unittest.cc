@@ -252,6 +252,10 @@ class MockNetworkHealthService : public NetworkHealthService {
               GetHealthSnapshot,
               (NetworkHealthService::GetHealthSnapshotCallback),
               (override));
+  MOCK_METHOD(void,
+              GetRecentlyActiveNetworks,
+              (NetworkHealthService::GetRecentlyActiveNetworksCallback),
+              (override));
 
   mojo::PendingRemote<NetworkHealthService> pending_remote() {
     return receiver_.BindNewPipeAndPassRemote();

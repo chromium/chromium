@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 // API intended for retrieving a snapshot of the network health state. Returns
 // properties of any available network technologies and any connected or
@@ -11,6 +11,7 @@
 module chromeos.network_health.mojom;
 
 import "chromeos/services/network_config/public/mojom/network_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 [Stable, Extensible]
 enum NetworkState {
@@ -117,8 +118,8 @@ interface NetworkEventsObserver {
 
 // Interface for retrieving aggregated information about the current network
 // state and health from the browser process.
-// Next Method ID: 3
-[Stable]
+// Next Method ID: 4
+[Stable, Extensible]
 interface NetworkHealthService {
   // Adds an observer to be notified on network events. The caller can remove
   // the observer created by this call by closing their end of the message
@@ -133,4 +134,10 @@ interface NetworkHealthService {
   // This is currently the same information provided by GetNetworkList. More
   // information will be added over time.
   GetHealthSnapshot@2() => (NetworkHealthState state);
+
+  // Returns the list of network guids we want traffic counters for. This
+  // includes currently active networks as well as networks that were active
+  // within the last hour.
+  [MinVersion=2]
+  GetRecentlyActiveNetworks@3() => (array<string> guids);
 };

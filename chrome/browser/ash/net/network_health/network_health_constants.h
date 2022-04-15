@@ -17,6 +17,10 @@ constexpr base::TimeDelta kSignalStrengthSampleRate = base::Seconds(5);
 // signal strength. Samples older than this duration are discarded.
 constexpr base::TimeDelta kSignalStrengthSampleWindow = base::Minutes(15);
 
+// Represents the interval at which we update tracked guids. See
+// network_health.h for more information about tracked guids.
+constexpr base::TimeDelta kUpdateTrackedGuidsInterval = base::Hours(1);
+
 }  // namespace network_health
 }  // namespace ash
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
@@ -129,22 +130,22 @@ class NetworkHealthTest : public ::testing::Test {
     const auto& initial_network_health_state =
         network_health_.GetNetworkHealthState();
 
-    ASSERT_EQ(std::size_t(1), initial_network_health_state->networks.size());
+    ASSERT_EQ(std::size_t(1), initial_network_health_state.networks.size());
 
     // Check that the default wifi device created by CrosNetworkConfigTestHelper
     // exists.
     ASSERT_EQ(network_config::mojom::NetworkType::kWiFi,
-              initial_network_health_state->networks[0]->type);
+              initial_network_health_state.networks[0]->type);
     ASSERT_EQ(network_health::mojom::NetworkState::kNotConnected,
-              initial_network_health_state->networks[0]->state);
+              initial_network_health_state.networks[0]->state);
   }
 
-  network_health::mojom::NetworkPtr GetNetworkHealthStateByType(
+  const network_health::mojom::NetworkPtr GetNetworkHealthStateByType(
       network_config::mojom::NetworkType type) {
     const auto& network_health_state = network_health_.GetNetworkHealthState();
-    for (auto& network : network_health_state->networks) {
+    for (auto& network : network_health_state.networks) {
       if (network->type == type) {
-        return std::move(network);
+        return network->Clone();
       }
     }
     return nullptr;
@@ -177,7 +178,8 @@ class NetworkHealthTest : public ::testing::Test {
     network_health_.FireTimer();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
   NetworkHealthTestImpl network_health_;
 };
@@ -515,7 +517,7 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrength) {
   }
 
   auto& network_health = network_health_.GetNetworkHealthState();
-  auto& networks = network_health->networks;
+  auto& networks = network_health.networks;
   ASSERT_EQ(1u, networks.size());
   auto& stats = networks[0]->signal_strength_stats;
   ASSERT_TRUE(stats);
@@ -554,12 +556,56 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrengthActive) {
   SetSignalStrengthAndRecordSample(kOtherWifiServicePath, 75);
 
   auto& network_health = network_health_.GetNetworkHealthState();
-  auto& networks = network_health->networks;
+  auto& networks = network_health.networks;
   ASSERT_EQ(1u, networks.size());
   auto& stats = networks[0]->signal_strength_stats;
   ASSERT_TRUE(stats);
   ASSERT_EQ(1u, stats->samples.size());
   ASSERT_EQ(75, stats->samples[0]);
+}
+
+// Ensure that networks are tracked after they become active.
+TEST_F(NetworkHealthTest, TrackActiveNetworks) {
+  CreateDefaultWifiDevice();
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
+                   shill::kTypeWifi, shill::kStateOnline, true);
+  cros_network_config_test_helper_.network_state_helper().AddDevice(
+      kEthDevicePath, shill::kTypeEthernet, kEthName);
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kEthServicePath, kEthGuid, kEthServiceName,
+                   shill::kTypeEthernet, shill::kStateOnline, true);
+  // Wait until the the WiFi and Ethernet services and devices have been
+  // configured.
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(2u, network_health_.GetTrackedGuidsForTest().size());
+
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStateOffline));
+
+  task_environment_.FastForwardBy(base::Hours(1));
+
+  // At this point in time, the inactive WiFi network has only been offline for
+  // exactly an hour. It should still be tracked.
+  ASSERT_EQ(2u, network_health_.GetTrackedGuidsForTest().size());
+
+  // The timer used to update tracked guids runs every hour.
+  task_environment_.FastForwardBy(base::Hours(1));
+
+  // After 2 hours, the inactive WiFi should not be tracked.
+  ASSERT_EQ(1u, network_health_.GetTrackedGuidsForTest().size());
+
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStateOnline));
+  task_environment_.RunUntilIdle();
+
+  // The WiFi network should be tracked again.
+  ASSERT_EQ(2u, network_health_.GetTrackedGuidsForTest().size());
 }
 
 }  // namespace network_health
