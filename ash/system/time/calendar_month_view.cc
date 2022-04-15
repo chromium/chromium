@@ -30,11 +30,17 @@ namespace ash {
 
 namespace {
 
-// The thickness of the today's circle line.
-constexpr int kLineThickness = 2;
+// The thickness of the border.
+constexpr int kBorderLineThickness = 2;
 
-// The radius used to draw rounded today's circle
-constexpr float kTodayRoundedRadius = 20.f;
+// The radius used to draw the border.
+constexpr float kBorderRadius = 21.f;
+
+// The default radius used to draw rounded today's circle.
+constexpr float kTodayRoundedRadius = 22.f;
+
+// The radius used to draw rounded today's circle when focused.
+constexpr float kTodayFocusedRoundedRadius = 18.f;
 
 // Radius of the small dot we display on a CalendarDateCellView if events are
 // present for that day.
@@ -109,15 +115,17 @@ void CalendarDateCellView::OnThemeChanged() {
                                    : calendar_utils::GetPrimaryTextColor());
 }
 
-// Draws the background for 'today'. If today is a grayed out date, which is
-// shown in its previous/next month, we won't draw this background.
+// Draws the background for this date. Note that this includes not only the
+// circular fill (if any), but also the border (if focused) and text color. If
+// this is a grayed out date, which is shown in its previous/next month, we
+// won't draw this background.
 void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   if (grayed_out_)
     return;
 
   const AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor bg_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
   const SkColor border_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor);
 
@@ -126,7 +134,6 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
       (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
       (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
 
-  // If the view is focused or selected, paint a solid background.
   is_selected_ = calendar_utils::IsTheSameDay(
       date_, calendar_view_controller_->selected_date());
 
@@ -147,39 +154,42 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
         calendar_utils::GetDayOfMonth(date_)));
   }
 
-  if (is_selected_ && calendar_utils::IsActiveUser()) {
-    // Change text color to the background color.
-    const SkColor text_color = color_provider->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent90);
+  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+                                   : calendar_utils::GetPrimaryTextColor());
+
+  if (views::View::HasFocus()) {
+    cc::PaintFlags highlight_border;
+    highlight_border.setColor(border_color);
+    highlight_border.setAntiAlias(true);
+    highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
+    highlight_border.setStrokeWidth(kBorderLineThickness);
+
+    canvas->DrawCircle(center, kBorderRadius, highlight_border);
+  }
+
+  if (calendar_utils::IsToday(date_)) {
+    const SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
     SetEnabledTextColors(text_color);
 
-    cc::PaintFlags background;
-    background.setColor(border_color);
-    background.setStyle(cc::PaintFlags::kFill_Style);
-    background.setAntiAlias(true);
-    canvas->DrawCircle(center, kTodayRoundedRadius, background);
+    cc::PaintFlags highlight_background;
+    highlight_background.setColor(bg_color);
+    highlight_background.setStyle(cc::PaintFlags::kFill_Style);
+    highlight_background.setAntiAlias(true);
+
+    canvas->DrawCircle(center,
+                       views::View::HasFocus() ? kTodayFocusedRoundedRadius
+                                               : kTodayRoundedRadius,
+                       highlight_background);
 
     return;
   }
 
-  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
-                                   : calendar_utils::GetPrimaryTextColor());
-
-  if (!calendar_utils::IsToday(date_) && !views::View::HasFocus())
-    return;
-
-  cc::PaintFlags highlight_background;
-  highlight_background.setColor(bg_color);
-  highlight_background.setStyle(cc::PaintFlags::kFill_Style);
-  highlight_background.setAntiAlias(true);
-  canvas->DrawCircle(center, kTodayRoundedRadius, highlight_background);
-
-  cc::PaintFlags highlight_border;
-  highlight_border.setColor(border_color);
-  highlight_border.setAntiAlias(true);
-  highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
-  highlight_border.setStrokeWidth(kLineThickness);
-  canvas->DrawCircle(center, kTodayRoundedRadius, highlight_border);
+  if (is_selected_) {
+    const SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorProminent);
+    SetEnabledTextColors(text_color);
+  }
 }
 
 void CalendarDateCellView::OnSelectedDateUpdated() {
