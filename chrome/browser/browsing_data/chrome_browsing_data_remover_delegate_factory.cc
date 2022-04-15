@@ -9,7 +9,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
@@ -57,7 +56,6 @@ ChromeBrowsingDataRemoverDelegateFactory::
           "BrowsingDataRemover",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
-  DependsOn(DataReductionProxyChromeSettingsFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)
   DependsOn(feed::FeedServiceFactory::GetInstance());

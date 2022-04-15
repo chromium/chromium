@@ -36,7 +36,6 @@ source_set("profile") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/common:buildflags",
     "//chrome/common:constants",
-    "//components/data_reduction_proxy/core/browser",
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/live_caption:constants",

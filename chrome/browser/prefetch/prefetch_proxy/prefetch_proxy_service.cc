@@ -5,8 +5,6 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
 
 #include "base/bind.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"

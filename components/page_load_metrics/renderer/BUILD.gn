@@ -16,7 +16,6 @@ source_set("renderer") {
   ]
   deps = [
     "//base",
-    "//components/data_reduction_proxy/core/common",
     "//components/page_load_metrics/common",
     "//components/page_load_metrics/common:page_load_metrics_mojom",
     "//components/subresource_filter/content/renderer",

@@ -11,7 +11,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/browser_context.h"
