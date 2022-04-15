@@ -12,6 +12,7 @@
 #include "build/buildflag.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
+#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/grit/components_resources.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -124,10 +125,17 @@ const re2::RE2* GetVisitCheckoutPattern(const GURL& url) {
     if (global_pattern_from_component &&
         commerce::kCheckoutPattern.Get() ==
             commerce::kCheckoutPattern.default_value) {
+      CommerceHeuristicsDataMetricsHelper::
+          RecordCheckoutURLGeneralPatternSource(
+              CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                  FROM_COMPONENT);
       return global_pattern_from_component;
     }
     static base::NoDestructor<re2::RE2> instance(
         commerce::kCheckoutPattern.Get(), options);
+    CommerceHeuristicsDataMetricsHelper::RecordCheckoutURLGeneralPatternSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+            FROM_FEATURE_PARAMETER);
     return instance.get();
   }
   if (checkout_regex_map->find(domain) == checkout_regex_map->end()) {

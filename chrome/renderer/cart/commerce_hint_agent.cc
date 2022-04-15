@@ -18,6 +18,7 @@
 #include "chrome/grit/renderer_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
+#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/heuristics/commerce_heuristics_provider.h"
 #include "components/search/ntp_features.h"
 #include "content/public/renderer/render_frame.h"
@@ -547,8 +548,14 @@ const WebString& GetProductExtractionScript(
               ";\n";
           DVLOG(2) << config;
           script_string = config + script_string;
+          CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
+              CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                  FROM_RESOURCE);
         } else {
           script_string = cart_extraction_script_component;
+          CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
+              CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                  FROM_COMPONENT);
         }
 
         if (!product_id_json_component.empty()) {

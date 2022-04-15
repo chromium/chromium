@@ -115,6 +115,39 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Heuristics.CartExtractionScriptSource"
+    enum="CommerceHeuristicsDataSource" expires_after="2022-10-01">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when we try to get cart extraction script to record the source of
+    this script data.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Heuristics.CheckoutURLGeneralPatternSource"
+    enum="CommerceHeuristicsDataSource" expires_after="2022-10-01">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when we try to get general checkout URL detection pattern to record
+    the source of this pattern data.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Heuristics.MerchantNameSource"
+    enum="CommerceHeuristicsDataSource" expires_after="2022-10-01">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when we try to get merchant name of a domain to record the source of
+    this name data.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
     expires_after="2023-02-01">
   <owner>ayman@chromium.org</owner>

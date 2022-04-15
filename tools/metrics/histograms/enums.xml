@@ -15428,6 +15428,14 @@ Called by update_net_error_codes.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<enum name="CommerceHeuristicsDataSource">
+  <summary>Sources of commerce heuristics data.</summary>
+  <int value="0" label="FromComponent"/>
+  <int value="1" label="FromResource"/>
+  <int value="2" label="FromFeatureParameter"/>
+  <int value="3" label="Missing"/>
+</enum>
+
 <enum name="CommerceSubscriptionValidationResult">
   <int value="0" label="No fixes needed"/>
   <int value="1" label="Bookmarks were fixed"/>

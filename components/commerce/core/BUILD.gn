@@ -84,6 +84,8 @@ if (!is_android) {
     sources = [
       "commerce_heuristics_data.cc",
       "commerce_heuristics_data.h",
+      "commerce_heuristics_data_metrics_helper.cc",
+      "commerce_heuristics_data_metrics_helper.h",
     ]
 
     deps = [

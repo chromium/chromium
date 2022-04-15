@@ -19,6 +19,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -558,6 +559,9 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromResource) {
   histogram_tester_.ExpectTotalCount("Commerce.Carts.ExtractionElapsedTime", 1);
   histogram_tester_.ExpectBucketCount("Commerce.Carts.ExtractionTimedOut", 0,
                                       1);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.CartExtractionScriptSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_RESOURCE, 1);
 
   SendXHR("/add-to-cart", "product: 123");
 
@@ -596,6 +600,10 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromComponent) {
   const ShoppingCarts expected_carts = {
       {"guitarcenter.com", expected_cart_protos}};
   WaitForProductCount(expected_carts);
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.CartExtractionScriptSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
@@ -628,6 +636,10 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
   const ShoppingCarts expected_carts = {
       {"guitarcenter.com", expected_cart_protos}};
   WaitForProductCount(expected_carts);
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.CartExtractionScriptSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_RESOURCE, 1);
 }
 
 class CommerceHintNoRateControlTest : public CommerceHintAgentTest {

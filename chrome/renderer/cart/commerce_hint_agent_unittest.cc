@@ -5,9 +5,11 @@
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
 #include "base/cfi_buildflags.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
+#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -779,6 +781,9 @@ class CommerceHintAgentUnitTest : public testing::Test {
             /*hint_json_data=*/"{}", /*global_json_data=*/"{}",
             /*product_id_json_data=*/"{}", /*cart_extraction_script=*/"");
   }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(CommerceHintAgentUnitTest, IsAddToCart) {
@@ -881,6 +886,14 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
   for (auto* str : kNotVisitCheckout) {
     EXPECT_FALSE(CommerceHintAgent::IsVisitCheckout(GURL(str))) << str;
   }
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 0);
+  EXPECT_GT(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_FEATURE_PARAMETER),
+            0);
 
   // General heuristics from component.
   const std::string& component_pattern = R"###(
@@ -892,7 +905,9 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
                   .PopulateDataFromComponent("{}", component_pattern, "", ""));
   EXPECT_TRUE(
       CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
-
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 1);
   // Per-domain heuristics from component which has a higher priority than
   // general heuristics.
   EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
@@ -910,6 +925,10 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
       CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
 
   // Feature param has a higher priority than component.
+  int prev_count = histogram_tester_.GetBucketCount(
+      "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+          FROM_FEATURE_PARAMETER);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ntp_features::kNtpChromeCartModule,
@@ -922,6 +941,11 @@ TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
       CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
   EXPECT_FALSE(CommerceHintAgent::IsVisitCheckout(
       GURL("https://wwww.foo.com/test/tuokcehc")));
+  EXPECT_EQ(2, histogram_tester_.GetBucketCount(
+                   "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+                   CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                       FROM_FEATURE_PARAMETER) -
+                   prev_count);
 }
 
 TEST_F(CommerceHintAgentUnitTest, IsPurchaseByURL) {

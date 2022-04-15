@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
+#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -956,6 +957,9 @@ TEST_F(CartServiceTest, TestLookupCartInfo_FromResource) {
       BuildProto(amazon_domain, kMockMerchantURLA);
   service_->AddCart(amazon_domain, absl::nullopt, merchant_A_proto);
   task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.MerchantNameSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_RESOURCE, 1);
 
   merchant_A_proto.set_merchant_cart_url(getDomainCartURL(amazon_domain));
   merchant_A_proto.set_merchant(getDomainName(amazon_domain));
@@ -974,6 +978,9 @@ TEST_F(CartServiceTest, TestLookupCartInfo_FromResource) {
       BuildProto(fake_domain, fake_cart_url);
   service_->AddCart(fake_domain, absl::nullopt, fake_proto);
   task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.MerchantNameSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::MISSING, 1);
 
   const ShoppingCarts result2 = {{fake_domain, fake_proto}};
   cart_db_->LoadCart(
@@ -994,6 +1001,9 @@ TEST_F(CartServiceTest, TestLookupCartInfo_FromComponent) {
       BuildProto(kMockMerchantA, "https://foo.com/cart");
   service_->AddCart(kMockMerchantA, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.MerchantNameSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 1);
 
   merchant_proto.set_merchant("Foo");
   const ShoppingCarts result = {{kMockMerchantA, merchant_proto}};
