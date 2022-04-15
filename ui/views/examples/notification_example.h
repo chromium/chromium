@@ -5,12 +5,15 @@
 #ifndef UI_VIEWS_EXAMPLES_NOTIFICATION_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_NOTIFICATION_EXAMPLE_H_
 
+#include "base/scoped_observation.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
-class VIEWS_EXAMPLES_EXPORT NotificationExample : public ExampleBase {
+class VIEWS_EXAMPLES_EXPORT NotificationExample : public ExampleBase,
+                                                  public ViewObserver {
  public:
   NotificationExample();
   NotificationExample(const NotificationExample&) = delete;
@@ -19,9 +22,15 @@ class VIEWS_EXAMPLES_EXPORT NotificationExample : public ExampleBase {
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
+
+  // ViewObserver:
+  void OnViewAddedToWidget(View* observed_view) override;
+  void OnViewIsDeleting(View* observed_view) override;
+
+ private:
+  base::ScopedObservation<View, ViewObserver> observer_{this};
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_NOTIFICATION_EXAMPLE_H_

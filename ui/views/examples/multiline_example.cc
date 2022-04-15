@@ -21,6 +21,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
@@ -28,8 +29,7 @@
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -62,11 +62,9 @@ class MultilineExample::RenderTextView : public View {
  public:
   RenderTextView() : render_text_(gfx::RenderText::CreateRenderText()) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    render_text_->SetColor(SK_ColorBLACK);
-    render_text_->set_selection_color(SK_ColorBLACK);
-    render_text_->set_selection_background_focused_color(SK_ColorGRAY);
     render_text_->SetMultiline(true);
-    SetBorder(CreateSolidBorder(2, SK_ColorGRAY));
+    SetBorder(CreateThemedSolidBorder(
+        2, ExamplesColorIds::kColorMultilineExampleBorder));
   }
 
   RenderTextView(const RenderTextView&) = delete;
@@ -101,20 +99,22 @@ class MultilineExample::RenderTextView : public View {
     return height;
   }
 
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    UpdateColors();
+  }
+
   void SetText(const std::u16string& new_contents) {
     // Color and style the text inside |test_range| to test colors and styles.
     const size_t range_max = new_contents.length();
-    gfx::Range color_range = ClampRange(gfx::Range(1, 21), range_max);
     gfx::Range bold_range = ClampRange(gfx::Range(4, 10), range_max);
     gfx::Range italic_range = ClampRange(gfx::Range(7, 13), range_max);
 
     render_text_->SetText(new_contents);
-    render_text_->SetColor(SK_ColorBLACK);
-    render_text_->ApplyColor(0xFFFF0000, color_range);
     render_text_->SetStyle(gfx::TEXT_STYLE_UNDERLINE, false);
-    render_text_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, true, color_range);
     render_text_->ApplyStyle(gfx::TEXT_STYLE_ITALIC, true, italic_range);
     render_text_->ApplyWeight(gfx::Font::Weight::BOLD, bold_range);
+    UpdateColors();
     InvalidateLayout();
   }
 
@@ -126,6 +126,24 @@ class MultilineExample::RenderTextView : public View {
  private:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
     render_text_->SetDisplayRect(GetContentsBounds());
+  }
+
+  void UpdateColors() {
+    const auto* cp = GetColorProvider();
+    if (!cp)
+      return;
+    render_text_->SetColor(
+        cp->GetColor(ExamplesColorIds::kColorMultilineExampleForeground));
+    render_text_->set_selection_color(cp->GetColor(
+        ExamplesColorIds::kColorMultilineExampleSelectionForeground));
+    render_text_->set_selection_background_focused_color(cp->GetColor(
+        ExamplesColorIds::kColorMultilineExampleSelectionBackground));
+    const size_t range_max = render_text_->text().length();
+    gfx::Range color_range = ClampRange(gfx::Range(1, 21), range_max);
+    render_text_->ApplyColor(
+        cp->GetColor(ExamplesColorIds::kColorMultilineExampleColorRange),
+        color_range);
+    render_text_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, true, color_range);
   }
 
   std::unique_ptr<gfx::RenderText> render_text_;
@@ -167,7 +185,8 @@ void MultilineExample::CreateExampleView(View* container) {
   label_ = container->AddChildView(std::make_unique<PreferredSizeLabel>());
   label_->SetText(kTestString);
   label_->SetMultiLine(true);
-  label_->SetBorder(CreateSolidBorder(2, SK_ColorCYAN));
+  label_->SetBorder(CreateThemedSolidBorder(
+      2, ExamplesColorIds::kColorMultilineExampleLabelBorder));
 
   elision_checkbox_ = container->AddChildView(std::make_unique<Checkbox>(
       GetStringUTF16(IDS_MULTILINE_ELIDE_LABEL),
@@ -198,5 +217,4 @@ void MultilineExample::ContentsChanged(Textfield* sender,
   example_view()->SchedulePaint();
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

@@ -5,12 +5,14 @@
 #include "ui/views/examples/bubble_example.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -22,7 +24,10 @@ namespace examples {
 
 namespace {
 
-SkColor colors[] = {SK_ColorWHITE, SK_ColorGRAY, SK_ColorCYAN, 0xFFC1B1E1};
+ExamplesColorIds colors[] = {ExamplesColorIds::kColorBubbleExampleBackground1,
+                             ExamplesColorIds::kColorBubbleExampleBackground2,
+                             ExamplesColorIds::kColorBubbleExampleBackground3,
+                             ExamplesColorIds::kColorBubbleExampleBackground4};
 
 BubbleBorder::Arrow arrows[] = {
     BubbleBorder::TOP_LEFT,     BubbleBorder::TOP_CENTER,
@@ -127,14 +132,16 @@ void BubbleExample::ShowBubble(Button** button,
   else if (event.IsAltDown())
     arrow = BubbleBorder::FLOAT;
 
+  auto* provider = (*button)->GetColorProvider();
   // |bubble| will be destroyed by its widget when the widget is destroyed.
-  ExampleBubble* bubble = new ExampleBubble(*button, arrow);
-  bubble->set_color(colors[(color_index++) % std::size(colors)]);
+  auto bubble = std::make_unique<ExampleBubble>(*button, arrow);
+  bubble->set_color(
+      provider->GetColor(colors[(color_index++) % std::size(colors)]));
   bubble->set_shadow(shadow);
   if (persistent)
     bubble->set_close_on_deactivate(false);
 
-  BubbleDialogDelegateView::CreateBubble(bubble)->Show();
+  BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
 
   LogStatus(
       "Click with optional modifiers: [Ctrl] for set_arrow(NONE), "

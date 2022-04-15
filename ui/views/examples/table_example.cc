@@ -12,9 +12,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -22,8 +24,7 @@
 
 using base::ASCIIToUTF16;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -40,14 +41,18 @@ ui::TableColumn TestTableColumn(int id, const std::string& title) {
 TableExample::TableExample() : ExampleBase("Table") {}
 
 TableExample::~TableExample() {
+  observer_.Reset();
   // Delete the view before the model.
-  delete table_;
-  table_ = nullptr;
+  if (table_ && table_->parent()) {
+    table_->parent()->RemoveChildViewT(table_);
+    table_ = nullptr;
+  }
 }
 
 void TableExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(LayoutOrientation::kVertical);
+  observer_.Observe(container);
 
   std::vector<ui::TableColumn> columns;
   columns.push_back(TestTableColumn(0, "Fruit"));
@@ -69,13 +74,6 @@ void TableExample::CreateExampleView(View* container) {
   container
       ->AddChildView(TableView::CreateScrollViewWithTable(std::move(table)))
       ->SetProperty(views::kFlexBehaviorKey, full_flex);
-
-  icon1_.allocN32Pixels(16, 16);
-  icon2_.allocN32Pixels(16, 16);
-
-  SkCanvas canvas1(icon1_, SkSurfaceProps{}), canvas2(icon2_, SkSurfaceProps{});
-  canvas1.drawColor(SK_ColorRED);
-  canvas2.drawColor(SK_ColorBLUE);
 
   auto* button_panel = container->AddChildView(std::make_unique<View>());
   button_panel->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -171,5 +169,20 @@ void TableExample::OnMiddleClick() {}
 
 void TableExample::OnKeyDown(ui::KeyboardCode virtual_keycode) {}
 
-}  // namespace examples
-}  // namespace views
+void TableExample::OnViewThemeChanged(View* observed_view) {
+  icon1_.allocN32Pixels(16, 16);
+  icon2_.allocN32Pixels(16, 16);
+
+  auto* const cp = observed_view->GetColorProvider();
+  SkCanvas canvas1(icon1_, SkSurfaceProps{}), canvas2(icon2_, SkSurfaceProps{});
+  canvas1.drawColor(
+      cp->GetColor(ExamplesColorIds::kColorTableExampleEvenRowIcon));
+  canvas2.drawColor(
+      cp->GetColor(ExamplesColorIds::kColorTableExampleOddRowIcon));
+}
+
+void TableExample::OnViewIsDeleting(View* observed_view) {
+  observer_.Reset();
+}
+
+}  // namespace views::examples

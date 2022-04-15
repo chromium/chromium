@@ -8,23 +8,27 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/table/table_grouper.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
+
 class Checkbox;
-class TableView;
+class View;
 
 namespace examples {
 
 class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
                                            public ui::TableModel,
                                            public TableGrouper,
-                                           public TableViewObserver {
+                                           public TableViewObserver,
+                                           public ViewObserver {
  public:
   TableExample();
 
@@ -52,6 +56,10 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
   void OnMiddleClick() override;
   void OnKeyDown(ui::KeyboardCode virtual_keycode) override;
 
+  // ViewObserver:
+  void OnViewThemeChanged(View* observed_view) override;
+  void OnViewIsDeleting(View* observed_view) override;
+
  private:
   // The table to be tested.
   raw_ptr<TableView> table_ = nullptr;
@@ -63,6 +71,8 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
 
   SkBitmap icon1_;
   SkBitmap icon2_;
+
+  base::ScopedObservation<View, ViewObserver> observer_{this};
 };
 
 }  // namespace examples

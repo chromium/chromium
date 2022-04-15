@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -21,13 +23,41 @@
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
+
+class InkDropView : public View {
+ public:
+  METADATA_HEADER(InkDropView);
+  InkDropView() = default;
+  InkDropView(const InkDropView&) = delete;
+  InkDropView& operator=(const InkDropView&) = delete;
+  ~InkDropView() override = default;
+
+  // View:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    InkDrop::Get(this)->SetBaseColor(GetColorProvider()->GetColor(
+        ExamplesColorIds::kColorInkDropExampleBase));
+  }
+};
+
+BEGIN_METADATA(InkDropView, View)
+END_METADATA
+
+BEGIN_VIEW_BUILDER(, InkDropView, View)
+END_VIEW_BUILDER
+
+}  // namespace views::examples
+
+DEFINE_VIEW_BUILDER(, views::examples::InkDropView)
+
+namespace views::examples {
 
 InkDropExample::InkDropExample() : ExampleBase("FloodFill Ink Drop") {}
 
@@ -49,9 +79,10 @@ void InkDropExample::CreateExampleView(View* container) {
               .SetOrientation(BoxLayout::Orientation::kVertical)
               .SetMainAxisAlignment(BoxLayout::MainAxisAlignment::kEnd)
               .AddChildren(
-                  Builder<View>()
+                  Builder<InkDropView>()
                       .CopyAddressTo(&ink_drop_view_)
-                      .SetBorder(CreateRoundedRectBorder(1, 4, SK_ColorBLACK))
+                      .SetBorder(CreateThemedRoundedRectBorder(
+                          1, 4, ExamplesColorIds::kColorInkDropExampleBorder))
                       .SetProperty(kMarginsKey, gfx::Insets(10)),
                   Builder<BoxLayoutView>()
                       .SetOrientation(BoxLayout::Orientation::kHorizontal)
@@ -108,7 +139,6 @@ void InkDropExample::CreateExampleView(View* container) {
 
 void InkDropExample::CreateInkDrop() {
   auto ink_drop_host = std::make_unique<InkDropHost>(ink_drop_view_);
-  ink_drop_host->SetBaseColor(SK_ColorBLACK);
   ink_drop_host->SetMode(InkDropHost::InkDropMode::ON);
   InkDrop::Install(ink_drop_view_, std::move(ink_drop_host));
 }
@@ -123,5 +153,4 @@ void InkDropExample::SetInkDropState(InkDropState state) {
   InkDrop::Get(ink_drop_view_)->AnimateToState(state, &event);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

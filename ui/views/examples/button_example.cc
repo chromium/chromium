@@ -16,6 +16,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
@@ -48,7 +49,7 @@ ButtonExample::ButtonExample() : ExampleBase("Button") {
 ButtonExample::~ButtonExample() = default;
 
 void ButtonExample::CreateExampleView(View* container) {
-  container->SetLayoutManager(std::make_unique<FillLayout>());
+  container->SetUseDefaultFillLayout(true);
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 
   auto start_throbber_cb = [](MdTextButton* button) {
@@ -59,7 +60,8 @@ void ButtonExample::CreateExampleView(View* container) {
                   .SetInsideBorderInsets(gfx::Insets(10))
                   .SetBetweenChildSpacing(10)
                   .SetCrossAxisAlignment(BoxLayout::CrossAxisAlignment::kCenter)
-                  .SetBackground(CreateSolidBackground(SK_ColorWHITE))
+                  .SetBackground(CreateThemedSolidBackground(
+                      ExamplesColorIds::kColorButtonExampleBackground))
                   .AddChildren(Builder<LabelButton>()
                                    .CopyAddressTo(&label_button_)
                                    .SetText(kLabelButton)

@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -24,6 +25,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -53,7 +55,8 @@ class VectorIconGallery : public View, public TextfieldController {
     image_layout->set_main_axis_alignment(
         BoxLayout::MainAxisAlignment::kCenter);
     image_view_container->SetLayoutManager(std::move(image_layout));
-    image_view_->SetBorder(CreateSolidBorder(1, SK_ColorBLACK));
+    image_view_->SetBorder(CreateThemedSolidBorder(
+        1, ExamplesColorIds::kColorVectorExampleImageBorder));
     image_view_container_ = AddChildView(std::move(image_view_container));
 
     BoxLayout* box = SetLayoutManager(std::make_unique<BoxLayout>(
@@ -141,7 +144,7 @@ class VectorIconGallery : public View, public TextfieldController {
   // 36dp is one of the natural sizes for MD icons, and corresponds roughly to a
   // 32dp usable area.
   int size_ = 36;
-  SkColor color_ = SK_ColorRED;
+  SkColor color_ = gfx::kPlaceholderColor;
 
   raw_ptr<ImageView> image_view_;
   raw_ptr<View> image_view_container_;

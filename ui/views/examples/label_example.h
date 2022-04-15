@@ -6,8 +6,10 @@
 #define UI_VIEWS_EXAMPLES_LABEL_EXAMPLE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 
@@ -19,7 +21,8 @@ class View;
 namespace examples {
 
 class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
-                                           public TextfieldController {
+                                           public TextfieldController,
+                                           public ViewObserver {
  public:
   LabelExample();
 
@@ -38,6 +41,10 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   // TextfieldController:
   void ContentsChanged(Textfield* sender,
                        const std::u16string& new_contents) override;
+
+  // ViewObserver:
+  void OnViewThemeChanged(View* observed_view) override;
+  void OnViewIsDeleting(View* observed_view) override;
 
  private:
   // Add a customizable label and various controls to modify its presentation.
@@ -59,7 +66,10 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   raw_ptr<Checkbox> multiline_ = nullptr;
   raw_ptr<Checkbox> shadows_ = nullptr;
   raw_ptr<Checkbox> selectable_ = nullptr;
+  raw_ptr<Label> label_ = nullptr;
   raw_ptr<Label> custom_label_ = nullptr;
+
+  base::ScopedObservation<View, ViewObserver> observer_{this};
 };
 
 }  // namespace examples

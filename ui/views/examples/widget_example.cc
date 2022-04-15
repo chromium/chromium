@@ -14,6 +14,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -70,7 +71,8 @@ LabelButton* WidgetExample::BuildButton(View* container,
 void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
   auto dialog = std::make_unique<DialogDelegateView>();
   dialog->SetTitle(IDS_WIDGET_WINDOW_TITLE);
-  dialog->SetBackground(CreateSolidBackground(SK_ColorGRAY));
+  dialog->SetBackground(CreateThemedSolidBackground(
+      ExamplesColorIds::kColorWidgetExampleDialogBorder));
   dialog->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, gfx::Insets(10), 10));
   dialog->SetExtraView(std::make_unique<MdTextButton>(
@@ -102,7 +104,8 @@ void WidgetExample::ShowWidget(View* sender, Widget::InitParams::Type type) {
     View* contents = widget->SetContentsView(std::make_unique<View>());
     contents->SetLayoutManager(
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal));
-    contents->SetBackground(CreateSolidBackground(SK_ColorGRAY));
+    contents->SetBackground(CreateThemedSolidBackground(
+        ExamplesColorIds::kColorWidgetExampleContentBorder));
     BuildButton(contents, GetStringUTF16(IDS_WIDGET_CLOSE_BUTTON_LABEL))
         ->SetCallback(
             base::BindRepeating(&Widget::Close, base::Unretained(widget)));

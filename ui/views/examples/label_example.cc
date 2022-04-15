@@ -19,6 +19,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/example_combobox_model.h"
+#include "ui/views/examples/examples_color_id.h"
+#include "ui/views/examples/examples_themed_label.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -27,8 +29,7 @@
 
 using base::ASCIIToUTF16;
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -37,7 +38,10 @@ const char* kAlignments[] = {"Left", "Center", "Right", "Head"};
 // A Label with a clamped preferred width to demonstrate eliding or wrapping.
 class ExamplePreferredSizeLabel : public Label {
  public:
-  ExamplePreferredSizeLabel() { SetBorder(CreateSolidBorder(1, SK_ColorGRAY)); }
+  ExamplePreferredSizeLabel() {
+    SetBorder(
+        CreateThemedSolidBorder(1, ExamplesColorIds::kColorLabelExampleBorder));
+  }
 
   ExamplePreferredSizeLabel(const ExamplePreferredSizeLabel&) = delete;
   ExamplePreferredSizeLabel& operator=(const ExamplePreferredSizeLabel&) =
@@ -63,9 +67,12 @@ const char* ExamplePreferredSizeLabel::kElideBehaviors[] = {
 LabelExample::LabelExample()
     : ExampleBase(l10n_util::GetStringUTF8(IDS_LABEL_SELECT_LABEL).c_str()) {}
 
-LabelExample::~LabelExample() = default;
+LabelExample::~LabelExample() {
+  observer_.Reset();
+}
 
 void LabelExample::CreateExampleView(View* container) {
+  observer_.Observe(container);
   // A very simple label example, followed by additional helpful examples.
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, gfx::Insets(), 10));
@@ -81,10 +88,12 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   container->AddChildView(std::move(label));
 
-  label = std::make_unique<Label>(u"A left-aligned blue label.");
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColor(SK_ColorBLUE);
-  container->AddChildView(std::move(label));
+  auto themed_label = std::make_unique<ThemedLabel>();
+  themed_label->SetText(u"A left-aligned blue label.");
+  themed_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  themed_label->SetEnabledColorId(
+      ExamplesColorIds::kColorLabelExampleBlueLabel);
+  container->AddChildView(std::move(themed_label));
 
   label = std::make_unique<Label>(u"Password!");
   label->SetObscured(true);
@@ -92,12 +101,7 @@ void LabelExample::CreateExampleView(View* container) {
 
   label = std::make_unique<Label>(u"A Courier-18 label with shadows.");
   label->SetFontList(gfx::FontList("Courier, 18px"));
-  gfx::ShadowValues shadows(1,
-                            gfx::ShadowValue(gfx::Vector2d(), 1, SK_ColorRED));
-  constexpr gfx::ShadowValue shadow(gfx::Vector2d(2, 2), 0, SK_ColorGRAY);
-  shadows.push_back(shadow);
-  label->SetShadows(shadows);
-  container->AddChildView(std::move(label));
+  label_ = container->AddChildView(std::move(label));
 
   label = std::make_unique<ExamplePreferredSizeLabel>();
   label->SetText(
@@ -114,7 +118,8 @@ void LabelExample::CreateExampleView(View* container) {
   container->AddChildView(std::move(label));
 
   label = std::make_unique<Label>(u"Label with thick border");
-  label->SetBorder(CreateSolidBorder(20, SK_ColorRED));
+  label->SetBorder(CreateThemedSolidBorder(
+      20, ExamplesColorIds::kColorLabelExampleThickBorder));
   container->AddChildView(std::move(label));
 
   label = std::make_unique<Label>(
@@ -133,8 +138,14 @@ void LabelExample::MultilineCheckboxPressed() {
 void LabelExample::ShadowsCheckboxPressed() {
   gfx::ShadowValues shadows;
   if (shadows_->GetChecked()) {
-    shadows.push_back(gfx::ShadowValue(gfx::Vector2d(), 1, SK_ColorRED));
-    shadows.push_back(gfx::ShadowValue(gfx::Vector2d(2, 2), 0, SK_ColorGRAY));
+    auto* const cp = custom_label_->GetColorProvider();
+    shadows = {
+        gfx::ShadowValue(
+            gfx::Vector2d(), 1,
+            cp->GetColor(ExamplesColorIds::kColorLabelExampleUpperShadow)),
+        gfx::ShadowValue(
+            gfx::Vector2d(2, 2), 0,
+            cp->GetColor(ExamplesColorIds::kColorLabelExampleLowerShadow))};
   }
   custom_label_->SetShadows(shadows);
 }
@@ -151,8 +162,10 @@ void LabelExample::ContentsChanged(Textfield* sender,
 
 void LabelExample::AddCustomLabel(View* container) {
   std::unique_ptr<View> control_container = std::make_unique<View>();
-  control_container->SetBorder(CreateSolidBorder(2, SK_ColorGRAY));
-  control_container->SetBackground(CreateSolidBackground(SK_ColorLTGRAY));
+  control_container->SetBorder(CreateThemedSolidBorder(
+      2, ExamplesColorIds::kColorLabelExampleCustomBorder));
+  control_container->SetBackground(CreateThemedSolidBackground(
+      ExamplesColorIds::kColorLabelExampleCustomBackground));
   control_container->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
 
@@ -236,5 +249,20 @@ void LabelExample::ElidingChanged() {
       static_cast<gfx::ElideBehavior>(elide_behavior_->GetSelectedIndex()));
 }
 
-}  // namespace examples
-}  // namespace views
+void LabelExample::OnViewThemeChanged(View* observed_view) {
+  auto* const cp = observed_view->GetColorProvider();
+  gfx::ShadowValues shadows = {
+      gfx::ShadowValue(
+          gfx::Vector2d(), 1,
+          cp->GetColor(ExamplesColorIds::kColorLabelExampleUpperShadow)),
+      gfx::ShadowValue(
+          gfx::Vector2d(2, 2), 0,
+          cp->GetColor(ExamplesColorIds::kColorLabelExampleLowerShadow))};
+  label_->SetShadows(shadows);
+}
+
+void LabelExample::OnViewIsDeleting(View* observed_view) {
+  observer_.Reset();
+}
+
+}  // namespace views::examples

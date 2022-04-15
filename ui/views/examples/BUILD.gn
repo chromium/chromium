@@ -41,6 +41,11 @@ component("views_examples_lib") {
     "example_base.h",
     "example_combobox_model.cc",
     "example_combobox_model.h",
+    "examples_color_id.h",
+    "examples_color_mixer.cc",
+    "examples_color_mixer.h",
+    "examples_themed_label.cc",
+    "examples_themed_label.h",
     "examples_window.cc",
     "examples_window.h",
     "fade_animation.cc",
@@ -160,6 +165,7 @@ source_set("views_examples_proc") {
     "//mojo/core/embedder",
     "//skia",
     "//ui/base",
+    "//ui/color:mixers",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/gfx",
@@ -208,6 +214,7 @@ executable("views_examples") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
+    "//ui/color:mixers",
     "//ui/resources:ui_test_pak",
   ]
 }

@@ -6,11 +6,11 @@
 #define UI_VIEWS_EXAMPLES_SCROLL_VIEW_EXAMPLE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/examples/example_base.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class VIEWS_EXAMPLES_EXPORT ScrollViewExample : public ExampleBase {
  public:
@@ -27,7 +27,7 @@ class VIEWS_EXAMPLES_EXPORT ScrollViewExample : public ExampleBase {
  private:
   class ScrollableView;
 
-  void ButtonPressed(gfx::Rect bounds, SkColor from, SkColor to);
+  void ButtonPressed(gfx::Rect bounds, ui::ColorId from, ui::ColorId to);
 
   // The content of the scroll view.
   raw_ptr<ScrollableView> scrollable_;
@@ -36,7 +36,6 @@ class VIEWS_EXAMPLES_EXPORT ScrollViewExample : public ExampleBase {
   raw_ptr<ScrollView> scroll_view_;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_SCROLL_VIEW_EXAMPLE_H_

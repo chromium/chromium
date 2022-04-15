@@ -7,13 +7,18 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/bind.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -26,14 +31,16 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/examples/examples_color_id.h"
+#include "ui/views/examples/examples_themed_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class CenteringLayoutManager : public LayoutManagerBase {
  public:
@@ -55,10 +62,12 @@ FadingView::FadingView() {
       .AddChildren(
           Builder<BoxLayoutView>()
               .CopyAddressTo(&primary_view_)
-              .SetBorder(CreateRoundedRectBorder(1, kCornerRadius,
-                                                 gfx::kGoogleGrey900))
-              .SetBackground(
-                  CreateRoundedRectBackground(SK_ColorWHITE, kCornerRadius, 1))
+              .SetBorder(CreateThemedRoundedRectBorder(
+                  1, kCornerRadius,
+                  ExamplesColorIds::kColorFadeAnimationExampleBorder))
+              .SetBackground(CreateThemedRoundedRectBackground(
+                  ExamplesColorIds::kColorFadeAnimationExampleBackground,
+                  kCornerRadius, 1))
               .SetPaintToLayer()
               .SetOrientation(BoxLayout::Orientation::kVertical)
               .SetMainAxisAlignment(BoxLayout::MainAxisAlignment::kCenter)
@@ -75,20 +84,24 @@ FadingView::FadingView() {
                                .SetVerticalAlignment(gfx::ALIGN_MIDDLE)),
           Builder<BoxLayoutView>()
               .CopyAddressTo(&secondary_view_)
-              .SetBorder(CreateRoundedRectBorder(1, kCornerRadius,
-                                                 gfx::kGoogleGrey900))
-              .SetBackground(
-                  CreateRoundedRectBackground(SK_ColorWHITE, kCornerRadius, 1))
+              .SetBorder(CreateThemedRoundedRectBorder(
+                  1, kCornerRadius,
+                  ExamplesColorIds::kColorFadeAnimationExampleBorder))
+              .SetBackground(CreateThemedRoundedRectBackground(
+                  ExamplesColorIds::kColorFadeAnimationExampleBackground,
+                  kCornerRadius, 1))
               .SetPaintToLayer()
               .SetOrientation(BoxLayout::Orientation::kVertical)
               .SetMainAxisAlignment(BoxLayout::MainAxisAlignment::kCenter)
               .SetBetweenChildSpacing(kSpacing)
-              .AddChild(Builder<Label>()
+              .AddChild(Builder<ThemedLabel>()
                             .SetText(u"Working...")
                             .SetTextContext(style::CONTEXT_DIALOG_TITLE)
                             .SetTextStyle(style::STYLE_PRIMARY)
                             .SetVerticalAlignment(gfx::ALIGN_MIDDLE)
-                            .SetEnabledColor(gfx::kGoogleBlue800)))
+                            .SetEnabledColorId(
+                                ExamplesColorIds::
+                                    kColorFadeAnimationExampleForeground)))
       .BuildChildren();
   primary_view_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kCornerRadiusF));
@@ -134,10 +147,10 @@ FadeAnimationExample::FadeAnimationExample() : ExampleBase("Fade Animation") {}
 FadeAnimationExample::~FadeAnimationExample() = default;
 
 void FadeAnimationExample::CreateExampleView(View* container) {
-  container->SetBackground(CreateSolidBackground(SK_ColorWHITE));
+  container->SetBackground(CreateThemedSolidBackground(
+      ExamplesColorIds::kColorFadeAnimationExampleBackground));
   container->SetLayoutManager(std::make_unique<CenteringLayoutManager>());
   container->AddChildView(std::make_unique<FadingView>());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

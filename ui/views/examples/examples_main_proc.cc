@@ -32,6 +32,7 @@
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/test/in_process_context_factory.h"
 #include "ui/compositor/test/test_context_factories.h"
@@ -42,6 +43,7 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/examples/examples_color_mixer.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -69,8 +71,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 base::LazyInstance<base::TestDiscardableMemoryAllocator>::DestructorAtExit
     g_discardable_memory_allocator = LAZY_INSTANCE_INITIALIZER;
@@ -136,6 +137,9 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
       g_discardable_memory_allocator.Pointer());
 
   gfx::InitializeFonts();
+
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(&AddExamplesColorMixers));
 
 #if defined(USE_AURA)
   std::unique_ptr<aura::Env> env = aura::Env::CreateInstance();
@@ -203,5 +207,4 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   return compare_result;
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
