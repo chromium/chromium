@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -31,7 +32,6 @@
 #include <aclapi.h>
 #include <windows.h>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/sid.h"
 #endif
@@ -54,7 +54,7 @@ static_assert(std::size(kSodaPublicKeySHA256) == crypto::kSHA256Length,
 
 constexpr char kSodaManifestName[] = "SODA Library";
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 constexpr base::FilePath::CharType kSodaIndicatorFile[] =
 #if defined(ARCH_CPU_X86)
@@ -165,7 +165,7 @@ void SodaComponentInstallerPolicy::OnCustomUninstall() {}
 bool SodaComponentInstallerPolicy::VerifyInstallation(
     const base::Value& manifest,
     const base::FilePath& install_dir) const {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   bool missing_indicator_file =
       !base::PathExists(install_dir.Append(kSodaIndicatorFile));
 
