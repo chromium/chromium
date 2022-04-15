@@ -34,4 +34,16 @@ views::Widget* OpenLensRegionSearchInstructions(
           anchor, std::move(close_callback), std::move(escape_callback)));
 }
 
+void CreateLensSidePanelControllerForTesting(Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  browser_view->CreateLensSidePanelController();
+  DCHECK(browser_view->lens_side_panel_controller());
+}
+
+content::WebContents* GetLensSidePanelWebContentsForTesting(Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  DCHECK(browser_view->lens_side_panel_controller());
+  return browser_view->lens_side_panel_controller()->web_contents();
+}
+
 }  // namespace lens

@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 
 namespace content {
+class WebContents;
 struct OpenURLParams;
 }  // namespace content
 
@@ -28,6 +29,14 @@ views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
     base::OnceClosure close_callback,
     base::OnceClosure escape_callback);
+
+// For testing purposes, retrieves the web contents used by the Lens side panel
+// view.
+content::WebContents* GetLensSidePanelWebContentsForTesting(Browser* browser);
+
+// For testing purposes, creates the LensSidePanelController in the
+// corresponding BrowserView of |browser|.
+void CreateLensSidePanelControllerForTesting(Browser* browser);
 
 }  // namespace lens
 
