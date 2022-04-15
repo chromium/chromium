@@ -74,7 +74,8 @@
                 android:layout_height="32dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="50dp"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:alpha="0.0" />
         </LinearLayout>
 
         <include layout="@layout/signin_first_run_bottom_group_view" />

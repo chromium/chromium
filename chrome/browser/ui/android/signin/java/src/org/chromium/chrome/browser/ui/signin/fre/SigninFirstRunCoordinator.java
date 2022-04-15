@@ -88,10 +88,11 @@ public class SigninFirstRunCoordinator {
     }
 
     /**
-     * Notifies that native is loaded, and if policies are available, that they are also available.
+     * Notifies that native is loaded, policies are available if any exists and child account
+     * status is fetched.
      * @param hasPolicies whether policies are found on device.
      */
-    public void onNativeAndPolicyLoaded(boolean hasPolicies) {
+    public void onNativePolicyAndChildStatusLoaded(boolean hasPolicies) {
         ThreadUtils.assertOnUiThread();
         mMediator.onNativeAndPolicyLoaded(hasPolicies);
     }

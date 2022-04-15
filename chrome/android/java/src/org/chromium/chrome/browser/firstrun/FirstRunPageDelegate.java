@@ -84,4 +84,9 @@ public interface FirstRunPageDelegate {
      * See {@link PolicyLoadListener} for details.
      */
     OneshotSupplier<Boolean> getPolicyLoadListener();
+
+    /**
+     * Returns the supplier that supplies child account status.
+     */
+    OneshotSupplier<Boolean> getChildAccountStatusListener();
 }
