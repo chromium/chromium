@@ -4,6 +4,7 @@
 
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/services/network_config/cros_network_config.h"
@@ -82,10 +83,13 @@ void CrosNetworkConfigTestHelper::Initialize(
   if (NetworkHandler::IsInitialized()) {
     cros_network_config_impl_ = std::make_unique<CrosNetworkConfig>();
   } else {
+    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
+    cellular_inhibitor_->Init(network_state_helper_.network_state_handler(),
+                              network_state_helper_.network_device_handler());
     cros_network_config_impl_ = std::make_unique<CrosNetworkConfig>(
         network_state_helper_.network_state_handler(),
         network_state_helper_.network_device_handler(),
-        /*cellular_inhibitor=*/nullptr,
+        cellular_inhibitor_.get(),
         /*cellular_esim_profile_handler=*/nullptr,
         network_configuration_handler,
         /*network_connection_handler=*/nullptr,

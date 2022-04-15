@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -51,6 +52,8 @@ class CrosNetworkConfigTestHelper {
     return network_state_helper_.network_device_handler();
   }
 
+  CellularInhibitor* cellular_inhibitor() { return cellular_inhibitor_.get(); }
+
   void Initialize(
       ManagedNetworkConfigurationHandler* network_configuration_handler);
 
@@ -61,6 +64,7 @@ class CrosNetworkConfigTestHelper {
 
   NetworkStateTestHelper network_state_helper_{
       /*use_default_devices_and_services=*/false};
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<CrosNetworkConfig> cros_network_config_impl_;
 };
 

@@ -24,11 +24,12 @@ class ASH_EXPORT NetworkListHeaderView : public views::View {
 
   TriView* container() const { return container_; }
 
- private:
-  friend class NetworkListNetworkHeaderViewTest;
-
   // Used for testing. This is 1 because view IDs should not be 0.
   static constexpr int kTitleLabelViewId = 1;
+
+ private:
+  friend class NetworkListNetworkHeaderViewTest;
+  friend class NetworkListMobileHeaderViewTest;
 
   void AddTitleView(int label_id);
 

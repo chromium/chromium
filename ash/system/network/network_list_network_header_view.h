@@ -51,12 +51,14 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
 
   TrayNetworkStateModel* model() { return model_; }
 
+ protected:
+  // Used for testing.
+  static constexpr int kToggleButtonId =
+      NetworkListHeaderView::kTitleLabelViewId + 1;
+
  private:
   friend class NetworkListNetworkHeaderViewTest;
-
-  // Used for testing. This is 2 because view IDs should not be 0. Id is set to
-  // 2 here because NetworkListHeaderView is using ID 1 for title label.
-  static constexpr int kToggleButtonId = 2;
+  friend class NetworkListMobileHeaderViewTest;
 
   void ToggleButtonPressed();
 
