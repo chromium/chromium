@@ -38,30 +38,12 @@ struct Rule {
 
 // An entry in the "simple" backend of an HTTP cache.
 interface SimpleCacheEntry {
-  // Writes data into the entry. See disk_cache::Entry::WriteData for details.
-  WriteData(int32 index,
-            int32 offset,
-            array<uint8> data,
-            bool truncate) => (int32 result);
-
-  // Reads data from the entry. See disk_cache::Entry::ReadData for details.
-  ReadData(int32 index,
-           int32 offset,
-           uint32 length) => (array<uint8> data, int32 result);
-
-  // Closes the entry.
-  Close() => ();
 };
 
 // The "simple" backend of an HTTP cache.
 interface SimpleCache {
   // Creates a new entry.
-  CreateEntry(string key) =>
-    (pending_remote<SimpleCacheEntry>? entry, int32 error);
-
-  // Opens an entry.
-  OpenEntry(string key) =>
-    (pending_remote<SimpleCacheEntry>? entry, int32 error);
+  CreateEntry(string key) => (pending_remote<SimpleCacheEntry>? entry);
 };
 
 // Testing interface to the network service.

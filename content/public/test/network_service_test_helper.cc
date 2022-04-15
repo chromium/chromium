@@ -80,88 +80,9 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
  public:
   explicit SimpleCacheEntry(disk_cache::ScopedEntryPtr entry)
       : entry_(std::move(entry)) {}
-  ~SimpleCacheEntry() override = default;
-
-  void WriteData(int32_t index,
-                 int32_t offset,
-                 const std::vector<uint8_t>& data,
-                 bool truncate,
-                 WriteDataCallback callback) override {
-    if (!entry_) {
-      std::move(callback).Run(net::ERR_FAILED);
-      return;
-    }
-    auto callback_holder =
-        base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
-    callback_holder->data = std::move(callback);
-
-    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
-    memcpy(data_to_pass->data(), data.data(), data.size());
-    int rv = entry_->WriteData(index, offset, data_to_pass.get(), data.size(),
-                               base::BindOnce(&SimpleCacheEntry::OnDataWritten,
-                                              weak_factory_.GetWeakPtr(),
-                                              data_to_pass, callback_holder),
-                               truncate);
-    if (rv == net::ERR_IO_PENDING) {
-      return;
-    }
-    OnDataWritten(std::move(data_to_pass), std::move(callback_holder), rv);
-  }
-
-  void ReadData(int32_t index,
-                int32_t offset,
-                uint32_t length,
-                ReadDataCallback callback) override {
-    if (!entry_) {
-      std::move(callback).Run(/*data=*/{}, net::ERR_FAILED);
-      return;
-    }
-
-    auto callback_holder =
-        base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
-    callback_holder->data = std::move(callback);
-
-    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
-    int rv = entry_->ReadData(
-        index, offset, buffer.get(), length,
-        base::BindOnce(&SimpleCacheEntry::OnDataRead,
-                       weak_factory_.GetWeakPtr(), buffer, callback_holder));
-    if (rv == net::ERR_IO_PENDING) {
-      return;
-    }
-    OnDataRead(std::move(buffer), std::move(callback_holder), rv);
-  }
-
-  void Close(CloseCallback callback) override {
-    entry_.reset();
-    std::move(callback).Run();
-  }
 
  private:
-  void OnDataWritten(
-      scoped_refptr<net::IOBuffer> buffer,
-      scoped_refptr<base::RefCountedData<WriteDataCallback>> callback_holder,
-      int result) {
-    WriteDataCallback callback = std::move(callback_holder->data);
-    std::move(callback).Run(result);
-  }
-
-  void OnDataRead(
-      scoped_refptr<net::IOBuffer> buffer,
-      scoped_refptr<base::RefCountedData<ReadDataCallback>> callback_holder,
-      int result) {
-    ReadDataCallback callback = std::move(callback_holder->data);
-    if (result < 0) {
-      std::move(callback).Run(/*data=*/{}, result);
-      return;
-    }
-    std::vector<uint8_t> data(result);
-    memcpy(data.data(), buffer->data(), result);
-    std::move(callback).Run(data, result);
-  }
-
   disk_cache::ScopedEntryPtr entry_;
-  base::WeakPtrFactory<SimpleCacheEntry> weak_factory_{this};
 };
 
 class SimpleCache : public network::mojom::SimpleCache {
@@ -188,28 +109,13 @@ class SimpleCache : public network::mojom::SimpleCache {
     OnEntryCreated(std::move(callback_holder), std::move(result));
   }
 
-  void OpenEntry(const std::string& key, OpenEntryCallback callback) override {
-    auto callback_holder =
-        base::MakeRefCounted<base::RefCountedData<OpenEntryCallback>>();
-    callback_holder->data = std::move(callback);
-
-    disk_cache::EntryResult result = backend_->OpenEntry(
-        key, net::DEFAULT_PRIORITY,
-        base::BindOnce(&SimpleCache::OnEntryOpend, weak_factory_.GetWeakPtr(),
-                       callback_holder));
-    if (result.net_error() == net::ERR_IO_PENDING) {
-      return;
-    }
-    OnEntryOpend(std::move(callback_holder), std::move(result));
-  }
-
  private:
   void OnEntryCreated(
       scoped_refptr<base::RefCountedData<CreateEntryCallback>> callback_holder,
       disk_cache::EntryResult result) {
     CreateEntryCallback callback = std::move(callback_holder->data);
     if (result.net_error() != net::OK) {
-      std::move(callback).Run(mojo::NullRemote(), result.net_error());
+      std::move(callback).Run(mojo::NullRemote());
       return;
     }
     disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
@@ -218,24 +124,7 @@ class SimpleCache : public network::mojom::SimpleCache {
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<SimpleCacheEntry>(std::move(entry)),
         remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(std::move(remote), net::OK);
-  }
-
-  void OnEntryOpend(
-      scoped_refptr<base::RefCountedData<OpenEntryCallback>> callback_holder,
-      disk_cache::EntryResult result) {
-    OpenEntryCallback callback = std::move(callback_holder->data);
-    if (result.net_error() != net::OK) {
-      std::move(callback).Run(mojo::NullRemote(), result.net_error());
-      return;
-    }
-    disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
-
-    mojo::PendingRemote<network::mojom::SimpleCacheEntry> remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<SimpleCacheEntry>(std::move(entry)),
-        remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(std::move(remote), net::OK);
+    std::move(callback).Run(std::move(remote));
   }
 
   std::unique_ptr<disk_cache::Backend> backend_;
