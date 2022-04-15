@@ -872,6 +872,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_menuOpenedClosedViaInnerText() {
+        performTest("menu-opened-closed-via-inner-text.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_multipleAriaPropertiesChanged() {
         performTest("multiple-aria-properties-changed.html", EMPTY_EXPECTATIONS_FILE);
     }
