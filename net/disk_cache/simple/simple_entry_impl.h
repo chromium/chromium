@@ -67,15 +67,17 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
     virtual ~ActiveEntryProxy() = 0;
   };
 
-  SimpleEntryImpl(net::CacheType cache_type,
-                  const base::FilePath& path,
-                  scoped_refptr<BackendCleanupTracker> cleanup_tracker,
-                  uint64_t entry_hash,
-                  OperationsMode operations_mode,
-                  SimpleBackendImpl* backend,
-                  SimpleFileTracker* file_tracker,
-                  net::NetLog* net_log,
-                  uint32_t entry_priority);
+  SimpleEntryImpl(
+      net::CacheType cache_type,
+      const base::FilePath& path,
+      scoped_refptr<BackendCleanupTracker> cleanup_tracker,
+      uint64_t entry_hash,
+      OperationsMode operations_mode,
+      SimpleBackendImpl* backend,
+      SimpleFileTracker* file_tracker,
+      scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
+      net::NetLog* net_log,
+      uint32_t entry_priority);
 
   void SetActiveEntryProxy(
       std::unique_ptr<ActiveEntryProxy> active_entry_proxy);
@@ -366,6 +368,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
 
   const base::WeakPtr<SimpleBackendImpl> backend_;
   const raw_ptr<SimpleFileTracker> file_tracker_;
+  const scoped_refptr<BackendFileOperationsFactory> file_operations_factory_;
   const net::CacheType cache_type_;
   const base::FilePath path_;
   const uint64_t entry_hash_;

@@ -104,15 +104,6 @@ int GetFileIndexFromStreamIndex(int stream_index) {
   return (stream_index == 2) ? 1 : 0;
 }
 
-bool GetMTime(const base::FilePath& path, base::Time* out_mtime) {
-  DCHECK(out_mtime);
-  base::File::Info file_info;
-  if (!base::GetFileInfo(path, &file_info))
-    return false;
-  *out_mtime = file_info.last_modified;
-  return true;
-}
-
 uint32_t Crc32(const char* data, int length) {
   uint32_t empty_crc = crc32(0, Z_NULL, 0);
   if (length == 0)

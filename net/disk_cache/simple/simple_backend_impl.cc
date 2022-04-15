@@ -180,17 +180,6 @@ SimpleEntryImpl::OperationsMode CacheTypeToOperationsMode(net::CacheType type) {
              : SimpleEntryImpl::NON_OPTIMISTIC_OPERATIONS;
 }
 
-class TrivialFileOperationsFactory : public BackendFileOperationsFactory {
- public:
-  std::unique_ptr<BackendFileOperations> Create(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
-    return std::make_unique<TrivialFileOperations>();
-  }
-
- private:
-  ~TrivialFileOperationsFactory() override = default;
-};
-
 }  // namespace
 
 class SimpleBackendImpl::ActiveEntryProxy
@@ -274,8 +263,8 @@ net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
   index_ = std::make_unique<SimpleIndex>(
       base::SequencedTaskRunnerHandle::Get(), cleanup_tracker_.get(), this,
       GetCacheType(),
-      std::make_unique<SimpleIndexFile>(index_task_runner, GetCacheType(),
-                                        path_));
+      std::make_unique<SimpleIndexFile>(
+          index_task_runner, file_operations_factory_, GetCacheType(), path_));
   index_->ExecuteWhenReady(
       base::BindOnce(&RecordIndexLoad, GetCacheType(), base::TimeTicks::Now()));
 
@@ -493,10 +482,10 @@ SimpleBackendImpl::MaybeOptimisticCreateForPostDoom(
   // serialized after doom's completion.
   if (post_doom->empty() &&
       entry_operations_mode_ == SimpleEntryImpl::OPTIMISTIC_OPERATIONS) {
-    simple_entry = new SimpleEntryImpl(
+    simple_entry = base::MakeRefCounted<SimpleEntryImpl>(
         GetCacheType(), path_, cleanup_tracker_.get(), entry_hash,
-        entry_operations_mode_, this, file_tracker_, net_log_,
-        GetNewEntryPriority(request_priority));
+        entry_operations_mode_, this, file_tracker_, file_operations_factory_,
+        net_log_, GetNewEntryPriority(request_priority));
     simple_entry->SetKey(key);
     simple_entry->SetActiveEntryProxy(
         ActiveEntryProxy::Create(entry_hash, this));
@@ -799,8 +788,8 @@ SimpleBackendImpl::CreateOrFindActiveOrDoomedEntry(
   if (did_insert) {
     SimpleEntryImpl* entry = it->second = new SimpleEntryImpl(
         GetCacheType(), path_, cleanup_tracker_.get(), entry_hash,
-        entry_operations_mode_, this, file_tracker_, net_log_,
-        GetNewEntryPriority(request_priority));
+        entry_operations_mode_, this, file_tracker_, file_operations_factory_,
+        net_log_, GetNewEntryPriority(request_priority));
     entry->SetKey(key);
     entry->SetActiveEntryProxy(ActiveEntryProxy::Create(entry_hash, this));
   }
@@ -841,10 +830,10 @@ EntryResult SimpleBackendImpl::OpenEntryFromHash(uint64_t entry_hash,
                      std::move(callback));
   }
 
-  scoped_refptr<SimpleEntryImpl> simple_entry = new SimpleEntryImpl(
+  auto simple_entry = base::MakeRefCounted<SimpleEntryImpl>(
       GetCacheType(), path_, cleanup_tracker_.get(), entry_hash,
-      entry_operations_mode_, this, file_tracker_, net_log_,
-      GetNewEntryPriority(net::HIGHEST));
+      entry_operations_mode_, this, file_tracker_, file_operations_factory_,
+      net_log_, GetNewEntryPriority(net::HIGHEST));
   EntryResultCallback backend_callback =
       base::BindOnce(&SimpleBackendImpl::OnEntryOpenedFromHash, AsWeakPtr(),
                      entry_hash, simple_entry, std::move(callback));

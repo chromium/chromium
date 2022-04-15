@@ -28,6 +28,7 @@ class MojoBackendFileOperations final
   // disk_cache::BackendFileOperations implementation:
   bool CreateDirectory(const base::FilePath& path) override;
   bool PathExists(const base::FilePath& path) override;
+  bool DirectoryExists(const base::FilePath& path) override;
   base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
   bool DeleteFile(const base::FilePath& path) override;
   bool ReplaceFile(const base::FilePath& from_path,
@@ -37,9 +38,25 @@ class MojoBackendFileOperations final
       const base::FilePath& path) override;
   std::unique_ptr<disk_cache::BackendFileOperations::FileEnumerator>
   EnumerateFiles(const base::FilePath& path) override;
+  std::unique_ptr<disk_cache::UnboundBackendFileOperations> Unbind() override;
 
  private:
   mojo::Remote<mojom::HttpCacheBackendFileOperations> remote_;
+};
+
+class UnboundMojoBackendFileOperations final
+    : public disk_cache::UnboundBackendFileOperations {
+ public:
+  explicit UnboundMojoBackendFileOperations(
+      mojo::PendingRemote<mojom::HttpCacheBackendFileOperations>
+          pending_remote);
+  ~UnboundMojoBackendFileOperations() override;
+
+  std::unique_ptr<disk_cache::BackendFileOperations> Bind(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
+
+ private:
+  mojo::PendingRemote<mojom::HttpCacheBackendFileOperations> pending_remote_;
 };
 
 }  // namespace network

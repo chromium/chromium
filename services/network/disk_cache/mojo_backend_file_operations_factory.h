@@ -32,6 +32,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MojoBackendFileOperationsFactory final
   // BackendFileOperationsFactory implementation:
   std::unique_ptr<disk_cache::BackendFileOperations> Create(
       scoped_refptr<base::SequencedTaskRunner> task_runner) override;
+  std::unique_ptr<disk_cache::UnboundBackendFileOperations> CreateUnbound()
+      override;
 
  private:
   ~MojoBackendFileOperationsFactory() override;
