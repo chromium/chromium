@@ -32,8 +32,9 @@ namespace {
 // Returns the default configuration for Symbols.
 UIImageConfiguration* SymbolConfiguration() {
   return [UIImageSymbolConfiguration
-      configurationWithPointSize:22
-                          weight:UIImageSymbolWeightMedium];
+      configurationWithPointSize:24
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
 }
 
 }  // namespace
