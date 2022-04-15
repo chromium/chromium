@@ -23,6 +23,9 @@ extern const base::Feature kSegmentationStructuredMetricsFeature;
 // Feature flag for enabling UKM based engine.
 extern const base::Feature kSegmentationPlatformUkmEngine;
 
+// Feature flag for enabling low engagement segmentation key.
+extern const base::Feature kSegmentationPlatformLowEngagementFeature;
+
 }  // namespace features
 }  // namespace segmentation_platform
 

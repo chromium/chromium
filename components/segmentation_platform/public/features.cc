@@ -27,5 +27,9 @@ const base::Feature kSegmentationStructuredMetricsFeature{
 const base::Feature kSegmentationPlatformUkmEngine{
     "SegmentationPlatformUkmEngine", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSegmentationPlatformLowEngagementFeature{
+    "SegmentationPlatformLowEngagementFeature",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace segmentation_platform
