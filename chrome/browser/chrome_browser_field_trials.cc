@@ -108,31 +108,6 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
   }
 
   {
-    // EarlyLibraryLoadSynthetic field trial.
-    const char* group_name;
-    bool java_feature_enabled = chrome::android::IsJavaDrivenFeatureEnabled(
-        features::kEarlyLibraryLoad);
-    bool feature_enabled =
-        base::FeatureList::IsEnabled(features::kEarlyLibraryLoad);
-    // Use the default group if cc and java feature values don't agree (can
-    // happen on first startup after feature is enabled by Finch), or the
-    // feature is not overridden by Finch.
-    if (feature_enabled != java_feature_enabled ||
-        !base::FeatureList::GetInstance()->IsFeatureOverridden(
-            features::kEarlyLibraryLoad.name)) {
-      group_name = "Default";
-    } else if (java_feature_enabled) {
-      group_name = "Enabled";
-    } else {
-      group_name = "Disabled";
-    }
-    static constexpr char kEarlyLibraryLoadTrial[] =
-        "EarlyLibraryLoadSynthetic";
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kEarlyLibraryLoadTrial, group_name);
-  }
-
-  {
     // BackgroundThreadPoolSynthetic field trial.
     const char* group_name;
     // Target group as indicated by finch feature.
