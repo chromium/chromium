@@ -65,13 +65,36 @@ struct PopupView: View {
 
     static let selfSizingListBottomMargin: CGFloat = 16
 
-    // Default height if no other header or footer. This spaces the sections
-    // out properly.
-    static let headerFooterHeight: CGFloat = 16
+    enum VariationOne {
+      static let pedalSectionSeparatorPadding = EdgeInsets(
+        top: 8.5, leading: 0, bottom: 4, trailing: 0)
+      static let visibleTopContentInset: CGFloat = 4
+      // This allows hiding floating section headers at the top of the list in variation one.
+      static let hiddenTopContentInset: CGFloat = -50
+    }
 
-    // Default list row insets. These are removed to inset the popup to the
-    // width of the omnibox
-    static let defaultInset: CGFloat = 16
+    enum VariationTwo {
+      // Default height if no other header or footer. This spaces the sections
+      // out properly in variation two.
+      static let headerFooterHeight: CGFloat = 16
+
+      // Default list row insets. These are removed to inset the popup to the
+      // width of the omnibox.
+      static let defaultInset: CGFloat = 16
+    }
+  }
+
+  /// Applies custom list style according to UI variation.
+  struct ListStyleModifier: ViewModifier {
+    @Environment(\.popupUIVariation) var popupUIVariation: PopupUIVariation
+    func body(content: Content) -> some View {
+      switch popupUIVariation {
+      case .one:
+        content.listStyle(.plain)
+      case .two:
+        content.listStyle(.insetGrouped)
+      }
+    }
   }
 
   /// Custom modifier emulating `.environment(key, value)`.
@@ -104,11 +127,9 @@ struct PopupView: View {
   private let shouldSelfSize: Bool
   private let appearanceContainerType: UIAppearanceContainer.Type?
 
+  @Environment(\.colorScheme) var colorScheme: ColorScheme
   @Environment(\.popupUIVariation) var popupUIVariation: PopupUIVariation
-
-  /// Memory of scrolling offset, so as to be able to tell the difference between user drag gesture and automatic scroll-to-top on new matches
-  @State private var initialScrollingOffset: CGFloat? = nil
-  @State private var scrollingOffset: CGFloat? = nil
+  @Environment(\.horizontalSizeClass) var sizeClass
 
   /// The current height of the self-sizing list.
   @State private var selfSizingListHeight: CGFloat? = nil
@@ -122,7 +143,7 @@ struct PopupView: View {
     self.appearanceContainerType = appearanceContainerType
   }
 
-  var listContent: some View {
+  func listContent(geometry: GeometryProxy) -> some View {
     ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
       sectionIndex, section in
 
@@ -130,10 +151,11 @@ struct PopupView: View {
         ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
           matchIndex, match in
           let indexPath = IndexPath(row: matchIndex, section: sectionIndex)
+          let highlighted = indexPath == model.highlightedMatchIndexPath
 
           PopupMatchRowView(
             match: match,
-            isHighlighted: indexPath == self.model.highlightedMatchIndexPath,
+            isHighlighted: highlighted,
             selectionHandler: {
               model.delegate?.autocompleteResultConsumer(
                 model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
@@ -142,11 +164,13 @@ struct PopupView: View {
               model.delegate?.autocompleteResultConsumer(
                 model, didTapTrailingButtonForRow: UInt(matchIndex),
                 inSection: UInt(sectionIndex))
-            }
+            },
+            shouldDisplayCustomSeparator: (!highlighted && matchIndex < section.matches.count - 1)
           )
           .id(indexPath)
           .deleteDisabled(!match.supportsDeletion)
           .listRowInsets(Dimensions.matchListRowInsets)
+          .listRowBackground(Color.clear)
           .accessibilityElement(children: .contain)
           .accessibilityIdentifier(
             OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath))
@@ -158,17 +182,25 @@ struct PopupView: View {
           }
         }
 
-      let footer = Spacer()
+      let footerForVariationTwo = Spacer()
         // Use `leastNonzeroMagnitude` to remove the footer. Otherwise,
         // it uses a default height.
         .frame(height: CGFloat.leastNonzeroMagnitude)
         .listRowInsets(EdgeInsets())
 
-      Section(header: header(for: section), footer: footer) {
+      Section(
+        header: header(for: section, at: sectionIndex, geometry: geometry),
+        footer: popupUIVariation == .one ? nil : footerForVariationTwo
+      ) {
         sectionContents
       }
     }
   }
+
+  // Memory of scrolling offset, so as to be able to tell the difference
+  // between user drag gesture and automatic scroll-to-top on new matches.
+  @State private var initialScrollingOffset: CGFloat? = nil
+  @State private var scrollingOffset: CGFloat? = nil
 
   @ViewBuilder
   var listView: some View {
@@ -176,6 +208,7 @@ struct PopupView: View {
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
     )
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewSections))
+    .concat(ListStyleModifier())
     .concat(EnvironmentValueModifier(\.defaultMinListHeaderHeight, 0))
 
     GeometryReader { geometry in
@@ -189,22 +222,25 @@ struct PopupView: View {
             bottomMargin: Dimensions.selfSizingListBottomMargin,
             listModifier: selfSizingListModifier,
             content: {
-              listContent
+              listContent(geometry: geometry)
                 .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
             },
             emptySpace: {
               PopupEmptySpaceView()
             }
-          ).frame(width: geometry.size.width, height: geometry.size.height)
-            .onPreferenceChange(SelfSizingListHeightPreferenceKey.self) { height in
-              selfSizingListHeight = height
-            }
+          )
+          .frame(width: geometry.size.width, height: geometry.size.height)
+          .onPreferenceChange(SelfSizingListHeightPreferenceKey.self) { height in
+            selfSizingListHeight = height
+          }
         }
       } else {
         List {
-          listContent
+          listContent(geometry: geometry)
             .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
         }
+        // This fixes list section header internal representation from overlapping safe areas.
+        .padding([.leading, .trailing], 0.2)
         .background(listBackground)
         .modifier(commonListModifier)
         .ignoresSafeArea(.keyboard)
@@ -224,11 +260,43 @@ struct PopupView: View {
   }
 
   @ViewBuilder
-  func header(for section: PopupMatchSection) -> some View {
+  func header(for section: PopupMatchSection, at index: Int, geometry: GeometryProxy) -> some View {
     if section.header.isEmpty {
-      Spacer()
-        .frame(height: Dimensions.headerFooterHeight)
-        .listRowInsets(EdgeInsets())
+      if popupUIVariation == .one {
+        if index == 0 {
+          // Additional space between omnibox and top section.
+          let firstSectionHeader =
+            Color.cr_primaryBackground.frame(
+              width: geometry.size.width, height: -Dimensions.VariationOne.hiddenTopContentInset)
+          if #available(iOS 15.0, *) {
+            // Additional padding is added on iOS 15, which needs to be cancelled here.
+            firstSectionHeader.padding([.top, .bottom], -6)
+          } else {
+            firstSectionHeader
+          }
+        } else if index == 1 {
+          // Spacing and separator below the top (pedal) section is inserted as
+          // a header in the second section.
+          let separatorColor = (colorScheme == .dark) ? Color.cr_grey700 : Color.cr_grey200
+          let pedalSectionSeparator =
+            separatorColor
+            .frame(width: geometry.size.width, height: 0.5)
+            .padding(Dimensions.VariationOne.pedalSectionSeparatorPadding)
+            .background(Color.cr_primaryBackground)
+
+          if #available(iOS 15.0, *) {
+            pedalSectionSeparator.padding([.top, .bottom], -6)
+          } else {
+            pedalSectionSeparator
+          }
+        } else {
+          EmptyView()
+        }
+      } else {
+        Spacer()
+          .frame(height: Dimensions.VariationTwo.headerFooterHeight)
+          .listRowInsets(EdgeInsets())
+      }
     } else {
       Text(section.header)
     }
@@ -239,29 +307,37 @@ struct PopupView: View {
   var omniboxPaddingModifier: some ViewModifier {
     let leadingSpace: CGFloat
     let trailingSpace: CGFloat
-    switch popupUIVariation {
-    case .one:
+    if sizeClass == .compact {
       leadingSpace = 0
       trailingSpace = 0
-    case .two:
-      leadingSpace = model.omniboxLeadingSpace - Dimensions.defaultInset
-      trailingSpace = model.omniboxTrailingSpace - Dimensions.defaultInset
+    } else {
+      leadingSpace = model.omniboxLeadingSpace
+      trailingSpace = model.omniboxTrailingSpace
     }
-    return PaddingModifier([.leading], leadingSpace).concat(
-      PaddingModifier([.trailing], trailingSpace))
+    let inset: CGFloat =
+      (popupUIVariation == .one || sizeClass == .compact)
+      ? 0 : -Dimensions.VariationTwo.defaultInset
+    return PaddingModifier([.leading], leadingSpace + inset).concat(
+      PaddingModifier([.trailing], trailingSpace + inset))
   }
 
   var listBackground: some View {
+    let backgroundColor: Color
     // iOS 14 + SwiftUI has a bug with dark mode colors in high contrast mode.
     // If no dark mode + high contrast color is provided, they are supposed to
     // default to the dark mode color. Instead, SwiftUI defaults to the light
     // mode color. This bug is fixed in iOS 15, but until then, a workaround
     // color with the dark mode + high contrast color specified is used.
     if #available(iOS 15, *) {
-      return Color.cr_groupedSecondaryBackground.edgesIgnoringSafeArea(.all)
+      backgroundColor =
+        (popupUIVariation == .one) ? Color.cr_primaryBackground : Color.cr_groupedPrimaryBackground
     } else {
-      return Color("grouped_primary_background_color_swiftui_ios14").edgesIgnoringSafeArea(.all)
+      backgroundColor =
+        (popupUIVariation == .one)
+        ? Color("primary_background_color_swiftui_ios14")
+        : Color("grouped_primary_background_color_swiftui_ios14")
     }
+    return backgroundColor.edgesIgnoringSafeArea(.all)
   }
 
   func onAppear() {
@@ -271,6 +347,21 @@ struct PopupView: View {
       ])
 
       listAppearance.backgroundColor = .clear
+      // Custom separators are provided, so the system ones are made invisible.
+      listAppearance.separatorColor = .clear
+      listAppearance.separatorStyle = .none
+      listAppearance.separatorInset = .zero
+
+      if #available(iOS 15.0, *) {
+        listAppearance.sectionHeaderTopPadding = 0
+      } else {
+        listAppearance.sectionFooterHeight = 0
+      }
+
+      if popupUIVariation == .one {
+        listAppearance.contentInset.top = Dimensions.VariationOne.hiddenTopContentInset
+        listAppearance.contentInset.top += Dimensions.VariationOne.visibleTopContentInset
+      }
 
       if shouldSelfSize {
         listAppearance.bounces = false
@@ -321,6 +412,8 @@ struct PopupView_Previews: PreviewProvider {
 
     PopupView(
       model: PopupModel(
-        matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil))
+        matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil)
+    )
+    .environment(\.popupUIVariation, .one)
   }
 }

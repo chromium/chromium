@@ -31,7 +31,8 @@ class PopupCoordinator {
     let mediator = PopupMediator()
     self.mediator = mediator
 
-    let viewController = UIHostingController(rootView: PopupView(model: mediator.model))
+    let viewController = UIHostingController(
+      rootView: PopupView(model: mediator.model).environment(\.popupUIVariation, .one))
     self.viewController = viewController
     viewController.view.translatesAutoresizingMaskIntoConstraints = false
 

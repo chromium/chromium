@@ -31,10 +31,11 @@ id<GREYMatcher> PopupRowWithUrl(GURL url) {
   id<GREYMatcher> URLMatcher =
       [ChromeEarlGrey isNewOmniboxPopupEnabled]
           ? grey_descendant(grey_accessibilityValue(urlString))
-          : grey_descendant(
-                chrome_test_util::StaticTextWithAccessibilityLabel(urlString));
-  return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher,
-                    grey_sufficientlyVisible(), nil);
+          : grey_allOf(grey_descendant(
+                           chrome_test_util::StaticTextWithAccessibilityLabel(
+                               urlString)),
+                       grey_sufficientlyVisible(), nil);
+  return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
 }
 
 // Returns the switch to open tab element for the |url|.
@@ -42,7 +43,7 @@ id<GREYMatcher> SwitchTabElementForUrl(const GURL& url) {
   return grey_allOf(
       grey_ancestor(PopupRowWithUrl(url)),
       grey_accessibilityID(kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
+      nil);
 }
 
 // Web page 1.
@@ -133,9 +134,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(kPage1URL)];
 
   // Switch to the first tab, scrolling the popup if necessary.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(firstPageURL),
-                                          grey_sufficientlyVisible(), nil)]
+  [[[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(firstPageURL)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       performAction:grey_tap()];
@@ -370,12 +369,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Make sure that the "Switch to Open Tab" element is visible, scrolling the
   // popup if necessary.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(URL1),
-                                          grey_sufficientlyVisible(), nil)]
+  [[[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL1)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
 
   // Close the first page.
   [ChromeEarlGrey closeTabAtIndex:0];

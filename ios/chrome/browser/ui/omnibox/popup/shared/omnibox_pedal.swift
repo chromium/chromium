@@ -15,17 +15,20 @@ import UIKit
   public let hint: String
   /// Name of the image in the bundle.
   public let imageName: String
+  public let incognito: Bool
   /// Action to run when the pedal is executed.
   public let action: () -> Void
 
   public init(
     title: String, subtitle: String,
-    accessibilityHint: String, imageName: String, action: @escaping () -> Void
+    accessibilityHint: String, imageName: String, incognito: Bool,
+    action: @escaping () -> Void
   ) {
     self.title = title
     self.subtitle = subtitle
     self.hint = accessibilityHint
     self.imageName = imageName
+    self.incognito = incognito
     self.action = action
   }
 }
@@ -37,7 +40,12 @@ extension OmniboxPedalData: OmniboxIcon {
   }
 
   public var iconImage: UIImage? {
-    return UIImage(named: self.imageName)
+    // Dark mode is set explicitly if incognito is enabled.
+    let userInterfaceStyle =
+      UITraitCollection(userInterfaceStyle: incognito ? .dark : .unspecified)
+    return UIImage(
+      named: self.imageName, in: nil,
+      compatibleWith: UITraitCollection(traitsFrom: [.current, userInterfaceStyle]))
   }
 
   public var imageURL: CrURL? { return nil }
