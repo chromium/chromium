@@ -163,6 +163,9 @@ account_manager::AccountManagerFacade::AccountAdditionSource
 GetAccountReauthSourceFromAccessPoint(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsReauthAccountButton;
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kAvatarBubbleReauthAccountButton;
