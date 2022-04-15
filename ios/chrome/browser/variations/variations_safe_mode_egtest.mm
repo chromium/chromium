@@ -121,7 +121,8 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.ThreeCrashesTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-- (void)testThreeCrashesTriggerSafeMode {
+// TODO(crbug.com/1316325): Test not run or not finished.
+- (void)DISABLED_testThreeCrashesTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
 
   // Persist the local state pref changes made above and in setUp().
@@ -168,7 +169,8 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.FetchFailuresTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-- (void)testFetchFailuresTriggerSafeMode {
+// TODO(crbug.com/1316325): Test not run or not finished.
+- (void)DISABLED_testFetchFailuresTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
   // The fetch failure streak threshold for triggering safe mode is 25.
   [VariationsAppInterface setFetchFailureValue:25];
@@ -198,7 +200,8 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.DoNotTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-- (void)testDoNotTriggerSafeMode {
+// TODO(crbug.com/1316325): Test not run or not finished.
+- (void)DISABLED_testDoNotTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
   // Neither a crash streak of 2 nor a fetch failure streak of 24 will trigger
   // variations safe mode in the next session.

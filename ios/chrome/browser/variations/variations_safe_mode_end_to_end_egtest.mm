@@ -138,7 +138,8 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 // TODO(crbug.com/1298274): Re-enabled with new mechanism to catch crashes.
 // TODO(crbug.com/1298256): Re-enabled with new mechanism to catch crashes.
 // Sheriffs, feel free to immediately re-disable if needed.
-- (void)testVariationsSafeModeEndToEnd {
+// TODO(crbug.com/1316325): Test not run or not finished.
+- (void)DISABLED_testVariationsSafeModeEndToEnd {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/1297123): Disabled on iPad device
