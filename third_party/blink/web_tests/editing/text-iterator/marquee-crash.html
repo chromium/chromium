@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1289525">
+
+This test passes if it does not crash.
+<marquee></marquee>
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+requestAnimationFrame(() => {
+  testRunner.findString('c', ['Async']);
+  requestAnimationFrame(() => {
+    testRunner.notifyDone();
+  });
+});
+</script>
