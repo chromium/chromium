@@ -335,8 +335,6 @@ Resource* PreloadHelper::PreloadIfNeeded(
   options.parser_disposition = parser_disposition;
   FetchParameters link_fetch_params(std::move(resource_request), options);
   link_fetch_params.SetCharset(document.Encoding());
-  link_fetch_params.SetRenderBlockingBehavior(
-      RenderBlockingBehavior::kNonBlocking);
 
   if (params.cross_origin != kCrossOriginAttributeNotSet) {
     link_fetch_params.SetCrossOriginAccessControl(
@@ -384,10 +382,14 @@ Resource* PreloadHelper::PreloadIfNeeded(
   }
   link_fetch_params.SetLinkPreload(true);
 
+  bool render_blocking = BlockingAttribute::IsRenderBlocking(params.blocking);
+  link_fetch_params.SetRenderBlockingBehavior(
+      render_blocking ? RenderBlockingBehavior::kBlocking
+                      : RenderBlockingBehavior::kNonBlocking);
   if (pending_preload) {
     if (RenderBlockingResourceManager* manager =
             document.GetRenderBlockingResourceManager()) {
-      if (BlockingAttribute::IsRenderBlocking(params.blocking)) {
+      if (render_blocking) {
         manager->AddPendingPreload(
             *pending_preload,
             RenderBlockingResourceManager::PreloadType::kRegular);
@@ -517,17 +519,19 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // is cryptographic nonce, integrity metadata is integrity metadata, parser
   // metadata is "not-parser-inserted", credentials mode is credentials mode,
   // and referrer policy is referrer policy." [spec text]
+  bool render_blocking = BlockingAttribute::IsRenderBlocking(params.blocking);
   ModuleScriptFetchRequest request(
       params.href, ModuleType::kJavaScript, context_type, destination,
-      ScriptFetchOptions(params.nonce, integrity_metadata, params.integrity,
-                         kNotParserInserted, credentials_mode,
-                         params.referrer_policy,
-                         mojom::blink::FetchPriorityHint::kAuto,
-                         RenderBlockingBehavior::kNonBlocking),
+      ScriptFetchOptions(
+          params.nonce, integrity_metadata, params.integrity,
+          kNotParserInserted, credentials_mode, params.referrer_policy,
+          mojom::blink::FetchPriorityHint::kAuto,
+          render_blocking ? RenderBlockingBehavior::kBlocking
+                          : RenderBlockingBehavior::kNonBlocking),
       Referrer::NoReferrer(), TextPosition::MinimumPosition());
 
   // Step 11. "If element is render-blocking, then block rendering on element."
-  if (client && BlockingAttribute::IsRenderBlocking(params.blocking)) {
+  if (client && render_blocking) {
     if (document.GetRenderBlockingResourceManager()) {
       document.GetRenderBlockingResourceManager()->AddPendingPreload(
           *client, RenderBlockingResourceManager::PreloadType::kRegular);

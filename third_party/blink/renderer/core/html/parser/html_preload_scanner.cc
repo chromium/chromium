@@ -300,7 +300,10 @@ class TokenPreloadScanner::StartTagScanner {
     RenderBlockingBehavior render_blocking_behavior =
         RenderBlockingBehavior::kUnset;
     if (request_type == PreloadRequest::kRequestTypeLinkRelPreload) {
-      render_blocking_behavior = RenderBlockingBehavior::kNonBlocking;
+      render_blocking_behavior =
+          BlockingAttribute::IsRenderBlocking(blocking_attribute_value_)
+              ? RenderBlockingBehavior::kBlocking
+              : RenderBlockingBehavior::kNonBlocking;
     } else if (is_script &&
                (is_module || defer_ == FetchParameters::kLazyLoad)) {
       render_blocking_behavior =
@@ -489,6 +492,9 @@ class TokenPreloadScanner::StartTagScanner {
                Match(attribute_name, html_names::kFetchpriorityAttr) &&
                priority_hints_origin_trial_enabled_) {
       SetFetchPriorityHint(attribute_value);
+    } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+               Match(attribute_name, html_names::kBlockingAttr)) {
+      blocking_attribute_value_ = attribute_value;
     }
   }
 

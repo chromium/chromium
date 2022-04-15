@@ -1,0 +1,16 @@
+Tests render blocking status in preload traces.
+Recording started
+Tracing complete
+empty.js?dynamic: non_blocking
+empty.js?dynamicBlocking: blocking
+empty.js?dynamicDocWrite: non_blocking
+empty.js?dynamicDocWriteBlocking: blocking
+empty.js?dynamicInnerHTML: non_blocking
+empty.js?dynamicInnerHTMLBlocking: blocking
+style.css?dynamic: non_blocking
+style.css?dynamicBlocking: blocking
+style.css?dynamicDocWrite: non_blocking
+style.css?dynamicDocWriteBlocking: blocking
+style.css?dynamicInnerHTML: non_blocking
+style.css?dynamicInnerHTMLBlocking: blocking
+

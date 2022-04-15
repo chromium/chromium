@@ -1,0 +1,8 @@
+Tests render-blocking status of preload in traces.
+Recording started
+Tracing complete
+empty.js: non_blocking
+empty.js?blocking: blocking
+style.css: non_blocking
+style.css?blocking: blocking
+
