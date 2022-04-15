@@ -66,6 +66,17 @@ std::string ReadSetsFile(base::File sets_file) {
   return base::ReadStreamToString(file.get(), &raw_sets) ? raw_sets : "";
 }
 
+// Creates a set of SchemefulSites present with the given list of SingleSets.
+base::flat_set<net::SchemefulSite> FlattenSingleSetList(
+    const std::vector<content::FirstPartySetsLoader::SingleSet>& sets) {
+  std::vector<net::SchemefulSite> sites;
+  for (const content::FirstPartySetsLoader::SingleSet& set : sets) {
+    sites.push_back(set.first);
+    sites.insert(sites.end(), set.second.begin(), set.second.end());
+  }
+  return sites;
+}
+
 }  // namespace
 
 FirstPartySetsLoader::FirstPartySetsLoader(
@@ -146,26 +157,28 @@ void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
 
 void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(component_sets_parse_progress_, Progress::kFinished);
-  DCHECK(manually_specified_set_.has_value());
+  DCHECK(HasAllInputs());
   if (!manually_specified_set_.value().has_value())
     return;
+  ApplyReplacementOverrides({manually_specified_set_->value()});
+}
 
-  const net::SchemefulSite& manual_owner =
-      manually_specified_set_.value()->first;
-  const base::flat_set<net::SchemefulSite>& manual_members =
-      manually_specified_set_.value()->second;
+void FirstPartySetsLoader::ApplyReplacementOverrides(
+    const std::vector<SingleSet>& override_sets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(HasAllInputs());
 
-  const auto was_manually_provided =
-      [&manual_members, &manual_owner](const net::SchemefulSite& site) {
-        return site == manual_owner || manual_members.contains(site);
-      };
+  base::flat_set<net::SchemefulSite> all_override_sites =
+      FlattenSingleSetList(override_sets);
 
-  // Erase the intersection between the manually-specified set and the
-  // CU-supplied set, and any members whose owner was in the intersection.
-  base::EraseIf(sets_, [&was_manually_provided](const auto& p) {
-    return was_manually_provided(p.first) || was_manually_provided(p.second);
-  });
+  // Erase the intersection between |sets_| and the list of |override_sets| and
+  // any members whose owner was in the intersection.
+  base::EraseIf(
+      sets_, [&all_override_sites](
+                 const std::pair<net::SchemefulSite, net::SchemefulSite>& p) {
+        return all_override_sites.contains(p.first) ||
+               all_override_sites.contains(p.second);
+      });
 
   // Now remove singleton sets. We already removed any sites that were part
   // of the intersection, or whose owner was part of the intersection. This
@@ -180,20 +193,34 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
     return p.first == p.second && !base::Contains(owners_with_members, p.first);
   });
 
-  // Next, we must add the manually-added set to the parsed value.
-  for (const net::SchemefulSite& member : manual_members) {
-    sets_.emplace(member, manual_owner);
+  // Next, we must add each site in the override_sets to |sets_|.
+  for (auto& [owner, members] : override_sets) {
+    sets_.emplace(owner, owner);
+    for (const net::SchemefulSite& member : members) {
+      sets_.emplace(member, owner);
+    }
   }
-  sets_.emplace(manual_owner, manual_owner);
+}
+
+void FirstPartySetsLoader::ApplyAllPolicyOverrides() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(HasAllInputs());
+  ApplyReplacementOverrides(policy_overrides_.replacements);
 }
 
 void FirstPartySetsLoader::MaybeFinishLoading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (component_sets_parse_progress_ != Progress::kFinished ||
-      !manually_specified_set_.has_value())
+  if (!HasAllInputs())
     return;
   ApplyManuallySpecifiedSet();
+  ApplyAllPolicyOverrides();
   std::move(on_load_complete_).Run(std::move(sets_));
+}
+
+bool FirstPartySetsLoader::HasAllInputs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return component_sets_parse_progress_ == Progress::kFinished &&
+         manually_specified_set_.has_value();
 }
 
 }  // namespace content

@@ -67,9 +67,25 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // `SetManuallySpecifiedSet`, and the public sets via `SetComponentSets`.
   void ApplyManuallySpecifiedSet();
 
+  // Removes the intersection between `sets_` and `override_sets` from the
+  // `sets_` member variable, and then adds the `override_sets` into `sets_`.
+  void ApplyReplacementOverrides(const std::vector<SingleSet>& override_sets);
+
+  // Applies the First-Party Sets overrides provided by policy.
+  //
+  // Must not be called until the loader has already received the public sets
+  // via `SetComponentSets` and the CLI-provided sets have been applied to
+  // `sets_`.
+  void ApplyAllPolicyOverrides();
+
   // Checks the required inputs have been received, and if so, invokes the
   // callback `on_load_complete_`, after merging sets appropriately.
   void MaybeFinishLoading();
+
+  // Returns true if all sources are present (Component Updater sets, CLI set,
+  // and Policy sets). The Policy sets are provided at construction time, so
+  // this effectively checks that the other two sources are ready.
+  bool HasAllInputs() const;
 
   // Represents the mapping of site -> site, where keys are members of sets,
   // and values are owners of the sets (explicitly including an entry of owner
