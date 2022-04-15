@@ -39,6 +39,11 @@ struct URLVisit {
   // have slightly different URLs due to various query params such as the AQS.
   url.mojom.Url normalized_url;
 
+  // String version of the URL suitable for display. This has been stripped of
+  // extraneous details like the scheme, and has IDN hostnames pre-converted.
+  // The actual URL formatting is similar to the omnibox popup.
+  string url_for_display;
+
   // Title of the visited webpage.
   string page_title;
 

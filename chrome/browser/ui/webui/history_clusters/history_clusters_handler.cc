@@ -46,6 +46,7 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
                                 const history::ClusterVisit& visit) {
   auto visit_mojom = mojom::URLVisit::New();
   visit_mojom->normalized_url = visit.normalized_url;
+  visit_mojom->url_for_display = base::UTF16ToUTF8(visit.url_for_display);
 
   auto& annotated_visit = visit.annotated_visit;
   visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());

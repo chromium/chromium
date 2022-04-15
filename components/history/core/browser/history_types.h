@@ -852,6 +852,10 @@ struct ClusterVisit {
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the
   // user's default search provider).
   GURL normalized_url;
+
+  // The URL used for display. Computed in the cross-platform code to provide
+  // a consistent experience between WebUI and Mobile.
+  std::u16string url_for_display;
 };
 
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and

@@ -35,6 +35,7 @@
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
+#include "components/url_formatter/url_formatter.h"
 
 namespace history_clusters {
 
@@ -241,6 +242,8 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
       // Search visits just use the `normalized_url` for deduping.
       cluster_visit.url_for_deduping = cluster_visit.normalized_url;
     }
+    cluster_visit.url_for_display =
+        ComputeURLForDisplay(cluster_visit.normalized_url);
 
     if (engagement_score_provider_) {
       if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache)) {
