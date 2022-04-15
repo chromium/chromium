@@ -6,7 +6,6 @@
 #define BASE_SYNCHRONIZATION_LOCK_H_
 
 #include "base/base_export.h"
-#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/thread_annotations.h"

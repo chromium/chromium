@@ -71,7 +71,6 @@
 #endif
 
 #include "base/base_export.h"
-#include "base/check_op.h"
 #include "base/synchronization/lock.h"
 
 #if BUILDFLAG(IS_WIN)

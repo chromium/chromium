@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"

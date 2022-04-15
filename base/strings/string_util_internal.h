@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"

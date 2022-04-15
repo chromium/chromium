@@ -7,7 +7,9 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "remoting/base/logging.h"
 
 namespace remoting {
