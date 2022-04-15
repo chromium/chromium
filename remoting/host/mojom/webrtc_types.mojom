@@ -78,3 +78,11 @@ struct DesktopVector {
   int32 x;
   int32 y;
 };
+
+// Original WebRTC class can be found at:
+// //third_party/webrtc/modules/desktop_capture/mouse_cursor.h
+struct MouseCursor {
+  DesktopSize image_size;
+  array<uint8> image_data;
+  DesktopVector hotspot;
+};

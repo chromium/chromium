@@ -168,6 +168,48 @@ bool mojo::StructTraits<remoting::mojom::KeyEventDataView,
 }
 
 // static
+bool mojo::StructTraits<
+    remoting::mojom::MouseCursorDataView,
+    ::webrtc::MouseCursor>::Read(remoting::mojom::MouseCursorDataView data_view,
+                                 ::webrtc::MouseCursor* out_cursor) {
+  ::webrtc::DesktopSize image_size;
+  if (!data_view.ReadImageSize(&image_size)) {
+    return false;
+  }
+
+  mojo::ArrayDataView<uint8_t> image_data;
+  data_view.GetImageDataDataView(&image_data);
+
+  base::CheckedNumeric<size_t> expected_image_data_size =
+      ::webrtc::DesktopFrame::kBytesPerPixel * image_size.width() *
+      image_size.height();
+  if (!expected_image_data_size.IsValid()) {
+    return false;
+  }
+
+  // ValueOrDie() won't CHECK since we've already verified the value is valid.
+  if (image_data.size() != expected_image_data_size.ValueOrDie()) {
+    return false;
+  }
+
+  ::webrtc::DesktopVector hotspot;
+  if (!data_view.ReadHotspot(&hotspot)) {
+    return false;
+  }
+
+  std::unique_ptr<::webrtc::DesktopFrame> new_frame(
+      new ::webrtc::BasicDesktopFrame(image_size));
+  memcpy(new_frame->data(), image_data.data(), image_data.size());
+
+  // ::webrtc::MouseCursor methods take a raw pointer *and* take ownership.
+  // TODO(joedow): Update webrtc::MouseCursor to use std::unique_ptr.
+  out_cursor->set_image(new_frame.release());
+  out_cursor->set_hotspot(hotspot);
+
+  return true;
+}
+
+// static
 bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
                         ::remoting::protocol::MouseEvent>::
     Read(remoting::mojom::MouseEventDataView data_view,

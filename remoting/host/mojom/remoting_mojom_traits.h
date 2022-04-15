@@ -6,8 +6,10 @@
 #define REMOTING_HOST_MOJOM_REMOTING_MOJOM_TRAITS_H_
 
 #include <stddef.h>
+#include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
@@ -28,6 +30,7 @@
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
@@ -246,6 +249,32 @@ class mojo::StructTraits<remoting::mojom::DesktopVectorDataView,
 
   static bool Read(remoting::mojom::DesktopVectorDataView data_view,
                    ::webrtc::DesktopVector* out_vector);
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::MouseCursorDataView,
+                         ::webrtc::MouseCursor> {
+ public:
+  static const webrtc::DesktopSize& image_size(
+      const ::webrtc::MouseCursor& cursor) {
+    return cursor.image()->size();
+  }
+
+  static base::span<const uint8_t> image_data(
+      const ::webrtc::MouseCursor& cursor) {
+    auto& image_size = cursor.image()->size();
+    auto buffer_size = ::webrtc::DesktopFrame::kBytesPerPixel *
+                       image_size.width() * image_size.height();
+    return base::span<const uint8_t>(cursor.image()->data(), buffer_size);
+  }
+
+  static const webrtc::DesktopVector& hotspot(
+      const ::webrtc::MouseCursor& cursor) {
+    return cursor.hotspot();
+  }
+
+  static bool Read(remoting::mojom::MouseCursorDataView data_view,
+                   ::webrtc::MouseCursor* out_cursor);
 };
 
 template <>

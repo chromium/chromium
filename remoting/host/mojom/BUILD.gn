@@ -86,6 +86,10 @@ mojom("mojom") {
           cpp = "::remoting::protocol::MouseEvent::MouseButton"
         },
         {
+          mojom = "remoting.mojom.MouseCursor"
+          cpp = "::webrtc::MouseCursor"
+        },
+        {
           mojom = "remoting.mojom.MouseEvent"
           cpp = "::remoting::protocol::MouseEvent"
         },

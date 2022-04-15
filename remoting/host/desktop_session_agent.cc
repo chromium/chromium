@@ -507,8 +507,9 @@ void DesktopSessionAgent::OnMouseCursor(webrtc::MouseCursor* cursor) {
 
   std::unique_ptr<webrtc::MouseCursor> owned_cursor(cursor);
 
-  SendToNetwork(
-      std::make_unique<ChromotingDesktopNetworkMsg_MouseCursor>(*owned_cursor));
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnMouseCursorChanged(*owned_cursor);
+  }
 
   if (video_capturer_)
     video_capturer_->SetMouseCursor(std::move(owned_cursor));

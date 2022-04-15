@@ -39,10 +39,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.
 
-// Carries a cursor share update from the desktop session agent to the client.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_MouseCursor,
-                    webrtc::MouseCursor /* cursor */)
-
 // Notifies the network process that the active keyboard layout has changed.
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_KeyboardChanged,
                     remoting::protocol::KeyboardLayout /* layout */)

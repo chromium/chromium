@@ -410,6 +410,9 @@ interface DesktopSessionEventHandler {
 
   // Notifies the network process that the host display layout has changed.
   OnDesktopDisplayChanged(VideoLayout layout);
+
+  // Notifies the network process that the mouse cursor has changed.
+  OnMouseCursorChanged(MouseCursor mouse_cursor);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.
