@@ -1,0 +1,6 @@
+Name: addr2line
+URL: https://crates.io/crates/addr2line
+Description: A cross-platform symbolication library written in Rust, using `gimli`
+Version: 0.17.0
+Security Critical: yes
+License: Apache 2.0

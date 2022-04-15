@@ -1,0 +1,6 @@
+Name: backtrace
+URL: https://crates.io/crates/backtrace
+Description: A library to acquire a stack trace (backtrace) at runtime in a Rust program.
+Version: 0.3.64
+Security Critical: yes
+License: Apache 2.0

@@ -37,10 +37,10 @@
 cxxbridge-cmd = "1"
 cxx = "1"
 serde = "1"
-autocxx = "0.17"
+autocxx = "0.20"
 
 [dependencies.autocxx-gen]
-version = "0.17"
+version = "0.20"
 features = [ "static" ]
 
 [dependencies.serde_json_lenient]
@@ -61,6 +61,11 @@ features = [ "static" ]
 version = "1"
 allow-first-party-usage = false
 build-script-outputs = [ "version.rs" ]
+
+[dependencies.unicode-linebreak]
+version = "0.1"
+allow-first-party-usage = false
+build-script-outputs = [ "tables.rs" ]
 
 # Crates listed in dev-dependencies will have a :test_support GN target
 # built for them in their BUILD.gn file, which is marked testonly=true.

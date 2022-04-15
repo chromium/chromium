@@ -100,7 +100,7 @@ template("rust_autocxx") {
     output_h = "{{source_gen_dir}}/{{source_file_part}}.h"
 
     autocxx_gen_target =
-        "//third_party/rust/autocxx_gen/v0_17:autocxx_gen($host_toolchain)"
+        "//third_party/rust/autocxx_gen/v0_20:autocxx_gen($host_toolchain)"
 
     autocxx_gen_obj_dir = get_label_info(autocxx_gen_target, "root_out_dir")
     autocxx_gen_executable = rebase_path("${autocxx_gen_obj_dir}/autocxx_gen")

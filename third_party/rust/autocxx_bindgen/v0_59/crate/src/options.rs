@@ -1016,6 +1016,10 @@ where
         builder = builder.cpp_semantic_attributes(true);
     }
 
+    if matches.is_present("use-distinct-char16-t") {
+        builder = builder.use_distinct_char16_t(true);
+    }
+
     let verbose = matches.is_present("verbose");
 
     Ok((builder, output, verbose))

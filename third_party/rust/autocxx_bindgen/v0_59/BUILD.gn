@@ -13,7 +13,7 @@ cargo_crate("autocxx_bindgen") {
   crate_root = "crate/src/main.rs"
   sources = [ "crate/src/main.rs" ]
   edition = "2018"
-  cargo_pkg_version = "0.59.14"
+  cargo_pkg_version = "0.59.15"
   cargo_pkg_authors = "Jyun-Yan You <jyyou.tw@gmail.com>, Emilio Cobos Álvarez <emilio@crisal.io>, Nick Fitzgerald <fitzgen@gmail.com>, The Servo project developers, Adrian Taylor <ade@hohum.me.uk>"
   cargo_pkg_name = "autocxx-bindgen"
   cargo_pkg_description = "Automatically generates Rust FFI bindings to C and C++ libraries. Version adjusted for cxx."
@@ -60,7 +60,7 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "0.59.14"
+  cargo_pkg_version = "0.59.15"
   cargo_pkg_authors = "Jyun-Yan You <jyyou.tw@gmail.com>, Emilio Cobos Álvarez <emilio@crisal.io>, Nick Fitzgerald <fitzgen@gmail.com>, The Servo project developers, Adrian Taylor <ade@hohum.me.uk>"
   cargo_pkg_name = "autocxx-bindgen"
   cargo_pkg_description = "Automatically generates Rust FFI bindings to C and C++ libraries. Version adjusted for cxx."

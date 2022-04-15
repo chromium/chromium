@@ -3755,6 +3755,7 @@ impl TryToRustTy for Type {
                     IntKind::I8 => Ok(quote! { i8 }.into()),
                     IntKind::U8 => Ok(quote! { u8 }.into()),
                     IntKind::I16 => Ok(quote! { i16 }.into()),
+                    IntKind::U16 if ctx.options().use_distinct_char16_t => Ok(quote! { c_char16_t }.into()),
                     IntKind::U16 => Ok(quote! { u16 }.into()),
                     IntKind::I32 => Ok(quote! { i32 }.into()),
                     IntKind::U32 => Ok(quote! { u32 }.into()),

@@ -1,0 +1,23 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("buildrs_support") {
+  crate_name = "autocfg"
+  epoch = "1"
+  crate_type = "rlib"
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  crate_root = "crate/src/lib.rs"
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2015"
+  cargo_pkg_version = "1.1.0"
+  cargo_pkg_authors = "Josh Stone <cuviper@gmail.com>"
+  cargo_pkg_name = "autocfg"
+  cargo_pkg_description = "Automatic cfg for Rust compiler features"
+}

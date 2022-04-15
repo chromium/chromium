@@ -1,0 +1,3 @@
+[submodule "testfiles"]
+	path = testfiles
+	url = https://github.com/gimli-rs/object-testfiles

@@ -1,0 +1,6 @@
+Name: is_ci
+URL: https://crates.io/crates/is_ci
+Description: Super lightweight CI environment checker. Just tells you if you're in CI or not without much fuss.
+Version: 1.1.1
+Security Critical: yes
+License: ISC

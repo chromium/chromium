@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use autocxx::include_cpp;
+use autocxx::prelude::*;
 use cxx::{CxxString, UniquePtr};
 
 include_cpp! {
@@ -22,7 +22,7 @@ pub fn serialize_url(scheme: &str, host: &str, port: u16) -> String {
 }
 
 pub fn get_cpu_vendor() -> String {
-    let cpu: UniquePtr<base::CPU> = base::CPU::make_unique();
+    let cpu: UniquePtr<base::CPU> = base::CPU::new().within_unique_ptr();
     cpu.vendor_name().to_string_lossy().to_string()
 }
 

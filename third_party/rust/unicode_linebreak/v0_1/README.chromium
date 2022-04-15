@@ -1,0 +1,6 @@
+Name: unicode-linebreak
+URL: https://crates.io/crates/unicode-linebreak
+Description: Implementation of the Unicode Line Breaking Algorithm
+Version: 0.1.2
+Security Critical: yes
+License: Apache 2.0

@@ -586,6 +586,11 @@ impl Builder {
                 .push("--represent-cxx-operators".into());
         }
 
+        if self.options.use_distinct_char16_t {
+            output_vector
+                .push("--use-distinct-char16-t".into());
+        }
+
         // Add clang arguments
 
         output_vector.push("--".into());
@@ -1490,6 +1495,12 @@ impl Builder {
         self
     }
 
+    /// If true, denote 'char16_t' as a separate type from 'u16'
+    pub fn use_distinct_char16_t(mut self, doit: bool) -> Self {
+        self.options.use_distinct_char16_t = doit;
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, ()> {
         // Add any extra arguments from the environment to the clang command line.
@@ -2033,6 +2044,9 @@ struct BindgenOptions {
     /// be called as functions because their names aren't valid identifiers,
     /// but the metadata may be useful to downstream code generators.
     represent_cxx_operators: bool,
+
+    /// Whether char16_t should be distinct from u16
+    use_distinct_char16_t: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -2181,6 +2195,7 @@ impl Default for BindgenOptions {
             use_specific_virtual_function_receiver: false,
             cpp_semantic_attributes: false,
             represent_cxx_operators: false,
+            use_distinct_char16_t: false,
         }
     }
 }
