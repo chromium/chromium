@@ -295,6 +295,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.ESTABLISH_GPU_CHANNEL_ASYNC,
                     "Enables establishing the GPU channel asnchronously when requesting a new "
                             + "layer tree frame sink."),
+            Flag.baseFeature(BlinkFeatures.DEFER_BEGIN_MAIN_FRAME_DURING_LOADING,
+                    "If enabled, the parser may continue parsing if BeginMainFrame was "
+                            + "recently called."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
