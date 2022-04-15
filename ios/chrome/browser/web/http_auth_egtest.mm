@@ -75,13 +75,7 @@ void WaitForHttpAuthDialog() {
 @implementation HTTPAuthTestCase
 
 // Tests Basic HTTP Authentication with correct username and password.
-// TODO(crbug.com/1264554): Re-enable for devices.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSuccessfullBasicAuth testSuccessfullBasicAuth
-#else
-#define MAYBE_testSuccessfullBasicAuth DISABLED_testSuccessfullBasicAuth
-#endif
-- (void)MAYBE_testSuccessfullBasicAuth {
+- (void)testSuccessfullBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
     // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
@@ -99,6 +93,12 @@ void WaitForHttpAuthDialog() {
         URL, "GoodRealm", "gooduser", "goodpass"));
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
+
+    [[EarlGrey selectElementWithMatcher:UsernameField()]
+        performAction:grey_tap()];
+
+    // Wait for the keyboard to be shown.
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     // Enter valid username and password.
     [[EarlGrey selectElementWithMatcher:UsernameField()]
