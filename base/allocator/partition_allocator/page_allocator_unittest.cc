@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
+#include "base/allocator/partition_allocator/base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/cpu.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 
@@ -43,6 +43,16 @@
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace partition_alloc::internal {
+
+#if BUILDFLAG(IS_ANDROID)
+namespace base::debug {
+
+using ::base::debug::MappedMemoryRegion;
+using ::base::debug::ParseProcMaps;
+using ::base::debug::ReadProcMaps;
+
+}  // namespace base::debug
+#endif
 
 namespace {
 

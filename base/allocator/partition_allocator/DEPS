@@ -12,7 +12,6 @@ include_rules = [
     "+base/check.h",
     "+base/check_op.h",
     "+base/compiler_specific.h",
-    "+base/cpu.h",
     "+base/cxx17_backports.h",
     "+base/dcheck_is_on.h",
     "+base/debug/alias.h",

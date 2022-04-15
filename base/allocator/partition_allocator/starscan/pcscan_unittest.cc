@@ -8,12 +8,12 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 
+#include "base/allocator/partition_allocator/base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/cpu.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

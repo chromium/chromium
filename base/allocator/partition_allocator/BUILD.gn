@@ -56,6 +56,8 @@ target(partition_alloc_target_type, "partition_alloc") {
     "allocation_guard.cc",
     "allocation_guard.h",
     "base/bits.h",
+    "base/cpu.cc",
+    "base/cpu.h",
     "base/migration_adapter.h",
     "base/sys_byteorder.h",
     "dangling_raw_ptr_checks.cc",

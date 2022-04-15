@@ -4,8 +4,8 @@
 
 #include "base/allocator/partition_allocator/starscan/scan_loop.h"
 
+#include "base/allocator/partition_allocator/base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/cpu.h"
 #include "build/build_config.h"
 
 #include "testing/gtest/include/gtest/gtest.h"

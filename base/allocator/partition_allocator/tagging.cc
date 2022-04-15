@@ -4,9 +4,9 @@
 
 #include "base/allocator/partition_allocator/tagging.h"
 
+#include "base/allocator/partition_allocator/base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/cpu.h"
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "build/build_config.h"
@@ -48,7 +48,7 @@ namespace partition_alloc {
 #if defined(PA_HAS_MEMORY_TAGGING)
 namespace {
 void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
-  base::CPU cpu;
+  internal::base::CPU cpu;
   if (cpu.has_mte()) {
     int status = prctl(PR_SET_TAGGED_ADDR_CTRL, prctl_mask, 0, 0, 0);
     PA_CHECK(status == 0);
