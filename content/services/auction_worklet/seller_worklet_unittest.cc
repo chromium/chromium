@@ -140,6 +140,7 @@ class SellerWorkletTest : public testing::Test {
         blink::mojom::AuctionAdConfigNonSharedParams::New();
 
     top_window_origin_ = url::Origin::Create(GURL("https://window.test/"));
+    experiment_group_id_ = absl::nullopt;
     browser_signals_other_seller_.reset();
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
@@ -489,7 +490,8 @@ class SellerWorkletTest : public testing::Test {
     mojo::Remote<mojom::SellerWorklet> seller_worklet;
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
         v8_helper_, pause_for_debugger_on_start, std::move(url_loader_factory),
-        decision_logic_url_, trusted_scoring_signals_url_, top_window_origin_);
+        decision_logic_url_, trusted_scoring_signals_url_, top_window_origin_,
+        experiment_group_id_);
     auto* seller_worklet_ptr = seller_worklet_impl.get();
     mojo::ReceiverId receiver_id =
         seller_worklets_.Add(std::move(seller_worklet_impl),
@@ -551,6 +553,7 @@ class SellerWorkletTest : public testing::Test {
   blink::mojom::AuctionAdConfigNonSharedParamsPtr
       auction_ad_config_non_shared_params_;
   url::Origin top_window_origin_;
+  absl::optional<uint16_t> experiment_group_id_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
   url::Origin browser_signal_interest_group_owner_;
   GURL browser_signal_render_url_;
@@ -1040,6 +1043,15 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
       decision_logic_url_.spec().length());
 }
 
+TEST_F(SellerWorkletTest, ScoreAdExperimentGroupIdParam) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"("experimentGroupId" in auctionConfig ? 1 : 0)", 0);
+
+  experiment_group_id_ = 954u;
+  RunScoreAdWithReturnValueExpectingResult("auctionConfig.experimentGroupId",
+                                           954);
+}
+
 // Tests that trusted scoring signals are correctly passed to scoreAd(). Each
 // request is sent individually, without calling SendPendingSignalsRequests() -
 // instead, the test advances the mock clock by
@@ -1140,6 +1152,25 @@ TEST_F(SellerWorkletTest, ScoreAdDataVersion) {
       "browserSignals.dataVersion", 100,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/100);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdExperimentGroupId) {
+  experiment_group_id_ = 3948u;
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  // Trusted scoring signals URL without any component ads and the above
+  // experiment group id.
+  const GURL kSignalsUrl = GURL(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F"
+      "&experimentGroupId=3948");
+
+  // The experiment ID is also passed in in auction config.
+  AddJsonResponse(&url_loader_factory_, kSignalsUrl,
+                  kTrustedScoringSignalsResponse);
+  RunScoreAdWithReturnValueExpectingResult("auctionConfig.experimentGroupId",
+                                           3948,
+                                           /*expected_errors=*/{});
 }
 
 // Test the case of a bunch of ScoreAd() calls in parallel, all started before
@@ -2136,6 +2167,19 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
       R"("decisionLogicUrl":"https://example.com/auction.js",)"
       R"("perBuyerTimeouts":{"*":150}})",
       absl::nullopt /* expected_report_url */);
+}
+
+TEST_F(SellerWorkletTest, ReportResultExperimentGroupIdParam) {
+  RunReportResultCreatedScriptExpectingResult(
+      R"("experimentGroupId" in auctionConfig ? 1 : 0)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"0",
+      /*expected_report_url=*/absl::nullopt);
+
+  experiment_group_id_ = 954u;
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig.experimentGroupId",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"954",
+      /*expected_report_url=*/absl::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultDataVersion) {

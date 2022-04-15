@@ -660,6 +660,36 @@ bool CopyPerBuyerTimeoutsFromIdlToMojo(const ScriptState& script_state,
   return true;
 }
 
+bool CopyPerBuyerExperimentIdsFromIdlToMojo(
+    const ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerExperimentGroupIds())
+    return true;
+  for (const auto& per_buyer_experiment_id :
+       input.perBuyerExperimentGroupIds()) {
+    if (per_buyer_experiment_id.first == "*") {
+      output.has_all_buyer_experiment_group_id = true;
+      output.all_buyer_experiment_group_id = per_buyer_experiment_id.second;
+      continue;
+    }
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_experiment_id.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerExperimentGroupIds buyer",
+          per_buyer_experiment_id.first,
+          "must be \"*\" (wildcard) or a valid https origin."));
+      return false;
+    }
+    output.per_buyer_experiment_group_ids.insert(
+        buyer, per_buyer_experiment_id.second);
+  }
+
+  return true;
+}
+
 bool CopyPerBuyerGroupLimitsFromIdlToMojo(
     const ScriptState& script_state,
     ExceptionState& exception_state,
@@ -722,6 +752,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                         *mojo_config) ||
       !CopyPerBuyerTimeoutsFromIdlToMojo(script_state, exception_state, config,
                                          *mojo_config) ||
+      !CopyPerBuyerExperimentIdsFromIdlToMojo(script_state, exception_state,
+                                              config, *mojo_config) ||
       !CopyPerBuyerGroupLimitsFromIdlToMojo(script_state, exception_state,
                                             config, *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
@@ -751,6 +783,11 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       mojo_config->auction_ad_config_non_shared_params->component_auctions
           .emplace_back(std::move(mojo_component_auction));
     }
+  }
+
+  if (config.hasSellerExperimentGroupId()) {
+    mojo_config->has_seller_experiment_group_id = true;
+    mojo_config->seller_experiment_group_id = config.sellerExperimentGroupId();
   }
 
   return mojo_config;

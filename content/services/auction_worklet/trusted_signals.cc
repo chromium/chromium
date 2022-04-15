@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -206,6 +207,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     std::set<std::string> bidding_signals_keys,
     const std::string& hostname,
     const GURL& trusted_bidding_signals_url,
+    absl::optional<uint16_t> experiment_group_id,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!bidding_signals_keys.empty());
@@ -217,9 +219,14 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
                          trusted_bidding_signals_url, std::move(v8_helper),
                          std::move(load_signals_callback)));
 
-  std::string query_params =
-      "hostname=" + net::EscapeQueryParamValue(hostname, /*use_plus=*/true) +
-      CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_);
+  std::string query_params = base::StrCat(
+      {"hostname=", net::EscapeQueryParamValue(hostname, /*use_plus=*/true),
+       CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_)});
+  if (experiment_group_id.has_value()) {
+    base::StrAppend(&query_params,
+                    {"&experimentGroupId=",
+                     base::NumberToString(experiment_group_id.value())});
+  }
   GURL full_signals_url =
       SetQueryParam(trusted_bidding_signals_url, query_params);
   base::UmaHistogramCounts100000(
@@ -236,6 +243,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     std::set<std::string> ad_component_render_urls,
     const std::string& hostname,
     const GURL& trusted_scoring_signals_url,
+    absl::optional<uint16_t> experiment_group_id,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!render_urls.empty());
@@ -246,11 +254,16 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
           std::move(ad_component_render_urls), trusted_scoring_signals_url,
           std::move(v8_helper), std::move(load_signals_callback)));
 
-  std::string query_params =
-      "hostname=" + net::EscapeQueryParamValue(hostname, /*use_plus=*/true) +
-      CreateQueryParam("renderUrls", *trusted_signals->render_urls_) +
-      CreateQueryParam("adComponentRenderUrls",
-                       *trusted_signals->ad_component_render_urls_);
+  std::string query_params = base::StrCat(
+      {"hostname=", net::EscapeQueryParamValue(hostname, /*use_plus=*/true),
+       CreateQueryParam("renderUrls", *trusted_signals->render_urls_),
+       CreateQueryParam("adComponentRenderUrls",
+                        *trusted_signals->ad_component_render_urls_)});
+  if (experiment_group_id.has_value()) {
+    base::StrAppend(&query_params,
+                    {"&experimentGroupId=",
+                     base::NumberToString(experiment_group_id.value())});
+  }
   GURL full_signals_url =
       SetQueryParam(trusted_scoring_signals_url, query_params);
   base::UmaHistogramCounts100000(

@@ -5016,6 +5016,147 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               "a.test", "/interest_group/decision_logic_loop_forever.js"))));
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithExperimentGroupId) {
+  const char kPublisher[] = "a.test";
+  const char kBidder[] = "b.test";
+  const char kSeller[] = "c.test";
+
+  // Navigate to bidder site, and add an interest group.
+  GURL bidder_url = https_server_->GetURL(kBidder, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/bidder_origin,
+      /*name=*/"cars",
+      /*priority=*/0.0,
+      /*bidding_url=*/
+      https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*daily_update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/
+      https_server_->GetURL(kBidder,
+                            "/interest_group/trusted_bidding_signals.json"),
+      /*trusted_bidding_signals_keys=*/{{"key1"}},
+      /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+      /*ads=*/
+      {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2]}"}}},
+      /*ad_components=*/absl::nullopt)));
+
+  // Navigate to publisher.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server_->GetURL(kPublisher, "/echo")));
+  GURL seller_logic_url =
+      https_server_->GetURL(kSeller, "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    trustedScoringSignalsUrl: $3,
+    interestGroupBuyers: [$4],
+    sellerExperimentGroupId: 8349,
+    perBuyerExperimentGroupIds: {'*': 3498},
+  })";
+
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForURL(JsReplace(
+                kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
+                seller_logic_url,
+                https_server_->GetURL(
+                    kSeller, "/interest_group/trusted_scoring_signals.json"),
+                bidder_origin)));
+
+  // Make sure that the right trusted signals URLs got fetched, incorporating
+  // the experiment group ID.
+  WaitForURL(https_server_->GetURL(
+      "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
+      "&experimentGroupId=3498"));
+  WaitForURL(https_server_->GetURL(
+      "/interest_group/trusted_scoring_signals.json?hostname=a.test"
+      "&renderUrls=https%3A%2F%2Fexample.com%2Frender&experimentGroupId=8349"));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithPerBuyerExperimentGroupId) {
+  const char kPublisher[] = "a.test";
+  const char kBidder[] = "b.test";
+  const char kBidder2[] = "d.test";
+  const char kSeller[] = "c.test";
+
+  // Navigate to bidder site, and add an interest group, then same for bidder 2.
+  GURL bidder_url = https_server_->GetURL(kBidder, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/bidder_origin,
+      /*name=*/"cars",
+      /*priority=*/0.0,
+      /*bidding_url=*/
+      https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*daily_update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/
+      https_server_->GetURL(kBidder,
+                            "/interest_group/trusted_bidding_signals.json"),
+      /*trusted_bidding_signals_keys=*/{{"key1"}},
+      /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+      /*ads=*/
+      {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2]}"}}},
+      /*ad_components=*/absl::nullopt)));
+
+  GURL bidder2_url = https_server_->GetURL(kBidder2, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder2_url));
+  url::Origin bidder2_origin = url::Origin::Create(bidder2_url);
+  content_browser_client_.AddToAllowList({bidder2_origin});
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/bidder2_origin,
+      /*name=*/"cars_and_trucks",
+      /*priority=*/0.0,
+      /*bidding_url=*/
+      https_server_->GetURL(kBidder2, "/interest_group/bidding_logic.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*daily_update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/
+      https_server_->GetURL(kBidder2,
+                            "/interest_group/trusted_bidding_signals.json"),
+      /*trusted_bidding_signals_keys=*/{{"key2"}},
+      /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+      /*ads=*/
+      {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2]}"}}},
+      /*ad_components=*/absl::nullopt)));
+
+  // Navigate to publisher.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server_->GetURL(kPublisher, "/echo")));
+  GURL seller_logic_url =
+      https_server_->GetURL(kSeller, "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$3, $4],
+    perBuyerExperimentGroupIds: {'*': 3498,
+                                 $4: 1203},
+  })";
+
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForURL(JsReplace(
+                kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
+                seller_logic_url, bidder_origin, bidder2_origin)));
+
+  // Make sure that the right trusted signals URLs got fetched, incorporating
+  // the experiment group IDs.
+  WaitForURL(https_server_->GetURL(
+      "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
+      "&experimentGroupId=3498"));
+  WaitForURL(https_server_->GetURL(
+      "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key2"
+      "&experimentGroupId=1203"));
+}
+
 // This test exercises the interest group and ad auction services directly,
 // rather than via Blink, to ensure that those services running in the browser
 // implement important security checks (Blink may also perform its own

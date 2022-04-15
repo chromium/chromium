@@ -32,12 +32,14 @@ TrustedSignalsRequestManager::TrustedSignalsRequestManager(
     bool automatically_send_requests,
     const url::Origin& top_level_origin,
     const GURL& trusted_signals_url,
+    absl::optional<uint16_t> experiment_group_id,
     AuctionV8Helper* v8_helper)
     : type_(type),
       url_loader_factory_(url_loader_factory),
       automatically_send_requests_(automatically_send_requests),
       top_level_origin_(top_level_origin),
       trusted_signals_url_(trusted_signals_url),
+      experiment_group_id_(experiment_group_id),
       v8_helper_(v8_helper) {}
 
 TrustedSignalsRequestManager::~TrustedSignalsRequestManager() {
@@ -103,7 +105,7 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
     }
     batched_request->trusted_signals = TrustedSignals::LoadBiddingSignals(
         url_loader_factory_, std::move(keys), top_level_origin_.host(),
-        trusted_signals_url_, v8_helper_,
+        trusted_signals_url_, experiment_group_id_, v8_helper_,
         base::BindOnce(&TrustedSignalsRequestManager::OnSignalsLoaded,
                        base::Unretained(this), batched_request));
     return;
@@ -125,7 +127,7 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
   batched_request->trusted_signals = TrustedSignals::LoadScoringSignals(
       url_loader_factory_, std::move(render_urls),
       std::move(ad_component_render_urls), top_level_origin_.host(),
-      trusted_signals_url_, v8_helper_,
+      trusted_signals_url_, experiment_group_id_, v8_helper_,
       base::BindOnce(&TrustedSignalsRequestManager::OnSignalsLoaded,
                      base::Unretained(this), batched_request));
 }

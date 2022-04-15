@@ -1165,7 +1165,9 @@ class MockAuctionProcessManager
       const GURL& script_source_url,
       const absl::optional<GURL>& bidding_wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
-      const url::Origin& top_window_origin) override {
+      const url::Origin& top_window_origin,
+      bool has_experiment_group_id,
+      uint16_t experiment_group_id) override {
     // Make sure this request came over the right pipe.
     url::Origin owner = url::Origin::Create(script_source_url);
     EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
@@ -1195,7 +1197,9 @@ class MockAuctionProcessManager
           pending_url_loader_factory,
       const GURL& script_source_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
-      const url::Origin& top_window_origin) override {
+      const url::Origin& top_window_origin,
+      bool has_experiment_group_id,
+      uint16_t experiment_group_id) override {
     EXPECT_EQ(0u, seller_worklets_.count(script_source_url));
 
     // Make sure this request came over the right pipe.
@@ -1460,6 +1464,22 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->auction_ad_config_non_shared_params->auction_signals =
         base::StringPrintf(R"("auctionSignalsFor %s")",
                            auction_config->seller.Serialize().c_str());
+
+    if (seller_experiment_group_id_.has_value()) {
+      auction_config->has_seller_experiment_group_id = true;
+      auction_config->seller_experiment_group_id =
+          seller_experiment_group_id_.value();
+    }
+
+    if (all_buyer_experiment_group_id_.has_value()) {
+      auction_config->has_all_buyer_experiment_group_id = true;
+      auction_config->all_buyer_experiment_group_id =
+          all_buyer_experiment_group_id_.value();
+    }
+
+    for (const auto& kv : per_buyer_experiment_group_id_) {
+      auction_config->per_buyer_experiment_group_ids[kv.first] = kv.second;
+    }
 
     return auction_config;
   }
@@ -1895,6 +1915,9 @@ class AuctionRunnerTest : public testing::Test,
             bid_from_component_auction_wins, report_post_auction_signals));
   }
 
+  absl::optional<uint16_t> seller_experiment_group_id_;
+  absl::optional<uint16_t> all_buyer_experiment_group_id_;
+  std::map<url::Origin, uint16_t> per_buyer_experiment_group_id_;
   const url::Origin top_frame_origin_ =
       url::Origin::Create(GURL("https://publisher1.com"));
   const url::Origin frame_origin_ =
@@ -2220,6 +2243,88 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
                   "Destroy https://adstuff.publisher1.com/auction.js",
                   "Create https://adplatform.com/offers.js",
                   "Destroy https://adplatform.com/offers.js"));
+}
+
+// An auction specifying buyer and seller experiment IDs.
+TEST_F(AuctionRunnerTest, ExperimentId) {
+  trusted_scoring_signals_url_ =
+      GURL("https://adstuff.publisher1.com/seller_signals");
+  seller_experiment_group_id_ = 498u;
+  all_buyer_experiment_group_id_ = 940u;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"
+                                        "&experimentGroupId=940"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(
+      &url_loader_factory_,
+      GURL(trusted_scoring_signals_url_->spec() +
+           "?hostname=publisher1.com&renderUrls=https%3A%2F%2Fad1.com%2F" +
+           "&experimentGroupId=498"),
+      R"({"renderUrls":{"https://ad1.com/":"accept",
+          "https://ad2.com/":"reject"}}
+       )");
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      {"k1", "k2"}, GURL("https://ad1.com")));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// An auction specifying a per-buyer experiment ID as well as fallback all-buyer
+// experiment id.
+TEST_F(AuctionRunnerTest, ExperimentIdPerBuyer) {
+  all_buyer_experiment_group_id_ = 940u;
+  per_buyer_experiment_group_id_[kBidder2] = 93u;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"
+                                        "&experimentGroupId=940"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"
+                                        "&experimentGroupId=93"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      {"k1", "k2"}, GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url, kBidder2TrustedSignalsUrl,
+      {"l1", "l2"}, GURL("https://ad2.com")));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 // An auction with two successful bids.

@@ -62,6 +62,10 @@ interface AuctionWorkletService {
   //
   // `top_window_origin` The origin of the top-level window running the
   //  auction(s) the BidderWorklet will be used in.
+  //
+  // `experiment_group_id`, `has_experiment_group_id`: An optional parameter to
+  // pass to trusted bidding server.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
   LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
       bool pause_for_debugger_on_start,
@@ -69,7 +73,9 @@ interface AuctionWorkletService {
       url.mojom.Url script_source_url,
       url.mojom.Url? wasm_helper_url,
       url.mojom.Url? trusted_bidding_signals_url,
-      url.mojom.Origin top_window_origin);
+      url.mojom.Origin top_window_origin,
+      bool has_experiment_group_id,
+      uint16 experiment_group_id);
 
   // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
   // While a single SellerWorklet object can be used in auctions with different
@@ -106,11 +112,17 @@ interface AuctionWorkletService {
   //  auction, if there is one.
   //
   // `top_window_origin` The origin of the top-level window running the auction.
+  //
+  // `experiment_group_id`, `has_experiment_group_id`: An optional parameter to
+  // pass to trusted signals server and as part of AuctionConfig.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
   LoadSellerWorklet(
       pending_receiver<SellerWorklet> seller_worklet,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       url.mojom.Url script_source_url,
       url.mojom.Url? trusted_scoring_signals_url,
-      url.mojom.Origin top_window_origin);
+      url.mojom.Origin top_window_origin,
+      bool has_experiment_group_id,
+      uint16 experiment_group_id);
 };

@@ -75,7 +75,8 @@ class BidderWorklet : public mojom::BidderWorklet {
                 const GURL& script_source_url,
                 const absl::optional<GURL>& bidding_wasm_helper_url,
                 const absl::optional<GURL>& trusted_bidding_signals_url,
-                const url::Origin& top_window_origin);
+                const url::Origin& top_window_origin,
+                absl::optional<uint16_t> experiment_group_id);
   explicit BidderWorklet(const BidderWorklet&) = delete;
   ~BidderWorklet() override;
   BidderWorklet& operator=(const BidderWorklet&) = delete;

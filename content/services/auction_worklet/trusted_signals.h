@@ -127,6 +127,7 @@ class TrustedSignals {
       std::set<std::string> bidding_signals_keys,
       const std::string& hostname,
       const GURL& trusted_bidding_signals_url,
+      absl::optional<uint16_t> experiment_group_id,
       scoped_refptr<AuctionV8Helper> v8_helper,
       LoadSignalsCallback load_signals_callback);
 
@@ -137,6 +138,7 @@ class TrustedSignals {
       std::set<std::string> ad_component_render_urls,
       const std::string& hostname,
       const GURL& trusted_scoring_signals_url,
+      absl::optional<uint16_t> experiment_group_id,
       scoped_refptr<AuctionV8Helper> v8_helper,
       LoadSignalsCallback load_signals_callback);
 

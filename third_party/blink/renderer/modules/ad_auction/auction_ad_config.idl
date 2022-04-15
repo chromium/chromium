@@ -13,8 +13,10 @@ dictionary AuctionAdConfig {
   any auctionSignals;
   any sellerSignals;
   unsigned long long sellerTimeout;
+  unsigned short sellerExperimentGroupId;
   record<USVString, any> perBuyerSignals;
   record<USVString, unsigned long long> perBuyerTimeouts;
   record<USVString, unsigned short> perBuyerGroupLimits;
+  record<USVString, unsigned short> perBuyerExperimentGroupIds;
   sequence<AuctionAdConfig> componentAuctions;
 };

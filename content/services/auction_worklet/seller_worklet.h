@@ -57,7 +57,8 @@ class SellerWorklet : public mojom::SellerWorklet {
                     pending_url_loader_factory,
                 const GURL& decision_logic_url,
                 const absl::optional<GURL>& trusted_scoring_signals_url,
-                const url::Origin& top_window_origin);
+                const url::Origin& top_window_origin,
+                absl::optional<uint16_t> experiment_group_id);
 
   explicit SellerWorklet(const SellerWorklet&) = delete;
   SellerWorklet& operator=(const SellerWorklet&) = delete;
@@ -197,6 +198,7 @@ class SellerWorklet : public mojom::SellerWorklet {
             const GURL& decision_logic_url,
             const absl::optional<GURL>& trusted_scoring_signals_url,
             const url::Origin& top_window_origin,
+            absl::optional<uint16_t> experiment_group_id,
             base::WeakPtr<SellerWorklet> parent);
 
     void SetWorkletScript(WorkletLoader::Result worklet_script);
@@ -271,6 +273,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     const GURL decision_logic_url_;
     const absl::optional<GURL> trusted_scoring_signals_url_;
     const url::Origin top_window_origin_;
+    const absl::optional<uint16_t> experiment_group_id_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

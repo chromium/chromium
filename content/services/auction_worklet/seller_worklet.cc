@@ -66,7 +66,8 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
                          v8::Local<v8::Context> context,
                          const GURL& decision_logic_url,
                          const absl::optional<GURL>& trusted_coding_signals_url,
-                         const blink::mojom::AuctionAdConfigNonSharedParams&
+                         const absl::optional<uint16_t> experiment_group_id,
+                         blink::mojom::AuctionAdConfigNonSharedParams&
                              auction_ad_config_non_shared_params,
                          std::vector<v8::Local<v8::Value>>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
@@ -167,6 +168,7 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
       if (!AppendAuctionConfig(
               v8_helper, context, component_auction->decision_logic_url,
               component_auction->trusted_scoring_signals_url,
+              experiment_group_id,
               *component_auction->auction_ad_config_non_shared_params,
               &component_auction_vector)) {
         return false;
@@ -178,6 +180,11 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
                        component_auction_vector.size()));
     if (result.IsNothing() || !result.FromJust())
       return false;
+  }
+
+  if (experiment_group_id.has_value()) {
+    auction_config_dict.Set("experimentGroupId",
+                            static_cast<unsigned>(experiment_group_id.value()));
   }
 
   args->push_back(std::move(auction_config_value));
@@ -212,7 +219,8 @@ SellerWorklet::SellerWorklet(
         pending_url_loader_factory,
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
-    const url::Origin& top_window_origin)
+    const url::Origin& top_window_origin,
+    absl::optional<uint16_t> experiment_group_id)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(std::move(v8_helper)),
       debug_id_(
@@ -227,6 +235,7 @@ SellerWorklet::SellerWorklet(
                     /*automatically_send_requests=*/true,
                     top_window_origin,
                     *trusted_scoring_signals_url,
+                    /*experiment_group_id=*/experiment_group_id,
                     v8_helper_.get())
               : nullptr),
       v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)) {
@@ -235,7 +244,7 @@ SellerWorklet::SellerWorklet(
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper_, debug_id_, decision_logic_url,
                   trusted_scoring_signals_url, top_window_origin,
-                  weak_ptr_factory_.GetWeakPtr()),
+                  experiment_group_id, weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
@@ -380,6 +389,7 @@ SellerWorklet::V8State::V8State(
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
+    absl::optional<uint16_t> experiment_group_id,
     base::WeakPtr<SellerWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
       debug_id_(debug_id),
@@ -387,7 +397,8 @@ SellerWorklet::V8State::V8State(
       user_thread_(base::SequencedTaskRunnerHandle::Get()),
       decision_logic_url_(decision_logic_url),
       trusted_scoring_signals_url_(trusted_scoring_signals_url),
-      top_window_origin_(top_window_origin) {
+      top_window_origin_(top_window_origin),
+      experiment_group_id_(experiment_group_id) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this)));
@@ -440,7 +451,7 @@ void SellerWorklet::V8State::ScoreAd(
   args.push_back(gin::ConvertToV8(isolate, bid));
 
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           trusted_scoring_signals_url_,
+                           trusted_scoring_signals_url_, experiment_group_id_,
                            *auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
@@ -684,7 +695,7 @@ void SellerWorklet::V8State::ReportResult(
 
   std::vector<v8::Local<v8::Value>> args;
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           trusted_scoring_signals_url_,
+                           trusted_scoring_signals_url_, experiment_group_id_,
                            *auction_ad_config_non_shared_params, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,

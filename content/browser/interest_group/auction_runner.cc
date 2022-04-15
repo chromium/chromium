@@ -323,6 +323,9 @@ void AuctionRunner::Auction::StartReportingPhase(
     DCHECK(top_seller_signals);
     if (!auction_worklet_manager_->RequestSellerWorklet(
             config_->decision_logic_url, config_->trusted_scoring_signals_url,
+            config_->has_seller_experiment_group_id
+                ? absl::make_optional(config_->seller_experiment_group_id)
+                : absl::nullopt,
             base::BindOnce(&Auction::ReportSellerResult, base::Unretained(this),
                            top_seller_signals),
             base::BindOnce(&Auction::OnWinningComponentSellerWorkletFatalError,
@@ -708,6 +711,9 @@ void AuctionRunner::Auction::OnComponentSellerWorkletReceived() {
 void AuctionRunner::Auction::RequestSellerWorklet() {
   if (auction_worklet_manager_->RequestSellerWorklet(
           config_->decision_logic_url, config_->trusted_scoring_signals_url,
+          config_->has_seller_experiment_group_id
+              ? absl::make_optional(config_->seller_experiment_group_id)
+              : absl::nullopt,
           base::BindOnce(&Auction::OnSellerWorkletReceived,
                          base::Unretained(this)),
           base::BindOnce(&Auction::OnSellerWorkletFatalError,
@@ -1463,10 +1469,18 @@ bool AuctionRunner::Auction::RequestBidderWorklet(
   DCHECK(!bid_state.worklet_handle);
 
   const blink::InterestGroup& interest_group = bid_state.bidder.interest_group;
+
+  absl::optional<uint16_t> experiment_group_id = absl::nullopt;
+  auto it = config_->per_buyer_experiment_group_ids.find(interest_group.owner);
+  if (it != config_->per_buyer_experiment_group_ids.end())
+    experiment_group_id = it->second;
+  else if (config_->has_all_buyer_experiment_group_id)
+    experiment_group_id = config_->all_buyer_experiment_group_id;
+
   return auction_worklet_manager_->RequestBidderWorklet(
       interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
-      interest_group.trusted_bidding_signals_url,
+      interest_group.trusted_bidding_signals_url, experiment_group_id,
       std::move(worklet_available_callback), std::move(fatal_error_callback),
       bid_state.worklet_handle);
 }

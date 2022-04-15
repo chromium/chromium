@@ -177,12 +177,14 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const GURL& bidding_logic_url,
       const absl::optional<GURL>& wasm_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
+      absl::optional<uint16_t> experiment_group_id,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
   [[nodiscard]] bool RequestSellerWorklet(
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
+      absl::optional<uint16_t> experiment_group_id,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
@@ -195,7 +197,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
     WorkletInfo(WorkletType type,
                 const GURL& script_url,
                 const absl::optional<GURL>& wasm_url,
-                const absl::optional<GURL>& signals_url);
+                const absl::optional<GURL>& signals_url,
+                absl::optional<uint16_t> experiment_group_id);
     WorkletInfo(const WorkletInfo&);
     WorkletInfo(WorkletInfo&&);
     ~WorkletInfo();
@@ -204,6 +207,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
     GURL script_url;
     absl::optional<GURL> wasm_url;
     absl::optional<GURL> signals_url;
+    absl::optional<uint16_t> experiment_group_id;
 
     bool operator<(const WorkletInfo& other) const;
   };

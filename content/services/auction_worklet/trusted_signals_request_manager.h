@@ -88,6 +88,7 @@ class TrustedSignalsRequestManager {
       bool automatically_send_requests,
       const url::Origin& top_level_origin,
       const GURL& trusted_signals_url,
+      absl::optional<uint16_t> experiment_group_id,
       AuctionV8Helper* v8_helper);
 
   explicit TrustedSignalsRequestManager(const TrustedSignalsRequestManager&) =
@@ -201,6 +202,7 @@ class TrustedSignalsRequestManager {
   const bool automatically_send_requests_;
   const url::Origin top_level_origin_;
   const GURL trusted_signals_url_;
+  const absl::optional<uint16_t> experiment_group_id_;
   const scoped_refptr<AuctionV8Helper> v8_helper_;
 
   // All live requests that haven't yet been assigned to a

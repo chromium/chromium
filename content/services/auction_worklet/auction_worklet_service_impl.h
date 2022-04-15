@@ -50,7 +50,9 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
       const GURL& script_source_url,
       const absl::optional<GURL>& wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
-      const url::Origin& top_window_origin) override;
+      const url::Origin& top_window_origin,
+      bool has_experiment_group_id,
+      uint16_t experiment_group_id) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
       bool pause_for_debugger_on_start,
@@ -58,7 +60,9 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
           pending_url_loader_factory,
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
-      const url::Origin& top_window_origin) override;
+      const url::Origin& top_window_origin,
+      bool has_experiment_group_id,
+      uint16_t experiment_group_id) override;
 
  private:
   void DisconnectSellerWorklet(mojo::ReceiverId receiver_id,

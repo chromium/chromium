@@ -90,6 +90,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
+            /*experiment_group_id=*/absl::nullopt,
             v8_helper_.get()),
         scoring_request_manager_(
             TrustedSignalsRequestManager::Type::kScoringSignals,
@@ -97,6 +98,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
+            /*experiment_group_id=*/absl::nullopt,
             v8_helper_.get()) {}
 
   ~TrustedSignalsRequestManagerTest() override {
@@ -861,7 +863,7 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
       TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      v8_helper_.get());
+      /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
 
   // Create one Request.
   base::RunLoop run_loop1;
@@ -936,7 +938,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
       TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      v8_helper_.get());
+      /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
@@ -991,7 +993,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
       TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      v8_helper_.get());
+      /*experiment_group_id=*/absl::nullopt, v8_helper_.get());
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
@@ -1028,6 +1030,75 @@ TEST_F(TrustedSignalsRequestManagerTest,
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
+}
+
+// Test bidding signals request carries experiment ID.
+TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
+  const std::vector<std::string> kKeys = {"key1"};
+
+  // Create a new bidding request manager with `experiment_group_id` set.
+  TrustedSignalsRequestManager bidding_request_manager(
+      TrustedSignalsRequestManager::Type::kBiddingSignals, &url_loader_factory_,
+      /*automatically_send_requests=*/false,
+      url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
+      /*experiment_group_id=*/934u, v8_helper_.get());
+  AddJsonResponse(&url_loader_factory_,
+                  GURL("https://url.test/"
+                       "?hostname=publisher&keys=key1&experimentGroupId=934"),
+                  kBaseBiddingJson);
+
+  base::RunLoop run_loop;
+  scoped_refptr<TrustedSignals::Result> signals;
+  absl::optional<std::string> error_msg;
+  auto request = bidding_request_manager.RequestBiddingSignals(
+      kKeys, base::BindOnce(&LoadSignalsCallback, &signals, &error_msg,
+                            run_loop.QuitClosure()));
+  bidding_request_manager.StartBatchedTrustedSignalsRequest();
+
+  run_loop.Run();
+  EXPECT_FALSE(error_msg);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), kKeys));
+}
+
+// Test scoring signals request carries experiment ID.
+TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
+  const GURL kRenderUrl1 = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1 = {
+      "https://foosub.test/", "https://bazsub.test/"};
+
+  // Create a new bidding request manager with `experiment_group_id` set.
+  TrustedSignalsRequestManager scoring_request_manager(
+      TrustedSignalsRequestManager::Type::kScoringSignals, &url_loader_factory_,
+      /*automatically_send_requests=*/false,
+      url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
+      /*experiment_group_id=*/344u, v8_helper_.get());
+
+  AddJsonResponse(&url_loader_factory_,
+                  GURL("https://url.test/?hostname=publisher"
+                       "&renderUrls=https%3A%2F%2Ffoo.test%2F"
+                       "&adComponentRenderUrls=https%3A%2F%2Fbazsub.test%2F,"
+                       "https%3A%2F%2Ffoosub.test%2F&experimentGroupId=344"),
+                  kBaseScoringJson);
+
+  base::RunLoop run_loop;
+  scoped_refptr<TrustedSignals::Result> signals;
+  absl::optional<std::string> error_msg;
+  auto request1 = scoring_request_manager.RequestScoringSignals(
+      kRenderUrl1, kAdComponentRenderUrls1,
+      base::BindOnce(&LoadSignalsCallback, &signals, &error_msg,
+                     run_loop.QuitClosure()));
+
+  scoring_request_manager.StartBatchedTrustedSignalsRequest();
+
+  run_loop.Run();
+  EXPECT_FALSE(error_msg) << *error_msg;
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1},")"
+            R"(adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
 }
 
 }  // namespace

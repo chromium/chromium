@@ -160,6 +160,7 @@ class BidderWorkletTest : public testing::Test {
     per_buyer_signals_ = "[\"per_buyer_signals\"]";
     per_buyer_timeout_ = absl::nullopt;
     top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
+    experiment_group_id_ = absl::nullopt;
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
     browser_signal_top_level_seller_origin_.reset();
@@ -351,7 +352,7 @@ class BidderWorkletTest : public testing::Test {
         v8_helper_, pause_for_debugger_on_start, std::move(url_loader_factory),
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
-        top_window_origin_);
+        top_window_origin_, experiment_group_id_);
     auto* bidder_worklet_ptr = bidder_worklet_impl.get();
     mojo::Remote<mojom::BidderWorklet> bidder_worklet;
     mojo::ReceiverId receiver_id =
@@ -492,6 +493,7 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<std::string> per_buyer_signals_;
   absl::optional<base::TimeDelta> per_buyer_timeout_;
   url::Origin top_window_origin_;
+  absl::optional<uint16_t> experiment_group_id_;
   url::Origin browser_signal_seller_origin_;
   absl::optional<url::Origin> browser_signal_top_level_seller_origin_;
 
@@ -2603,6 +2605,23 @@ TEST_F(BidderWorkletTest, GenerateBidWithSetBid) {
       /*expected_bid=*/
       mojom::BidderWorkletBid::New(
           "\"returned\"", 2, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidExperimentGroupId) {
+  experiment_group_id_ = 48384u;
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_trusted_bidding_signals_keys_.emplace();
+  interest_group_trusted_bidding_signals_keys_->push_back("key1");
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL("https://signals.test/?hostname=top.window.test&keys=key1"
+           "&experimentGroupId=48384"),
+      R"({"key1":1})");
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid:123, render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New(
+          R"("ad")", 123, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
 }
 

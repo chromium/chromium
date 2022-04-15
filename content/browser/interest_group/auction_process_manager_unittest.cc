@@ -55,7 +55,9 @@ class TestAuctionProcessManager
       const GURL& script_source_url,
       const absl::optional<GURL>& bidding_wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
-      const url::Origin& top_window_origin) override {
+      const url::Origin& top_window_origin,
+      bool has_experiment_nonce,
+      uint16_t experiment_nonce) override {
     NOTREACHED();
   }
 
@@ -66,7 +68,9 @@ class TestAuctionProcessManager
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
       const GURL& script_source_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
-      const url::Origin& top_window_origin) override {
+      const url::Origin& top_window_origin,
+      bool has_experiment_nonce,
+      uint16_t experiment_nonce) override {
     NOTREACHED();
   }
 

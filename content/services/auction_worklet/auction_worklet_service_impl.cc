@@ -34,11 +34,15 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     const GURL& script_source_url,
     const absl::optional<GURL>& wasm_helper_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
-    const url::Origin& top_window_origin) {
+    const url::Origin& top_window_origin,
+    bool has_experiment_group_id,
+    uint16_t experiment_group_id) {
   auto bidder_worklet = std::make_unique<BidderWorklet>(
       auction_v8_helper_, pause_for_debugger_on_start,
       std::move(pending_url_loader_factory), script_source_url, wasm_helper_url,
-      trusted_bidding_signals_url, top_window_origin);
+      trusted_bidding_signals_url, top_window_origin,
+      has_experiment_group_id ? absl::make_optional(experiment_group_id)
+                              : absl::nullopt);
   auto* bidder_worklet_ptr = bidder_worklet.get();
 
   mojo::ReceiverId receiver_id = bidder_worklets_.Add(
@@ -56,11 +60,15 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
         pending_url_loader_factory,
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
-    const url::Origin& top_window_origin) {
+    const url::Origin& top_window_origin,
+    bool has_experiment_group_id,
+    uint16_t experiment_group_id) {
   auto seller_worklet = std::make_unique<SellerWorklet>(
       auction_v8_helper_, pause_for_debugger_on_start,
       std::move(pending_url_loader_factory), decision_logic_url,
-      trusted_scoring_signals_url, top_window_origin);
+      trusted_scoring_signals_url, top_window_origin,
+      has_experiment_group_id ? absl::make_optional(experiment_group_id)
+                              : absl::nullopt);
   auto* seller_worklet_ptr = seller_worklet.get();
 
   mojo::ReceiverId receiver_id = seller_worklets_.Add(

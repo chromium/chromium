@@ -118,4 +118,13 @@ struct AuctionAdConfig {
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   AuctionAdConfigNonSharedParams auction_ad_config_non_shared_params;
+
+  // Optional identifier for an experiment group, used when getting trusted
+  // signals (and as part of AuctionConfig given to worklets).
+  // TODO(https://crbug.com/657632): Update when optional integers supported.
+  bool has_seller_experiment_group_id = false;
+  uint16 seller_experiment_group_id;
+  bool has_all_buyer_experiment_group_id = false;
+  int16 all_buyer_experiment_group_id;
+  map<url.mojom.Origin, uint16> per_buyer_experiment_group_ids;
 };

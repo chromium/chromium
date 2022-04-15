@@ -131,7 +131,8 @@ BidderWorklet::BidderWorklet(
     const GURL& script_source_url,
     const absl::optional<GURL>& wasm_helper_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
-    const url::Origin& top_window_origin)
+    const url::Origin& top_window_origin,
+    absl::optional<uint16_t> experiment_group_id)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(v8_helper),
       debug_id_(
@@ -147,6 +148,7 @@ BidderWorklet::BidderWorklet(
                     /*automatically_send_requests=*/false,
                     top_window_origin,
                     *trusted_bidding_signals_url,
+                    experiment_group_id,
                     v8_helper_.get())
               : nullptr),
       top_window_origin_(top_window_origin),
