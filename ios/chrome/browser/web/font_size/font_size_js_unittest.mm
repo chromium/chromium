@@ -68,7 +68,7 @@ class FontSizeJsTest : public PlatformTest {
     // Main web injection should have occurred.
     ASSERT_NSEQ(@"object",
                 web::test::ExecuteJavaScript(@"typeof __gCrWeb", web_state()));
-    web::test::ExecuteJavaScript(web::test::GetPageScript(@"font_size_js"),
+    web::test::ExecuteJavaScript(web::test::GetPageScript(@"font_size"),
                                  web_state());
   }
 

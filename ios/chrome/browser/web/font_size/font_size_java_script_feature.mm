@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-const char kFontSizeScript[] = "font_size_js";
+const char kFontSizeScript[] = "font_size";
 }  // namespace
 
 // static

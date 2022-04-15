@@ -5,7 +5,6 @@
 /**
  * @fileoverview Add functionality related to font size adjustment.
  */
-goog.provide('__crWeb.font_size');
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been

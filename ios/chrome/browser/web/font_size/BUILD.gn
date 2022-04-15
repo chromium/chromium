@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("font_size") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -30,13 +30,13 @@ source_set("font_size") {
   public_deps = [ "//ios/web/public/js_messaging" ]
 }
 
-js_compile_bundle("font_size_js") {
+optimize_js("font_size_js") {
   visibility = [
     ":font_size",
     ":unit_tests",
   ]
-  closure_entry_point = "__crWeb.font_size"
 
+  primary_script = "resources/font_size.js"
   sources = [ "resources/font_size.js" ]
 }
 
