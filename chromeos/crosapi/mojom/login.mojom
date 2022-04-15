@@ -26,16 +26,7 @@ interface LacrosCleanupTriggeredObserver {
   OnLacrosCleanupTriggered@0() => (string? error);
 };
 
-// Interface for observers of external logout request events.
-[Stable, Uuid="4aee372e-a1f0-482c-bb21-922eac8ba7cc"]
-interface ExternalLogoutRequestObserver {
-  // Called when an external logout is requested.
-  OnRequestExternalLogout@0();
-};
-
 // This API allows Lacros to call the chrome.login extension API.
-//
-// Next MinVersion: 4
 [Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
 interface Login {
   // Launches a managed guest session if one is set up via the admin console.
@@ -114,16 +105,4 @@ interface Login {
   [MinVersion=2]
   AddLacrosCleanupTriggeredObserver@13(
       pending_remote<LacrosCleanupTriggeredObserver> observer);
-
-  // Adds an observer for the external logout request events.
-  [MinVersion=3]
-  AddExternalLogoutRequestObserver@14(
-      pending_remote<ExternalLogoutRequestObserver> observer);
-
-  // Notifies the external logout observers with the
-  // `login.onExternalLogoutDone` event. It is called from the in-session
-  // extension (lacros/ash-chrome). The login screen extension running on the
-  // lock screen (ash-chrome) listens for the dispatched event.
-  [MinVersion=3]
-  NotifyOnExternalLogoutDone@16();
 };

@@ -372,41 +372,4 @@ LoginSetDataForNextLoginAttemptFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-LoginRequestExternalLogoutFunction::LoginRequestExternalLogoutFunction() =
-    default;
-LoginRequestExternalLogoutFunction::~LoginRequestExternalLogoutFunction() =
-    default;
-
-ExtensionFunction::ResponseAction LoginRequestExternalLogoutFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return RespondNow(Error(kCannotBeCalledFromLacros));
-#else
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->login_ash()
-      ->NotifyOnRequestExternalLogout();
-
-  return RespondNow(NoArguments());
-#endif
-}
-
-LoginNotifyExternalLogoutDoneFunction::LoginNotifyExternalLogoutDoneFunction() =
-    default;
-LoginNotifyExternalLogoutDoneFunction::
-    ~LoginNotifyExternalLogoutDoneFunction() = default;
-
-ExtensionFunction::ResponseAction LoginNotifyExternalLogoutDoneFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi(
-      crosapi::mojom::Login::kNotifyOnExternalLogoutDoneMinVersion);
-  if (error.has_value()) {
-    return RespondNow(Error(error.value()));
-  }
-#endif
-
-  GetLoginApi()->NotifyOnExternalLogoutDone();
-
-  return RespondNow(NoArguments());
-}
-
 }  // namespace extensions

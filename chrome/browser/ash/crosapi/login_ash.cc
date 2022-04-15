@@ -244,35 +244,6 @@ LoginAsh::GetCleanupTriggeredObservers() {
   return lacros_cleanup_triggered_observers_;
 }
 
-void LoginAsh::AddExternalLogoutRequestObserver(
-    mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer) {
-  mojo::Remote<mojom::ExternalLogoutRequestObserver> remote(
-      std::move(observer));
-  external_logout_request_observers_.Add(std::move(remote));
-}
-
-void LoginAsh::AddExternalLogoutDoneObserver(
-    ExternalLogoutDoneObserver* observer) {
-  external_logout_done_observers_.AddObserver(observer);
-}
-
-void LoginAsh::RemoveExternalLogoutDoneObserver(
-    ExternalLogoutDoneObserver* observer) {
-  external_logout_done_observers_.RemoveObserver(observer);
-}
-
-void LoginAsh::NotifyOnRequestExternalLogout() {
-  for (auto& observer : external_logout_request_observers_) {
-    observer->OnRequestExternalLogout();
-  }
-}
-
-void LoginAsh::NotifyOnExternalLogoutDone() {
-  for (auto& observer : external_logout_done_observers_) {
-    observer.OnExternalLogoutDone();
-  }
-}
-
 void LoginAsh::OnScreenLockerAuthenticate(
     base::OnceCallback<void(const absl::optional<std::string>&)> callback,
     bool success) {

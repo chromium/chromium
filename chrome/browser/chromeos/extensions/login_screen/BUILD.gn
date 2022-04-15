@@ -10,10 +10,6 @@ assert(is_chromeos)
 
 source_set("login_screen") {
   sources = [
-    "login/external_logout_request/external_logout_request_event_handler.cc",
-    "login/external_logout_request/external_logout_request_event_handler.h",
-    "login/external_logout_request/external_logout_request_event_handler_factory.cc",
-    "login/external_logout_request/external_logout_request_event_handler_factory.h",
     "login/login_api.cc",
     "login/login_api.h",
     "login_screen_storage/login_screen_storage_api.cc",
@@ -31,18 +27,11 @@ source_set("login_screen") {
     "//chrome/common:non_code_constants",
     "//chrome/common/extensions/api",
     "//chromeos/crosapi/mojom",
-    "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",
   ]
 
   if (is_chromeos_ash) {
-    sources += [
-      "login/external_logout_done/external_logout_done_event_handler.cc",
-      "login/external_logout_done/external_logout_done_event_handler.h",
-      "login/external_logout_done/external_logout_done_event_handler_factory.cc",
-      "login/external_logout_done/external_logout_done_event_handler_factory.h",
-    ]
     deps += [ "//chrome/browser/ash/crosapi" ]
   }
 
@@ -103,10 +92,7 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "login/external_logout_request/external_logout_request_event_handler_unittest.cc",
-    "login_state/login_state_api_unittest.cc",
-  ]
+  sources = [ "login_state/login_state_api_unittest.cc" ]
 
   deps = [
     ":login_screen",
@@ -119,7 +105,6 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "login/external_logout_done/external_logout_done_event_handler_unittest.cc",
       "login_screen_storage/login_screen_storage_api_ash_unittest.cc",
       "login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
     ]
