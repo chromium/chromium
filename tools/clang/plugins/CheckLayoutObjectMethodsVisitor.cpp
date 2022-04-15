@@ -89,7 +89,7 @@ class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
     match_finder.addDynamicMatcher(function_call, this);
   }
 
-  void run(const MatchFinder::MatchResult& result) {
+  void run(const MatchFinder::MatchResult& result) override {
     auto* method =
         result.Nodes.getNodeAs<clang::CXXMethodDecl>("layout_method");
 
