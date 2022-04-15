@@ -67,6 +67,7 @@ public class StripLayoutHelperTest {
     private static final float TAB_WIDTH_2 = 160.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
+    private static final long TIMESTAMP = 5000;
 
     /** Reset the environment before each test. */
     @Before
@@ -271,7 +272,7 @@ public class StripLayoutHelperTest {
         // Arrange
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
         initializeTest(true, true, 3);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2, 150.f);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2, 150.f, 5);
         // Set mWidth value to 800.f.
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
         // The leftmost tab is partially hidden.
@@ -297,7 +298,7 @@ public class StripLayoutHelperTest {
         // Arrange
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
         initializeTest(true, true, 3);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2, 150.f);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2, 150.f, 5);
         // Set mWidth value to 800.f
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
         // To make rightmost tab partially hidden value should be gt than (SCREEN_WIDTH - 120.f -
@@ -318,17 +319,103 @@ public class StripLayoutHelperTest {
         Mockito.verify(tabs[4]).setCanShowCloseButton(false);
     }
 
-    private void initializeTest(boolean rtl, boolean incognito, int tabIndex) {
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testScrollOffset_OnResume_StartOnLeft_SelectedRightmostTab() {
+        // Arrange: Initialize tabs with last tab selected.
+        initializeTest(false, true, 9, 10);
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM, 150.f, 10);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Set screen width to 800dp.
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
+
+        int expectedFinalX = -1004; // scrollOffset(0) - delta(optimalRight(-980) - scrollOffset(0)
+                                    // - tabOverlapWidth(24))
+        assertEquals(expectedFinalX, mStripLayoutHelper.getScroller().getFinalX());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testScrollOffset_OnResume_StartOnRight_SelectedLeftmostTab() {
+        // Arrange: Initialize tabs with first tab selected.
+        initializeTest(false, true, 0, 10);
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM, 150.f, 10);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        mStripLayoutHelper.testSetScrollOffset(1200);
+
+        // Set screen width to 800dp.
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
+
+        int expectedFinalX = 490; // scrollOffset(1200) - delta(optimalRight(514) - scrollOffset(24)
+                                  // - tabOverlapWidth(1200))
+        assertEquals(expectedFinalX, mStripLayoutHelper.getScroller().getFinalX());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testScrollDuration() {
+        initializeTest(false, true, 3);
+
+        // Act: Set scroll offset less than 960.
+        mStripLayoutHelper.testSetScrollOffset(800);
+
+        // Assert: Expand duration is 250.
+        assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 250);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testScrollDuration_Medium() {
+        initializeTest(false, true, 3);
+
+        // Act: Set scroll offset between 960 and 1920.
+        mStripLayoutHelper.testSetScrollOffset(1000);
+
+        // Assert: Expand duration is 350.
+        assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 350);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testScrollDuration_Large() {
+        initializeTest(false, true, 3);
+
+        // Act: Set scroll offset greater than 1920
+        mStripLayoutHelper.testSetScrollOffset(2000);
+
+        // Assert: Expand duration is 450.
+        assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 450);
+    }
+
+    private void initializeTest(boolean rtl, boolean incognito, int tabIndex, int numTabs) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
-        for (int i = 0; i < TEST_TAB_TITLES.length; i++) {
-            mModel.addTab(TEST_TAB_TITLES[i]);
-            when(mModel.getTabAt(i).isHidden()).thenReturn(tabIndex != i);
+        if (numTabs <= 5) {
+            for (int i = 0; i < numTabs; i++) {
+                mModel.addTab(TEST_TAB_TITLES[i]);
+                when(mModel.getTabAt(i).isHidden()).thenReturn(tabIndex != i);
+            }
+        } else {
+            for (int i = 0; i < numTabs; i++) {
+                mModel.addTab("Tab " + i);
+                when(mModel.getTabAt(i).isHidden()).thenReturn(tabIndex != i);
+            }
         }
         mModel.setIndex(tabIndex);
         mStripLayoutHelper.setTabModel(mModel, null);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0);
         // Flush UI updated
+    }
+
+    private void initializeTest(boolean rtl, boolean incognito, int tabIndex) {
+        initializeTest(rtl, incognito, tabIndex, 5);
     }
 
     private void assertTabStripAndOrder(String[] expectedAccessibilityDescriptions) {
@@ -381,20 +468,18 @@ public class StripLayoutHelperTest {
         return expectedAccessibilityDescriptions;
     }
 
-    private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth, float mDrawX) {
+    private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth, float mDrawX, int numTabs) {
         StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
 
-        tabs[0] = mockStripTab(0, tabWidth, mDrawX);
-        tabs[1] = mockStripTab(1, tabWidth, mDrawX);
-        tabs[2] = mockStripTab(2, tabWidth, mDrawX);
-        tabs[3] = mockStripTab(3, tabWidth, mDrawX);
-        tabs[4] = mockStripTab(4, tabWidth, mDrawX);
+        for (int i = 0; i < numTabs; i++) {
+            tabs[i] = mockStripTab(i, tabWidth, mDrawX);
+        }
 
         return tabs;
     }
 
     private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth) {
-        return getMockedStripLayoutTabs(tabWidth, 0.f);
+        return getMockedStripLayoutTabs(tabWidth, 0.f, 5);
     }
 
     private StripLayoutTab mockStripTab(int id, float tabWidth, float mDrawX) {

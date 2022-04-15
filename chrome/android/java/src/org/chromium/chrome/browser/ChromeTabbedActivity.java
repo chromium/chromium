@@ -731,7 +731,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
                     mOverviewModeBehaviorSupplier,
                     mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker, tabSwitcherViewHolder,
-                    mRootUiCoordinator.getScrimCoordinator());
+                    mRootUiCoordinator.getScrimCoordinator(), getLifecycleDispatcher());
             mLayoutStateProviderOneshotSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;
