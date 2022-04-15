@@ -175,7 +175,10 @@ public class MessageQueueManagerTest {
 
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        when(m1.shouldShow()).thenReturn(true, true, true, false);
+        when(m1.shouldShow())
+                .thenReturn(true, true,
+                        true, // This is called by #getNextMessage after a message is shown.
+                        true, false);
 
         // m1#shouldShow will be invoked and will return true.
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
@@ -190,7 +193,7 @@ public class MessageQueueManagerTest {
         messageState = queueManager.getNextMessage();
         Assert.assertNull("Next message candidate should be null.", messageState);
 
-        verify(m1, times(4)).shouldShow();
+        verify(m1, times(5)).shouldShow();
 
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(anyBoolean(), any());
@@ -451,22 +454,12 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE, true));
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
 
         verify(m1,
                 description(
                         "A message should be hidden with animation when animationTransition is set true."))
                 .hide(eq(true), any());
-
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE, false));
-
-        verify(m1,
-                description(
-                        "A message should be hidden without animation when animationTransition is set false."))
-                .hide(eq(false), any());
     }
 
     /**
