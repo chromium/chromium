@@ -121,6 +121,14 @@ mojom("mojom") {
           mojom = "remoting.mojom.TransportRouteType"
           cpp = "::remoting::protocol::TransportRoute::RouteType"
         },
+        {
+          mojom = "remoting.mojom.VideoLayout"
+          cpp = "::remoting::protocol::VideoLayout"
+        },
+        {
+          mojom = "remoting.mojom.VideoTrackLayout"
+          cpp = "::remoting::protocol::VideoTrackLayout"
+        },
       ]
       traits_headers = [ "remoting_mojom_traits.h" ]
       traits_sources = [ "remoting_mojom_traits.cc" ]

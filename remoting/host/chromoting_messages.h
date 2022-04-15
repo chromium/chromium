@@ -39,10 +39,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.
 
-// Notifies the network process that the host display layout has changed.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_DisplayChanged,
-                    remoting::protocol::VideoLayout /* layout */)
-
 // Carries a cursor share update from the desktop session agent to the client.
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_MouseCursor,
                     webrtc::MouseCursor /* cursor */)

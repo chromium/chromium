@@ -22,6 +22,7 @@
 #include "remoting/host/mojom/webrtc_types.mojom-shared.h"
 #include "remoting/host/mojom/wrapped_primitives.mojom-shared.h"
 #include "remoting/proto/audio.pb.h"
+#include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/transport.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
@@ -960,6 +961,58 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
     NOTREACHED();
     return false;
   }
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::VideoLayoutDataView,
+                         ::remoting::protocol::VideoLayout> {
+ public:
+  static const ::google::protobuf::RepeatedPtrField<
+      ::remoting::protocol::VideoTrackLayout>&
+  tracks(const ::remoting::protocol::VideoLayout& layout) {
+    return layout.video_track();
+  }
+
+  static bool supports_full_desktop_capture(
+      const ::remoting::protocol::VideoLayout& layout) {
+    return layout.supports_full_desktop_capture();
+  }
+
+  static bool Read(remoting::mojom::VideoLayoutDataView data_view,
+                   ::remoting::protocol::VideoLayout* out_layout);
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::VideoTrackLayoutDataView,
+                         ::remoting::protocol::VideoTrackLayout> {
+ public:
+  static int64_t screen_id(
+      const ::remoting::protocol::VideoTrackLayout& track) {
+    return track.screen_id();
+  }
+
+  static const std::string& media_stream_id(
+      const ::remoting::protocol::VideoTrackLayout& track) {
+    return track.media_stream_id();
+  }
+
+  static gfx::Point position(
+      const ::remoting::protocol::VideoTrackLayout& track) {
+    return {track.position_x(), track.position_y()};
+  }
+
+  static webrtc::DesktopSize size(
+      const ::remoting::protocol::VideoTrackLayout& track) {
+    return {track.width(), track.height()};
+  }
+
+  static webrtc::DesktopVector dpi(
+      const ::remoting::protocol::VideoTrackLayout& track) {
+    return {track.x_dpi(), track.y_dpi()};
+  }
+
+  static bool Read(remoting::mojom::VideoTrackLayoutDataView data_view,
+                   ::remoting::protocol::VideoTrackLayout* out_track);
 };
 
 }  // namespace mojo

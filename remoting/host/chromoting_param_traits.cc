@@ -132,47 +132,6 @@ void ParamTraits<webrtc::MouseCursor>::Log(
                          p.hotspot().x(), p.hotspot().y()));
 }
 
-// remoting::protocol::VideoLayout
-
-// static
-void ParamTraits<remoting::protocol::VideoLayout>::Write(
-    base::Pickle* m,
-    const remoting::protocol::VideoLayout& p) {
-  std::string serialized_video_layout;
-  bool result = p.SerializeToString(&serialized_video_layout);
-  DCHECK(result);
-  m->WriteString(serialized_video_layout);
-}
-
-// static
-bool ParamTraits<remoting::protocol::VideoLayout>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    remoting::protocol::VideoLayout* p) {
-  std::string serialized_video_layout;
-  if (!iter->ReadString(&serialized_video_layout))
-    return false;
-
-  return p->ParseFromString(serialized_video_layout);
-}
-
-// static
-void ParamTraits<remoting::protocol::VideoLayout>::Log(
-    const remoting::protocol::VideoLayout& p,
-    std::string* l) {
-  l->append(base::StringPrintf("protocol::VideoLayout(["));
-  for (int i = 0; i < p.video_track_size(); i++) {
-    remoting::protocol::VideoTrackLayout track = p.video_track(i);
-    l->append("])");
-    if (i != 0)
-      l->append(",");
-    l->append(base::StringPrintf("{(%d,%d) %dx%d}", track.position_x(),
-                                 track.position_y(), track.width(),
-                                 track.height()));
-  }
-  l->append("])");
-}
-
 // remoting::protocol::KeyboardLayout
 
 // static

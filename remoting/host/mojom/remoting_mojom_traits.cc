@@ -350,4 +350,60 @@ bool mojo::StructTraits<remoting::mojom::TransportRouteDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<remoting::mojom::VideoTrackLayoutDataView,
+                        ::remoting::protocol::VideoTrackLayout>::
+    Read(remoting::mojom::VideoTrackLayoutDataView data_view,
+         ::remoting::protocol::VideoTrackLayout* out_track) {
+  out_track->set_screen_id(data_view.screen_id());
+
+  std::string media_stream_id;
+  if (!data_view.ReadMediaStreamId(&media_stream_id)) {
+    return false;
+  }
+  // Don't set |media_stream_id| if the value is empty as the client will
+  // misinterpret an empty protobuf value and multi-mon scenarios will break.
+  if (!media_stream_id.empty()) {
+    out_track->set_media_stream_id(std::move(media_stream_id));
+  }
+
+  gfx::Point position;
+  if (!data_view.ReadPosition(&position)) {
+    return false;
+  }
+  out_track->set_position_x(position.x());
+  out_track->set_position_y(position.y());
+
+  webrtc::DesktopSize size;
+  if (!data_view.ReadSize(&size)) {
+    return false;
+  }
+  out_track->set_width(size.width());
+  out_track->set_height(size.height());
+
+  webrtc::DesktopVector dpi;
+  if (!data_view.ReadDpi(&dpi)) {
+    return false;
+  }
+  out_track->set_x_dpi(dpi.x());
+  out_track->set_y_dpi(dpi.y());
+
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::VideoLayoutDataView,
+                        ::remoting::protocol::VideoLayout>::
+    Read(remoting::mojom::VideoLayoutDataView data_view,
+         ::remoting::protocol::VideoLayout* out_layout) {
+  if (!data_view.ReadTracks(out_layout->mutable_video_track())) {
+    return false;
+  }
+
+  out_layout->set_supports_full_desktop_capture(
+      data_view.supports_full_desktop_capture());
+
+  return true;
+}
+
 }  // namespace mojo

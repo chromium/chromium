@@ -187,6 +187,7 @@ class DesktopSessionProxy
                                    uint32_t size) override;
   void OnSharedMemoryRegionReleased(int id) override;
   void OnCaptureResult(mojom::CaptureResultPtr capture_result) override;
+  void OnDesktopDisplayChanged(const protocol::VideoLayout& layout) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error) override;
@@ -217,9 +218,6 @@ class DesktopSessionProxy
   void OnDesktopSessionAgentStarted(
       mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
           pending_remote);
-
-  // Handles DesktopDisplayChange notification from the desktop session agent.
-  void OnDesktopDisplayChanged(const protocol::VideoLayout& layout);
 
   // Handles CaptureResult notification from the desktop session agent.
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,

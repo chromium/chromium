@@ -232,8 +232,6 @@ bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(DesktopSessionProxy, message)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_DisplayChanged,
-                        OnDesktopDisplayChanged)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_MouseCursor, OnMouseCursor)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_KeyboardChanged,
                         OnKeyboardChanged)

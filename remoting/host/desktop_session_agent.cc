@@ -356,8 +356,9 @@ void DesktopSessionAgent::OnDesktopDisplayChanged(
     LOG(INFO) << "   #" << display_id << " : "
               << " [" << track.x_dpi() << "," << track.y_dpi() << "]";
   }
-  SendToNetwork(std::make_unique<ChromotingDesktopNetworkMsg_DisplayChanged>(
-      *layout.get()));
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnDesktopDisplayChanged(*layout);
+  }
 }
 
 void DesktopSessionAgent::Start(
