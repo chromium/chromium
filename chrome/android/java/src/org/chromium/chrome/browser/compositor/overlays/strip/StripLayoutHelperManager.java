@@ -548,6 +548,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 if (mLayerTitleCacheSupplier.hasValue()) {
                     mLayerTitleCacheSupplier.get().remove(tab.getId());
                 }
+                getStripLayoutHelper(tab.isIncognito()).tabClosureCommited();
             }
 
             @Override
@@ -563,8 +564,15 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
 
             @Override
+            public void willCloseTab(Tab tab, boolean animate) {
+                if (!tab.isIncognito()) {
+                    getStripLayoutHelper(tab.isIncognito()).willCloseTab(tab.getId());
+                }
+            }
+
+            @Override
             public void willCloseAllTabs(boolean incognito) {
-                getStripLayoutHelper(incognito).allTabsClosed();
+                getStripLayoutHelper(incognito).willCloseAllTabs();
                 updateModelSwitcherButton();
             }
 
@@ -573,6 +581,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 if (mLayerTitleCacheSupplier.hasValue()) {
                     mLayerTitleCacheSupplier.get().clearExcept(Tab.INVALID_TAB_ID);
                 }
+                getStripLayoutHelper(false).tabClosureCommited();
             }
 
             @Override

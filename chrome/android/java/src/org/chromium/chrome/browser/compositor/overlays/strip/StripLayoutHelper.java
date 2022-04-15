@@ -174,6 +174,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private Context mContext;
 
+    // Id of the selected tab that was closed.
+    private Integer mSelectedTabIdWhenTabClosed;
+    private Boolean mClosedAllTabs;
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      * @param context         The current Android {@link Context}.
@@ -567,19 +571,39 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * Called when all tabs are closed at once.
      */
-    public void allTabsClosed() {
+    public void willCloseAllTabs() {
+        if (!mIncognito) {
+            int selTabIndex = mModel.index();
+            mClosedAllTabs = true;
+            if (selTabIndex > -1 && selTabIndex < mModel.getCount()) {
+                Tab tab = mModel.getTabAt(selTabIndex);
+                if (tab != null) {
+                    mSelectedTabIdWhenTabClosed = tab.getId();
+                }
+            }
+        }
         computeAndUpdateTabOrders(true);
         mUpdateHost.requestUpdate();
     }
 
     /**
-     * Called when a tab close has been undone and the tab has been restored.
+     * Called when a tab close has been undone and the tab has been restored. This also reselects
+     * the last tab the user was on before the tab was closed.
      * @param time The current time of the app in ms.
      * @param id   The id of the Tab.
      */
     public void tabClosureCancelled(long time, int id) {
         final boolean selected = TabModelUtils.getCurrentTabId(mModel) == id;
         tabCreated(time, id, Tab.INVALID_TAB_ID, selected);
+        if (mSelectedTabIdWhenTabClosed != null && mSelectedTabIdWhenTabClosed == id) {
+            TabModelUtils.setIndex(mModel,
+                    TabModelUtils.getTabIndexById(mModel, mSelectedTabIdWhenTabClosed), false);
+            resetSelectionsForUndo();
+        }
+    }
+
+    protected void tabClosureCommited() {
+        resetSelectionsForUndo();
     }
 
     /**
@@ -1012,6 +1036,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             clickedTab.getCloseButton().handleClick(time);
         } else {
             RecordUserAction.record("MobileTabSwitched.TabletTabStrip");
+            // Undoing a selected tab closure, after manually switching tabs shouldn't switch focus
+            // to the reopened tab.
+            resetSelectionsForUndo();
             recordTabSwitchTimeHistogram();
             clickedTab.handleClick(time);
         }
@@ -1680,6 +1707,34 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     protected void scrollTabToView(long time, boolean requestUpdate) {
         bringSelectedTabToVisibleArea(time, true);
         if (requestUpdate) mUpdateHost.requestUpdate();
+    }
+
+    /**
+     * When a tab is being closed, this keeps track of whether it was selected or not. If the tab
+     * closure is undone, that helps us decide whether to select it or not.
+     * @param tabId Id of the tab that will be closed.
+     */
+    protected void willCloseTab(int tabId) {
+        // If all tabs are closed, return early as this method gets called multiple times and the
+        // mModel.index() value is inaccurate. allTabsClosed() method handles that case.
+        if (mClosedAllTabs != null) return;
+
+        int selTabIndex = mModel.index();
+        if (selTabIndex > -1 && selTabIndex < mModel.getCount()) {
+            Tab tab = mModel.getTabAt(selTabIndex);
+            if (tab != null && tabId == tab.getId()) {
+                mSelectedTabIdWhenTabClosed = tabId;
+            }
+        }
+    }
+
+    /**
+     * After a tab closure has been committed or user manually selects a different tab, these values
+     * should be reset so the next undo closure action does not reselect the reopened tab.
+     */
+    private void resetSelectionsForUndo() {
+        mSelectedTabIdWhenTabClosed = null;
+        mClosedAllTabs = null;
     }
 
     @SuppressLint("HandlerLeak")
