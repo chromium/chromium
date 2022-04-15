@@ -191,13 +191,8 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// This test is flaky on Lacros. See https://crbug.com/1307249
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DeleteActiveProfile DISABLED_DeleteActiveProfile
-#else
-#define MAYBE_DeleteActiveProfile DeleteActiveProfile
-#endif
-IN_PROC_BROWSER_TEST_F(ProfileHelperTest, MAYBE_DeleteActiveProfile) {
+// This test is flaky. See https://crbug.com/1307249
+IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DISABLED_DeleteActiveProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
   ProfileAttributesStorage& storage =
