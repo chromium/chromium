@@ -36,12 +36,22 @@
 namespace ios {
 namespace provider {
 
+// Block invoked when the URL for Lens has been generated. Either
+// `url` or `error` is guaranteed to be non-nil.
+using LensWebURLCompletion = void (^)(NSURL* url, NSError* error);
+
 // Returns a controller for the given configuration that can facilitate
 // communication with the downstream Lens controller.
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
 
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();
+
+// Generates an URL for a Lens image search. The `completion` will
+// be invoked asynchronously in the calling sequence when the url
+// has been generated.
+void GenerateLensWebURLForImage(UIImage* image,
+                                LensWebURLCompletion completion);
 
 }  // namespace provider
 }  // namespace ios

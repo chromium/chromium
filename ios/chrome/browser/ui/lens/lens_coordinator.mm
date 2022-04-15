@@ -4,11 +4,8 @@
 
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 
-#import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
@@ -58,39 +55,18 @@
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  LensConfiguration* configuration = [[LensConfiguration alloc] init];
-  configuration.isIncognito = browserState->IsOffTheRecord();
-  configuration.ssoService = GetApplicationContext()->GetSSOService();
-
-  if (!configuration.isIncognito) {
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
-    configuration.identity = authenticationService->GetPrimaryIdentity(
-        ::signin::ConsentLevel::kSignin);
-  }
-
-  self.lensController = ios::provider::NewChromeLensController(configuration);
-  if (!self.lensController) {
-    // Lens is not available.
-    return;
-  }
-  self.lensController.delegate = self;
-
-  self.viewController =
-      [self.lensController postCaptureViewControllerForImage:command.image];
-  [self.viewController setModalPresentationStyle:UIModalPresentationFullScreen];
-
-  [self.baseViewController presentViewController:self.viewController
-                                        animated:YES
-                                      completion:nil];
+  __weak LensCoordinator* weakSelf = self;
+  ios::provider::GenerateLensWebURLForImage(
+      command.image, ^(NSURL* url, NSError* error) {
+        if (url != nil) {
+          [weakSelf openWebURL:net::GURLWithNSURL(url)];
+        }
+      });
 }
 
 #pragma mark - ChromeLensControllerDelegate
 
 - (void)lensControllerDidTapDismissButton {
-  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
-  // stack.
   if (self.baseViewController.presentedViewController == self.viewController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   }
@@ -105,16 +81,19 @@
   }
 
   self.viewController = nil;
+  [self openWebURL:net::GURLWithNSURL(URL)];
+}
 
-  // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
-  // stack.
-  UrlLoadParams loadParams = UrlLoadParams::InNewTab(net::GURLWithNSURL(URL));
+#pragma mark - Private
+
+- (void)openWebURL:(const GURL&)url {
+  if (!self.browser)
+    return;
+  UrlLoadParams loadParams = UrlLoadParams::InNewTab(url);
   loadParams.SetInBackground(NO);
   loadParams.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   loadParams.append_to = kCurrentTab;
-  UrlLoadingBrowserAgent* loadingAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  loadingAgent->Load(loadParams);
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
 }
 
 @end

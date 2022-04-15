@@ -5,5 +5,8 @@
 source_set("chromium_lens") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_lens.mm" ]
-  deps = [ "//ios/public/provider/chrome/browser/lens:lens_api" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+  ]
 }
