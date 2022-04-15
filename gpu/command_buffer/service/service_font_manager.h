@@ -55,8 +55,25 @@ class GPU_GLES2_EXPORT ServiceFontManager
   raw_ptr<Client> client_;
   const base::PlatformThreadId client_thread_id_;
   std::unique_ptr<SkStrikeClient> strike_client_;
-  base::flat_map<SkDiscardableHandleId, ServiceDiscardableHandle>
-      discardable_handle_map_;
+
+  class Handle {
+   public:
+    explicit Handle(ServiceDiscardableHandle handle)
+        : handle_(std::move(handle)) {}
+    void Unlock() {
+      --ref_count_;
+      handle_.Unlock();
+    }
+    void Lock() { ++ref_count_; }
+    bool Delete() { return handle_.Delete(); }
+    int ref_count() const { return ref_count_; }
+
+   private:
+    ServiceDiscardableHandle handle_;
+    // ref count hold by GPU service.
+    int ref_count_ = 0;
+  };
+  base::flat_map<SkDiscardableHandleId, Handle> discardable_handle_map_;
   bool destroyed_ = false;
   const bool disable_oopr_debug_crash_dump_;
 };
