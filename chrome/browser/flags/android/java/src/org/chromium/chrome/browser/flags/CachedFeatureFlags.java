@@ -56,7 +56,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH, true)
                     .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED, false)
                     .put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true)
-                    .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, false)
+                    .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, true)
                     .put(ChromeFeatureList.ELASTIC_OVERSCROLL, true)
                     .put(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS, true)
                     .put(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP, true)

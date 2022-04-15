@@ -372,7 +372,7 @@ const base::Feature kDnsProxyEnableDOH{"DnsProxyEnableDOH",
 #if BUILDFLAG(IS_ANDROID)
 // Enable loading native libraries earlier in startup on Android.
 const base::Feature kEarlyLibraryLoad{"EarlyLibraryLoad",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

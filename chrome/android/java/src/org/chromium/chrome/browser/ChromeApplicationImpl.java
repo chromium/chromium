@@ -58,7 +58,11 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
         if (SplitCompatApplication.isBrowserProcess()) {
             FontPreloader.getInstance().load(getApplication());
 
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)) {
+            // Only load the native library early for bundle builds since some tests use the
+            // "--disable-native-initialization" switch, and the CommandLine is not initialized at
+            // this point to check.
+            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)
+                    && ProductConfig.IS_BUNDLE) {
                 // Kick off library loading in a separate thread so it's ready when we need it.
                 new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized()).start();
             }
