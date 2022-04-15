@@ -58,6 +58,8 @@ class CSSPreloadScanner {
             const PreloadRequest::ExclusionInfo*);
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy);
+  void SetInBody(bool in_body) { in_body_ = in_body; }
+  void SetMediaMatches(bool media_matches) { media_matches_ = media_matches; }
 
  private:
   enum State {
@@ -100,6 +102,8 @@ class CSSPreloadScanner {
 
   network::mojom::ReferrerPolicy referrer_policy_ =
       network::mojom::ReferrerPolicy::kDefault;
+  bool in_body_ = false;
+  bool media_matches_ = true;
 
   // Below members only non-null during scan()
   PreloadRequestStream* requests_ = nullptr;

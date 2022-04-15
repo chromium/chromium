@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/pending_sheet_type.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
@@ -76,6 +77,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
   bool created_by_parser_ : 1;
   TextPosition start_position_;
   PendingSheetType pending_sheet_type_;
+  RenderBlockingBehavior render_blocking_behavior_;
 };
 
 }  // namespace blink

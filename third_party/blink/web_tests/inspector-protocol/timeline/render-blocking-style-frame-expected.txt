@@ -11,6 +11,8 @@ style.css?dynamicDocWritePrintHead: non_blocking
 style.css?head: blocking
 style.css?head_print: non_blocking
 style.css?imported: in_body_parser_blocking
+style.css?inline_imported: blocking
+style.css?inline_imported_print: non_blocking
 style.css?preload: non_blocking
 style.css?preload_used: in_body_parser_blocking
 

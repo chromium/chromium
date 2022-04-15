@@ -739,10 +739,12 @@ void StyleEngine::MarkViewportStyleDirty() {
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
 
-CSSStyleSheet* StyleEngine::CreateSheet(Element& element,
-                                        const String& text,
-                                        TextPosition start_position,
-                                        PendingSheetType type) {
+CSSStyleSheet* StyleEngine::CreateSheet(
+    Element& element,
+    const String& text,
+    TextPosition start_position,
+    PendingSheetType type,
+    RenderBlockingBehavior render_blocking_behavior) {
   DCHECK(element.GetDocument() == GetDocument());
   CSSStyleSheet* style_sheet = nullptr;
 
@@ -756,7 +758,8 @@ CSSStyleSheet* StyleEngine::CreateSheet(Element& element,
   if (result.is_new_entry || !contents ||
       !contents->IsCacheableForStyleElement()) {
     result.stored_value->value = nullptr;
-    style_sheet = ParseSheet(element, text, start_position);
+    style_sheet =
+        ParseSheet(element, text, start_position, render_blocking_behavior);
     if (style_sheet->Contents()->IsCacheableForStyleElement()) {
       result.stored_value->value = style_sheet->Contents();
       sheet_to_text_cache_.insert(style_sheet->Contents(), text_content);
@@ -781,12 +784,15 @@ CSSStyleSheet* StyleEngine::CreateSheet(Element& element,
   return style_sheet;
 }
 
-CSSStyleSheet* StyleEngine::ParseSheet(Element& element,
-                                       const String& text,
-                                       TextPosition start_position) {
+CSSStyleSheet* StyleEngine::ParseSheet(
+    Element& element,
+    const String& text,
+    TextPosition start_position,
+    RenderBlockingBehavior render_blocking_behavior) {
   CSSStyleSheet* style_sheet = nullptr;
   style_sheet = CSSStyleSheet::CreateInline(element, NullURL(), start_position,
                                             GetDocument().Encoding());
+  style_sheet->Contents()->SetRenderBlocking(render_blocking_behavior);
   style_sheet->Contents()->ParseString(text);
   return style_sheet;
 }

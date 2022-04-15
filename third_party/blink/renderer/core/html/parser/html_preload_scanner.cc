@@ -178,11 +178,14 @@ class TokenPreloadScanner::StartTagScanner {
     }
     if (!Match(tag_impl_, html_names::kInputTag) &&
         !Match(tag_impl_, html_names::kScriptTag) &&
-        !Match(tag_impl_, html_names::kVideoTag))
+        !Match(tag_impl_, html_names::kVideoTag) &&
+        !Match(tag_impl_, html_names::kStyleTag))
       tag_impl_ = nullptr;
   }
 
   enum URLReplacement { kAllowURLReplacement, kDisallowURLReplacement };
+
+  bool GetMatched() const { return matched_; }
 
   void ProcessAttributes(const HTMLToken::AttributeList& attributes) {
     DCHECK(IsMainThread());
@@ -446,6 +449,16 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   template <typename NameType>
+  void ProcessStyleAttribute(const NameType& attribute_name,
+                             const String& attribute_value) {
+    if (Match(attribute_name, html_names::kMediaAttr)) {
+      matched_ &= MediaAttributeMatches(*media_values_, attribute_value);
+    }
+    // No need to parse the `blocking` attribute. Parser-created style elements
+    // are implicitly render-blocking as long as the media attribute matches.
+  }
+
+  template <typename NameType>
   void ProcessLinkAttribute(const NameType& attribute_name,
                             const String& attribute_value) {
     // FIXME - Don't set rel/media/crossorigin multiple times.
@@ -562,6 +575,8 @@ class TokenPreloadScanner::StartTagScanner {
       ProcessSourceAttribute(attribute_name, attribute_value);
     else if (Match(tag_impl_, html_names::kVideoTag))
       ProcessVideoAttribute(attribute_name, attribute_value);
+    else if (Match(tag_impl_, html_names::kStyleTag))
+      ProcessStyleAttribute(attribute_name, attribute_value);
   }
 
   bool IsLazyLoadImageDeferable(
@@ -970,12 +985,12 @@ void TokenPreloadScanner::ScanCommon(
       }
       if (template_count_)
         return;
-      if (Match(tag_impl, html_names::kStyleTag)) {
-        in_style_ = true;
-        return;
-      }
       // Don't early return, because the StartTagScanner needs to look at these
       // too.
+      if (Match(tag_impl, html_names::kStyleTag)) {
+        in_style_ = true;
+        css_scanner_.SetInBody(seen_img_ || seen_body_);
+      }
       if (Match(tag_impl, html_names::kScriptTag)) {
         in_script_ = true;
 
@@ -1051,6 +1066,8 @@ void TokenPreloadScanner::ScanCommon(
 
       if (in_picture_ && media_values_->Width())
         scanner.HandlePictureSourceURL(picture_data_);
+      if (in_style_)
+        css_scanner_.SetMediaMatches(scanner.GetMatched());
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
           predicted_base_element_url_, source, client_hints_preferences_,
           picture_data_, *document_parameters_, exclusion_info_.get(),

@@ -47,6 +47,8 @@ void CSSPreloadScanner::Reset() {
   rule_value_.Clear();
   maybe_layer_value_.Clear();
   has_trailing_contents_ = false;
+  in_body_ = false;
+  media_matches_ = true;
 }
 
 template <typename Char>
@@ -314,6 +316,12 @@ void CSSPreloadScanner::EmitRule(const SegmentedString& source) {
           referrer_policy_, ResourceFetcher::kImageNotImageSet,
           exclusion_info_);
       if (request) {
+        RenderBlockingBehavior behavior =
+            !media_matches_
+                ? RenderBlockingBehavior::kNonBlocking
+                : (in_body_ ? RenderBlockingBehavior::kInBodyParserBlocking
+                            : RenderBlockingBehavior::kBlocking);
+        request->SetRenderBlockingBehavior(behavior);
         // FIXME: Should this be including the charset in the preload request?
         requests_->push_back(std::move(request));
       }

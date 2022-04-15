@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -348,7 +349,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   CSSStyleSheet* CreateSheet(Element&,
                              const String& text,
                              WTF::TextPosition start_position,
-                             PendingSheetType type);
+                             PendingSheetType type,
+                             RenderBlockingBehavior render_blocking_behavior);
 
   void CollectFeaturesTo(RuleFeatureSet& features);
 
@@ -605,7 +607,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   CSSStyleSheet* ParseSheet(Element&,
                             const String& text,
-                            WTF::TextPosition start_position);
+                            WTF::TextPosition start_position,
+                            RenderBlockingBehavior render_blocking_behavior);
 
   const DocumentStyleSheetCollection& GetDocumentStyleSheetCollection() const {
     DCHECK(document_style_sheet_collection_);

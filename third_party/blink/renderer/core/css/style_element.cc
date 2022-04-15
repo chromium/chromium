@@ -52,7 +52,8 @@ StyleElement::StyleElement(Document* document, bool created_by_parser)
       registered_as_candidate_(false),
       created_by_parser_(created_by_parser),
       start_position_(TextPosition::BelowRangePosition()),
-      pending_sheet_type_(PendingSheetType::kNone) {
+      pending_sheet_type_(PendingSheetType::kNone),
+      render_blocking_behavior_(RenderBlockingBehavior::kUnset) {
   if (created_by_parser && document &&
       document->GetScriptableDocumentParser() &&
       !document->IsInDocumentWrite()) {
@@ -170,20 +171,29 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
         media_query_matches = evaluator.Eval(*media_queries);
       }
     }
-    pending_sheet_type_ =
+    bool render_blocking =
         media_query_matches &&
-                (created_by_parser_ ||
-                 (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-                  blocking() && blocking()->IsRenderBlocking()))
-            ? PendingSheetType::kBlocking
-            : PendingSheetType::kNonBlocking;
+        (created_by_parser_ ||
+         (RuntimeEnabledFeatures::BlockingAttributeEnabled() && blocking() &&
+          blocking()->IsRenderBlocking()));
+    pending_sheet_type_ = render_blocking ? PendingSheetType::kBlocking
+                                          : PendingSheetType::kNonBlocking;
+    bool is_in_body = element.IsDescendantOf(element.GetDocument().body());
+    render_blocking_behavior_ =
+        !media_query_matches
+            ? RenderBlockingBehavior::kNonBlocking
+            : (render_blocking
+                   ? (is_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
+                                 : RenderBlockingBehavior::kBlocking)
+                   : RenderBlockingBehavior::kNonBlockingDynamic);
     loading_ = true;
     TextPosition start_position =
         start_position_ == TextPosition::BelowRangePosition()
             ? TextPosition::MinimumPosition()
             : start_position_;
     new_sheet = document.GetStyleEngine().CreateSheet(
-        element, text, start_position, pending_sheet_type_);
+        element, text, start_position, pending_sheet_type_,
+        render_blocking_behavior_);
     new_sheet->SetMediaQueries(media_queries);
     loading_ = false;
   }

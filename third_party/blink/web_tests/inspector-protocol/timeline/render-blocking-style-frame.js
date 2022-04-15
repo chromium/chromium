@@ -1,7 +1,7 @@
 (async function(testRunner) {
   // The number includes the frame, the 5 CSS files it loads directly, and the
   // one imported by them.
-  const numberOfURLs = 12;
+  const numberOfURLs = 14;
 
   var {page, session, dp} = await testRunner.startHTML(`
       <head></head>
