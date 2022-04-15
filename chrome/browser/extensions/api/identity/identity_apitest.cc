@@ -176,7 +176,7 @@ class AsyncFunctionRunner {
         << "Unexpected error: " << function->GetError();
     EXPECT_NE(nullptr, function->GetResultList());
 
-    const auto& result_list = function->GetResultList()->GetListDeprecated();
+    const auto& result_list = *function->GetResultList();
     EXPECT_EQ(2ul, result_list.size());
 
     *first_result = result_list[0].Clone();
@@ -629,23 +629,21 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       return GenerateFailureResult(gaia_ids, absl::nullopt)
              << "getAccounts did not return a result.";
     }
-    const base::ListValue* callback_arguments = func->GetResultList();
-    if (!callback_arguments)
+    const base::Value::List* callback_arguments_list = func->GetResultList();
+    if (!callback_arguments_list)
       return GenerateFailureResult(gaia_ids, absl::nullopt) << "NULL result";
-    base::Value::ConstListView callback_arguments_list =
-        callback_arguments->GetListDeprecated();
 
-    if (callback_arguments_list.size() != 1u) {
+    if (callback_arguments_list->size() != 1u) {
       return GenerateFailureResult(gaia_ids, absl::nullopt)
              << "Expected 1 argument but got "
-             << callback_arguments_list.size();
+             << callback_arguments_list->size();
     }
 
-    if (!callback_arguments_list[0].is_list())
+    if (!(*callback_arguments_list)[0].is_list())
       GenerateFailureResult(gaia_ids, absl::nullopt)
           << "Result was not an array";
     base::Value::ConstListView results =
-        callback_arguments_list[0].GetListDeprecated();
+        (*callback_arguments_list)[0].GetListDeprecated();
 
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
@@ -999,7 +997,7 @@ class GetAuthTokenFunctionTest
         << "Unexpected error: " << function->GetError();
     EXPECT_NE(nullptr, function->GetResultList());
 
-    const auto& result_list = function->GetResultList()->GetListDeprecated();
+    const auto& result_list = *function->GetResultList();
     EXPECT_EQ(2ul, result_list.size());
 
     const auto& access_token_value = result_list[0];

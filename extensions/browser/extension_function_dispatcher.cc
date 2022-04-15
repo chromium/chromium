@@ -70,7 +70,7 @@ bool IsRequestFromServiceWorker(const mojom::RequestParams& request_params) {
 void ResponseCallbackOnError(ExtensionFunction::ResponseCallback callback,
                              ExtensionFunction::ResponseType type,
                              const std::string& error) {
-  std::move(callback).Run(type, base::Value(base::Value::Type::LIST), error);
+  std::move(callback).Run(type, base::Value::List(), error);
 }
 
 }  // namespace
@@ -115,10 +115,10 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
   void OnExtensionFunctionCompleted(
       mojom::LocalFrameHost::RequestCallback callback,
       ExtensionFunction::ResponseType type,
-      base::Value results,
+      base::Value::List results,
       const std::string& error) {
     std::move(callback).Run(type == ExtensionFunction::SUCCEEDED,
-                            std::move(results.GetList()), error);
+                            std::move(results), error);
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
@@ -177,7 +177,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
   void OnExtensionFunctionCompleted(int request_id,
                                     int worker_thread_id,
                                     ExtensionFunction::ResponseType type,
-                                    base::Value results,
+                                    base::Value::List results,
                                     const std::string& error) {
     if (type == ExtensionFunction::BAD_MESSAGE) {
       // The renderer will be shut down from ExtensionFunction::SetBadMessage().
@@ -185,7 +185,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
     }
     render_process_host_->Send(new ExtensionMsg_ResponseWorker(
         worker_thread_id, request_id, type == ExtensionFunction::SUCCEEDED,
-        std::move(results.GetList()), error));
+        std::move(results), error));
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;

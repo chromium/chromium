@@ -232,7 +232,8 @@ void ReceivedBadMessage(T* bad_message_sender,
 class ArgumentListResponseValue
     : public ExtensionFunction::ResponseValueObject {
  public:
-  ArgumentListResponseValue(ExtensionFunction* function, base::Value result) {
+  ArgumentListResponseValue(ExtensionFunction* function,
+                            base::Value::List result) {
     SetFunctionResults(function, std::move(result));
     // It would be nice to DCHECK(error.empty()) but some legacy extension
     // function implementations... I'm looking at chrome.input.ime... do this
@@ -247,7 +248,7 @@ class ArgumentListResponseValue
 class ErrorWithArgumentsResponseValue : public ArgumentListResponseValue {
  public:
   ErrorWithArgumentsResponseValue(ExtensionFunction* function,
-                                  base::Value result,
+                                  base::Value::List result,
                                   const std::string& error)
       : ArgumentListResponseValue(function, std::move(result)) {
     SetFunctionError(function, error);
@@ -386,11 +387,10 @@ void ExtensionFunction::EnsureShutdownNotifierFactoryBuilt() {
 
 void ExtensionFunction::ResponseValueObject::SetFunctionResults(
     ExtensionFunction* function,
-    base::Value results) {
+    base::Value::List results) {
   DCHECK(!function->results_)
       << "Function " << function->name_ << " already has results set.";
-  function->results_ =
-      base::ListValue::From(base::Value::ToUniquePtrValue(std::move(results)));
+  function->results_ = std::move(results);
 }
 
 void ExtensionFunction::ResponseValueObject::SetFunctionError(
@@ -485,7 +485,7 @@ ExtensionFunction::~ExtensionFunction() {
   if (!response_callback_.is_null()) {
     constexpr char kShouldCallMojoCallback[] = "Ignored did_respond()";
     std::move(response_callback_)
-        .Run(ResponseType::FAILED, base::Value(base::Value::Type::LIST),
+        .Run(ResponseType::FAILED, base::Value::List(),
              kShouldCallMojoCallback);
   }
 #endif  // DCHECK_IS_ON()
@@ -555,8 +555,8 @@ void ExtensionFunction::SetArgs(base::Value args) {
   args_ = std::move(args).TakeListDeprecated();
 }
 
-const base::ListValue* ExtensionFunction::GetResultList() const {
-  return results_.get();
+const base::Value::List* ExtensionFunction::GetResultList() const {
+  return results_ ? &(*results_) : nullptr;
 }
 
 const std::string& ExtensionFunction::GetError() const {
@@ -659,13 +659,13 @@ void ExtensionFunction::OnServiceWorkerAck() {
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {
-  return ResponseValue(new ArgumentListResponseValue(
-      this, base::Value(base::Value::Type::LIST)));
+  return ResponseValue(
+      new ArgumentListResponseValue(this, base::Value::List()));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::OneArgument(
     base::Value arg) {
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(std::move(arg));
   return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
 }
@@ -673,7 +673,7 @@ ExtensionFunction::ResponseValue ExtensionFunction::OneArgument(
 ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
     base::Value arg1,
     base::Value arg2) {
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(std::move(arg1));
   args.Append(std::move(arg2));
   return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
@@ -681,15 +681,18 @@ ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
 
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
     std::vector<base::Value> results) {
-  return ResponseValue(
-      new ArgumentListResponseValue(this, base::Value(std::move(results))));
+  base::Value::List list;
+  for (auto&& value : results) {
+    list.Append(std::move(value));
+  }
+  return ResponseValue(new ArgumentListResponseValue(this, std::move(list)));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
     std::unique_ptr<base::ListValue> args) {
-  base::Value new_args;
+  base::Value::List new_args;
   if (args)
-    new_args = base::Value::FromUniquePtrValue(std::move(args));
+    new_args = std::move(args->GetList());
   return ResponseValue(
       new ArgumentListResponseValue(this, std::move(new_args)));
 }
@@ -725,16 +728,20 @@ ExtensionFunction::ResponseValue ExtensionFunction::Error(
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
     std::vector<base::Value> args,
     const std::string& error) {
-  return ResponseValue(new ErrorWithArgumentsResponseValue(
-      this, base::Value(std::move(args)), error));
+  base::Value::List list;
+  for (auto&& value : args) {
+    list.Append(std::move(value));
+  }
+  return ResponseValue(
+      new ErrorWithArgumentsResponseValue(this, std::move(list), error));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
     std::unique_ptr<base::ListValue> args,
     const std::string& error) {
-  base::Value new_args;
+  base::Value::List new_args;
   if (args)
-    new_args = base::Value::FromUniquePtrValue(std::move(args));
+    new_args = std::move(args->GetList());
   return ResponseValue(
       new ErrorWithArgumentsResponseValue(this, std::move(new_args), error));
 }
@@ -819,9 +826,9 @@ void ExtensionFunction::SendResponseImpl(bool success) {
 
   // If results were never set, we send an empty argument list.
   if (!results_)
-    results_ = std::make_unique<base::ListValue>();
+    results_.emplace();
 
-  base::Value results;
+  base::Value::List results;
   if (preserve_results_for_testing_) {
     // Keep |results_| untouched.
     results = results_->Clone();

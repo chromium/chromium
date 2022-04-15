@@ -393,8 +393,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
 
   void VerifyUserCancelledFunctionResult(ExtensionFunction* function) {
     ASSERT_TRUE(function->GetResultList());
-    const base::Value& result =
-        function->GetResultList()->GetListDeprecated()[0];
+    const base::Value& result = (*function->GetResultList())[0];
     EXPECT_EQ("user_cancelled", result.GetString());
     EXPECT_EQ(kWebstoreUserCancelledError, function->GetError());
   }
@@ -403,8 +402,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
       WebstorePrivateBeginInstallWithManifest3Function* function,
       const std::u16string& expected_blocked_message) {
     ASSERT_TRUE(function->GetResultList());
-    const base::Value& result =
-        function->GetResultList()->GetListDeprecated()[0];
+    const base::Value& result = (*function->GetResultList())[0];
     EXPECT_EQ("blocked_by_policy", result.GetString());
     EXPECT_EQ(kWebstoreBlockByPolicy, function->GetError());
     EXPECT_EQ(expected_blocked_message,

@@ -50,7 +50,7 @@ bool SendResponseHelper::GetResponse() {
 }
 
 void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
-                                    base::Value results,
+                                    base::Value::List results,
                                     const std::string& error) {
   ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
   response_ = std::make_unique<bool>(response == ExtensionFunction::SUCCEEDED);
@@ -136,10 +136,8 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   RunFunction(function.get(), std::move(args), std::move(dispatcher), flags);
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
                                             << function->GetError();
-  if (function->GetResultList() &&
-      !function->GetResultList()->GetListDeprecated().empty()) {
-    const base::Value& single_result =
-        function->GetResultList()->GetListDeprecated()[0];
+  if (function->GetResultList() && !function->GetResultList()->empty()) {
+    const base::Value& single_result = (*function->GetResultList())[0];
     return std::make_unique<base::Value>(single_result.Clone());
   }
   return nullptr;
@@ -181,10 +179,9 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
   RunFunction(function, args, std::move(dispatcher), flags);
   // When sending a response, the function will set an empty list value if there
   // is no specified result.
-  const base::ListValue* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultList();
   CHECK(results);
-  EXPECT_TRUE(results->GetListDeprecated().empty())
-      << "Did not expect a result";
+  EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();

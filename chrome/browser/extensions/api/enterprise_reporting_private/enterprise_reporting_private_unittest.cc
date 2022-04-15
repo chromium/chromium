@@ -123,7 +123,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(0u, function->GetResultList()->GetListDeprecated().size());
+  EXPECT_EQ(0u, function->GetResultList()->size());
   EXPECT_TRUE(function->GetError().empty());
 }
 
@@ -136,11 +136,10 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(1u, function->GetResultList()->GetListDeprecated().size());
+  EXPECT_EQ(1u, function->GetResultList()->size());
   EXPECT_TRUE(function->GetError().empty());
 
-  const base::Value& single_result =
-      function->GetResultList()->GetListDeprecated()[0];
+  const base::Value& single_result = (*function->GetResultList())[0];
   ASSERT_TRUE(single_result.is_blob());
   EXPECT_EQ(base::Value::BlobStorage(), single_result.GetBlob());
 }
@@ -166,7 +165,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(0u, function->GetResultList()->GetListDeprecated().size());
+  EXPECT_EQ(0u, function->GetResultList()->size());
   EXPECT_FALSE(function->GetError().empty());
 }
 
@@ -190,8 +189,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
                                              std::move(values), browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(get_function->GetResultList());
-  const base::Value& single_result =
-      get_function->GetResultList()->GetListDeprecated()[0];
+  const base::Value& single_result = (*get_function->GetResultList())[0];
   EXPECT_TRUE(get_function->GetError().empty());
   ASSERT_TRUE(single_result.is_blob());
   EXPECT_EQ(base::Value::BlobStorage({1, 2, 3}), single_result.GetBlob());
@@ -216,11 +214,10 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
                                              std::move(values2), browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(get_function2->GetResultList());
-  EXPECT_EQ(1u, get_function2->GetResultList()->GetListDeprecated().size());
+  EXPECT_EQ(1u, get_function2->GetResultList()->size());
   EXPECT_TRUE(get_function2->GetError().empty());
 
-  const base::Value& single_result2 =
-      get_function2->GetResultList()->GetListDeprecated()[0];
+  const base::Value& single_result2 = (*get_function2->GetResultList())[0];
   ASSERT_TRUE(single_result2.is_blob());
   EXPECT_EQ(base::Value::BlobStorage(), single_result2.GetBlob());
 }

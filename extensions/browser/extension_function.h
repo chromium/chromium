@@ -106,8 +106,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     BAD_MESSAGE
   };
 
-  using ResponseCallback = base::OnceCallback<
-      void(ResponseType type, base::Value results, const std::string& error)>;
+  using ResponseCallback = base::OnceCallback<void(ResponseType type,
+                                                   base::Value::List results,
+                                                   const std::string& error)>;
 
   ExtensionFunction();
 
@@ -138,7 +139,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     virtual bool Apply() = 0;
 
    protected:
-    void SetFunctionResults(ExtensionFunction* function, base::Value results);
+    void SetFunctionResults(ExtensionFunction* function,
+                            base::Value::List results);
     void SetFunctionError(ExtensionFunction* function, std::string error);
   };
   typedef std::unique_ptr<ResponseValueObject> ResponseValue;
@@ -228,7 +230,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   void SetArgs(base::Value args);
 
   // Retrieves the results of the function as a ListValue.
-  const base::ListValue* GetResultList() const;
+  const base::Value::List* GetResultList() const;
 
   // Retrieves any error string from the function.
   virtual const std::string& GetError() const;
@@ -528,7 +530,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // The results of the API. This should be populated through the Respond()/
   // RespondNow() methods. In legacy implementations, this is set directly, and
   // should be set before calling SendResponse().
-  std::unique_ptr<base::ListValue> results_;
+  absl::optional<base::Value::List> results_;
 
   // Any detailed error from the API. This should be populated by the derived
   // class before Run() returns.

@@ -111,10 +111,9 @@ std::string RunFunctionAndReturnError(
   RunFunction(function, args, browser, flags);
   // When sending a response, the function will set an empty list value if there
   // is no specified result.
-  const base::ListValue* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultList();
   CHECK(results);
-  EXPECT_TRUE(results->GetListDeprecated().empty())
-      << "Did not expect a result";
+  EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();
@@ -138,10 +137,9 @@ std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
   RunFunction(function, args, browser, flags);
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
       << function->GetError();
-  if (function->GetResultList() &&
-      !function->GetResultList()->GetListDeprecated().empty()) {
+  if (function->GetResultList() && !function->GetResultList()->empty()) {
     return base::Value::ToUniquePtrValue(
-        function->GetResultList()->GetListDeprecated()[0].Clone());
+        (*function->GetResultList())[0].Clone());
   }
   return nullptr;
 }

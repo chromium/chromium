@@ -138,9 +138,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
                        extensions::api_test_utils::NONE);
     EXPECT_TRUE(function->GetError().empty())
         << "Unexpected error: " << function->GetError();
-    if (function->GetResultList() &&
-        !function->GetResultList()->GetListDeprecated().empty()) {
-      return function->GetResultList()->GetListDeprecated()[0].Clone();
+    if (function->GetResultList() && !function->GetResultList()->empty()) {
+      return (*function->GetResultList())[0].Clone();
     }
     return base::Value();
   }
