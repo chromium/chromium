@@ -153,6 +153,25 @@
     object-fit: cover;
     width: 100%;
   }
+
+  #albumTitleTooltip {
+    --paper-tooltip: {
+      align-items: flex-end;
+      display: flex;
+      flex-direction: row;
+      height: 18px;
+      padding: 3px 8px;
+    };
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-opacity: 0.8;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+  }
+
+  #albumTitleTooltip span {
+    align-items: center;
+    display: flex;
+    font: 400 12px/18px var(--cros-font-family-roboto);
+  }
 </style>
 <div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]" id="container">
   <slot></slot>
@@ -200,6 +219,9 @@
           <span id="albumTitle" aria-hidden="true">
             [[getAlbumTitle_(firstPreviewAlbum_)]]
           </span>
+          <paper-tooltip id="albumTitleTooltip" for="albumTitle">
+            <span>[[getAlbumTitle_(firstPreviewAlbum_)]]</span>
+          </paper-tooltip>
           <span id="albumDescription" aria-hidden="true">
             [[getAlbumDescription_(topicSource_, previewAlbums_)]]
           </span>
