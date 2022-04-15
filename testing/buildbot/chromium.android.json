@@ -15061,7 +15061,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "android_sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:android_sync_integration_tests/"
@@ -31783,7 +31784,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "android_sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:android_sync_integration_tests/"

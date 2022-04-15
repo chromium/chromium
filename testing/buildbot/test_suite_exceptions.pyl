@@ -105,6 +105,18 @@
       # Remove from CQ bots due to capacity.
       'android-marshmallow-arm64-rel',
    ],
+   'modifications': {
+      'android-12-x64-rel': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+      'android-marshmallow-x86-rel': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+   },
   },
   'android_webview_unittests': {
   },
