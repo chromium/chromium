@@ -231,7 +231,8 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowClose) {
+// TODO(crbug.com/1316539): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, DISABLED_CrosWindowClose) {
   // Open browser instance to close outside of service worker.
   chrome::NewWindow(browser());
 
