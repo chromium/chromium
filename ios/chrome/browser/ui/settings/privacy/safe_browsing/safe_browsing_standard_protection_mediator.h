@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_consumer.h"
 
+class AuthenticationService;
 class PrefService;
 
 // Mediator for the Google services settings.
@@ -20,8 +21,10 @@ class PrefService;
 // Designated initializer. All the parameters should not be null.
 // |userPrefService|: preference service from the browser state.
 // |localPrefService|: preference service from the application context.
+// |authService|: authentication service from browser state.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService
+                            authService:(AuthenticationService*)authService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

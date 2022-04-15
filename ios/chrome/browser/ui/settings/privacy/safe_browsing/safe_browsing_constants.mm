@@ -34,3 +34,9 @@ NSString* const kSafeBrowsingStandardProtectionShieldCellId =
 
 NSString* const kSafeBrowsingStandardProtectionMetricCellId =
     @"kSafeBrowsingStandardProtectionMetricCellId";
+
+NSString* const kSafeBrowsingStandardProtectionPasswordLeakCellId =
+    @"kSafeBrowsingStandardProtectionPasswordLeakCellId";
+
+NSString* const kSafeBrowsingExtendedReportingCellId =
+    @"kSafeBrowsingExtendedReportingCellId";

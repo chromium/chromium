@@ -43,4 +43,12 @@ extern NSString* const kSafeBrowsingStandardProtectionShieldCellId;
 // cell.
 extern NSString* const kSafeBrowsingStandardProtectionMetricCellId;
 
+// The accessibility identifier of the Safe Browsing Standard Protection
+// password leak cell.
+extern NSString* const kSafeBrowsingStandardProtectionPasswordLeakCellId;
+
+// The accessibility identifier of the Safe Browsing Extended Reporting switch
+// cell.
+extern NSString* const kSafeBrowsingExtendedReportingCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_SAFE_BROWSING_SAFE_BROWSING_CONSTANTS_H_
