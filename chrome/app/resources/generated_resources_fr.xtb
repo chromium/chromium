@@ -7184,7 +7184,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="810185532889603849">Couleur personnalisée</translation>
 <translation id="8101987792947961127">Powerwash requis au prochain redémarrage</translation>
 <translation id="81020759409809034">Emplacement local</translation>
-<translation id="8102139037507939978">Retirez les informations personnelles du fichier system_logs.txt.</translation>
+<translation id="8102139037507939978">Retirez les informations permettant d'identifier personnellement les utilisateurs du fichier system_logs.txt.</translation>
 <translation id="8104088837833760645">Télécharger le profil eSIM</translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8105541061909542455">{NUM_APPS,plural, =1{Appli non compatible}one{Appli non compatible}other{Applis non compatibles}}</translation>
