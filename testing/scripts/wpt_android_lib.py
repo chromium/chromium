@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+"""Run web platform tests for Chromium-related products on Android."""
+
 import argparse
 import contextlib
-import json
 import logging
 import os
 import sys
@@ -33,16 +34,22 @@ if BLINK_TOOLS_DIR not in sys.path:
 if BUILD_ANDROID not in sys.path:
   sys.path.append(BUILD_ANDROID)
 
+# This import adds `devil` to `sys.path`.
 import devil_chromium
 
 from blinkpy.web_tests.port.android import (
-    PRODUCTS, PRODUCTS_TO_EXPECTATION_FILE_PATHS, ANDROID_WEBLAYER,
-    ANDROID_WEBVIEW, CHROME_ANDROID, ANDROID_DISABLED_TESTS)
+    PRODUCTS,
+    PRODUCTS_TO_EXPECTATION_FILE_PATHS,
+    ANDROID_WEBLAYER,
+    ANDROID_WEBVIEW,
+    CHROME_ANDROID,
+    ANDROID_DISABLED_TESTS,
+)
 
+from devil import devil_env
 from devil.android import apk_helper
 from devil.android import device_utils
 from devil.android.device_errors import CommandFailedError
-from devil.android.tools import system_app
 from devil.android.tools import webview_app
 
 from py_utils.tempfile_ext import NamedTemporaryDirectory
@@ -68,41 +75,27 @@ class PassThroughArgs(argparse.Action):
 
 class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
-  def __init__(self, devices):
+  def __init__(self):
     self.pass_through_wpt_args = []
     self.pass_through_binary_args = []
     self._metadata_dir = None
-    self._devices = devices
     super(WPTAndroidAdapter, self).__init__()
-    # Arguments from add_extra_argumentsparse were added so
-    # its safe to parse the arguments and set self._options
-    self.parse_args()
+    # Parent adapter adds extra arguments, so it is safe to parse the arguments
+    # and set options here.
+    try:
+      self.parse_args()
+      product_cls = _product_registry[self.options.product_name]
+      self.product = product_cls(self.options, self.select_python_executable())
+    except ValueError as exc:
+      self._parser.error(str(exc))
 
-  def get_version_provider_package_name(self):
-    """Get the name of a package containing the product's version.
-
-    Some Android products are broken up into multiple packages with decoupled
-    "versionName"s. This method should return None to use wpt's best guess of
-    the product version or a valid package name to override wpt.
-
-    See also:
-      https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L850-L864
-    """
-    return None
-
-  def get_version(self):
-    """Get the product version, if available."""
-    version_provider = self.get_version_provider_package_name()
-    if self._devices and version_provider:
-      # Assume emulated devices are identically provisioned.
-      device = self._devices[0]
-      try:
-        version = device.GetApplicationVersion(version_provider)
-        logger.info('Version of %s is %s', version_provider, version)
-        return version
-      except CommandFailedError:
-        logger.warning('Failed to retrieve version of %s', version_provider)
-    return None
+  def parse_args(self, args=None):
+    super(WPTAndroidAdapter, self).parse_args(args)
+    logging.basicConfig(
+        level=self.log_level,
+        # Align level name for easier reading.
+        format='%(asctime)s [%(levelname)-8s] %(name)s: %(message)s',
+        force=True)
 
   @property
   def rest_args(self):
@@ -127,18 +120,12 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       '--binary-arg=--force-fieldtrial-params=DownloadServiceStudy.Enabled:'
       'start_up_delay_ms/0',
     ])
-
-    for device in self._devices:
-      rest_args.extend(['--device-serial', device.serial])
+    rest_args.extend(self.product.wpt_args)
 
     # if metadata was created then add the metadata directory
     # to the list of wpt arguments
     if self._metadata_dir:
       rest_args.extend(['--metadata', self._metadata_dir])
-
-    version = self.get_version()
-    if version:
-      rest_args.extend(['--browser-version', version])
 
     if self.options.test_filter:
       for pattern in self.options.test_filter.split(':'):
@@ -151,29 +138,22 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
     return rest_args
 
-  @property
-  def browser_specific_expectations_path(self):
-    raise NotImplementedError
-
   def _extra_metadata_builder_args(self):
-    args = ['--additional-expectations=%s' % path
-            for path in self.options.additional_expectations]
+    expectations = [ANDROID_DISABLED_TESTS]
+    expectations.extend(self.options.additional_expectations)
     if not self.options.ignore_browser_specific_expectations:
-      args.extend(['--additional-expectations',
-                   self.browser_specific_expectations_path])
-
-    return args
+      expectations.extend(self.product.expectations)
+    return ['--additional-expectations=%s' % expectation
+            for expectation in expectations]
 
   def _maybe_build_metadata(self):
     metadata_builder_cmd = [
-      sys.executable,
+      self.select_python_executable(),
       os.path.join(wpt_common.BLINK_TOOLS_DIR, 'build_wpt_metadata.py'),
       '--android-product',
-      self.options.product,
+      self.wpt_product_name(),
       '--metadata-output-dir',
       self._metadata_dir,
-      '--additional-expectations',
-      ANDROID_DISABLED_TESTS,
       '--use-subtest-results',
     ]
     if self.options.ignore_default_expectations:
@@ -181,8 +161,16 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     metadata_builder_cmd.extend(self._extra_metadata_builder_args())
     return common.run_command(metadata_builder_cmd)
 
+  @property
+  def log_level(self):
+    if self.options.verbose >= 2:
+      return logging.DEBUG
+    elif self.options.verbose >= 1:
+      return logging.INFO
+    return logging.WARNING
+
   def run_test(self):
-    with NamedTemporaryDirectory() as tmp_dir, self._install_apks():
+    with NamedTemporaryDirectory() as tmp_dir, self.product.test_env():
       self._metadata_dir = os.path.join(tmp_dir, 'metadata_dir')
       metadata_command_ret = self._maybe_build_metadata()
       if metadata_command_ret != 0:
@@ -194,9 +182,6 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
         os.makedirs(self._metadata_dir)
       return super(WPTAndroidAdapter, self).run_test()
 
-  def _install_apks(self):
-    raise NotImplementedError
-
   def clean_up_after_test_run(self):
     # Avoid having a dangling reference to the temp directory
     # which was deleted
@@ -204,6 +189,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
   def add_extra_arguments(self, parser):
     super(WPTAndroidAdapter, self).add_extra_arguments(parser)
+    parser.description = __doc__
 
     # TODO: |pass_through_args| are broke and need to be supplied by way of
     # --binary-arg".
@@ -212,9 +198,17 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     class WPTPassThroughArgs(PassThroughArgs):
       pass_through_args = self.pass_through_wpt_args
 
-    # Add this so that product argument does not go in self._rest_args
-    # when self.parse_args() is called
-    parser.add_argument('--product', help=argparse.SUPPRESS)
+    parser.add_argument('-p',
+                        '--product',
+                        # TODO(crbug/1274933): Change to 'chrome' once it
+                        # implements 'Product'.
+                        dest='product_name',
+                        default='clank',
+                        # The parser converts the value before checking if it is
+                        # in choices, so we avoid looking up the class right
+                        # away.
+                        choices=sorted(_product_registry, key=len),
+                        help='Product (browser or browser component) to test.')
     parser.add_argument('--webdriver-binary', required=True,
                         help='Path of the webdriver binary.  It needs to have'
                         ' the same major version as the apk.')
@@ -262,169 +256,309 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--force-fieldtrial-params',
                         action=BinaryPassThroughArgs,
                         help='Force trial params for Chromium features.')
-    add_emulator_args(parser)
+    add_android_group(parser)
+
+  def wpt_product_name(self):
+    # `self.product` may not be set yet, so `self.product.name` is unavailable.
+    # `self._options.product_name` may be an alias, so we need to translate it
+    # into its wpt-accepted name.
+    product_cls = _product_registry[self._options.product_name]
+    return product_cls.name
 
 
-class WPTWeblayerAdapter(WPTAndroidAdapter):
+class Product:
+    """A product (browser or browser component) that can run web platform tests.
 
-  WEBLAYER_SHELL_PKG = 'org.chromium.weblayer.shell'
-  WEBLAYER_SUPPORT_PKG = 'org.chromium.weblayer.support'
+    Attributes:
+        name (str): The official wpt-accepted name of this product.
+        aliases (list[str]): Human-friendly aliases for the official name.
+    """
+    name = ''
+    aliases = []
 
-  @contextlib.contextmanager
-  def _install_apks(self):
-    install_weblayer_shell_as_needed = _maybe_install_user_apk(
-        self._devices, self.options.weblayer_shell, self.WEBLAYER_SHELL_PKG)
-    install_weblayer_support_as_needed = _maybe_install_user_apk(
-        self._devices, self.options.weblayer_support, self.WEBLAYER_SUPPORT_PKG)
-    install_webview_provider_as_needed = _maybe_install_webview_provider(
-        self._devices, self.options.webview_provider)
+    def __init__(self, options, python_executable=None):
+        self._options = options
+        self._python_executable = python_executable
+        self._tasks = contextlib.ExitStack()
+        self._validate_options()
 
-    with install_weblayer_shell_as_needed,   \
-         install_weblayer_support_as_needed, \
-         install_webview_provider_as_needed:
-      yield
+    def _validate_options(self):
+        """Validate product-specific command-line options.
 
-  @property
-  def browser_specific_expectations_path(self):
-    return PRODUCTS_TO_EXPECTATION_FILE_PATHS[ANDROID_WEBLAYER]
+        The validity of some options may depend on the product. We check these
+        options here instead of at parse time because the product itself is an
+        option and the parser cannot handle that dependency.
 
-  def add_extra_arguments(self, parser):
-    super(WPTWeblayerAdapter, self).add_extra_arguments(parser)
-    parser.add_argument('--weblayer-shell',
-                        help='WebLayer Shell apk to install.')
-    parser.add_argument('--weblayer-support',
-                        help='WebLayer Support apk to install.')
-    parser.add_argument('--webview-provider',
-                        help='Webview provider apk to install.')
+        The test environment will not be set up at this point, so checks should
+        not depend on external resources.
 
-  def get_version_provider_package_name(self):
-    if self.options.webview_provider:
-      return apk_helper.GetPackageName(self.options.webview_provider)
-    return self.WEBLAYER_SUPPORT_PKG
+        Raises:
+            ValueError: When the given options are invalid for this product.
+                The user will see the error's message (formatted with
+                `argparse`, not a traceback) and the program will exit early,
+                which avoids wasted runtime.
+        """
 
-  @property
-  def rest_args(self):
-    args = super(WPTWeblayerAdapter, self).rest_args
-    args.append('--test-type=testharness')
-    args.extend(['--package-name', self.WEBLAYER_SHELL_PKG])
-    return args
+    @contextlib.contextmanager
+    def test_env(self):
+        """Set up and clean up the test environment."""
+        with self._tasks:
+            yield
 
-  @classmethod
-  def wpt_product_name(cls):
-    return ANDROID_WEBLAYER
+    @property
+    def wpt_args(self):
+        """list[str]: Arguments to add to a 'wpt run' command."""
+        args = []
+        version = self.get_version()
+        if version:
+            args.append('--browser-version=%s' % version)
+        return args
 
+    @property
+    def expectations(self):
+        """list[str]: Paths to additional expectations to build metadata for."""
+        return []
 
-class WPTWebviewAdapter(WPTAndroidAdapter):
-
-  def __init__(self, devices):
-    super(WPTWebviewAdapter, self).__init__(devices)
-    if self.options.system_webview_shell is not None:
-      self.system_webview_shell_pkg = apk_helper.GetPackageName(
-          self.options.system_webview_shell)
-    else:
-      self.system_webview_shell_pkg = 'org.chromium.webview_shell'
-
-  def _install_webview_from_release(self, serial, channel):
-    path = os.path.join(SRC_DIR, 'clank', 'bin', 'install_webview.py')
-    command = [sys.executable, path, '-s', serial, '--channel', channel]
-    return common.run_command(command)
-
-  @contextlib.contextmanager
-  def _install_apks(self):
-    if self.options.release_channel:
-      self._install_webview_from_release(self._device.serial,
-                                         self.options.release_channel)
-      install_shell_as_needed = _no_op()
-      install_webview_provider_as_needed = _no_op()
-    else:
-      install_shell_as_needed = _maybe_install_user_apk(
-          self._devices, self.options.system_webview_shell,
-          self.system_webview_shell_pkg)
-      install_webview_provider_as_needed = _maybe_install_webview_provider(
-          self._devices, self.options.webview_provider)
-    with install_shell_as_needed, install_webview_provider_as_needed:
-      yield
-
-  @property
-  def browser_specific_expectations_path(self):
-    return PRODUCTS_TO_EXPECTATION_FILE_PATHS[ANDROID_WEBVIEW]
-
-  def add_extra_arguments(self, parser):
-    super(WPTWebviewAdapter, self).add_extra_arguments(parser)
-    parser.add_argument('--system-webview-shell',
-                        help=('System WebView Shell apk to install. If not '
-                              'specified then the on-device WebView apk '
-                              'will be used.'))
-    parser.add_argument('--webview-provider',
-                        help='Webview provider APK to install.')
-    parser.add_argument('--release-channel',
-                        default=None,
-                        help='Using WebView from release channel.')
-
-  def get_version_provider_package_name(self):
-    if self.options.webview_provider:
-      return apk_helper.GetPackageName(self.options.webview_provider)
-    return None
-
-  @property
-  def rest_args(self):
-    args = super(WPTWebviewAdapter, self).rest_args
-    args.extend(['--package-name', self.system_webview_shell_pkg])
-    return args
-
-  @classmethod
-  def wpt_product_name(cls):
-    return ANDROID_WEBVIEW
+    def get_version(self):
+        """Get the product version, if available."""
+        return None
 
 
-class WPTClankAdapter(WPTAndroidAdapter):
+@contextlib.contextmanager
+def _install_apk(device, path):
+    """Helper context manager for ensuring a device uninstalls an APK."""
+    device.Install(path)
+    try:
+        yield
+    finally:
+        device.Uninstall(path)
 
-  @contextlib.contextmanager
-  def _install_apks(self):
-    install_clank_as_needed = _maybe_install_user_apk(
-        self._devices, self.options.chrome_apk)
-    with install_clank_as_needed:
-      yield
 
-  @property
-  def browser_specific_expectations_path(self):
-    return PRODUCTS_TO_EXPECTATION_FILE_PATHS[CHROME_ANDROID]
+class ChromeAndroidBase(Product):
+    def __init__(self, options, python_executable=None):
+        super(ChromeAndroidBase, self).__init__(options, python_executable)
+        self.devices = {}
 
-  def add_extra_arguments(self, parser):
-    super(WPTClankAdapter, self).add_extra_arguments(parser)
-    parser.add_argument(
-        '--chrome-apk', help='Chrome apk to install.')
-    parser.add_argument(
-        '--chrome-package-name',
-        help=('The package name of Chrome to test,'
-              ' defaults to that of the compiled Chrome apk.'))
+    @contextlib.contextmanager
+    def test_env(self):
+        with super(ChromeAndroidBase, self).test_env():
+            devil_chromium.Initialize(adb_path=self._options.adb_binary)
+            if not self._options.adb_binary:
+                self._options.adb_binary = devil_env.config.FetchPath('adb')
+            devices = self._tasks.enter_context(get_devices(self._options))
+            if not devices:
+                raise Exception(
+                    'No devices attached to this host. '
+                    "Make sure to provide '--avd-config' "
+                    'if using only emulators.')
+            for device in devices:
+                self.provision_device(device)
+            yield
 
-  @property
-  def rest_args(self):
-    args = super(WPTClankAdapter, self).rest_args
-    if not self.options.chrome_package_name and not self.options.chrome_apk:
-      raise Exception('Either the --chrome-package-name or --chrome-apk '
-                      'command line arguments must be used.')
-    if not self.options.chrome_package_name:
-      self.options.chrome_package_name = apk_helper.GetPackageName(
-          self.options.chrome_apk)
-      logger.info("Using Chrome apk's default package %s." %
-                  self.options.chrome_package_name)
-    args.extend(['--package-name', self.options.chrome_package_name])
-    return args
+    @property
+    def wpt_args(self):
+        wpt_args = list(super(ChromeAndroidBase, self).wpt_args)
+        for serial in self.devices:
+            wpt_args.append('--device-serial=%s' % serial)
+        package_name = self.get_browser_package_name()
+        if package_name:
+            wpt_args.append('--package-name=%s' % package_name)
+        if self._options.adb_binary:
+            wpt_args.append('--adb-binary=%s' % self._options.adb_binary)
+        return wpt_args
 
-  @classmethod
-  def wpt_product_name(cls):
-    return CHROME_ANDROID
+    @property
+    def expectations(self):
+        expectations = list(super(ChromeAndroidBase, self).expectations)
+        maybe_path = PRODUCTS_TO_EXPECTATION_FILE_PATHS.get(self.name)
+        if maybe_path:
+            expectations.append(maybe_path)
+        return expectations
+
+    def get_version(self):
+        version_provider = self.get_version_provider_package_name()
+        if self.devices and version_provider:
+            # Assume devices are identically provisioned, so select any.
+            device = list(self.devices.values())[0]
+            try:
+                version = device.GetApplicationVersion(version_provider)
+                logger.info('Product version: %s %s (package: %r)',
+                            self.name, version, version_provider)
+                return version
+            except CommandFailedError:
+                logger.warning('Failed to retrieve version of %s (package: %r)',
+                               self.name, version_provider)
+        return None
+
+    def get_browser_package_name(self):
+        """Get the name of the package to run tests against.
+
+        For WebView and WebLayer, this package is the shell.
+
+        Returns:
+            Optional[str]: The name of a package installed on the devices or
+                `None` to use wpt's best guess of the runnable package.
+
+        See Also:
+            https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L867-L924
+        """
+        return self._options.package_name
+
+    def get_version_provider_package_name(self):
+        """Get the name of the package containing the product version.
+
+        Some Android products are made up of multiple packages with decoupled
+        "versionName" fields. This method identifies the package whose
+        "versionName" should be consider the product's version.
+
+        Returns:
+            Optional[str]: The name of a package installed on the devices or
+                `None` to use wpt's best guess of the version.
+
+        See Also:
+            https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/run.py#L810-L816
+            https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L850-L924
+        """
+        # Assume the product is a single APK.
+        return self.get_browser_package_name()
+
+    def provision_device(self, device):
+        """Provision an Android device for a test."""
+        for apk in self._options.apk:
+            self._tasks.enter_context(_install_apk(device, apk))
+        logger.info('Provisioned device (serial: %s)', device.serial)
+
+        if device.serial in self.devices:
+            raise Exception('duplicate device serial: %s' % device.serial)
+        self.devices[device.serial] = device
+        self._tasks.callback(self.devices.pop, device.serial, None)
+
+
+@contextlib.contextmanager
+def _install_webview_from_release(device, channel, python_executable=None):
+    script_path = os.path.join(SRC_DIR, 'clank', 'bin', 'install_webview.py')
+    python_executable = python_executable or sys.executable
+    command = [python_executable, script_path, '-s', device.serial, '--channel',
+               channel]
+    exit_code = common.run_command(command)
+    if exit_code != 0:
+        raise Exception('failed to install webview from release '
+                        '(serial: %r, channel: %r, exit code: %d)'
+                        % (device.serial, channel, exit_code))
+    yield
+
+
+class ChromeAndroidShellBase(ChromeAndroidBase):
+    def get_browser_package_name(self):
+        package_name = super(ChromeAndroidShellBase,
+                             self).get_browser_package_name()
+        if package_name:
+            return package_name
+        elif self._options.shell_apk:
+            with contextlib.suppress(apk_helper.ApkHelperError):
+                return apk_helper.GetPackageName(self._options.shell_apk)
+        return None
+
+    def provision_device(self, device):
+        if self._options.shell_apk:
+            self._tasks.enter_context(_install_apk(device,
+                                                   self._options.shell_apk))
+        super(ChromeAndroidShellBase, self).provision_device(device)
+
+
+class WebLayer(ChromeAndroidShellBase):
+    name = ANDROID_WEBLAYER
+    aliases = ['weblayer']
+
+    @property
+    def wpt_args(self):
+        args = list(super(WebLayer, self).wpt_args)
+        args.append('--test-type=testharness')
+        return args
+
+    def get_browser_package_name(self):
+        return (super(WebLayer, self).get_browser_package_name()
+                or 'org.chromium.weblayer.shell')
+
+    def get_version_provider_package_name(self):
+        # Read version from support APK.
+        if self._options.apk:
+            with contextlib.suppress(apk_helper.ApkHelperError):
+                return apk_helper.GetPackageName(self._options.apk[0])
+        return super(WebLayer, self).get_version_provider_package_name()
+
+
+class WebView(ChromeAndroidShellBase):
+    name = ANDROID_WEBVIEW
+    aliases = ['webview']
+
+    def _install_webview(self, device):
+        # Prioritize local builds.
+        if self._options.webview_provider:
+            return webview_app.UseWebViewProvider(
+                device,
+                self._options.webview_provider)
+        else:
+            assert self._options.release_channel, 'no webview install method'
+            return _install_webview_from_release(
+                device,
+                self._options.release_channel,
+                self._python_executable)
+
+    def _validate_options(self):
+        super(WebView, self)._validate_options()
+        if not self._options.webview_provider \
+                and not self._options.release_channel:
+            raise ValueError(
+                "Must provide either '--webview-provider' or "
+                "'--release-channel' to install WebView.")
+
+    def get_browser_package_name(self):
+        return (super(WebView, self).get_browser_package_name()
+                or 'org.chromium.webview_shell')
+
+    def get_version_provider_package_name(self):
+        # Prioritize using the webview provider, not the shell, since the
+        # provider is distributed to end users. The shell is developer-facing,
+        # so its version is usually not actively updated.
+        if self._options.webview_provider:
+            with contextlib.suppress(apk_helper.ApkHelperError):
+                return apk_helper.GetPackageName(self._options.webview_provider)
+        return super(WebView, self).get_version_provider_package_name()
+
+    def provision_device(self, device):
+        self._tasks.enter_context(self._install_webview(device))
+        super(WebView, self).provision_device(device)
+
+
+class ChromeAndroid(ChromeAndroidBase):
+    name = CHROME_ANDROID
+    aliases = ['clank']
+
+    def _validate_options(self):
+        super(ChromeAndroid, self)._validate_options()
+        if not self._options.package_name and not self._options.apk:
+            raise ValueError(
+                "Must provide either '--package-name' or '--apk' "
+                'for %r.' % self.name)
+
+    def get_browser_package_name(self):
+        package_name = super(ChromeAndroid, self).get_browser_package_name()
+        if package_name:
+            return package_name
+        elif self._options.apk:
+            with contextlib.suppress(apk_helper.ApkHelperError):
+                return apk_helper.GetPackageName(self._options.apk[0])
+        return None
 
 
 def add_emulator_args(parser):
   parser.add_argument(
       '--avd-config',
       type=os.path.realpath,
-      help='Path to the avd config textpb. '
-      '(See //tools/android/avd/proto/ for message definition'
-      ' and existing textpb files.)')
+      help=('Path to the avd config. Required for Android products. '
+            '(See //tools/android/avd/proto for message definition '
+            'and existing *.textpb files.)'))
   parser.add_argument(
       '--emulator-window',
       action='store_true',
@@ -436,10 +570,66 @@ def add_emulator_args(parser):
       default=1,
       help='Number of emulator to run.')
 
+
+def add_android_group(parser):
+    android_group = parser.add_argument_group(
+        'Android',
+        'Options for configuring the emulator(s) and Android tooling.')
+    add_emulator_args(android_group)
+    android_group.add_argument(
+        '--apk',
+        # Aliases for backwards compatibility.
+        '--chrome-apk',
+        '--weblayer-support',
+        action='append',
+        default=[],
+        help='Path to an APK to install.')
+    android_group.add_argument(
+        '--shell-apk',
+        # Aliases for backwards compatibility.
+        '--system-webview-shell',
+        '--weblayer-shell',
+        help=('Path to a shell APK to install. '
+              '(WebView and WebLayer only. '
+              'Defaults to an on-device APK if not provided.)'))
+    android_group.add_argument(
+        '--webview-provider',
+        help=('Path to a WebView provider APK to install. '
+              '(WebView only.)'))
+    android_group.add_argument(
+        '--release-channel',
+        help='Install WebView from release channel. (WebView only.)')
+    android_group.add_argument(
+        '--package-name',
+        # Aliases for backwards compatibility.
+        '--chrome-package-name',
+        help='Package name to run tests against.')
+    android_group.add_argument(
+        '--adb-binary',
+        type=os.path.realpath,
+        help='Path to adb binary to use.')
+
+
+def _make_product_registry():
+    """Create a mapping from all product names (including aliases) to their
+    respective classes.
+    """
+    product_registry = {}
+    product_classes = [ChromeAndroid, WebView, WebLayer]
+    for product_cls in product_classes:
+        names = [product_cls.name] + product_cls.aliases
+        product_registry.update((name, product_cls) for name in names)
+    return product_registry
+
+
+_product_registry = _make_product_registry()
+
+
 @contextlib.contextmanager
 def get_device(args):
   with get_devices(args) as devices:
     yield None if not devices else devices[0]
+
 
 @contextlib.contextmanager
 def get_devices(args):
@@ -447,7 +637,7 @@ def get_devices(args):
   try:
     if args.avd_config:
       avd_config = avd.AvdConfig(args.avd_config)
-      logger.warning('Install emulator from ' + args.avd_config)
+      logger.warning('Installing emulator from %s', args.avd_config)
       avd_config.Install()
       for _ in range(max(args.processes, 1)):
         instance = avd_config.CreateInstance()
@@ -455,68 +645,7 @@ def get_devices(args):
         instances.append(instance)
 
     #TODO(weizhong): when choose device, make sure abi matches with target
-    devices = device_utils.DeviceUtils.HealthyDevices()
-    if devices:
-      yield devices
-    else:
-      yield
+    yield device_utils.DeviceUtils.HealthyDevices()
   finally:
     for instance in instances:
       instance.Stop()
-
-
-def _maybe_install_webview_provider(devices, apk):
-  if apk:
-    logger.info('Will install WebView apk at ' + apk)
-
-    @contextlib.contextmanager
-    def use_webview_provider(devices, apk):
-      with contextlib.ExitStack() as stack:
-        for device in devices:
-          stack.enter_context(webview_app.UseWebViewProvider(device, apk))
-        yield
-
-    return use_webview_provider(devices, apk)
-  else:
-    return _no_op()
-
-
-def _maybe_install_user_apk(devices, apk, expected_pkg=None):
-  """contextmanager to install apk on device.
-
-  Args:
-    device: DeviceUtils instance on which to install the apk.
-    apk: Apk file path on host.
-    expected_pkg:  Optional, check that apk's package name matches.
-  Returns:
-    If apk evaluates to false, returns a do-nothing contextmanager.
-    Otherwise, returns a contextmanager to install apk on device.
-  """
-  if apk:
-    pkg = apk_helper.GetPackageName(apk)
-    if expected_pkg and pkg != expected_pkg:
-      raise ValueError('{} has incorrect package name: {}, expected {}.'.format(
-          apk, pkg, expected_pkg))
-    install_as_needed = _app_installed(devices, apk, pkg)
-    logger.info('Will install ' + pkg + ' at ' + apk)
-  else:
-    install_as_needed = _no_op()
-  return install_as_needed
-
-
-@contextlib.contextmanager
-def _app_installed(devices, apk, pkg):
-  for device in devices:
-    device.Install(apk)
-  try:
-    yield
-  finally:
-    for device in devices:
-      device.Uninstall(pkg)
-
-
-# Dummy contextmanager to simplify multiple optional managers.
-@contextlib.contextmanager
-def _no_op():
-  yield
-

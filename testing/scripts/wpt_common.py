@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import os
-import posixpath
 import sys
 
 import common
@@ -92,7 +91,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             action='store_true',
             help='Do not upload results to ResultDB')
         # We provide an option to show wptrunner's help here because the 'wpt'
-        # executable may not be inaccessible from the user's PATH. The top-level
+        # executable may be inaccessible from the user's PATH. The top-level
         # 'wpt' command also needs to have virtualenv disabled.
         parser.add_argument(
             '--wpt-help',
@@ -105,9 +104,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.output_group.add_argument(
             '--log-wptreport',
             nargs='?',
-            const=self._default_wpt_report(),
+            # We cannot provide a default, since the default filename depends on
+            # the product, so we use this placeholder instead.
+            const='',
             help=('Log a wptreport in JSON to the output directory '
-                  '(default filename: %(const)s)'))
+                  '(default filename: '
+                  'wpt_reports_<product>_<shard-index>.json)'))
         self.output_group.add_argument(
             '-v',
             '--verbose',
@@ -145,26 +147,27 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
     def parse_args(self, args=None):
         super(BaseWptScriptAdapter, self).parse_args(args)
-        # Update the output directory to the default if it's not set.
-        # We cannot provide a CLI arg default because the path depends on
-        # --target.
-        self.maybe_set_default_isolated_script_test_output()
-        if self.options.log_wptreport:
-            wpt_output = self.options.isolated_script_test_output
-            self.wptreport = self.fs.join(
-                self.fs.dirname(wpt_output),
-                self.options.log_wptreport)
-
-    def do_pre_test_run_tasks(self):
-        super(BaseWptScriptAdapter, self).do_pre_test_run_tasks()
         if self.options.wpt_help:
-            command = [
-                self.select_python_executable(),
-            ]
-            command.extend(self._wpt_run_args)
-            command.extend(['--help'])
-            exit_code = common.run_command(command)
-            self.parser.exit(exit_code)
+            self._show_wpt_help()
+        # Update the output directory and wptreport filename to defaults if not
+        # set. We cannot provide CLI option defaults because they depend on
+        # other options ('--target' and '--product').
+        self.maybe_set_default_isolated_script_test_output()
+        report = self.options.log_wptreport
+        if report is not None:
+            if not report:
+                report = self._default_wpt_report()
+            wpt_output = self.options.isolated_script_test_output
+            self.wptreport = self.fs.join(self.fs.dirname(wpt_output), report)
+
+    def _show_wpt_help(self):
+        command = [
+            self.select_python_executable(),
+        ]
+        command.extend(self._wpt_run_args)
+        command.extend(['--help'])
+        exit_code = common.run_command(command)
+        self.parser.exit(exit_code)
 
     @property
     def _wpt_run_args(self):
@@ -238,8 +241,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             command.extend(['--wpt-report', self.wptreport])
         common.run_command(command)
 
-    @classmethod
-    def wpt_product_name(cls):
+    def wpt_product_name(self):
         raise NotImplementedError
 
     def _default_wpt_report(self):
