@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ORDER_ITERATOR_H_
 
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #include <set>
@@ -61,15 +62,20 @@ class OrderIterator {
     return const_cast<OrderIterator*>(this)->Next();
   }
 
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(container_box_);
+    visitor->Trace(current_child_);
+  }
+
  private:
   void Reset();
 
   // Returns the order to use for |child|.
   int ResolvedOrder(const LayoutBox& child) const;
 
-  UntracedMember<const LayoutBox> container_box_;
+  Member<const LayoutBox> container_box_;
 
-  UntracedMember<LayoutBox> current_child_;
+  Member<LayoutBox> current_child_;
 
   using OrderValues = std::set<int>;
   OrderValues order_values_;

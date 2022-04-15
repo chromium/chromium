@@ -74,6 +74,7 @@ LayoutFlexibleBox::~LayoutFlexibleBox() = default;
 void LayoutFlexibleBox::Trace(Visitor* visitor) const {
   visitor->Trace(intrinsic_size_along_main_axis_);
   visitor->Trace(relaid_out_children_);
+  visitor->Trace(order_iterator_);
   LayoutBlock::Trace(visitor);
 }
 

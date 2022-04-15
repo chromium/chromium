@@ -58,6 +58,7 @@ class CORE_EXPORT Grid : public GarbageCollected<Grid> {
   virtual ~Grid() {}
 
   virtual void Trace(Visitor* visitor) const {
+    visitor->Trace(order_iterator_);
     visitor->Trace(grid_item_area_);
     visitor->Trace(grid_items_indexes_map_);
   }
