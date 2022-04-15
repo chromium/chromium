@@ -293,6 +293,18 @@ message BootPerformanceTelemetry {
   optional string shutdown_reason = 5;
 }
 
+// Data tracking user status information
+message UserStatusTelemetry {
+  enum DeviceActivityState {
+    ACTIVE = 0;
+    IDLE = 1;
+    LOCKED = 2;
+  }
+
+  // Device state.
+  optional DeviceActivityState device_activity_state = 1;
+}
+
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 message TelemetryData {
@@ -306,6 +318,8 @@ message TelemetryData {
   optional PeripheralsTelemetry peripherals_telemetry = 3;
   // Boot Performance telemetry data.
   optional BootPerformanceTelemetry boot_performance_telemetry = 4;
+  // User status telemetry data.
+  optional UserStatusTelemetry user_status_telemetry = 5;
 }
 
 enum MetricEventType {
