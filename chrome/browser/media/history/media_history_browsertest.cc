@@ -1079,8 +1079,10 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   EXPECT_TRUE(sessions.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       DoNotRecordSessionForVideoOnlyInPictureInPicture) {
+// TODO(crbug.com/1310805): Fix flakiness and re-enable this test.
+IN_PROC_BROWSER_TEST_P(
+    MediaHistoryBrowserTest,
+    DISABLED_DoNotRecordSessionForVideoOnlyInPictureInPicture) {
   auto* browser = CreateBrowserFromParam();
 
   ASSERT_TRUE(SetupPageAndStartPlayingVideoOnly(browser, GetTestURL()));
