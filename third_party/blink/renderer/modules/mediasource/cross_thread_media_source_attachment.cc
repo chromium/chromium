@@ -6,10 +6,12 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_public.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 
+#include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

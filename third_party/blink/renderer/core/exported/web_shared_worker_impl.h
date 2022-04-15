@@ -56,6 +56,7 @@
 
 namespace blink {
 
+class MessagePortChannel;
 class SharedWorkerThread;
 class WebSharedWorkerClient;
 class WebString;

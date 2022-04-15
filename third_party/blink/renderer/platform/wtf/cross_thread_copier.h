@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_H_
 
-#include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -41,12 +40,6 @@ struct SkISize;
 class SkRefCnt;
 template <typename T>
 class sk_sp;
-
-namespace blink {
-// TODO(https://crbug.com/1247393): Move this and others to
-// blink/public/platform.
-class WebTimeRanges;
-}  // namespace blink
 
 namespace gpu {
 struct SyncToken;
@@ -145,33 +138,8 @@ struct CrossThreadCopier<String> {
 };
 
 template <>
-struct CrossThreadCopier<blink::MessagePortChannel> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::MessagePortChannel;
-  static Type Copy(Type pointer) {
-    return pointer;  // This is in fact a move.
-  }
-};
-
-template <wtf_size_t inlineCapacity, typename Allocator>
-struct CrossThreadCopier<
-    Vector<blink::MessagePortChannel, inlineCapacity, Allocator>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = Vector<blink::MessagePortChannel, inlineCapacity, Allocator>;
-  static Type Copy(Type pointer) {
-    return pointer;  // This is in fact a move.
-  }
-};
-
-template <>
 struct CrossThreadCopier<SkISize>
     : public CrossThreadCopierPassThrough<SkISize> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<blink::WebTimeRanges>
-    : public CrossThreadCopierByValuePassThrough<blink::WebTimeRanges> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
