@@ -652,7 +652,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto2.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url2));
   dummy_proto2.set_merchant("Cart Bar");
   dummy_proto2.set_merchant_cart_url(dummy_url2.spec());
-  dummy_proto2.set_timestamp(time_now + 5);
+  dummy_proto2.set_timestamp(time_now + 3);
   dummy_proto2.mutable_discount_info()->set_discount_text(
       l10n_util::GetStringFUTF8(IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT,
                                 u"20%"));
@@ -693,7 +693,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto4.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url4));
   dummy_proto4.set_merchant("Cart Qux");
   dummy_proto4.set_merchant_cart_url(dummy_url4.spec());
-  dummy_proto4.set_timestamp(time_now + 3);
+  dummy_proto4.set_timestamp(time_now + 5);
   dummy_proto4.add_product_image_urls(
       "https://encrypted-tbn0.gstatic.com/"
       "shopping?q=tbn:ANd9GcQyMRYWeM2Yq095nOXTL0-"
