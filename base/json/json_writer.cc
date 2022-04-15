@@ -154,7 +154,8 @@ bool JSONWriter::BuildJSONString(const Value::Dict& node, size_t depth) {
   }
 
   if (pretty_print_) {
-    json_string_->append(kPrettyPrintLineEnding);
+    if (first_value_has_been_output)
+      json_string_->append(kPrettyPrintLineEnding);
     IndentLine(depth);
   }
 

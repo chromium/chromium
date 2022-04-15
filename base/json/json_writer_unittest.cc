@@ -64,15 +64,11 @@ TEST(JSONWriterTest, NestedTypes) {
   Value inner_dict(Value::Type::DICTIONARY);
   inner_dict.SetIntKey("inner int", 10);
   list_storage.push_back(std::move(inner_dict));
+  Value empty_dict(Value::Type::DICTIONARY);
+  list_storage.push_back(std::move(empty_dict));
   list_storage.push_back(Value(Value::Type::LIST));
   list_storage.push_back(Value(true));
   root_dict.SetKey("list", Value(std::move(list_storage)));
-
-  // Test the pretty-printer.
-  EXPECT_TRUE(JSONWriter::Write(root_dict, &output_js));
-  EXPECT_EQ("{\"list\":[{\"inner int\":10},[],true]}", output_js);
-  EXPECT_TRUE(JSONWriter::WriteWithOptions(
-      root_dict, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
 
   // The pretty-printer uses a different newline style on Windows than on
   // other platforms.
@@ -81,12 +77,20 @@ TEST(JSONWriterTest, NestedTypes) {
 #else
 #define JSON_NEWLINE "\n"
 #endif
+
+  // Test the pretty-printer.
+  EXPECT_TRUE(JSONWriter::Write(root_dict, &output_js));
+  EXPECT_EQ("{\"list\":[{\"inner int\":10},{},[],true]}", output_js);
+  EXPECT_TRUE(JSONWriter::WriteWithOptions(
+      root_dict, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
   EXPECT_EQ("{" JSON_NEWLINE
             "   \"list\": [ {" JSON_NEWLINE
             "      \"inner int\": 10" JSON_NEWLINE
+            "   }, {" JSON_NEWLINE
             "   }, [  ], true ]" JSON_NEWLINE
             "}" JSON_NEWLINE,
             output_js);
+
 #undef JSON_NEWLINE
 }
 
