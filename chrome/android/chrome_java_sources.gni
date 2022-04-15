@@ -1021,6 +1021,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/share/ShareHelper.java",
   "java/src/org/chromium/chrome/browser/share/ShareRegistrationCoordinator.java",
   "java/src/org/chromium/chrome/browser/share/ShareUtils.java",
+  "java/src/org/chromium/chrome/browser/share/crow/CrowButtonDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/sharing/SharingAdapter.java",
   "java/src/org/chromium/chrome/browser/sharing/SharingJNIBridge.java",
   "java/src/org/chromium/chrome/browser/sharing/SharingNotificationUtil.java",

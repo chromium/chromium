@@ -40,6 +40,7 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -84,6 +85,8 @@ public final class WebFeedMainMenuItemTest {
     @Mock
     public UrlFormatter.Natives mUrlFormatterJniMock;
     private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
+    @Mock
+    private CrowButtonDelegate mCrowButtonDelegate;
 
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
     private ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
@@ -150,7 +153,7 @@ public final class WebFeedMainMenuItemTest {
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager);
+                mDialogManager, mSnackBarManager, mCrowButtonDelegate);
         respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithNull();
 
@@ -331,7 +334,7 @@ public final class WebFeedMainMenuItemTest {
     private void initializeWebFeedMainMenuItem() {
         doReturn(TEST_URL).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager);
+                mDialogManager, mSnackBarManager, mCrowButtonDelegate);
     }
 
     /**

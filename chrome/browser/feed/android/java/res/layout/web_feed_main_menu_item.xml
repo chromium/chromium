@@ -57,6 +57,13 @@
             android:layout_gravity="end"
             android:visibility="gone" />
 
+        <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/crow_chip_view"
+            style="@style/MenuFooterChipInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:visibility="gone" />
     </LinearLayout>
 
     <View

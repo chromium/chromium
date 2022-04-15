@@ -58,6 +58,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
+      "android/java/src/org/chromium/chrome/browser/share/crow/CrowButtonDelegate.java",
       "android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeOptionShareCallback.java",
     ]
 

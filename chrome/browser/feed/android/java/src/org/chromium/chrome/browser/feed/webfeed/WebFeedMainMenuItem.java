@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.feed.webfeed;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLa
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -51,6 +53,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private Tab mTab;
     private String mTitle;
     private AppMenuHandler mAppMenuHandler;
+    private CrowButtonDelegate mCrowButtonDelegate;
 
     // Points to the currently shown chip: null, mFollowingChipView, mFollowChipView,
     private ChipView mChipView;
@@ -58,6 +61,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
     // Child views, null before inflation.
     private ChipView mFollowingChipView;
     private ChipView mFollowChipView;
+    private ChipView mCrowButton;
     private ImageView mIcon;
     private TextView mItemText;
 
@@ -78,6 +82,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mIcon = findViewById(R.id.icon);
         mFollowingChipView = findViewById(R.id.following_chip_view);
         mFollowChipView = findViewById(R.id.follow_chip_view);
+        mCrowButton = findViewById(R.id.crow_chip_view);
         mItemText = findViewById(R.id.menu_item_text);
 
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID)) {
@@ -100,20 +105,25 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
+     * @param crowButtonDelegate {@link CrowButtonDelegate} for managing a footer chip.
      */
     public void initialize(Tab tab, AppMenuHandler appMenuHandler,
             WebFeedFaviconFetcher faviconFetcher, FeedLauncher feedLauncher,
-            ModalDialogManager dialogManager, SnackbarManager snackbarManager) {
+            ModalDialogManager dialogManager, SnackbarManager snackbarManager,
+            CrowButtonDelegate crowButtonDelegate) {
         mUrl = tab.getOriginalUrl();
         mTab = tab;
         mAppMenuHandler = appMenuHandler;
         mFaviconFetcher = faviconFetcher;
         mWebFeedSnackbarController = new WebFeedSnackbarController(
                 mContext, feedLauncher, dialogManager, snackbarManager);
+        mCrowButtonDelegate = crowButtonDelegate;
         Callback<WebFeedMetadata> metadata_callback = result -> {
             initializeFavicon(result);
             initializeText(result);
             initializeChipView(result);
+            initializeCrowButton();
+
             if (mChipView != null && mTab.isShowingErrorPage()) {
                 mChipView.setEnabled(false);
             }
@@ -152,6 +162,12 @@ public class WebFeedMainMenuItem extends FrameLayout {
             showLoadingChipView(mFollowingChipView, mContext.getText(R.string.menu_following));
         } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS) {
             showLoadingChipView(mFollowChipView, mContext.getText(R.string.menu_follow));
+        }
+    }
+
+    private void initializeCrowButton() {
+        if (mCrowButtonDelegate.isEnabledForSite(mUrl)) {
+            showCrowButton();
         }
     }
 
@@ -249,6 +265,16 @@ public class WebFeedMainMenuItem extends FrameLayout {
         chipView.setOnClickListener(onClickListener);
         chipView.setEnabled(!mTab.isShowingErrorPage());
         chipView.setVisibility(View.VISIBLE);
+    }
+
+    private void showCrowButton() {
+        mCrowButton.getPrimaryTextView().setText(mCrowButtonDelegate.getButtonText());
+        mCrowButton.setOnClickListener((view) -> {
+            if (mTab == null) return;
+            Activity activity = mTab.getWindowAndroid().getActivity().get();
+            mCrowButtonDelegate.launchCustomTab(activity, mUrl);
+        });
+        mCrowButton.setVisibility(View.VISIBLE);
     }
 
     private void onFaviconFetched(Bitmap icon) {

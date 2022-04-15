@@ -264,6 +264,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kServiceManagerForBackgroundPrefetch,
     &kServiceManagerForDownload,
     &kShareButtonInTopToolbar,
+    &kShareCrowButton,
     &kSharedClipboardUI,
     &kShowScrollableMVTOnNTPAndroid,
     &kSpannableInlineAutocomplete,
@@ -721,6 +722,9 @@ const base::Feature kServiceManagerForDownload{
 
 const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kShareCrowButton{"ShareCrowButton",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kShowScrollableMVTOnNTPAndroid{
     "ShowScrollableMVTOnNTPAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
