@@ -108,6 +108,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SegmentationPlatform.Init.CreationToInitializationLatency"
+    units="ms" expires_after="M104">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Time taken from the platform getting created till the platform finishes
+    initialization. Recorded when initialization is done.
+  </summary>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency"
+    units="ms" expires_after="M104">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Time taken from process creation till the time segmentation platform was
+    created. Recorded once when the platform is created.
+  </summary>
+</histogram>
+
 <histogram name="SegmentationPlatform.Maintenance.CleanupSignalSuccessCount"
     units="signals" expires_after="2022-08-01">
   <owner>nyquist@chromium.org</owner>

@@ -134,6 +134,10 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // PrefService from browser's local state, not profile specific.
   raw_ptr<PrefService> local_state_;
 
+  // For metrics only:
+  const base::Time creation_time_;
+  base::Time init_time_;
+
   base::WeakPtrFactory<SegmentationPlatformServiceImpl> weak_ptr_factory_{this};
 };
 

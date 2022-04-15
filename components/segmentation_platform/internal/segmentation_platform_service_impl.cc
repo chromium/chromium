@@ -10,6 +10,8 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -89,7 +91,11 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       platform_options_(PlatformOptions::CreateDefault()),
       configs_(std::move(configs)),
       storage_service_(std::move(storage_service)),
-      local_state_(local_state) {
+      local_state_(local_state),
+      creation_time_(clock_->Now()) {
+  base::UmaHistogramMediumTimes(
+      "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",
+      base::SysInfo::Uptime());
   all_segment_ids_ = GetAllSegmentIds(configs_);
   std::vector<OptimizationTarget> segment_id_vec(all_segment_ids_.begin(),
                                                  all_segment_ids_.end());
@@ -187,6 +193,11 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   for (auto& selector : segment_selectors_) {
     selector.second->OnPlatformInitialized(&execution_service_);
   }
+
+  init_time_ = clock_->Now();
+  base::UmaHistogramMediumTimes(
+      "SegmentationPlatform.Init.CreationToInitializationLatency",
+      init_time_ - creation_time_);
 }
 
 void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
