@@ -96,6 +96,8 @@ export class ModulesElement extends PolymerElement {
         value: null,
       },
 
+      moduleImpressionDetected_: Boolean,
+
       modulesLoaded_: Boolean,
 
       modulesVisibilityDetermined_: Boolean,
@@ -138,6 +140,7 @@ export class ModulesElement extends PolymerElement {
   private modulesFreRemoved_: boolean;
   private modulesFreShown: boolean;
   private modulesFreVisible_: boolean;
+  private moduleImpressionDetected_: boolean;
   private modulesLoaded_: boolean;
   private modulesVisibilityDetermined_: boolean;
   private modulesLoadedAndVisibilityDetermined_: boolean;
@@ -243,6 +246,7 @@ export class ModulesElement extends PolymerElement {
   }
 
   private async renderModules_(): Promise<void> {
+    this.moduleImpressionDetected_ = false;
     const modules = await ModuleRegistry.getInstance().initializeModules(
         loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
@@ -260,6 +264,12 @@ export class ModulesElement extends PolymerElement {
         }
         moduleWrapper.addEventListener(
             'disable-module', e => this.onDisableModule_(e));
+        moduleWrapper.addEventListener('detect-impression', () => {
+          if (!this.moduleImpressionDetected_) {
+            NewTabPageProxy.getInstance().handler.incrementModulesShownCount();
+          }
+          this.moduleImpressionDetected_ = true;
+        });
         const moduleContainer = this.ownerDocument.createElement('div');
         moduleContainer.classList.add('module-container');
         if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
@@ -274,10 +284,6 @@ export class ModulesElement extends PolymerElement {
         moduleContainer.appendChild(moduleWrapper);
         return moduleContainer;
       });
-
-      if (modules.length > 0) {
-        NewTabPageProxy.getInstance().handler.incrementModulesShownCount();
-      }
 
       chrome.metricsPrivate.recordSmallCount(
           'NewTabPage.Modules.LoadedModulesCount', modules.length);
