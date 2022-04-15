@@ -3268,6 +3268,21 @@
             ]
         }
     ],
+    "FastPairPowerConsumption": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220412",
+                    "enable_features": [
+                        "FastPair"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeatureNotificationGuide": [
         {
             "platforms": [

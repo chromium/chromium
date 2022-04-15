@@ -212,5 +212,19 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Managed_Disabled) {
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
 }
 
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Ineligible_Enabled) {
+  FastPairFeatureUsageMetricsLogger feature_usage_metrics;
+
+  SetBluetoothIsPresent(/*present=*/false);
+  SetHardwareOffloadingStatus(
+      /*hardware_offloading_status=*/device::BluetoothAdapter::
+          LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported);
+
+  EXPECT_FALSE(feature_usage_metrics.IsEligible());
+  SetManagedEnabled(/*is_enabled=*/true);
+  EXPECT_FALSE(feature_usage_metrics.IsAccessible().value());
+  EXPECT_FALSE(feature_usage_metrics.IsEnabled());
+}
+
 }  // namespace quick_pair
 }  // namespace ash

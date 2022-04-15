@@ -52,6 +52,9 @@ bool FastPairFeatureUsageMetricsLogger::IsEligible() const {
 }
 
 absl::optional<bool> FastPairFeatureUsageMetricsLogger::IsAccessible() const {
+  if (!IsEligible())
+    return false;
+
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
 
