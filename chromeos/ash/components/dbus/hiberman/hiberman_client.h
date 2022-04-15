@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_
-#define CHROMEOS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
@@ -14,7 +14,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // HibermanClient is used to communicate with the org.chromium.Hibernate
 // service exposed by hiberman. All method should be called from the origin
@@ -56,12 +56,6 @@ class COMPONENT_EXPORT(HIBERMAN_CLIENT) HibermanClient {
   virtual ~HibermanClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::HibermanClient;
-}
-
-#endif  // CHROMEOS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_

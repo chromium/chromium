@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FUSEBOX_FAKE_FUSEBOX_REVERSE_CLIENT_H_
-#define CHROMEOS_DBUS_FUSEBOX_FAKE_FUSEBOX_REVERSE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FUSEBOX_FAKE_FUSEBOX_REVERSE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FUSEBOX_FAKE_FUSEBOX_REVERSE_CLIENT_H_
 
-#include "chromeos/dbus/fusebox/fusebox_reverse_client.h"
+#include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class FakeFuseBoxReverseClient : public FuseBoxReverseClient {
  public:
@@ -28,6 +28,6 @@ class FakeFuseBoxReverseClient : public FuseBoxReverseClient {
                       bool has_more) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FUSEBOX_FAKE_FUSEBOX_REVERSE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FUSEBOX_FAKE_FUSEBOX_REVERSE_CLIENT_H_

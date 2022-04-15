@@ -15,8 +15,8 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/dbus/fusebox/fusebox_reverse_client.h"
 
 namespace file_manager {
 

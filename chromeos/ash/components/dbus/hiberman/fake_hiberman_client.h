@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HIBERMAN_FAKE_HIBERMAN_CLIENT_H_
-#define CHROMEOS_DBUS_HIBERMAN_FAKE_HIBERMAN_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_FAKE_HIBERMAN_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_FAKE_HIBERMAN_CLIENT_H_
 
-#include "chromeos/dbus/hiberman/hiberman_client.h"
+#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"
 
 #include <vector>
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class which satisfies the implementation of a HibermanClient but does not
 // actually wire up to dbus. Used in testing.
@@ -36,12 +36,6 @@ class COMPONENT_EXPORT(HIBERMAN_CLIENT) FakeHibermanClient
                            ResumeFromHibernateCallback callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FakeHibermanClient;
-}
-
-#endif  // CHROMEOS_DBUS_HIBERMAN_FAKE_HIBERMAN_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_FAKE_HIBERMAN_CLIENT_H_

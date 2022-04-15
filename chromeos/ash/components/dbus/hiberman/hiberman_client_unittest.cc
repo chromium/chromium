@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hiberman/hiberman_client.h"
+#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"
 
 #include <string>
 #include <utility>
@@ -20,7 +20,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 class HibermanClientTest : public testing::Test {
  public:
@@ -59,7 +59,6 @@ class HibermanClientTest : public testing::Test {
   void TearDown() override { HibermanClient::Shutdown(); }
 
  protected:
-
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Mock bus and proxy for simulating calls.
@@ -109,4 +108,4 @@ TEST_F(HibermanClientTest, ResumeFromHibernate) {
   ASSERT_TRUE(callback_called);
 }
 
-}  // namespace chromeos
+}  // namespace ash

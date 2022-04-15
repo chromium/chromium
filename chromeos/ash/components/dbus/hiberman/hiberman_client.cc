@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hiberman/hiberman_client.h"
+#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"
 
 #include <utility>
 
@@ -13,14 +13,14 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/hiberman/fake_hiberman_client.h"
+#include "chromeos/ash/components/dbus/hiberman/fake_hiberman_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/hiberman/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The default time for the resume from hibernate method call. This method
@@ -57,7 +57,6 @@ class HibermanClientImpl : public HibermanClient {
 
   void ResumeFromHibernate(const std::string& account_id,
                            ResumeFromHibernateCallback callback) override {
-
     dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
                                  ::hiberman::kResumeFromHibernateMethod);
     dbus::MessageWriter writer(&method_call);
@@ -121,4 +120,4 @@ HibermanClient* HibermanClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

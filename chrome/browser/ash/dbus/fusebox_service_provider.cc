@@ -19,7 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/fusebox/fusebox_reverse_client.h"
+#include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/message.h"

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_
-#define CHROMEOS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_
 
 #include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/fusebox/fusebox.pb.h"
+#include "chromeos/ash/components/dbus/fusebox/fusebox.pb.h"
 
 namespace dbus {
 class Bus;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // Chrome interface used to call into ChromeOS' /usr/bin/fusebox process (which
 // provides the org.chromium.FuseBoxReverseService D-Bus interface). These
@@ -62,11 +62,6 @@ class COMPONENT_EXPORT(FUSEBOX_REVERSE_CLIENT) FuseBoxReverseClient {
   virtual ~FuseBoxReverseClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::FuseBoxReverseClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_

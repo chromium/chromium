@@ -131,7 +131,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_HIBERNATE)
-#include "chromeos/dbus/hiberman/hiberman_client.h"  // nogncheck
+#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"  // nogncheck
 #endif
 
 namespace ash {

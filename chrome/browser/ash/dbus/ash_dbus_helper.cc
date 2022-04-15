@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
+#include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -36,7 +37,6 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/federated/federated_client.h"
-#include "chromeos/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
@@ -72,7 +72,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_HIBERNATE)
-#include "chromeos/dbus/hiberman/hiberman_client.h" // nogncheck
+#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"  // nogncheck
 #endif
 
 namespace ash {
@@ -125,10 +125,10 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<chromeos::FederatedClient>(bus);
-  InitializeDBusClient<chromeos::FuseBoxReverseClient>(bus);
+  InitializeDBusClient<FuseBoxReverseClient>(bus);
   chromeos::hermes_clients::Initialize(bus);
 #if BUILDFLAG(ENABLE_HIBERNATE)
-  InitializeDBusClient<chromeos::HibermanClient>(bus);
+  InitializeDBusClient<HibermanClient>(bus);
 #endif
   InitializeDBusClient<chromeos::InstallAttributesClient>(bus);
   InitializeDBusClient<chromeos::IpPeripheralServiceClient>(bus);
@@ -230,10 +230,10 @@ void ShutdownDBus() {
   chromeos::IpPeripheralServiceClient::Shutdown();
   chromeos::InstallAttributesClient::Shutdown();
 #if BUILDFLAG(ENABLE_HIBERNATE)
-  chromeos::HibermanClient::Shutdown();
+  HibermanClient::Shutdown();
 #endif
   chromeos::hermes_clients::Shutdown();
-  chromeos::FuseBoxReverseClient::Shutdown();
+  FuseBoxReverseClient::Shutdown();
   chromeos::FederatedClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();

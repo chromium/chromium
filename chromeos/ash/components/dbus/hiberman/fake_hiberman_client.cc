@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hiberman/fake_hiberman_client.h"
+#include "chromeos/ash/components/dbus/hiberman/fake_hiberman_client.h"
 
 #include <utility>
 
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -42,8 +42,7 @@ void FakeHibermanClient::ResumeFromHibernate(
 
 void FakeHibermanClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
-
   // Don't call us, we'll call you ;)
 }
 
-}  // namespace chromeos
+}  // namespace ash

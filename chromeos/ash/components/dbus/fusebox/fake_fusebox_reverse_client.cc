@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fusebox/fake_fusebox_reverse_client.h"
+#include "chromeos/ash/components/dbus/fusebox/fake_fusebox_reverse_client.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeFuseBoxReverseClient::FakeFuseBoxReverseClient() = default;
 
@@ -22,4 +22,4 @@ void FakeFuseBoxReverseClient::ReplyToReadDir(
     fusebox::DirEntryListProto dir_entry_list_proto,
     bool has_more) {}
 
-}  // namespace chromeos
+}  // namespace ash
