@@ -304,6 +304,8 @@ ul {
 
 #disassembly-code {
   border: 1px solid #ccc;
+  box-sizing: border-box;
+  max-width: 100%;
   min-width: 500px;
   overflow: auto;
   position: relative;
