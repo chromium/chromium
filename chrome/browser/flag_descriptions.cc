@@ -840,12 +840,6 @@ const char kDesktopPWAsElidedExtensionsMenuDescription[] =
     "Moves the Extensions \"puzzle piece\" icon from the title bar into the "
     "app menu for web app windows.";
 
-const char kDesktopPWAsNotificationIconAndTitleName[] =
-    "Desktop PWAs improvements in notification icon and title";
-const char kDesktopPWAsNotificationIconAndTitleDescription[] =
-    "Replaces the websites origin and the Chrome icon with the web app's name "
-    "and app icon in notifications.";
-
 const char kDesktopPWAsLaunchHandlerName[] = "Desktop PWA launch handler";
 const char kDesktopPWAsLaunchHandlerDescription[] =
     "Enable web app manifests to declare app launch behavior. Prototype "

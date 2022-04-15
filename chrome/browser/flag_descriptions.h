@@ -482,9 +482,6 @@ extern const char kDesktopPWAsDefaultOfflinePageDescription[];
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 
-extern const char kDesktopPWAsNotificationIconAndTitleName[];
-extern const char kDesktopPWAsNotificationIconAndTitleDescription[];
-
 extern const char kDesktopPWAsLaunchHandlerName[];
 extern const char kDesktopPWAsLaunchHandlerDescription[];
 

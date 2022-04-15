@@ -1555,16 +1555,8 @@ TEST_F(WebAppIconManagerTest,
   EXPECT_FALSE(image_skia.HasRepresentation(3.0f));
 }
 
-class WebAppIconManagerTest_NotificationIconAndTitle
-    : public WebAppIconManagerTest {
- public:
-  WebAppIconManagerTest_NotificationIconAndTitle() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsNotificationIconAndTitle);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+#if BUILDFLAG(IS_CHROMEOS)
+using WebAppIconManagerTest_NotificationIconAndTitle = WebAppIconManagerTest;
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoMissingIcons) {
@@ -1711,5 +1703,6 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
   gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
   EXPECT_TRUE(monochrome_image.isNull());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

@@ -1906,11 +1906,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "enable-desktop-pwas-notification-icon-and-title",
-    "owners": [ "loyso@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "enable-desktop-pwas-prefix-app-name-in-window-title",
     "owners": [ "dmurph@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 101

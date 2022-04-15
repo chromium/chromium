@@ -741,10 +741,10 @@ void WebAppIconManager::Start() {
   for (const AppId& app_id : registrar_->GetAppIds()) {
     ReadFavicon(app_id);
 
-    if (base::FeatureList::IsEnabled(
-            features::kDesktopPWAsNotificationIconAndTitle)) {
-      ReadMonochromeFavicon(app_id);
-    }
+#if BUILDFLAG(IS_CHROMEOS)
+    // Notifications use a monochrome icon.
+    ReadMonochromeFavicon(app_id);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   install_manager_observation_.Observe(install_manager_);
 }
@@ -943,10 +943,10 @@ gfx::ImageSkia WebAppIconManager::GetMonochromeFavicon(
 
 void WebAppIconManager::OnWebAppInstalled(const AppId& app_id) {
   ReadFavicon(app_id);
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsNotificationIconAndTitle)) {
-    ReadMonochromeFavicon(app_id);
-  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // Notifications use a monochrome icon.
+  ReadMonochromeFavicon(app_id);
+#endif
 }
 
 void WebAppIconManager::OnWebAppInstallManagerDestroyed() {

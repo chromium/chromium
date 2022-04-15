@@ -432,19 +432,17 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
       message_center::SettingsButtonHandler::INLINE;
 
   absl::optional<WebAppIconAndTitle> web_app_icon_and_title;
-
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsNotificationIconAndTitle)) {
-    web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
-    if (web_app_icon_and_title && notification_resources.badge.isNull()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
+  if (web_app_icon_and_title && notification_resources.badge.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // ChromeOS: Enables web app theme color only if monochrome web app icon
-      // has been specified. `badge` Notifications API icons must be masked with
-      // the accent color.
-      optional_fields.ignore_accent_color_for_small_image = true;
+    // ChromeOS: Enables web app theme color only if monochrome web app icon
+    // has been specified. `badge` Notifications API icons must be masked with
+    // the accent color.
+    optional_fields.ignore_accent_color_for_small_image = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   message_center::NotifierId notifier_id(
       origin, web_app_icon_and_title

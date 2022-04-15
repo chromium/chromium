@@ -415,16 +415,9 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !BUILDFLAG(IS_ANDROID)
-
-class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
-    : public PlatformNotificationServiceTest {
- protected:
-  PlatformNotificationServiceTest_WebAppNotificationIconAndTitle() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsNotificationIconAndTitle);
-  }
-};
+#if BUILDFLAG(IS_CHROMEOS)
+using PlatformNotificationServiceTest_WebAppNotificationIconAndTitle =
+    PlatformNotificationServiceTest;
 
 TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
        FindWebAppIconAndTitle_NoApp) {
@@ -470,5 +463,4 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       SK_ColorTRANSPARENT,
       icon_and_title->icon.GetRepresentation(1.0f).GetBitmap().getColor(0, 0));
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
