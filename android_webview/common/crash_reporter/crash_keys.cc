@@ -145,6 +145,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "variations",
     "num-experiments",
 
+    // sandbox/linux
+    "seccomp-sigsys",
+
     kWeblayerWebViewCompatMode,
 
     nullptr};
