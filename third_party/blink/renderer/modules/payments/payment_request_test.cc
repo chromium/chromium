@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"

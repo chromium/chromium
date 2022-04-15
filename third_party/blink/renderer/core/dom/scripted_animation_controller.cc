@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"

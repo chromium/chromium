@@ -24,7 +24,6 @@
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -59,6 +58,7 @@ namespace blink {
 
 class KURL;
 class WebDocumentLoader;
+class WebServiceWorkerNetworkProvider;
 
 // This structure holds all information collected by Blink when
 // navigation is being initiated.
