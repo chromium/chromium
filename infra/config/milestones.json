@@ -23,5 +23,10 @@
         "name": "m101",
         "project": "chromium-m101",
         "ref": "refs/branch-heads/4951"
+    },
+    "102": {
+        "name": "m102",
+        "project": "chromium-m102",
+        "ref": "refs/branch-heads/5005"
     }
 }
