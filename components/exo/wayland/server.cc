@@ -52,6 +52,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
 #include "components/exo/capabilities.h"
+#include "components/exo/common_utils.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/overlay_prioritizer.h"
 #include "components/exo/wayland/serial_tracker.h"
@@ -139,18 +140,6 @@ const char kWaylandSocketGroup[] = "wayland";
 // Directory name where all custom wayland sockets will live.
 constexpr base::FilePath::CharType kCustomServerDir[] =
     FILE_PATH_LITERAL("wayland");
-
-bool IsDrmAtomicAvailable() {
-#if defined(USE_OZONE)
-  auto& host_properties =
-      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
-  return host_properties.supports_overlays;
-#else
-  LOG(WARNING) << "Ozone disabled, cannot determine whether DrmAtomic is "
-                  "present. Assuming it is not";
-  return false;
-#endif
-}
 
 void wayland_log(const char* fmt, va_list argp) {
   LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
