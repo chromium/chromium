@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_async_file_util.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -110,10 +112,17 @@ void ArcContentFileSystemAsyncFileUtil::Truncate(
     const storage::FileSystemURL& url,
     int64_t length,
     StatusCallback callback) {
-  NOTIMPLEMENTED();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), base::File::FILE_ERROR_FAILED));
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  // Truncate() doesn't work well on ARC++ P.
+  // TODO(b/223247850) Fix this.
+  if (!IsArcVmEnabled()) {
+    NOTIMPLEMENTED();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::File::FILE_ERROR_FAILED));
+    return;
+  }
+  TruncateOnIOThread(FileSystemUrlToArcUrl(url), length, std::move(callback));
 }
 
 void ArcContentFileSystemAsyncFileUtil::CopyFileLocal(

@@ -7,11 +7,14 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -376,10 +379,22 @@ void ArcDocumentsProviderAsyncFileUtil::Truncate(
     int64_t length,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // TODO(b/223247850): Investigate whether Truncate() should be implemented
-  // after introducing write support in https://crrev.com/c/1490361.
-  NOTIMPLEMENTED();
-  std::move(callback).Run(base::File::FILE_OK);
+  // Truncate() doesn't work well on ARC++ P.
+  // TODO(b/223247850) Fix this.
+  if (!IsArcVmEnabled()) {
+    // HACK: Return FILE_OK even though we do nothing here.
+    // This is a really dirty hack which can result in corrupting file contents.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(base::File::FILE_OK);
+    return;
+  }
+  // Call TruncateOnIOThread() after ResolveToContentUrlOnIOThread().
+  ResolveToContentUrlOnIOThread(
+      url, base::BindOnce(
+               [](int64_t length, StatusCallback callback, const GURL& url) {
+                 TruncateOnIOThread(url, length, std::move(callback));
+               },
+               length, std::move(callback)));
 }
 
 void ArcDocumentsProviderAsyncFileUtil::CopyFileLocal(

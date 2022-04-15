@@ -13,7 +13,9 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -57,7 +59,7 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
 
   void SetUp() override {
     fake_file_system_.AddFile(
-        File(kArcUrl, kData, kMimeType, File::Seekable::NO));
+        File(kArcUrl, kData, kMimeType, File::Seekable::YES));
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
@@ -74,6 +76,10 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Before destroying objects, flush tasks posted to run
+    // ArcFileSystemOperationRunner::CloseFileSession().
+    task_environment_.RunUntilIdle();
+
     arc_service_manager_->arc_bridge_service()->file_system()->CloseInstance(
         &fake_file_system_);
   }
@@ -119,6 +125,31 @@ TEST_F(ArcContentFileSystemAsyncFileUtilTest, GetFileInfo) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(ArcContentFileSystemAsyncFileUtilTest, Truncate) {
+  // Currently, truncate() is disabled if ARCVM is not enabled.
+  // For this test, just pretend ARCVM is enabled.
+  // TODO(b/223247850) Fix this.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+
+  GURL externalfile_url = ArcUrlToExternalFileUrl(GURL(kArcUrl));
+  const int64_t kLength = strlen(kData) / 2;
+
+  base::RunLoop run_loop;
+  async_file_util_->Truncate(
+      std::unique_ptr<storage::FileSystemOperationContext>(),
+      ExternalFileURLToFileSystemURL(externalfile_url), kLength,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, base::File::Error error) {
+            EXPECT_EQ(base::File::FILE_OK, error);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+
+  EXPECT_EQ(fake_file_system_.GetFileContent(kArcUrl).size(), kLength);
 }
 
 }  // namespace arc
