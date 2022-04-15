@@ -54880,6 +54880,7 @@ from previous Chrome versions.
   <int value="-286603268" label="hide-android-files-in-files-app"/>
   <int value="-284547865" label="UnifiedConsent:enabled"/>
   <int value="-284328071" label="LocalWebApprovals:enabled"/>
+  <int value="-284279318" label="LacrosMoveProfileMigration:enabled"/>
   <int value="-283388027" label="ManualFallbacksFilling:disabled"/>
   <int value="-283079109" label="TouchToFillPasswordSubmission:enabled"/>
   <int value="-283024110" label="WebXRPlaneDetection:disabled"/>
@@ -56557,6 +56558,7 @@ from previous Chrome versions.
   <int value="860336036" label="ChromeModernDesign:enabled"/>
   <int value="861351290" label="FontManagerEarlyInit:enabled"/>
   <int value="862453793" label="TranslateUI2016Q2:enabled"/>
+  <int value="863493664" label="LacrosMoveProfileMigration:disabled"/>
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
   <int value="867512869" label="mark-non-secure-as"/>

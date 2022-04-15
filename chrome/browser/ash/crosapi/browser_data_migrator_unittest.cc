@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -205,7 +206,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDiskForCopy) {
 }
 
 TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDiskForMove) {
-  base::test::ScopedFeatureList feature_list(kLacrosMoveProfileMigration);
+  base::test::ScopedFeatureList feature_list(
+      ash::features::kLacrosMoveProfileMigration);
 
   // Emulate the situation of out-of-disk.
   browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting

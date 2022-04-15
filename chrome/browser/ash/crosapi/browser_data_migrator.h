@@ -42,11 +42,6 @@ constexpr char kMigrationAttemptCountPref[] =
 // after
 constexpr int kMaxMigrationAttemptCount = 3;
 
-// If enabled, use `MoveMigrator` instead of `CopyMigrator` to migrate data.
-// `MoveMigrator` moves data from ash to lacros instead of copying them.
-const base::Feature kLacrosMoveProfileMigration{
-    "LacrosMoveProfileMigration", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Injects the restart function called from
 // `BrowserDataMigratorImpl::AttemptRestart()` in RAII manner.
 class ScopedRestartAttemptForTesting {

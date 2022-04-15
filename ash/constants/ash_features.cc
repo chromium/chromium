@@ -892,6 +892,11 @@ const base::Feature kLacrosProfileMigrationForceOff{
 const base::Feature kLacrosProfileMigrationForAnyUser{
     "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, use `MoveMigrator` instead of `CopyMigrator` to migrate data.
+// `MoveMigrator` moves data from ash to lacros instead of copying them.
+const base::Feature kLacrosMoveProfileMigration{
+    "LacrosMoveProfileMigration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the second language settings update.
 const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

@@ -2826,6 +2826,9 @@ extern const char kImeAssistMultiWordLacrosSupportDescription[];
 extern const char kLacrosProfileMigrationForAnyUserName[];
 extern const char kLacrosProfileMigrationForAnyUserDescription[];
 
+extern const char kLacrosMoveProfileMigrationName[];
+extern const char kLacrosMoveProfileMigrationDescription[];
+
 extern const char kLacrosProfileMigrationForceOffName[];
 extern const char kLacrosProfileMigrationForceOffDescription[];
 
