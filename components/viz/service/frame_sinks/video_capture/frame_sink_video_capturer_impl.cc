@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -30,7 +29,6 @@
 #include "components/viz/service/frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.h"
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 #include "media/base/limits.h"
-#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -39,7 +37,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 using media::VideoCaptureOracle;
@@ -857,7 +854,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     }
 
     OnFrameReadyForDelivery(capture_frame_number, oracle_frame_number,
-                            content_rect, std::move(frame), nullptr);
+                            content_rect, std::move(frame));
     return;
   }
 
@@ -869,9 +866,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // Extreme edge-case: If somehow the source size is so tiny that the content
   // region becomes empty, just deliver a frame filled with black.
   if (content_rect.IsEmpty()) {
-    auto wrapped_frame = frame;
-    frame = media::VideoFrame::WrapVideoFrame(
-        wrapped_frame, wrapped_frame->format(), gfx::Rect{}, gfx::Size{});
+    media::LetterboxVideoFrame(frame.get(), gfx::Rect());
 
     if (pixel_format_ == media::PIXEL_FORMAT_I420 ||
         pixel_format_ == media::PIXEL_FORMAT_NV12) {
@@ -883,8 +878,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
     dirty_rect_ = gfx::Rect();
     OnFrameReadyForDelivery(capture_frame_number, oracle_frame_number,
-                            gfx::Rect(), std::move(frame),
-                            std::move(wrapped_frame));
+                            gfx::Rect(), std::move(frame));
     return;
   }
 
@@ -1118,7 +1112,6 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     UMA_HISTOGRAM_CAPTURE_SUCCEEDED("NV12", !result->IsEmpty());
   }
 
-  scoped_refptr<media::VideoFrame> wrapped_frame;
   if (frame) {
     if (!frame->HasGpuMemoryBuffer()) {
       // For GMB-backed video frames, overlays were already applied by
@@ -1134,39 +1127,31 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       }
     }
 
-    if (ShouldMark(*frame, properties.content_version)) {
-      MarkFrame(frame, properties.content_version);
-    }
-
     // The result may be smaller than what was requested, if unforeseen
     // clamping to the source boundaries occurred by the executor of the
     // CopyOutputRequest. However, the result should never contain more than
     // what was requested.
     DCHECK_LE(result->size().width(), content_rect.width());
     DCHECK_LE(result->size().height(), content_rect.height());
+    media::LetterboxVideoFrame(
+        frame.get(), gfx::Rect(content_rect.origin(),
+                               AdjustSizeForPixelFormat(result->size())));
 
-    const gfx::Rect letterbox_rect = gfx::Rect(
-        content_rect.origin(), AdjustSizeForPixelFormat(result->size()));
-    if (letterbox_rect != frame->visible_rect()) {
-      wrapped_frame = frame;
-      frame = media::VideoFrame::WrapVideoFrame(
-          wrapped_frame, wrapped_frame->format(), letterbox_rect,
-          wrapped_frame->natural_size());
-      frame->set_color_space(wrapped_frame->ColorSpace());
+    if (ShouldMark(*frame, properties.content_version)) {
+      MarkFrame(frame, properties.content_version);
     }
   }
 
   OnFrameReadyForDelivery(properties.capture_frame_number,
                           properties.oracle_frame_number, content_rect,
-                          std::move(frame), std::move(wrapped_frame));
+                          std::move(frame));
 }
 
 void FrameSinkVideoCapturerImpl::OnFrameReadyForDelivery(
     int64_t capture_frame_number,
     OracleFrameNumber oracle_frame_number,
     const gfx::Rect& content_rect,
-    scoped_refptr<VideoFrame> frame,
-    scoped_refptr<VideoFrame> wrapped_frame) {
+    scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(capture_frame_number, next_delivery_frame_number_);
 
@@ -1196,13 +1181,12 @@ void FrameSinkVideoCapturerImpl::OnFrameReadyForDelivery(
   // Ensure frames are delivered in-order by using a min-heap, and only
   // deliver the next frame(s) in-sequence when they are found at the top.
   delivery_queue_.emplace(capture_frame_number, oracle_frame_number,
-                          content_rect, std::move(frame),
-                          std::move(wrapped_frame));
-  while (delivery_queue_.top().capture_frame_number() ==
+                          content_rect, std::move(frame));
+  while (delivery_queue_.top().capture_frame_number ==
          next_delivery_frame_number_) {
     auto& next = delivery_queue_.top();
-    MaybeDeliverFrame(next.oracle_frame_number(), next.content_rect(),
-                      next.frame(), next.wrapped_frame());
+    MaybeDeliverFrame(next.oracle_frame_number, next.content_rect,
+                      std::move(next.frame));
     ++next_delivery_frame_number_;
     delivery_queue_.pop();
     if (delivery_queue_.empty()) {
@@ -1214,8 +1198,7 @@ void FrameSinkVideoCapturerImpl::OnFrameReadyForDelivery(
 void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     OracleFrameNumber oracle_frame_number,
     const gfx::Rect& content_rect,
-    scoped_refptr<VideoFrame> frame,
-    scoped_refptr<VideoFrame> wrapped_frame) {
+    scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The Oracle has the final say in whether frame delivery will proceed. It
@@ -1248,8 +1231,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
 
   // Clone a handle to the shared memory backing the populated video frame, to
   // send to the consumer.
-  auto handle = frame_pool_->CloneHandleForDelivery(
-      wrapped_frame ? *wrapped_frame : *frame);
+  auto handle = frame_pool_->CloneHandleForDelivery(*frame);
   DCHECK(handle);
   DCHECK(!handle->is_read_only_shmem_region() ||
          handle->get_read_only_shmem_region().IsValid());
@@ -1379,13 +1361,11 @@ FrameSinkVideoCapturerImpl::CapturedFrame::CapturedFrame(
     int64_t capture_frame_number,
     OracleFrameNumber oracle_frame_number,
     const gfx::Rect& content_rect,
-    scoped_refptr<media::VideoFrame> frame,
-    scoped_refptr<media::VideoFrame> wrapped_frame)
-    : capture_frame_number_(capture_frame_number),
-      oracle_frame_number_(oracle_frame_number),
-      content_rect_(content_rect),
-      frame_(std::move(frame)),
-      wrapped_frame_(std::move(wrapped_frame)) {}
+    scoped_refptr<media::VideoFrame> frame)
+    : capture_frame_number(capture_frame_number),
+      oracle_frame_number(oracle_frame_number),
+      content_rect(content_rect),
+      frame(std::move(frame)) {}
 
 FrameSinkVideoCapturerImpl::CapturedFrame::CapturedFrame(
     const CapturedFrame& other) = default;
@@ -1396,7 +1376,7 @@ bool FrameSinkVideoCapturerImpl::CapturedFrame::operator<(
     const FrameSinkVideoCapturerImpl::CapturedFrame& other) const {
   // Reverse the sort order; so std::priority_queue<CapturedFrame> becomes a
   // min-heap instead of a max-heap.
-  return other.capture_frame_number_ < capture_frame_number_;
+  return other.capture_frame_number < capture_frame_number;
 }
 
 }  // namespace viz
