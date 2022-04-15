@@ -7,17 +7,12 @@
  * injected only into main frame when it's loaded.
  */
 
-goog.provide('__crWeb.favicon');
-
-// Requires __crWeb.common.
+// Requires functions from common.js
 
 // Store namespace object in a global __gCrWeb object referenced by a string, so
 // it does not get renamed by closure compiler during the minification.
 __gCrWeb.favicon = {};
 __gCrWeb['favicon'] = __gCrWeb.favicon;
-
-/** Beginning of anonymous object */
-(function() {
 
 /**
  * Retrieves favicon information.
@@ -50,5 +45,3 @@ __gCrWeb.favicon.sendFaviconUrls = function() {
 };
 
 __gCrWeb.favicon.sendFaviconUrls();
-
-}());  // End of anonymous object

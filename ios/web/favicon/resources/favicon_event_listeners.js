@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('__crWeb.faviconEventListeners');
-
-// Requires __crWeb.favicon.
+// Requires functions from favicon.js
 
 window.addEventListener('hashchange', function(evt) {
   // Hash changes don't trigger __gCrWeb.didFinishNavigation, so fetch favicons

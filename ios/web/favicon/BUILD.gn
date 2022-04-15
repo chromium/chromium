@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("favicon") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -24,17 +24,17 @@ source_set("favicon") {
   ]
 }
 
-js_compile_bundle("favicon_js") {
+optimize_js("favicon_js") {
   visibility = [ ":favicon" ]
-  closure_entry_point = "__crWeb.favicon"
 
+  primary_script = "resources/favicon.js"
   sources = [ "resources/favicon.js" ]
 }
 
-js_compile_bundle("favicon_event_listeners_js") {
+optimize_js("favicon_event_listeners_js") {
   visibility = [ ":favicon" ]
-  closure_entry_point = "__crWeb.faviconEventListeners"
 
+  primary_script = "resources/favicon_event_listeners.js"
   sources = [ "resources/favicon_event_listeners.js" ]
 }
 

@@ -17,8 +17,8 @@
 #endif
 
 namespace {
-const char kScriptName[] = "favicon_js";
-const char kEventListenersScriptName[] = "favicon_event_listeners_js";
+const char kScriptName[] = "favicon";
+const char kEventListenersScriptName[] = "favicon_event_listeners";
 
 const char kFaviconScriptHandlerName[] = "FaviconUrlsHandler";
 
