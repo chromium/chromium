@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
+#include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/ukm/ukm_service.h"
@@ -25,7 +26,12 @@ UkmDatabaseClient& UkmDatabaseClient::GetInstance() {
   return *instance;
 }
 
-UkmDatabaseClient::UkmDatabaseClient() {
+UkmDatabaseClient::UkmDatabaseClient()
+    : ukm_observer_(std::make_unique<UkmObserver>(
+          g_browser_process->GetMetricsServicesManager()->GetUkmService(),
+          g_browser_process->local_state(),
+          g_browser_process->GetMetricsServicesManager()
+              ->IsUkmAllowedForAllProfiles())) {
   if (base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformUkmEngine)) {
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
@@ -47,23 +53,17 @@ void UkmDatabaseClient::PreProfileInit() {
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &local_data_dir);
   DCHECK(result);
   ukm_data_manager_->Initialize(
-      local_data_dir.Append(FILE_PATH_LITERAL("segmentation_platform/ukm_db")));
-
-  // Metrics service is created at PreCreateThreads, and should be available at
-  // PreProfileInit(). If this changes the metrics service is created on-demand,
-  // so will get created by calling GetMetricsServicesManager().
-  ukm_data_manager_->NotifyCanObserveUkm(
-      g_browser_process->GetMetricsServicesManager()->GetUkmService(),
-      g_browser_process->local_state());
+      local_data_dir.Append(FILE_PATH_LITERAL("segmentation_platform/ukm_db")),
+      ukm_observer_.get());
 }
 
 void UkmDatabaseClient::PostMessageLoopRun() {
   // UkmService is destroyed in BrowserProcessImpl::TearDown(), which happens
   // after all the extra main parts get PostMainMessageLoopRun(). So, it is safe
-  // to remove observer here. The profiles can still be active and
+  // to stop the observer here. The profiles can still be active and
   // UkmDataManager needs to be available. This does not tear down the
   // UkmDataManager, but only stops observing UKM.
-  ukm_data_manager_->StopObservingUkm();
+  ukm_observer_->StopObserving();
 }
 
 }  // namespace segmentation_platform

@@ -9,11 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-class PrefService;
 
 namespace segmentation_platform {
 
@@ -29,35 +26,36 @@ class UkmDataManagerImpl : public UkmDataManager {
   UkmDataManagerImpl(UkmDataManagerImpl&) = delete;
   UkmDataManagerImpl& operator=(UkmDataManagerImpl&) = delete;
 
-  void InitializeForTesting(std::unique_ptr<UkmDatabase> ukm_database);
-
-  // Gets the most recent time when UKM is allowed.
-  base::Time GetUkmMostRecentAllowedTime() const;
+  void InitializeForTesting(std::unique_ptr<UkmDatabase> ukm_database,
+                            UkmObserver* ukm_observer);
 
   // UkmDataManager implementation:
-  void Initialize(const base::FilePath& database_path) override;
+  void Initialize(const base::FilePath& database_path,
+                  UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
-  void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder,
-                           PrefService* pref_service) override;
   void StartObservingUkm(const UkmConfig& config) override;
   void PauseOrResumeObservation(bool pause) override;
-  void StopObservingUkm() override;
   UrlSignalHandler* GetOrCreateUrlHandler() override;
   UkmDatabase* GetUkmDatabase() override;
+  void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override;
+  void OnUkmSourceUpdated(ukm::SourceId source_id,
+                          const std::vector<GURL>& urls) override;
   void AddRef() override;
   void RemoveRef() override;
-  void OnUkmAllowedStateChanged(bool allowed) override;
 
  private:
+  // Helper method for initializing this object.
+  void InitiailizeImpl(std::unique_ptr<UkmDatabase> ukm_database,
+                       UkmObserver* ukm_observer);
+
   int ref_count_ = 0;
+  raw_ptr<UkmObserver> ukm_observer_ = nullptr;
   std::unique_ptr<UkmDatabase> ukm_database_;
   std::unique_ptr<UrlSignalHandler> url_signal_handler_;
-  std::unique_ptr<UkmObserver> ukm_observer_;
   std::unique_ptr<UkmConfig> pending_ukm_config_;
 
   absl::optional<bool> is_ukm_allowed_;
 
-  raw_ptr<PrefService> prefs_ = nullptr;
   SEQUENCE_CHECKER(sequence_check_);
 };
 

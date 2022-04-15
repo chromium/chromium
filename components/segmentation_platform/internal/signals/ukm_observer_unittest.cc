@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
@@ -66,20 +67,14 @@ class UkmObserverTest : public testing::Test {
   ~UkmObserverTest() override = default;
 
   void SetUp() override {
-    ukm_database_ = std::make_unique<MockUkmDatabase>();
-    url_signal_handler_ =
-        std::make_unique<UrlSignalHandler>(ukm_database_.get());
+    SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    ukm_observer_ = std::make_unique<UkmObserver>(
-        ukm_recorder_.get(), ukm_database_.get(), url_signal_handler_.get(),
-        &ukm_data_manager_);
+    InitializeUkmObserver(true /*is_ukm_allowed*/);
   }
 
   void TearDown() override {
     ukm_observer_.reset();
     ukm_recorder_.reset();
-    url_signal_handler_.reset();
-    ukm_database_.reset();
   }
 
   void ExpectUkmEventFromRecorder(ukm::mojom::UkmEntryPtr entry) {
@@ -95,18 +90,29 @@ class UkmObserverTest : public testing::Test {
     wait_for_record.Run();
   }
 
+  void InitializeUkmObserver(bool is_ukm_allowed) {
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get(), &prefs_,
+                                                  is_ukm_allowed);
+    auto ukm_database = std::make_unique<MockUkmDatabase>();
+    ukm_database_ = ukm_database.get();
+    ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
+    ukm_data_manager_->InitializeForTesting(std::move(ukm_database),
+                                            ukm_observer_.get());
+  }
+
   UkmObserver& ukm_observer() { return *ukm_observer_; }
   ukm::TestUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
   MockUkmDatabase& ukm_database() { return *ukm_database_; }
+  UkmDataManagerImpl& ukm_data_manager() { return *ukm_data_manager_; }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<MockUkmDatabase> ukm_database_;
-  std::unique_ptr<UrlSignalHandler> url_signal_handler_;
   std::unique_ptr<ukm::TestUkmRecorder> ukm_recorder_;
   std::unique_ptr<UkmObserver> ukm_observer_;
-  UkmDataManagerImpl ukm_data_manager_;
+  base::raw_ptr<MockUkmDatabase> ukm_database_;
+  std::unique_ptr<UkmDataManagerImpl> ukm_data_manager_;
+  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(UkmObserverTest, EmptyConfig) {
@@ -214,7 +220,7 @@ TEST_F(UkmObserverTest, ObservationFromRecorder) {
   config.AddEvent(TestEvent(PageLoad::kEntryNameHash),
                   {TestMetric(PageLoad::kCpuTimeNameHash),
                    TestMetric(PageLoad::kIsNewBookmarkNameHash)});
-  observer.StartObserving(config);
+  ukm_data_manager().StartObservingUkm(config);
 
   ExpectUkmEventFromRecorder(GetSamplePageLoadEntry());
 
@@ -237,6 +243,34 @@ TEST_F(UkmObserverTest, ObservationFromRecorder) {
 
   ExpectUkmEventFromRecorder(GetSamplePageLoadEntry());
   ExpectUkmEventFromRecorder(GetSamplePaintPreviewEntry());
+}
+
+// Tests that the most recent time for UKM allowed state is correctly set and
+// read.
+TEST_F(UkmObserverTest, GetUkmMostRecentAllowedTime) {
+  // Without pref entry, the |is_ukm_allowed| param passed to UkmObserver ctor
+  // will determine the value to be returned.
+  EXPECT_LE(ukm_observer().GetUkmMostRecentAllowedTime(), base::Time::Now());
+  InitializeUkmObserver(false /*is_ukm_allowed*/);
+  UkmObserver& observer = ukm_observer();
+  EXPECT_EQ(base::Time::Max(), observer.GetUkmMostRecentAllowedTime());
+
+  observer.OnUkmAllowedStateChanged(true);
+  EXPECT_LE(ukm_observer().GetUkmMostRecentAllowedTime(), base::Time::Now());
+
+  // Change the allowed state to false, the start time should now be set to
+  // Time::Max().
+  ukm_recorder().OnUkmAllowedStateChanged(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::Time::Max(), observer.GetUkmMostRecentAllowedTime());
+
+  // Change the allowed state to true, the new start time should be close to
+  // now.
+  base::Time now = base::Time::Now();
+  ukm_recorder().OnUkmAllowedStateChanged(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_LE(now, observer.GetUkmMostRecentAllowedTime());
+  EXPECT_LE(observer.GetUkmMostRecentAllowedTime(), base::Time::Now());
 }
 
 }  // namespace segmentation_platform

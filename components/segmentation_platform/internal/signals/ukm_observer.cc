@@ -7,9 +7,9 @@
 #include <cstdint>
 
 #include "base/rand_util.h"
-#include "components/segmentation_platform/internal/database/ukm_database.h"
+#include "components/prefs/pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
-#include "components/segmentation_platform/internal/signals/url_signal_handler.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -17,20 +17,19 @@
 namespace segmentation_platform {
 
 UkmObserver::UkmObserver(ukm::UkmRecorderImpl* ukm_recorder,
-                         UkmDatabase* ukm_database,
-                         UrlSignalHandler* url_signal_handler,
-                         UkmDataManagerImpl* ukm_data_manager)
-    : ukm_database_(ukm_database),
-      url_signal_handler_(url_signal_handler),
-      ukm_recorder_(ukm_recorder),
-      ukm_data_manager_(ukm_data_manager) {
+                         PrefService* pref_service,
+                         bool is_ukm_allowed)
+    : ukm_recorder_(ukm_recorder),
+      pref_service_(pref_service),
+      ukm_data_manager_(nullptr) {
   // Listen to |OnUkmAllowedStateChanged| event.
+  OnUkmAllowedStateChanged(is_ukm_allowed);
   ukm_recorder_->AddUkmRecorderObserver(base::flat_set<uint64_t>(), this);
 }
 
 UkmObserver::~UkmObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  ukm_recorder_->RemoveUkmRecorderObserver(this);
+  StopObserving();
 }
 
 void UkmObserver::StartObserving(const UkmConfig& config) {
@@ -48,9 +47,14 @@ void UkmObserver::StartObserving(const UkmConfig& config) {
   ukm_recorder_->AddUkmRecorderObserver(config_->GetRawObservedEvents(), this);
 }
 
+void UkmObserver::StopObserving() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  ukm_recorder_->RemoveUkmRecorderObserver(this);
+}
+
 void UkmObserver::OnEntryAdded(ukm::mojom::UkmEntryPtr entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  if (paused_)
+  if (paused_ || !ukm_data_manager_)
     return;
 
   // Remove any metric from the entry that is not observed.
@@ -65,16 +69,16 @@ void UkmObserver::OnEntryAdded(ukm::mojom::UkmEntryPtr entry) {
       entry->metrics.erase(metric_and_value);
     }
   }
-  ukm_database_->StoreUkmEntry(std::move(entry));
+  ukm_data_manager_->OnEntryAdded(std::move(entry));
 }
 
 void UkmObserver::OnUpdateSourceURL(ukm::SourceId source_id,
                                     const std::vector<GURL>& urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  if (paused_)
+  if (paused_ || !ukm_data_manager_)
     return;
 
-  url_signal_handler_->OnUkmSourceUpdated(source_id, urls);
+  ukm_data_manager_->OnUkmSourceUpdated(source_id, urls);
 }
 
 void UkmObserver::PauseOrResumeObservation(bool pause) {
@@ -83,7 +87,24 @@ void UkmObserver::PauseOrResumeObservation(bool pause) {
 }
 
 void UkmObserver::OnUkmAllowedStateChanged(bool allowed) {
-  ukm_data_manager_->OnUkmAllowedStateChanged(allowed);
+  base::Time most_recent_allowed = GetUkmMostRecentAllowedTime();
+  if (!allowed) {
+    if (most_recent_allowed != base::Time::Max()) {
+      pref_service_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
+                             base::Time::Max());
+    }
+    return;
+  }
+  // Update the most recent allowed time if needed.
+  if (most_recent_allowed.is_null() ||
+      most_recent_allowed == base::Time::Max()) {
+    pref_service_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
+                           base::Time::Now());
+  }
+}
+
+base::Time UkmObserver::GetUkmMostRecentAllowedTime() const {
+  return pref_service_->GetTime(kSegmentationUkmMostRecentAllowedTimeKey);
 }
 
 }  // namespace segmentation_platform

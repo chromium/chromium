@@ -9,7 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "components/ukm/ukm_recorder_observer.h"
+
+class PrefService;
 
 namespace ukm {
 class UkmRecorderImpl;
@@ -17,19 +20,16 @@ class UkmRecorderImpl;
 
 namespace segmentation_platform {
 
-class UkmDatabase;
-class UrlSignalHandler;
 class UkmConfig;
 class UkmDataManagerImpl;
 
-// Observes UKM metrics and URL source and stores the relevant data in UKM
-// database.
+// Observes UKM metrics and URL source and calls UKMDataManager on new
+// entries or on source URL changes.
 class UkmObserver : public ukm::UkmRecorderObserver {
  public:
   UkmObserver(ukm::UkmRecorderImpl* ukm_recorder,
-              UkmDatabase* ukm_database,
-              UrlSignalHandler* url_signal_handler,
-              UkmDataManagerImpl* ukm_data_manager);
+              PrefService* pref_service,
+              bool is_ukm_allowed);
   ~UkmObserver() override;
 
   UkmObserver(UkmObserver&) = delete;
@@ -44,28 +44,34 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   // database when paused.
   void PauseOrResumeObservation(bool pause);
 
+  // Stop observing |ukm_recorder_|.
+  void StopObserving();
+
+  // Gets the most recent time when UKM is allowed.
+  base::Time GetUkmMostRecentAllowedTime() const;
+
   // UkmRecorderObserver implementation:
   void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override;
   void OnUpdateSourceURL(ukm::SourceId source_id,
                          const std::vector<GURL>& urls) override;
   void OnUkmAllowedStateChanged(bool allowed) override;
 
+  void set_ukm_data_manager(UkmDataManagerImpl* ukm_data_manager) {
+    ukm_data_manager_ = ukm_data_manager;
+  }
+
  private:
-  // Owned by UkmDataManagerImpl. The manager guarantees that database is
-  // deleted after observer.
-  raw_ptr<UkmDatabase> ukm_database_;
-  // Owned by UkmDataManagerImpl. The manager guarantees that handler is deleted
-  // after observer.
-  raw_ptr<UrlSignalHandler> url_signal_handler_;
   // UkmDataManagerImpl destroys this observer before the UKM service is
   // destroyed.
   raw_ptr<ukm::UkmRecorderImpl> const ukm_recorder_;
+
+  raw_ptr<PrefService> pref_service_;
 
   // Currently observed config.
   std::unique_ptr<UkmConfig> config_;
   bool paused_ = false;
 
-  // Class that owns this object.
+  // Class that is notified on new entries or on source URL change.
   raw_ptr<UkmDataManagerImpl> ukm_data_manager_;
 
   SEQUENCE_CHECKER(sequence_check_);

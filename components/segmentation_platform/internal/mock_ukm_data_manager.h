@@ -19,30 +19,28 @@ class MockUkmDataManager : public UkmDataManager {
 
   MOCK_METHOD(void,
               Initialize,
-              (const base::FilePath& database_path),
+              (const base::FilePath& database_path, UkmObserver*),
               (override));
 
   MOCK_METHOD(bool, IsUkmEngineEnabled, (), (override));
-
-  MOCK_METHOD(void,
-              NotifyCanObserveUkm,
-              (ukm::UkmRecorderImpl * ukm_recorder, PrefService* pref_service),
-              (override));
 
   MOCK_METHOD(void, StartObservingUkm, (const UkmConfig& config), (override));
 
   MOCK_METHOD(void, PauseOrResumeObservation, (bool pause), (override));
 
-  MOCK_METHOD(void, StopObservingUkm, (), (override));
-
   MOCK_METHOD(UrlSignalHandler*, GetOrCreateUrlHandler, (), (override));
 
   MOCK_METHOD(UkmDatabase*, GetUkmDatabase, (), (override));
 
+  MOCK_METHOD(void, OnEntryAdded, (ukm::mojom::UkmEntryPtr), (override));
+
+  MOCK_METHOD(void,
+              OnUkmSourceUpdated,
+              (ukm::SourceId, const std::vector<GURL>&),
+              (override));
+
   MOCK_METHOD(void, AddRef, (), (override));
   MOCK_METHOD(void, RemoveRef, (), (override));
-
-  MOCK_METHOD(void, OnUkmAllowedStateChanged, (bool allowed), (override));
 };
 
 }  // namespace segmentation_platform

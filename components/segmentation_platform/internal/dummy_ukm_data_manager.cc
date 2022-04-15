@@ -11,21 +11,16 @@ namespace segmentation_platform {
 DummyUkmDataManager::DummyUkmDataManager() = default;
 DummyUkmDataManager::~DummyUkmDataManager() = default;
 
-void DummyUkmDataManager::Initialize(const base::FilePath& database_path) {}
+void DummyUkmDataManager::Initialize(const base::FilePath& database_path,
+                                     UkmObserver* ukm_observer) {}
 
 bool DummyUkmDataManager::IsUkmEngineEnabled() {
   return false;
 }
 
-void DummyUkmDataManager::NotifyCanObserveUkm(
-    ukm::UkmRecorderImpl* ukm_recorder,
-    PrefService* pref_service) {}
-
 void DummyUkmDataManager::StartObservingUkm(const UkmConfig& config) {}
 
 void DummyUkmDataManager::PauseOrResumeObservation(bool pause) {}
-
-void DummyUkmDataManager::StopObservingUkm() {}
 
 UrlSignalHandler* DummyUkmDataManager::GetOrCreateUrlHandler() {
   NOTREACHED();
@@ -37,10 +32,13 @@ UkmDatabase* DummyUkmDataManager::GetUkmDatabase() {
   return nullptr;
 }
 
+void DummyUkmDataManager::OnEntryAdded(ukm::mojom::UkmEntryPtr entry) {}
+
+void DummyUkmDataManager::OnUkmSourceUpdated(ukm::SourceId source_id,
+                                             const std::vector<GURL>& urls) {}
+
 void DummyUkmDataManager::AddRef() {}
 
 void DummyUkmDataManager::RemoveRef() {}
-
-void DummyUkmDataManager::OnUkmAllowedStateChanged(bool allowed) {}
 
 }  // namespace segmentation_platform

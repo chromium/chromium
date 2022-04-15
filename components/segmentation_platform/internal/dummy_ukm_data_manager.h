@@ -20,18 +20,18 @@ class DummyUkmDataManager : public UkmDataManager {
   DummyUkmDataManager& operator=(DummyUkmDataManager&) = delete;
 
   // UkmDataManager implementation:
-  void Initialize(const base::FilePath& database_path) override;
+  void Initialize(const base::FilePath& database_path,
+                  UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
-  void NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder,
-                           PrefService* pref_service) override;
   void StartObservingUkm(const UkmConfig& config) override;
   void PauseOrResumeObservation(bool pause) override;
-  void StopObservingUkm() override;
   UrlSignalHandler* GetOrCreateUrlHandler() override;
   UkmDatabase* GetUkmDatabase() override;
+  void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override;
+  void OnUkmSourceUpdated(ukm::SourceId source_id,
+                          const std::vector<GURL>& urls) override;
   void AddRef() override;
   void RemoveRef() override;
-  void OnUkmAllowedStateChanged(bool allowed) override;
 };
 
 }  // namespace segmentation_platform

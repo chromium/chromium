@@ -5,8 +5,6 @@
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 
 #include "base/check_op.h"
-#include "components/prefs/pref_service.h"
-#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
@@ -20,23 +18,32 @@ UkmDataManagerImpl::~UkmDataManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK_EQ(ref_count_, 0);
 
-  // UKM observer should be destroyed earlier since it uses the database.
-  DCHECK(!ukm_observer_);
   url_signal_handler_.reset();
   ukm_database_.reset();
 }
 
 void UkmDataManagerImpl::InitializeForTesting(
-    std::unique_ptr<UkmDatabase> ukm_database) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  DCHECK(!ukm_database_);
-  ukm_database_ = std::move(ukm_database);
+    std::unique_ptr<UkmDatabase> ukm_database,
+    UkmObserver* ukm_observer) {
+  InitiailizeImpl(std::move(ukm_database), ukm_observer);
 }
 
-void UkmDataManagerImpl::Initialize(const base::FilePath& database_path) {
+void UkmDataManagerImpl::Initialize(const base::FilePath& database_path,
+                                    UkmObserver* ukm_observer) {
+  InitiailizeImpl(std::make_unique<UkmDatabase>(database_path), ukm_observer);
+}
+
+void UkmDataManagerImpl::InitiailizeImpl(
+    std::unique_ptr<UkmDatabase> ukm_database,
+    UkmObserver* ukm_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK(!ukm_database_);
-  ukm_database_ = std::make_unique<UkmDatabase>(database_path);
+  DCHECK(!ukm_observer_);
+
+  ukm_observer_ = ukm_observer;
+  ukm_observer_->set_ukm_data_manager(this);
+  ukm_database_ = std::move(ukm_database);
+  GetOrCreateUrlHandler();
 }
 
 bool UkmDataManagerImpl::IsUkmEngineEnabled() {
@@ -54,31 +61,9 @@ UrlSignalHandler* UkmDataManagerImpl::GetOrCreateUrlHandler() {
   return url_signal_handler_.get();
 }
 
-void UkmDataManagerImpl::NotifyCanObserveUkm(ukm::UkmRecorderImpl* ukm_recorder,
-                                             PrefService* pref_service) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  DCHECK(ukm_database_);
-  ukm_observer_ = std::make_unique<UkmObserver>(
-      ukm_recorder, ukm_database_.get(), GetOrCreateUrlHandler(), this);
-  if (pending_ukm_config_) {
-    ukm_observer_->StartObserving(*pending_ukm_config_);
-    pending_ukm_config_.reset();
-  }
-  prefs_ = pref_service;
-  if (is_ukm_allowed_.has_value()) {
-    OnUkmAllowedStateChanged(is_ukm_allowed_.value());
-  }
-}
-
 void UkmDataManagerImpl::StartObservingUkm(const UkmConfig& ukm_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  if (ukm_observer_) {
-    ukm_observer_->StartObserving(ukm_config);
-  } else {
-    if (!pending_ukm_config_)
-      pending_ukm_config_ = std::make_unique<UkmConfig>();
-    pending_ukm_config_->Merge(ukm_config);
-  }
+  ukm_observer_->StartObserving(ukm_config);
 }
 
 void UkmDataManagerImpl::PauseOrResumeObservation(bool pause) {
@@ -86,20 +71,20 @@ void UkmDataManagerImpl::PauseOrResumeObservation(bool pause) {
   ukm_observer_->PauseOrResumeObservation(pause);
 }
 
-void UkmDataManagerImpl::StopObservingUkm() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
-  if (!ukm_observer_)
-    return;
-
-  DCHECK(ukm_database_);
-  DCHECK(url_signal_handler_);
-  ukm_observer_.reset();
-}
-
 UkmDatabase* UkmDataManagerImpl::GetUkmDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK(ukm_database_);
   return ukm_database_.get();
+}
+
+void UkmDataManagerImpl::OnEntryAdded(ukm::mojom::UkmEntryPtr entry) {
+  ukm_database_->StoreUkmEntry(std::move(entry));
+}
+
+void UkmDataManagerImpl::OnUkmSourceUpdated(ukm::SourceId source_id,
+                                            const std::vector<GURL>& urls) {
+  if (url_signal_handler_)
+    url_signal_handler_->OnUkmSourceUpdated(source_id, urls);
 }
 
 void UkmDataManagerImpl::AddRef() {
@@ -111,32 +96,6 @@ void UkmDataManagerImpl::RemoveRef() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK_GT(ref_count_, 0);
   ref_count_--;
-}
-
-void UkmDataManagerImpl::OnUkmAllowedStateChanged(bool allowed) {
-  if (!prefs_) {
-    is_ukm_allowed_ = allowed;
-    return;
-  }
-
-  if (!allowed) {
-    prefs_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
-                    base::Time::Max());
-    return;
-  }
-  // Update the most recent allowed time if needed.
-  base::Time most_recent_allowed = GetUkmMostRecentAllowedTime();
-  if (most_recent_allowed.is_null() ||
-      most_recent_allowed == base::Time::Max()) {
-    prefs_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
-                    base::Time::Now());
-  }
-}
-
-base::Time UkmDataManagerImpl::GetUkmMostRecentAllowedTime() const {
-  if (prefs_)
-    return prefs_->GetTime(kSegmentationUkmMostRecentAllowedTimeKey);
-  return base::Time::Max();
 }
 
 }  // namespace segmentation_platform

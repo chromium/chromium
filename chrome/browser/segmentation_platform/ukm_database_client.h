@@ -12,6 +12,7 @@
 
 namespace segmentation_platform {
 class UkmDataManager;
+class UkmObserver;
 
 // Provides UKM functionality to the segmentation platform service(s).
 class UkmDatabaseClient {
@@ -35,6 +36,7 @@ class UkmDatabaseClient {
   UkmDatabaseClient();
   ~UkmDatabaseClient();
 
+  std::unique_ptr<UkmObserver> ukm_observer_;
   std::unique_ptr<segmentation_platform::UkmDataManager> ukm_data_manager_;
 };
 

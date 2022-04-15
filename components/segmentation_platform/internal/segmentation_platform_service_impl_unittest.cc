@@ -16,13 +16,16 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_test_base.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
+#include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,10 +57,20 @@ class SegmentationPlatformServiceImplTest
       public SegmentationPlatformServiceTestBase {
  public:
   explicit SegmentationPlatformServiceImplTest(
-      std::unique_ptr<UkmDataManager> ukm_data_manager = nullptr)
-      : ukm_data_manager_(ukm_data_manager
-                              ? std::move(ukm_data_manager)
-                              : std::make_unique<UkmDataManagerImpl>()) {}
+      std::unique_ptr<UkmDataManager> ukm_data_manager = nullptr) {
+    if (ukm_data_manager) {
+      ukm_data_manager_ = std::move(ukm_data_manager);
+      return;
+    }
+    SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
+    ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    ukm_observer_ =
+        std::make_unique<UkmObserver>(ukm_recorder_.get(), &prefs_, true);
+    auto ukm_database = std::make_unique<MockUkmDatabase>();
+    static_cast<UkmDataManagerImpl*>(ukm_data_manager_.get())
+        ->InitializeForTesting(std::move(ukm_database), ukm_observer_.get());
+  }
 
   ~SegmentationPlatformServiceImplTest() override = default;
 
@@ -238,6 +251,9 @@ class SegmentationPlatformServiceImplTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockServiceProxyObserver observer_;
   std::unique_ptr<UkmDataManager> ukm_data_manager_;
+  std::unique_ptr<ukm::TestUkmRecorder> ukm_recorder_;
+  std::unique_ptr<UkmObserver> ukm_observer_;
+  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
