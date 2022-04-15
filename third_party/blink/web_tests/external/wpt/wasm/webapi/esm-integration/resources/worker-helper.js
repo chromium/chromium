@@ -1,1 +1,1 @@
-export const pm = DedicatedWorkerGlobalScope.postMessage;
+export function pm(x) { postMessage(x); }
