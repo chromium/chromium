@@ -407,26 +407,29 @@ static void U_CALLCONV TraceICUData(const void* context,
     }
     case UTRACE_UBRK_CREATE_LINE: {
       const char* lb_type = va_arg(args, const char*);
+      auto lb_type_len = std::strlen(lb_type);
       va_end(args);
       ICUCreateInstance value;
-      switch (lb_type[0]) {
-        case '\0':
-          value = ICUCreateInstance::kLineBreakIterator;
-          break;
-        case 'l':
-          DCHECK(strcmp(lb_type, "loose") == 0);
-          value = ICUCreateInstance::kLineBreakIteratorTypeLoose;
-          break;
-        case 'n':
-          DCHECK(strcmp(lb_type, "normal") == 0);
-          value = ICUCreateInstance::kLineBreakIteratorTypeNormal;
-          break;
-        case 's':
-          DCHECK(strcmp(lb_type, "strict") == 0);
-          value = ICUCreateInstance::kLineBreakIteratorTypeStrict;
-          break;
-        default:
-          return;
+      if (lb_type_len < 6) {
+        DCHECK(strcmp(lb_type, "line") == 0);
+        value = ICUCreateInstance::kLineBreakIterator;
+      } else {
+        switch (lb_type[5]) {
+          case 'l':
+            DCHECK(strcmp(lb_type, "line_loose") == 0);
+            value = ICUCreateInstance::kLineBreakIteratorTypeLoose;
+            break;
+          case 'n':
+            DCHECK(strcmp(lb_type, "line_normal") == 0);
+            value = ICUCreateInstance::kLineBreakIteratorTypeNormal;
+            break;
+          case 's':
+            DCHECK(strcmp(lb_type, "line_strict") == 0);
+            value = ICUCreateInstance::kLineBreakIteratorTypeStrict;
+            break;
+          default:
+            return;
+        }
       }
       base::UmaHistogramEnumeration(kICUCreateInstance, value);
       return;
