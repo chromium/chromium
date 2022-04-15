@@ -520,6 +520,15 @@ export class ShimlessRma extends ShimlessRmaBase {
       component = this.loadComponent_(this.currentPage_.componentIs);
     }
 
+    // A special case for the landing page, which has its own navigation
+    // buttons.
+    if (component.getStartedButtonClicked) {
+      component.getStartedButtonClicked = false;
+    }
+    if (component.landingCancelButtonClicked) {
+      component.landingCancelButtonClicked = false;
+    }
+
     this.hideAllComponents_();
     component.hidden = false;
     this.setAllButtonsState_(

@@ -71,6 +71,24 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
         value: false,
       },
 
+      /**
+       * After the Get Started button is clicked, true until the next state is
+       * processed. It is set back to false by shimless_rma.js.
+       */
+      getStartedButtonClicked: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * After the cancel button is clicked, true until the next state is
+       * processed. It is set back to false by shimless_rma.js.
+       */
+      landingCancelButtonClicked: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @protected */
       verificationFailedMessage_: {
         type: String,
@@ -113,6 +131,8 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   onGetStartedButtonClicked_(e) {
     e.preventDefault();
 
+    this.getStartedButtonClicked = true;
+
     executeThenTransitionState(this, () => {
       if (!this.verificationInProgress_) {
         return this.shimlessRmaService_.beginFinalization();
@@ -128,6 +148,8 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
    */
   onLandingCancelButtonClicked_(e) {
     e.preventDefault();
+
+    this.landingCancelButtonClicked = true;
 
     this.dispatchEvent(new CustomEvent(
         'click-cancel-button',
