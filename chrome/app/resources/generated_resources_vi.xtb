@@ -229,7 +229,7 @@
 <translation id="1225177025209879837">Đang xử lý yêu cầu...</translation>
 <translation id="1227507814927581609">Xác thực không thành công trong khi kết nối với "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Tính năng Bảo vệ thông thường đang bật. Để tăng cường khả năng bảo mật, hãy sử dụng chế độ bảo vệ nâng cao.</translation>
-<translation id="1231733316453485619">Bạn muốn bật tính năng đồng bộ hóa?</translation>
+<translation id="1231733316453485619">Bật tính năng đồng bộ hóa?</translation>
 <translation id="1232569758102978740">Không tên</translation>
 <translation id="1233497634904001272">Chạm lại vào khóa bảo mật để hoàn tất yêu cầu.</translation>
 <translation id="1233721473400465416">Ngôn ngữ</translation>
@@ -1872,7 +1872,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2889064240420137087">Mở đường liên kết bằng...</translation>
 <translation id="2891922230654533301">Dùng thiết bị của bạn để đăng nhập vào <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Trình duyệt mặc định</translation>
-<translation id="2893180576842394309">Google có thể sử dụng lịch sử của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp với bạn</translation>
+<translation id="2893180576842394309">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn</translation>
 <translation id="2894757982205307093">Thẻ mới trong nhóm</translation>
 <translation id="289695669188700754">ID Khoá: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Chế độ cài đặt tùy chỉnh này sẽ bị xóa khi bạn đóng tất cả Cửa sổ ẩn danh</translation>
@@ -5227,7 +5227,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="652492607360843641">Bạn đang kết nối mạng <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6528179044667508675">Ko làm phiền</translation>
-<translation id="652948702951888897">Lịch sử Chrome</translation>
+<translation id="652948702951888897">Nhật ký duyệt web trên Chrome</translation>
 <translation id="6530186581263215931">Các tùy chọn cài đặt này được quản trị viên của bạn yêu cầu buộc phải tuân theo</translation>
 <translation id="6531282281159901044">Giữ tệp nguy hiểm</translation>
 <translation id="6532101170117367231">Lưu vào Google Drive</translation>
@@ -5582,7 +5582,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="691106080621596509">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="SITE_GROUP_NAME" /> cũng như trong mọi trang web và ứng dụng đã cài đặt thuộc nhóm này</translation>
 <translation id="6911734910326569517">Mức sử dụng bộ nhớ</translation>
 <translation id="6912007319859991306">Mã PIN của SIM di động</translation>
-<translation id="691289340230098384">Lựa chọn ưu tiên về phụ đề</translation>
+<translation id="691289340230098384">Tuỳ chọn phụ đề</translation>
 <translation id="6914783257214138813">Bất cứ ai có thể xem tệp đã xuất đều có thể biết mật khẩu của bạn.</translation>
 <translation id="6916590542764765824">Quản lý các tiện ích</translation>
 <translation id="6919868320029503575">Mật khẩu yếu</translation>
