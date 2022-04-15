@@ -66,14 +66,6 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
   // Starts the download with given cookies.
   void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);
 
-  // Starts parsing data:// url. Separate code path is used because
-  // NSURLSession does not support data URLs.
-  void StartDataUrlParsing();
-
-  // Called when data:// url parsing has completed and the data has been
-  // written.
-  void OnDataUrlWritten(int bytes_written);
-
   // Called to implement the method -URLSession:task:didCompleteWithError:
   // from NSURLSessionDataDelegate.
   void OnTaskDone(NSURLSessionTask* task, NSError* error);

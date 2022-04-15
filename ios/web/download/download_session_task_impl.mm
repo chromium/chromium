@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -194,7 +195,9 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
                        total_bytes,
                        mime_type,
                        identifier,
-                       delegate) {}
+                       delegate) {
+  DCHECK(!original_url_.SchemeIs(url::kDataScheme));
+}
 
 DownloadSessionTaskImpl::~DownloadSessionTaskImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -290,8 +293,6 @@ void DownloadSessionTaskImpl::OnWriterInitialized(
 
   if (writer_initialization_status != net::OK) {
     OnWriterDownloadFinished(writer_initialization_status);
-  } else if (original_url_.SchemeIs(url::kDataScheme)) {
-    StartDataUrlParsing();
   } else {
     GetCookies(base::BindRepeating(&DownloadSessionTaskImpl::StartWithCookies,
                                    weak_factory_.GetWeakPtr()));
@@ -352,38 +353,6 @@ void DownloadSessionTaskImpl::StartWithCookies(
   session_task_ = [session_ dataTaskWithRequest:request];
   [session_task_ resume];
   OnDownloadUpdated();
-}
-
-void DownloadSessionTaskImpl::StartDataUrlParsing() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  mime_type_.clear();
-  std::string charset;
-  std::string data;
-  if (!net::DataURL::Parse(original_url_, &mime_type_, &charset, &data)) {
-    OnWriterDownloadFinished(net::ERR_INVALID_URL);
-    return;
-  }
-  auto callback = base::BindOnce(&DownloadSessionTaskImpl::OnDataUrlWritten,
-                                 weak_factory_.GetWeakPtr());
-  auto buffer = base::MakeRefCounted<net::IOBuffer>(data.size());
-  memcpy(buffer->data(), data.c_str(), data.size());
-  int written = writer_->Write(buffer.get(), data.size(), std::move(callback));
-  if (written != net::ERR_IO_PENDING) {
-    OnDataUrlWritten(written);
-  }
-}
-
-void DownloadSessionTaskImpl::OnDataUrlWritten(int bytes_written) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  percent_complete_ = 100;
-  total_bytes_ = bytes_written;
-  received_bytes_ = total_bytes_;
-  auto callback =
-      base::BindOnce(&DownloadSessionTaskImpl::OnWriterDownloadFinished,
-                     weak_factory_.GetWeakPtr());
-  if (writer_->Finish(net::OK, std::move(callback)) != net::ERR_IO_PENDING) {
-    OnWriterDownloadFinished(net::OK);
-  }
 }
 
 void DownloadSessionTaskImpl::OnTaskDone(NSURLSessionTask* task,

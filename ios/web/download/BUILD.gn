@@ -17,6 +17,8 @@ source_set("download") {
   ]
 
   sources = [
+    "data_url_download_task.h",
+    "data_url_download_task.mm",
     "download_controller_impl.h",
     "download_controller_impl.mm",
     "download_native_task_bridge.h",
@@ -77,6 +79,7 @@ source_set("download_unittests") {
   ]
 
   sources = [
+    "data_url_download_task_unittest.mm",
     "download_controller_impl_unittest.mm",
     "download_native_task_impl_unittest.mm",
     "download_session_cookie_storage_unittest.mm",

@@ -5,6 +5,7 @@
 #import "ios/web/download/download_controller_impl.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "ios/web/download/data_url_download_task.h"
 #import "ios/web/download/download_native_task_bridge.h"
 #import "ios/web/download/download_native_task_impl.h"
 #import "ios/web/download/download_session_cookie_storage.h"
@@ -62,9 +63,18 @@ void DownloadControllerImpl::CreateDownloadTask(
   if (!delegate_)
     return;
 
-  auto task = std::make_unique<DownloadSessionTaskImpl>(
-      web_state, original_url, http_method, content_disposition, total_bytes,
-      mime_type, identifier, this);
+  std::unique_ptr<DownloadTaskImpl> task;
+  if (original_url.SchemeIs(url::kDataScheme)) {
+    task = std::make_unique<DataUrlDownloadTask>(
+        web_state, original_url, http_method, content_disposition, total_bytes,
+        mime_type, identifier, this);
+  } else {
+    task = std::make_unique<DownloadSessionTaskImpl>(
+        web_state, original_url, http_method, content_disposition, total_bytes,
+        mime_type, identifier, this);
+  }
+  DCHECK(task);
+
   alive_tasks_.insert(task.get());
   delegate_->OnDownloadCreated(this, web_state, std::move(task));
 }
