@@ -1,9 +1,4 @@
 <style include="cr-shared-style shimless-rma-shared">
-  .small-icon {
-    height: 30px;
-    width: 30px;
-  }
-
   #nextButtonCaret {
     margin-inline-start: 5px;
   }
@@ -29,8 +24,8 @@
     <h1>[[i18n('welcomeTitleText')]]</h1>
     <div class="instructions">[[i18n('beginRmaWarningText')]]</div>
     <div id="verificationMessage">
-      <paper-spinner-lite id="busyIcon" hidden$="[[!verificationInProgress_]]"
-        active>
+      <paper-spinner-lite id="busyIcon" class="small-spinner"
+          hidden$="[[!verificationInProgress_]]" active>
       </paper-spinner-lite>
       <iron-icon id="verificationIcon"
         icon="[[getVerificationIcon_(isCompliant_)]]"
