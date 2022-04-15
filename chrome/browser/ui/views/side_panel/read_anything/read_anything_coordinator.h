@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
-#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 
 class Browser;
 class ReadAnythingController;
@@ -34,4 +34,4 @@ class ReadAnythingCoordinator {
   std::unique_ptr<ReadAnythingController> controller_;
   std::unique_ptr<ReadAnythingContainerView> container_view_;
 };
-#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_

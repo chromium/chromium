@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_coordinator.h"
-
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_container_view.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_controller.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_toolbar_view.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 

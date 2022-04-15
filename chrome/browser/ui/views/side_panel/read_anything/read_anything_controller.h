@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_coordinator.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_toolbar_view.h"
 
 class ReadAnythingController : public ReadAnythingToolbarView::Delegate {
  public:
@@ -27,4 +27,4 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate {
 
   base::WeakPtrFactory<ReadAnythingController> weak_pointer_factory_{this};
 };
-#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
