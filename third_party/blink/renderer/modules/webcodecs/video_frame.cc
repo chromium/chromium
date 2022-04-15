@@ -447,8 +447,7 @@ VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
 }
 
 VideoFrame::~VideoFrame() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -external_allocated_memory_);
+  ResetExternalMemory();
 }
 
 // static
@@ -1054,6 +1053,7 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
 
 void VideoFrame::close() {
   handle_->Invalidate();
+  ResetExternalMemory();
 }
 
 VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
@@ -1154,6 +1154,14 @@ bool VideoFrame::IsAccelerated() const {
                                      local_handle->frame().get());
   }
   return false;
+}
+
+void VideoFrame::ResetExternalMemory() {
+  if (external_allocated_memory_) {
+    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+        -external_allocated_memory_);
+    external_allocated_memory_ = 0;
+  }
 }
 
 gfx::Size VideoFrame::BitmapSourceSize() const {

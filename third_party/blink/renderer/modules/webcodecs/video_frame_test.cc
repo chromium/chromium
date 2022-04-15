@@ -524,6 +524,68 @@ TEST_F(VideoFrameTest, VideoFrameMonitoring) {
   EXPECT_TRUE(monitor.IsEmpty());
 }
 
+TEST_F(VideoFrameTest, TestExternalAllocatedMemoryIsReportedCorrectlyOnClose) {
+  V8TestingScope scope;
+
+  scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
+      base::Microseconds(1000), media::PIXEL_FORMAT_I420,
+      gfx::Size(112, 208) /* coded_size */,
+      gfx::Size(100, 200) /* visible_size */);
+
+  int64_t initial_external_memory =
+      v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0);
+
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
+
+  EXPECT_GT(v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  // Calling close should decrement externally allocated memory.
+  blink_frame->close();
+
+  EXPECT_EQ(v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  // Calling close another time should not decrement external memory twice.
+  blink_frame->close();
+
+  EXPECT_EQ(v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  blink_frame = nullptr;
+  blink::WebHeap::CollectAllGarbageForTesting();
+
+  // Check the destructor does not double decrement the external memory.
+  EXPECT_EQ(v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+}
+
+TEST_F(VideoFrameTest,
+       TestExternalAllocatedMemoryIsReportedCorrectlyOnDestruction) {
+  V8TestingScope scope;
+
+  scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
+      base::Microseconds(1000), media::PIXEL_FORMAT_I420,
+      gfx::Size(112, 208) /* coded_size */,
+      gfx::Size(100, 200) /* visible_size */);
+
+  int64_t initial_external_memory =
+      v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0);
+
+  CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
+
+  EXPECT_GT(v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+
+  blink::WebHeap::CollectAllGarbageForTesting();
+
+  // Check the destructor correctly decrements the reported
+  // externally allocated memory  when close has not been called before.
+  EXPECT_EQ(v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(0),
+            initial_external_memory);
+}
+
 }  // namespace
 
 }  // namespace blink

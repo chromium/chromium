@@ -132,6 +132,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
 
+  void ResetExternalMemory();
+
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   gfx::Size BitmapSourceSize() const override;
