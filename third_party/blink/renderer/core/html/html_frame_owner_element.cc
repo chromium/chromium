@@ -125,8 +125,20 @@ bool IsFrameLazyLoadable(ExecutionContext* context,
   return true;
 }
 
-bool ShouldLazilyLoadFrame(const Document& document,
-                           bool is_loading_attr_lazy) {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutomaticLazyLoadFrame {
+  kFeatureNotEnabled = 0,
+  kTargetFramesNotFound = 1,
+  kTargetFramesFound = 2,
+  kMaxValue = kTargetFramesFound,
+};
+
+bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
+                                           bool is_loading_attr_lazy,
+                                           bool is_eligible_for_lazy_embeds,
+                                           bool is_eligible_for_lazy_ads,
+                                           bool record_uma) {
   DCHECK(document.GetSettings());
   if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled() ||
       !document.GetSettings()->GetLazyLoadEnabled()) {
@@ -137,7 +149,38 @@ bool ShouldLazilyLoadFrame(const Document& document,
   if (!document.IsPageVisible())
     return false;
 
-  return is_loading_attr_lazy;
+  if (is_loading_attr_lazy)
+    return true;
+
+  if (record_uma) {
+    base::UmaHistogramEnumeration(
+        "Blink.AutomaticLazyLoadFrame",
+        !base::FeatureList::IsEnabled(
+            features::kAutomaticLazyFrameLoadingToEmbeds)
+            ? AutomaticLazyLoadFrame::kFeatureNotEnabled
+            : is_eligible_for_lazy_embeds
+                  ? AutomaticLazyLoadFrame::kTargetFramesFound
+                  : AutomaticLazyLoadFrame::kTargetFramesNotFound);
+  }
+
+  if (is_eligible_for_lazy_embeds)
+    document.TopDocument().IncrementLazyEmbedsFrameCount();
+
+  if (is_eligible_for_lazy_ads)
+    document.TopDocument().IncrementLazyAdsFrameCount();
+
+  if (is_eligible_for_lazy_embeds &&
+      base::FeatureList::IsEnabled(
+          features::kAutomaticLazyFrameLoadingToEmbeds)) {
+    return true;
+  }
+
+  if (is_eligible_for_lazy_ads &&
+      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds)) {
+    return true;
+  }
+
+  return false;
 }
 
 using AllowedListForLazyLoading =
@@ -155,7 +198,7 @@ ParseFieldParamForAutomaticLazyFrameLoadingToEmbeds() {
   WTF::Vector<WTF::String> parsed_strings;
   WTF::String(
       base::GetFieldTrialParamValueByFeature(
-          features::kAutomaticLazyFrameLoadingToEmbeds, "allowed_websites")
+          features::kAutomaticLazyFrameLoadingToEmbedUrls, "allowed_websites")
           .c_str())
       .Split(",", /*allow_empty_entries=*/false, parsed_strings);
   WTF::Vector<WTF::String> site_info;
@@ -177,26 +220,18 @@ const AllowedListForLazyLoading& AllowedWebsitesForLazyLoading() {
   return allowed_websites;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AutomaticLazyLoadFrame {
-  kFeatureNotEnabled = 0,
-  kTargetFramesNotFound = 1,
-  kTargetFramesFound = 2,
-  kMaxValue = kTargetFramesFound,
-};
-
-// Checks if the passed `url` is in the allowlist for automatic lazy-loading.
-// Returns true if the feature flag is enabled and the url is in the list.
-bool IsLazyLoadableUrl(KURL url) {
-  constexpr const char kAutomaticLazyLoadFrameHistogram[] =
-      "Blink.AutomaticLazyLoadFrame";
-  if (!base::FeatureList::IsEnabled(
+// Checks if the passed `url` is in the allowlist for automatic
+// lazy-loading. Returns true if the url is in the list.
+bool IsEligibleForLazyEmbeds(KURL url) {
+#if DCHECK_IS_ON()
+  if (base::FeatureList::IsEnabled(
           features::kAutomaticLazyFrameLoadingToEmbeds)) {
-    base::UmaHistogramEnumeration(kAutomaticLazyLoadFrameHistogram,
-                                  AutomaticLazyLoadFrame::kFeatureNotEnabled);
-    return false;
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kAutomaticLazyFrameLoadingToEmbedUrls))
+        << "kAutomaticLazyFrameLoadingToEmbedUrls should be enabled when "
+           "kAutomaticLazyFrameLoadingToEmbeds is enabled.";
   }
+#endif  // DCHECK_IS_ON()
 
   scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
   for (const auto& it : AllowedWebsitesForLazyLoading()) {
@@ -211,14 +246,9 @@ bool IsLazyLoadableUrl(KURL url) {
          origin.get()->Host() == it.first->Host()) &&
         (url.GetPath().Contains(it.second) ||
          url.Query().Contains(it.second))) {
-      base::UmaHistogramEnumeration(kAutomaticLazyLoadFrameHistogram,
-                                    AutomaticLazyLoadFrame::kTargetFramesFound);
       return true;
     }
   }
-
-  base::UmaHistogramEnumeration(kAutomaticLazyLoadFrameHistogram,
-                                AutomaticLazyLoadFrame::kTargetFramesNotFound);
 
   return false;
 }
@@ -581,8 +611,12 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
   if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
     lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
 
-  if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set) ||
-      IsLazyLoadableUrl(url) || IsLazyLoadableAd()) {
+  if (CheckAndRecordIfShouldLazilyLoadFrame(
+          GetDocument(),
+          /*is_loading_attr_lazy=*/loading_lazy_set,
+          /*is_eligible_for_lazy_embeds=*/IsEligibleForLazyEmbeds(url),
+          /*is_eligible_for_lazy_ads=*/IsAdRelated(),
+          /*record_uma=*/true)) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
     return true;
@@ -758,8 +792,11 @@ void HTMLFrameOwnerElement::ParseAttribute(
     // loading is disabled.
     if (loading == LoadingAttributeValue::kEager ||
         (GetDocument().GetSettings() &&
-         !ShouldLazilyLoadFrame(GetDocument(),
-                                loading == LoadingAttributeValue::kLazy))) {
+         !CheckAndRecordIfShouldLazilyLoadFrame(
+             GetDocument(), loading == LoadingAttributeValue::kLazy,
+             /*is_eligible_for_lazy_embeds=*/false,
+             /*is_eligible_for_lazy_ads=*/false,
+             /*record_uma=*/false))) {
       should_lazy_load_children_ = false;
       if (lazy_load_frame_observer_ &&
           lazy_load_frame_observer_->IsLazyLoadPending()) {
@@ -776,15 +813,6 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
     return false;
 
   return content_frame_->IsAdSubframe();
-}
-
-bool HTMLFrameOwnerElement::IsLazyLoadableAd() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutomaticLazyFrameLoadingToAds)) {
-    return false;
-  }
-
-  return IsAdRelated();
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {

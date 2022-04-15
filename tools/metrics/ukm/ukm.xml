@@ -2780,6 +2780,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.AutomaticLazyLoadFrame" singular="True">
+  <owner>chikamune@google.com</owner>
+  <owner>sisidovski@google.com</owner>
+  <owner>kouhei@google.com</owner>
+  <summary>
+    Records metrics for LazyAds and LazyEmbeds Interventions. LazyAds and
+    LazyEmbeds Interventions will automatically apply lazy loading to ad's
+    frames and embedded web applications so that we can automatically improve
+    Core Web Vitals for many sites. These metrics help us to know to what degree
+    these Interventions can improve Core Web Vitals when the sites are eligible
+    for LazyAds or LazyEmbeds.
+  </summary>
+  <metric name="LazyAdsFrameCount">
+    <summary>
+      Records the total number of per-page ad frames that are eligible for the
+      LazyAds interventions by AutomaticLazyFrameLoadingToAds. The exponential
+      bucketing is applied for privacy reasons by using
+      ukm::GetExponentialBucketMinForCounts1000().
+    </summary>
+  </metric>
+  <metric name="LazyEmbedsFrameCount">
+    <summary>
+      Records the total number of per-page frames that are eligible for the
+      LazyEmbeds interventions by AutomaticLazyFrameLoadingToEmbeds. The
+      exponential bucketing is applied for privacy reasons by using
+      ukm::GetExponentialBucketMinForCounts1000().
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.ContextMenu.ImageSelection">
   <owner>benwgold@google.com</owner>
   <owner>flackr@chromium.org</owner>

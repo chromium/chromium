@@ -17,6 +17,14 @@ function createAdIframeWithSrc(src) {
   return frame;
 }
 
+function createLazyAdIframeWithSrc(src) {
+  const frame = document.createElement('iframe');
+  frame.src = src;
+  frame.loading = 'lazy';
+  document.body.appendChild(frame);
+  return frame;
+}
+
 function createAdIframeAtRect(x, y, width, height) {
   const frame = document.createElement('iframe');
   frame.style.border = '0px none transparent';

@@ -1796,6 +1796,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool RenderingHasBegun() const { return rendering_has_begun_; }
 
+  void IncrementLazyAdsFrameCount();
+  void IncrementLazyEmbedsFrameCount();
+
   enum class DeclarativeShadowRootAllowState : uint8_t {
     kNotSet,
     kAllow,
