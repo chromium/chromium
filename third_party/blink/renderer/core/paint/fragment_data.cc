@@ -157,22 +157,6 @@ const EffectPaintPropertyNodeOrAlias& FragmentData::PostIsolationEffect()
   return LocalBorderBoxProperties().Effect();
 }
 
-void FragmentData::InvalidateClipPathCache() {
-  if (!rare_data_)
-    return;
-
-  rare_data_->is_clip_path_cache_valid = false;
-  rare_data_->clip_path_bounding_box = absl::nullopt;
-  rare_data_->clip_path_path = nullptr;
-}
-
-void FragmentData::SetClipPathCache(const gfx::RectF& bounding_box,
-                                    scoped_refptr<const RefCountedPath> path) {
-  EnsureRareData().is_clip_path_cache_valid = true;
-  rare_data_->clip_path_bounding_box = bounding_box;
-  rare_data_->clip_path_path = std::move(path);
-}
-
 void FragmentData::MapRectToFragment(const FragmentData& fragment,
                                      gfx::Rect& rect) const {
   if (this == &fragment)

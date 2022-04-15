@@ -212,15 +212,6 @@ class PLATFORM_EXPORT Path {
   SkPath path_;
 };
 
-class PLATFORM_EXPORT RefCountedPath : public blink::Path,
-                                       public RefCounted<RefCountedPath> {
-  USING_FAST_MALLOC(RefCountedPath);
-
- public:
-  template <typename... Args>
-  RefCountedPath(Args&&... args) : blink::Path(std::forward<Args>(args)...) {}
-};
-
 // Only used for DCHECKs
 PLATFORM_EXPORT bool EllipseIsRenderable(float start_angle, float end_angle);
 

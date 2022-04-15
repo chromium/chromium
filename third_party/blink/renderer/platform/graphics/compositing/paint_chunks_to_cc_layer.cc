@@ -419,7 +419,7 @@ void ConversionContext::StartClip(
     cc_list_.push<cc::ClipRectOp>(gfx::RectFToSkRect(combined_clip_rect.Rect()),
                                   SkClipOp::kIntersect, antialias);
   }
-  if (const auto* clip_path = lowest_combined_clip_node.ClipPath()) {
+  if (const auto& clip_path = lowest_combined_clip_node.ClipPath()) {
     cc_list_.push<cc::ClipPathOp>(clip_path->GetSkPath(), SkClipOp::kIntersect,
                                   antialias);
   }

@@ -6572,7 +6572,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPath) {
   EXPECT_EQ(DocContentClip(), clip_path_clip->Parent());
   EXPECT_CLIP_RECT(gfx::RectF(75, 0, 150, 150), clip_path_clip);
   EXPECT_EQ(transform, &clip_path_clip->LocalTransformSpace());
-  EXPECT_NE(nullptr, clip_path_clip->ClipPath());
+  EXPECT_TRUE(clip_path_clip->ClipPath());
 
   const auto* overflow_clip = properties->OverflowClip();
   ASSERT_NE(nullptr, overflow_clip);

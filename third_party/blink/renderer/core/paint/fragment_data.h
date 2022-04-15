@@ -97,29 +97,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
       EnsureRareData().legacy_pagination_offset = pagination_offset;
   }
 
-  bool IsClipPathCacheValid() const {
-    return rare_data_ && rare_data_->is_clip_path_cache_valid;
-  }
-  void InvalidateClipPathCache();
-
-  absl::optional<gfx::RectF> ClipPathBoundingBox() const {
-    DCHECK(IsClipPathCacheValid());
-    return rare_data_ ? rare_data_->clip_path_bounding_box : absl::nullopt;
-  }
-  const RefCountedPath* ClipPathPath() const {
-    DCHECK(IsClipPathCacheValid());
-    return rare_data_ ? rare_data_->clip_path_path.get() : nullptr;
-  }
-  void SetClipPathCache(const gfx::RectF& bounding_box,
-                        scoped_refptr<const RefCountedPath>);
-  void ClearClipPathCache() {
-    if (rare_data_) {
-      rare_data_->is_clip_path_cache_valid = true;
-      rare_data_->clip_path_bounding_box = absl::nullopt;
-      rare_data_->clip_path_path = nullptr;
-    }
-  }
-
   // Holds references to the paint property nodes created by this object.
   const ObjectPaintProperties* PaintProperties() const {
     return rare_data_ ? rare_data_->paint_properties.get() : nullptr;
@@ -247,9 +224,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     wtf_size_t fragment_id = 0;
     std::unique_ptr<ObjectPaintProperties> paint_properties;
     std::unique_ptr<RefCountedPropertyTreeState> local_border_box_properties;
-    bool is_clip_path_cache_valid = false;
-    absl::optional<gfx::RectF> clip_path_bounding_box;
-    scoped_refptr<const RefCountedPath> clip_path_path;
     CullRect cull_rect_;
     CullRect contents_cull_rect_;
     Member<FragmentData> next_fragment_;

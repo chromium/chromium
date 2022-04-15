@@ -258,13 +258,8 @@ void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
 
   const auto* clip_reference =
       DynamicTo<ReferenceClipPathOperation>(style.ClipPath());
-  if (ContainsResource(clip_reference, resource)) {
-    // TODO(fs): "Downgrade" to non-subtree?
-    layout_object->SetSubtreeShouldDoFullPaintInvalidation();
-    layout_object->InvalidateClipPathCache();
-  }
-
-  if (ContainsResource(style.MaskerResource(), resource)) {
+  if (ContainsResource(clip_reference, resource) ||
+      ContainsResource(style.MaskerResource(), resource)) {
     // TODO(fs): "Downgrade" to non-subtree?
     layout_object->SetSubtreeShouldDoFullPaintInvalidation();
     layout_object->SetNeedsPaintPropertyUpdate();
@@ -377,11 +372,7 @@ void SVGResourceInvalidator::InvalidateEffects() {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
   }
-  if (style.HasClipPath()) {
-    object_.SetShouldDoFullPaintInvalidation();
-    object_.InvalidateClipPathCache();
-  }
-  if (style.MaskerResource()) {
+  if (style.HasClipPath() || style.MaskerResource()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.SetNeedsPaintPropertyUpdate();
   }

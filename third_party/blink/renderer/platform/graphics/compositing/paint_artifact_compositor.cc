@@ -476,7 +476,7 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
     layer_->SetHitTestable(true);
   }
 
-  const RefCountedPath* path = clip.ClipPath();
+  const auto& path = clip.ClipPath();
   SkRRect new_rrect(clip.PaintClipRect());
   gfx::Rect layer_bounds = gfx::ToEnclosingRect(clip.PaintClipRect().Rect());
   bool needs_display = false;
@@ -497,7 +497,7 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
   } else {
     needs_display = rrect_is_local_ || new_rrect != rrect_ ||
                     new_translation_2d_or_matrix != translation_2d_or_matrix_ ||
-                    (path_ != path && (!path_ || !path || *path_ != *path));
+                    !clip.ClipPathEquals(path_);
     translation_2d_or_matrix_ = new_translation_2d_or_matrix;
     rrect_is_local_ = false;
   }

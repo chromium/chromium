@@ -98,7 +98,7 @@ class SynthesizedClip : private cc::ContentLayerClient {
   GeometryMapper::Translation2DOrMatrix translation_2d_or_matrix_;
   bool rrect_is_local_ = false;
   SkRRect rrect_;
-  scoped_refptr<const RefCountedPath> path_;
+  absl::optional<Path> path_;
   CompositorElementId mask_isolation_id_;
   CompositorElementId mask_effect_id_;
 };

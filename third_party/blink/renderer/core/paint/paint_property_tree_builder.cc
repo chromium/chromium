@@ -238,10 +238,10 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void SetNeedsPaintPropertyUpdateIfNeeded();
   ALWAYS_INLINE void UpdateForObjectLocationAndSize(
       absl::optional<gfx::Vector2d>& paint_offset_translation);
-  ALWAYS_INLINE void UpdateClipPathCache();
   ALWAYS_INLINE void UpdateStickyTranslation();
   ALWAYS_INLINE void UpdateTransform();
   ALWAYS_INLINE void UpdateTransformForSVGChild(CompositingReasons);
+  ALWAYS_INLINE bool NeedsEffect() const;
   ALWAYS_INLINE bool EffectCanUseCurrentClipAsOutputClip() const;
   ALWAYS_INLINE void UpdateSharedElementTransitionEffect();
   ALWAYS_INLINE void UpdateEffect();
@@ -341,6 +341,10 @@ class FragmentPaintPropertyTreeBuilder {
   ObjectPaintProperties* properties_;
   PaintPropertyChangeType property_changed_ =
       PaintPropertyChangeType::kUnchanged;
+  // These are updated in UpdateClipPathClip() and used in UpdateEffect() if
+  // needs_mask_base_clip_path_ is true.
+  bool needs_mask_based_clip_path_ = false;
+  absl::optional<gfx::RectF> clip_path_bounding_box_;
 };
 
 // True if a scroll translation is needed for static scroll offset (e.g.,
@@ -1049,25 +1053,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
   }
 }
 
-static bool MayNeedClipPathClip(const LayoutObject& object) {
+static bool NeedsClipPathClipOrMask(const LayoutObject& object) {
   // We only apply clip-path if the LayoutObject has a layer or is an SVG
   // child. See NeedsEffect() for additional information on the former.
   return !object.IsText() && object.StyleRef().HasClipPath() &&
          (object.HasLayer() || object.IsSVGChild());
 }
 
-static bool NeedsClipPathClip(const LayoutObject& object,
-                              const FragmentData& fragment_data) {
-  // We should have already updated the clip path cache when this is called.
-  if (fragment_data.ClipPathPath()) {
-    DCHECK(MayNeedClipPathClip(object));
-    return true;
-  }
-  return false;
-}
-
-static bool NeedsEffect(const LayoutObject& object,
-                        CompositingReasons direct_compositing_reasons) {
+static bool NeedsEffectIgnoringClipPath(
+    const LayoutObject& object,
+    CompositingReasons direct_compositing_reasons) {
   if (object.IsText()) {
     DCHECK(!(direct_compositing_reasons &
              CompositingReason::kDirectReasonsForEffectProperty));
@@ -1100,11 +1095,9 @@ static bool NeedsEffect(const LayoutObject& object,
       return true;
   }
 
-  SkBlendMode blend_mode = object.IsBlendingAllowed()
-                               ? WebCoreCompositeToSkiaComposite(
-                                     kCompositeSourceOver, style.GetBlendMode())
-                               : SkBlendMode::kSrcOver;
-  if (blend_mode != SkBlendMode::kSrcOver)
+  if (object.IsBlendingAllowed() &&
+      WebCoreCompositeToSkiaComposite(
+          kCompositeSourceOver, style.GetBlendMode()) != SkBlendMode::kSrcOver)
     return true;
 
   if (!style.BackdropFilter().IsEmpty())
@@ -1113,18 +1106,21 @@ static bool NeedsEffect(const LayoutObject& object,
   if (style.Opacity() != 1.0f)
     return true;
 
+  // A mask needs an effect node on the current LayoutObject to define the scope
+  // of masked contents to be the current LayoutObject and its descendants.
   if (object.StyleRef().HasMask())
     return true;
 
-  if (object.StyleRef().HasClipPath() &&
-      object.FirstFragment().ClipPathBoundingBox() &&
-      !object.FirstFragment().ClipPathPath()) {
-    // If the object has a valid clip-path but can't use path-based clip-path,
-    // a clip-path effect node must be created.
-    return true;
-  }
-
   return false;
+}
+
+bool FragmentPaintPropertyTreeBuilder::NeedsEffect() const {
+  DCHECK(NeedsPaintPropertyUpdate());
+  // A mask-based clip-path needs an effect node, similar to a normal mask.
+  if (needs_mask_based_clip_path_)
+    return true;
+  return NeedsEffectIgnoringClipPath(object_,
+                                     full_context_.direct_compositing_reasons);
 }
 
 // An effect node can use the current clip as its output clip if the clip won't
@@ -1132,7 +1128,7 @@ static bool NeedsEffect(const LayoutObject& object,
 // stages use more optimized code path.
 bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
     const {
-  DCHECK(NeedsEffect(object_, full_context_.direct_compositing_reasons));
+  DCHECK(NeedsEffect());
 
   if (!object_.HasLayer()) {
     // This is either SVG or it's the effect node to create flattening at the
@@ -1172,26 +1168,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
   const ComputedStyle& style = object_.StyleRef();
 
   if (NeedsPaintPropertyUpdate()) {
-    if (NeedsEffect(object_, full_context_.direct_compositing_reasons)) {
+    if (NeedsEffect()) {
       absl::optional<gfx::RectF> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
-      bool has_clip_path =
-          style.HasClipPath() && fragment_data_.ClipPathBoundingBox();
-      bool has_mask_based_clip_path =
-          has_clip_path && !fragment_data_.ClipPathPath();
-      absl::optional<gfx::RectF> clip_path_clip;
-      if (has_mask_based_clip_path)
-        clip_path_clip = fragment_data_.ClipPathBoundingBox();
-
       const auto* output_clip = EffectCanUseCurrentClipAsOutputClip()
                                     ? context_.current.clip
                                     : nullptr;
 
-      if (mask_clip || clip_path_clip) {
-        gfx::RectF combined_clip = mask_clip ? *mask_clip : *clip_path_clip;
-        if (mask_clip && clip_path_clip)
-          combined_clip.Intersect(*clip_path_clip);
-
+      if (mask_clip || needs_mask_based_clip_path_) {
+        DCHECK(mask_clip || clip_path_bounding_box_.has_value());
+        gfx::RectF combined_clip =
+            mask_clip ? *mask_clip : *clip_path_bounding_box_;
+        if (mask_clip && needs_mask_based_clip_path_)
+          combined_clip.Intersect(*clip_path_bounding_box_);
         OnUpdate(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(
@@ -1328,7 +1317,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         OnClear(properties_->ClearMask());
       }
 
-      if (has_mask_based_clip_path) {
+      if (needs_mask_based_clip_path_) {
         EffectPaintPropertyNode::State clip_path_state;
         clip_path_state.local_transform_space = context_.current.transform;
         clip_path_state.output_clip = output_clip;
@@ -1586,17 +1575,32 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
-    if (!NeedsClipPathClip(object_, fragment_data_)) {
-      OnClear(properties_->ClearClipPathClip());
-    } else {
-      ClipPaintPropertyNode::State state(
-          context_.current.transform, *fragment_data_.ClipPathBoundingBox(),
-          FloatRoundedRect(
-              gfx::ToEnclosingRect(*fragment_data_.ClipPathBoundingBox())));
-      state.clip_path = fragment_data_.ClipPathPath();
-      OnUpdate(properties_->UpdateClipPathClip(*context_.current.clip,
-                                               std::move(state)));
+    DCHECK(!clip_path_bounding_box_.has_value());
+    if (NeedsClipPathClipOrMask(object_)) {
+      clip_path_bounding_box_ =
+          ClipPathClipper::LocalClipPathBoundingBox(object_);
+      if (clip_path_bounding_box_) {
+        clip_path_bounding_box_->Offset(
+            gfx::Vector2dF(context_.current.paint_offset));
+        if (absl::optional<Path> path =
+                ClipPathClipper::PathBasedClip(object_)) {
+          path->Translate(gfx::Vector2dF(context_.current.paint_offset));
+          ClipPaintPropertyNode::State state(
+              context_.current.transform, *clip_path_bounding_box_,
+              FloatRoundedRect(gfx::ToEnclosingRect(*clip_path_bounding_box_)));
+          state.clip_path = path;
+          OnUpdate(properties_->UpdateClipPathClip(*context_.current.clip,
+                                                   std::move(state)));
+        } else {
+          // This means that the clip-path is too complex to be represented as a
+          // Path. Will create ClipPathMask in UpdateEffect().
+          needs_mask_based_clip_path_ = true;
+        }
+      }
     }
+
+    if (!clip_path_bounding_box_ || needs_mask_based_clip_path_)
+      OnClear(properties_->ClearClipPathClip());
   }
 
   if (properties_->ClipPathClip()) {
@@ -2622,9 +2626,6 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   }
 
-  if (MayNeedClipPathClip(box))
-    box.GetMutableForPainting().InvalidateClipPathCache();
-
   // The filter generated for reflection depends on box size.
   if (box.HasReflection()) {
     DCHECK(box.HasLayer());
@@ -2648,7 +2649,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
         PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationBlocked;
     object_.GetMutableForPainting().SetShouldCheckForPaintInvalidation();
     fragment_data_.SetPaintOffset(context_.current.paint_offset);
-    fragment_data_.InvalidateClipPathCache();
 
     if (object_.IsBox()) {
       // See PaintLayerScrollableArea::PixelSnappedBorderBoxSize() for the
@@ -2664,31 +2664,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
 
   if (paint_offset_translation)
     context_.current.paint_offset_root = &To<LayoutBoxModelObject>(object_);
-}
-
-void FragmentPaintPropertyTreeBuilder::UpdateClipPathCache() {
-  if (!MayNeedClipPathClip(object_)) {
-    fragment_data_.ClearClipPathCache();
-    return;
-  }
-
-  if (fragment_data_.IsClipPathCacheValid())
-    return;
-
-  absl::optional<gfx::RectF> bounding_box =
-      ClipPathClipper::LocalClipPathBoundingBox(object_);
-  if (!bounding_box) {
-    fragment_data_.ClearClipPathCache();
-    return;
-  }
-  bounding_box->Offset(gfx::Vector2dF(fragment_data_.PaintOffset()));
-
-  absl::optional<Path> path = ClipPathClipper::PathBasedClip(object_);
-  if (path)
-    path->Translate(gfx::Vector2dF(fragment_data_.PaintOffset()));
-  fragment_data_.SetClipPathCache(
-      *bounding_box,
-      path ? AdoptRef(new RefCountedPath(std::move(*path))) : nullptr);
 }
 
 static bool IsLayoutShiftRoot(const LayoutObject& object,
@@ -2730,7 +2705,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   UpdateForObjectLocationAndSize(paint_offset_translation);
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
-  UpdateClipPathCache();
 
   if (properties_) {
     {
@@ -3644,16 +3618,13 @@ bool PaintPropertyTreeBuilder::UpdateFragments() {
       // If DCHECK is not on, use fast path for text.
       !object_.IsText() &&
 #endif
-      (NeedsPaintOffsetTranslation(
-           object_, context_.direct_compositing_reasons) ||
+      (NeedsPaintOffsetTranslation(object_,
+                                   context_.direct_compositing_reasons) ||
        NeedsStickyTranslation(object_) ||
        NeedsTransform(object_, context_.direct_compositing_reasons) ||
-       // Note: It is important to use MayNeedClipPathClip() instead of
-       // NeedsClipPathClip() which requires the clip path cache to be
-       // resolved, but the clip path cache invalidation must delayed until
-       // the paint offset and border box has been computed.
-       MayNeedClipPathClip(object_) ||
-       NeedsEffect(object_, context_.direct_compositing_reasons) ||
+       NeedsEffectIgnoringClipPath(object_,
+                                   context_.direct_compositing_reasons) ||
+       NeedsClipPathClipOrMask(object_) ||
        NeedsTransformForSVGChild(object_,
                                  context_.direct_compositing_reasons) ||
        NeedsFilter(object_, context_) || NeedsCssClip(object_) ||

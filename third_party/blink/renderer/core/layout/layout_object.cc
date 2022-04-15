@@ -2650,7 +2650,7 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
 
   if (diff.NeedsPaintInvalidation() && old_style &&
       !old_style->ClipPathDataEquivalent(*style_)) {
-    InvalidateClipPathCache();
+    SetNeedsPaintPropertyUpdate();
     PaintingLayer()->SetNeedsCompositingInputsUpdate();
   }
 
@@ -4625,11 +4625,9 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 void LayoutObject::SetNeedsBoundariesUpdate() {
   NOT_DESTROYED();
   if (IsSVGChild()) {
-    // The boundaries affect mask clip.
-    if (StyleRef().MaskerResource())
+    // The boundaries affect mask clip and clip path mask/clip.
+    if (StyleRef().MaskerResource() || StyleRef().HasClipPath())
       SetNeedsPaintPropertyUpdate();
-    if (StyleRef().HasClipPath())
-      InvalidateClipPathCache();
   }
   if (LayoutObject* layout_object = Parent())
     layout_object->SetNeedsBoundariesUpdate();
@@ -5018,14 +5016,6 @@ bool LayoutObject::CanBeSelectionLeaf() const {
     return false;
   }
   return CanBeSelectionLeafInternal();
-}
-
-void LayoutObject::InvalidateClipPathCache() {
-  NOT_DESTROYED();
-  SetNeedsPaintPropertyUpdate();
-  for (FragmentData* fragment = fragment_; fragment;
-       fragment = fragment->NextFragment())
-    fragment->InvalidateClipPathCache();
 }
 
 Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(

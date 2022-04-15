@@ -12,8 +12,8 @@ namespace blink {
 PaintPropertyChangeType ClipPaintPropertyNode::State::ComputeChange(
     const State& other) const {
   if (local_transform_space != other.local_transform_space ||
-      paint_clip_rect != other.paint_clip_rect ||
-      clip_path != other.clip_path) {
+      paint_clip_rect_ != other.paint_clip_rect_ ||
+      !ClipPathEquals(other.clip_path)) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
   if (layout_clip_rect_excluding_overlay_scrollbars !=
@@ -72,7 +72,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
     json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.get()));
-  json->SetString("rect", String(state_.paint_clip_rect.Rect().ToString()));
+  json->SetString("rect", String(state_.paint_clip_rect_.Rect().ToString()));
   if (state_.layout_clip_rect_excluding_overlay_scrollbars) {
     json->SetString(
         "rectExcludingOverlayScrollbars",

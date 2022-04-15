@@ -199,7 +199,7 @@ inline scoped_refptr<ClipPaintPropertyNode> CreateClipPathClip(
     const FloatRoundedRect& clip_rect) {
   ClipPaintPropertyNode::State state(&local_transform_space, clip_rect.Rect(),
                                      clip_rect);
-  state.clip_path = base::AdoptRef(new RefCountedPath);
+  state.clip_path = Path();
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }
 
