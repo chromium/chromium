@@ -227,7 +227,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       {
           "https://accounts.google.com",
           {v2_extension},
-          NONE_ON_LINUX(Result::kServerLink),
+          Result::kServerLink,
       },
   };
 
