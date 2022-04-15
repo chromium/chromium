@@ -21,7 +21,7 @@
 #endif
 
 namespace {
-const char kPerformanceMetricsScript[] = "web_performance_metrics_js";
+const char kPerformanceMetricsScript[] = "web_performance_metrics";
 const char kWebPerformanceMetricsScriptName[] = "WebPerformanceMetricsHandler";
 
 // The time range's expected min and max values for custom histograms.
