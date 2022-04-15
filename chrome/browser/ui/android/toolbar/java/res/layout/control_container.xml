@@ -22,9 +22,10 @@
             android:layout_height="@dimen/toolbar_height_no_shadow" />
 
         <ImageView
-            android:id="@+id/toolbar_shadow"
+            android:id="@+id/toolbar_hairline"
+            android:src="@drawable/toolbar_hairline"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/tab_strip_and_toolbar_height"
             android:scaleType="fitXY"
             android:importantForAccessibility="no" />

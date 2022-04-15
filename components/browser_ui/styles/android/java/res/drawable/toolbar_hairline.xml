@@ -7,5 +7,5 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@macro/divider_line_bg_color"/>
-    <size android:height="1dp"/>
+    <size android:height="@dimen/toolbar_hairline_height"/>
 </shape>

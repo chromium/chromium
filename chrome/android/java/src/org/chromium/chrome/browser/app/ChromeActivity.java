@@ -27,13 +27,10 @@ import android.view.Display.Mode;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
-import android.widget.ImageView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -720,7 +717,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 ViewGroup contentParent = (ViewGroup) placeHolderView.getParent();
                 warmupManager.transferViewHierarchyTo(contentParent);
                 contentParent.removeView(placeHolderView);
-                initializeToolbarShadow();
                 onInitialLayoutInflationComplete();
             } else {
                 warmupManager.clearViewHierarchy();
@@ -768,22 +764,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 int toolbarLayoutId = getToolbarLayoutId();
                 if (toolbarLayoutId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
                     controlContainer.initWithToolbar(toolbarLayoutId);
-                    initializeToolbarShadow();
                 }
             }
             onInitialLayoutInflationComplete();
         }
-    }
-
-    private void initializeToolbarShadow() {
-        ImageView shadowImage = findViewById(R.id.toolbar_shadow);
-        if (shadowImage == null) return;
-
-        Drawable drawable = getDrawable(getToolbarShadowResource());
-        shadowImage.setImageDrawable(drawable);
-        LayoutParams layoutParams = shadowImage.getLayoutParams();
-        layoutParams.height = getToolbarShadowLayoutHeight();
-        shadowImage.setLayoutParams(layoutParams);
     }
 
     @Override
@@ -954,23 +938,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected int getToolbarLayoutId() {
         return ActivityUtils.NO_RESOURCE_ID;
     }
-
-    /**
-     * Returns the drawable resource id for the toolbar shadow.
-     *
-     * TODO(https://crbug.com/1227450): Rename toolbar shadow to hairline or divider.
-     */
-    protected abstract @DrawableRes int getToolbarShadowResource();
-
-    /**
-     * Returns the layout height of the toolbar shadow in pixels, -1, or -2. Negative values, -1 and
-     * -2, denote MATCH_PARENT and WRAP_CONTENT respectively.
-     * See https://developer.android.com/reference/android/view/ViewGroup.LayoutParams#MATCH_PARENT
-     *
-     * TODO(https://crbug.com/1227450): Rename toolbar shadow to hairline or divider. This specific
-     * method might not even be necessary.
-     */
-    protected abstract int getToolbarShadowLayoutHeight();
 
     @Override
     public void initializeState() {

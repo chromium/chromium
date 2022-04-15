@@ -1704,7 +1704,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Sets the visibility of the Toolbar shadow.
      */
     public void setToolbarShadowVisibility(int visibility) {
-        View toolbarShadow = mControlContainer.findViewById(R.id.toolbar_shadow);
+        View toolbarShadow = mControlContainer.findViewById(R.id.toolbar_hairline);
         if (toolbarShadow != null) toolbarShadow.setVisibility(visibility);
     }
 

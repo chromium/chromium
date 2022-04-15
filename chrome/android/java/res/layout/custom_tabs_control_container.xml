@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/custom_tabs_control_container_height" />
         <ImageView
-            android:id="@+id/toolbar_shadow"
+            android:id="@+id/toolbar_hairline"
+            android:src="@drawable/toolbar_hairline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/custom_tabs_control_container_height"

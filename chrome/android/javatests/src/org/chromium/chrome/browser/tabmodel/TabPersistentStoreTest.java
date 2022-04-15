@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabmodel;
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
-import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
@@ -37,7 +36,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -342,16 +340,6 @@ public class TabPersistentStoreTest {
                     if (getBaseContext() == null) {
                         attachBaseContext(mAppContext);
                     }
-                }
-
-                @Override
-                protected int getToolbarShadowLayoutHeight() {
-                    return LayoutParams.WRAP_CONTENT;
-                }
-
-                @Override
-                protected int getToolbarShadowResource() {
-                    return ActivityUtils.NO_RESOURCE_ID;
                 }
             };
             ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);

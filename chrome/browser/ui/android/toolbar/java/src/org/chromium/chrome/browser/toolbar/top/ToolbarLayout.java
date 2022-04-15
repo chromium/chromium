@@ -30,8 +30,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -854,10 +852,7 @@ public abstract class ToolbarLayout
      * @param toolbarColor The toolbar color to base the hairline color on.
      */
     protected void setToolbarHairlineColor(@ColorInt int toolbarColor) {
-        // The refactor replaces the shadow with a hairline.
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) return;
-
-        final ImageView shadow = getRootView().findViewById(R.id.toolbar_shadow);
+        final ImageView shadow = getRootView().findViewById(R.id.toolbar_hairline);
         final int hairlineColor =
                 ThemeUtils.getToolbarHairlineColor(getContext(), toolbarColor, isIncognito());
         shadow.setImageTintList(ColorStateList.valueOf(hairlineColor));

@@ -369,7 +369,7 @@ public class InstantStartTabSwitcherTest {
 
         // On tab switcher page, shadow is handled by TabListRecyclerView itself, so toolbar shadow
         // shouldn't show.
-        onView(withId(org.chromium.chrome.test.R.id.toolbar_shadow))
+        onView(withId(org.chromium.chrome.test.R.id.toolbar_hairline))
                 .check(matches(not(isDisplayed())));
 
         // Scroll the tab list a little bit and shadow should show.

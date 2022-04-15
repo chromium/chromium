@@ -304,7 +304,7 @@ public class ToolbarTablet extends ToolbarLayout
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        mToolbarShadow = (ImageView) getRootView().findViewById(R.id.toolbar_shadow);
+        mToolbarShadow = (ImageView) getRootView().findViewById(R.id.toolbar_hairline);
     }
 
     @Override
