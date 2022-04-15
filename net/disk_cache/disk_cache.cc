@@ -238,6 +238,15 @@ class TrivialFileEnumerator final : public FileEnumerator {
   disk_cache::SimpleFileEnumerator enumerator_;
 };
 
+class UnboundTrivialFileOperations
+    : public disk_cache::UnboundBackendFileOperations {
+ public:
+  std::unique_ptr<disk_cache::BackendFileOperations> Bind(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
+    return std::make_unique<disk_cache::TrivialFileOperations>();
+  }
+};
+
 }  // namespace
 
 namespace disk_cache {
@@ -440,6 +449,9 @@ TrivialFileOperations::~TrivialFileOperations() {
 
 bool TrivialFileOperations::CreateDirectory(const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
 
   // This is needed for some unittests.
   if (path.empty()) {
@@ -454,6 +466,9 @@ bool TrivialFileOperations::CreateDirectory(const base::FilePath& path) {
 
 bool TrivialFileOperations::PathExists(const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
 
   // This is needed for some unittests.
   if (path.empty()) {
@@ -466,10 +481,24 @@ bool TrivialFileOperations::PathExists(const base::FilePath& path) {
   return result;
 }
 
+bool TrivialFileOperations::DirectoryExists(const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(path.IsAbsolute());
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
+
+  bool result = base::DirectoryExists(path);
+  return result;
+}
+
 base::File TrivialFileOperations::OpenFile(const base::FilePath& path,
                                            uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
 
   base::File file(path, flags);
   return file;
@@ -478,6 +507,9 @@ base::File TrivialFileOperations::OpenFile(const base::FilePath& path,
 bool TrivialFileOperations::DeleteFile(const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
 
   return base::DeleteFile(path);
 }
@@ -488,6 +520,9 @@ bool TrivialFileOperations::ReplaceFile(const base::FilePath& from_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(from_path.IsAbsolute());
   DCHECK(to_path.IsAbsolute());
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
 
   return base::ReplaceFile(from_path, to_path, error);
 }
@@ -496,6 +531,9 @@ absl::optional<base::File::Info> TrivialFileOperations::GetFileInfo(
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
 
   base::File::Info file_info;
   if (!base::GetFileInfo(path, &file_info)) {
@@ -506,7 +544,33 @@ absl::optional<base::File::Info> TrivialFileOperations::GetFileInfo(
 
 std::unique_ptr<FileEnumerator> TrivialFileOperations::EnumerateFiles(
     const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(path.IsAbsolute());
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+#endif
   return std::make_unique<TrivialFileEnumerator>(path);
+}
+
+std::unique_ptr<UnboundBackendFileOperations> TrivialFileOperations::Unbind() {
+#if DCHECK_IS_ON()
+  DCHECK(bound_);
+  bound_ = false;
+#endif
+  return std::make_unique<UnboundTrivialFileOperations>();
+}
+
+TrivialFileOperationsFactory::TrivialFileOperationsFactory() = default;
+TrivialFileOperationsFactory::~TrivialFileOperationsFactory() = default;
+
+std::unique_ptr<BackendFileOperations> TrivialFileOperationsFactory::Create(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  return std::make_unique<TrivialFileOperations>();
+}
+
+std::unique_ptr<UnboundBackendFileOperations>
+TrivialFileOperationsFactory::CreateUnbound() {
+  return std::make_unique<UnboundTrivialFileOperations>();
 }
 
 }  // namespace disk_cache

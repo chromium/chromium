@@ -21,6 +21,7 @@
 
 namespace disk_cache {
 
+class BackendFileOperations;
 class SimpleSynchronousEntry;
 
 // This keeps track of all the files SimpleCache has open, across all the
@@ -112,7 +113,9 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   // pressure, and that open may have failed. This should not be called twice
   // with the exact same arguments until the handle returned from the previous
   // such call is destroyed.
-  FileHandle Acquire(const SimpleSynchronousEntry* owner, SubFile subfile);
+  FileHandle Acquire(BackendFileOperations* file_operations,
+                     const SimpleSynchronousEntry* owner,
+                     SubFile subfile);
 
   // Tells SimpleFileTracker that SimpleSynchronousEntry will not be interested
   // in the file further, so it can be closed and forgotten about.  It's OK to
@@ -204,7 +207,9 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
       std::vector<std::unique_ptr<base::File>>* files_to_close);
 
   // Tries to reopen given file, updating |*owners_files| if successful.
-  void ReopenFile(TrackedFiles* owners_files, SubFile subfile);
+  void ReopenFile(BackendFileOperations* file_operations,
+                  TrackedFiles* owners_files,
+                  SubFile subfile);
 
   // Makes sure the entry is marked as most recently used, adding it to LRU
   // if needed.
