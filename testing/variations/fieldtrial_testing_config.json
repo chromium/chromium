@@ -8439,6 +8439,21 @@
             ]
         }
     ],
+    "WebRtcAllowWgcDesktopCapturer": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowWgcDesktopCapturer"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRtcMetronomeTaskQueue": [
         {
             "platforms": [
