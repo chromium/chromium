@@ -119,26 +119,26 @@ TEST_F(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
     UpdateAllLifecyclePhasesForTest();
   }
   // When scrolled to 3800, the cull rect covers the whole scrolling contents.
-  // Then we use this full cull rect on further scroll to avoid repaint.
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetCullRect("child").Rect());
+  // Then we use infinite cull rect on further scroll to avoid repaint.
+  EXPECT_TRUE(GetContentsCullRect("scroller").IsInfinite());
+  EXPECT_TRUE(GetCullRect("child").IsInfinite());
 
   // The full cull rect still applies when the scroller scrolls to the top.
   scroller->scrollTo(0, 0);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetCullRect("child").Rect());
+  EXPECT_TRUE(GetContentsCullRect("scroller").IsInfinite());
+  EXPECT_TRUE(GetCullRect("child").IsInfinite());
 
   // When child needs repaint, it will recalculate its cull rect.
   GetPaintLayerByElementId("child")->SetNeedsRepaint();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
+  EXPECT_TRUE(GetContentsCullRect("scroller").IsInfinite());
   EXPECT_EQ(gfx::Rect(0, 0, 200, 4200), GetCullRect("child").Rect());
 
   // Then scroll to the bottom, child should recalculate it cull rect again.
   scroller->scrollTo(0, 7000);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
+  EXPECT_TRUE(GetContentsCullRect("scroller").IsInfinite());
   EXPECT_EQ(gfx::Rect(0, 2800, 200, 4200), GetCullRect("child").Rect());
 }
 
@@ -162,13 +162,13 @@ TEST_F(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
 
   scroller->scrollTo(0, 3800);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 600, 8120), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8120), GetCullRect("child").Rect());
+  EXPECT_TRUE(GetContentsCullRect("scroller").IsInfinite());
+  EXPECT_TRUE(GetCullRect("child").IsInfinite());
 
   scroller->scrollTo(0, 4000);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 600, 8120), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8120), GetCullRect("child").Rect());
+  EXPECT_TRUE(GetContentsCullRect("scroller").IsInfinite());
+  EXPECT_TRUE(GetCullRect("child").IsInfinite());
 }
 
 TEST_F(CullRectUpdaterTest, SVGForeignObject) {

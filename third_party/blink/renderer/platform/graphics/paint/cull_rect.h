@@ -51,7 +51,7 @@ class PLATFORM_EXPORT CullRect {
   // composited transforms (including scrolling and non-scrolling ones).
   // |root| is used to calculate the expansion distance in the local space,
   // to make the expansion distance approximately the same in the root space.
-  // Returns whether the cull rect has been expanded.
+  // Returns whether the cull rect has been expanded by a finite distance.
   bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,
                             const PropertyTreeState& destination,
