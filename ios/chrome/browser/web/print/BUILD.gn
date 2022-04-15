@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("print") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -47,9 +47,9 @@ source_set("unit_tests") {
   ]
 }
 
-js_compile_bundle("print_js") {
+optimize_js("print_js") {
   visibility = [ ":print" ]
-  closure_entry_point = "__crWeb.print"
 
+  primary_script = "resources/print.js"
   sources = [ "resources/print.js" ]
 }

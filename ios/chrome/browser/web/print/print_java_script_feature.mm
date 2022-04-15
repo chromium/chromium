@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "print_js";
+const char kScriptName[] = "print";
 const char kScriptHandlerName[] = "PrintMessageHandler";
 }  // namespace
 
