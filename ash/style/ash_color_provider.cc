@@ -314,6 +314,9 @@ bool AshColorProvider::IsDarkModeEnabled() const {
     return false;
 
   if (features::IsDarkLightModeEnabled()) {
+    if (is_dark_mode_enabled_in_oobe_for_testing_.has_value())
+      return is_dark_mode_enabled_in_oobe_for_testing_.value();
+
     // Always use the LIGHT theme in all OOBE screens except the last two
     if (force_oobe_light_mode_)
       return false;
@@ -336,6 +339,12 @@ bool AshColorProvider::IsDarkModeEnabled() const {
 
 void AshColorProvider::SetDarkModeEnabledForTest(bool enabled) {
   DCHECK(features::IsDarkLightModeEnabled());
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::OOBE) {
+    auto closure = GetNotifyOnDarkModeChangeClosure();
+    is_dark_mode_enabled_in_oobe_for_testing_ = enabled;
+    return;
+  }
   if (IsDarkModeEnabled() != enabled) {
     ToggleColorMode();
   }

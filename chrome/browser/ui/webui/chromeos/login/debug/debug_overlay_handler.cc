@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/debug/debug_overlay_handler.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -99,6 +100,7 @@ DebugOverlayHandler::~DebugOverlayHandler() = default;
 void DebugOverlayHandler::DeclareJSCallbacks() {
   AddCallback("debug.captureScreenshot",
               &DebugOverlayHandler::HandleCaptureScreenshot);
+  AddCallback("debug.toggleColorMode", &DebugOverlayHandler::ToggleColorMode);
 }
 
 void DebugOverlayHandler::DeclareLocalizedValues(
@@ -134,6 +136,11 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
         base::BindOnce(&RunStoreScreenshotOnTaskRunner, screenshot_dir_,
                        filename));
   }
+}
+
+void DebugOverlayHandler::ToggleColorMode() {
+  ash::ColorProvider::Get()->SetDarkModeEnabledForTest(  // IN-TEST
+      !ash::ColorProvider::Get()->IsDarkModeEnabled());
 }
 
 }  // namespace chromeos

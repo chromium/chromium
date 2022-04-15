@@ -1672,6 +1672,9 @@ cr.define('cr.ui.login.debug', function() {
       new DebugButton(
           panel.content, 'Capture deck of all screens',
           this.makeScreenshotDeck.bind(this));
+      new DebugButton(panel.content, 'Toggle color mode', function() {
+        chrome.send('debug.toggleColorMode');
+      });
     }
 
     createScreensPanel(parent) {

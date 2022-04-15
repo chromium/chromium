@@ -157,6 +157,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // DarkLightMode feature.
   bool override_light_mode_as_default_ = false;
 
+  // Temporary field for testing purposes while OOBE WebUI is being migrated.
+  absl::optional<bool> is_dark_mode_enabled_in_oobe_for_testing_;
+
   // True if we're in the OOBE state, or OOBE WebUI dialog is open (e.g. for the
   // "Add person" flow), except for the last two screens. In those two screens
   // the theme is based on user's preferences.

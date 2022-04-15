@@ -28,6 +28,7 @@ class DebugOverlayHandler : public BaseWebUIHandler {
  private:
   // JS callbacks.
   void HandleCaptureScreenshot(const std::string& name);
+  void ToggleColorMode();
 
   base::FilePath screenshot_dir_;
   int screenshot_index_ = 0;
