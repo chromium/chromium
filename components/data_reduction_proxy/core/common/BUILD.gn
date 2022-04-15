@@ -1,0 +1,33 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Variables:
+#   deps: Extra dependencies.
+template("common_tmpl") {
+  static_library(target_name) {
+    sources = [
+      "data_reduction_proxy_switches.cc",
+      "data_reduction_proxy_switches.h",
+    ]
+
+    deps = [
+      "//base",
+      "//google_apis",
+      "//services/network/public/cpp",
+    ]
+
+    defines = [ "USE_GOOGLE_API_KEYS" ]
+
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+  }
+}
+
+common_tmpl("common") {
+  deps = [
+    "//net",
+    "//url",
+  ]
+}

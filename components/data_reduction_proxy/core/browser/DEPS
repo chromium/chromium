@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/data_use_measurement/core",
+  "+components/variations",
+  "+mojo/public/cpp",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/leveldatabase",
+]

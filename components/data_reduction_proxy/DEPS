@@ -1,0 +1,16 @@
+include_rules = [
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/previews/core",
+  "+crypto",
+  "+google_apis",
+  "+net",
+  "+mojo/public/cpp",
+  "+services/network/public/mojom",
+
+  "-components"
+
+  # Data Reduction Proxy is a layered component; subdirectories must explicitly
+  # introduce the ability to use the content layer as appropriate.
+  "-components/data_reduction_proxy/content",
+]

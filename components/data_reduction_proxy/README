@@ -1,0 +1,14 @@
+The Data Reduction Proxy component contains code for a configuring and using
+the data reduction proxy.
+
+The Data Reduction Proxy is a layered component. See
+http://www.chromium.org/developers/design-documents/layered-components-design
+for more information.
+
+Folder structure:
+
+  core/: Shared code that does not depend on src/content/ or src/ios/
+    browser/: Browser process code.
+    common/: Code shared by the browser and the renderer.
+  
+  content/: Driver for the shared code based on the content layer.

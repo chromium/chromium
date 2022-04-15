@@ -23,6 +23,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -127,6 +128,10 @@ static const char* kBadFlags[] = {
     // such as writing user data to disk, cleaning caches, reporting metrics or
     // updating components won't be performed until shutdown.
     switches::kDisableBestEffortTasks,
+
+    // Enables save data feature which can cause user traffic to be proxied via
+    // Google's data reduction proxy servers.
+    data_reduction_proxy::switches::kEnableDataReductionProxy,
 
     // GPU sanboxing isn't implemented for the Web GPU API yet meaning it would
     // be possible to read GPU data for other Chromium processes.
