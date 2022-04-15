@@ -13,5 +13,8 @@
   },
   "builder_group": "chromium.fyi",
   "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ],
   "xcode_build_version": "13c100"
 }

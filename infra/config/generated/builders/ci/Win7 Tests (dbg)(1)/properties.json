@@ -15,6 +15,6 @@
   "builder_group": "chromium.win",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

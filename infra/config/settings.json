@@ -1,6 +1,9 @@
 {
-    "project": "chromium",
-    "project_title": "Chromium",
-    "ref": "refs/heads/main",
-    "chrome_project": "chrome"
+    "project": "chromium-m102",
+    "project_title": "Chromium M102",
+    "ref": "refs/branch-heads/5005",
+    "chrome_project": "chrome-m102",
+    "branch_types": [
+        "standard"
+    ]
 }

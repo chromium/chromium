@@ -67,12 +67,6 @@
           "builder": "Win 7 Tests x64 (1)",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "win_chromium_x64_rel_ng",
-          "group": "tryserver.chromium.win"
-        }
       ]
     }
   },
@@ -92,6 +86,6 @@
   "builder_group": "chromium.win",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

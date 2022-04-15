@@ -69,19 +69,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "mac-inverse-fieldtrials-fyi-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
           "builder": "mac-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_11.0_rel_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_compile_rel_ng",
           "group": "tryserver.chromium.mac"
         }
       ]
@@ -97,6 +85,6 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
