@@ -41,7 +41,12 @@ bool UnionTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
     }
 {%- endfor %}
     default:
+{%  if union.extensible %}
+      *output = UnionType::New{{union.default_field.name|under_to_camel}}({});
+      return true;
+{%- else %}
       return false;
+{%- endif %}
   }
   return true;
 }

@@ -438,6 +438,11 @@ def _UnionField(module, parsed_field, union):
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = None
   field.attributes = _AttributeListToDict(module, parsed_field.attribute_list)
+  if field.is_default and not mojom.IsNullableKind(field.kind) and \
+     not mojom.IsIntegralKind(field.kind):
+    raise Exception(
+        '[Default] field for union %s must be nullable or integral type.' %
+        union.mojom_name)
   return field
 
 
@@ -846,8 +851,17 @@ def _Module(tree, path, imports):
     union.fields = list(
         map(lambda field: _UnionField(module, field, union), union.fields_data))
     _AssignDefaultOrdinals(union.fields)
+    for field in union.fields:
+      if field.is_default:
+        if union.default_field is not None:
+          raise Exception('Multiple [Default] fields in union %s.' %
+                          union.mojom_name)
+        union.default_field = field
     del union.fields_data
     all_defined_kinds[union.spec] = union
+    if union.extensible and union.default_field is None:
+      raise Exception('Extensible union %s must specify a [Default] field' %
+                      union.mojom_name)
 
   for interface in module.interfaces:
     interface.methods = list(

@@ -411,7 +411,18 @@ class StructField(Field):
 
 
 class UnionField(Field):
-  pass
+  def __init__(self,
+               mojom_name=None,
+               kind=None,
+               ordinal=None,
+               default=None,
+               attributes=None):
+    Field.__init__(self, mojom_name, kind, ordinal, default, attributes)
+
+  @property
+  def is_default(self):
+    return self.attributes.get(ATTRIBUTE_DEFAULT, False) \
+        if self.attributes else False
 
 
 def _IsFieldBackwardCompatible(new_field, old_field, checker):
@@ -603,6 +614,7 @@ class Union(ReferenceKind):
   ReferenceKind.AddSharedProperty('name')
   ReferenceKind.AddSharedProperty('fields')
   ReferenceKind.AddSharedProperty('attributes')
+  ReferenceKind.AddSharedProperty('default_field')
 
   def __init__(self, mojom_name=None, module=None, attributes=None):
     if mojom_name is not None:
@@ -614,6 +626,7 @@ class Union(ReferenceKind):
     self.name = None
     self.fields = []
     self.attributes = attributes
+    self.default_field = None
 
   def Repr(self, as_ref=True):
     if as_ref:
@@ -680,6 +693,11 @@ class Union(ReferenceKind):
         return False
 
     return True
+
+  @property
+  def extensible(self):
+    return self.attributes.get(ATTRIBUTE_EXTENSIBLE, False) \
+        if self.attributes else False
 
   @property
   def stable(self):

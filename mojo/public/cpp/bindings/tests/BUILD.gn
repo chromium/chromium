@@ -160,6 +160,7 @@ mojom("test_mojom") {
     "service_factory_unittest.test-mojom",
     "struct_headers_unittest.test-mojom",
     "sync_method_unittest.test-mojom",
+    "union_unittest.test-mojom",
   ]
 
   public_deps = [

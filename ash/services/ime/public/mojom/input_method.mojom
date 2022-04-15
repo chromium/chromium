@@ -55,11 +55,12 @@ enum NamedDomKey {
 // NamedDomKey for special keys (e.g. Shift), as specified by:
 // https://www.w3.org/TR/uievents/#dom-keyboardevent-key
 //
-// TODO(crbug/1201949): Note that the Extensible keyword is not supported for
-// union types. We may need to revisit this type in the future.
+// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// all deployed versions before new ordinals can be introduced, and [Extensible]
+// requires specifying a [Default] field.
 //
 // Next ordinal: 2
-[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.DomKey"]
+[Stable, RenamedFrom="chromeos.ime.mojom.DomKey"]
 union DomKey {
   // If the key is a key with a "named key attribute" in:
   // https://www.w3.org/TR/uievents-key/#named-key-attribute-value
@@ -259,9 +260,11 @@ struct InputFieldInfo {
 };
 
 // Next ordinal: 4
-// TODO(crbug/1201949): Note that the Extensible keyword is not supported for
-// union types. We may need to revisit this type in the future.
-[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
+//
+// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// all deployed versions before new ordinals can be introduced, and [Extensible]
+// requires specifying a [Default] field.
+[Stable, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
 union InputMethodSettings {
   KoreanSettings korean_settings@0;
   LatinSettings latin_settings@1;

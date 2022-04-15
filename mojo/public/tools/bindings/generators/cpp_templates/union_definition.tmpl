@@ -36,11 +36,15 @@ bool {{class_name}}::Validate(
     }
 {%- endfor %}
     default: {
+{%  if union.extensible %}
+      return true;
+{%- else %}
       ReportValidationError(
           validation_context,
           mojo::internal::VALIDATION_ERROR_UNKNOWN_UNION_TAG,
           "unknown tag in {{union.name}}");
       return false;
+{%- endif %}
     }
   }
 }

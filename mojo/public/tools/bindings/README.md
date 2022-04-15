@@ -399,20 +399,33 @@ interesting attributes supported today.
   extreme caution, because it can lead to deadlocks otherwise.
 
 * **`[Default]`**:
-  The `Default` attribute may be used to specify an enumerator value that
-  will be used if an `Extensible` enumeration does not deserialize to a known
-  value on the receiver side, i.e. the sender is using a newer version of the
-  enum. This allows unknown values to be mapped to a well-defined value that can
-  be appropriately handled.
+  The `Default` attribute may be used to specify an enumerator value or union
+  field that will be used if an `Extensible` enumeration or union does not
+  deserialize to a known value on the receiver side, i.e. the sender is using a
+  newer version of the enum or union. This allows unknown values to be mapped to
+  a well-defined value that can be appropriately handled.
+
+  Note: The `Default` field for a union must be of nullable or integral type.
+  When a union is defaulted to this field, the field takes on the default value
+  for its type: null for nullable types, and zero/false for integral types.
 
 * **`[Extensible]`**:
-  The `Extensible` attribute may be specified for any enum definition. This
-  essentially disables builtin range validation when receiving values of the
-  enum type in a message, allowing older bindings to tolerate unrecognized
-  values from newer versions of the enum.
+  The `Extensible` attribute may be specified for any enum or union definition.
+  For enums, this essentially disables builtin range validation when receiving
+  values of the enum type in a message, allowing older bindings to tolerate
+  unrecognized values from newer versions of the enum.
 
-  Note: in the future, an `Extensible` enumeration will require that a `Default`
-  enumerator value also be specified.
+  If an enum value within an extensible enum definition is affixed with the
+  `Default` attribute, out-of-range values for the enum will deserialize to that
+  default value. Only one enum value may be designated as the `Default`.
+
+  Similarly, a union marked `Extensible` will deserialize to its `Default` field
+  when an unrecognized field is received. Extensible unions MUST specify exactly
+  one `Default` field, and the field must be of nullable or integral type. When
+  defaulted to this field, the value is always null/zero/false as appropriate.
+
+  Note: in the future, an `Extensible` enumeration will also REQUIRE that a
+  `Default` value be specified, so all new extensible enums should specify one.
 
 * **`[Native]`**:
   The `Native` attribute may be specified for an empty struct declaration to

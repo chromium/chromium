@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/tests/union_unittest.test-mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_unions.mojom.h"
@@ -26,6 +27,7 @@
 
 namespace mojo {
 namespace test {
+namespace union_unittest {
 
 template <typename InputType, typename DataType>
 size_t SerializeStruct(InputType& input,
@@ -1143,5 +1145,69 @@ TEST(UnionTest, InlineUnionAllocationWithNonPODFirstField) {
   u = UnionWithStringForFirstField::NewS("hey");
 }
 
+class ExtensibleTestUnionExchange
+    : public mojom::ExtensibleTestUnionExchangeV1 {
+ public:
+  explicit ExtensibleTestUnionExchange(
+      PendingReceiver<mojom::ExtensibleTestUnionExchangeV2> receiver) {
+    // Coerce the V2 interface receiver into a V1 receiver. This is OK per
+    // comments on the ExtensibleTestUnionExchangeV2 mojom definition.
+    receiver_.Bind(PendingReceiver<mojom::ExtensibleTestUnionExchangeV1>(
+        receiver.PassPipe()));
+  }
+
+  // mojom::ExtensibleTestUnionExchangeV1:
+  void ExchangeWithBoolDefault(
+      mojom::ExtensibleTestUnionV1WithBoolDefaultPtr u,
+      ExchangeWithBoolDefaultCallback callback) override {
+    std::move(callback).Run(std::move(u));
+  }
+  void ExchangeWithIntDefault(
+      mojom::ExtensibleTestUnionV1WithIntDefaultPtr u,
+      ExchangeWithIntDefaultCallback callback) override {
+    std::move(callback).Run(std::move(u));
+  }
+  void ExchangeWithNullableDefault(
+      mojom::ExtensibleTestUnionV1WithNullableDefaultPtr u,
+      ExchangeWithNullableDefaultCallback callback) override {
+    std::move(callback).Run(std::move(u));
+  }
+
+ private:
+  Receiver<mojom::ExtensibleTestUnionExchangeV1> receiver_{this};
+};
+
+TEST(UnionTest, ExtensibleUnion) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  Remote<mojom::ExtensibleTestUnionExchangeV2> remote;
+  ExtensibleTestUnionExchange exchange(remote.BindNewPipeAndPassReceiver());
+
+  {
+    mojom::ExtensibleTestUnionV1WithBoolDefaultPtr result;
+    remote->ExchangeWithBoolDefault(mojom::TestUnionV2::NewBlob({}), &result);
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->is_flag());
+    EXPECT_FALSE(result->get_flag());
+  }
+
+  {
+    mojom::ExtensibleTestUnionV1WithIntDefaultPtr result;
+    remote->ExchangeWithIntDefault(mojom::TestUnionV2::NewBlob({}), &result);
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->is_integer());
+    EXPECT_EQ(0u, result->get_integer());
+  }
+
+  {
+    mojom::ExtensibleTestUnionV1WithNullableDefaultPtr result;
+    remote->ExchangeWithNullableDefault(mojom::TestUnionV2::NewBlob({}),
+                                        &result);
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->is_name());
+    EXPECT_FALSE(result->get_name().has_value());
+  }
+}
+
+}  // namespace union_unittest
 }  // namespace test
 }  // namespace mojo
