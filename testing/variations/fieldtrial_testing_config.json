@@ -4943,26 +4943,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "OmniboxPedalsAndroidBatch1",
-                        "OmniboxPedalsBatch3NonEnglish"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxPedalsBatch3NonEnglish": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxPedalsBatch3NonEnglish"
+                        "OmniboxPedalsAndroidBatch1"
                     ]
                 }
             ]
