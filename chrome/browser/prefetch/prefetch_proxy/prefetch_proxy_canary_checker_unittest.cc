@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_canary_checker.h"
-#include "build/build_config.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -261,15 +260,8 @@ TEST_F(PrefetchProxyCanaryCheckerTest, CacheHit) {
   EXPECT_FALSE(checker->IsActive());
 }
 
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-     BUILDFLAG(IS_ANDROID))
-#define MAYBE_NetworkConnectionShardsCache DISABLED_NetworkConnectionShardsCache
-#else
-#define MAYBE_NetworkConnectionShardsCache NetworkConnectionShardsCache
-#endif
-// TODO(crbug.com/1307697): Disabled due to failures on win-asan.
-// TODO(crbug.com/1307470): Disabled due to flakes on linux and chromeos.
-TEST_F(PrefetchProxyCanaryCheckerTest, MAYBE_NetworkConnectionShardsCache) {
+// TODO(crbug.com/1307470): Re-enable; flaky.
+TEST_F(PrefetchProxyCanaryCheckerTest, DISABLED_NetworkConnectionShardsCache) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_3G);
   RunUntilIdle();
