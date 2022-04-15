@@ -93,8 +93,7 @@ const CGFloat kOmniboxIconSize = 16;
     formatter.starred = _delegate->IsStarredMatch(match);
     formatter.incognito = _incognito;
     formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
-    formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
-                                                   incognito:_incognito];
+    formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
     [wrappedMatches addObject:formatter];
   }
 

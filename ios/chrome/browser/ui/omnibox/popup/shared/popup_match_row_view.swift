@@ -6,13 +6,6 @@ import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
 struct PopupMatchRowView: View {
-  enum Colors {
-    static let highlightingColor = Color(
-      red: 26 / 255, green: 115 / 255, blue: 232 / 255, opacity: 1)
-    static let highlightingGradient = Gradient(colors: [
-      highlightingColor.opacity(0.85), highlightingColor,
-    ])
-  }
 
   enum Dimensions {
     static let actionButtonOffset = CGSize(width: -5, height: 0)
@@ -22,9 +15,6 @@ struct PopupMatchRowView: View {
     static let maxHeight: CGFloat = 98
     static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
   }
-
-  @Environment(\.colorScheme) var colorScheme: ColorScheme
-  @Environment(\.popupUIVariation) var uiVariation: PopupUIVariation
 
   let match: PopupMatch
   let isHighlighted: Bool
@@ -65,33 +55,15 @@ struct PopupMatchRowView: View {
     }
   }
 
-  /// Enable this to tell the row it should display its own custom separator at the bottom.
-  let shouldDisplayCustomSeparator: Bool
-  var customSeparatorColor: Color {
-    (colorScheme == .dark) ? .cr_grey700 : .cr_grey200
-  }
-  @ViewBuilder
-  var customSeparator: some View {
-    HStack(spacing: 0) {
-      Spacer().frame(width: Dimensions.leadingSpacing)
-      customSeparatorColor.frame(height: 0.5)
-    }
-  }
-
   var body: some View {
     ZStack {
-      // This hides system separators when disabling them is not possible.
-      backgroundColor
-
-      if shouldDisplayCustomSeparator {
-        VStack {
-          Spacer()
-          customSeparator
-        }
-      }
-
       if isHighlighted {
-        LinearGradient(gradient: Colors.highlightingGradient, startPoint: .top, endPoint: .bottom)
+        LinearGradient(
+          gradient:
+            Gradient(colors: [backgroundColor.opacity(0.85), backgroundColor]), startPoint: .top,
+          endPoint: .bottom
+        )
+
       } else if self.isPressed {
         Color.cr_tableRowViewHighlight
       }
@@ -141,7 +113,14 @@ struct PopupMatchRowView: View {
   }
 
   var backgroundColor: Color {
-    (uiVariation == .one) ? .cr_primaryBackground : .cr_groupedSecondaryBackground
+    if isHighlighted {
+      return Color(red: 26 / 255, green: 115 / 255, blue: 232 / 255, opacity: 1)
+    }
+    if self.isPressed {
+      return .cr_tableRowViewHighlight
+    } else {
+      return .cr_groupedSecondaryBackground
+    }
   }
 
   var foregroundColorPrimary: Color {

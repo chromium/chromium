@@ -14,7 +14,7 @@ import SwiftUI
 
   /// The SwiftUI `Image` and tint color for the main static image.
   public var iconImage: Image? {
-    return icon.iconImage.map { image in Image(uiImage: image) }
+    icon.iconImage.map { image in Image(uiImage: image) }
   }
   public var iconImageTintColor: Color? {
     icon.iconImageTintColor.map { color in Color(color) }
