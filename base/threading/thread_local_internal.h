@@ -5,7 +5,7 @@
 #ifndef BASE_THREADING_THREAD_LOCAL_INTERNAL_H_
 #define BASE_THREADING_THREAD_LOCAL_INTERNAL_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/dcheck_is_on.h"
 
 #if DCHECK_IS_ON()
 
@@ -13,6 +13,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_local_storage.h"
 
 namespace base {

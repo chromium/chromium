@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/containers/stack.h"
+#include "base/dcheck_is_on.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 

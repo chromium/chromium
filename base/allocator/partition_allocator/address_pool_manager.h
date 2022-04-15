@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 

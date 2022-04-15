@@ -49,6 +49,7 @@
 
 #include "base/atomicops.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance_helpers.h"
 #include "base/threading/thread_restrictions.h"

@@ -65,6 +65,7 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"

@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/random.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 // Prefetch *x into memory.

@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 

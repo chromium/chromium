@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/cancelable_callback.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"

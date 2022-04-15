@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list_buildflags.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"

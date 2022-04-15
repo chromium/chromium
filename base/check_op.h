@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/template_util.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.

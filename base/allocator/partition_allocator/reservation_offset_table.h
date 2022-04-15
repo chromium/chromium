@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {

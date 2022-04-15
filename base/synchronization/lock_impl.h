@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 

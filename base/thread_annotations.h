@@ -38,6 +38,7 @@
 #define BASE_THREAD_ANNOTATIONS_H_
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 #if defined(__clang__)

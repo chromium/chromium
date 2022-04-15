@@ -18,6 +18,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"

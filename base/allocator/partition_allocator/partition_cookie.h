@@ -8,6 +8,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 
 namespace partition_alloc::internal {
 

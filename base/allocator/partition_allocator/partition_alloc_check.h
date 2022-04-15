@@ -10,6 +10,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "build/build_config.h"
