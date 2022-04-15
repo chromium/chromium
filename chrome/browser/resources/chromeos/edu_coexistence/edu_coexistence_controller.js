@@ -228,7 +228,7 @@ export class EduCoexistenceController extends PostMessageAPIServer {
 
     // The EDU Signin page doesn't forward to the next page on success, so we have
     // to manually update the src to continue to the last page of the flow.
-    let finishURL = this.flowURL_;
+    const finishURL = this.flowURL_;
     finishURL.pathname = '/supervision/coexistence/finish';
     this.webview_.src = finishURL.toString();
   }

@@ -5,7 +5,7 @@
 /* #js_imports_placeholder */
 
 /** @enum {string} */
-let NotificationCardType = {
+const NotificationCardType = {
   FAIL: 'fail',
   SUCCESS: 'success',
 };

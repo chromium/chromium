@@ -19,7 +19,7 @@ class TestElementApi {
    * @return {HTMLElement}
    */
   element() {
-    throw 'element() should be defined!';
+    throw new Error('element() should be defined!');
   }
 
   /**
@@ -122,17 +122,18 @@ class HIDDetectionScreenTester extends ScreenElementApi {
 
   touchscreenDetected() {
     // Touchscreen entire row is only visible when touchscreen is detected.
-    let touchscreenRow = new PolymerElementApi(this, '#hid-touchscreen-entry');
+    const touchscreenRow =
+        new PolymerElementApi(this, '#hid-touchscreen-entry');
     return touchscreenRow.isVisible();
   }
 
   mouseDetected() {
-    let mouseTickIcon = new PolymerElementApi(this, '#mouse-tick');
+    const mouseTickIcon = new PolymerElementApi(this, '#mouse-tick');
     return mouseTickIcon.isVisible();
   }
 
   keyboardDetected() {
-    let keyboardTickIcon = new PolymerElementApi(this, '#keyboard-tick');
+    const keyboardTickIcon = new PolymerElementApi(this, '#keyboard-tick');
     return keyboardTickIcon.isVisible();
   }
 
@@ -153,7 +154,7 @@ class WelcomeScreenTester extends ScreenElementApi {
   /** @override */
   clickNext() {
     if (!this.nextButton) {
-      let mainStep = new PolymerElementApi(this, '#welcomeScreen');
+      const mainStep = new PolymerElementApi(this, '#welcomeScreen');
       this.nextButton = new PolymerElementApi(mainStep, '#getStarted');
     }
 
@@ -268,8 +269,8 @@ class PinSetupScreenTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#nextButton');
     this.doneButton = new PolymerElementApi(this, '#doneButton');
     this.backButton = new PolymerElementApi(this, '#backButton');
-    let pinSetupKeyboard = new PolymerElementApi(this, '#pinKeyboard');
-    let pinKeyboard = new PolymerElementApi(pinSetupKeyboard, '#pinKeyboard');
+    const pinSetupKeyboard = new PolymerElementApi(this, '#pinKeyboard');
+    const pinKeyboard = new PolymerElementApi(pinSetupKeyboard, '#pinKeyboard');
     this.pinField = new TextFieldApi(pinKeyboard, '#pinInput');
     this.pinButtons = {};
     for (let i = 0; i <= 9; i++) {

@@ -86,7 +86,7 @@ Polymer({
     this.assertButtonType_(buttonType);
 
     // Disable the border if necessary.
-    let cssClassses = newOobeStyleEnabled ? 'no-border button-radius' : '';
+    const cssClassses = newOobeStyleEnabled ? 'no-border button-radius' : '';
 
     if (buttonType === ButtonTypes.BACK) {
       return cssClassses;

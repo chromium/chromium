@@ -61,7 +61,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
       resetAllowed: false,
     });
 
-    let networkContainer = this.$.configNetworkContainer;
+    const networkContainer = this.$.configNetworkContainer;
     networkContainer.addEventListener(
         'transitionend', this.onConfigNetworkTransitionend_.bind(this));
 

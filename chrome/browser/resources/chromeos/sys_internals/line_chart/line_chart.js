@@ -305,7 +305,7 @@ export class LineChart {
    */
   scroll(delta) {
     const /** number */ oldPosition = this.scrollbar_.getPosition();
-    let /** number */ newPosition = oldPosition + Math.round(delta);
+    const /** number */ newPosition = oldPosition + Math.round(delta);
 
     this.scrollbar_.setPosition(newPosition);
     if (this.scrollbar_.getPosition() == oldPosition)

@@ -329,7 +329,7 @@ class GaiaDialog extends GaiaDialogBase {
       },
     };
 
-    for (let eventName in authenticatorEventListeners) {
+    for (const eventName in authenticatorEventListeners) {
       this.authenticator_.addEventListener(
           eventName, authenticatorEventListeners[eventName].bind(this));
     }

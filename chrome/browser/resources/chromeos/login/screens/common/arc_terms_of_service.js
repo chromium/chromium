@@ -373,7 +373,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
           this.$.arcTosOverlayWebview, TERMS_URL,
           WebViewHelper.ContentType.PDF);
     } else {
-      let overlayWebview = this.$.arcTosOverlayWebview;
+      const overlayWebview = this.$.arcTosOverlayWebview;
       if (this.isDemoModeSetup_()) {
         this.setClearAnchorScriptForWebview_(overlayWebview);
       }

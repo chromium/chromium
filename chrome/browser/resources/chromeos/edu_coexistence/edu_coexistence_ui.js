@@ -97,7 +97,7 @@ Polymer({
 
   handleGaiaLoginGoBack_(e) {
     e.stopPropagation();
-    let backButton = this.root.getElementById('gaia-back-button');
+    const backButton = this.root.getElementById('gaia-back-button');
     if (backButton.disabled) {
       // This is a safeguard against this method getting called somehow
       // despite the button being disabled.

@@ -73,14 +73,14 @@ Polymer({
 
   /** @override */
   attached() {
-    let dialogArgs = chrome.getVariableValue('dialogArguments');
+    const dialogArgs = chrome.getVariableValue('dialogArguments');
 
     if (this.isBluetoothRevampEnabled_) {
       if (!dialogArgs) {
         return;
       }
 
-      let parsedDialogArgs = JSON.parse(dialogArgs);
+      const parsedDialogArgs = JSON.parse(dialogArgs);
       if (!parsedDialogArgs) {
         return;
       }
@@ -100,7 +100,7 @@ Polymer({
       return;
     }
 
-    let parsedDialogArgs = JSON.parse(dialogArgs);
+    const parsedDialogArgs = JSON.parse(dialogArgs);
 
     // Wait for next render or deviceDialog has not been created yet.
     afterNextRender(this, () => this.connect_(parsedDialogArgs.address));

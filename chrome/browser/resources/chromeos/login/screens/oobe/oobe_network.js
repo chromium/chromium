@@ -165,8 +165,9 @@ class NetworkScreen extends NetworkScreenBase {
    * @return {NetworkList.NetworkListItemType}
    */
   getNetworkListItemWithQueryForTest(query) {
-    let networkList =
-        this.$.networkSelectLogin.shadowRoot.querySelector('#networkSelect').getNetworkListForTest();
+    const networkList =
+        this.$.networkSelectLogin.shadowRoot.querySelector('#networkSelect')
+            .getNetworkListForTest();
     assert(networkList);
     return networkList.querySelector(query);
   }

@@ -182,7 +182,7 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
     this.loading = true;
     this.loadingError_ = false;
     this.headerReceived_ = false;
-    let locale = this.locale.replace('-', '_').toLowerCase();
+    const locale = this.locale.replace('-', '_').toLowerCase();
     this.webview_.src = this.urlTemplate_.replace('$', locale);
   }
 

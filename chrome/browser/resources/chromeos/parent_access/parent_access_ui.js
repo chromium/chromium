@@ -113,7 +113,7 @@ Polymer({
     this.server =
         new ParentAccessController(webview, url.toString(), eventOriginFilter);
 
-    let parentAccessResult = await Promise.race([
+    const parentAccessResult = await Promise.race([
       this.server.whenParentAccessResult(),
       this.server.whenInitializationError()
     ]);

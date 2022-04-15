@@ -140,7 +140,7 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
    */
   setSelectedKeyboard(keyboardId) {
     let found = false;
-    for (let keyboard of this.keyboards) {
+    for (const keyboard of this.keyboards) {
       if (keyboard.value != keyboardId) {
         keyboard.selected = false;
         continue;
@@ -182,7 +182,7 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
     this.countries = countries;
     this.$.countryDropdownContainer.hidden = countries.length == 0;
     for (let i = 0; i < countries.length; ++i) {
-      let country = countries[i];
+      const country = countries[i];
       if (country.selected && country.value !== this.country_not_selected_id_) {
         this.is_country_selected_ = true;
         return;

@@ -62,7 +62,7 @@
         onError();
         return;
       }
-      let contents = /** @type {string} */ (xhr.response);
+      const contents = /** @type {string} */ (xhr.response);
       setContents(contents);
     };
 

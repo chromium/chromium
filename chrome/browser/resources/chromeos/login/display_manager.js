@@ -44,7 +44,7 @@ cr.define('cr.ui.login', function() {
    * TODO(crbug.com/1229130) - Remove this suppression.
    */
   /* #export */ function invokePolymerMethod(element, name, ...args) {
-    let method = element[name];
+    const method = element[name];
     if (!method || typeof method !== 'function')
       return;
     method.apply(element, args);
@@ -54,8 +54,8 @@ cr.define('cr.ui.login', function() {
     // If element has behaviors call functions on them in reverse order,
     // ignoring case when method on element was derived from behavior.
     for (var i = element.behaviors.length - 1; i >= 0; i--) {
-      let behavior = element.behaviors[i];
-      let behaviorMethod = behavior[name];
+      const behavior = element.behaviors[i];
+      const behaviorMethod = behavior[name];
       if (!behaviorMethod || typeof behaviorMethod !== 'function')
         continue;
       if (behaviorMethod == method)
@@ -257,8 +257,8 @@ cr.define('cr.ui.login', function() {
       if (this.currentScreen && this.currentScreen.ignoreAccelerators) {
         return;
       }
-      let currentStepId = this.screens_[this.currentStep_];
-      let attributes = this.screensAttributes_[this.currentStep_] || {};
+      const currentStepId = this.screens_[this.currentStep_];
+      const attributes = this.screensAttributes_[this.currentStep_] || {};
       if (name == ACCELERATOR_CANCEL) {
         if (this.currentScreen && this.currentScreen.cancel) {
           this.currentScreen.cancel();
@@ -292,10 +292,10 @@ cr.define('cr.ui.login', function() {
      * TODO(crbug.com/1229130) - Remove this suppression.
      */
     toggleStep_(nextStepIndex, screenData) {
-      let currentStepId = this.screens_[this.currentStep_];
-      let nextStepId = this.screens_[nextStepIndex];
-      let oldStep = $(currentStepId);
-      let newStep = $(nextStepId);
+      const currentStepId = this.screens_[this.currentStep_];
+      const nextStepId = this.screens_[nextStepIndex];
+      const oldStep = $(currentStepId);
+      const newStep = $(nextStepId);
 
       invokePolymerMethod(oldStep, 'onBeforeHide');
 
@@ -321,7 +321,7 @@ cr.define('cr.ui.login', function() {
       //
       // TODO(alemate): make every screen a single Polymer element, so that
       // we could simply use OobeDialogHostBehavior in stead of this.
-      for (let dialog of newStep.getElementsByTagName('oobe-dialog'))
+      for (const dialog of newStep.getElementsByTagName('oobe-dialog'))
         invokePolymerMethod(dialog, 'onBeforeShow', screenData);
 
       if (newStep.defaultControl)
@@ -334,9 +334,9 @@ cr.define('cr.ui.login', function() {
       newStep.classList.remove('faded');
 
       // Default control to be focused (if specified).
-      let defaultControl = newStep.defaultControl;
+      const defaultControl = newStep.defaultControl;
 
-      let innerContainer = $('inner-container');
+      const innerContainer = $('inner-container');
       if (this.currentStep_ != nextStepIndex &&
           !oldStep.classList.contains('hidden')) {
         oldStep.classList.add('hidden');
@@ -350,7 +350,7 @@ cr.define('cr.ui.login', function() {
           innerContainer.addEventListener('transitionend', function f(e) {
             innerContainer.removeEventListener('transitionend', f);
             // Refresh defaultControl. It could have changed.
-            let defaultControl = newStep.defaultControl;
+            const defaultControl = newStep.defaultControl;
             if (defaultControl)
               defaultControl.focus();
           });
@@ -393,10 +393,10 @@ cr.define('cr.ui.login', function() {
         return;
       }
 
-      let screenId = screen.id;
+      const screenId = screen.id;
 
-      let data = screen.data;
-      let index = this.getScreenIndex_(screenId);
+      const data = screen.data;
+      const index = this.getScreenIndex_(screenId);
       if (index >= 0)
         this.toggleStep_(index, data);
     }
@@ -420,7 +420,7 @@ cr.define('cr.ui.login', function() {
      * @param {DisplayManagerScreenAttributes} attributes
      */
     registerScreen(el, attributes) {
-      let screenId = el.id;
+      const screenId = el.id;
       assert(screenId);
       assert(!this.screens_.includes(screenId), 'Duplicate screen ID.');
       assert(
@@ -440,18 +440,18 @@ cr.define('cr.ui.login', function() {
      */
     updateLocalizedContent_() {
       for (let i = 0; i < this.screens_.length; ++i) {
-        let screenId = this.screens_[i];
-        let screen = $(screenId);
+        const screenId = this.screens_[i];
+        const screen = $(screenId);
         if (screen.updateLocalizedContent)
           screen.updateLocalizedContent();
       }
-      let dynamicElements = document.getElementsByClassName('i18n-dynamic');
+      const dynamicElements = document.getElementsByClassName('i18n-dynamic');
       for (var child of dynamicElements) {
         if (typeof (child.i18nUpdateLocale) === 'function') {
           child.i18nUpdateLocale();
         }
       }
-      let isInTabletMode = loadTimeData.getBoolean('isInTabletMode');
+      const isInTabletMode = loadTimeData.getBoolean('isInTabletMode');
       this.setTabletModeState_(isInTabletMode);
     }
 
@@ -462,8 +462,8 @@ cr.define('cr.ui.login', function() {
     updateOobeConfiguration_(configuration) {
       this.oobe_configuration_ = configuration;
       for (let i = 0; i < this.screens_.length; ++i) {
-        let screenId = this.screens_[i];
-        let screen = $(screenId);
+        const screenId = this.screens_[i];
+        const screen = $(screenId);
         if (screen.updateOobeConfiguration)
           screen.updateOobeConfiguration(configuration);
       }
@@ -475,8 +475,8 @@ cr.define('cr.ui.login', function() {
      */
     setTabletModeState_(isInTabletMode) {
       for (let i = 0; i < this.screens_.length; ++i) {
-        let screenId = this.screens_[i];
-        let screen = $(screenId);
+        const screenId = this.screens_[i];
+        const screen = $(screenId);
         if (screen.setTabletModeState)
           screen.setTabletModeState(isInTabletMode);
       }
@@ -491,7 +491,7 @@ cr.define('cr.ui.login', function() {
       if (this.displayType_ == DISPLAY_TYPE.OOBE) {
         this.demoModeStartListener_ =
             new MultiTapDetector($('outer-container'), 10, () => {
-              let currentScreen = this.currentScreen;
+              const currentScreen = this.currentScreen;
               if (currentScreen.id === SCREEN_WELCOME) {
                 currentScreen.onSetupDemoModeGesture();
               }

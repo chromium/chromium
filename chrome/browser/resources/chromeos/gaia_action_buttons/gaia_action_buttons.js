@@ -135,7 +135,7 @@ Polymer({
    * @return {string}
    */
   getActionButtonClasses_(roundedButton) {
-    let cssClasses = ['action-button'];
+    const cssClasses = ['action-button'];
     if (roundedButton) {
       cssClasses.push('rounded-button');
     }
@@ -148,7 +148,7 @@ Polymer({
    * @return {string}
    */
   getSecondaryButtonClasses_(roundedButton) {
-    let cssClasses = ['secondary-button'];
+    const cssClasses = ['secondary-button'];
     if (roundedButton) {
       cssClasses.push('rounded-button');
     }

@@ -12,7 +12,7 @@
  *   resetAllowed: (boolean|undefined),
  * }}
  */
-/* #export */ let DisplayManagerScreenAttributes = {};
+/* #export */ const DisplayManagerScreenAttributes = {};
 
 /**
  * True if device reset is allowed on the screen.

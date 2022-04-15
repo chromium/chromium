@@ -556,7 +556,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   /** @private */
   focusActiveFrame_() {
-    let activeFrame = this.getActiveFrame_();
+    const activeFrame = this.getActiveFrame_();
     Polymer.RenderStatus.afterNextRender(this, () => activeFrame.focus());
   }
 
@@ -603,7 +603,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // Reset the PIN dialog, in case it's shown.
     this.closePinDialog();
 
-    let params = {};
+    const params = {};
     cr.login.Authenticator.SUPPORTED_PARAMS.forEach(name => {
       if (data.hasOwnProperty(name)) {
         params[name] = data[name];

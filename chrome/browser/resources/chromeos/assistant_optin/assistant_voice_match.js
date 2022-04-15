@@ -142,7 +142,7 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
     this.$['loading-animation'].hidden = true;
 
     for (let i = 0; i < MAX_INDEX; ++i) {
-      let entry = this.$['voice-entry-' + i];
+      const entry = this.$['voice-entry-' + i];
       entry.removeAttribute('active');
       entry.removeAttribute('completed');
     }
@@ -180,7 +180,7 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
       announceAccessibleMessage(
           loadTimeData.getString('assistantVoiceMatchA11yMessage'));
     }
-    let currentEntry = this.$['voice-entry-' + this.currentIndex_];
+    const currentEntry = this.$['voice-entry-' + this.currentIndex_];
     currentEntry.setAttribute('active', true);
   }
 
@@ -188,7 +188,7 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
    * Called when the server has detected and processing hotword.
    */
   processingHotword() {
-    let currentEntry = this.$['voice-entry-' + this.currentIndex_];
+    const currentEntry = this.$['voice-entry-' + this.currentIndex_];
     currentEntry.removeAttribute('active');
     currentEntry.setAttribute('completed', true);
     this.currentIndex_++;

@@ -152,7 +152,7 @@ export class CfmNetworkSettings extends PolymerElement {
    * @private
    */
   onCustomItemSelected_(event) {
-    let itemState = event.detail;
+    const itemState = event.detail;
     itemState.customData.onTap(this.browserProxy_);
   }
 }

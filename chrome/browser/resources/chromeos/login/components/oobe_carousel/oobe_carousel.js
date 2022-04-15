@@ -97,7 +97,7 @@ Polymer({
   prepareCarousel_() {
     this.slides = this.$.slot.assignedElements();
     this.totalSlides = this.slides.length;
-    let array = [];
+    const array = [];
     for (let i = 0; i < this.totalSlides; ++i) {
       this.slides[i].setAttribute('aria-label', this.getSlideLabel_(i));
       this.slides[i].setAttribute('role', 'group');

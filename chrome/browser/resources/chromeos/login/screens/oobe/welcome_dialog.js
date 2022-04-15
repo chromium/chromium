@@ -155,7 +155,7 @@ OobeWelcomeDialogBase.$;
     if (!this.focusedElement_) {
       this.focusedElement_ = 'getStarted';
     }
-    let focusedElement = this.$[this.focusedElement_];
+    const focusedElement = this.$[this.focusedElement_];
     if (focusedElement)
       focusedElement.focus();
   }
@@ -165,7 +165,7 @@ OobeWelcomeDialogBase.$;
     * This replaces the show() function, in this class.
     */
   updateHidden_(newValue, oldValue) {
-    let visible = !newValue;
+    const visible = !newValue;
     if (visible) {
       this.focus();
     }

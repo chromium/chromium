@@ -27,7 +27,7 @@ const CALLBACK_USER_ACTED = 'userActed';
    * @param {DisplayManagerScreenAttributes} attributes
    */
   initializeLoginScreen(screenName, attributes) {
-    let api = {};
+    const api = {};
 
     if (this.EXTERNAL_API.length != 0) {
       for (let i = 0; i < this.EXTERNAL_API.length; ++i) {

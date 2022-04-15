@@ -9,6 +9,5 @@ module.exports = {
     'curly': 'off',
     'eqeqeq': 'off',
     'no-var': 'off',
-    'prefer-const': 'off',
   },
 };

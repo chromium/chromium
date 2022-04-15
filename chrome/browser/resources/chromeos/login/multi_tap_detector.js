@@ -50,7 +50,7 @@
    * @private
    */
   onTap_() {
-    let timestamp = this.getCurrentTime_();
+    const timestamp = this.getCurrentTime_();
     if (!this.lastTapTime_ ||
         timestamp - this.lastTapTime_ <
             MultiTapDetector.IN_BETWEEN_TAPS_TIME_MS) {

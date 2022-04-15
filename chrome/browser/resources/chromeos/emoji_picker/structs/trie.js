@@ -47,9 +47,9 @@ export class Trie {
    * @returns {!Array<string>} all keys that share the same given prefix.
    */
   getKeys(prefix) {
-    let allKeys = [];
+    const allKeys = [];
     if (prefix !== undefined) {
-      let prefixNode = this.getChildNode_(prefix);
+      const prefixNode = this.getChildNode_(prefix);
       if (prefixNode === undefined) {
         return [];
       }
@@ -81,7 +81,7 @@ export class Trie {
    * @returns {boolean}
    */
   containsKey(key) {
-    let node = this.getChildNode_(key);
+    const node = this.getChildNode_(key);
     return node !== undefined && node.isEndOfWord_ === true;
   }
 

@@ -22,7 +22,7 @@ export class EmojiPrefixSearch {
    */
   setCollection(collection) {
     this.clear();
-    for (let record of collection) {
+    for (const record of collection) {
       const string = record.base.string;
       const name = record.base.name;
       const terms = this.tokenize_(name).map(term => this.sanitize_(term));
@@ -43,9 +43,9 @@ export class EmojiPrefixSearch {
    * @returns {!Array<string>}
    */
   matchPrefixToEmojis(prefix) {
-    let results = new Set();
+    const results = new Set();
     const terms = this.tokenTrie_.getKeys(prefix);
-    for (let term of terms) {
+    for (const term of terms) {
       const matchedItems = this.wordToEmojisMap_.get(term);
       if (matchedItems !== undefined) {
         matchedItems.forEach(item => {
@@ -167,7 +167,7 @@ export class EmojiPrefixSearch {
       }
     });
 
-    let results =
+    const results =
         Array.from(queryScores.keys()).map(emoji => ({
                                              item: this.emojiMap_.get(emoji),
                                              score: queryScores.get(emoji)

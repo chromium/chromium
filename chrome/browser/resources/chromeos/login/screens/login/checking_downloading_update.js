@@ -130,8 +130,8 @@ const CheckingDownloadingUpdateBase = Polymer.mixinBehaviors(
    * Sets estimated time left until download will complete.
    */
   computeEstimatedTimeLeftMsg_(estimatedTimeLeft) {
-    let seconds = estimatedTimeLeft;
-    let minutes = Math.ceil(seconds / 60);
+    const seconds = estimatedTimeLeft;
+    const minutes = Math.ceil(seconds / 60);
     var message = '';
     if (minutes > 60) {
       message = loadTimeData.getString('downloadingTimeLeftLong');

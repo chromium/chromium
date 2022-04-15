@@ -125,7 +125,7 @@ let networkCustomItemCustomData;
    * @private
    */
   getNetworkCustomItems_() {
-    let items = [];
+    const items = [];
     if (this.isOfflineDemoModeSetup) {
       items.push({
         customItemType: NetworkList.CustomItemType.OOBE,

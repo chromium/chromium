@@ -730,7 +730,7 @@ cr.define('cr.ui.login.debug', function() {
           // Error dialog
           id: 'error-dialog',
           trigger: (screen) => {
-            let error = 'Some error text';
+            const error = 'Some error text';
             screen.showErrorDialog(error);
           }
         },
@@ -1240,7 +1240,7 @@ cr.define('cr.ui.login.debug', function() {
             // There can be up to 21 apps: see recommend_apps_fetcher_impl
             screen.reset();
             screen.setWebview(RECOMMENDED_APPS_OLD_CONTENT);
-            let apps = [];
+            const apps = [];
             for (let i = 1; i <= 21; i++) {
               apps.push({
                 name: 'Test app ' + i,
@@ -1282,7 +1282,7 @@ cr.define('cr.ui.login.debug', function() {
             // There can be up to 21 apps: see recommend_apps_fetcher_impl
             screen.reset();
             screen.setWebview(RECOMMENDED_APPS_CONTENT);
-            let apps = [];
+            const apps = [];
             for (let i = 1; i <= 21; i++) {
               apps.push({
                 name: 'Test app ' + i,
@@ -1413,7 +1413,7 @@ cr.define('cr.ui.login.debug', function() {
           /** @type {!HTMLElement} */ (document.createElement('h2'));
       this.titleDiv.textContent = title;
 
-      let panel = /** @type {!HTMLElement} */ (document.createElement('div'));
+      const panel = /** @type {!HTMLElement} */ (document.createElement('div'));
       panel.className = 'debug-tool-panel';
       panel.id = id;
 
@@ -1428,7 +1428,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     clearContent() {
-      let range = document.createRange();
+      const range = document.createRange();
       range.selectNodeContents(this.content);
       range.deleteContents();
     }
@@ -1498,12 +1498,12 @@ cr.define('cr.ui.login.debug', function() {
     runIterator_() {
       if (!this.commandIterator_)
         return;
-      let command = this.commandIterator_.next();
+      const command = this.commandIterator_.next();
       if (command.done) {
         this.commandIterator_ = undefined;
         return;
       }
-      let [func, timeout] = command.value;
+      const [func, timeout] = command.value;
       try {
         func();
       } finally {
@@ -1532,7 +1532,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     showStateCommand(screenAndState) {
-      let [screenId, stateId] = screenAndState;
+      const [screenId, stateId] = screenAndState;
       // Switch to screen.
       return [
         () => {
@@ -1544,7 +1544,7 @@ cr.define('cr.ui.login.debug', function() {
 
     makeScreenshotCommand() {
       // Make a screenshot.
-      let id = this.getScreenshotId();
+      const id = this.getScreenshotId();
       return [
         () => {
           console.info('Making screenshot for ' + id);
@@ -1561,7 +1561,7 @@ cr.define('cr.ui.login.debug', function() {
     * screenshotSeries_(statesList) {
       yield this.hideButtonCommand();
       // Make all screenshots
-      for (let screenAndState of statesList) {
+      for (const screenAndState of statesList) {
         yield this.showStateCommand(screenAndState);
         yield this.makeScreenshotCommand();
       }
@@ -1581,7 +1581,7 @@ cr.define('cr.ui.login.debug', function() {
      * Generator that returns all (screen, state) pairs for current screen.
      */
     * iterateStates(screenId) {
-      for (let state of this.screenMap[screenId].states) {
+      for (const state of this.screenMap[screenId].states) {
         yield [screenId, state.id];
       }
     }
@@ -1590,7 +1590,7 @@ cr.define('cr.ui.login.debug', function() {
      * Generator that returns (screen, state) pairs for all known screens.
      */
     * iterateScreens() {
-      for (let screen of this.knownScreens) {
+      for (const screen of this.knownScreens) {
         if (screen.skipScreenshots)
           continue;
         yield* this.iterateStates(screen.id);
@@ -1622,7 +1622,7 @@ cr.define('cr.ui.login.debug', function() {
         screen.index = index;
         // Create a default state
         if (!screen.states) {
-          let state = {
+          const state = {
             id: 'default',
           };
           screen.states = [state];
@@ -1633,7 +1633,7 @@ cr.define('cr.ui.login.debug', function() {
         }
         screen.stateMap_ = {};
         // For each state fall back to screen data if state data is not defined.
-        for (let state of screen.states) {
+        for (const state of screen.states) {
           if (!state.data) {
             state.data = screen.data;
           }
@@ -1643,7 +1643,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createLanguagePanel(parent) {
-      let langPanel = new ToolPanel(
+      const langPanel = new ToolPanel(
           this.debuggerOverlay_, 'Language', 'DebuggerPanelLanguage');
       const LANGUAGES = [
         ['English', 'en-US'],
@@ -1662,7 +1662,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createToolsPanel(parent) {
-      let panel =
+      const panel =
           new ToolPanel(this.debuggerOverlay_, 'Tools', 'DebuggerPanelTools');
       new DebugButton(
           panel.content, 'Capture screenshot', this.makeScreenshot.bind(this));
@@ -1678,7 +1678,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createScreensPanel(parent) {
-      let panel = new ToolPanel(
+      const panel = new ToolPanel(
           this.debuggerOverlay_, 'Screens', 'DebuggerPanelScreens');
       // List of screens will be created later, as not all screens
       // might be registered at this point.
@@ -1686,7 +1686,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createStatesPanel(parent) {
-      let panel = new ToolPanel(
+      const panel = new ToolPanel(
           this.debuggerOverlay_, 'Screen States', 'DebuggerPanelStates');
       // List of states is rebuilt every time to reflect current screen.
       this.statesPanel = panel;
@@ -1697,8 +1697,8 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     triggerScreenState(screenId, stateId) {
-      let screen = this.screenMap[screenId];
-      let state = screen.stateMap_[stateId];
+      const screen = this.screenMap[screenId];
+      const state = screen.stateMap_[stateId];
       var data = {};
       if (state.data) {
         data = state.data;
@@ -1706,7 +1706,7 @@ cr.define('cr.ui.login.debug', function() {
       this.currentScreenId_ = screenId;
       this.lastScreenState_ = stateId;
       /** @suppress {visibility} */
-      let displayManager = cr.ui.Oobe.instance_;
+      const displayManager = cr.ui.Oobe.instance_;
       cr.ui.Oobe.instance_.showScreen({id: screen.id, data: data});
       if (state.trigger) {
         state.trigger(displayManager.currentScreen);
@@ -1715,7 +1715,7 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     createScreensList() {
-      for (let screen of KNOWN_SCREENS) {
+      for (const screen of KNOWN_SCREENS) {
         this.screenMap[screen.id] = screen;
       }
       this.knownScreens = [];
@@ -1723,23 +1723,23 @@ cr.define('cr.ui.login.debug', function() {
       /** @suppress {visibility} */
       for (var id of cr.ui.Oobe.instance_.screens_) {
         if (id in this.screenMap) {
-          let screenDef = this.screenMap[id];
-          let screenElement = $(id);
+          const screenDef = this.screenMap[id];
+          const screenElement = $(id);
           if (screenElement.listSteps &&
               typeof screenElement.listSteps === 'function') {
             if (screenDef.stateMap_['default']) {
               screenDef.states = [];
               screenDef.stateMap_ = {};
             }
-            let handledSteps = new Set();
+            const handledSteps = new Set();
             if (screenDef.handledSteps) {
-              for (let step of screenDef.handledSteps.split(','))
+              for (const step of screenDef.handledSteps.split(','))
                 handledSteps.add(step);
             }
-            for (let step of screenElement.listSteps()) {
+            for (const step of screenElement.listSteps()) {
               if (handledSteps.has(step))
                 continue;
-              let state = {
+              const state = {
                 id: 'step-' + step,
                 data: screenDef.data,
                 trigger: (screen) => {
@@ -1756,7 +1756,7 @@ cr.define('cr.ui.login.debug', function() {
           this.screenMap[id] = screenDef;
         } else {
           console.error('### Screen not registered in debug overlay ' + id);
-          let unknownScreen = {
+          const unknownScreen = {
             id: id,
             kind: ScreenKind.UNKNOWN,
             suffix: '???',
@@ -1771,7 +1771,7 @@ cr.define('cr.ui.login.debug', function() {
         }
       }
       this.knownScreens = this.knownScreens.sort((a, b) => a.index - b.index);
-      let content = this.screensPanel.content;
+      const content = this.screensPanel.content;
       this.knownScreens.forEach((screen) => {
         var name = screen.id;
         if (screen.suffix) {
@@ -1789,7 +1789,7 @@ cr.define('cr.ui.login.debug', function() {
         this.createScreensList();
       }
       /** @suppress {visibility} */
-      let displayManager = cr.ui.Oobe.instance_;
+      const displayManager = cr.ui.Oobe.instance_;
       if (this.stateCachedFor_) {
         this.screenButtons[this.stateCachedFor_].element.classList.remove(
             'debug-button-selected');
@@ -1805,11 +1805,11 @@ cr.define('cr.ui.login.debug', function() {
             'debug-button-selected');
       }
 
-      let screen = this.screenMap[this.currentScreenId_];
+      const screen = this.screenMap[this.currentScreenId_];
 
       this.statesPanel.clearContent();
-      for (let state of screen.states) {
-        let button = new DebugButton(
+      for (const state of screen.states) {
+        const button = new DebugButton(
             this.statesPanel.content, state.id,
             this.triggerScreenState.bind(
                 this, this.currentScreenId_, state.id));
@@ -1847,7 +1847,7 @@ cr.define('cr.ui.login.debug', function() {
       }
       {
         // Create UI Debugger button
-        let button =
+        const button =
             /** @type {!HTMLElement} */ (document.createElement('div'));
         button.id = 'invokeDebuggerButton';
         button.className = 'debugger-button';
@@ -1858,7 +1858,7 @@ cr.define('cr.ui.login.debug', function() {
       }
       {
         // Create base debugger panel.
-        let overlay =
+        const overlay =
             /** @type {!HTMLElement} */ (document.createElement('div'));
         overlay.id = 'debuggerOverlay';
         overlay.className = 'debugger-overlay';

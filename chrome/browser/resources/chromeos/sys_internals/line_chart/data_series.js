@@ -241,7 +241,7 @@ export class DataSeries {
   backfillValuePoint_(valueIndex, dataIndex, boundaryTime) {
     const dataPoints = this.dataPoints_;
     const values = this.cacheValues_;
-    let maxValue = this.cacheMaxValue_;
+    const maxValue = this.cacheMaxValue_;
     if (values[valueIndex] == null && dataIndex > 0 &&
         dataIndex < dataPoints.length) {
       values[valueIndex] = this.dataPointLinearInterpolation(

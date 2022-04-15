@@ -177,8 +177,8 @@ Polymer({
    */
   loadAuthenticator(data) {
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
-    let params = {};
-    for (let i in cr.login.Authenticator.SUPPORTED_PARAMS) {
+    const params = {};
+    for (const i in cr.login.Authenticator.SUPPORTED_PARAMS) {
       const name = cr.login.Authenticator.SUPPORTED_PARAMS[i];
       if (data[name]) {
         params[name] = data[name];
@@ -219,7 +219,7 @@ Polymer({
   },
 
   onAuthCompletedMessage_(e) {
-    let credentials = e.detail;
+    const credentials = e.detail;
     chrome.send('completeAuthentication', [
       credentials.gaiaId, credentials.email, credentials.password,
       credentials.usingSAML, credentials.services,
@@ -315,7 +315,7 @@ Polymer({
       return;
     if (this.isManualInput_) {
       // When using manual password entry, both passwords must match.
-      let confirmPasswordInput = this.$$('#confirmPasswordInput');
+      const confirmPasswordInput = this.$$('#confirmPasswordInput');
       if (!confirmPasswordInput.validate())
         return;
 

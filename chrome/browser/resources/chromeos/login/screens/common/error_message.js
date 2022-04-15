@@ -283,7 +283,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
     opts.attrs = opts.attrs.concat(['id', 'class', 'is']);
     opts.substitutions = opts.substitutions || [];
     for (const anchorId of anchor_ids) {
-      let attributes =
+      const attributes =
           ' class="oobe-local-link focus-on-show" is="action-link"';
       opts.substitutions = opts.substitutions.concat(
           ['<a id="' + anchorId + '"' + attributes + '>', '</a>']);
@@ -305,7 +305,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
     }
     for (const anchorId of anchor_ids) {
       /** @suppress {checkTypes} anchorId is a string */
-      let linkElement = this.shadowRoot.getElementById(anchorId);
+      const linkElement = this.shadowRoot.getElementById(anchorId);
       if (hidden) {
         linkElement.setAttribute('hidden', '');
       } else {

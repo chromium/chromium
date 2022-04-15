@@ -52,7 +52,7 @@ Polymer({
     }
 
     // The filename is prefixed with "../../", so replace it with "//".
-    let filename = this.logMessage.file.replace('../../', '//');
+    const filename = this.logMessage.file.replace('../../', '//');
     return filename + ':' + this.logMessage.line;
   },
 });

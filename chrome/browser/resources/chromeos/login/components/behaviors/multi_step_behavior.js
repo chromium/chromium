@@ -75,8 +75,8 @@
   listSteps() {
     if (Array.isArray(this.UI_STEPS))
       return this.UI_STEPS.slice();
-    let result = [];
-    for (let [key, value] of Object.entries(this.UI_STEPS)) {
+    const result = [];
+    for (const [key, value] of Object.entries(this.UI_STEPS)) {
       result.push(value);
     }
     return result;
@@ -87,7 +87,7 @@
    * @return {string}
    */
   defaultUIStep() {
-    throw 'Element should define default UI state';
+    throw new Error('Element should define default UI state');
   },
 
   ready() {
@@ -125,7 +125,7 @@
    * current step).
    */
   applyToStepElements(func, step = this.uiStep) {
-    for (let element of this.stepElements_[step] || []) {
+    for (const element of this.stepElements_[step] || []) {
       func(element);
     }
   },
@@ -145,7 +145,7 @@
       // Will execute from onBeforeShow.
       return;
     }
-    for (let element of this.stepElements_[step] || []) {
+    for (const element of this.stepElements_[step] || []) {
       cr.ui.login.invokePolymerMethod(element, 'onBeforeShow');
       element.hidden = false;
       // Trigger show() if element is an oobe-dialog
@@ -156,7 +156,7 @@
   },
 
   hideUIStep_(step) {
-    for (let element of this.stepElements_[step] || []) {
+    for (const element of this.stepElements_[step] || []) {
       cr.ui.login.invokePolymerMethod(element, 'onBeforeHide');
       element.hidden = true;
     }
@@ -170,11 +170,11 @@
   refreshStepBindings_() {
     this.stepElements_ = {};
     var matches = Polymer.dom(this.root).querySelectorAll('[for-step]');
-    for (let child of matches) {
-      let stepsList = child.getAttribute('for-step');
-      for (let stepChunk of stepsList.split(',')) {
-        let step = stepChunk.trim();
-        let list = this.stepElements_[step] || [];
+    for (const child of matches) {
+      const stepsList = child.getAttribute('for-step');
+      for (const stepChunk of stepsList.split(',')) {
+        const step = stepChunk.trim();
+        const list = this.stepElements_[step] || [];
         list.push(child);
         this.stepElements_[step] = list;
       }
