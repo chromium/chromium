@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider_params.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 namespace blink {

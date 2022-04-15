@@ -9,6 +9,7 @@
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace webrtc {
 class TransformableFrameInterface;

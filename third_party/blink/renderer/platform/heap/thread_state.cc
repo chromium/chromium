@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
+#include "base/callback.h"
 #include "gin/public/v8_platform.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
