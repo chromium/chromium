@@ -652,8 +652,8 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223055
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1223055): Re-enable this test.
 #define MAYBE_Xslt DISABLED_Xslt
 #else
 #define MAYBE_Xslt Xslt
