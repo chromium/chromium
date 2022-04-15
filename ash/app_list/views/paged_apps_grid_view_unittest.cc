@@ -14,6 +14,7 @@
 #include "ash/app_list/test/test_focus_change_listener.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
@@ -22,6 +23,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -624,26 +626,25 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
   helper->AddRecentApps(5);
   helper->GetAppsContainerView()->ResetForShowApps();
 
-  AppsContainerView* container_view = helper->GetAppsContainerView();
-
   // Trigger a sort to show the reorder toast.
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
 
-  EXPECT_TRUE(
-      container_view->toast_container_for_test()->GetToastButton()->HasFocus());
-  EXPECT_TRUE(container_view->toast_container_for_test()->is_toast_visible());
+  AppListToastContainerView* toast_container =
+      helper->GetAppsContainerView()->toast_container_for_test();
+  EXPECT_TRUE(toast_container->GetToastButton()->HasFocus());
+  EXPECT_TRUE(toast_container->is_toast_visible());
   EXPECT_EQ(2, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
 
   // Tap on the close button to remove the toast.
-  gfx::Point close_button_point = container_view->toast_container_for_test()
-                                      ->GetCloseButton()
-                                      ->GetBoundsInScreen()
-                                      .CenterPoint();
-  GetEventGenerator()->GestureTapAt(close_button_point);
+  GestureTapOn(toast_container->GetCloseButton());
+
+  // Wait for the toast to finish fade out animation.
+  EXPECT_EQ(toast_container->toast_view()->layer()->GetTargetOpacity(), 0.0f);
+  LayerAnimationStoppedWaiter().Wait(toast_container->toast_view()->layer());
 
   // Verify that another row appears once the toast is closed.
   EXPECT_EQ(3, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
-  EXPECT_FALSE(container_view->toast_container_for_test()->is_toast_visible());
+  EXPECT_FALSE(toast_container->is_toast_visible());
 }
 
 }  // namespace

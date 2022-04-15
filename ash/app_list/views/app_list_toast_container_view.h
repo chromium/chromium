@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/app_list/views/app_list_nudge_controller.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -93,9 +94,6 @@ class AppListToastContainerView : public views::View {
   // Creates a reorder nudge view in the container.
   void CreateReorderNudgeView();
 
-  // Dismisses the reorder nudge view and ensures it will no longer be shown.
-  void DismissReorderNudgeView();
-
   // Removes the reorder nudge view if the nudge view is showing.
   void RemoveReorderNudgeView();
 
@@ -137,14 +135,18 @@ class AppListToastContainerView : public views::View {
   // Called when the `toast_view_`'s dismiss button is clicked.
   void OnReorderUndoButtonClicked();
 
-  // Called when the `toast_view_`'s close button is clicked.
-  void OnReorderCloseButtonClicked();
-
   // Calculates the toast text based on the temporary sorting order.
   [[nodiscard]] std::u16string CalculateToastTextFromOrder(
       AppListSortOrder order) const;
 
   std::u16string GetA11yTextOnUndoButtonFromOrder(AppListSortOrder order) const;
+
+  // Animates the opacity of `toast_view_` to fade out, then calls
+  // OnFadeOutToastViewComplete().
+  void FadeOutToastView();
+
+  // Called when the fade out animation for the `toast_view_` is finished.
+  void OnFadeOutToastViewComplete();
 
   AppListA11yAnnouncer* const a11y_announcer_;
 
@@ -170,6 +172,8 @@ class AppListToastContainerView : public views::View {
   // Caches the column of previously focused app. Used when passing focus
   // between apps grid view and recent apps.
   int focused_app_column_ = 0;
+
+  base::WeakPtrFactory<AppListToastContainerView> weak_factory_{this};
 };
 
 }  // namespace ash

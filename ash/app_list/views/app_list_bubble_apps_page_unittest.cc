@@ -11,6 +11,7 @@
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -410,19 +411,23 @@ TEST_F(AppListBubbleAppsPageTest, CloseReorderToast) {
   helper->AddAppItems(5);
   helper->ShowAppList();
 
-  AppListToastContainerView* reorder_undo_toast_container =
+  AppListToastContainerView* toast_container =
       helper->GetBubbleAppsPage()->toast_container_for_test();
-  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_FALSE(toast_container->is_toast_visible());
 
   // Sort app list and expect undo toast to be shown with close button.
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
-  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
-  EXPECT_TRUE(reorder_undo_toast_container->GetCloseButton());
+  EXPECT_TRUE(toast_container->is_toast_visible());
+  EXPECT_TRUE(toast_container->GetCloseButton());
 
   // Click on close button to dismiss the toast.
-  LeftClickOn(reorder_undo_toast_container->GetCloseButton());
+  LeftClickOn(toast_container->GetCloseButton());
 
-  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+  // Wait for the toast to finish fade out animation.
+  EXPECT_EQ(toast_container->toast_view()->layer()->GetTargetOpacity(), 0.0f);
+  LayerAnimationStoppedWaiter().Wait(toast_container->toast_view()->layer());
+
+  EXPECT_FALSE(toast_container->is_toast_visible());
 }
 
 }  // namespace

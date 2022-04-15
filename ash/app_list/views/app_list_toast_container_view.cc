@@ -19,7 +19,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -138,7 +140,7 @@ void AppListToastContainerView::CreateReorderNudgeView() {
     toast_view_builder.SetButton(
         l10n_util::GetStringUTF16(
             IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_DISMISS_BUTTON),
-        base::BindRepeating(&AppListToastContainerView::DismissReorderNudgeView,
+        base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
                             base::Unretained(this)));
   }
 
@@ -155,12 +157,6 @@ void AppListToastContainerView::CreateReorderNudgeView() {
           .SetIconBackground(true)
           .Build());
   current_toast_ = ToastType::kReorderNudge;
-}
-
-void AppListToastContainerView::DismissReorderNudgeView() {
-  RemoveReorderNudgeView();
-  nudge_controller_->OnReorderNudgeConfirmed();
-  delegate_->OnNudgeRemoved();
 }
 
 void AppListToastContainerView::RemoveReorderNudgeView() {
@@ -248,8 +244,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 
   if (features::IsLauncherDismissButtonsOnSortNudgeAndToastEnabled()) {
     toast_view_builder.SetCloseButton(base::BindRepeating(
-        &AppListToastContainerView::OnReorderCloseButtonClicked,
-        base::Unretained(this)));
+        &AppListToastContainerView::FadeOutToastView, base::Unretained(this)));
   }
 
   toast_view_ = AddChildView(
@@ -300,7 +295,29 @@ void AppListToastContainerView::OnReorderUndoButtonClicked() {
   AppListModelProvider::Get()->model()->delegate()->RequestAppListSortRevert();
 }
 
-void AppListToastContainerView::OnReorderCloseButtonClicked() {
+void AppListToastContainerView::FadeOutToastView() {
+  if (!toast_view_->layer()) {
+    toast_view_->SetPaintToLayer();
+    toast_view_->layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(
+          base::BindOnce(&AppListToastContainerView::OnFadeOutToastViewComplete,
+                         weak_factory_.GetWeakPtr()))
+      .OnAborted(
+          base::BindOnce(&AppListToastContainerView::OnFadeOutToastViewComplete,
+                         weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(base::Milliseconds(200))
+      .SetOpacity(toast_view_->layer(), 0.0f, gfx::Tween::LINEAR);
+}
+
+void AppListToastContainerView::OnFadeOutToastViewComplete() {
+  if (current_toast_ == ToastType::kReorderNudge)
+    nudge_controller_->OnReorderNudgeConfirmed();
   RemoveCurrentView();
   delegate_->OnNudgeRemoved();
 }
