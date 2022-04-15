@@ -1504,25 +1504,6 @@
             ]
         }
     ],
-    "BackForwardCacheMediaSessionPlaybackStateChange": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BackForwardCacheMediaSessionPlaybackStateChange"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheMemoryControls": [
         {
             "platforms": [
@@ -4498,6 +4479,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "HardwareSecureDecryptionExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MediaSessionPlaybackStateChangeBackForwardCache": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackForwardCacheMediaSessionPlaybackStateChange"
                     ]
                 }
             ]
