@@ -40,6 +40,11 @@ class TrainingDataCollector {
   // to Ukm for |UMAOutput| in |SegmentationModelMetadata|.
   virtual void OnServiceInitialized() = 0;
 
+  // Called by the DataCollectionScheduler to upload all the training data
+  // collected. This will only upload tensors that require continuous
+  // collection.
+  virtual void ReportCollectedContinuousTrainingData() = 0;
+
   virtual ~TrainingDataCollector();
 
   // Disallow copy/assign.

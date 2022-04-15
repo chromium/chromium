@@ -95,7 +95,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   auto* service = new SegmentationPlatformServiceImpl(
       std::move(model_provider_factory), db_provider, storage_dir,
       ukm_data_manager, profile->GetPrefs(), history_service, task_runner,
-      clock, GetSegmentationPlatformConfig());
+      clock, GetSegmentationPlatformConfig(), g_browser_process->local_state());
 
   service->SetUserData(kSegmentationPlatformProfileObserverKey,
                        std::make_unique<SegmentationPlatformProfileObserver>(

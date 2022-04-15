@@ -107,7 +107,7 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
           std::move(storage_service),
           std::make_unique<TestModelProviderFactory>(&model_provider_data_),
           &pref_service_, history_service, task_runner_, &test_clock_,
-          std::move(configs));
+          std::move(configs), &pref_service_);
 }
 
 void SegmentationPlatformServiceTestBase::DestroyPlatform() {

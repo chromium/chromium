@@ -32,6 +32,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // TrainingDataCollector implementation.
   void OnModelMetadataUpdated() override;
   void OnServiceInitialized() override;
+  void ReportCollectedContinuousTrainingData() override;
 
   // HistogramSignalHandler::Observer implementation.
   void OnHistogramSignalUpdated(const std::string& histogram_name,

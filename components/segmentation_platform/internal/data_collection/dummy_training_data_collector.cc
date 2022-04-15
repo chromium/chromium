@@ -14,4 +14,6 @@ void DummyTrainingDataCollector::OnModelMetadataUpdated() {}
 
 void DummyTrainingDataCollector::OnServiceInitialized() {}
 
+void DummyTrainingDataCollector::ReportCollectedContinuousTrainingData() {}
+
 }  // namespace segmentation_platform

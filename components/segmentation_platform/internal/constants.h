@@ -13,6 +13,9 @@ extern const char kSegmentationResultPref[];
 // The path to the pref storing when UKM are allowed recently.
 extern const char kSegmentationUkmMostRecentAllowedTimeKey[];
 
+// Last metrics collection time for the segmentation platform.
+extern const char kSegmentationLastCollectionTimePref[];
+
 extern const char kSegmentationPlatformRefreshResultsSwitch[];
 
 }  // namespace segmentation_platform

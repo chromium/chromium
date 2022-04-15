@@ -56,7 +56,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     history::HistoryService* history_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
-    std::vector<std::unique_ptr<Config>> configs)
+    std::vector<std::unique_ptr<Config>> configs,
+    PrefService* local_state)
     : SegmentationPlatformServiceImpl(
           std::make_unique<StorageService>(storage_dir,
                                            db_provider,
@@ -70,7 +71,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           history_service,
           task_runner,
           clock,
-          std::move(configs)) {}
+          std::move(configs),
+          local_state) {}
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     std::unique_ptr<StorageService> storage_service,
@@ -79,13 +81,15 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     history::HistoryService* history_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
-    std::vector<std::unique_ptr<Config>> configs)
+    std::vector<std::unique_ptr<Config>> configs,
+    PrefService* local_state)
     : model_provider_factory_(std::move(model_provider)),
       task_runner_(task_runner),
       clock_(clock),
       platform_options_(PlatformOptions::CreateDefault()),
       configs_(std::move(configs)),
-      storage_service_(std::move(storage_service)) {
+      storage_service_(std::move(storage_service)),
+      local_state_(local_state) {
   all_segment_ids_ = GetAllSegmentIds(configs_);
   std::vector<OptimizationTarget> segment_id_vec(all_segment_ids_.begin(),
                                                  all_segment_ids_.end());
@@ -176,7 +180,7 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()),
       task_runner_, all_segment_ids_, model_provider_factory_.get(),
-      std::move(observers), platform_options_);
+      std::move(observers), platform_options_, local_state_);
 
   proxy_->SetExecutionService(&execution_service_);
 
@@ -214,10 +218,12 @@ void SegmentationPlatformService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kSegmentationResultPref);
 }
 
+// static
 void SegmentationPlatformService::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kSegmentationUkmMostRecentAllowedTimeKey,
                              base::Time());
+  registry->RegisterTimePref(kSegmentationLastCollectionTimePref, base::Time());
 }
 
 }  // namespace segmentation_platform

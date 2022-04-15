@@ -59,7 +59,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       history::HistoryService* history_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
-      std::vector<std::unique_ptr<Config>> configs);
+      std::vector<std::unique_ptr<Config>> configs,
+      PrefService* local_state);
 
   // For testing only.
   SegmentationPlatformServiceImpl(
@@ -69,7 +70,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       history::HistoryService* history_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
-      std::vector<std::unique_ptr<Config>> configs);
+      std::vector<std::unique_ptr<Config>> configs,
+      PrefService* local_state);
 
   ~SegmentationPlatformServiceImpl() override;
 
@@ -128,6 +130,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   ExecutionService execution_service_;
 
   std::unique_ptr<ServiceProxyImpl> proxy_;
+
+  // PrefService from browser's local state, not profile specific.
+  raw_ptr<PrefService> local_state_;
 
   base::WeakPtrFactory<SegmentationPlatformServiceImpl> weak_ptr_factory_{this};
 };

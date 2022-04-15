@@ -4,6 +4,9 @@
 
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 
+#include "base/metrics/field_trial_params.h"
+#include "components/prefs/pref_service.h"
+#include "components/segmentation_platform/internal/data_collection/data_collection_scheduler.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -12,6 +15,8 @@
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
+#include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/features.h"
 
 namespace segmentation_platform {
 
@@ -41,7 +46,8 @@ void ExecutionService::Initialize(
     const base::flat_set<OptimizationTarget>& all_segment_ids,
     ModelProviderFactory* model_provider_factory,
     std::vector<ModelExecutionScheduler::Observer*>&& observers,
-    const PlatformOptions& platform_options) {
+    const PlatformOptions& platform_options,
+    PrefService* pref_service) {
   feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
       signal_database, nullptr, std::make_unique<FeatureAggregatorImpl>());
 
@@ -57,6 +63,17 @@ void ExecutionService::Initialize(
   model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
       all_segment_ids, model_provider_factory, clock, segment_info_database,
       callback);
+
+  // TODO(qinmin): Store the allowed Id list in a SegmentationUkmHelper.
+  if (!base::GetFieldTrialParamValueByFeature(
+           features::kSegmentationStructuredMetricsFeature,
+           kSegmentIdsAllowedForReportingKey)
+           .empty()) {
+    data_collection_scheduler_ = std::make_unique<DataCollectionScheduler>(
+        training_data_collector_.get(), pref_service, clock);
+    // TODO(qinmin): post a delayed task to run
+    // DataCollectionScheduler::ReportTrainingDataIfApplicable().
+  }
 
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       std::move(observers), segment_info_database, signal_storage_config,

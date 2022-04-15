@@ -19,6 +19,7 @@ class DummyTrainingDataCollector : public TrainingDataCollector {
   // TrainingDataCollector implementation.
   void OnModelMetadataUpdated() override;
   void OnServiceInitialized() override;
+  void ReportCollectedContinuousTrainingData() override;
 };
 
 }  // namespace segmentation_platform

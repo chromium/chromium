@@ -15,9 +15,12 @@
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
+class PrefService;
+
 namespace segmentation_platform {
 
 struct PlatformOptions;
+class DataCollectionScheduler;
 class FeatureListQueryProcessor;
 class ModelExecutor;
 class ModelProviderFactory;
@@ -52,7 +55,8 @@ class ExecutionService {
       const base::flat_set<OptimizationTarget>& all_segment_ids,
       ModelProviderFactory* model_provider_factory,
       std::vector<ModelExecutionScheduler::Observer*>&& observers,
-      const PlatformOptions& platform_options);
+      const PlatformOptions& platform_options,
+      PrefService* pref_service);
 
   // Called whenever a new or updated model is available. Must be a valid
   // SegmentInfo with valid metadata and features.
@@ -93,6 +97,9 @@ class ExecutionService {
   std::unique_ptr<TrainingDataCollector> training_data_collector_;
 
   std::unique_ptr<ModelExecutor> model_executor_;
+
+  // Scheduler to launch tasks to report training data to the server.
+  std::unique_ptr<DataCollectionScheduler> data_collection_scheduler_;
 
   // Model execution.
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;

@@ -218,4 +218,8 @@ void TrainingDataCollectorImpl::OnGetInputTensor(
   }
 }
 
+void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
+  // TODO(qinmin): report all metrics that requires continuous observation.
+}
+
 }  // namespace segmentation_platform

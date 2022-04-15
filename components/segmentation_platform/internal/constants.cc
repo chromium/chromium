@@ -12,6 +12,9 @@ const char kSegmentationResultPref[] =
 const char kSegmentationUkmMostRecentAllowedTimeKey[] =
     "segmentation_platform.ukm_most_recent_allowed_time_key";
 
+const char kSegmentationLastCollectionTimePref[] =
+    "segmentation_platform.last_collection_time";
+
 // The segmentation platform will ignore all the valid results from previous
 // model executions, and re-run all the models and recompute segment selections.
 // Used for testing the model execution locally.
