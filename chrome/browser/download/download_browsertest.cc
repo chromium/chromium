@@ -3479,13 +3479,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
   ASSERT_EQ(jpeg_url, download_items[1]->GetOriginalUrl());
 }
 
-// TODO(crbug.com/1249757): Flaky on Windows 7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadErrorsServer DISABLED_DownloadErrorsServer
-#else
-#define MAYBE_DownloadErrorsServer DownloadErrorsServer
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadErrorsServer) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadErrorsServer) {
   DownloadInfo download_info[] = {
       {// Normal navigated download.
        "a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
@@ -3511,13 +3505,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadErrorsServer) {
        "download-anchor-attrib-name-not-resolved.html",
        "http://doesnotexist/shouldnotberesolved", DOWNLOAD_NAVIGATE,
        download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, false, false},
-      {// Simulates clicking on <a href="http://..." download=""> where the URL
-       // leads to a 404 response. This is different from the previous test case
-       // in that the ResourceLoader issues a OnResponseStarted() callback since
-       // the headers are successfully received.
-       "download-anchor-attrib-404.html", "there_IS_no_spoon.zip",
-       DOWNLOAD_NAVIGATE,
-       download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT, true, false},
       {// Similar to the above, but the resulting response contains a status
        // code of 400.
        "download-anchor-attrib-400.html", "zip_file_not_found.zip",
@@ -3527,6 +3514,20 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadErrorsServer) {
        "http://doesnotexist/shouldnotdownloadsuccessfully",
        "http://doesnotexist/shouldnotdownloadsuccessfully", DOWNLOAD_DIRECT,
        download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, true, false}};
+
+  DownloadFilesCheckErrors(std::size(download_info), download_info);
+}
+
+// TODO(crbug.com/1249757): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadErrorsServerNavigate404) {
+  DownloadInfo download_info[] = {
+      {// Simulates clicking on <a href="http://..." download=""> where the URL
+       // leads to a 404 response. This is different from the previous test case
+       // in that the ResourceLoader issues a OnResponseStarted() callback since
+       // the headers are successfully received.
+       "download-anchor-attrib-404.html", "there_IS_no_spoon.zip",
+       DOWNLOAD_NAVIGATE,
+       download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT, true, false}};
 
   DownloadFilesCheckErrors(std::size(download_info), download_info);
 }

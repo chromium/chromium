@@ -638,14 +638,18 @@ DownloadTargetDeterminer::Result
   DCHECK(mime_type_.empty());
 
   next_state_ = STATE_DETERMINE_IF_HANDLED_SAFELY_BY_BROWSER;
-
-  if (virtual_path_ == local_path_) {
+  if (virtual_path_ == local_path_
+#if BUILDFLAG(IS_ANDROID)
+      || local_path_.IsContentUri()
+#endif  //  BUILDFLAG(IS_ANDROID)
+  ) {
     delegate_->GetFileMimeType(
         local_path_,
         base::BindOnce(&DownloadTargetDeterminer::DetermineMimeTypeDone,
                        weak_ptr_factory_.GetWeakPtr()));
     return QUIT_DOLOOP;
   }
+
   return CONTINUE;
 }
 

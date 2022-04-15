@@ -540,6 +540,7 @@ class DownloadManagerTest : public testing::Test {
       download::DownloadItem::MixedContentStatus mixed_content_status,
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
+      const std::string& mime_type,
       absl::optional<download::DownloadSchedule> download_schedule,
       download::DownloadInterruptReason interrupt_reason) {
     callback_called_ = true;
@@ -547,6 +548,7 @@ class DownloadManagerTest : public testing::Test {
     target_disposition_ = disposition;
     danger_type_ = danger_type;
     intermediate_path_ = intermediate_path;
+    mime_type_ = mime_type;
     download_schedule_ = std::move(download_schedule);
     interrupt_reason_ = interrupt_reason;
   }
@@ -583,6 +585,7 @@ class DownloadManagerTest : public testing::Test {
   base::FilePath target_path_;
   download::DownloadItem::TargetDisposition target_disposition_;
   download::DownloadDangerType danger_type_;
+  std::string mime_type_;
   base::FilePath intermediate_path_;
   absl::optional<download::DownloadSchedule> download_schedule_;
   download::DownloadInterruptReason interrupt_reason_;

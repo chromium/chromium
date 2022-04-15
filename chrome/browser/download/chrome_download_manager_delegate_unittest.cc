@@ -125,6 +125,7 @@ struct DetermineDownloadTargetResult {
   download::DownloadInterruptReason interrupt_reason =
       download::DOWNLOAD_INTERRUPT_REASON_NONE;
   absl::optional<download::DownloadSchedule> download_schedule;
+  std::string mime_type;
 };
 
 // Subclass of the ChromeDownloadManagerDelegate that replaces a few interaction
@@ -412,6 +413,7 @@ void StoreDownloadTargetInfo(
     download::DownloadItem::MixedContentStatus mixed_content_status,
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
+    const std::string& mime_type,
     absl::optional<download::DownloadSchedule> download_schedule,
     download::DownloadInterruptReason interrupt_reason) {
   result->target_path = target_path;
@@ -422,6 +424,7 @@ void StoreDownloadTargetInfo(
   result->display_name = display_name;
   result->interrupt_reason = interrupt_reason;
   result->download_schedule = std::move(download_schedule);
+  result->mime_type = mime_type;
   quit_runloop.Run();
 }
 

@@ -33,7 +33,7 @@ bool CastDownloadManagerDelegate::DetermineDownloadTarget(
       empty, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
       download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
       download::DownloadItem::MixedContentStatus::UNKNOWN, empty, empty,
-      absl::nullopt /*download_schedule*/,
+      std::string() /*mime_type*/, absl::nullopt /*download_schedule*/,
       download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
   return true;
 }
