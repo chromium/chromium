@@ -91,6 +91,7 @@ const int kDistanceBetweenPasswordFieldAndPinKeyboardDp = 16;
 // Height of button used for switching between pin and password authentication.
 const int kPinPasswordToggleButtonHeight = 32;
 const int kPinPasswordToggleButtonPaddingTop = 24;
+const int kPinPasswordToggleButtonPaddingBottom = 20;
 
 // Distance from the end of pin keyboard to the bottom of the big user view.
 const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
@@ -1105,7 +1106,8 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   auto toggle_container = std::make_unique<NonAccessibleView>();
   toggle_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(kPinPasswordToggleButtonPaddingTop, 0, 0, 0)));
+      gfx::Insets::TLBR(kPinPasswordToggleButtonPaddingTop, 0,
+                        kPinPasswordToggleButtonPaddingBottom, 0)));
   pin_password_toggle_ =
       toggle_container->AddChildView(std::make_unique<SystemLabelButton>(
           base::BindRepeating(&LoginAuthUserView::OnSwitchButtonClicked,
