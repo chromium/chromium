@@ -5,9 +5,7 @@
 /**
  * @fileoverview Add functionality related to getting image data.
  */
-goog.provide('__crWeb.imageFetch');
 
-(function() {
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
  * injected.
@@ -126,5 +124,3 @@ function getImageDataByXMLHttpRequest(url, timeout, onData, onError) {
 
   xhr.send();
 };
-
-}());  // End of anonymous object

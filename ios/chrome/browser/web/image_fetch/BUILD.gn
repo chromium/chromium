@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("image_fetch") {
@@ -24,13 +24,13 @@ source_set("image_fetch") {
   ]
 }
 
-js_compile_bundle("image_fetch_js") {
+optimize_js("image_fetch_js") {
   visibility = [
     ":image_fetch",
     ":unit_tests",
   ]
-  closure_entry_point = "__crWeb.imageFetch"
 
+  primary_script = "resources/image_fetch.js"
   sources = [ "resources/image_fetch.js" ]
 }
 

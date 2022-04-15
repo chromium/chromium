@@ -18,7 +18,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "image_fetch_js";
+const char kScriptName[] = "image_fetch";
 const char kScriptHandlerName[] = "ImageFetchMessageHandler";
 
 ImageFetchJavaScriptFeature::Handler* GetHandlerFromWebState(
