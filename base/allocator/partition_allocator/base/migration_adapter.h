@@ -26,6 +26,8 @@ class TimeDelta;
 class TimeTicks;
 struct NativeLibraryLoadError;
 
+struct NativeLibraryLoadError;
+
 template <typename Type, typename Traits>
 class LazyInstance;
 
@@ -53,12 +55,6 @@ BASE_EXPORT void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
 template <typename T, typename O>
 class NoDestructor;
-
-namespace debug {
-
-void BASE_EXPORT Alias(const void* var);
-
-}  // namespace debug
 
 namespace internal {
 
@@ -126,12 +122,6 @@ template <typename CFT>
 using ScopedCFTypeRef =
     ::base::ScopedTypeRef<CFT, ::base::internal::ScopedCFTypeRefTraits<CFT>>;
 #endif
-
-namespace debug {
-
-using ::base::debug::Alias;
-
-}  // namespace debug
 
 #if BUILDFLAG(IS_MAC)
 namespace mac {

@@ -30,7 +30,7 @@ namespace partition_alloc::internal {
 namespace {
 
 [[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeOrCorruptionDetected() {
-  NO_CODE_FOLDING();
+  PA_NO_CODE_FOLDING();
   IMMEDIATE_CRASH();
 }
 

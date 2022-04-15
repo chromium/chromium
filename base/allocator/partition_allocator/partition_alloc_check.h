@@ -8,10 +8,10 @@
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/base/debug/alias.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "build/build_config.h"
 
@@ -50,11 +50,11 @@
 #define PA_DCHECK(condition) EAT_CHECK_STREAM_PARAMS(!(condition))
 #endif  // DCHECK_IS_ON()
 
-#define PA_PCHECK(condition)    \
-  if (!(condition)) {           \
-    int error = errno;          \
-    base::debug::Alias(&error); \
-    IMMEDIATE_CRASH();          \
+#define PA_PCHECK(condition)                                 \
+  if (!(condition)) {                                        \
+    int error = errno;                                       \
+    ::partition_alloc::internal::base::debug::Alias(&error); \
+    IMMEDIATE_CRASH();                                       \
   }
 
 #else
@@ -158,6 +158,6 @@ struct PA_DEBUGKV_ALIGN DebugKv {
 // to see the data. With lldb, "x <STACK_POINTER> <FRAME_POJNTER>" can be used.
 #define PA_DEBUG_DATA_ON_STACK(name, value)                               \
   ::partition_alloc::internal::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
-  ::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
+  ::partition_alloc::internal::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_

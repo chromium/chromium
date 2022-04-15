@@ -22,6 +22,7 @@
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/base/cpu.h"
+#include "base/allocator/partition_allocator/base/debug/alias.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -42,7 +43,6 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
-#include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -70,7 +70,7 @@ using ::base::RefCountedThreadSafe;
 }  // namespace base
 
 [[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
-  NO_CODE_FOLDING();
+  PA_NO_CODE_FOLDING();
   IMMEDIATE_CRASH();
 }
 

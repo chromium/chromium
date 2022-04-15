@@ -58,6 +58,8 @@ target(partition_alloc_target_type, "partition_alloc") {
     "base/bits.h",
     "base/cpu.cc",
     "base/cpu.h",
+    "base/debug/alias.cc",
+    "base/debug/alias.h",
     "base/migration_adapter.h",
     "base/sys_byteorder.h",
     "dangling_raw_ptr_checks.cc",

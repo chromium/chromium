@@ -14,7 +14,6 @@ include_rules = [
     "+base/compiler_specific.h",
     "+base/cxx17_backports.h",
     "+base/dcheck_is_on.h",
-    "+base/debug/alias.h",
     "+base/debug/proc_maps_linux.h",
     "+base/files/file_path.h",
     "+base/fuchsia/fuchsia_logging.h",
