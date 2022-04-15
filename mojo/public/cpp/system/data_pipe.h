@@ -14,9 +14,8 @@
 
 #include <stdint.h>
 
-#include "base/check.h"
-#include "base/compiler_specific.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/handle.h"
 
 namespace mojo {
