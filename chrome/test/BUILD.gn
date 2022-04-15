@@ -341,7 +341,6 @@ static_library("test_support") {
       # target.
       ":test_support_ui",
       "//chrome/app:test_support",
-      "//chrome/browser:test_support",
       "//chrome/browser/web_applications",
       "//components/crx_file",
       "//components/keep_alive_registry",
@@ -8926,7 +8925,6 @@ if (!is_android) {
       "../browser/ui/views/extensions/extensions_menu_view_interactive_uitest.cc",
       "../browser/ui/views/extensions/extensions_tabbed_menu_view_interactive_uitest.cc",
       "../browser/ui/views/page_info/page_info_bubble_view_interactive_uitest.cc",
-      "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
       "../browser/webauth_interactive_uitest.cc",
