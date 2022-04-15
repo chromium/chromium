@@ -117,11 +117,17 @@ def create_complete_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
+    # We should already be in a virtual environment from the top-level
+    # `wpt build-docs` command but we need to look up the environment to
+    # find out where it's located.
+    venv_path = os.environ["VIRTUAL_ENV"]
+    venv = virtualenv.Virtualenv(venv_path, True)
+
     for command in commands:
         props = commands[command]
 
-        if props["virtualenv"]:
-            setup_virtualenv(None, False, props)
+        for path in props.get("requirements", []):
+            venv.install_requirements(path)
 
         subparser = import_command('wpt', command, props)[1]
         if not subparser:

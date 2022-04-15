@@ -33,6 +33,7 @@ def check_args(**kwargs):
 
 def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
+            "adb_binary": kwargs["adb_binary"],
             "device_serial": kwargs["device_serial"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args"),
@@ -84,6 +85,7 @@ class SystemWebViewShell(ChromeAndroidBrowserBase):
     """
 
     def __init__(self, logger, binary, webdriver_binary="chromedriver",
+                 adb_binary="adb",
                  remote_queue=None,
                  device_serial=None,
                  webdriver_args=None,
@@ -92,7 +94,8 @@ class SystemWebViewShell(ChromeAndroidBrowserBase):
         """Creates a new representation of Chrome.  The `binary` argument gives
         the browser binary to use for testing."""
         super().__init__(logger,
-                         webdriver_binary, remote_queue, device_serial,
-                         webdriver_args, stackwalk_binary, symbols_path)
+                         webdriver_binary, adb_binary, remote_queue,
+                         device_serial, webdriver_args, stackwalk_binary,
+                         symbols_path)
         self.binary = binary
         self.wptserver_ports = _wptserve_ports
