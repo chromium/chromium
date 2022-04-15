@@ -1817,6 +1817,14 @@ void ListValue::Append(std::unique_ptr<Value> in_value) {
   list().push_back(std::move(*in_value));
 }
 
+void ListValue::Append(base::Value::Dict in_dict) {
+  list().emplace_back(std::move(in_dict));
+}
+
+void ListValue::Append(base::Value::List in_list) {
+  list().emplace_back(std::move(in_list));
+}
+
 void ListValue::Swap(ListValue* other) {
   CHECK(other->is_list());
   list().swap(other->list());
