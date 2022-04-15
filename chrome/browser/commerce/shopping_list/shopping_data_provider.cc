@@ -253,6 +253,10 @@ void PopulateShoppingSpecifics(
     price->set_currency_code(data.current_price().currency_code());
     price->set_amount_micros(data.current_price().amount_micros());
   }
+
+  if (data.has_country_code()) {
+    shopping_specifics->set_country_code(data.country_code());
+  }
 }
 
 }  // namespace shopping_list

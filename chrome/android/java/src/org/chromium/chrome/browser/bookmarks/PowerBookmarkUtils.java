@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.power_bookmarks.ProductPrice;
 import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.PriceTrackableOffer;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
@@ -129,10 +130,16 @@ public class PowerBookmarkUtils {
      */
     public static @NonNull CommerceSubscription createCommerceSubscriptionForPowerBookmarkMeta(
             @NonNull PowerBookmarkMeta meta) {
+        ShoppingSpecifics shoppingSpecifics = meta.getShoppingSpecifics();
         // Use UnsignedLongs to convert ProductClusterId to avoid overflow.
+        PriceTrackableOffer seenOffer =
+                new PriceTrackableOffer(UnsignedLongs.toString(shoppingSpecifics.getOfferId()),
+                        Long.toString(shoppingSpecifics.getCurrentPrice().getAmountMicros()),
+                        shoppingSpecifics.getCountryCode());
         return new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                UnsignedLongs.toString(meta.getShoppingSpecifics().getProductClusterId()),
-                SubscriptionManagementType.USER_MANAGED, TrackingIdType.PRODUCT_CLUSTER_ID);
+                UnsignedLongs.toString(shoppingSpecifics.getProductClusterId()),
+                SubscriptionManagementType.USER_MANAGED, TrackingIdType.PRODUCT_CLUSTER_ID,
+                seenOffer);
     }
 
     /**

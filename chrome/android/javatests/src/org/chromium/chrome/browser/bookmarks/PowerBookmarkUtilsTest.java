@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
+import org.chromium.chrome.browser.power_bookmarks.ProductPrice;
 import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
@@ -196,6 +197,33 @@ public class PowerBookmarkUtilsTest {
 
         // No bookmark meta updates should have occurred.
         verify(mMockBookmarkModel, times(0)).setPowerBookmarkMeta(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateCommerceSubscriptionForPowerBookmarkMeta() {
+        ShoppingSpecifics specifics =
+                ShoppingSpecifics.newBuilder()
+                        .setProductClusterId(123)
+                        .setOfferId(456)
+                        .setCountryCode("us")
+                        .setCurrentPrice(ProductPrice.newBuilder().setAmountMicros(100).build())
+                        .build();
+        PowerBookmarkMeta meta = PowerBookmarkMeta.newBuilder()
+                                         .setType(PowerBookmarkType.SHOPPING)
+                                         .setShoppingSpecifics(specifics)
+                                         .build();
+        CommerceSubscription subscription =
+                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
+
+        Assert.assertEquals(CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID,
+                subscription.getTrackingIdType());
+        Assert.assertEquals(CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
+                subscription.getManagementType());
+        Assert.assertEquals("123", subscription.getTrackingId());
+        Assert.assertEquals("456", subscription.getSeenOffer().offerId);
+        Assert.assertEquals("100", subscription.getSeenOffer().currentPrice);
+        Assert.assertEquals("us", subscription.getSeenOffer().countryCode);
     }
 
     /**

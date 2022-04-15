@@ -44,6 +44,9 @@ message BuyableProduct {
 
   // Cluster id.
   optional uint64 product_cluster_id = 6;
+
+  // Country code of the offer.
+  optional string country_code = 7;
 }
 
 message ProductPriceUpdate {

@@ -15,6 +15,7 @@ namespace {
 const char kLeadImageUrl[] = "image.png";
 const char kFallbackImageUrl[] = "fallback_image.png";
 const char kCurrencyCode[] = "USD";
+const char kCountryCode[] = "us";
 
 const char kMainTitle[] = "Title";
 const char kFallbackTitle[] = "Fallback Title";
@@ -86,6 +87,7 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecifics) {
   product.mutable_current_price()->set_amount_micros(100L);
   product.mutable_current_price()->set_currency_code(kCurrencyCode);
   product.set_offer_id(kOfferId);
+  product.set_country_code(kCountryCode);
 
   power_bookmarks::ShoppingSpecifics out_specifics;
 
@@ -97,6 +99,7 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecifics) {
   EXPECT_EQ(100L, out_specifics.current_price().amount_micros());
   EXPECT_EQ(kCurrencyCode, out_specifics.current_price().currency_code());
   EXPECT_EQ(kOfferId, out_specifics.offer_id());
+  EXPECT_EQ(kCountryCode, out_specifics.country_code());
 }
 
 TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecificsMissingData) {
@@ -117,6 +120,7 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecificsMissingData) {
   EXPECT_EQ(kLeadImageUrl, out_specifics.image_url());
   EXPECT_FALSE(out_specifics.has_product_cluster_id());
   EXPECT_FALSE(out_specifics.has_current_price());
+  EXPECT_FALSE(out_specifics.has_country_code());
 }
 
 }  // namespace
