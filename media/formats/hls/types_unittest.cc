@@ -5,18 +5,10 @@
 #include "media/formats/hls/types.h"
 #include "base/location.h"
 #include "media/formats/hls/source_string.h"
+#include "media/formats/hls/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media::hls {
-
-namespace {
-
-types::VariableName CreateVarName(base::StringPiece name) {
-  return types::VariableName::Parse(SourceString::CreateForTesting(name))
-      .value();
-}
-
-}  // namespace
 
 TEST(HlsFormatParserTest, ParseDecimalIntegerTest) {
   auto const error_test = [](base::StringPiece input,

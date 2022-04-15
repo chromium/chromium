@@ -6,6 +6,7 @@
 #include "base/location.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/source_string.h"
+#include "media/formats/hls/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media::hls {
@@ -100,11 +101,6 @@ void RunEmptyTagTest() {
   ErrorTest<T>("a", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("1234", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("\t", ParseStatusCode::kMalformedTag);
-}
-
-types::VariableName CreateVarName(base::StringPiece name) {
-  return types::VariableName::Parse(SourceString::CreateForTesting(name))
-      .value();
 }
 
 VariableDictionary CreateBasicDictionary(

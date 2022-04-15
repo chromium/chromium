@@ -4,209 +4,15 @@
 
 #include "media/formats/hls/media_playlist.h"
 
-#include <vector>
-
-#include "base/callback_list.h"
-#include "base/location.h"
-#include "media/formats/hls/items.h"
-#include "media/formats/hls/media_segment.h"
-#include "media/formats/hls/source_string.h"
+#include "media/formats/hls/media_playlist_test_builder.h"
+#include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
-#include "media/formats/hls/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media::hls {
 
-namespace {
-
-class TestBuilder {
- public:
-  void SetUri(GURL uri) { uri_ = std::move(uri); }
-
-  // Appends text to the playlist, without a trailing newline.
-  void Append(base::StringPiece text) {
-    source_.append(text.data(), text.size());
-  }
-
-  // Appends a new line to the playlist.
-  void AppendLine(base::StringPiece line) {
-    Append(line);
-    Append("\n");
-  }
-
-  // Adds a new expectation for the playlist, which will be checked during
-  // `ExpectOk`.
-  template <typename Fn, typename Arg>
-  void ExpectPlaylist(Fn fn,
-                      Arg arg,
-                      base::Location location = base::Location::Current()) {
-    playlist_expectations_.emplace_back(base::BindRepeating(
-        std::move(fn), std::move(arg), std::move(location)));
-  }
-
-  // Increments the number of segments that are expected to be contained in the
-  // playlist.
-  void ExpectAdditionalSegment() { segment_expectations_.push_back({}); }
-
-  // Adds a new expectation for the latest segment in the playlist, which will
-  // be checked during `ExpectOk`.
-  template <typename Fn, typename Arg>
-  void ExpectSegment(Fn fn,
-                     Arg arg,
-                     base::Location location = base::Location::Current()) {
-    segment_expectations_.back().expectations.emplace_back(base::BindRepeating(
-        std::move(fn), std::move(arg), std::move(location)));
-  }
-
-  // Attempts to parse the playlist as-is, checking for the given
-  // error code.
-  void ExpectError(
-      ParseStatusCode code,
-      const base::Location& from = base::Location::Current()) const {
-    auto result = MediaPlaylist::Parse(source_, uri_);
-    ASSERT_TRUE(result.has_error()) << from.ToString();
-    EXPECT_EQ(std::move(result).error().code(), code) << from.ToString();
-  }
-
-  // Attempts to parse the playlist as-is, checking all playlist and segment
-  // expectations.
-  void ExpectOk(const base::Location& from = base::Location::Current()) const {
-    auto result = MediaPlaylist::Parse(source_, uri_);
-    ASSERT_TRUE(result.has_value())
-        << "Error: "
-        << ParseStatusCodeToString(std::move(result).error().code()) << "\n"
-        << from.ToString();
-    auto playlist = std::move(result).value();
-
-    for (const auto& expectation : playlist_expectations_) {
-      expectation.Run(playlist);
-    }
-
-    ASSERT_EQ(segment_expectations_.size(), playlist.GetSegments().size())
-        << from.ToString();
-    for (size_t i = 0; i < segment_expectations_.size(); ++i) {
-      const auto& segment = playlist.GetSegments().at(i);
-      const auto& expectations = segment_expectations_.at(i);
-      for (const auto& expectation : expectations.expectations) {
-        expectation.Run(segment);
-      }
-    }
-  }
-
- private:
-  struct SegmentExpectations {
-    std::vector<base::RepeatingCallback<void(const MediaSegment&)>>
-        expectations;
-  };
-
-  std::vector<SegmentExpectations> segment_expectations_;
-  std::vector<base::RepeatingCallback<void(const MediaPlaylist&)>>
-      playlist_expectations_;
-  GURL uri_ = GURL("http://localhost/playlist.m3u8");
-  std::string source_;
-};
-
-void HasVersion(types::DecimalInteger version,
-                const base::Location& from,
-                const MediaPlaylist& playlist) {
-  EXPECT_EQ(playlist.GetVersion(), version) << from.ToString();
-}
-
-void HasType(absl::optional<PlaylistType> type,
-             const base::Location& from,
-             const MediaPlaylist& playlist) {
-  EXPECT_EQ(playlist.GetPlaylistType(), type) << from.ToString();
-}
-
-void HasDuration(types::DecimalFloatingPoint duration,
-                 const base::Location& from,
-                 const MediaSegment& segment) {
-  EXPECT_DOUBLE_EQ(segment.GetDuration(), duration) << from.ToString();
-}
-
-void HasUri(GURL uri, const base::Location& from, const MediaSegment& segment) {
-  EXPECT_EQ(segment.GetUri(), uri) << from.ToString();
-}
-
-void HasDiscontinuity(bool value,
-                      const base::Location& from,
-                      const MediaSegment& segment) {
-  EXPECT_EQ(segment.HasDiscontinuity(), value) << from.ToString();
-}
-
-void IsGap(bool value,
-           const base::Location& from,
-           const MediaSegment& segment) {
-  EXPECT_EQ(segment.IsGap(), value) << from.ToString();
-}
-
-}  // namespace
-
-TEST(HlsFormatParserTest, ParseMediaPlaylist_BadLineEndings) {
-  TestBuilder builder;
-  builder.AppendLine("#EXTM3U");
-
-  {
-    // Double carriage-return is not allowed
-    auto fork = builder;
-    fork.Append("\r\r\n");
-    fork.ExpectError(ParseStatusCode::kInvalidEOL);
-  }
-
-  {
-    // Carriage-return not followed by a newline is not allowed
-    auto fork = builder;
-    fork.Append("#EXT-X-VERSION:5\r");
-    fork.ExpectError(ParseStatusCode::kInvalidEOL);
-  }
-
-  builder.Append("\r\n");
-  builder.ExpectOk();
-}
-
-TEST(HlsFormatParserTest, ParseMediaPlaylist_MissingM3u) {
-  // #EXTM3U must be the very first line
-  TestBuilder builder;
-  builder.AppendLine("");
-  builder.AppendLine("#EXTM3U");
-  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
-
-  builder = TestBuilder();
-  builder.AppendLine("#EXT-X-VERSION:5");
-  builder.AppendLine("#EXTM3U");
-  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
-
-  // Test with invalid line ending
-  builder = TestBuilder();
-  builder.Append("#EXTM3U");
-  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
-
-  // Test with invalid format
-  builder = TestBuilder();
-  builder.AppendLine("#EXTM3U:");
-  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
-  builder = TestBuilder();
-  builder.AppendLine("#EXTM3U:1");
-  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
-
-  // Extra M3U tag is OK
-  builder = TestBuilder();
-  builder.AppendLine("#EXTM3U");
-  builder.AppendLine("#EXTM3U");
-  builder.ExpectOk();
-}
-
-TEST(HlsFormatParserTest, ParseMediaPlaylist_UnknownTag) {
-  TestBuilder builder;
-  builder.AppendLine("#EXTM3U");
-
-  // Unrecognized tags should not result in an error
-  builder.AppendLine("#EXT-UNKNOWN-TAG");
-  builder.ExpectOk();
-}
-
-TEST(HlsFormatParserTest, ParseMediaPlaylist_XDiscontinuityTag) {
-  TestBuilder builder;
+TEST(HlsMediaPlaylistTest, XDiscontinuityTag) {
+  MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
 
   // Default discontinuity state is false
@@ -242,8 +48,8 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_XDiscontinuityTag) {
   builder.ExpectOk();
 }
 
-TEST(HlsFormatParserTest, ParseMediaPlaylist_XGapTag) {
-  TestBuilder builder;
+TEST(HlsMediaPlaylistTest, XGapTag) {
+  MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
 
   // Default gap state is false
@@ -279,48 +85,8 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_XGapTag) {
   builder.ExpectOk();
 }
 
-TEST(HlsFormatParserTest, ParseMediaPlaylist_VersionChecks) {
-  TestBuilder builder;
-  builder.AppendLine("#EXTM3U");
-
-  {
-    // Default version is 1
-    auto fork = builder;
-    fork.ExpectPlaylist(HasVersion, 1);
-    fork.ExpectOk();
-  }
-
-  {
-    // "-1" is not a valid decimal-integer
-    auto fork = builder;
-    fork.AppendLine("#EXT-X-VERSION:-1");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
-  }
-
-  {
-    // "0" is not a valid version
-    auto fork = builder;
-    fork.AppendLine("#EXT-X-VERSION:0");
-    fork.ExpectError(ParseStatusCode::kInvalidPlaylistVersion);
-  }
-
-  for (int i = 1; i <= 10; ++i) {
-    auto fork = builder;
-    fork.AppendLine("#EXT-X-VERSION:" + base::NumberToString(i));
-    fork.ExpectPlaylist(HasVersion, i);
-    fork.ExpectOk();
-  }
-
-  for (int i : {11, 12, 100, 999}) {
-    // Versions 11+ are not supported by this parser
-    auto fork = builder;
-    fork.AppendLine("#EXT-X-VERSION:" + base::NumberToString(i));
-    fork.ExpectError(ParseStatusCode::kPlaylistHasUnsupportedVersion);
-  }
-}
-
-TEST(HlsFormatParserTest, ParseMediaPlaylist_Segments) {
-  TestBuilder builder;
+TEST(HlsMediaPlaylistTest, Segments) {
+  MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-VERSION:5");
   builder.ExpectPlaylist(HasVersion, 5);
@@ -360,8 +126,13 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_Segments) {
   builder.ExpectOk();
 }
 
-TEST(HlsFormatParserTest, ParseMediaPlaylist_Define) {
-  TestBuilder builder;
+// This test is similar to the `HlsMultivariantPlaylistTest` test of the same
+// name, but due to subtle differences between media playlists and multivariant
+// playlists its difficult to combine them. If new cases are added here that are
+// also relevant to multivariant playlists, they should be added to that test as
+// well.
+TEST(HlsMediaPlaylistTest, VariableSubstitution) {
+  MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-VERSION:8");
   builder.ExpectPlaylist(HasVersion, 8);
@@ -420,8 +191,8 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_Define) {
   builder.ExpectOk();
 }
 
-TEST(HlsFormatParserTest, ParseMediaPlaylist_PlaylistType) {
-  TestBuilder builder;
+TEST(HlsMediaPlaylistTest, PlaylistType) {
+  MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
 
   // Without the EXT-X-PLAYLIST-TYPE tag, the playlist has no type.
@@ -474,6 +245,20 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_PlaylistType) {
     auto fork = builder;
     fork.AppendLine("#EXT-X-PLAYLIST-TYPE");
     fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+}
+
+TEST(HlsMediaPlaylistTest, MultivariantPlaylistTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // Media playlists may not contain tags exclusive to multivariant playlists
+  for (TagName name = ToTagName(MultivariantPlaylistTagName::kMinValue);
+       name <= ToTagName(MultivariantPlaylistTagName::kMaxValue); ++name) {
+    auto tag_line = "#" + std::string{TagNameToString(name)};
+    auto fork = builder;
+    fork.AppendLine(tag_line);
+    fork.ExpectError(ParseStatusCode::kMediaPlaylistHasMultivariantPlaylistTag);
   }
 }
 

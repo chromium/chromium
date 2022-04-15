@@ -322,9 +322,14 @@ source_set("unit_tests") {
 
   # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
+    "hls/common_playlist_unittest.cc",
     "hls/items_unittest.cc",
+    "hls/media_playlist_test_builder.cc",
+    "hls/media_playlist_test_builder.h",
     "hls/media_playlist_unittest.cc",
+    "hls/playlist_test_builder.h",
     "hls/tags_unittest.cc",
+    "hls/test_util.h",
     "hls/types_unittest.cc",
     "hls/variable_dictionary_unittest.cc",
   ]
