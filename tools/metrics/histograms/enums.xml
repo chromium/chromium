@@ -39932,6 +39932,15 @@ Called by update_permissions_policy_enum.py.-->
              same-party)"/>
 </enum>
 
+<enum name="FirstPartySetsDatabaseInitStatus">
+  <int value="0" label="Unattempted"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed to initialize DB"/>
+  <int value="3" label="DB schema too new"/>
+  <int value="4" label="DB schema too old"/>
+  <int value="5" label="DB data corrupted"/>
+</enum>
+
 <enum name="FirstRunLaunchSource">
   <summary>
     External applications/promotions that triggered Chrome launch and First Run.

@@ -5439,6 +5439,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FirstPartySets.Database.InitStatus"
+    enum="FirstPartySetsDatabaseInitStatus" expires_after="2022-12-21">
+  <owner>shuuran@google.com</owner>
+  <owner>kaustubhag@google.com</owner>
+  <summary>
+    Records initialization status of First-Party Sets database. Recorded when
+    the database is lazily initialised when the first operation is encountered.
+  </summary>
+</histogram>
+
 <histogram name="FirstRun.IOSFirebaseConfigured" enum="FirebaseConfiguredState"
     expires_after="M89">
   <owner>ghendel@chromium.org</owner>
