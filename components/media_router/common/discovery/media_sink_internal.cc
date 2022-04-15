@@ -206,7 +206,7 @@ bool CastSinkExtraData::operator==(const CastSinkExtraData& other) const {
   return ip_endpoint == other.ip_endpoint && model_name == other.model_name &&
          capabilities == other.capabilities &&
          cast_channel_id == other.cast_channel_id &&
-         discovered_by_dial == other.discovered_by_dial;
+         discovery_type == other.discovery_type;
 }
 
 }  // namespace media_router

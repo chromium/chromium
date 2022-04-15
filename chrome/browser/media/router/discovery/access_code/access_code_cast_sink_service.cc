@@ -195,7 +195,9 @@ void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
     std::move(it->second).Run(AddSinkResultCode::OK, sink->id());
     pending_callbacks_.erase(sink->id());
   } else {
-    if (sink->cast_data().discovered_by_access_code) {
+    CastDiscoveryType type = sink->cast_data().discovery_type;
+    if (type == CastDiscoveryType::kAccessCodeManualEntry ||
+        type == CastDiscoveryType::kAccessCodeRememberedDevice) {
       // Need to pause just a little bit before attempting to remove the sink.
       // Sometimes sinks terminate their routes and immediately start another
       // (tab content transitions for example), so wait just a little while

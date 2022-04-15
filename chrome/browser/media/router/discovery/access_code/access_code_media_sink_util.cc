@@ -115,7 +115,7 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
   }
   extra_data.capabilities =
       ConvertDeviceCapabilitiesToInt(discovery_device.device_capabilities());
-  extra_data.discovered_by_access_code = true;
+  extra_data.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
 
   const std::string& processed_uuid =
       MediaSinkInternal::ProcessDeviceUUID(unique_id);
@@ -190,7 +190,7 @@ absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint = net::IPEndPoint(ip_address, port.value());
   extra_data.capabilities = capabilities.value();
-  extra_data.discovered_by_access_code = true;
+  extra_data.discovery_type = CastDiscoveryType::kAccessCodeRememberedDevice;
 
   const auto* sink_dict = value_dict.FindDict(kSinkDictKey);
   if (!sink_dict)

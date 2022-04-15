@@ -17,6 +17,14 @@ namespace media_router {
 // Default Cast control port to open Cast Socket.
 static constexpr int kCastControlPort = 8009;
 
+// The method by which the cast sink was discovered.
+enum class CastDiscoveryType {
+  kMdns,
+  kDial,
+  kAccessCodeManualEntry,
+  kAccessCodeRememberedDevice,
+};
+
 // Extra data for DIAL media sink.
 struct DialSinkExtraData {
   net::IPAddress ip_address;
@@ -53,11 +61,8 @@ struct CastSinkExtraData {
   // browser reconnects to a device.
   int cast_channel_id = 0;
 
-  // True if Cast channel is opened from DIAL sink.
-  bool discovered_by_dial = false;
-
-  // True if Cast Device was discovered via access code.
-  bool discovered_by_access_code = false;
+  // The method used to discover the cast sink.
+  CastDiscoveryType discovery_type = CastDiscoveryType::kMdns;
 
   CastSinkExtraData();
   CastSinkExtraData(const CastSinkExtraData& other);

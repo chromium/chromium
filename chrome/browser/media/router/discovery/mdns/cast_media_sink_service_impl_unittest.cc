@@ -186,7 +186,7 @@ TEST_P(CastMediaSinkServiceImplTest, TestMultipleOnChannelOpenSucceeded) {
   MediaSinkInternal cast_sink3 = CreateCastSink(3);
 
   CastSinkExtraData extra_data = cast_sink3.cast_data();
-  extra_data.discovered_by_dial = true;
+  extra_data.discovery_type = CastDiscoveryType::kDial;
   cast_sink3.set_cast_data(extra_data);
 
   cast_channel::MockCastSocket socket2;
@@ -223,7 +223,7 @@ TEST_P(CastMediaSinkServiceImplTest, TestMultipleOnChannelOpenSucceeded) {
           Bucket(static_cast<int>(CastMediaSinkServiceImpl::SinkSource::kDial),
                  1)));
 
-  extra_data.discovered_by_dial = false;
+  extra_data.discovery_type = CastDiscoveryType::kMdns;
   cast_sink3.set_cast_data(extra_data);
   EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink3));
   media_sink_service_impl_.OnChannelOpenSucceeded(
@@ -1471,7 +1471,8 @@ TEST_P(CastMediaSinkServiceImplTest, TestAccessCodeSinkNotAddedToNetworkCache) {
 
   MediaSinkInternal sink1 = CreateCastSink(1);
   MediaSinkInternal access_sink = CreateCastSink(2);
-  access_sink.cast_data().discovered_by_access_code = true;
+  access_sink.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
   net::IPEndPoint ip_endpoint1 = CreateIPEndPoint(1);
   net::IPEndPoint ip_endpoint2 = CreateIPEndPoint(2);
   std::vector<MediaSinkInternal> sink_list1{sink1, access_sink};

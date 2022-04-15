@@ -213,7 +213,8 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   // Add a cast sink discovered by access code to the list of routes.
   MediaSinkInternal access_code_sink2 = CreateCastSink(2);
-  access_code_sink2.cast_data().discovered_by_access_code = true;
+  access_code_sink2.cast_data().discovery_type =
+        CastDiscoveryType::kAccessCodeManualEntry;
   MediaRoute media_route_access = CreateRouteForTesting(access_code_sink2);
 
   route_list.push_back(media_route_access);
@@ -284,7 +285,8 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
   // When an existing sink has an existing route, ensure that that route is
   // terminated before the caller is alerted to the successful discovery.
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
-  cast_sink1.cast_data().discovered_by_access_code = true;
+  cast_sink1.cast_data().discovery_type =
+        CastDiscoveryType::kAccessCodeManualEntry;
 
   MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
 

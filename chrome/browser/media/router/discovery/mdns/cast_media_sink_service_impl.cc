@@ -49,7 +49,7 @@ MediaSinkInternal CreateCastSinkFromDialSink(
   extra_data.ip_endpoint =
       net::IPEndPoint(dial_sink.dial_data().ip_address, kCastControlPort);
   extra_data.model_name = dial_sink.dial_data().model_name;
-  extra_data.discovered_by_dial = true;
+  extra_data.discovery_type = CastDiscoveryType::kDial;
   extra_data.capabilities = cast_channel::CastDeviceCapability::NONE;
 
   return MediaSinkInternal(sink, extra_data);
@@ -168,14 +168,14 @@ bool IsNetworkIdUnknownOrDisconnected(const std::string& network_id) {
 // Updates |existing_sink| with properties from |new_sink|. The relevant
 // properties are sink name and capabilities (and icon type, by association).
 // This method is only called with a |new_sink| discovered by mDNS. As such,
-// |discovered_by_dial| is also updated to false.
+// |discovery_type| is also updated to kMdns.
 void UpdateCastSink(const MediaSinkInternal& new_sink,
                     MediaSinkInternal* existing_sink) {
   existing_sink->sink().set_name(new_sink.sink().name());
   auto capabilities = new_sink.cast_data().capabilities;
   existing_sink->cast_data().capabilities = capabilities;
   existing_sink->sink().set_icon_type(GetCastSinkIconType(capabilities));
-  existing_sink->cast_data().discovered_by_dial = false;
+  existing_sink->cast_data().discovery_type = CastDiscoveryType::kMdns;
 }
 
 }  // namespace
@@ -405,7 +405,9 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
     for (const auto& entry : GetSinks()) {
       // AccessCode sinks should not be cached because of expiration -- this is
       // handled elsewhere instead.
-      if (!entry.second.cast_data().discovered_by_access_code) {
+      CastDiscoveryType type = entry.second.cast_data().discovery_type;
+      if (type != CastDiscoveryType::kAccessCodeManualEntry &&
+          type != CastDiscoveryType::kAccessCodeRememberedDevice) {
         current_sinks.push_back(entry.second);
       }
     }
@@ -600,7 +602,7 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   CastSinkExtraData& extra_data = cast_sink.cast_data();
   // Manually set device capabilities for sinks discovered via DIAL as DIAL
   // discovery does not provide capability info.
-  if (cast_sink.cast_data().discovered_by_dial) {
+  if (cast_sink.cast_data().discovery_type == CastDiscoveryType::kDial) {
     extra_data.capabilities = cast_channel::CastDeviceCapability::AUDIO_OUT;
     if (!socket->audio_only())
       extra_data.capabilities |= cast_channel::CastDeviceCapability::VIDEO_OUT;
@@ -617,8 +619,8 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   if (!existing_sink) {
     metrics_.RecordCastSinkDiscoverySource(sink_source);
   } else {
-    if (existing_sink->cast_data().discovered_by_dial &&
-        !cast_sink.cast_data().discovered_by_dial) {
+    if (existing_sink->cast_data().discovery_type == CastDiscoveryType::kDial &&
+        cast_sink.cast_data().discovery_type != CastDiscoveryType::kDial) {
       metrics_.RecordCastSinkDiscoverySource(SinkSource::kDialMdns);
     }
   }

@@ -116,7 +116,8 @@ TEST_F(AccessCodeMediaSinkUtilTest, MissingPort) {
 
   expected_extra_data.ip_endpoint =
       net::IPEndPoint(expected_ip, kCastControlPort);
-  expected_extra_data.discovered_by_access_code = true;
+  expected_extra_data.discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
 
   media_router::MediaSink expected_sink(
       base::StringPrintf("cast:<%s>", kExpectedSinkId), kExpectedDisplayName,
@@ -166,7 +167,8 @@ TEST_F(AccessCodeMediaSinkUtilTest, MediaSinkCreatedCorrectly) {
   int port_value = 0;
   EXPECT_EQ(true, base::StringToInt(kExpectedPort, &port_value));
   expected_extra_data.ip_endpoint = net::IPEndPoint(expected_ip, port_value);
-  expected_extra_data.discovered_by_access_code = true;
+  expected_extra_data.discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
 
   media_router::MediaSink expected_sink(
       base::StringPrintf("cast:<%s>", kExpectedSinkId), kExpectedDisplayName,
@@ -188,6 +190,10 @@ TEST_F(AccessCodeMediaSinkUtilTest, ParsedMediaSinkInternalEqualToOriginal) {
   DiscoveryDevice discovery_device_proto = BuildDiscoveryDeviceProto();
   auto cast_sink =
       CreateAccessCodeMediaSink(discovery_device_proto).first.value();
+  media_router::CastSinkExtraData cast_sink_data = cast_sink.cast_data();
+  cast_sink_data.discovery_type =
+      CastDiscoveryType::kAccessCodeRememberedDevice;
+  cast_sink.set_cast_data(cast_sink_data);
 
   auto value_dict =
       std::move(*CreateValueDictFromMediaSinkInternal(cast_sink).GetIfDict());
