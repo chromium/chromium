@@ -334,9 +334,6 @@ export class ChromeVoxBackground {
     ChromeVoxState.backgroundTts = background.backgroundTts_;
     // Export the prefs object for access by the options page.
     window['prefs'] = ChromeVoxPrefs.instance;
-    // Export the braille translator manager for access by the options page.
-    window['braille_translator_manager'] =
-        background.backgroundBraille_.getTranslatorManager();
     window['getCurrentVoice'] = background.getCurrentVoice.bind(background);
   }
 }

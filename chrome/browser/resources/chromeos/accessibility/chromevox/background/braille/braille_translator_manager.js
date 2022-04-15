@@ -37,27 +37,27 @@ export class BrailleTranslatorManager {
      */
     this.tables_ = [];
     /**
-     * @type {ExpandingBrailleTranslator}
+     * @type {?ExpandingBrailleTranslator}
      * @private
      */
     this.expandingTranslator_ = null;
     /**
-     * @type {LibLouis.Translator}
+     * @type {?LibLouis.Translator}
      * @private
      */
     this.defaultTranslator_ = null;
     /**
-     * @type {string?}
+     * @type {?string}
      * @private
      */
     this.defaultTableId_ = null;
     /**
-     * @type {LibLouis.Translator}
+     * @type {?LibLouis.Translator}
      * @private
      */
     this.uncontractedTranslator_ = null;
     /**
-     * @type {string?}
+     * @type {?string}
      * @private
      */
     this.uncontractedTableId_ = null;

@@ -43,11 +43,8 @@ export class LearnMode {
     ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 
     /** @type {LibLouis.Translator} */
-    LearnMode.currentBrailleTranslator_ = await new Promise(
-        resolve => chrome.runtime.sendMessage(
-            {target: 'BrailleBackground', action: 'getDefaultTranslator'},
-            resolve));
-
+    LearnMode.currentBrailleTranslator_ =
+        await BackgroundBridge.BrailleBackground.getDefaultTranslator();
     ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
 
     $('instruction').textContent = Msgs.getMsg('learn_mode_intro');

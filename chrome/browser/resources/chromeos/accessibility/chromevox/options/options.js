@@ -7,7 +7,6 @@
  */
 import {BluetoothBrailleDisplayUI} from '../background/braille/bluetooth_braille_display_ui.js';
 import {BrailleTable} from '../background/braille/braille_table.js';
-import {BrailleTranslatorManager} from '../background/braille/braille_translator_manager.js';
 import {ConsoleTts} from '../background/console_tts.js';
 import {ChromeVoxPrefs} from '../background/prefs.js';
 import {TtsBackground} from '../background/tts_background.js';
@@ -351,7 +350,7 @@ export class OptionsPage {
         const sel = node.options[selIndex];
         localStorage['brailleTable'] = sel.id;
         localStorage[node.id] = sel.id;
-        OptionsPage.getBrailleTranslatorManager().refresh(
+        BackgroundBridge.BrailleBackground.refreshBrailleTable(
             localStorage['brailleTable']);
       };
     };
@@ -384,7 +383,7 @@ export class OptionsPage {
         tableTypeButton.textContent =
             Msgs.getMsg('options_braille_table_type_8');
       }
-      OptionsPage.getBrailleTranslatorManager().refresh(
+      BackgroundBridge.BrailleBackground.refreshBrailleTable(
           localStorage['brailleTable']);
     };
     updateTableType(false);
@@ -498,13 +497,6 @@ export class OptionsPage {
    * Hides all elements not matching the current platform.
    */
   static hidePlatformSpecifics() {}
-
-  /**
-   * @return {BrailleTranslatorManager}
-   */
-  static getBrailleTranslatorManager() {
-    return chrome.extension.getBackgroundPage()['braille_translator_manager'];
-  }
 }
 
 /**

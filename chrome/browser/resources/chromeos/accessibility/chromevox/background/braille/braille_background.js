@@ -71,7 +71,6 @@ export class BrailleBackground {
     return BrailleBackground.instance_;
   }
 
-
   /** @override */
   write(params) {
     if (this.frozen_) {
@@ -174,11 +173,15 @@ export class BrailleBackground {
 /** @type {?BrailleBackground} */
 BrailleBackground.instance_ = null;
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.target === 'BrailleBackground' &&
-      message.action === 'getDefaultTranslator') {
-    sendResponse(BrailleBackground.getInstance()
-                     .getTranslatorManager()
-                     .getDefaultTranslator());
-  }
-});
+const target = 'BrailleBackground';
+BackgroundBridge.registerHandler(
+    target, 'getDefaultTranslator',
+    () => BrailleBackground.getInstance()
+              .getTranslatorManager()
+              .getDefaultTranslator());
+
+BackgroundBridge.registerHandler(
+    target, 'refreshBrailleTable',
+    (brailleTable) =>
+        BrailleBackground.getInstance().getTranslatorManager().refresh(
+            brailleTable));
