@@ -552,6 +552,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
   histograms.ExpectBucketCount(ash::kClamshellReorderActionHistogram,
                                ash::AppListSortOrder::kNameAlphabetical, 1);
+  histograms.ExpectTotalCount(ash::kAppListSortDiscoveryDurationAfterNudge, 1);
 
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListPageMenu,
@@ -835,11 +836,13 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   top_level_grid->Layout();
 
   // Order apps grid to transition to temporary sort order.
+  base::HistogramTester histograms;
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListFolderItemMenu,
                                    AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+  histograms.ExpectTotalCount(ash::kAppListSortDiscoveryDurationAfterNudge, 1);
 
   // Click on the folder item to open it.
   base::RunLoop run_loop;

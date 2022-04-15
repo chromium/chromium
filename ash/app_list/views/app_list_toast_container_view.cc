@@ -14,6 +14,8 @@
 #include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
+#include "ash/public/cpp/feature_discovery_duration_reporter.h"
+#include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -139,6 +141,9 @@ void AppListToastContainerView::CreateReorderNudgeView() {
         base::BindRepeating(&AppListToastContainerView::DismissReorderNudgeView,
                             base::Unretained(this)));
   }
+
+  FeatureDiscoveryDurationReporter::GetInstance()->MaybeActivateObservation(
+      feature_discovery::TrackableFeature::kAppListReorderAfterEducationNudge);
 
   toast_view_ = AddChildView(
       toast_view_builder.SetStyleForTabletMode(tablet_mode_)
