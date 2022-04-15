@@ -847,8 +847,6 @@ component("ash") {
     "shelf/hotseat_widget.h",
     "shelf/in_app_to_home_nudge_controller.cc",
     "shelf/in_app_to_home_nudge_controller.h",
-    "shelf/kiosk_app_instruction_bubble.cc",
-    "shelf/kiosk_app_instruction_bubble.h",
     "shelf/launcher_nudge_controller.cc",
     "shelf/launcher_nudge_controller.h",
     "shelf/login_shelf_gesture_controller.cc",

@@ -39,7 +39,6 @@
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -937,11 +936,6 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
       views::BoxLayout::MainAxisAlignment::kCenter);
   main_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  // TODO(crbug.com/1307303): Determine if this is a kiosk license device.
-  bool kiosk_license_mode = false;
-  if (kiosk_license_mode)
-    return;
 
   // If there are no users, show GAIA signin if login.
   if (users.empty() && screen_type_ == LockScreen::ScreenType::kLogin) {
