@@ -27,6 +27,9 @@ const char* g_preinstalled_app_for_testing = nullptr;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
+base::Feature kChromeAppsDeprecationExcludeForceInstalls(
+    "ChromeAppsDeprecationExcludeForceInstalls",
+    base::FEATURE_DISABLED_BY_DEFAULT);
 base::FeatureParam<std::string> kChromeAppAllowlist{
     &features::kChromeAppsDeprecation, "allow_list", ""};
 #endif
@@ -129,6 +132,12 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
   if (base::FeatureList::IsEnabled(
           features::kKeepForceInstalledPreinstalledApps) &&
       force_installed && preinstalled) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kChromeAppsDeprecationExcludeForceInstalls) &&
+      force_installed) {
     return false;
   }
 
