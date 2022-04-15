@@ -595,11 +595,11 @@ PartialTranslateBubbleView::CreateViewAdvancedSource() {
 
   // Language icon
   int source_default_index = model_->GetSourceLanguageIndex();
-  source_language_combobox_model_ =
+  auto source_language_combobox_model =
       std::make_unique<SourceLanguageComboboxModel>(source_default_index,
                                                     model_.get());
   auto source_language_combobox = std::make_unique<views::Combobox>(
-      std::move(source_language_combobox_model_));
+      std::move(source_language_combobox_model));
   source_language_combobox->SetProperty(views::kElementIdentifierKey,
                                         kSourceLanguageCombobox);
 
@@ -640,12 +640,12 @@ PartialTranslateBubbleView::CreateViewAdvancedTarget() {
           views::style::CONTEXT_DIALOG_TITLE);
 
   int target_default_index = model_->GetTargetLanguageIndex();
-  target_language_combobox_model_ =
+  auto target_language_combobox_model =
       std::make_unique<TargetLanguageComboboxModel>(target_default_index,
                                                     model_.get());
 
   auto target_language_combobox = std::make_unique<views::Combobox>(
-      std::move(target_language_combobox_model_));
+      std::move(target_language_combobox_model));
   target_language_combobox->SetProperty(views::kElementIdentifierKey,
                                         kTargetLanguageCombobox);
 

@@ -820,7 +820,6 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   view->AddChildView(std::move(button_row));
 
-  // Layout();
   return view;
 }
 
@@ -833,14 +832,11 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
 
   // Language icon
   int source_default_index = model_->GetSourceLanguageIndex();
-  source_language_combobox_model_ =
+  auto source_language_combobox_model =
       std::make_unique<SourceLanguageComboboxModel>(source_default_index,
                                                     model_.get());
-
-  // Ideally all child view elements shall be created using unique_ptr.
-  // Using normal pointer for compatibility with existing code.
-  auto source_language_combobox =
-      std::make_unique<views::Combobox>(source_language_combobox_model_.get());
+  auto source_language_combobox = std::make_unique<views::Combobox>(
+      std::move(source_language_combobox_model));
   source_language_combobox->SetProperty(views::kElementIdentifierKey,
                                         kSourceLanguageCombobox);
 
@@ -895,14 +891,11 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
           views::style::CONTEXT_DIALOG_TITLE);
 
   int target_default_index = model_->GetTargetLanguageIndex();
-  target_language_combobox_model_ =
+  auto target_language_combobox_model =
       std::make_unique<TargetLanguageComboboxModel>(target_default_index,
                                                     model_.get());
-
-  // Ideally all view components shall be created using unique_ptr.
-  // Using normal pointer for compatibility with existing code.
-  auto target_language_combobox =
-      std::make_unique<views::Combobox>(target_language_combobox_model_.get());
+  auto target_language_combobox = std::make_unique<views::Combobox>(
+      std::move(target_language_combobox_model));
   target_language_combobox->SetProperty(views::kElementIdentifierKey,
                                         kTargetLanguageCombobox);
 

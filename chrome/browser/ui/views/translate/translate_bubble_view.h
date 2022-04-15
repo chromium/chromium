@@ -286,9 +286,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   raw_ptr<views::View> advanced_view_source_ = nullptr;
   raw_ptr<views::View> advanced_view_target_ = nullptr;
 
-  std::unique_ptr<SourceLanguageComboboxModel> source_language_combobox_model_;
-  std::unique_ptr<TargetLanguageComboboxModel> target_language_combobox_model_;
-
   raw_ptr<views::Combobox> source_language_combobox_ = nullptr;
   raw_ptr<views::Combobox> target_language_combobox_ = nullptr;
 
