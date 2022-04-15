@@ -946,6 +946,32 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
   }
 }
 
+// Test for crbug.com/1316581.
+TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
+  const base::FilePath kLegacyFilePath =
+      ProfilePath().AppendASCII(kDatabaseName);
+  const StorageKey kStorageKey =
+      StorageKey::CreateFromStringForTesting("http://google/");
+  const std::string kBucketName = "google_bucket";
+  // Create database, add bucket and close by leaving scope.
+  {
+    auto db = CreateDatabase(/*is_incognito=*/false);
+    auto result = db->GetOrCreateBucket(kStorageKey, kBucketName);
+    ASSERT_TRUE(result.ok());
+  }
+  // Copy db file paths to legacy file path to mimic bad migration state.
+  base::CopyFile(DbPath(), kLegacyFilePath);
+
+  // Reopen database, check that db is migrated and is in a good state.
+  {
+    auto db = CreateDatabase(/*is_incognito=*/false);
+    auto result = db->GetBucket(kStorageKey, kBucketName, kTemp);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(base::PathExists(kLegacyFilePath));
+    EXPECT_TRUE(base::PathExists(DbPath()));
+  }
+}
+
 TEST_F(QuotaDatabaseTest, GetOrCreateBucket_CorruptedDatabase) {
   QuotaDatabase db(ProfilePath());
   StorageKey storage_key =
