@@ -558,6 +558,22 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
       return "hevc main 10";
     case gpu::HEVCPROFILE_MAIN_STILL_PICTURE:
       return "hevc main still-picture";
+    case gpu::HEVCPROFILE_REXT:
+      return "hevc range extensions";
+    case gpu::HEVCPROFILE_HIGH_THROUGHPUT:
+      return "hevc high throughput";
+    case gpu::HEVCPROFILE_MULTIVIEW_MAIN:
+      return "hevc multiview main";
+    case gpu::HEVCPROFILE_SCALABLE_MAIN:
+      return "hevc scalable main";
+    case gpu::HEVCPROFILE_3D_MAIN:
+      return "hevc 3d main";
+    case gpu::HEVCPROFILE_SCREEN_EXTENDED:
+      return "hevc screen extended";
+    case gpu::HEVCPROFILE_SCALABLE_REXT:
+      return "hevc scalable range extensions";
+    case gpu::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return "hevc high throughput screen extended";
     case gpu::VP8PROFILE_ANY:
       return "vp8";
     case gpu::VP9PROFILE_PROFILE0:

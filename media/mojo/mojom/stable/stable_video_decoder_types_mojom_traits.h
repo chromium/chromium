@@ -824,6 +824,29 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
       case ::media::VideoCodecProfile::HEVCPROFILE_MAIN_STILL_PICTURE:
         return media::stable::mojom::VideoCodecProfile::
             kHEVCProfileMainStillPicture;
+      case ::media::VideoCodecProfile::HEVCPROFILE_REXT:
+        return media::stable::mojom::VideoCodecProfile::kHEVCProfileRext;
+      case ::media::VideoCodecProfile::HEVCPROFILE_HIGH_THROUGHPUT:
+        return media::stable::mojom::VideoCodecProfile::
+            kHEVCProfileHighThroughput;
+      case ::media::VideoCodecProfile::HEVCPROFILE_MULTIVIEW_MAIN:
+        return media::stable::mojom::VideoCodecProfile::
+            kHEVCProfileMultiviewMain;
+      case ::media::VideoCodecProfile::HEVCPROFILE_SCALABLE_MAIN:
+        return media::stable::mojom::VideoCodecProfile::
+            kHEVCProfileScalableMain;
+      case ::media::VideoCodecProfile::HEVCPROFILE_3D_MAIN:
+        return media::stable::mojom::VideoCodecProfile::kHEVCProfile3dMain;
+      case ::media::VideoCodecProfile::HEVCPROFILE_SCREEN_EXTENDED:
+        return media::stable::mojom::VideoCodecProfile::
+            kHEVCProfileScreenExtended;
+      case ::media::VideoCodecProfile::HEVCPROFILE_SCALABLE_REXT:
+        return media::stable::mojom::VideoCodecProfile::
+            kHEVCProfileScalableRext;
+      case ::media::VideoCodecProfile::
+          HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+        return media::stable::mojom::VideoCodecProfile::
+            kHEVCProfileHighThroughputScreenExtended;
       case ::media::VideoCodecProfile::DOLBYVISION_PROFILE0:
         return media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile0;
       case ::media::VideoCodecProfile::DOLBYVISION_PROFILE4:
@@ -918,6 +941,32 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
       case media::stable::mojom::VideoCodecProfile::
           kHEVCProfileMainStillPicture:
         *output = ::media::VideoCodecProfile::HEVCPROFILE_MAIN_STILL_PICTURE;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kHEVCProfileRext:
+        *output = ::media::VideoCodecProfile::HEVCPROFILE_REXT;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kHEVCProfileHighThroughput:
+        *output = ::media::VideoCodecProfile::HEVCPROFILE_HIGH_THROUGHPUT;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kHEVCProfileMultiviewMain:
+        *output = ::media::VideoCodecProfile::HEVCPROFILE_MULTIVIEW_MAIN;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kHEVCProfileScalableMain:
+        *output = ::media::VideoCodecProfile::HEVCPROFILE_SCALABLE_MAIN;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kHEVCProfile3dMain:
+        *output = ::media::VideoCodecProfile::HEVCPROFILE_3D_MAIN;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kHEVCProfileScreenExtended:
+        *output = ::media::VideoCodecProfile::HEVCPROFILE_SCREEN_EXTENDED;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kHEVCProfileScalableRext:
+        *output = ::media::VideoCodecProfile::HEVCPROFILE_SCALABLE_REXT;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::
+          kHEVCProfileHighThroughputScreenExtended:
+        *output = ::media::VideoCodecProfile::
+            HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
         return true;
       case media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile0:
         *output = ::media::VideoCodecProfile::DOLBYVISION_PROFILE0;

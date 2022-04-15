@@ -123,7 +123,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
 
 VideoCodecProfile HEVCDecoderConfigurationRecord::GetVideoProfile() const {
   // The values of general_profile_idc are taken from the HEVC standard, see
-  // the latest https://www.itu.int/rec/T-REC-H.265/en section A.3
+  // the latest https://www.itu.int/rec/T-REC-H.265/en
   switch (general_profile_idc) {
     case 1:
       return HEVCPROFILE_MAIN;
@@ -131,6 +131,22 @@ VideoCodecProfile HEVCDecoderConfigurationRecord::GetVideoProfile() const {
       return HEVCPROFILE_MAIN10;
     case 3:
       return HEVCPROFILE_MAIN_STILL_PICTURE;
+    case 4:
+      return HEVCPROFILE_REXT;
+    case 5:
+      return HEVCPROFILE_HIGH_THROUGHPUT;
+    case 6:
+      return HEVCPROFILE_MULTIVIEW_MAIN;
+    case 7:
+      return HEVCPROFILE_SCALABLE_MAIN;
+    case 8:
+      return HEVCPROFILE_3D_MAIN;
+    case 9:
+      return HEVCPROFILE_SCREEN_EXTENDED;
+    case 10:
+      return HEVCPROFILE_SCALABLE_REXT;
+    case 11:
+      return HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
   }
   return VIDEO_CODEC_PROFILE_UNKNOWN;
 }

@@ -37,6 +37,8 @@ enum VideoCodecProfile {
   // Keep the values in this enum unique, as they imply format (h.264 vs. VP8,
   // for example), and keep the values for a particular format grouped
   // together for clarity.
+  // Next version: 2
+  // Next value: 37
   [Default] kVideoCodecProfileUnknown = -1,
   kH264ProfileMin = 0,
   kH264ProfileBaseline = kH264ProfileMin,
@@ -79,6 +81,16 @@ enum VideoCodecProfile {
   kAV1ProfileMax = kAV1ProfilePro,
   kDolbyVisionProfile8 = 27,
   kDolbyVisionProfile9 = 28,
+  [MinVersion=1] kHEVCProfileExtMin = 29,
+  [MinVersion=1] kHEVCProfileRext = kHEVCProfileExtMin,
+  [MinVersion=1] kHEVCProfileHighThroughput = 30,
+  [MinVersion=1] kHEVCProfileMultiviewMain = 31,
+  [MinVersion=1] kHEVCProfileScalableMain = 32,
+  [MinVersion=1] kHEVCProfile3dMain = 33,
+  [MinVersion=1] kHEVCProfileScreenExtended = 34,
+  [MinVersion=1] kHEVCProfileScalableRext = 35,
+  [MinVersion=1] kHEVCProfileHighThroughputScreenExtended = 36,
+  [MinVersion=1] kHEVCProfileExtMax = kHEVCProfileHighThroughputScreenExtended,
 };
 
 // Based on |media.mojom.SubsampleEntry|.

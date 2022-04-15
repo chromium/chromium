@@ -493,6 +493,22 @@ gpu::VideoCodecProfile ToGpuVideoCodecProfile(
       return gpu::HEVCPROFILE_MAIN10;
     case media::HEVCPROFILE_MAIN_STILL_PICTURE:
       return gpu::HEVCPROFILE_MAIN_STILL_PICTURE;
+    case media::HEVCPROFILE_REXT:
+      return gpu::HEVCPROFILE_REXT;
+    case media::HEVCPROFILE_HIGH_THROUGHPUT:
+      return gpu::HEVCPROFILE_HIGH_THROUGHPUT;
+    case media::HEVCPROFILE_MULTIVIEW_MAIN:
+      return gpu::HEVCPROFILE_MULTIVIEW_MAIN;
+    case media::HEVCPROFILE_SCALABLE_MAIN:
+      return gpu::HEVCPROFILE_SCALABLE_MAIN;
+    case media::HEVCPROFILE_3D_MAIN:
+      return gpu::HEVCPROFILE_3D_MAIN;
+    case media::HEVCPROFILE_SCREEN_EXTENDED:
+      return gpu::HEVCPROFILE_SCREEN_EXTENDED;
+    case media::HEVCPROFILE_SCALABLE_REXT:
+      return gpu::HEVCPROFILE_SCALABLE_REXT;
+    case media::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return gpu::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
     case media::DOLBYVISION_PROFILE0:
       return gpu::DOLBYVISION_PROFILE0;
     case media::DOLBYVISION_PROFILE4:

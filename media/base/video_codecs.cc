@@ -77,6 +77,22 @@ std::string GetProfileName(VideoCodecProfile profile) {
       return "hevc main 10";
     case HEVCPROFILE_MAIN_STILL_PICTURE:
       return "hevc main still-picture";
+    case HEVCPROFILE_REXT:
+      return "hevc range extensions";
+    case HEVCPROFILE_HIGH_THROUGHPUT:
+      return "hevc high throughput";
+    case HEVCPROFILE_MULTIVIEW_MAIN:
+      return "hevc multiview main";
+    case HEVCPROFILE_SCALABLE_MAIN:
+      return "hevc scalable main";
+    case HEVCPROFILE_3D_MAIN:
+      return "hevc 3d main";
+    case HEVCPROFILE_SCREEN_EXTENDED:
+      return "hevc screen extended";
+    case HEVCPROFILE_SCALABLE_REXT:
+      return "hevc scalable range extensions";
+    case HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return "hevc high throughput screen extended";
     case VP8PROFILE_ANY:
       return "vp8";
     case VP9PROFILE_PROFILE0:
@@ -708,14 +724,54 @@ bool ParseHEVCCodecId(const std::string& codec_id,
   }
 
   if (profile) {
-    // TODO(servolk): Handle format range extension profiles as explained in
-    // HEVC standard (ISO/IEC ISO/IEC 23008-2) section A.3.5
+    // Spec A.3.8
+    if (general_profile_idc == 11 ||
+        (general_profile_compatibility_flags & 1024)) {
+      *profile = HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
+    }
+    // Spec H.11.1.2
+    if (general_profile_idc == 10 ||
+        (general_profile_compatibility_flags & 512)) {
+      *profile = HEVCPROFILE_SCALABLE_REXT;
+    }
+    // Spec A.3.7
+    if (general_profile_idc == 9 ||
+        (general_profile_compatibility_flags & 256)) {
+      *profile = HEVCPROFILE_SCREEN_EXTENDED;
+    }
+    // Spec I.11.1.1
+    if (general_profile_idc == 8 ||
+        (general_profile_compatibility_flags & 128)) {
+      *profile = HEVCPROFILE_3D_MAIN;
+    }
+    // Spec H.11.1.1
+    if (general_profile_idc == 7 ||
+        (general_profile_compatibility_flags & 64)) {
+      *profile = HEVCPROFILE_SCALABLE_MAIN;
+    }
+    // Spec G.11.1.1
+    if (general_profile_idc == 6 ||
+        (general_profile_compatibility_flags & 32)) {
+      *profile = HEVCPROFILE_MULTIVIEW_MAIN;
+    }
+    // Spec A.3.6
+    if (general_profile_idc == 5 ||
+        (general_profile_compatibility_flags & 16)) {
+      *profile = HEVCPROFILE_HIGH_THROUGHPUT;
+    }
+    // Spec A.3.5
+    if (general_profile_idc == 4 || (general_profile_compatibility_flags & 8)) {
+      *profile = HEVCPROFILE_REXT;
+    }
+    // Spec A.3.4
     if (general_profile_idc == 3 || (general_profile_compatibility_flags & 4)) {
       *profile = HEVCPROFILE_MAIN_STILL_PICTURE;
     }
+    // Spec A.3.3
     if (general_profile_idc == 2 || (general_profile_compatibility_flags & 2)) {
       *profile = HEVCPROFILE_MAIN10;
     }
+    // Spec A.3.2
     if (general_profile_idc == 1 || (general_profile_compatibility_flags & 1)) {
       *profile = HEVCPROFILE_MAIN;
     }
@@ -954,6 +1010,14 @@ VideoCodec VideoCodecProfileToVideoCodec(VideoCodecProfile profile) {
     case HEVCPROFILE_MAIN:
     case HEVCPROFILE_MAIN10:
     case HEVCPROFILE_MAIN_STILL_PICTURE:
+    case HEVCPROFILE_REXT:
+    case HEVCPROFILE_HIGH_THROUGHPUT:
+    case HEVCPROFILE_MULTIVIEW_MAIN:
+    case HEVCPROFILE_SCALABLE_MAIN:
+    case HEVCPROFILE_3D_MAIN:
+    case HEVCPROFILE_SCREEN_EXTENDED:
+    case HEVCPROFILE_SCALABLE_REXT:
+    case HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
       return VideoCodec::kHEVC;
     case VP8PROFILE_ANY:
       return VideoCodec::kVP8;

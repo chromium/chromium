@@ -1229,6 +1229,22 @@ VideoCodecProfile H265Parser::ProfileIDCToVideoCodecProfile(int profile_idc) {
       return HEVCPROFILE_MAIN10;
     case H265ProfileTierLevel::kProfileIdcMainStill:
       return HEVCPROFILE_MAIN_STILL_PICTURE;
+    case H265ProfileTierLevel::kProfileIdcRangeExtensions:
+      return HEVCPROFILE_REXT;
+    case H265ProfileTierLevel::kProfileIdcHighThroughput:
+      return HEVCPROFILE_HIGH_THROUGHPUT;
+    case H265ProfileTierLevel::kProfileIdcMultiviewMain:
+      return HEVCPROFILE_MULTIVIEW_MAIN;
+    case H265ProfileTierLevel::kProfileIdcScalableMain:
+      return HEVCPROFILE_SCALABLE_MAIN;
+    case H265ProfileTierLevel::kProfileIdc3dMain:
+      return HEVCPROFILE_3D_MAIN;
+    case H265ProfileTierLevel::kProfileIdcScreenContentCoding:
+      return HEVCPROFILE_SCREEN_EXTENDED;
+    case H265ProfileTierLevel::kProfileIdcScalableRangeExtensions:
+      return HEVCPROFILE_SCALABLE_REXT;
+    case H265ProfileTierLevel::kProfileIdcHighThroughputScreenContentCoding:
+      return HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
     default:
       DVLOG(1) << "unknown video profile: " << profile_idc;
       return VIDEO_CODEC_PROFILE_UNKNOWN;

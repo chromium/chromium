@@ -35,14 +35,17 @@ enum {
 struct MEDIA_EXPORT H265ProfileTierLevel {
   H265ProfileTierLevel();
 
-  // From Annex A.3.
   enum H265ProfileIdc {
     kProfileIdcMain = 1,
     kProfileIdcMain10 = 2,
     kProfileIdcMainStill = 3,
     kProfileIdcRangeExtensions = 4,
     kProfileIdcHighThroughput = 5,
+    kProfileIdcMultiviewMain = 6,
+    kProfileIdcScalableMain = 7,
+    kProfileIdc3dMain = 8,
     kProfileIdcScreenContentCoding = 9,
+    kProfileIdcScalableRangeExtensions = 10,
     kProfileIdcHighThroughputScreenContentCoding = 11,
   };
 

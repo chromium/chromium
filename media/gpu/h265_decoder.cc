@@ -31,14 +31,42 @@ bool ParseBitDepth(const H265SPS& sps, uint8_t& bit_depth) {
 }
 
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
-  // Spec A.3.
   switch (profile) {
+    // Spec A.3.2
     case HEVCPROFILE_MAIN:
       return bit_depth == 8u;
+    // Spec A.3.3
     case HEVCPROFILE_MAIN10:
       return bit_depth == 8u || bit_depth == 10u;
+    // Spec A.3.4
     case HEVCPROFILE_MAIN_STILL_PICTURE:
       return bit_depth == 8u;
+    // Spec A.3.5
+    case HEVCPROFILE_REXT:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u ||
+             bit_depth == 14u || bit_depth == 16u;
+    // Spec A.3.6
+    case HEVCPROFILE_HIGH_THROUGHPUT:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u ||
+             bit_depth == 16u;
+    // Spec G.11.1.1
+    case HEVCPROFILE_MULTIVIEW_MAIN:
+      return bit_depth == 8u;
+    // Spec H.11.1.1
+    case HEVCPROFILE_SCALABLE_MAIN:
+      return bit_depth == 8u || bit_depth == 10u;
+    // Spec I.11.1.1
+    case HEVCPROFILE_3D_MAIN:
+      return bit_depth == 8u;
+    // Spec A.3.7
+    case HEVCPROFILE_SCREEN_EXTENDED:
+      return bit_depth == 8u || bit_depth == 10u;
+    // Spec H.11.1.2
+    case HEVCPROFILE_SCALABLE_REXT:
+      return bit_depth == 8u || bit_depth == 12u || bit_depth == 16u;
+    // Spec A.3.8
+    case HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u;
     default:
       DVLOG(1) << "Invalid profile specified for H265";
       return false;

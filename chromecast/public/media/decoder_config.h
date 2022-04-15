@@ -141,9 +141,17 @@ enum VideoProfile : int {
   kAV1ProfileMain,
   kAV1ProfileHigh,
   kAV1ProfilePro,
+  kHEVCRext,
+  kHEVCHighThroughput,
+  kHEVCMultiviewMain,
+  kHEVCScalableMain,
+  kHEVC3dMain,
+  kHEVCScreenExtended,
+  kHEVCScalableRext,
+  kHEVCHighThroughputScreenExtended,
 
   kVideoProfileMin = kVideoProfileUnknown,
-  kVideoProfileMax = kAV1ProfilePro,
+  kVideoProfileMax = kHEVCHighThroughputScreenExtended,
 };
 
 struct CodecProfileLevel {

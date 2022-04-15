@@ -105,6 +105,22 @@ VideoProfile ToCastVideoProfile(
       return kHEVCMain10;
     case ::media::HEVCPROFILE_MAIN_STILL_PICTURE:
       return kHEVCMainStillPicture;
+    case ::media::HEVCPROFILE_REXT:
+      return kHEVCRext;
+    case ::media::HEVCPROFILE_HIGH_THROUGHPUT:
+      return kHEVCHighThroughput;
+    case ::media::HEVCPROFILE_MULTIVIEW_MAIN:
+      return kHEVCMultiviewMain;
+    case ::media::HEVCPROFILE_SCALABLE_MAIN:
+      return kHEVCScalableMain;
+    case ::media::HEVCPROFILE_3D_MAIN:
+      return kHEVC3dMain;
+    case ::media::HEVCPROFILE_SCREEN_EXTENDED:
+      return kHEVCScreenExtended;
+    case ::media::HEVCPROFILE_SCALABLE_REXT:
+      return kHEVCScalableRext;
+    case ::media::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return kHEVCHighThroughputScreenExtended;
     case ::media::VP8PROFILE_ANY:
       return kVP8ProfileAny;
     case ::media::VP9PROFILE_PROFILE0:

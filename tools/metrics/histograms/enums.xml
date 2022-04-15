@@ -93489,6 +93489,16 @@ Full version information for the fingerprint enum values:
   <int value="24" label="AV1 Profile Main"/>
   <int value="25" label="AV1 Profile High"/>
   <int value="26" label="AV1 Profile Pro"/>
+  <int value="27" label="DolbyVision profile8"/>
+  <int value="28" label="DolbyVision profile9"/>
+  <int value="29" label="HEVC Rext"/>
+  <int value="30" label="HEVC HighThroughput"/>
+  <int value="31" label="HEVC MultiviewMain"/>
+  <int value="32" label="HEVC ScalableMain"/>
+  <int value="33" label="HEVC 3dMain"/>
+  <int value="34" label="HEVC ScreenExtended"/>
+  <int value="35" label="HEVC ScalableRext"/>
+  <int value="36" label="HEVC HighThroughputScreenExtended"/>
 </enum>
 
 <enum name="VideoColorSpace.PrimaryID">

@@ -570,6 +570,31 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         case FF_PROFILE_HEVC_MAIN_STILL_PICTURE:
           profile = HEVCPROFILE_MAIN_STILL_PICTURE;
           break;
+        case FF_PROFILE_HEVC_REXT:
+          profile = HEVCPROFILE_REXT;
+          break;
+        // FF will treat the following profiles as FF_PROFILE_UNKNOWN
+        case 5:
+          profile = HEVCPROFILE_HIGH_THROUGHPUT;
+          break;
+        case 6:
+          profile = HEVCPROFILE_MULTIVIEW_MAIN;
+          break;
+        case 7:
+          profile = HEVCPROFILE_SCALABLE_MAIN;
+          break;
+        case 8:
+          profile = HEVCPROFILE_3D_MAIN;
+          break;
+        case 9:
+          profile = HEVCPROFILE_SCREEN_EXTENDED;
+          break;
+        case 10:
+          profile = HEVCPROFILE_SCALABLE_REXT;
+          break;
+        case 11:
+          profile = HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
+          break;
         default:
           // Always assign a default if all heuristics fail.
           profile = HEVCPROFILE_MAIN;
