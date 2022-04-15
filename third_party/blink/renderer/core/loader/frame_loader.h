@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
-#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -64,6 +63,7 @@ class FetchClientSettingsObject;
 class Frame;
 class LocalFrame;
 class LocalFrameClient;
+class PolicyContainer;
 class ProgressTracker;
 class ResourceRequest;
 class TracedValue;
