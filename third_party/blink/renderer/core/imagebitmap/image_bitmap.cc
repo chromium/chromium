@@ -16,6 +16,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -883,17 +885,15 @@ ScriptPromise ImageBitmap::CreateAsync(
     absl::optional<gfx::Rect> crop_rect,
     ScriptState* script_state,
     mojom::blink::PreferredColorScheme preferred_color_scheme,
+    ExceptionState& exception_state,
     const ImageBitmapOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
   ParsedOptions parsed_options =
       ParseOptions(options, crop_rect, image->BitmapSourceSize());
   if (DstBufferSizeHasOverflow(parsed_options)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The ImageBitmap could not be allocated."));
-    return promise;
+        "The ImageBitmap could not be allocated.");
+    return ScriptPromise();
   }
 
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
@@ -908,13 +908,15 @@ ScriptPromise ImageBitmap::CreateAsync(
         MakeGarbageCollected<ImageBitmap>(MakeBlankImage(parsed_options));
     if (bitmap->BitmapImage()) {
       bitmap->BitmapImage()->SetOriginClean(!image->WouldTaintOrigin());
-      resolver->Resolve(bitmap);
+      return ScriptPromise::Cast(
+          script_state,
+          ToV8Traits<ImageBitmap>::ToV8(script_state, bitmap).ToLocalChecked());
     } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
-          "The ImageBitmap could not be allocated."));
+          "The ImageBitmap could not be allocated.");
+      return ScriptPromise();
     }
-    return promise;
   }
 
   gfx::Rect draw_src_rect = parsed_options.crop_rect;
@@ -936,6 +938,9 @@ ScriptPromise ImageBitmap::CreateAsync(
 
   std::unique_ptr<ParsedOptions> passed_parsed_options =
       std::make_unique<ParsedOptions>(parsed_options);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
   worker_pool::PostTask(
       FROM_HERE, CrossThreadBindOnce(
                      &RasterizeImageOnBackgroundThread, std::move(paint_record),

@@ -174,7 +174,8 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
     // The following function only works on SVGImages (as checked above).
     return ImageBitmap::CreateAsync(
         this, crop_rect, script_state,
-        GetElement().GetDocument().GetPreferredColorScheme(), options);
+        GetElement().GetDocument().GetPreferredColorScheme(), exception_state,
+        options);
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),

@@ -43,6 +43,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       absl::optional<gfx::Rect>,
       ScriptState*,
       mojom::blink::PreferredColorScheme,
+      ExceptionState&,
       const ImageBitmapOptions* = ImageBitmapOptions::Create());
   static sk_sp<SkImage> GetSkImageFromDecoder(std::unique_ptr<ImageDecoder>);
 
