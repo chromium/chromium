@@ -419,9 +419,6 @@ crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/e
 # Note that the following test seems to pass, but it may still be flaky.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
-# Win NVIDIA failures
-crbug.com/angleproject/5536 [ win nvidia angle-opengl passthrough oop-c ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
-
 # Win / AMD D3D11 (default) failures
 crbug.com/1043773 [ win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
 
