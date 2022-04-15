@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/test_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -262,6 +265,76 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsIntentChipCollapsed) {
   ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
+}
+
+class IntentChipButtonIPHBubbleBrowserTest
+    : public IntentChipButtonBrowserTest {
+ public:
+  IntentChipButtonIPHBubbleBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        feature_engagement::kIPHIntentChipFeature);
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &IntentChipButtonIPHBubbleBrowserTest::RegisterTestTracker));
+  }
+
+ private:
+  static void RegisterTestTracker(content::BrowserContext* context) {
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestTracker));
+  }
+  static std::unique_ptr<KeyedService> CreateTestTracker(
+      content::BrowserContext*) {
+    return feature_engagement::CreateTestTracker();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
+  if (!HasRequiredAshVersionForLacros())
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
+
+  InstallTestWebApp();
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  BrowserFeaturePromoController* const promo_controller =
+      static_cast<BrowserFeaturePromoController*>(
+          browser()->window()->GetFeaturePromoController());
+  feature_engagement::Tracker* tracker =
+      promo_controller->feature_engagement_tracker();
+  base::RunLoop loop;
+  tracker->AddOnInitializedCallback(
+      base::BindLambdaForTesting([&loop](bool success) {
+        DCHECK(success);
+        loop.Quit();
+      }));
+  loop.Run();
+  ASSERT_TRUE(tracker->IsInitialized());
+
+  NavigateToLaunchingPage(browser());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to an in-scope page to see the intent chip and the IPH.
+  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
+
+  // Check if the IPH bubble is showing.
+  EXPECT_TRUE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHIntentChipFeature));
+
+  // When we click on the intent chip, the IPH should disappear.
+  ClickIntentChip();
+
+  // Check the IPH is no longer showing.
+  EXPECT_FALSE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHIntentChipFeature));
 }
 
 class IntentChipButtonAppIconBrowserTest : public IntentChipButtonBrowserTest {
