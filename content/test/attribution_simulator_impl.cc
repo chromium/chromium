@@ -26,6 +26,7 @@
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_default_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
@@ -168,14 +169,8 @@ class SentReportAccumulator : public AttributionReportSender {
       auto list = std::make_unique<base::ListValue>();
       for (const auto& contribution : aggregatable_data->contributions) {
         auto dict = std::make_unique<base::DictionaryValue>();
-        // TODO(linnan): Replacing with 128-bit value string.
-        dict->SetString(
-            "key_high_bits",
-            base::NumberToString(absl::Uint128High64(contribution.key())));
-        dict->SetString(
-            "key_low_bits",
-            base::NumberToString(absl::Uint128Low64(contribution.key())));
-        dict->SetString("value", base::NumberToString(contribution.value()));
+        dict->SetString("key", HexEncodeAggregatableKey(contribution.key()));
+        dict->SetInteger("value", contribution.value());
 
         list->Append(std::move(dict));
       }

@@ -4,6 +4,9 @@
 
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
+#include <stdint.h>
+
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,6 +18,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 
@@ -114,6 +118,28 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       ElementsAre(
           AggregatableHistogramContribution(/*key=*/1369, /*value=*/32768u),
           AggregatableHistogramContribution(/*key=*/2693, /*value=*/1664u)));
+}
+
+TEST(AggregatableAttributionUtilsTest, HexEncodeAggregatableKey) {
+  const struct {
+    absl::uint128 input;
+    std::string output;
+  } kTestCases[] = {
+      {0, "0x0"},
+      {absl::MakeUint128(/*high=*/0,
+                         /*low=*/std::numeric_limits<uint64_t>::max()),
+       "0xffffffffffffffff"},
+      {absl::MakeUint128(/*high=*/1,
+                         /*low=*/std::numeric_limits<uint64_t>::max()),
+       "0x1ffffffffffffffff"},
+      {std::numeric_limits<absl::uint128>::max(),
+       "0xffffffffffffffffffffffffffffffff"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(HexEncodeAggregatableKey(test_case.input), test_case.output)
+        << test_case.input;
+  }
 }
 
 }  // namespace content

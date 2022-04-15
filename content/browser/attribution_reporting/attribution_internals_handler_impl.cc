@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
@@ -54,17 +55,15 @@ attribution_internals::mojom::DebugKeyPtr WebUIDebugKey(
                    : nullptr;
 }
 
-base::flat_map<std::string, attribution_internals::mojom::AggregatableKeyPtr>
-Convert(const AttributionAggregatableSource& aggregatable_source) {
+base::flat_map<std::string, std::string> Convert(
+    const AttributionAggregatableSource& aggregatable_source) {
   const proto::AttributionAggregatableSource& proto =
       aggregatable_source.proto();
 
-  base::flat_map<std::string, attribution_internals::mojom::AggregatableKeyPtr>
-      map;
+  base::flat_map<std::string, std::string> map;
   for (const auto& [key_id, key] : proto.keys()) {
-    // TODO(linnan): Replacing with 128-bit value string.
-    map.emplace(key_id, attribution_internals::mojom::AggregatableKey::New(
-                            key.high_bits(), key.low_bits()));
+    map.emplace(key_id, HexEncodeAggregatableKey(absl::MakeUint128(
+                            key.high_bits(), key.low_bits())));
   }
   return map;
 }
@@ -142,9 +141,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
           [](const auto& contribution) {
             return attribution_internals::mojom::
                 AggregatableHistogramContribution::New(
-                    attribution_internals::mojom::AggregatableKey::New(
-                        absl::Uint128High64(contribution.key()),
-                        absl::Uint128Low64(contribution.key())),
+                    HexEncodeAggregatableKey(contribution.key()),
                     contribution.value());
           });
       return attribution_internals::mojom::WebUIReportData::

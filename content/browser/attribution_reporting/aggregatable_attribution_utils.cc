@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -65,6 +66,14 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   }
 
   return contributions;
+}
+
+std::string HexEncodeAggregatableKey(absl::uint128 value) {
+  std::ostringstream out;
+  out << "0x";
+  out.setf(out.hex, out.basefield);
+  out << value;
+  return out.str();
 }
 
 }  // namespace content

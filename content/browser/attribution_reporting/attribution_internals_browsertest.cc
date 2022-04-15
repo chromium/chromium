@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[9].innerText === "{}" &&
           table.children[1].children[9].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
           table.children[0].children[10].innerText === "{}" &&
-          table.children[1].children[10].innerText === '{\n "a": {\n  "highBits": "0",\n  "lowBits": "1"\n }\n}' &&
+          table.children[1].children[10].innerText === '{\n "a": "0x1"\n}' &&
           table.children[0].children[11].innerText === "19" &&
           table.children[1].children[11].innerText === "" &&
           table.children[0].children[12].innerText === "" &&
@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-aggregate-attribution" &&
             table.children[0].children[2].innerText === "Pending" &&
-            table.children[0].children[6].innerText === '[ {  "key": {   "highBits": "0",   "lowBits": "1"  },  "value": 2 }]' &&
+            table.children[0].children[6].innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
             table.children[1].children[2].innerText === "Sent: HTTP 200" &&
             table.children[2].children[2].innerText === "Prohibited by browser policy" &&
             table.children[3].children[2].innerText === "Dropped due to assembly failure" &&

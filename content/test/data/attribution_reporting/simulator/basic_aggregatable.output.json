@@ -10,9 +10,8 @@
       "test_info": {
         "histograms": [
           {
-            "key_high_bits": "0",
-            "key_low_bits": "1369",
-            "value": "123"
+            "key": "0x559",
+            "value": 123
           }
         ]
       }

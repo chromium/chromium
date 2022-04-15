@@ -190,14 +190,11 @@ JSON schema for the output of the simulator.
         // Aggregatable histograms created from the source and trigger.
         "histograms": [
           {
-            // The higher 64-bit value of uint128 formatted as a base-10 string.
-            "key_high_bits": "0",
+            // uint128 formatted as a base-16 string.
+            "key": "0x0",
 
-            // The lower 64-bit value of uint128 formatted as a base-10 string.
-            "key_low_bits":  "1369",
-
-            // uint32 formatted as a base-10 string.
-            "value": "123"
+            // uint32 value.
+            "value": 123
           }
         ],
 

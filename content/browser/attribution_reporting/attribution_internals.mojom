@@ -36,15 +36,10 @@ struct WebUIReportEventLevelData {
   bool attributed_truthfully;
 };
 
-// Represents `AttributionAggregatableKey`.
-struct AggregatableKey {
-  uint64 high_bits;
-  uint64 low_bits;
-};
-
 // Represents `AggregatableHistogramContribution`.
 struct AggregatableHistogramContribution {
-  AggregatableKey key;
+  // Hex-encoded unsigned 128-bit integer.
+  string key;
   uint32 value;
 };
 
@@ -103,7 +98,8 @@ struct WebUISource {
   DebugKey? debug_key;
   array<uint64> dedup_keys;
   map<string, array<string>> filter_data;
-  map<string, AggregatableKey> aggregatable_source;
+  // The value is a hex-encoded unsigned 128-bit integer.
+  map<string, string> aggregatable_source;
 
   // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`,
   // and `AttributionStorage::DeactivatedSource::Reason`.
