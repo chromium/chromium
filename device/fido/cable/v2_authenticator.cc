@@ -982,7 +982,9 @@ class CTAP2Processor : public Transaction {
                 return false;
               }
               out->emplace_back(device::CredentialType::kPublicKey,
-                                value.GetBytestring());
+                                value.GetBytestring(),
+                                base::flat_set<device::FidoTransportProtocol>{
+                                    device::FidoTransportProtocol::kInternal});
               return true;
             },
             base::Unretained(out)));
