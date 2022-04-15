@@ -528,6 +528,12 @@ const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "
     "managed by the toolbar container coordinator rather than BVC.";
 
+extern const char kUIViewWindowObservingName[] =
+    "Support KVO on UIView's window property.";
+extern const char kUIViewWindowObservingDescription[] =
+    "When enabled, all instances of UIView can be observed with KVO on thei "
+    "`window` property.";
+
 const char kUpdateHistoryEntryPointsInIncognitoName[] =
     "Update history entry points in Incognito.";
 const char kUpdateHistoryEntryPointsInIncognitoDescription[] =

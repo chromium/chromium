@@ -476,6 +476,10 @@ extern const char kTabsSearchRegularResultsSuggestedActionsDescription[];
 extern const char kToolbarContainerName[];
 extern const char kToolbarContainerDescription[];
 
+// Title and description for the flag to enable -[UIView window] observing.
+extern const char kUIViewWindowObservingName[];
+extern const char kUIViewWindowObservingDescription[];
+
 // Title and description for the flag to enable removing any entry points to the
 // history UI from Incognito mode.
 extern const char kUpdateHistoryEntryPointsInIncognitoName[];
