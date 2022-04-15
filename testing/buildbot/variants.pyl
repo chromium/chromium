@@ -20,16 +20,9 @@
     },
     'identifier': 'iPhone 6S 12.3.1'
   },
-  'LACROS_TOT': {
-    'args': [
-      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
-    ],
-    'identifier': 'on ToT ash',
-  },
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [
       '--ash-chrome-path-override=../../lacros_version_skew_tests_v102.0.5004.0/test_ash_chrome',
-      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
     'identifier': 'Lacros version skew testing ash 102.0.5004.0',
     'swarming': {
@@ -45,7 +38,6 @@
   'LACROS_VERSION_SKEW_DEV': {
     'args': [
       '--ash-chrome-path-override=../../lacros_version_skew_tests_v102.0.4992.0/test_ash_chrome',
-      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
     'identifier': 'Lacros version skew testing ash 102.0.4992.0',
     'swarming': {
@@ -61,7 +53,6 @@
   'LACROS_VERSION_SKEW_BETA': {
     'args': [
       '--ash-chrome-path-override=../../lacros_version_skew_tests_v101.0.4951.26/test_ash_chrome',
-      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
     'identifier': 'Lacros version skew testing ash 101.0.4951.26',
     'swarming': {
@@ -77,7 +68,6 @@
   'LACROS_VERSION_SKEW_STABLE': {
     'args': [
       '--ash-chrome-path-override=../../lacros_version_skew_tests_v100.0.4896.82/test_ash_chrome',
-      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
     'identifier': 'Lacros version skew testing ash 100.0.4896.82',
     'swarming': {
