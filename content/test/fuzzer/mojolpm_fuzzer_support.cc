@@ -13,7 +13,7 @@
 
 namespace content {
 namespace mojolpm {
-FuzzerEnvironment::FuzzerEnvironment(int argc, const char** argv)
+FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
     : command_line_initialized_(base::CommandLine::Init(argc, argv)),
       fuzzer_thread_("fuzzer_thread") {
   TestTimeouts::Initialize();
@@ -32,7 +32,7 @@ FuzzerEnvironment::~FuzzerEnvironment() {}
 
 FuzzerEnvironmentWithTaskEnvironment::FuzzerEnvironmentWithTaskEnvironment(
     int argc,
-    const char** argv)
+    const char* const* argv)
     : FuzzerEnvironment(argc, argv),
       task_environment_(
           base::test::TaskEnvironment::MainThreadType::DEFAULT,

@@ -31,7 +31,7 @@ namespace mojolpm {
 // (as much as is reasonable) any state being preserved between testcases.
 class FuzzerEnvironment {
  public:
-  FuzzerEnvironment(int argc, const char** argv);
+  FuzzerEnvironment(int argc, const char* const* argv);
   virtual ~FuzzerEnvironment();
 
   inline scoped_refptr<base::SequencedTaskRunner> fuzzer_task_runner() {
@@ -56,7 +56,7 @@ class FuzzerEnvironment {
 // class instead.
 class FuzzerEnvironmentWithTaskEnvironment : public FuzzerEnvironment {
  public:
-  FuzzerEnvironmentWithTaskEnvironment(int argc, const char** argv);
+  FuzzerEnvironmentWithTaskEnvironment(int argc, const char* const* argv);
   ~FuzzerEnvironmentWithTaskEnvironment() override;
 
  private:

@@ -382,6 +382,21 @@ mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
   ]
 }
 
+mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
+  sources = [ "clipboard_host_mojolpm_fuzzer.cc" ]
+
+  proto_source = "clipboard_host_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:browser",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+}
+
 if (enable_mojom_fuzzer) {
   static_library("controller_presentation_service_delegate_for_fuzzing") {
     # Should only be used in the fuzzer this was made for
