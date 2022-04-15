@@ -45,6 +45,7 @@
 #include "third_party/nearby/src/internal/platform/implementation/submittable_executor.h"
 #include "third_party/nearby/src/internal/platform/implementation/webrtc.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi.h"
+#include "third_party/nearby/src/internal/platform/implementation/wifi_hotspot.h"
 
 namespace location {
 namespace nearby {
@@ -208,6 +209,11 @@ ImplementationPlatform::CreateServerSyncMedium() {
 }
 
 std::unique_ptr<WifiMedium> ImplementationPlatform::CreateWifiMedium() {
+  return nullptr;
+}
+
+std::unique_ptr<WifiHotspotMedium>
+ImplementationPlatform::CreateWifiHotspotMedium() {
   return nullptr;
 }
 
