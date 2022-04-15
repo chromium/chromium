@@ -113,10 +113,6 @@ bool PrimaryAccountMutatorImpl::CanTransitionFromSyncToSigninConsentLevel()
           primary_account_manager_->GetPrimaryAccountId(ConsentLevel::kSync));
     case AccountConsistencyMethod::kMirror:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(crbug.com/1217645): Consider making this return false only for the
-      // main profile and return true, otherwise. This requires implementing
-      // ProfileOAuth2TokenServiceDelegateChromeOS::Revoke* and it's not clear
-      // what these functions should do.
       return true;
 #elif BUILDFLAG(IS_ANDROID)
       // Android supports users being signed in with sync disabled, with the

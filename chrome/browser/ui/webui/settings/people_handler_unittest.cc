@@ -1294,6 +1294,53 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST(PeopleHandlerMainProfile, Signout) {
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(true);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
+                                                 ConsentLevel::kSync);
+  ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+
+  PeopleHandler handler(profile.get());
+  base::Value::List args;
+  args.Append(base::Value(/*delete_profile=*/false));
+  handler.HandleSignout(args);
+
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+
+TEST_F(PeopleHandlerTest, SignoutWhenSyncing) {
+  auto account_1 = identity_test_env()->MakeAccountAvailable("a@gmail.com");
+  auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
+  identity_test_env()->SetPrimaryAccount(account_1.email,
+                                         signin::ConsentLevel::kSync);
+  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
+
+  CreatePeopleHandler();
+  base::Value::List args;
+  args.Append(base::Value(/*delete_profile=*/false));
+  handler_->HandleSignout(args);
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Regression test for crash in guest mode. https://crbug.com/1040476
 TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {

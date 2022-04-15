@@ -296,6 +296,10 @@ class ProfileManagerBrowserTest : public ProfileManagerBrowserTestBase,
 #else
 #define MAYBE_DeleteSingletonProfile DeleteSingletonProfile
 #endif
+
+// On Lacros, the single profile would be the main profile which should never be
+// deleted.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest,
                        MAYBE_DeleteSingletonProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -333,6 +337,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest,
   std::string last_used_profile_name = last_used->GetBaseName().MaybeAsASCII();
   EXPECT_EQ(last_used_profile_name, observer.last_used_profile_name());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Delete inactive profile in a multi profile setup and make sure current
 // browser is not affected.
@@ -369,24 +374,42 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
       profile_manager->GetProfileAttributesStorage();
 
   // Create an additional profile.
-  base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  profiles::testing::CreateProfileSync(profile_manager, new_path);
+  base::FilePath new_profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  [[maybe_unused]] Profile* new_profile =
+      profiles::testing::CreateProfileSync(profile_manager, new_profile_path);
+
+  base::FilePath current_profile_path = browser()->profile()->GetPath();
+  base::FilePath new_last_used_path = new_profile_path;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Deleting the main profile on Lacros is not allowed.
+  // Set the current profile to the new profile.
+  new_last_used_path = browser()->profile()->GetPath();
+  ASSERT_EQ(Browser::GetCreationStatusForProfile(new_profile),
+            Browser::CreationStatus::kOk);
+  Browser* browser = Browser::Create(Browser::CreateParams(new_profile, true));
+  BrowserList::SetLastActive(browser);
+  EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), browser);
+  EXPECT_EQ(ProfileManager::GetLastUsedProfile()->GetPath(), new_profile_path);
+  current_profile_path = new_profile_path;
+#endif
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
 
   // Delete current profile.
   MultipleProfileDeletionObserver profile_deletion_observer(1u);
-  profile_manager->ScheduleProfileForDeletion(browser()->profile()->GetPath(),
+  profile_manager->ScheduleProfileForDeletion(current_profile_path,
                                               base::DoNothing());
   profile_deletion_observer.Wait();
 
   // Make sure a profile created earlier become the only profile.
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
-  EXPECT_EQ(new_path, storage.GetAllProfilesAttributes().front()->GetPath());
+  EXPECT_EQ(new_last_used_path,
+            storage.GetAllProfilesAttributes().front()->GetPath());
 
   // Make sure that last used profile preference is set correctly.
   Profile* last_used = ProfileManager::GetLastUsedProfile();
-  EXPECT_EQ(new_path, last_used->GetPath());
+  EXPECT_EQ(new_last_used_path, last_used->GetPath());
 }
 
 // Test is flaky. https://crbug.com/1206184
@@ -400,28 +423,41 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_DeleteAllProfiles) {
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
 
-  // Create an additional profile.
-  base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  profiles::testing::CreateProfileSync(profile_manager, new_path);
+  // Create  additional profiles.
+  for (size_t i = 0; i < 2; i++) {
+    profiles::testing::CreateProfileSync(
+        profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  }
+  ASSERT_EQ(3u, storage.GetNumberOfProfiles());
 
-  ASSERT_EQ(2u, storage.GetNumberOfProfiles());
+  size_t profiles_to_be_deleted = 3U;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Deletion of the main profile is not allowed in Lacros.
+  profiles_to_be_deleted--;
+#endif
 
   // Delete all profiles.
-  MultipleProfileDeletionObserver profile_deletion_observer(2u);
+  MultipleProfileDeletionObserver profile_deletion_observer(
+      profiles_to_be_deleted);
   std::vector<ProfileAttributesEntry*> entries =
       storage.GetAllProfilesAttributes();
   std::vector<base::FilePath> old_profile_paths;
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath profile_path = entry->GetPath();
     EXPECT_FALSE(profile_path.empty());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (Profile::IsMainProfilePath(profile_path))
+      continue;
+#endif
     profile_manager->ScheduleProfileForDeletion(profile_path,
                                                 base::DoNothing());
     old_profile_paths.push_back(profile_path);
   }
   profile_deletion_observer.Wait();
 
-  // Make sure a new profile was created automatically.
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Make sure a new profile was created automatically.
   base::FilePath new_profile_path =
       storage.GetAllProfilesAttributes().front()->GetPath();
   for (const base::FilePath& old_profile_path : old_profile_paths)
@@ -430,6 +466,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_DeleteAllProfiles) {
   // Make sure that last used profile preference is set correctly.
   Profile* last_used = ProfileManager::GetLastUsedProfile();
   EXPECT_EQ(new_profile_path, last_used->GetPath());
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -702,7 +739,15 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
 // The test makes sense on those platforms where the keychain exists.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros main profile should never be deleted.
+  // Use a secondary profile.
+  Profile* profile = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(),
+      g_browser_process->profile_manager()->GenerateNextProfileDirectoryPath());
+#else
   Profile* profile = browser()->profile();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   ASSERT_TRUE(profile);
 
   password_manager::PasswordForm form;
@@ -725,11 +770,11 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
   verify_add.Wait();
   EXPECT_EQ(1u, verify_add.GetPasswords().size());
 
-  base::RunLoop run_loop;
+  MultipleProfileDeletionObserver profile_deletion_observer(1U);
   g_browser_process->profile_manager()->ScheduleProfileForDeletion(
-      profile->GetPath(),
-      base::BindLambdaForTesting([&run_loop](Profile*) { run_loop.Quit(); }));
-  run_loop.Run();
+      profile->GetPath(), base::DoNothing());
+  // run_loop.Run();
+  profile_deletion_observer.Wait();
 
   PasswordStoreConsumerVerifier verify_delete;
   password_store->GetAutofillableLogins(verify_delete.GetWeakPtr());

@@ -1123,6 +1123,9 @@ void ProfileManager::ScheduleProfileForDeletion(
 
   Profile* profile = GetProfileByPath(profile_dir);
   if (profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    CHECK(!profile->IsMainProfile());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     // Cancel all in-progress downloads before deleting the profile to prevent a
     // "Do you want to exit Google Chrome and cancel the downloads?" prompt
     // (crbug.com/336725).

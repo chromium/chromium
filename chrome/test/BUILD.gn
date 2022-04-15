@@ -2155,7 +2155,6 @@ if (!is_android) {
       "../browser/ui/web_applications/web_app_link_capturing_browsertest.cc",
       "../browser/ui/web_applications/web_app_metrics_browsertest.cc",
       "../browser/ui/web_applications/web_app_navigate_browsertest.cc",
-      "../browser/ui/web_applications/web_app_profile_deletion_browsertest.cc",
       "../browser/ui/web_applications/web_app_protocol_handling_browsertest.cc",
       "../browser/ui/web_applications/web_app_ui_manager_impl_browsertest.cc",
       "../browser/ui/web_applications/web_app_uninstall_browsertest.cc",
@@ -2287,6 +2286,10 @@ if (!is_android) {
 
         # This test is run as part of lacros_chrome_browsertests below.
         "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
+
+        # Test not valid on Lacros as WebApps is only enabled in the main
+        # profile which can never be deleted.
+        "../browser/ui/web_applications/web_app_profile_deletion_browsertest.cc",
       ]
     }
 

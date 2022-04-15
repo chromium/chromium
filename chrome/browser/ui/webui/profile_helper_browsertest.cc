@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -160,6 +161,8 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
 #endif
 }
 
+// The solo profile on Lacros is the main profile which can never be deleted.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
@@ -186,6 +189,7 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   EXPECT_NE(original_browser_profile_path, new_browser->profile()->GetPath());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   content::TestWebUI web_ui;
@@ -200,6 +204,17 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
 
   Profile* additional_profile = CreateProfile();
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The original browser belongs to the main profile which can't be deleted.
+  // Make the additional profile active and close the original browser.
+  profiles::SwitchToProfile(additional_profile->GetPath(), false);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(2U, browser_list->size());
+  CloseBrowserSynchronously(original_browser);
+  EXPECT_EQ(1u, browser_list->size());
+  // Original browser now belongs to the additional profile.
+  original_browser = browser_list->get(0);
+#endif
 
   // Original browser will be closed, and browser with the new profile created.
   webui::DeleteProfileAtPath(original_browser->profile()->GetPath(),
@@ -209,7 +224,11 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, browser_list->size());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_TRUE(browser_list->get(0)->profile()->IsMainProfile());
+#else
   EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
+#endif
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
 

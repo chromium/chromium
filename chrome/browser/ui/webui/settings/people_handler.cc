@@ -631,56 +631,79 @@ void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void PeopleHandler::HandleSignout(const base::Value::List& args) {
-  // TODO(https://crbug.com/1260291): add support for signed out profiles.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bool delete_profile = false;
   if (args[0].is_bool())
     delete_profile = args[0].GetBool();
   base::FilePath profile_path = profile_->GetPath();
 
+  // TODO(crbug.com/1315163): consider splitting `HandleSignout()` in two
+  // different functions: one for "Signout" and one for "Turn off".
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  bool is_syncing =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  DCHECK(is_syncing || !delete_profile)
+      << "Deleting the profile should only be offered if the user is syncing.";
+
   if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
     // If the user cannot signout, the profile must be destroyed.
-    DCHECK(delete_profile);
-  } else {
-    Browser* browser =
-        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-    if (browser) {
-      browser->signin_view_controller()->ShowGaiaLogoutTab(
-          signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
-    }
-
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-      signin_metrics::SignoutDelete delete_metric =
-          delete_profile ? signin_metrics::SignoutDelete::kDeleted
-                         : signin_metrics::SignoutDelete::kKeeping;
-
-      // Only revoke the sync consent.
-      // * If the primary account is still valid, then it will be removed by
-      // the Gaia logout tab (see http://crbug.com/1068978).
-      // * If the account is already invalid, drop the token now because it's
-      // already invalid on the web, so the Gaia logout tab won't affect it
-      // (see http://crbug.com/1114646).
-      //
-      // This operation may delete the current browser that owns |this| if force
-      // signin is enabled (see https://crbug.com/1153120).
-      identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-          signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+    if (delete_profile) {
+      webui::DeleteProfileAtPath(profile_path,
+                                 ProfileMetrics::DELETE_PROFILE_SETTINGS);
     } else {
-      DCHECK(!delete_profile)
-          << "Deleting the profile should only be offered the user is syncing.";
+      DCHECK(false) << "User signout requires profile destruction.";
     }
+    return;
   }
 
-  // CAUTION: |this| may be deleted at this point.
+  signin_metrics::SignoutDelete delete_metric =
+      delete_profile ? signin_metrics::SignoutDelete::kDeleted
+                     : signin_metrics::SignoutDelete::kKeeping;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profile_->IsMainProfile()) {
+    if (!is_syncing) {
+      DLOG(ERROR) << "Signout form the main profile is not allowed.";
+      return;
+    }
+    DCHECK(!delete_profile) << "The main profile should never be deleted.";
+    identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
+        signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+    return;
+  }
+  // For secondary profiles 'Turn off' and 'Signout', clears the primary
+  // account and signout all.
+  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+      signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+#else
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  if (browser) {
+    browser->signin_view_controller()->ShowGaiaLogoutTab(
+        signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
+  }
+
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // Only revoke the sync consent.
+    // * If the primary account is still valid, then it will be removed by
+    // the Gaia logout tab (see http://crbug.com/1068978).
+    // * If the account is already invalid, drop the token now because it's
+    // already invalid on the web, so the Gaia logout tab won't affect it
+    // (see http://crbug.com/1114646).
+    //
+    // This operation may delete the current browser that owns |this| if force
+    // signin is enabled (see https://crbug.com/1153120).
+    identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
+        signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // CAUTION: |this| may be deleted at this point.
   if (delete_profile) {
     webui::DeleteProfileAtPath(profile_path,
                                ProfileMetrics::DELETE_PROFILE_SETTINGS);
   }
-#endif
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void PeopleHandler::HandlePauseSync(const base::Value::List& args) {
