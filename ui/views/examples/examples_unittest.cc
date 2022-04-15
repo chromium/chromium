@@ -10,7 +10,14 @@
 namespace views {
 namespace examples {
 
-TEST(ExamplesTest, TestViewsExamplesLaunches) {
+// TODO(crbug.com/1221012): Disabled the test on windows due to its flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TestViewsExamplesLaunches DISABLED_TestViewsExamplesLaunches
+#else
+#define MAYBE_TestViewsExamplesLaunches TestViewsExamplesLaunches
+#endif
+
+TEST(ExamplesTest, MAYBE_TestViewsExamplesLaunches) {
   const ExamplesExitCode exit_code = ExamplesMainProc(true);
   // Check the status of the Skia Gold comparison.
   EXPECT_EQ(ExamplesExitCode::kSucceeded, exit_code);
