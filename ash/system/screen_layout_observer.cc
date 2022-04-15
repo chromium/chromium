@@ -214,9 +214,8 @@ void ScreenLayoutObserver::UpdateDisplayInfo(
   }
 }
 
-bool ScreenLayoutObserver::GetDisplayMessageForNotification(
+bool ScreenLayoutObserver::GetUnassociatedDisplayMessage(
     const ScreenLayoutObserver::DisplayInfoMap& old_info,
-    bool should_notify_has_unassociated_display,
     std::u16string* out_message,
     std::u16string* out_additional_message) {
   if (old_display_mode_ != current_display_mode_) {
@@ -226,9 +225,8 @@ bool ScreenLayoutObserver::GetDisplayMessageForNotification(
     // additional external display to make the number of displays exceed the
     // maximum that device can support. Display mode changes from extending mode
     // to mirror mode.
-    if (should_notify_has_unassociated_display)
-      *out_additional_message = l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM);
+    *out_additional_message = l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM);
 
     // Detect changes in the mirror mode status.
     if (current_display_mode_ == DisplayMode::MIRRORING) {
@@ -288,48 +286,13 @@ bool ScreenLayoutObserver::GetDisplayMessageForNotification(
   }
 
   DCHECK_EQ(display_info_.size(), old_info.size());
-
-  if (should_notify_has_unassociated_display) {
-    // When user connects more external display than the maximum that device
-    // can support, |display_info_|'s size should be same with |old_info_|
-    // because the displays which have unassociated crtc are not included in
-    // |display_info_|.
-    *out_additional_message = l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM);
-    return true;
-  }
-
-  for (const auto& iter : display_info_) {
-    DisplayInfoMap::const_iterator old_iter = old_info.find(iter.first);
-    if (old_iter == old_info.end()) {
-      // The display's number is same but different displays. This happens
-      // for the transition between docked mode and mirrored display.
-      // This condition can never be reached here, since it is handled above.
-      NOTREACHED() << "A display mode transition that should have been handled"
-                      "earlier.";
-      return false;
-    }
-
-    const auto ignore_display_iter =
-        displays_changed_from_settings_ui_.find(iter.first);
-    if (ignore_display_iter != displays_changed_from_settings_ui_.end()) {
-      // Consume this state so that later changes are not affected.
-      displays_changed_from_settings_ui_.erase(ignore_display_iter);
-    } else {
-      if (GetDisplayManager()->IsInUnifiedMode() &&
-          iter.second.size_in_pixel() != old_iter->second.size_in_pixel()) {
-        *out_message = l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TITLE);
-        *out_additional_message = l10n_util::GetStringFUTF16(
-            IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED,
-            GetDisplayName(iter.first), GetDisplaySize(iter.first));
-        return true;
-      }
-    }
-  }
-
-  // Found nothing special
-  return false;
+  // When user connects more external display than the maximum that device
+  // can support, |display_info_|'s size should be same with |old_info_|
+  // because the displays which have unassociated crtc are not included in
+  // |display_info_|.
+  *out_additional_message = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM);
+  return true;
 }
 
 void ScreenLayoutObserver::CreateOrUpdateNotification(
@@ -401,19 +364,14 @@ void ScreenLayoutObserver::OnDisplayConfigurationChanged() {
   else
     current_display_mode_ = DisplayMode::SINGLE;
 
-  if (!show_notifications_for_testing_)
+  // Only show notifications for unassociated displays.
+  if (!should_notify_has_unassociated_display ||
+      !show_notifications_for_testing_)
     return;
 
   std::u16string message;
   std::u16string additional_message;
-  if (!GetDisplayMessageForNotification(old_info,
-                                        should_notify_has_unassociated_display,
-                                        &message, &additional_message)) {
-    return;
-  }
-
-  // Alerting user unassociated display are allowed even when suppressed.
-  if (!should_notify_has_unassociated_display) {
+  if (!GetUnassociatedDisplayMessage(old_info, &message, &additional_message)) {
     return;
   }
 
