@@ -1594,6 +1594,9 @@ mixed_component("base") {
       "android/apk_assets.h",
       "android/application_status_listener.cc",
       "android/application_status_listener.h",
+      "android/base_feature_list.cc",
+      "android/base_features.cc",
+      "android/base_features.h",
       "android/base_jni_onload.cc",
       "android/base_jni_onload.h",
       "android/build_info.cc",
@@ -3886,6 +3889,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/ApplicationStatus.java",
+      "android/java/src/org/chromium/base/BaseFeatureList.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/Callback.java",
@@ -3949,6 +3953,13 @@ if (is_android) {
     deps = [ "//build/android:build_config_java" ]
   }
 
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":base_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "android/base_features.cc" ]
+    template = "android/java/src/org/chromium/base/BaseFeatures.java.tmpl"
+  }
+
   java_cpp_strings("java_switches_srcjar") {
     # External code should depend on ":base_java" instead.
     visibility = [ ":*" ]
@@ -3960,6 +3971,7 @@ if (is_android) {
     srcjar_deps = [
       ":base_android_java_enums_srcjar",
       ":base_java_aidl",
+      ":java_features_srcjar",
       ":java_switches_srcjar",
     ]
 
@@ -3982,6 +3994,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/ApiCompatibilityUtils.java",
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/ApplicationStatus.java",
+      "android/java/src/org/chromium/base/BaseFeatureList.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/ByteArrayGenerator.java",

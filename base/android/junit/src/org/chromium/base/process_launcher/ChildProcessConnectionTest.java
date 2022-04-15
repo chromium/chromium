@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -39,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -150,6 +152,8 @@ public class ChildProcessConnectionTest {
         MockitoAnnotations.initMocks(this);
 
         mIChildProcessService = mock(IChildProcessService.class);
+        ApplicationInfo appInfo = BuildInfo.getInstance().getBrowserApplicationInfo();
+        when(mIChildProcessService.getAppInfo()).thenReturn(appInfo);
         // Capture the parameters passed to the IChildProcessService.setupConnection() call.
         doAnswer(new Answer<Void>() {
             @Override
@@ -235,7 +239,7 @@ public class ChildProcessConnectionTest {
         verify(mServiceCallback, never()).onChildProcessDied(any());
 
         // The service connects.
-        mFirstServiceConnection.notifyServiceConnected(null /* iBinder */);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         Assert.assertTrue(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, times(1)).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -263,7 +267,7 @@ public class ChildProcessConnectionTest {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, mServiceCallback);
-        mFirstServiceConnection.notifyServiceConnected(null /* iBinder */);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.stop();
         verify(mServiceCallback, times(1)).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -275,7 +279,7 @@ public class ChildProcessConnectionTest {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, mServiceCallback);
-        mFirstServiceConnection.notifyServiceConnected(null /* iBinder */);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         mFirstServiceConnection.notifyServiceDisconnected();
         verify(mServiceCallback, times(1)).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
