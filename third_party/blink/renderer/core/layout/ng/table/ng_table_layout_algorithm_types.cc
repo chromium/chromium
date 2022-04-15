@@ -353,21 +353,43 @@ NGTableGroupedChildrenIterator::NGTableGroupedChildrenIterator(
     return;
   }
   current_section_ = kNone;
-  AdvanceToNonEmptySection();
+  AdvanceForwardToNonEmptySection();
 }
 
 NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator++() {
   switch (current_section_) {
     case kHead:
     case kFoot:
-      AdvanceToNonEmptySection();
+      AdvanceForwardToNonEmptySection();
       break;
     case kBody:
       ++position_;
       if (body_vector_->begin() + position_ == grouped_children_.bodies.end())
-        AdvanceToNonEmptySection();
+        AdvanceForwardToNonEmptySection();
       break;
     case kEnd:
+      break;
+    case kNone:
+      NOTREACHED();
+      break;
+  }
+  return *this;
+}
+
+NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator--() {
+  switch (current_section_) {
+    case kHead:
+    case kFoot:
+      AdvanceBackwardToNonEmptySection();
+      break;
+    case kBody:
+      if (position_ == 0)
+        AdvanceBackwardToNonEmptySection();
+      else
+        --position_;
+      break;
+    case kEnd:
+      AdvanceBackwardToNonEmptySection();
       break;
     case kNone:
       NOTREACHED();
@@ -405,30 +427,59 @@ bool NGTableGroupedChildrenIterator::operator!=(
   return !(*this == rhs);
 }
 
-void NGTableGroupedChildrenIterator::AdvanceToNonEmptySection() {
+void NGTableGroupedChildrenIterator::AdvanceForwardToNonEmptySection() {
   switch (current_section_) {
     case kNone:
       current_section_ = kHead;
       if (!grouped_children_.header)
-        AdvanceToNonEmptySection();
+        AdvanceForwardToNonEmptySection();
       break;
     case kHead:
       current_section_ = kBody;
       body_vector_ = &grouped_children_.bodies;
       position_ = 0;
       if (body_vector_->size() == 0)
-        AdvanceToNonEmptySection();
+        AdvanceForwardToNonEmptySection();
       break;
     case kBody:
       current_section_ = kFoot;
       if (!grouped_children_.footer)
-        AdvanceToNonEmptySection();
+        AdvanceForwardToNonEmptySection();
       break;
     case kFoot:
       current_section_ = kEnd;
       break;
     case kEnd:
       NOTREACHED();
+      break;
+  }
+}
+
+void NGTableGroupedChildrenIterator::AdvanceBackwardToNonEmptySection() {
+  switch (current_section_) {
+    case kNone:
+      NOTREACHED();
+      break;
+    case kHead:
+      current_section_ = kNone;
+      break;
+    case kBody:
+      current_section_ = kHead;
+      if (!grouped_children_.header)
+        AdvanceBackwardToNonEmptySection();
+      break;
+    case kFoot:
+      current_section_ = kBody;
+      body_vector_ = &grouped_children_.bodies;
+      if (body_vector_->size() == 0)
+        AdvanceBackwardToNonEmptySection();
+      else
+        position_ = body_vector_->size() - 1;
+      break;
+    case kEnd:
+      current_section_ = kFoot;
+      if (!grouped_children_.footer)
+        AdvanceBackwardToNonEmptySection();
       break;
   }
 }

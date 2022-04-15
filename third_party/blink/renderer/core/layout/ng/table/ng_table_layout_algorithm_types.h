@@ -281,6 +281,7 @@ class NGTableGroupedChildrenIterator {
       bool is_end = false);
 
   NGTableGroupedChildrenIterator& operator++();
+  NGTableGroupedChildrenIterator& operator--();
   NGBlockNode operator*() const;
   bool operator==(const NGTableGroupedChildrenIterator& rhs) const;
   bool operator!=(const NGTableGroupedChildrenIterator& rhs) const;
@@ -288,7 +289,8 @@ class NGTableGroupedChildrenIterator {
   bool TreatAsTBody() const { return current_section_ == kBody; }
 
  private:
-  void AdvanceToNonEmptySection();
+  void AdvanceForwardToNonEmptySection();
+  void AdvanceBackwardToNonEmptySection();
   const NGTableGroupedChildren& grouped_children_;
   CurrentSection current_section_{kNone};
 

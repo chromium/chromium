@@ -289,20 +289,33 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
     <table>
   )HTML");
   auto* table = GetTableInterfaceByElementId("table");
-  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                GetLayoutObjectByElementId("head")),
-            table->TopSectionInterface());
-  // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->TopNonEmptySectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->BottomSectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->BottomNonEmptySectionInterface());
+  auto* head_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("head"));
+  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("body"));
+  ASSERT_TRUE(table);
+  ASSERT_TRUE(head_section);
+  ASSERT_TRUE(body_section);
+
+  EXPECT_EQ(head_section, table->FirstSectionInterface());
+  EXPECT_EQ(body_section, table->LastSectionInterface());
+
+  EXPECT_EQ(body_section,
+            table->NextSectionInterface(head_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(nullptr,
+            table->NextSectionInterface(body_section, kDoNotSkipEmptySections));
+
+  EXPECT_EQ(body_section, table->FirstNonEmptySectionInterface());
+  EXPECT_EQ(body_section, table->LastNonEmptySectionInterface());
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    // Legacy does not implement this API. It is only used by TablesNG.
+    EXPECT_EQ(nullptr, table->PreviousSectionInterface(head_section,
+                                                       kSkipEmptySections));
+    EXPECT_EQ(nullptr, table->PreviousSectionInterface(body_section,
+                                                       kSkipEmptySections));
+    EXPECT_EQ(head_section, table->PreviousSectionInterface(
+                                body_section, kDoNotSkipEmptySections));
   }
 }
 
@@ -314,20 +327,33 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
     <table>
   )HTML");
   auto* table = GetTableInterfaceByElementId("table");
-  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                GetLayoutObjectByElementId("body")),
-            table->TopSectionInterface());
-  // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->TopNonEmptySectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("foot")),
-              table->BottomSectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("body")),
-              table->BottomNonEmptySectionInterface());
+  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("body"));
+  auto* foot_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("foot"));
+  ASSERT_TRUE(table);
+  ASSERT_TRUE(body_section);
+  ASSERT_TRUE(foot_section);
+
+  EXPECT_EQ(body_section, table->FirstSectionInterface());
+  EXPECT_EQ(foot_section, table->LastSectionInterface());
+
+  EXPECT_EQ(nullptr,
+            table->NextSectionInterface(body_section, kSkipEmptySections));
+  EXPECT_EQ(foot_section,
+            table->NextSectionInterface(body_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(nullptr,
+            table->NextSectionInterface(foot_section, kDoNotSkipEmptySections));
+
+  EXPECT_EQ(body_section, table->FirstNonEmptySectionInterface());
+  EXPECT_EQ(body_section, table->LastNonEmptySectionInterface());
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    // Legacy does not implement this API. It is only used by TablesNG.
+    EXPECT_EQ(body_section, table->PreviousSectionInterface(
+                                foot_section, kSkipEmptySections));
+    EXPECT_EQ(nullptr, table->PreviousSectionInterface(body_section,
+                                                       kSkipEmptySections));
   }
 }
 
@@ -340,20 +366,34 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
     <table>
   )HTML");
   auto* table = GetTableInterfaceByElementId("table");
-  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                GetLayoutObjectByElementId("head")),
-            table->TopSectionInterface());
-  // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("head")),
-              table->TopNonEmptySectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("foot")),
-              table->BottomSectionInterface());
-    EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
-                  GetLayoutObjectByElementId("foot")),
-              table->BottomNonEmptySectionInterface());
+  auto* head_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("head"));
+  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("body"));
+  auto* foot_section = ToInterface<LayoutNGTableSectionInterface>(
+      GetLayoutObjectByElementId("foot"));
+  ASSERT_TRUE(table);
+  ASSERT_TRUE(head_section);
+  ASSERT_TRUE(body_section);
+  ASSERT_TRUE(foot_section);
+
+  EXPECT_EQ(head_section, table->FirstSectionInterface());
+  EXPECT_EQ(foot_section, table->LastSectionInterface());
+
+  EXPECT_EQ(body_section,
+            table->NextSectionInterface(head_section, kSkipEmptySections));
+  EXPECT_EQ(foot_section,
+            table->NextSectionInterface(body_section, kSkipEmptySections));
+
+  EXPECT_EQ(head_section, table->FirstNonEmptySectionInterface());
+  EXPECT_EQ(foot_section, table->LastNonEmptySectionInterface());
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    // Legacy does not implement this API. It is only used by TablesNG.
+    EXPECT_EQ(body_section, table->PreviousSectionInterface(
+                                foot_section, kSkipEmptySections));
+    EXPECT_EQ(head_section, table->PreviousSectionInterface(
+                                body_section, kSkipEmptySections));
   }
 }
 

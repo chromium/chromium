@@ -2382,7 +2382,7 @@ static PhysicalRect BoundingBoxInPaginationContainer(
     // Now bounding_box covers the original header. Expand it to intersect
     // with all fragments containing the original and repeatings, i.e. to
     // intersect any fragment containing any row.
-    if (const auto* bottom_section = table.BottomNonEmptySectionInterface()) {
+    if (const auto* bottom_section = table.LastNonEmptySectionInterface()) {
       const auto* bottom_section_box =
           To<LayoutBox>(bottom_section->ToLayoutObject());
       bounding_box.Unite(MapLocalRectToAncestorLayer(
@@ -2395,7 +2395,7 @@ static PhysicalRect BoundingBoxInPaginationContainer(
   DCHECK(section.IsRepeatingFooterGroup());
   // Similar to repeating header, expand bounding_box to intersect any
   // fragment containing any row first.
-  if (const auto* top_section = table.TopNonEmptySectionInterface()) {
+  if (const auto* top_section = table.FirstNonEmptySectionInterface()) {
     const auto* top_section_box = To<LayoutBox>(top_section->ToLayoutObject());
     bounding_box.Unite(MapLocalRectToAncestorLayer(
         *top_section_box, top_section_box->PhysicalBorderBoxRect(),
@@ -3108,9 +3108,9 @@ void PaintPropertyTreeBuilder::
   // border-spacing, and also bottom captions. No room has been made for a
   // repeated header there.
   auto sections_logical_height =
-      To<LayoutBox>(table.BottomSectionInterface()->ToLayoutObject())
+      To<LayoutBox>(table.LastSectionInterface()->ToLayoutObject())
           ->LogicalBottom() -
-      To<LayoutBox>(table.TopSectionInterface()->ToLayoutObject())
+      To<LayoutBox>(table.FirstSectionInterface()->ToLayoutObject())
           ->LogicalTop();
   auto content_remaining = sections_logical_height - table.VBorderSpacing();
 

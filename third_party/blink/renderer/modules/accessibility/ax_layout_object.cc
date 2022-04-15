@@ -1470,7 +1470,7 @@ unsigned AXLayoutObject::ColumnCount() const {
   LayoutNGTableInterface* table =
       ToInterface<LayoutNGTableInterface>(layout_object);
   table->RecalcSectionsIfNeeded();
-  LayoutNGTableSectionInterface* table_section = table->TopSectionInterface();
+  LayoutNGTableSectionInterface* table_section = table->FirstSectionInterface();
   if (!table_section)
     return AXNodeObject::ColumnCount();
 
@@ -1491,14 +1491,14 @@ unsigned AXLayoutObject::RowCount() const {
 
   unsigned row_count = 0;
   const LayoutNGTableSectionInterface* table_section =
-      table->TopSectionInterface();
+      table->FirstSectionInterface();
   if (!table_section)
     return AXNodeObject::RowCount();
 
   while (table_section) {
     row_count += table_section->NumRows();
     table_section =
-        table->SectionBelowInterface(table_section, kSkipEmptySections);
+        table->NextSectionInterface(table_section, kSkipEmptySections);
   }
   return row_count;
 }
@@ -1548,10 +1548,10 @@ unsigned AXLayoutObject::RowIndex() const {
   // Since our table might have multiple sections, we have to offset our row
   // appropriately.
   table->RecalcSectionsIfNeeded();
-  const LayoutNGTableSectionInterface* section = table->TopSectionInterface();
+  const LayoutNGTableSectionInterface* section = table->FirstSectionInterface();
   while (section && section != row_section) {
     row_index += section->NumRows();
-    section = table->SectionBelowInterface(section, kSkipEmptySections);
+    section = table->NextSectionInterface(section, kSkipEmptySections);
   }
 
   return row_index;
@@ -1619,7 +1619,7 @@ AXObject* AXLayoutObject::CellForColumnAndRow(unsigned target_column_index,
       ToInterface<LayoutNGTableInterface>(layout_object);
   table->RecalcSectionsIfNeeded();
 
-  LayoutNGTableSectionInterface* table_section = table->TopSectionInterface();
+  LayoutNGTableSectionInterface* table_section = table->FirstSectionInterface();
   if (!table_section) {
     return AXNodeObject::CellForColumnAndRow(target_column_index,
                                              target_row_index);
@@ -1654,7 +1654,7 @@ AXObject* AXLayoutObject::CellForColumnAndRow(unsigned target_column_index,
 
     row_offset += table_section->NumRows();
     table_section =
-        table->SectionBelowInterface(table_section, kSkipEmptySections);
+        table->NextSectionInterface(table_section, kSkipEmptySections);
   }
 
   return nullptr;
@@ -1670,7 +1670,7 @@ bool AXLayoutObject::FindAllTableCellsWithRole(ax::mojom::blink::Role role,
       ToInterface<LayoutNGTableInterface>(layout_object);
   table->RecalcSectionsIfNeeded();
 
-  LayoutNGTableSectionInterface* table_section = table->TopSectionInterface();
+  LayoutNGTableSectionInterface* table_section = table->FirstSectionInterface();
   if (!table_section)
     return true;
 
@@ -1687,7 +1687,7 @@ bool AXLayoutObject::FindAllTableCellsWithRole(ax::mojom::blink::Role role,
     }
 
     table_section =
-        table->SectionBelowInterface(table_section, kSkipEmptySections);
+        table->NextSectionInterface(table_section, kSkipEmptySections);
   }
 
   return true;

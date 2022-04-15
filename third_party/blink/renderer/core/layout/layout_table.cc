@@ -296,30 +296,40 @@ LayoutNGTableSectionInterface* LayoutTable::FirstBodyInterface() const {
   return FirstBody();
 }
 
-LayoutNGTableSectionInterface* LayoutTable::TopSectionInterface() const {
+LayoutNGTableSectionInterface* LayoutTable::FirstSectionInterface() const {
   NOT_DESTROYED();
   return TopSection();
 }
 
-LayoutNGTableSectionInterface* LayoutTable::BottomSectionInterface() const {
+LayoutNGTableSectionInterface* LayoutTable::LastSectionInterface() const {
   NOT_DESTROYED();
   return BottomSection();
 }
 
-LayoutNGTableSectionInterface* LayoutTable::TopNonEmptySectionInterface()
+LayoutNGTableSectionInterface* LayoutTable::FirstNonEmptySectionInterface()
     const {
   NOT_DESTROYED();
   return TopNonEmptySection();
 }
 
-LayoutNGTableSectionInterface* LayoutTable::SectionBelowInterface(
+LayoutNGTableSectionInterface* LayoutTable::NextSectionInterface(
     const LayoutNGTableSectionInterface* section,
     SkipEmptySectionsValue skip_empty_sections) const {
   NOT_DESTROYED();
   return SectionBelow(To<LayoutTableSection>(section->ToLayoutObject()),
                       skip_empty_sections);
 }
-LayoutNGTableSectionInterface* LayoutTable::BottomNonEmptySectionInterface()
+
+// Only used by NG.
+LayoutNGTableSectionInterface* LayoutTable::PreviousSectionInterface(
+    const LayoutNGTableSectionInterface* section,
+    SkipEmptySectionsValue skip_empty_sections) const {
+  NOT_DESTROYED();
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+LayoutNGTableSectionInterface* LayoutTable::LastNonEmptySectionInterface()
     const {
   NOT_DESTROYED();
   return BottomNonEmptySection();
