@@ -123,7 +123,7 @@ HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
       policy::PlatformManagementService::GetInstance(),
-      kRegistryChromePolicyKey));
+      kRegistryChromePolicyKey, IsCommandLineSwitchSupported()));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif BUILDFLAG(IS_MAC)

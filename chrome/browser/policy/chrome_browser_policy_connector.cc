@@ -259,7 +259,8 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
   std::unique_ptr<AsyncPolicyLoader> loader(PolicyLoaderWin::Create(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      ManagementServiceFactory::GetForPlatform(), kRegistryChromePolicyKey));
+      ManagementServiceFactory::GetForPlatform(), kRegistryChromePolicyKey,
+      IsCommandLineSwitchSupported()));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif BUILDFLAG(IS_MAC)
