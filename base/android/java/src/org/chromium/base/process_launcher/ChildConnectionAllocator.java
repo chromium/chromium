@@ -61,7 +61,9 @@ public abstract class ChildConnectionAllocator {
     private static final long FREE_CONNECTION_DELAY_MILLIS = 1;
 
     // Max number of connections allocated for variable allocator.
-    private static final int MAX_VARIABLE_ALLOCATED = 100;
+    // Android allocates 100 UIDs for a zygote, but unbinding and killing a service is not
+    // synchronous. So leave 2 to leave some time for ActivityManager to respond.
+    private static final int MAX_VARIABLE_ALLOCATED = 98;
 
     // Runnable which will be called when allocator wants to allocate a new connection, but does
     // not have any more free slots. May be null.
