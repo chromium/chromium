@@ -1979,14 +1979,6 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
       base::BindOnce(&PaymentsClientTest::OnDidGetVirtualCardEnrollmentDetails,
                      weak_ptr_factory_.GetWeakPtr()));
   IssueOAuthToken();
-  // Ensures the request contains the correct fields.
-  EXPECT_TRUE(!GetUploadData().empty());
-  EXPECT_TRUE(GetUploadData().find("language_code") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("billable_service") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("external_customer_id") !=
-              std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("instrument_id") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("risk_data_encoded") != std::string::npos);
 
   // Ensures the PaymentsRpcResult is set correctly.
   AutofillClient::PaymentsRpcResult result = std::get<1>(GetParam());

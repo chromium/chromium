@@ -786,6 +786,7 @@ source_set("unit_tests") {
     "payments/legal_message_line_unittest.cc",
     "payments/payments_client_unittest.cc",
     "payments/payments_requests/get_details_for_enrollment_request_unittest.cc",
+    "payments/payments_requests/update_virtual_card_enrollment_request_unittest.cc",
     "payments/payments_service_url_unittest.cc",
     "payments/payments_util_unittest.cc",
     "payments/virtual_card_enrollment_manager_unittest.cc",
