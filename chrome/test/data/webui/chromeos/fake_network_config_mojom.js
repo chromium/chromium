@@ -114,6 +114,7 @@ export class FakeNetworkConfig {
 
     this.globalPolicy_ =
         /** @type {!chromeos.networkConfig.mojom.GlobalPolicy} */ ({
+          allow_cellular_sim_lock: true,
           allow_only_policy_cellular_networks: false,
           allow_only_policy_networks_to_autoconnect: false,
           allow_only_policy_wifi_networks_to_connect: false,

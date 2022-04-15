@@ -934,6 +934,10 @@ struct CellularSimState {
 // Properties provided by GetGlobalPolicy. These properties affect network
 // configuration as a whole instead of individual network configurations.
 struct GlobalPolicy {
+  // If true, allow PIN locking of SIMs attached to the device.
+  // If false, PIN locking is prohibited.
+  bool allow_cellular_sim_lock = true;
+
   // If true, only cellular networks present in policy may be connected to and
   // no new networks may be added or configured.
   bool allow_only_policy_cellular_networks = false;

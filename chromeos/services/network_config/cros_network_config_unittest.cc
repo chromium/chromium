@@ -1873,6 +1873,7 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
+  EXPECT_EQ(false, policy->allow_cellular_sim_lock);
   EXPECT_EQ(false, policy->allow_only_policy_cellular_networks);
   EXPECT_EQ(true, policy->allow_only_policy_networks_to_autoconnect);
   EXPECT_EQ(false, policy->allow_only_policy_wifi_networks_to_connect);
@@ -1888,6 +1889,8 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   EXPECT_EQ(0, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
 
   base::DictionaryValue global_config;
+  global_config.SetBoolKey(::onc::global_network_config::kAllowCellularSimLock,
+                           true);
   global_config.SetBoolKey(
       ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks, true);
   global_config.SetBoolKey(
@@ -1898,6 +1901,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
+  EXPECT_EQ(true, policy->allow_cellular_sim_lock);
   EXPECT_EQ(true, policy->allow_only_policy_cellular_networks);
   EXPECT_EQ(false, policy->allow_only_policy_networks_to_autoconnect);
   EXPECT_EQ(false, policy->allow_only_policy_wifi_networks_to_connect);
