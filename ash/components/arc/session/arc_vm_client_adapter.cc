@@ -362,6 +362,9 @@ std::vector<std::string> GenerateKernelCmdline(
   if (base::FeatureList::IsEnabled(arc::kVmGmsCoreLowMemoryKillerProtection))
     result.push_back("androidboot.arc_enable_gmscore_lmk_protection=1");
 
+  if (start_params.enable_tts_caching)
+    result.push_back("androidboot.arc.tts.caching=1");
+
   return result;
 }
 

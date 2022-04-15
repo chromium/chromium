@@ -175,6 +175,27 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableUreadahead) {
   EXPECT_TRUE(request.disable_ureadahead());
 }
 
+TEST_F(ArcContainerClientAdapterTest, ArcVmTTSCachingDefault) {
+  StartParams start_params;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_enable_tts_caching());
+  EXPECT_FALSE(request.enable_tts_caching());
+}
+
+TEST_F(ArcContainerClientAdapterTest, ArcVmTTSCachingEnabled) {
+  StartParams start_params;
+  start_params.enable_tts_caching = true;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_enable_tts_caching());
+  EXPECT_TRUE(request.enable_tts_caching());
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;

@@ -131,6 +131,8 @@ class ArcContainerClientAdapter
     request.set_arc_generate_pai(params.arc_generate_play_auto_install);
     request.set_enable_notifications_refresh(
         params.enable_notifications_refresh);
+    request.set_enable_tts_caching(params.enable_tts_caching);
+
     return request;
   }
 

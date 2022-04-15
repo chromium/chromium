@@ -48,6 +48,10 @@ const base::Feature kEnablePerVmCoreScheduling{
 const base::Feature kEnableThrottlingNotification{
     "ArcEnableThrottlingNotification", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to use ARC TTS caching to optimize ARC boot.
+const base::Feature kEnableTTSCaching{"ArcEnableTTSCaching",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 const base::Feature kEnableUnifiedAudioFocusFeature{
     "ArcEnableUnifiedAudioFocus", base::FEATURE_ENABLED_BY_DEFAULT};

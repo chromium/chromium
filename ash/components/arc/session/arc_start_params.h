@@ -94,6 +94,9 @@ struct StartParams {
 
   // Flag to enable notification refresh.
   bool enable_notifications_refresh = false;
+
+  // Flag to enable TTS caching.
+  bool enable_tts_caching = false;
 };
 
 }  // namespace arc

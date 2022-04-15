@@ -2604,5 +2604,21 @@ TEST_P(ArcVmClientAdapterUsapProfileTest, Profile) {
   }
 }
 
+TEST_F(ArcVmClientAdapterTest, ArcVmTTSCachingDefault) {
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(HasParameterWithPrefix(request, "androidboot.arc.tts.caching="));
+}
+
+TEST_F(ArcVmClientAdapterTest, ArcVmTTSCachingEnabled) {
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.enable_tts_caching = true;
+  StartMiniArcWithParams(true, std::move(start_params));
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(
+      base::Contains(request.params(), "androidboot.arc.tts.caching=1"));
+}
+
 }  // namespace
 }  // namespace arc
