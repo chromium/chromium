@@ -7,16 +7,9 @@
 #include "base/hash/hash.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
+#include "components/segmentation_platform/internal/database/ukm_url_table.h"
 
 namespace segmentation_platform {
-namespace {
-
-// TODO(ssid): This should be moved to URL table instead.
-UrlId GenerateUrlId(const GURL& url) {
-  return UrlId::FromUnsafeValue(base::PersistentHash(url.spec()));
-}
-
-}  // namespace
 
 HistoryDelegateImpl::HistoryDelegateImpl(
     history::HistoryService* history_service,
@@ -31,19 +24,19 @@ HistoryDelegateImpl::~HistoryDelegateImpl() {
 
 void HistoryDelegateImpl::OnUrlAdded(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cached_history_urls_.insert(GenerateUrlId(url));
+  cached_history_urls_.insert(UkmUrlTable::GenerateUrlId(url));
 }
 
 void HistoryDelegateImpl::OnUrlRemoved(const std::vector<GURL>& urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const GURL& url : urls) {
-    cached_history_urls_.erase(GenerateUrlId(url));
+    cached_history_urls_.erase(UkmUrlTable::GenerateUrlId(url));
   }
 }
 
 bool HistoryDelegateImpl::FastCheckUrl(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return cached_history_urls_.count(GenerateUrlId(url));
+  return cached_history_urls_.count(UkmUrlTable::GenerateUrlId(url));
 }
 
 void HistoryDelegateImpl::FindUrlInHistory(
@@ -53,8 +46,8 @@ void HistoryDelegateImpl::FindUrlInHistory(
   history_service_->QueryURL(
       url, /* want_visits=*/false,
       base::BindOnce(&HistoryDelegateImpl::OnHistoryQueryResult,
-                     weak_factory_.GetWeakPtr(), GenerateUrlId(url),
-                     std::move(callback)),
+                     weak_factory_.GetWeakPtr(),
+                     UkmUrlTable::GenerateUrlId(url), std::move(callback)),
       &task_tracker_);
 }
 
