@@ -410,6 +410,7 @@ export class ChromeCartModuleElement extends I18nMixin
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentRejectConfirmation');
     this.$.confirmDiscountConsentToast.show();
+    this.$.confirmDiscountConsentToast.focus();
     ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(false);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.RejectDiscountConsent');
@@ -420,6 +421,7 @@ export class ChromeCartModuleElement extends I18nMixin
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentAcceptConfirmation');
     this.$.confirmDiscountConsentToast.show();
+    this.$.confirmDiscountConsentToast.focus();
     ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(true);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.AcceptDiscountConsent');
@@ -427,6 +429,11 @@ export class ChromeCartModuleElement extends I18nMixin
 
   private onDiscountConsentDismissed_() {
     this.showDiscountConsent = false;
+    const firstCart =
+        this.$.cartCarousel.querySelector<HTMLElement>('.cart-container');
+    if (firstCart !== null) {
+      firstCart.focus();
+    }
     ChromeCartProxy.getHandler().onDiscountConsentDismissed();
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.DismissDiscountConsent');

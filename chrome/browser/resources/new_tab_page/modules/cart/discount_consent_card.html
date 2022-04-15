@@ -97,7 +97,7 @@
           as="merchant">
         <li class="favicon">
           <img class="favicon-image" is="cr-auto-img"
-              auto-src="[[getFaviconUrl_(merchant.cartUrl.url)]]"></img>
+              auto-src="[[getFaviconUrl_(merchant.cartUrl.url)]]" alt=""></img>
         </li>
       </template>
     </ul>
@@ -137,7 +137,7 @@
     </iron-pages>
   </div>
   <template is="dom-if" if="[[showCloseButton_]]" restamp>
-    <cr-icon-button id="close" class="icon-clear"
+    <cr-icon-button id="close" class="icon-clear" aria-label="$i18n{close}"
         on-click="onCloseClick_"></cr-icon-button>
   </template>
 </div>
