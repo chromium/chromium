@@ -25,35 +25,32 @@ ReadAnythingPageHandler::ReadAnythingPageHandler(
   // Register |this| as a |ReadAnythingModel::Observer| with the coordinator
   // for the component. This will allow the IPC to update the front-end web ui.
 
-  Browser* browser = chrome::FindLastActive();
-  if (!browser)
+  browser_ = chrome::FindLastActive();
+  if (!browser_)
     return;
-  browser_view_ = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view_)
-    return;
-  browser_view_->side_panel_coordinator()
-      ->read_anything_coordinator()
-      ->AddObserver(this);
+  ReadAnythingCoordinator::FromBrowser(browser_)->AddObserver(this);
 }
 
 ReadAnythingPageHandler::~ReadAnythingPageHandler() {
   // Remove |this| from the observer list of |ReadAnythingModel|.
-  if (browser_view_) {
-    DCHECK(
-        browser_view_->side_panel_coordinator()->read_anything_coordinator());
-    browser_view_->side_panel_coordinator()
-        ->read_anything_coordinator()
-        ->RemoveObserver(this);
+  if (browser_) {
+    ReadAnythingCoordinator* coordinator =
+        ReadAnythingCoordinator::FromBrowser(browser_);
+
+    // `Browser` is guaranteed to live as long as the ReadAnythingCoordinator
+    // since it is BrowserUserData (due to how UserData works - Browser owns
+    // this UserData).
+    DCHECK(coordinator);
+    coordinator->RemoveObserver(this);
   }
 }
 
 void ReadAnythingPageHandler::ShowUI() {
-  Browser* browser = chrome::FindLastActive();
-  if (!browser)
+  if (!browser_)
     return;
 
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser_->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return;
 

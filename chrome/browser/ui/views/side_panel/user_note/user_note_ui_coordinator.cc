@@ -4,17 +4,34 @@
 
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 
+#include <memory>
+
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
 UserNoteUICoordinator::UserNoteUICoordinator(Browser* browser)
-    : browser_(browser) {
+    : BrowserUserData<UserNoteUICoordinator>(*browser), browser_(browser) {
   browser_->tab_strip_model()->AddObserver(this);
 }
 
 UserNoteUICoordinator::~UserNoteUICoordinator() {
   browser_->tab_strip_model()->RemoveObserver(this);
+}
+
+void UserNoteUICoordinator::CreateAndRegisterEntry(
+    SidePanelRegistry* global_registry) {
+  global_registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kUserNote,
+      l10n_util::GetStringUTF16(IDS_USER_NOTE_TITLE),
+      ui::ImageModel::FromVectorIcon(kInkHighlighterIcon, ui::kColorIcon),
+      base::BindRepeating(&UserNoteUICoordinator::CreateUserNotesView,
+                          base::Unretained(this))));
 }
 
 void UserNoteUICoordinator::FocusNote(const std::string& guid) {
@@ -83,3 +100,5 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
 
   return root_view;
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(UserNoteUICoordinator);

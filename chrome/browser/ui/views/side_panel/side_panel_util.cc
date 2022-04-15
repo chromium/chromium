@@ -1,0 +1,40 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
+#include "components/user_notes/user_notes_features.h"
+#include "ui/accessibility/accessibility_features.h"
+
+// static
+void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
+                                          SidePanelRegistry* global_registry) {
+  // Add reading list.
+  ReadingListSidePanelCoordinator::GetOrCreateForBrowser(browser)
+      ->CreateAndRegisterEntry(global_registry);
+
+  // Add bookmarks.
+  BookmarksSidePanelCoordinator::GetOrCreateForBrowser(browser)
+      ->CreateAndRegisterEntry(global_registry);
+
+  // Add read anything.
+  if (features::IsReadAnythingEnabled()) {
+    ReadAnythingCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
+  }
+
+  // Add user notes.
+  if (user_notes::IsUserNotesEnabled()) {
+    UserNoteUICoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
+  }
+
+  return;
+}

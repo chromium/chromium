@@ -11,9 +11,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 
-class Browser;
 class BrowserView;
-class ReadAnythingCoordinator;
 class SidePanelComboboxModel;
 
 namespace views {
@@ -35,8 +33,7 @@ class View;
 class SidePanelCoordinator final : public SidePanelRegistryObserver,
                                    public TabStripModelObserver {
  public:
-  explicit SidePanelCoordinator(BrowserView* browser_view,
-                                SidePanelRegistry* global_registry);
+  explicit SidePanelCoordinator(BrowserView* browser_view);
   SidePanelCoordinator(const SidePanelCoordinator&) = delete;
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
@@ -45,9 +42,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void Close();
   void Toggle();
 
-  ReadAnythingCoordinator* read_anything_coordinator() {
-    return read_anything_coordinator_.get();
-  }
+  SidePanelRegistry* GetGlobalSidePanelRegistry();
 
  private:
   friend class SidePanelCoordinatorTest;
@@ -76,10 +71,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   std::unique_ptr<views::Combobox> CreateCombobox();
   void OnComboboxChanged();
 
-  std::unique_ptr<views::View> CreateBookmarksWebView(Browser* browser);
-  std::unique_ptr<views::View> CreateReadAnythingWebView(Browser* browser);
-  std::unique_ptr<views::View> CreateUserNoteView(Browser* browser);
-
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelEntry* entry) override;
   void OnEntryWillDeregister(SidePanelEntry* entry) override;
@@ -98,10 +89,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // their availability in the observed side panel registries.
   std::unique_ptr<SidePanelComboboxModel> combobox_model_;
   raw_ptr<views::Combobox> header_combobox_ = nullptr;
-
-  // Used to coordinate the "Read Anything" component, instantiated in
-  // CreateReadAnythingWebView.
-  std::unique_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
 
   // TODO(pbos): Add awareness of tab registries here. This probably needs to
   // know the tab registry it's currently monitoring.

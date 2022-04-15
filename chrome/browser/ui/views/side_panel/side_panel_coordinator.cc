@@ -9,27 +9,19 @@
 #include "base/callback_forward.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_notes/user_notes_features.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,6 +36,8 @@
 #include "ui/views/vector_icons.h"
 
 namespace {
+
+const char kGlobalSidePanelRegistryKey[] = "global_side_panel_registry_key";
 
 constexpr int kSidePanelContentViewId = 42;
 constexpr int kSidePanelContentWrapperViewId = 43;
@@ -83,49 +77,20 @@ END_METADATA
 
 }  // namespace
 
-SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view,
-                                           SidePanelRegistry* global_registry)
-    : browser_view_(browser_view), global_registry_(global_registry) {
+SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
+    : browser_view_(browser_view) {
   combobox_model_ = std::make_unique<SidePanelComboboxModel>();
-  global_registry->AddObserver(this);
-  browser_view_->browser()->tab_strip_model()->AddObserver(this);
-  // TODO(pbos): Consider moving creation of SidePanelEntry into other functions
-  // that can easily be unit tested.
-  global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadingList,
-      l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE),
-      ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
-      base::BindRepeating(
-          [](SidePanelCoordinator* coordinator,
-             Browser* browser) -> std::unique_ptr<views::View> {
-            return std::make_unique<ReadLaterSidePanelWebView>(
-                browser, base::BindRepeating(&SidePanelCoordinator::Close,
-                                             base::Unretained(coordinator)));
-          },
-          this, browser_view->browser())));
-  global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kBookmarks,
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE),
-      ui::ImageModel::FromVectorIcon(omnibox::kStarIcon, ui::kColorIcon),
-      base::BindRepeating(&SidePanelCoordinator::CreateBookmarksWebView,
-                          base::Unretained(this), browser_view->browser())));
-  if (features::IsReadAnythingEnabled()) {
-    global_registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kReadAnything,
-        l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TITLE),
-        ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
-        base::BindRepeating(&SidePanelCoordinator::CreateReadAnythingWebView,
-                            base::Unretained(this), browser_view->browser())));
-  }
 
-  if (user_notes::IsUserNotesEnabled()) {
-    global_registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kUserNote,
-        l10n_util::GetStringUTF16(IDS_USER_NOTE_TITLE),
-        ui::ImageModel::FromVectorIcon(kInkHighlighterIcon, ui::kColorIcon),
-        base::BindRepeating(&SidePanelCoordinator::CreateUserNoteView,
-                            base::Unretained(this), browser_view->browser())));
-  }
+  auto global_registry = std::make_unique<SidePanelRegistry>();
+  global_registry->AddObserver(this);
+  global_registry_ = global_registry.get();
+  browser_view->browser()->SetUserData(kGlobalSidePanelRegistryKey,
+                                       std::move(global_registry));
+
+  browser_view_->browser()->tab_strip_model()->AddObserver(this);
+
+  SidePanelUtil::PopulateGlobalEntries(browser_view->browser(),
+                                       GetGlobalSidePanelRegistry());
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() {
@@ -189,6 +154,11 @@ void SidePanelCoordinator::Toggle() {
   } else {
     Show();
   }
+}
+
+SidePanelRegistry* SidePanelCoordinator::GetGlobalSidePanelRegistry() {
+  return static_cast<SidePanelRegistry*>(
+      browser_view_->browser()->GetUserData(kGlobalSidePanelRegistryKey));
 }
 
 views::View* SidePanelCoordinator::GetContentView() {
@@ -359,38 +329,6 @@ void SidePanelCoordinator::OnComboboxChanged() {
   SidePanelEntry::Id entry_id =
       combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
   Show(entry_id);
-}
-
-std::unique_ptr<views::View> SidePanelCoordinator::CreateBookmarksWebView(
-    Browser* browser) {
-  auto bookmarks_web_view =
-      std::make_unique<SidePanelWebUIViewT<BookmarksSidePanelUI>>(
-          browser, base::RepeatingClosure(),
-          base::BindRepeating(&SidePanelCoordinator::Close,
-                              base::Unretained(this)),
-          std::make_unique<BubbleContentsWrapperT<BookmarksSidePanelUI>>(
-              GURL(chrome::kChromeUIBookmarksSidePanelURL), browser->profile(),
-              IDS_BOOKMARK_MANAGER_TITLE,
-              /*webui_resizes_host=*/false,
-              /*esc_closes_ui=*/false));
-  if (base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop)) {
-    extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
-        bookmarks_web_view.get()->contents_wrapper()->web_contents());
-  }
-  return bookmarks_web_view;
-}
-
-// The ownership of the container view moves to the caller of this function.
-std::unique_ptr<views::View> SidePanelCoordinator::CreateReadAnythingWebView(
-    Browser* browser) {
-  read_anything_coordinator_ =
-      std::make_unique<ReadAnythingCoordinator>(browser);
-  return read_anything_coordinator_->GetContainerView();
-}
-
-std::unique_ptr<views::View> SidePanelCoordinator::CreateUserNoteView(
-    Browser* browser) {
-  return browser_view_->user_note_ui_coordinator()->CreateUserNotesView();
 }
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {

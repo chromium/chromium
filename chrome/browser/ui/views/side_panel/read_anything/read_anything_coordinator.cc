@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
-ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser) {
+ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
+    : BrowserUserData<ReadAnythingCoordinator>(*browser) {
   // Create the model.
   model_ = std::make_unique<ReadAnythingModel>();
 
@@ -44,9 +49,20 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser) {
       std::move(toolbar), std::move(content_web_view));
 }
 
-std::unique_ptr<ReadAnythingContainerView>
-ReadAnythingCoordinator::GetContainerView() {
+ReadAnythingCoordinator::~ReadAnythingCoordinator() = default;
+
+void ReadAnythingCoordinator::CreateAndRegisterEntry(
+    SidePanelRegistry* global_registry) {
+  global_registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kReadAnything,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TITLE),
+      ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
+      base::BindRepeating(&ReadAnythingCoordinator::GetContainerView,
+                          base::Unretained(this))));
+}
+
+std::unique_ptr<views::View> ReadAnythingCoordinator::GetContainerView() {
   return std::move(container_view_);
 }
 
-ReadAnythingCoordinator::~ReadAnythingCoordinator() = default;
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);

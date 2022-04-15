@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_
 
+#include "chrome/browser/ui/browser_user_data.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
@@ -12,15 +14,21 @@
 class Browser;
 class ReadAnythingController;
 class ReadAnythingContainerView;
+class SidePanelRegistry;
 
-class ReadAnythingCoordinator {
+namespace views {
+class View;
+}  // namespace views
+
+class ReadAnythingCoordinator
+    : public BrowserUserData<ReadAnythingCoordinator> {
  public:
   explicit ReadAnythingCoordinator(Browser* browser);
   ReadAnythingCoordinator(const ReadAnythingCoordinator&) = delete;
   ReadAnythingCoordinator& operator=(const ReadAnythingCoordinator&) = delete;
-  ~ReadAnythingCoordinator();
+  ~ReadAnythingCoordinator() override;
 
-  std::unique_ptr<ReadAnythingContainerView> GetContainerView();
+  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
   void AddObserver(ReadAnythingModel::Observer* observer) {
     model_->AddObserver(observer);
@@ -30,8 +38,14 @@ class ReadAnythingCoordinator {
   }
 
  private:
+  friend class BrowserUserData<ReadAnythingCoordinator>;
+
+  std::unique_ptr<views::View> GetContainerView();
+
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
   std::unique_ptr<ReadAnythingContainerView> container_view_;
+
+  BROWSER_USER_DATA_KEY_DECL();
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_

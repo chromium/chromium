@@ -41,7 +41,7 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
                          const std::vector<ui::AXNodeID>& text_node_ids);
 
-  BrowserView* browser_view_;
+  Browser* browser_;
 
   mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
   mojo::Remote<read_anything::mojom::Page> page_;
