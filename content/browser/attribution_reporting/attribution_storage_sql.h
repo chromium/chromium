@@ -119,8 +119,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter) override;
-  bool AddAggregatableAttributionForTesting(
-      const AttributionReport& report) override;
 
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 

@@ -904,6 +904,10 @@ MATCHER_P(ReportURLIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.ReportURL(), result_listener);
 }
 
+MATCHER_P(ReportTypeIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.GetReportType(), result_listener);
+}
+
 MATCHER_P(AggregatableAttributionDataIs, matcher, "") {
   return ExplainMatchResult(
       ::testing::VariantWith<AttributionReport::AggregatableAttributionData>(

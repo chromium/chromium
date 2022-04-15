@@ -1777,32 +1777,32 @@ TEST_F(AttributionManagerImplTest,
        AggregateReportAssemblySucceeded_ReportSent) {
   base::HistogramTester histograms;
 
-  attribution_manager_->HandleSource(SourceBuilder().Build());
-
-  const auto aggregatable_attribution =
-      ReportBuilder(AttributionInfoBuilder(SourceBuilder()
-                                               .SetSourceId(StoredSource::Id(1))
-                                               .SetDefaultFilterData()
-                                               .BuildStored())
-                        .SetTime(base::Time::Now())
-                        .Build())
-          .SetReportTime(base::Time::Now() + base::Hours(1))
-          .SetAggregatableHistogramContributions(
-              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-          .BuildAggregatableAttribution();
-  attribution_manager_->AddAggregatableAttributionForTesting(
-      aggregatable_attribution);
+  attribution_manager_->HandleSource(
+      TestAggregatableSourceProvider().GetBuilder().Build());
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build());
 
   MockAttributionObserver observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(observer, OnReportSent(aggregatable_attribution,
-                                     /*is_debug_report=*/false, _));
+  EXPECT_CALL(
+      observer,
+      OnReportSent(ReportTypeIs(AttributionReport::ReportType::kEventLevel),
+                   /*is_debug_report=*/false,
+                   Field(&SendResult::status, SendResult::Status::kSent)));
+
+  EXPECT_CALL(
+      observer,
+      OnReportSent(
+          ReportTypeIs(AttributionReport::ReportType::kAggregatableAttribution),
+          /*is_debug_report=*/false,
+          Field(&SendResult::status, SendResult::Status::kSent)));
 
   // Make sure the report is not sent earlier than its report time.
-  task_environment_.FastForwardBy(base::Hours(1) - base::Microseconds(1));
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Microseconds(1));
   EXPECT_THAT(aggregation_service_->calls(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Microseconds(1));
@@ -1810,14 +1810,17 @@ TEST_F(AttributionManagerImplTest,
 
   aggregation_service_->RunCallback(0, CreateExampleAggregatableReport(),
                                     AggregationService::AssemblyStatus::kOk);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
+  // One event-level report, one aggregatable report.
+  EXPECT_THAT(report_sender_->calls(), SizeIs(2));
+  report_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kSent, SendResult::Status::kSent});
 
   // kSuccess = 0.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus", 0, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly", 60, 1);
+      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
+      kFirstReportingWindow.InMinutes(), 1);
   // kSent = 0.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome", 0, 1);
@@ -1827,32 +1830,26 @@ TEST_F(AttributionManagerImplTest,
        AggregateReportAssemblyFailed_ReportNotSent) {
   base::HistogramTester histograms;
 
-  attribution_manager_->HandleSource(SourceBuilder().Build());
-
-  const auto aggregatable_attribution =
-      ReportBuilder(AttributionInfoBuilder(SourceBuilder()
-                                               .SetSourceId(StoredSource::Id(1))
-                                               .SetDefaultFilterData()
-                                               .BuildStored())
-                        .SetTime(base::Time::Now())
-                        .Build())
-          .SetReportTime(base::Time::Now() + base::Hours(1))
-          .SetAggregatableHistogramContributions(
-              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-          .BuildAggregatableAttribution();
-  attribution_manager_->AddAggregatableAttributionForTesting(
-      aggregatable_attribution);
+  attribution_manager_->HandleSource(
+      TestAggregatableSourceProvider().GetBuilder().Build());
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build());
 
   MockAttributionObserver observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(observer, OnReportSent(aggregatable_attribution,
-                                     /*is_debug_report=*/false, _));
+  EXPECT_CALL(
+      observer,
+      OnReportSent(
+          ReportTypeIs(AttributionReport::ReportType::kAggregatableAttribution),
+          /*is_debug_report=*/false,
+          Field(&SendResult::status, SendResult::Status::kFailedToAssemble)));
 
   // Make sure the report is not sent earlier than its report time.
-  task_environment_.FastForwardBy(base::Hours(1) - base::Microseconds(1));
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Microseconds(1));
   EXPECT_THAT(aggregation_service_->calls(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Microseconds(1));
@@ -1860,13 +1857,15 @@ TEST_F(AttributionManagerImplTest,
 
   aggregation_service_->RunCallback(
       0, absl::nullopt, AggregationService::AssemblyStatus::kAssemblyFailed);
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+  // Event-level report was sent.
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   // kAssembleReportFailed = 3.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus", 3, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly", 60, 1);
+      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
+      kFirstReportingWindow.InMinutes(), 1);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome", 3, 1);
@@ -1877,66 +1876,24 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
 
   ShutdownAggregationService();
 
-  attribution_manager_->HandleSource(SourceBuilder().Build());
+  attribution_manager_->HandleSource(
+      TestAggregatableSourceProvider().GetBuilder().Build());
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build());
 
-  attribution_manager_->AddAggregatableAttributionForTesting(
-      ReportBuilder(
-          AttributionInfoBuilder(
-              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
-              .SetTime(base::Time::Now())
-              .Build())
-          .SetReportTime(base::Time::Now() + base::Hours(1))
-          .SetAggregatableHistogramContributions(
-              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-          .BuildAggregatableAttribution());
-
-  task_environment_.FastForwardBy(base::Hours(1));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  // Event-level report was sent.
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   // kAggregationServiceUnavailable = 1.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus", 1, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly", 60, 1);
+      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
+      kFirstReportingWindow.InMinutes(), 1);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome", 3, 1);
-}
-
-TEST_F(AttributionManagerImplTest, EventAndAggregateReportsStored_BothSent) {
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-
-  const auto aggregatable_attribution =
-      ReportBuilder(
-          AttributionInfoBuilder(
-              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
-              .Build())
-          .SetReportTime(base::Time::Now() + kFirstReportingWindow)
-          .SetAggregatableHistogramContributions(
-              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-          .BuildAggregatableAttribution();
-  attribution_manager_->AddAggregatableAttributionForTesting(
-      aggregatable_attribution);
-
-  // Make sure the report is not sent earlier than its report time.
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  base::Microseconds(1));
-  EXPECT_THAT(aggregation_service_->calls(), IsEmpty());
-
-  task_environment_.FastForwardBy(base::Microseconds(1));
-
-  // Event-level report was sent.
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-
-  EXPECT_THAT(aggregation_service_->calls(), SizeIs(1));
-
-  aggregation_service_->RunCallback(0, CreateExampleAggregatableReport(),
-                                    AggregationService::AssemblyStatus::kOk);
-
-  // Aggregatable report was sent.
-  EXPECT_THAT(report_sender_->calls(), SizeIs(2));
 }
 
 TEST_F(AttributionManagerImplTest, GetFailedReportDelay) {

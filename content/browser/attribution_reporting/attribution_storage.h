@@ -133,10 +133,6 @@ class AttributionStorage {
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin& origin)> filter) = 0;
-
-  // Aggregate Attribution:
-  [[nodiscard]] virtual bool AddAggregatableAttributionForTesting(
-      const AttributionReport& report) = 0;
 };
 
 }  // namespace content

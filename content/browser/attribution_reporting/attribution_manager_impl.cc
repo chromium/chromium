@@ -882,20 +882,4 @@ void AttributionManagerImpl::NotifySourceDeactivated(
     observer.OnSourceDeactivated(source);
 }
 
-void AttributionManagerImpl::AddAggregatableAttributionForTesting(
-    AttributionReport report) {
-  base::Time report_time = report.report_time();
-
-  attribution_storage_
-      .AsyncCall(&AttributionStorage::AddAggregatableAttributionForTesting)
-      .WithArgs(std::move(report))
-      .Then(base::BindOnce(
-          [](base::WeakPtr<AttributionManagerImpl> manager,
-             base::Time report_time, bool success) {
-            if (manager && success)
-              manager->scheduler_.ScheduleSend(report_time);
-          },
-          weak_factory_.GetWeakPtr(), report_time));
-}
-
 }  // namespace content

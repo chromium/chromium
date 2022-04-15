@@ -2344,31 +2344,6 @@ bool AttributionStorageSql::DeleteSources(
   return transaction.Commit();
 }
 
-bool AttributionStorageSql::AddAggregatableAttributionForTesting(
-    const AttributionReport& report) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const auto* aggregatable_attribution =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-  DCHECK(aggregatable_attribution);
-
-  if (!LazyInit(DbCreationPolicy::kCreateIfAbsent))
-    return false;
-
-  StoredSource::Id source_id = report.attribution_info().source.source_id();
-
-  absl::optional<StoredSourceData> source_to_attribute =
-      ReadSourceToAttribute(db_.get(), source_id);
-  // This is only possible if there is a corrupt DB.
-  if (!source_to_attribute.has_value())
-    return false;
-
-  return MaybeStoreAggregatableAttributionReport(
-             report, source_to_attribute->aggregatable_budget_consumed) ==
-         AggregatableResult::kSuccess;
-}
-
 bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
     base::Time delete_begin,
     base::Time delete_end,
