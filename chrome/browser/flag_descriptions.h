@@ -308,6 +308,9 @@ extern const char kChromeLabsDescription[];
 extern const char kConsolidatedSiteStorageControlsName[];
 extern const char kConsolidatedSiteStorageControlsDescription[];
 
+extern const char kConsumerAutoUpdateToggleAllowedName[];
+extern const char kConsumerAutoUpdateToggleAllowedDescription[];
+
 extern const char kContextMenuGoogleLensChipName[];
 extern const char kContextMenuGoogleLensChipDescription[];
 

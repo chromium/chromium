@@ -565,6 +565,11 @@ const char kConsolidatedSiteStorageControlsName[] =
 const char kConsolidatedSiteStorageControlsDescription[] =
     "Enables the consolidated version of Site Storage controls in settings";
 
+const char kConsumerAutoUpdateToggleAllowedName[] =
+    "Allow Consumer Auto Update Toggle";
+const char kConsumerAutoUpdateToggleAllowedDescription[] =
+    "Allow enabling the consumer auto update toggle in settings";
+
 const char kContextMenuGoogleLensChipName[] =
     "Google Lens powered image search for surfaced as a chip below the context "
     "menu.";

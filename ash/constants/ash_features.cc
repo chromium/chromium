@@ -300,6 +300,11 @@ const base::Feature kClipboardHistoryContextMenuNudge{
 const base::Feature kClipboardHistoryNudgeSessionReset{
     "ClipboardHistoryNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled and account falls under the new deal, will be allowed to toggle
+// auto updates.
+const base::Feature kConsumerAutoUpdateToggleAllowed{
+    "ConsumerAutoUpdateToggleAllowed", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
 // with a button to close desk and windows and a button to combine desks (the
 // legacy behavior).
@@ -1618,6 +1623,10 @@ bool IsDesksCloseAllEnabled() {
 bool IsLauncherItemColorSyncEnabled() {
   return IsLauncherAppSortEnabled() &&
          base::FeatureList::IsEnabled(kLauncherItemColorSync);
+}
+
+bool IsConsumerAutoUpdateAllowed() {
+  return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
 }
 
 bool IsCryptohomeRecoveryFlowEnabled() {

@@ -3545,6 +3545,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWifiConnectMacAddressRandomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kWifiConnectMacAddressRandomization)},
+    {"consumer-auto-update-toggle-allowed",
+     flag_descriptions::kConsumerAutoUpdateToggleAllowedName,
+     flag_descriptions::kConsumerAutoUpdateToggleAllowedDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kConsumerAutoUpdateToggleAllowed)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

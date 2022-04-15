@@ -877,6 +877,14 @@
     "expiry_milestone": 98
   },
   {
+    "name": "consumer-auto-update-toggle-allowed",
+    "owners": [
+      "kimjae",
+      "xiaohuic"
+    ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "content-languages-in-language-picker",
     "owners": [ "sclittle", "basiaz@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 105
