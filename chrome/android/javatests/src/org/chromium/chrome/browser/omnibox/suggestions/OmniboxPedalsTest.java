@@ -9,6 +9,7 @@ import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVA
 
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
+import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.MediumTest;
@@ -162,6 +163,18 @@ public class OmniboxPedalsTest {
         CriteriaHelper.pollUiThread(() -> {
             TestTouchUtils.performClickOnMainSync(
                     InstrumentationRegistry.getInstrumentation(), info.view.getPedalChipView());
+        }, DEFAULT_MAX_TIME_TO_POLL * 5, DEFAULT_POLLING_INTERVAL);
+    }
+
+    private void clickOnActionButton(@OmniboxPedalType int omniboxPedalType) {
+        SuggestionInfo<PedalSuggestionView> info =
+                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        CriteriaHelper.pollUiThread(() -> {
+            List<ImageView> buttonsList = info.view.getBaseSuggestionView().getActionButtons();
+            Criteria.checkThat(buttonsList, Matchers.notNullValue());
+            Criteria.checkThat(buttonsList.size(), Matchers.is(1));
+            TestTouchUtils.performClickOnMainSync(
+                    InstrumentationRegistry.getInstrumentation(), buttonsList.get(0));
         }, DEFAULT_MAX_TIME_TO_POLL * 5, DEFAULT_POLLING_INTERVAL);
     }
 
@@ -519,5 +532,32 @@ public class OmniboxPedalsTest {
         SuggestionInfo<PedalSuggestionView> info =
                 mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
         Assert.assertNotNull("Should show a pedal if the suggestion is in top 3 suggestions", info);
+    }
+
+    @Test
+    @MediumTest
+    public void testClickActionButtonThenClickPedal() throws InterruptedException {
+        if (mIncognito) {
+            // In incognito mode, no action button shows for "open incog".
+            return;
+        }
+
+        // Generate the open incognito pedal.
+        typeInOmnibox("Open Incog");
+
+        checkPedalWasShown(OmniboxPedalType.LAUNCH_INCOGNITO, /*expectShown=*/true);
+
+        clickOnActionButton(OmniboxPedalType.LAUNCH_INCOGNITO);
+        checkPedalWasShown(OmniboxPedalType.LAUNCH_INCOGNITO, /*expectShown=*/true);
+
+        clickOnPedal(OmniboxPedalType.LAUNCH_INCOGNITO);
+
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = sActivityTestRule.getActivity().getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+            Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
+        });
+
+        verifyHistogram(OmniboxPedalType.LAUNCH_INCOGNITO);
     }
 }
