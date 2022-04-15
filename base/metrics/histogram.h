@@ -73,6 +73,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"

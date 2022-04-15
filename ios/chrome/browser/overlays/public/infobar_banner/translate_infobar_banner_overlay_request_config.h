@@ -7,8 +7,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include <string>
-
 #include "components/translate/core/browser/translate_step.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_user_data.h"

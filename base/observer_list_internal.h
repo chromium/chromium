@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/linked_list.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/weak_ptr.h"

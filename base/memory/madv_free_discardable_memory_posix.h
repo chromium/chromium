@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"

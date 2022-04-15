@@ -6,7 +6,6 @@
 
 #if ENABLE_SYNC_CALL_RESTRICTIONS
 
-#include "base/check_op.h"
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"

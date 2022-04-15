@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"

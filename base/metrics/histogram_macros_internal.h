@@ -12,6 +12,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/sparse_histogram.h"

@@ -13,7 +13,6 @@
 #include <memory>
 #include <ostream>
 
-#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_local_storage.h"
 

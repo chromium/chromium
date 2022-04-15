@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
