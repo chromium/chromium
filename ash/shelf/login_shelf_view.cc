@@ -725,9 +725,6 @@ void LoginShelfView::SetKioskApps(
 
   kiosk_apps_button_->SetApps(kiosk_apps, launch_app, show_kiosk_menu_callback);
   UpdateUi();
-  if (LockScreen::HasInstance())
-    LockScreen::Get()->SetKioskAppsButtonPresence(
-        kiosk_apps_button_->GetVisible());
 }
 
 void LoginShelfView::SetLoginDialogState(OobeDialogState state) {

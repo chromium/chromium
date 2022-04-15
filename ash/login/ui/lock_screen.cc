@@ -165,10 +165,6 @@ void LockScreen::ShowParentAccessDialog() {
   contents_view_->ShowParentAccessDialog();
 }
 
-void LockScreen::SetKioskAppsButtonPresence(bool is_kiosk_apps_button_present) {
-  contents_view_->SetKioskAppsButtonPresence(is_kiosk_apps_button_present);
-}
-
 void LockScreen::OnLockScreenNoteStateChanged(mojom::TrayActionState state) {
   Shell::Get()
       ->login_screen_controller()

@@ -18,7 +18,6 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/bottom_status_indicator.h"
-#include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/login_auth_user_view.h"
@@ -435,11 +434,6 @@ LockContentsView::TestApi::TestApi(LockContentsView* view) : view_(view) {}
 
 LockContentsView::TestApi::~TestApi() = default;
 
-KioskAppDefaultMessage* LockContentsView::TestApi::kiosk_default_message()
-    const {
-  return view_->kiosk_default_message_;
-}
-
 LoginBigUserView* LockContentsView::TestApi::primary_big_view() const {
   return view_->primary_big_view_;
 }
@@ -695,8 +689,6 @@ LockContentsView::LockContentsView(
         AddChildView(std::make_unique<UserAddingScreenIndicator>());
   }
 
-  kiosk_default_message_ = new KioskAppDefaultMessage();
-
   OnLockScreenNoteStateChanged(initial_note_action_state);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   RegisterAccelerators();
@@ -839,20 +831,6 @@ void LockContentsView::ShowParentAccessDialog() {
                      weak_ptr_factory_.GetWeakPtr(), account_id),
       SupervisedAction::kUnlockTimeLimits, false, base::Time::Now());
   Shell::Get()->login_screen_controller()->ShowParentAccessButton(false);
-}
-
-void LockContentsView::SetKioskAppsButtonPresence(
-    bool is_kiosk_apps_button_present) {
-  DCHECK(kiosk_default_message_);
-  if (kiosk_license_mode_) {
-    // check if the kiosk app button is visible
-    if (is_kiosk_apps_button_present) {
-      kiosk_default_message_->Hide();
-    } else {
-      kiosk_default_message_->Show();
-    }
-    return;
-  }
 }
 
 void LockContentsView::Layout() {
@@ -2583,11 +2561,6 @@ void LockContentsView::OnBottomStatusIndicatorTapped() {
 void LockContentsView::OnBackToSigninButtonTapped() {
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(
       /*prefilled_account=*/EmptyAccountId());
-}
-
-void LockContentsView::SetKioskLicenseModeForTesting(
-    bool is_kiosk_license_mode) {
-  kiosk_license_mode_ = is_kiosk_license_mode;
 }
 
 BEGIN_METADATA(LockContentsView, NonAccessibleView)
