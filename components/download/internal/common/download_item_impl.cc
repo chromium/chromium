@@ -454,6 +454,7 @@ DownloadItemImpl::DownloadItemImpl(
     const base::FilePath& path,
     const GURL& url,
     const std::string& mime_type,
+
     DownloadJob::CancelRequestCallback cancel_request_callback)
     : request_info_(url),
       guid_(base::GenerateGUID()),
@@ -1758,7 +1759,6 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
     MixedContentStatus mixed_content_status,
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
-    const std::string& mime_type,
     absl::optional<DownloadSchedule> download_schedule,
     DownloadInterruptReason interrupt_reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1805,8 +1805,6 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   mixed_content_status_ = mixed_content_status;
   if (!display_name.empty())
     SetDisplayName(display_name);
-  if (!mime_type.empty())
-    mime_type_ = mime_type;
 
   // This was an interrupted download that was looking for a filename. Resolve
   // early without performing the intermediate rename. If there is a

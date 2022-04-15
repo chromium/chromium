@@ -605,7 +605,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       MixedContentStatus mixed_content_status,
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
-      const std::string& mime_type,
       absl::optional<DownloadSchedule> download_schedule,
       DownloadInterruptReason interrupt_reason);
 
