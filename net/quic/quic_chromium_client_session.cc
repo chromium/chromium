@@ -2729,7 +2729,6 @@ void QuicChromiumClientSession::OnPathDegrading() {
     return;
 
   if (allow_port_migration_ && !migrate_session_early_v2_) {
-    current_migration_cause_ = CHANGE_PORT_ON_PATH_DEGRADING;
     MaybeMigrateToDifferentPortOnPathDegrading();
     return;
   }
@@ -2893,6 +2892,7 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
     return;
   }
 
+  current_migration_cause_ = CHANGE_PORT_ON_PATH_DEGRADING;
   net_log_.BeginEvent(NetLogEventType::QUIC_PORT_MIGRATION_TRIGGERED);
 
   if (!stream_factory_)

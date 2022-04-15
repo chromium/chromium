@@ -2022,10 +2022,6 @@ void QuicStreamFactory::InitializeMigrationOptions() {
   if (handle_ip_change)
     NetworkChangeNotifier::AddIPAddressObserver(this);
 
-  // Port migration and early migration both act on path degrading and thus can
-  // not be simultaneously set.
-  DCHECK(!allow_port_migration || !migrate_sessions_early);
-
   if (allow_port_migration) {
     params_.allow_port_migration = true;
     if (migrate_idle_sessions) {

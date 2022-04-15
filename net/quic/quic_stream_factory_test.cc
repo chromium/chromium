@@ -278,7 +278,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     mock_ncn->SetConnectedNetworksList(connected_networks);
     quic_params_->migrate_sessions_on_network_change_v2 = true;
     quic_params_->migrate_sessions_early_v2 = true;
-    quic_params_->allow_port_migration = false;
     socket_factory_ = std::make_unique<TestConnectionMigrationSocketFactory>();
     SetIetfConnectionMigrationFlagsAndConnectionOptions();
     Initialize();
@@ -4640,7 +4639,6 @@ TEST_P(QuicStreamFactoryTest,
     // Path validator is only supported in IETF QUIC.
     return;
   }
-  quic_params_->allow_port_migration = true;
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
@@ -4653,7 +4651,6 @@ TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
     // Path validator is only supported in IETF QUIC.
     return;
   }
-  quic_params_->allow_port_migration = true;
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
@@ -4760,7 +4757,6 @@ TEST_P(QuicStreamFactoryTest,
     // Path validator is only supported in IETF QUIC.
     return;
   }
-  quic_params_->allow_port_migration = true;
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
@@ -4893,7 +4889,6 @@ TEST_P(QuicStreamFactoryTest,
       scoped_mock_network_change_notifier_->mock_network_change_notifier();
   mock_ncn->ForceNetworkHandlesSupported();
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
-  quic_params_->allow_port_migration = true;
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
@@ -4918,7 +4913,6 @@ TEST_P(QuicStreamFactoryTest,
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
-  quic_params_->allow_port_migration = true;
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
@@ -5119,7 +5113,6 @@ TEST_P(QuicStreamFactoryTest,
     return;
   }
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
-  quic_params_->allow_port_migration = true;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5310,7 +5303,6 @@ TEST_P(QuicStreamFactoryTest,
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
-  quic_params_->allow_port_migration = true;
   quic_params_->migrate_idle_sessions = true;
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();

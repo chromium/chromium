@@ -318,8 +318,8 @@ bool ShouldQuicMigrateSessionsEarlyV2(
 
 bool ShouldQuicAllowPortMigration(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
-      GetVariationParam(quic_trial_params, "allow_port_migration"), "true");
+  return !base::LowerCaseEqualsASCII(
+      GetVariationParam(quic_trial_params, "allow_port_migration"), "false");
 }
 
 bool ShouldQuicRetryOnAlternateNetworkBeforeHandshake(

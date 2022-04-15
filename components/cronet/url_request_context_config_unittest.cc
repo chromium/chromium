@@ -219,7 +219,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_FALSE(quic_params->migrate_idle_sessions);
   EXPECT_FALSE(quic_params->retry_on_alternate_network_before_handshake);
   EXPECT_FALSE(quic_params->race_stale_dns_on_connection);
-  EXPECT_FALSE(quic_params->allow_port_migration);
+  EXPECT_TRUE(quic_params->allow_port_migration);
   EXPECT_FALSE(quic_params->disable_tls_zero_rtt);
   EXPECT_TRUE(quic_params->retry_without_alt_svc_on_quic_errors);
   EXPECT_FALSE(
@@ -970,7 +970,7 @@ TEST(URLRequestContextConfigTest, SetQuicAllowPortMigration) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"QUIC\":{\"allow_port_migration\":true}}",
+          "{\"QUIC\":{\"allow_port_migration\":false}}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -989,7 +989,7 @@ TEST(URLRequestContextConfigTest, SetQuicAllowPortMigration) {
   std::unique_ptr<net::URLRequestContext> context(builder.Build());
   const net::QuicParams* quic_params = context->quic_context()->params();
 
-  EXPECT_TRUE(quic_params->allow_port_migration);
+  EXPECT_FALSE(quic_params->allow_port_migration);
 }
 
 TEST(URLRequestContextConfigTest, DisableQuicRetryWithoutAltSvcOnQuicErrors) {

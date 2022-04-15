@@ -36,8 +36,6 @@ class QuicChromiumClientSessionPeer {
       QuicChromiumClientSession* session);
 
   static bool GetSessionGoingAway(QuicChromiumClientSession* session);
-
-  static bool DoesSessionAllowPortMigration(QuicChromiumClientSession* session);
 };
 
 }  // namespace test
