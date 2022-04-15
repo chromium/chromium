@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -72,6 +73,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
 
         mTestValues = new TestValues();
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, false);
+        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, false);
         FeatureList.setTestValues(mTestValues);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

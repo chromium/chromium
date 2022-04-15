@@ -10,14 +10,23 @@ import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.common.ContentFeatures;
 
 /**
  * A custom ListView to be able to set width and height using the contents. Width and height are
  * constrained to make sure the view fits the screen size with margins.
  */
 public class ContextMenuListView extends ListView {
+    // Whether the max width of this list view is limited by screen width.
+    private final boolean mLimitedByScreenWidth;
+
     public ContextMenuListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mLimitedByScreenWidth =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
+                || ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
     }
 
     @Override
@@ -47,6 +56,11 @@ public class ContextMenuListView extends ListView {
         final int parentLateralPadding = frame.getPaddingLeft();
         final int maxWidth = Math.min(maxWidthFromRes, frame.getMeasuredWidth());
 
+        // When context menu is a popup, the max width with windowWidth - 2 * lateralMargin does not
+        // applied since it is presented in a popup window. See https://crbug.com/1314675.
+        if (mLimitedByScreenWidth) {
+            return maxWidth - 2 * parentLateralPadding;
+        }
         return Math.min(maxWidth, windowWidthPx - 2 * lateralMargin) - 2 * parentLateralPadding;
     }
 }
