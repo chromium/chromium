@@ -12,7 +12,7 @@
 <translation id="1917964099031477364">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
 <translation id="1968388653333775699">Obavite više s Chromeom</translation>
 <translation id="2009224836393115614">Chrome nije mogao provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
-<translation id="2056123005618757196">Veća učinkovitost uz Google Chrome, jednostavniji, sigurniji i brži nego ikad.</translation>
+<translation id="2056123005618757196">Obavite više s jednostavnim i sigurnim Google Chromeom koji je brži nego ikad.</translation>
 <translation id="2147651015520127414">Chrome je potvrdio da <ph name="ISSUER" /> izdaje potvrdu ove web lokacije.</translation>
 <translation id="2199719347983604670">Podaci od Sinhronizacije Chromea</translation>
 <translation id="2313070403598893276">Google Chrome je jednostavan, siguran i brži nego ikad</translation>
@@ -55,7 +55,7 @@
 <translation id="4523886039239821078">Zbog nekih dodataka Chrome može prestati da radi. Deinstalirajte:</translation>
 <translation id="4633328489441962921">Chrome ne može provjeriti ima li ažuriranja</translation>
 <translation id="4698415050768537821">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
-<translation id="4819268619367838612">Radi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">Radi poboljšanja aplikacije, Chrome šalje Googleu podatke o korištenju i padovima. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nije podržano u Beta verziji Chromea</translation>
 <translation id="5030102366287574140">Chrome vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga.</translation>
 <translation id="5108659628347594808">Poboljšajte Chrome</translation>
@@ -75,6 +75,7 @@
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Omogućite Chromeu da zaključa vaše anonimne kartice.</translation>
 <translation id="6387994324662817823">Lozinke se pohranjuju u Googleovom Upravitelju lozinki samo na ovom uređaju.</translation>
+<translation id="6412673304250309937">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu. Ako web lokacija pokuša ukrasti vašu lozinku, ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
 <translation id="6427126399757991875">Vaša organizacija postavlja Chrome...</translation>
 <translation id="6600954340915313787">Kopirano u Chrome</translation>
 <translation id="6634107063912726160">Kada se odjavite Chrome neće sinhronizirati nove podatke s vašim Google računom. Prethodno sinhronizirani podaci ostaju na računu.</translation>
@@ -121,14 +122,12 @@
 <translation id="8772179140489533211">Prikazuje upite za prijavu pomoću Chromea.</translation>
 <translation id="8788269841521769222">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>
 <translation id="8969290730818637510">Kada je uključeno:
-<ph name="BEGIN_INDENT" />  • Pomozite poboljšati Chrome za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
+<ph name="BEGIN_INDENT" />  • Pomozite nam da poboljšamo Chrome za osobe koje ga koriste na isti način kao i vi.<ph name="END_INDENT" />
 
-Važne napomene:
-<ph name="BEGIN_INDENT" />  • Podaci o upotrebi Chromea šalju se Googleu, no nisu povezani s vama.
-
-  • Ako se Chrome sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.
-
-  • Ako uključite sinkronizaciju, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
+Stvari za razmatranje:
+<ph name="BEGIN_INDENT" />  • Informacije o vašem korištenju Chromea se šalju Googleu, ali se ne povezuju s vama.
+  • Ako dođe do pada Chromea, detalji o padu mogu uključivati neke lične informacije.
+  • Ako uključite sinhronizaciju, pokazatelji također mogu uključivati informacije o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>
 </translationbundle>

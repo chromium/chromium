@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">系統會將這個帳戶和所有未儲存的資料從 Chrome 以及這部裝置上的其他 Google 應用程式中移除。</translation>
 <translation id="1968388653333775699">Chrome 讓你事半功倍</translation>
 <translation id="2009224836393115614">Chrome 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
+<translation id="2056123005618757196">Google Chrome 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
 <translation id="2147651015520127414">Chrome 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="2199719347983604670">Chrome 同步功能資料</translation>
 <translation id="2313070403598893276">Google Chrome 不僅簡便安全，速度更遠勝以往</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼，請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼。<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">為協助改善應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta 版不支援這項功能</translation>
 <translation id="5030102366287574140">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
 <translation id="5108659628347594808">讓 Chrome 更臻完美</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">改為使用 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定你的無痕分頁。</translation>
 <translation id="6387994324662817823">密碼只會儲存至這部裝置上的 Google 密碼管理員。</translation>
+<translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>
 <translation id="6427126399757991875">貴機構正在設定 Chrome...</translation>
 <translation id="6600954340915313787">已複製到 Chrome</translation>
 <translation id="6634107063912726160">登出帳戶後，Chrome 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">讓 Google Chrome 保障你的安全</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>
 <translation id="8788269841521769222">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
+<translation id="8969290730818637510">開啟時：
+<ph name="BEGIN_INDENT" />  • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
+
+注意事項：
+<ph name="BEGIN_INDENT" />  • 系統會將 Chrome 使用資訊傳送給 Google，但不會用於辨識你的身分。
+
+  • Chrome 當機時，有關當機的詳細資料可能會包含一些個人資訊。
+
+  • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">要將 Chrome 設為預設瀏覽器嗎？</translation>
 <translation id="9122931302567044771">這代表 Chrome 每次都會對電腦版網站發出要求。</translation>
 </translationbundle>

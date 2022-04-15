@@ -116,6 +116,7 @@
 <translation id="1923342640370224680">बितेको घन्टा</translation>
 <translation id="1930989359703290198">तपाईंको सङ्गठनको नीतिअनुसार तपाईं निश्चित खातामार्फत मात्र साइन इन गर्न पाउनुहुन्छ। साइन इन गर्ने अनुमति नदिइएका खाताहरू लुकाइन्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">प्रतिलिपि बनाउन डबल ट्याप गर्नुहोस्।</translation>
+<translation id="1943478190258551035">मेनु → सेटिङ</translation>
 <translation id="1952172573699511566">सम्भव भए सम्म वेबसाइटहरूले तपाईंको रुचाइएको भाषामा पाठ देखाउनेछ।</translation>
 <translation id="1965935827552890526">तपाईंले Chrome मा खुला रहेको अर्को विन्डोमा गरिरहनुभएको कार्य पूरा गर्नुहोस्।</translation>
 <translation id="196896377990863006">लिंकको प्रिभ्यू देखाउनुहोस्</translation>
@@ -143,6 +144,7 @@
 <translation id="2218443599109088993">जुम घटाउनुहोस्</translation>
 <translation id="2230173723195178503">वेबपृष्ठ लोड गरियो</translation>
 <translation id="2239626343334228536">ब्राउजिङ डेटा खाली गर्दै...</translation>
+<translation id="2251686759395008410">मेनु → इतिहास</translation>
 <translation id="2256933947031277845">तपाईंको सङ्गठनको नीतिअनुसार तपाईं निश्चित खातामार्फत मात्र साइन इन गर्न पाउनुहुन्छ।</translation>
 <translation id="225943865679747347">त्रुटि कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाता थप्नुहोस्...</translation>
@@ -198,10 +200,12 @@
 <translation id="2712127207578915686">फाइल खोल्न असमर्थ</translation>
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
 <translation id="2747003861858887689">अघिल्लो क्षेत्र</translation>
+<translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> फलो गरिँदै छ</translation>
 <translation id="2764831210418622012">भर्खरै</translation>
 <translation id="2773292004659987824">इन्कोग्निटो खोज</translation>
 <translation id="277771892408211951">भाषा चयन गर्नुहोस्</translation>
 <translation id="2780046210906776326">इमेल खाताहरू छैन</translation>
+<translation id="2781325423985810933">अन्डू गर्नुहोस्</translation>
 <translation id="2781331604911854368">सक्रिय छ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">लिंक सिर्जना गर्न सकिएन</translation>
@@ -239,6 +243,7 @@
 <translation id="298306318844797842">भुक्तानी विधि थप्नुहोस्...</translation>
 <translation id="2989805286512600854">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="3037605927509011580">हरे, स्न्याप!</translation>
+<translation id="3039722182465315531">साइन इन नगर्नुहोस्</translation>
 <translation id="3076846064362030967">तपाईं Google खाताबाट साइन आउट हुनु हुने छैन। तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।
 
 
@@ -340,6 +345,7 @@
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
 <translation id="3929457972718048006">ठेगानाहरू</translation>
 <translation id="3943492037546055397">पासवर्डहरू</translation>
+<translation id="3959736869653157332">मेनु → नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3989635538409502728">साइन आउट गर्नुहोस्</translation>
@@ -353,6 +359,7 @@
 <translation id="4049507953662678203">तपाईँसँग नेटवर्क जडान छ भनी निश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4063300985191096908">फिडमा जानुहोस्</translation>
 <translation id="408404951701638773">खोज पट्टीमा पुग्न अब सजिलो छ</translation>
+<translation id="4108998448622696017">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="411254640334432676">डाउनलोड असफल भयो।</translation>
 <translation id="4112644173421521737">खोज्नुहोस्</translation>
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
@@ -604,6 +611,7 @@
 <translation id="6254066287920239840">लिंंकहरूलाई ब्राउजरको सट्टा यो एपमा खोल्नुहोस्।</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
+<translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> अनफलो गरियो</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
 <translation id="6324669097367352121">सेटिङहरूमा साइन इन गर्नुहोस्</translation>
@@ -774,6 +782,7 @@
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
+<translation id="7646263789464975852">मेनु → सेटिङ → सुरक्षितपनाको जाँच</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
@@ -782,6 +791,7 @@
 <translation id="7720410380936703141">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7726702057919861819">मेनु → इतिहास → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="7741325291586284254">इन्कोग्निटो ट्याबसम्बन्धी नयाँ पेज</translation>
+<translation id="7756478488453921771">मेनु → सेटिङ → भुक्तानी विधि</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7781011649027948662">यो पृष्ठ अनुवाद गर्ने हो?</translation>
@@ -789,6 +799,7 @@
 <translation id="7781829728241885113">हिजो</translation>
 <translation id="778855399387580014">Chrome को नयाँ ट्याबमा खोज सुरु गर्नुहोस्।</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
+<translation id="7807060072011926525">Google ले प्रदान गरेको</translation>
 <translation id="7839985698273989086">अफलाइन पृष्ठ</translation>
 <translation id="7840771868269352570">तपाईंले चयन गर्नुभएका वस्तुहरू हटाइने छन्।</translation>
 <translation id="7853202427316060426">गतिविधि</translation>
@@ -802,6 +813,7 @@
 <translation id="7939128259257418052">पासवर्ड निर्यात गर्नु…</translation>
 <translation id="794799177247607889">लग गर्न छाड्नुहोस्</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{कुनै पनि पासवर्ड अरूले देखेका छैनन्}=1{अरूले देखेको {COUNT} पासवर्ड फेला पर्‍यो}other{अरूले देखेका {COUNT} पासवर्डहरू फेला परे}}</translation>
+<translation id="7959441099968534758">फिडमा जानुहोस्</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
 <translation id="7966516440812255683">साइटहरूले तपाईंलाई राम्रो ब्राउजिङको अनुभव प्रदान गर्न कुकीहरूको प्रयोग गर्न सक्छन्। उदाहरणको लागि साइटहरूले कुकीहरूको प्रयोग गरी तपाईंलाई साइन इन अवस्थामै राख्न वा तपाईंको किनमेलको कार्टमा भएका वस्तुहरू सम्झन सक्छन्।
 
@@ -925,6 +937,7 @@
 <translation id="9037965129289936994">मूल पाठ देखाउनुहोस्</translation>
 <translation id="9039373489628511875">व्याण्डविथ</translation>
 <translation id="9055772144595778347">साइन इन गर्न सकिदैन</translation>
+<translation id="9057972802061533987">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9079935439869366234">नपढिएका भनी सबैलाई चिन्ह लगाउनुहोस्</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
@@ -932,6 +945,7 @@
 <translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा अन गर्नुहोस्।</translation>
 <translation id="9087108903408689779">Chrome ले सिफारिस गरेको पासवर्ड:</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
+<translation id="9097506547406246598">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9107664647686727385">अरूले पासवर्डहरू देखेका छन् कि छैनन् भनी जाँच्नुहोस्</translation>
 <translation id="9124387962554796433">Google ले Search तथा Google का अन्य सेवाहरूमा तपाईंका आवश्यकताअनुसारका सुविधा उपलब्ध गराउन तपाईंको गतिविधिसम्बन्धी इतिहास प्रयोग गर्न सक्छ।</translation>

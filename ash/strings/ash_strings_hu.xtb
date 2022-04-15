@@ -524,6 +524,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4095366824370681039">Toll</translation>
 <translation id="4112140312785995938">Ugrás visszafelé</translation>
 <translation id="4114315158543974537">Phone Hub bekapcsolása</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">ablak</translation>
 <translation id="4123259114412175274">A Chromebook zárolásának feloldása előtt győződjön meg arról, hogy be van kapcsolva a Bluetooth a telefonon.</translation>
 <translation id="4129129681837227511">Ha szeretné látni az értesítéseket a lezárási képernyőn, oldja fel a képernyő zárolását a beállítás módosításához</translation>
@@ -563,7 +564,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Lenyomta a nagy kontraszt billentyűparancsát. Bekapcsolja a funkciót?</translation>
 <translation id="4322742403972824594">A Ctrl + Alt + Felfelé nyíl billentyűparancs módosult. A Home billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Balra nyíl.</translation>
-<translation id="4331809312908958774">Chrome operációs rendszer</translation>
 <translation id="4333628967105022692">A Lacros nem támogatott akkor, ha több felhasználó van bejelentkezve.</translation>
 <translation id="4338109981321384717">Nagyító</translation>
 <translation id="4351433414020964307">Segéd betöltése…</translation>
@@ -796,7 +796,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5788127256798019331">Play-fájlok</translation>
 <translation id="5790085346892983794">Siker</translation>
 <translation id="5805809050170488595">Kattintson a(z) <ph name="NETWORK_NAME" /> aktiválásához</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>
@@ -1148,7 +1147,6 @@ Frissen telepítve</translation>
 <translation id="79341161159229895">A fiókot a(z) <ph name="FIRST_PARENT_EMAIL" /> és a(z) <ph name="SECOND_PARENT_EMAIL" /> kezeli</translation>
 <translation id="793716872548410480">Nyomja le a(z) <ph name="SHORTCUT_KEY_NAME" /> + V billentyűkombinációt a vágólap megtekintéséhez. A rendszer az utoljára másolt öt elemet menti a vágólapra.</translation>
 <translation id="7942349550061667556">Piros</translation>
-<translation id="7952747673138230804">A Chrome OS új, felfedezhető tartalmakat javasol. Csak akkor küld statisztikákat a javaslatok javítása érdekében, ha Ön a használati adatok megosztása mellett döntött. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Nagy kontrasztú mód</translation>
 <translation id="7968693143708939792">Mappa választása…</translation>
 <translation id="7977927628060636163">Mobilhálózatok keresése…</translation>

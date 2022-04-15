@@ -116,6 +116,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1923342640370224680">Ultima oră</translation>
 <translation id="1930989359703290198">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Atinge de două ori pentru a copia.</translation>
+<translation id="1943478190258551035">Meniu → Setări</translation>
 <translation id="1952172573699511566">Site-urile vor afișa textul în limba ta preferată, dacă este posibil.</translation>
 <translation id="1965935827552890526">Termină ce făceai în cealaltă fereastră Chrome deschisă.</translation>
 <translation id="196896377990863006">Afișează previzualizarea linkului</translation>
@@ -143,6 +144,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2218443599109088993">Micșorează</translation>
 <translation id="2230173723195178503">Pagina web s-a încărcat</translation>
 <translation id="2239626343334228536">Se șterg datele de navigare...</translation>
+<translation id="2251686759395008410">Meniu → Istoric</translation>
 <translation id="2256933947031277845">Organizația îți permite să te conectezi doar cu anumite conturi.</translation>
 <translation id="225943865679747347">Cod de eroare: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adaugă un cont</translation>
@@ -198,10 +200,12 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2712127207578915686">Fișierul nu se deschide</translation>
 <translation id="2718352093833049315">Numai prin Wi-Fi</translation>
 <translation id="2747003861858887689">Câmpul anterior</translation>
+<translation id="2749231692441336879">Urmărești <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">adineauri</translation>
 <translation id="2773292004659987824">Căutare incognito</translation>
 <translation id="277771892408211951">Selectează limba</translation>
 <translation id="2780046210906776326">Niciun cont e-mail</translation>
+<translation id="2781325423985810933">ANULEAZĂ</translation>
 <translation id="2781331604911854368">Activat</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Nu s-a putut crea linkul</translation>
@@ -239,6 +243,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="298306318844797842">Adaugă o metodă de plată...</translation>
 <translation id="2989805286512600854">Deschideți într-o filă nouă</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
+<translation id="3039722182465315531">Nu mă conectez</translation>
 <translation id="3076846064362030967">Nu te vei deconecta de la Contul Google. <ph name="BEGIN_LINK" />Alte tipuri de activități<ph name="END_LINK" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.
 
 
@@ -272,6 +277,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3290875554372353449">Alege un cont</translation>
 <translation id="3311748811247479259">Dezactivat</translation>
 <translation id="3324193307694657476">Adresă 2</translation>
+<translation id="3324298231050545260">Este disponibil un fișier pentru calendar</translation>
 <translation id="3328801116991980348">Informații despre site</translation>
 <translation id="3329904751041170572">Nu s-a putut realiza conexiunea la server.</translation>
 <translation id="3335947283844343239">Redeschide fila închisă</translation>
@@ -340,6 +346,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="3928666092801078803">Combină datele</translation>
 <translation id="3929457972718048006">Adrese</translation>
 <translation id="3943492037546055397">Parole</translation>
+<translation id="3959736869653157332">Meniu → Filă incognito nouă</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3968505803272650567">Gestionează interesele</translation>
 <translation id="3989635538409502728">Deconectează-te</translation>
@@ -353,6 +360,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4049507953662678203">Asigură-te că ai o conexiune la rețea și încearcă din nou.</translation>
 <translation id="4063300985191096908">Accesează feedul</translation>
 <translation id="408404951701638773">Bara de căutare este acum mai ușor de accesat</translation>
+<translation id="4108998448622696017">Detectează și te avertizează cu privire la evenimentele periculoase atunci când au loc.</translation>
 <translation id="411254640334432676">Nu s-a descărcat.</translation>
 <translation id="4112644173421521737">Caută</translation>
 <translation id="4113030288477039509">Gestionat de administratorul tău</translation>
@@ -604,6 +612,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6254066287920239840">Deschide linkurile în aplicație, nu în browser.</translation>
 <translation id="6255097610484507482">Editați cardul de credit</translation>
 <translation id="6284652193729350524">Oferă traducerea din <ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">Ai anulat urmărirea pentru <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pentru a activa Navigarea sigură, deschide <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" /> și atinge Navigare sigură.</translation>
 <translation id="6321526113093607004">Adaugă în Marcaje</translation>
 <translation id="6324669097367352121">Setări de conectare</translation>
@@ -774,6 +783,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7603852183842204213">Pop-upuri blocate (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Șterge parola</translation>
 <translation id="7638584964844754484">Expresie de acces incorectă</translation>
+<translation id="7646263789464975852">Meniu → Setări → Verificare de siguranță</translation>
 <translation id="7646772052135772216">Sincronizarea parolelor nu funcționează</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>
@@ -782,6 +792,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7720410380936703141">ÎNCEARCĂ DIN NOU</translation>
 <translation id="7726702057919861819">Meniu → Istoric → Șterge datele de navigare</translation>
 <translation id="7741325291586284254">Pagina Filă incognito nouă</translation>
+<translation id="7756478488453921771">Meniu → Setări → Metode de plată</translation>
 <translation id="7765158879357617694">Mută</translation>
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
 <translation id="7781011649027948662">Traduci pagina?</translation>
@@ -789,6 +800,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="778855399387580014">Începe o căutare într-o filă Chrome nouă.</translation>
 <translation id="7791543448312431591">Adaugă</translation>
+<translation id="7807060072011926525">Oferit de Google</translation>
 <translation id="7839985698273989086">Pagină offline</translation>
 <translation id="7840771868269352570">Elementele selectate vor fi eliminate.</translation>
 <translation id="7853202427316060426">Activitate</translation>
@@ -802,6 +814,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7939128259257418052">Exportă parolele...</translation>
 <translation id="794799177247607889">Oprește înregistrarea în jurnal</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Nicio parolă compromisă}=1{{COUNT} parolă compromisă}few{{COUNT} parole compromise}other{{COUNT} de parole compromise}}</translation>
+<translation id="7959441099968534758">ACCESEAZĂ FEEDUL</translation>
 <translation id="7961015016161918242">Niciodată</translation>
 <translation id="7966516440812255683">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.
 
@@ -925,6 +938,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9037965129289936994">Afișează versiunea originală</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>
 <translation id="9055772144595778347">Conectare nereușită</translation>
+<translation id="9057972802061533987">Nu se poate urmări. A apărut o eroare.</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9079935439869366234">Marchează-le pe toate ca necitite</translation>
 <translation id="9081058212938299310">Actualizezi parola pentru <ph name="USERNAME" />?</translation>
@@ -932,6 +946,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9083838294503912307">Pentru a sincroniza și a personaliza pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="9087108903408689779">Parolă sugerată de Chrome:</translation>
 <translation id="9094033019050270033">Actualizează parola</translation>
+<translation id="9097506547406246598">Nu se poate anula urmărirea. A apărut o eroare.</translation>
 <translation id="9100610230175265781">Este necesară o expresie de acces</translation>
 <translation id="9107664647686727385">Verifică dacă există parole compromise</translation>
 <translation id="9124387962554796433">Google poate folosi istoricul pentru a personaliza Căutarea și alte servicii Google.</translation>
@@ -951,4 +966,5 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="988141524645182168">Alte dispozitive</translation>
 <translation id="989988560359834682">Editați adresa</translation>
 <translation id="994757059139821576">Sugestii de articole</translation>
+<translation id="997742718232442409">Site-ul încearcă să descarce un fișier pentru calendar.</translation>
 </translationbundle>

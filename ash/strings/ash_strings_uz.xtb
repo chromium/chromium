@@ -523,6 +523,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4095366824370681039">Moʻyqalam</translation>
 <translation id="4112140312785995938">Orqaga qaytarish</translation>
 <translation id="4114315158543974537">Phone Hub funksiyasini yoqish</translation>
+<translation id="4115378294792113321">Siyohrang</translation>
 <translation id="412298498316631026">oyna</translation>
 <translation id="4123259114412175274">Chromebook qurilmangiz qulfini ochish uchun telefoningizda Bluetooth yoniqligini. tekshiring</translation>
 <translation id="4129129681837227511">Bildirishnomalar qulflangan ekranda chiqishi uchun avval qulfdan chiqaring va sozlamani yangilang</translation>
@@ -562,7 +563,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Yuqori kontrastli rejim tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Tepaga strelka tezkor tugmasi oʻzgardi. Home tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Chapga strelkani bosing.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Bir nechta foydalanuvchi hisobiga kirganida Lacros ishlamaydi.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Assistent yuklanmoqda...</translation>
@@ -795,7 +795,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5788127256798019331">Play fayllari</translation>
 <translation id="5790085346892983794">Bajarildi</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> nomli tarmoqni faollashtirish uchun bosing</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ulangan qurilmalar sozlamalari</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinishi to‘xtatilsin</translation>
@@ -1147,7 +1146,6 @@ yangi oʻrnatilgan</translation>
 <translation id="79341161159229895">Hisobni <ph name="FIRST_PARENT_EMAIL" /> va <ph name="SECOND_PARENT_EMAIL" /> boshqaradi</translation>
 <translation id="793716872548410480">Klipbordni ochish uchun <ph name="SHORTCUT_KEY_NAME" /> + V tugmalarini bosing. Nusxalangan oxirgi 5 ta element klipbordga saqlandi.</translation>
 <translation id="7942349550061667556">Qizil</translation>
-<translation id="7952747673138230804">Chrome OS yangi kontent bilan tanishuvni taklif qiladi. Takliflar sifatini yaxshilash maqsadida faqat siz tanlagan statistik axborotlar yuboriladi. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Yuqori kontrastli rejim</translation>
 <translation id="7968693143708939792">Jildni tanlang...</translation>
 <translation id="7977927628060636163">Mobil tarmoqlar qidirilmoqda...</translation>

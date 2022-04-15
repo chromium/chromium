@@ -360,6 +360,7 @@
 <translation id="4049507953662678203">დარწმუნდით, რომ დაკავშირებული ხართ ქსელთან და ხელახლა ცადეთ.</translation>
 <translation id="4063300985191096908">არხზე გადასვლა</translation>
 <translation id="408404951701638773">ახლა უფრო მარტივად შეგიძლიათ წვდომა ძიების ზოლზე</translation>
+<translation id="4108998448622696017">აღმოაჩენს სახიფათო მოვლენებს და გაგაფრთხილებთ მათ შესახებ.</translation>
 <translation id="411254640334432676">ჩამოტვირთვა ვერ მოხერხდა.</translation>
 <translation id="4112644173421521737">ძიება</translation>
 <translation id="4113030288477039509">თქვენი ადმინისტრატორის მიერ მართული</translation>
@@ -610,6 +611,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6232736989810857397">ეს საშუალებას გაძლევთ, მარტივად შექმნათ კალენდრის მოვლენები Google Lens-ის მეშვეობით.</translation>
 <translation id="6254066287920239840">ბმულების, ბრაუზერის ნაცვლად, აპში გახსნა.</translation>
 <translation id="6255097610484507482">საკრედიტო ბარათის რედაქტირება</translation>
+<translation id="6277426346321820595">დაცვის გარეშე</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ენის თარგმნის შემოთავაზება</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> აღარ არის თვალმიდევნებული</translation>
 <translation id="6293101329759844770">Safe Browsing-ის ჩასართავად გახსენით <ph name="BEGIN_LINK" />Google სერვისები<ph name="END_LINK" /> და შეეხეთ Safe Browsing-ს.</translation>
@@ -808,6 +810,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7884694604461143138">ძიების ისტორია (ნაპოვნია <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">თქვენი კონფიდენციალურობის დაცვის მიზნით, Chrome არ შეავსებს ავტომატურად ამ ველს.</translation>
 <translation id="7911190106180361398">თქვენი ორგანიზაცია ყველაფრის სინქრონიზაციის უფლებას არ გაძლევთ.</translation>
+<translation id="7920949005883349320">კონფიდენციალურობა და უსაფრთხოება</translation>
 <translation id="7930998711684428189">გაგაფრთხილებთ მონაცემთა გაჟონვისას პაროლების გამოაშკარავების შემთხვევაში.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">პაროლების ექსპორტი...</translation>

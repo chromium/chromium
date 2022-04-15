@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
-<translation id="1930797645656624981">Chrome-käyttöjärjestelmän syöttöpalvelu</translation>
 <translation id="1947737735496445907">Tulostettu</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">Salasanan vaihto myöhässä</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">Ei internetyhteyttä.</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aloita määritys avaamalla Asetukset.</translation>
-<translation id="2585245331261708204">Chrome OS: uutta</translation>
 <translation id="2619761439309613843">Uusi päivittäin</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2640549051766135490">Albumi <ph name="TITLE" /> <ph name="DESC" /> valittu</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4744944742468440486">Valintaasi liittyviä tietoja</translation>
-<translation id="475869545581454722">Chrome-käyttöjärjestelmän salasana vaihdettu</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4782311465517282004">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> kuva</translation>
@@ -739,6 +736,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="917720651393141712">Testi</translation>
 <translation id="9204237731135241582">Yhdyskäytävään ei saada yhteyttä Android-sovelluksilla</translation>
 <translation id="9211490828691860325">Kaikki työpöydät</translation>
+<translation id="932327136139879170">Etusivu</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ei aktivoitu</translation>
 <translation id="960719561871045870">Operaattorikoodi</translation>

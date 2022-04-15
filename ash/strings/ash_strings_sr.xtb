@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">Пенкало</translation>
 <translation id="4112140312785995938">Премотај уназад</translation>
 <translation id="4114315158543974537">Укључите Phone Hub</translation>
+<translation id="4115378294792113321">Циклама</translation>
 <translation id="412298498316631026">прозор</translation>
 <translation id="4123259114412175274">Да бисте откључали Chromebook, уверите се да је Bluetooth на телефону укључен</translation>
 <translation id="4129129681837227511">Да бисте видели обавештења на закључаном екрану, откључајте га како бисте променили подешавање</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Притиснули сте тастерску пречицу за високи контраст. Желите ли да је укључите?</translation>
 <translation id="4322742403972824594">Тастерска пречица Ctrl + Alt + стрелица нагоре је промењена. Да бисте користили тастер Home, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица налево.</translation>
-<translation id="4331809312908958774">Chrome ОС</translation>
 <translation id="4333628967105022692">Lacros није подржан када је пријављено више корисника.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Помоћник се учитава...</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">Play датотеке</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5805809050170488595">Кликните да бисте активирали <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium ОС</translation>
 <translation id="5825969630400862129">Подешавања повезаних уређаја</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5837036133683224804">Заустави <ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">Налогом управљају <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте видели привремену меморију. Последњих 5 ставки које сте копирали се чувају у привременој меморији.</translation>
 <translation id="7942349550061667556">Црвена</translation>
-<translation id="7952747673138230804">Chrome ОС приказује предлоге за нов садржај за истраживање. Шаље статистику да би се побољшао квалитет само ако сте одабрали да делите податке о коришћењу. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Режим високог контраста</translation>
 <translation id="7968693143708939792">Изаберите фолдер…</translation>
 <translation id="7977927628060636163">Траже се мобилне мреже…</translation>

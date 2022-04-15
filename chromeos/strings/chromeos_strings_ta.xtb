@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">வன்பொருள் பதிப்பு</translation>
 <translation id="1905710495812624430">அனுமதிக்கப்பட்ட அதிகபட்ச முயற்சிகளைக் கடந்துவிட்டீர்கள்.</translation>
 <translation id="1908234395526491708">UDP கோரிக்கையை அனுப்ப முடியவில்லை</translation>
-<translation id="1930797645656624981">Chrome OS உள்ளீட்டு முறை சேவை</translation>
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google சுயவிவரப் படம்</translation>
 <translation id="1979103255016296513">கடவுச்சொல்லை மாற்ற வேண்டும்</translation>
 <translation id="1999615961760456652">கேப்டிவ் போர்டல்</translation>
 <translation id="2006864819935886708">இணைப்பு</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">குறைந்தது ஒரு ஆர்ட் கேலரி ஆல்பத்தைத் தேர்ந்தெடுக்க வேண்டும்</translation>
 <translation id="2230005943220647148">செல்சியஸ்</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">கீபோர்டு பேக்லைட்டை நிலைமாற்றும்</translation>
 <translation id="2240366984605217732">லேஅவுட் ஸ்விட்ச்</translation>
 <translation id="225692081236532131">செயலாக்க நிலை</translation>
 <translation id="2287186687001756809">படங்கள் எதுவுமில்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">இணையத்துடன் இணைக்க முடியவில்லை.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
-<translation id="2585245331261708204">Chrome OSஸில் புதியவை</translation>
 <translation id="2619761439309613843">தினசரிப் புதுப்பிப்பு</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ஆல்பம் தேர்ந்தெடுக்கப்பட்டது</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4744944742468440486">உங்கள் தேர்வுடன் தொடர்புடைய தகவல்கள்</translation>
-<translation id="475869545581454722">Chrome OS கடவுச்சொல் மாற்றப்பட்டது</translation>
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
 <translation id="4782311465517282004">வார்த்தையை வலது கிளிக் செய்தோ தொட்டுப் பிடித்தோ அதற்கான வரையறைகள், மொழிபெயர்ப்புகள், அலகு மாற்றங்கள் ஆகியவற்றைத் தெரிந்துகொள்ளலாம்</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> படம்</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">தன்னியக்க வண்ணப் பயன்முறையை இயக்கும்</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
+<translation id="8045012663542226664">மைக்ரோஃபோனை ஒலியடக்கும்</translation>
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
 <translation id="8082366717211101304">Android ஆப்ஸில் இருந்து DNS கோரிக்கையைத் தீர்க்க முடியவில்லை</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9204237731135241582">Android ஆப்ஸில் இருந்து கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>
 <translation id="9211490828691860325">அனைத்து டெஸ்குகளும்</translation>
+<translation id="932327136139879170">முகப்பு</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">செயலாக்கப்படவில்லை</translation>
 <translation id="960719561871045870">ஆபரேட்டர் குறியீடு</translation>

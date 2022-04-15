@@ -524,6 +524,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4095366824370681039">Estilográfica</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
+<translation id="4115378294792113321">Maxenta</translation>
 <translation id="412298498316631026">ventá</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, asegúrate de ter activado o Bluetooth do teléfono</translation>
 <translation id="4129129681837227511">Para ver notificacións na pantalla de bloqueo, desbloquea o dispositivo e cambia a opción de configuración correspondente</translation>
@@ -563,7 +564,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Premiches o atallo de teclado para o alto contraste. Queres activalo?</translation>
 <translation id="4322742403972824594">O atallo Control + Alt + Frecha arriba cambiou. Para usar a tecla Inicio, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha esquerda.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Non pode utilizarse Lacros se hai varios usuarios coa sesión iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">O Asistente está cargando...</translation>
@@ -796,7 +796,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5788127256798019331">Ficheiros de Play</translation>
 <translation id="5790085346892983794">Correcto</translation>
 <translation id="5805809050170488595">Facer clic para activar <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
@@ -1148,7 +1147,6 @@ Nova instalación</translation>
 <translation id="79341161159229895">A conta está xestionada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Preme <ph name="SHORTCUT_KEY_NAME" /> + V para ver o portapapeis. Nel gárdanse os últimos 5 elementos que copiaches.</translation>
 <translation id="7942349550061667556">Vermello</translation>
-<translation id="7952747673138230804">Chrome OS mostra suxestións de contido novo que podes explorar. Envía estatísticas para mellorar a calidade só se escolliches compartir os datos de uso. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Modo de alto contraste</translation>
 <translation id="7968693143708939792">Seleccionar cartafol…</translation>
 <translation id="7977927628060636163">Buscando redes móbiles...</translation>

@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
-<translation id="1930797645656624981">Servicio de método de introducción de Chrome OS</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">No es posible conectarse a Internet.</translation>
 <translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
-<translation id="2585245331261708204">Novedades de Chrome OS</translation>
 <translation id="2619761439309613843">Actualiz. diaria</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> seleccionado</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada con tu selección</translation>
-<translation id="475869545581454722">Contraseña de Chrome OS actualizada</translation>
 <translation id="4773299976671772492">Detenido</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -738,6 +735,7 @@
 <translation id="917720651393141712">Prueba</translation>
 <translation id="9204237731135241582">No se puede contactar con la pasarela desde aplicaciones Android</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
+<translation id="932327136139879170">Página principal</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Sin activar</translation>
 <translation id="960719561871045870">Código del operador</translation>

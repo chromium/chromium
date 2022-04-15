@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z Chromu a ďalších aplikácií Google v tomto zariadení.</translation>
 <translation id="1968388653333775699">S prehliadačom Chrome zvládnete viac</translation>
 <translation id="2009224836393115614">Chromu sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
+<translation id="2056123005618757196">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Google Chrome, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="2147651015520127414">Chrome overil, že certifikát tohto webu vydal vydavateľ <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Údaje zo synchronizácie Chromu</translation>
 <translation id="2313070403598893276">Google Chrome je jednoduchý, bezpečný a rýchlejší ako kedykoľvek predtým</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Odinštalujte ich.</translation>
 <translation id="4633328489441962921">Chrome nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4698415050768537821">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Chrome odosiela údaje o používaní a pádoch Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nepodporované vo verzii Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami.</translation>
 <translation id="5108659628347594808">Zlepšujte Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Prejdite na Chrome</translation>
 <translation id="6238746320622508509">Umožnite Chromu uzamknúť vaše karty inkognito.</translation>
 <translation id="6387994324662817823">Heslá sa ukladajú do správcu hesiel od Googlu iba v tomto zariadení.</translation>
+<translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
 <translation id="6427126399757991875">Vaša organizácia nastavuje Chrome…</translation>
 <translation id="6600954340915313787">Skopírovaná do prehliadača Chrome</translation>
 <translation id="6634107063912726160">Keď sa odhlásite, Chrome prestane synchronizovať nové údaje do vášho účtu Google. Údaje, ktoré boli synchronizované predtým, v účte zostanú.</translation>
@@ -118,6 +121,14 @@
 <translation id="8736550665979974340">Zaistite svoju bezpečnosť s prehliadačom Google Chrome</translation>
 <translation id="8772179140489533211">Zobrazí výzvy na prihlásenie do Chromu.</translation>
 <translation id="8788269841521769222">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
+<translation id="8969290730818637510">Keď túto možnosť zapnete:
+<ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať Chrome pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
+
+
+Čo je potrebné vziať do úvahy:
+<ph name="BEGIN_INDENT" />  • Informácie o vašom používaní Chromu sa odosielajú Googlu, ale nie sú s vami spojené.
+  • V prípade pádu Chromu môžu podrobnosti o páde zahŕňať niektoré osobné údaje.
+  • Ak zapnete synchronizáciu, metriky môžu zahŕňať aj informácie o webových adresách, ktoré navštívite.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
 <translation id="9122931302567044771">Znamená to, že Chrome bude zakaždým žiadať o verziu webu pre počítače.</translation>
 </translationbundle>

@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">фински</translation>
 <translation id="1942765061641586207">Резолуција слике</translation>
 <translation id="1972984168337863910">Прошири окна за повратне информације о датотекама</translation>
-<translation id="1984456723671657197">Овај тип фајла није подржан. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="1995337122023280937">Иди на локацију датотеке</translation>
 <translation id="2001796770603320721">Управљајте на Диску</translation>
 <translation id="2009067268969781306">Форматирањем диска избрисаће се сви подаци сачувани на њему. Ова радња не може да се опозове.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">бугарски</translation>
 <translation id="6973630695168034713">Директоријуми</translation>
 <translation id="6976795442547527108">Лав</translation>
-<translation id="6978611942794658017">Датотека је осмишљена за рачунар који користи Windows софтвер. Није компатибилна са уређајем, који користи Chrome ОС. Претражите Chrome веб-продавницу да бисте нашли одговарајућу замену за апликацију.</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6989942356279143254">шведски</translation>
 <translation id="6990081529015358884">Понестало вам је простора</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">француски (Швајцарска)</translation>
 <translation id="7973962044839454485">Провера аутентичности преко протокола PPP није успела због нетачног корисничког имена или лозинке</translation>
 <translation id="7980421588063892270">енглески (САД) са тастатуром Colemak</translation>
-<translation id="79907182588096956">Овај фајл је осмишљен за рачунар који користи Windows софтвер. Није компатибилан са вашим уређајем, који користи Chrome ОС. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="8000066093800657092">Нема мреже</translation>
 <translation id="8008366997883261463">Пас</translation>
 <translation id="8028993641010258682">Величина</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Пас маше репом</translation>
 <translation id="8919081441417203123">дански</translation>
 <translation id="8965697826696209160">Нема довољно простора.</translation>
-<translation id="8970501467542182729">Овај фајл је осмишљен за рачунар који користи Macintosh софтвер. Није компатибилан са вашим уређајем, који користи Chrome ОС. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="8997962250644902079">кинески (традиционални) пинјин</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, управља администратор, детаљи</translation>
 <translation id="9017798300203431059">руска фонетска</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">Чланови из „<ph name="DESTINATION_NAME" />“ ће добити приступ овим ставкама.</translation>
 <translation id="9131598836763251128">Избор једне или више датотека</translation>
 <translation id="9133055936679483811">Додавање у zip датотеку није успело. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Ова датотека је осмишљена за рачунар који користи Macintosh софтвер. Није компатибилна са уређајем, који користи Chrome ОС. Претражите Chrome веб-продавницу да бисте нашли одговарајућу замену за апликацију.</translation>
 <translation id="9144340019284012223">каталонски</translation>
 <translation id="914873105831852105">Неважећи PIN. Имате још 1 покушај.</translation>
 <translation id="9153934054460603056">Сачувај идентитет и лозинку</translation>

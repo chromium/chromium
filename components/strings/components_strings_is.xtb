@@ -100,7 +100,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="124116460088058876">Fleiri tungumál</translation>
 <translation id="1243027604378859286">Höfundur:</translation>
 <translation id="1246424317317450637">Feitletur</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að sérsníða aðgengisverkfærin þín í stillingum Chrome OS</translation>
 <translation id="1250759482327835220">Til að greiða hraðar næst geturðu vistað kortið og nafn og heimilisfang greiðanda á Google reikningnum.</translation>
 <translation id="1252799212227771492">Hnappurinn „Búa til töflureikni“, ýttu á Enter til að búa til nýjan Google töflureikni á skjótan hátt</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (samstillt)</translation>
@@ -384,7 +383,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1919345977826869612">Auglýsingar</translation>
 <translation id="1919367280705858090">Fáðu aðstoð varðandi einstök villuskilaboð</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ekkert}=1{Eitt vefsvæði}one{# vefsvæði}other{# vefsvæði}}</translation>
-<translation id="1923390796829649802">Stjórnaðu hnappi aðgengisstillinga, ýttu á Enter til að sérsníða aðgengisverkfærin þín í stillingum Chrome OS</translation>
 <translation id="1924727005275031552">Nýtt</translation>
 <translation id="1927439593081478069">Hnappur til að keyra öryggisathugun í Chrome, ýttu á Enter til að keyra öryggisathugun í stillingum Chrome</translation>
 <translation id="1939175642807587452">Getur beðið um að senda tilkynningar</translation>
@@ -643,7 +641,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að hreinsa vafraferil, fótspor, skyndiminni og fleira í stillingum Chrome</translation>
 <translation id="2650446666397867134">Aðgangi að skránni var hafnað</translation>
 <translation id="2653659639078652383">Senda</translation>
-<translation id="2659491813326907275">Þú getur sérsniðið aðgengisverkfærin þín í stillingum Chrome OS</translation>
 <translation id="2660779039299703961">Tilvik</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ekkert}=1{1 aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}=2{2 aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}one{# aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}other{# aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Efst</translation>

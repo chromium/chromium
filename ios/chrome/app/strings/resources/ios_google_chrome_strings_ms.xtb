@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chrome dan apl Google yang lain pada peranti ini.</translation>
 <translation id="1968388653333775699">Selesaikan Lebih Banyak Perkara dengan Chrome</translation>
 <translation id="2009224836393115614">Chrome tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
+<translation id="2056123005618757196">Selesaikan lebih banyak tugas dengan Google Chrome yang mudah, selamat dan lebih pantas berbanding dahulu.</translation>
 <translation id="2147651015520127414">Chrome mengesahkan bahawa <ph name="ISSUER" /> telah mengeluarkan sijil laman web ini.</translation>
 <translation id="2199719347983604670">Data daripada penyegerakan Chrome</translation>
 <translation id="2313070403598893276">Google Chrome mudah, selamat dan lebih pantas berbanding dengan dahulu</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Beberapa tambahan menyebabkan Chrome ranap. Sila nyahpasang:</translation>
 <translation id="4633328489441962921">Chrome tidak dapat menyemak kemas kini</translation>
 <translation id="4698415050768537821">Chrome tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">Untuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Tidak disokong pada Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
 <translation id="5108659628347594808">Jadikan Chrome Lebih Baik</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Beralih kepada Chrome</translation>
 <translation id="6238746320622508509">Biarkan Chrome mengunci tab Inkognito anda.</translation>
 <translation id="6387994324662817823">Kata laluan disimpan pada Pengurus Kata Laluan Google pada peranti ini sahaja.</translation>
+<translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6427126399757991875">Organisasi anda sedang menyediakan Chrome...</translation>
 <translation id="6600954340915313787">Disalin ke Chrome</translation>
 <translation id="6634107063912726160">Apabila anda log keluar, Chrome tidak akan menyegerakkan sebarang data baharu ke Akaun Google anda. Data yang disegerakkan sebelumnya akan dikekalkan dalam akaun.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Kekal Selamat dengan Google Chrome</translation>
 <translation id="8772179140489533211">Memaparkan gesaan untuk log masuk ke Chrome.</translation>
 <translation id="8788269841521769222">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Pengurus Kata Laluan Google untuk <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Apabila dihidupkan:
+<ph name="BEGIN_INDENT" />  • Bantu jadikan Chrome lebih baik untuk orang yang menggunakannya seperti anda.<ph name="END_INDENT" />
+
+Perkara yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" />  • Maklumat tentang penggunaan Chrome anda dihantar kepada Google, tetapi maklumat ini tidak terikat dengan anda.
+
+  • Jika Chrome ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
+
+  • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Tetapkan Chrome sebagai Penyemak Imbas Lalai?</translation>
 <translation id="9122931302567044771">Ini bermakna Chrome akan meminta laman desktop setiap masa.</translation>
 </translationbundle>

@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Қосымша тілдер</translation>
 <translation id="1243027604378859286">Авторы:</translation>
 <translation id="1246424317317450637">Қалың</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome OS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="1250759482327835220">Келесіде жылдамырақ төлеу үшін картаңызды, аты-жөніңізді және төлем мекенжайын Google аккаунтыңызға сақтап қойыңыз.</translation>
 <translation id="1252799212227771492">"Парақ жасау" түймесі, жаңа Google парағын жылдам жасау үшін Enter пернесін басыңыз.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхрондалған)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">Толығырақ</translation>
 <translation id="132390688737681464">Мекенжайларды сақтау және толтыру</translation>
 <translation id="1330449323196174374">Сол жағын қақпа тәрізді бүктеу</translation>
+<translation id="1333745675627230582">Chrome Dino ойынын ойнау</translation>
 <translation id="1333989956347591814">Әрекетіңіз <ph name="BEGIN_EMPHASIS" />төмендегілерге көрінуі мүмкін<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Сіз кірген вебсайттар
@@ -383,7 +383,6 @@
 <translation id="1919345977826869612">Жарнамалар</translation>
 <translation id="1919367280705858090">Арнайы қате туралы хабар арқылы көмек алу</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
-<translation id="1923390796829649802">"Арнайы мүмкіндіктер параметрін басқару" түймесі. Chrome OS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Enter пернесін басыңыз.</translation>
 <translation id="1924727005275031552">Жаңа</translation>
 <translation id="1927439593081478069">"Chrome қауіпсіздік тексерісін іске қосу" түймесі. Chrome параметрлерінен қауіпсіздік тексерісін іске қосу үшін Enter пернесін басыңыз.</translation>
 <translation id="1939175642807587452">Хабарландыру жіберу туралы сұрай алады</translation>
@@ -642,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. өшіру үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="2650446666397867134">Файлға кіруге тыйым салынған</translation>
 <translation id="2653659639078652383">Жіберу</translation>
-<translation id="2659491813326907275">Chrome OS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру</translation>
 <translation id="2660779039299703961">Оқиға</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Жоқ}=1{1 құпия сөз (<ph name="DOMAIN_LIST" />)}=2{2 құпия сөз (<ph name="DOMAIN_LIST" />)}other{# құпия сөз (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Жоғары</translation>
@@ -746,6 +744,7 @@
 <translation id="2972581237482394796">&amp;Қайта орындау</translation>
 <translation id="2977665033722899841">Ағымдағы таңдалғаны: <ph name="ROW_NAME" />, <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
+<translation id="2983666748527428214">Инкогнито қойындысын ашу</translation>
 <translation id="2985306909656435243">Іске қосылса, Chromium нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыға сақтайды.</translation>
 <translation id="2985398929374701810">Дұрыс мекенжайды енгізіңіз</translation>
 <translation id="2986368408720340940">Бұл таңдау әдісі қолжетімді емес. Басқа әдісті қолданып көріңіз.</translation>
@@ -1511,6 +1510,7 @@
 <translation id="5097099694988056070">CPU/RAM пайдалануы сияқты құрылғы статистикасы</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Сайт қауіпсіз емес</translation>
+<translation id="5109892411553231226">Төлеу әдістерін басқару</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">18-науа</translation>
 <translation id="5114987907971894280">виртуалды шындық</translation>
@@ -1758,6 +1758,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> картасының мәліметтерін толтырғыңыз келе ме?</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
+<translation id="5808435672482059465">Chrome тарихын көру</translation>
 <translation id="5808542072418270309">Симуляциялар</translation>
 <translation id="5810442152076338065">Сіздің <ph name="DOMAIN" /> доменіне қосылуыңыз ескірген шифр жиынтығы арқылы шифрланған.</translation>
 <translation id="5812947184178430888">Chrome браузерінде қауіпсіздік іс-шараларына жалауша қойылған кезде, іс-шараларға қатысты деректер әкімшіңізге жіберіледі. Мұндай деректерге Chrome браузерінде кірген беттердің URL мекенжайлары, файл атаулары немесе метадеректер, сондай-ақ веб-қолданбаларға, құрылғыңызға және Chrome браузеріне кіру үшін қолданылатын пайдаланушы аты жатуы мүмкін.</translation>

@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">الفنلندية</translation>
 <translation id="1942765061641586207">دقة الصورة</translation>
 <translation id="1972984168337863910">توسيع لوحات تعليقات الملفات</translation>
-<translation id="1984456723671657197">‏نوع الملف هذا غير متوافق. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على "نظام التشغيل Chrome"</translation>
 <translation id="1995337122023280937">الانتقال إلى موقع الملف</translation>
 <translation id="2001796770603320721">‏الإدارة في Drive</translation>
 <translation id="2009067268969781306">سيؤدي تنسيق محرك أقراص إلى حذف جميع البيانات المخزّنة عليه. لا يمكن التراجع عن هذا الإجراء.</translation>
@@ -703,7 +702,6 @@
 <translation id="6970230597523682626">البلغارية</translation>
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6976795442547527108">أسد</translation>
-<translation id="6978611942794658017">‏تم تصميم هذا الملف لأجهزة الكمبيوتر باستخدام برنامج Windows. هذا غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome OS. يُرجى البحث في سوق Chrome الإلكتروني للحصول على تطبيق بديل مناسب.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">السويدية</translation>
 <translation id="6990081529015358884">لقد نفدت المساحة</translation>
@@ -825,7 +823,6 @@
 <translation id="7972920761225148017">الفرنسية (سويسرا)</translation>
 <translation id="7973962044839454485">‏تعذّرت مصادقة PPP نظرًا لوجود خطأ في اسم المستخدم أو كلمة المرور</translation>
 <translation id="7980421588063892270">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Colemak</translation>
-<translation id="79907182588096956">‏تم تصميم هذا الملف لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Windows. وهذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على "نظام التشغيل Chrome"</translation>
 <translation id="8000066093800657092">لا شبكة</translation>
 <translation id="8008366997883261463">كلب</translation>
 <translation id="8028993641010258682">الحجم</translation>
@@ -936,7 +933,6 @@
 <translation id="8912078710089354287">كلب يهُز ذيله</translation>
 <translation id="8919081441417203123">الدانماركية</translation>
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
-<translation id="8970501467542182729">‏تم تصميم هذا الملف لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. وهذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على "نظام التشغيل Chrome"</translation>
 <translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="9003940392834790328">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="9017798300203431059">روسية صوتية</translation>
@@ -955,7 +951,6 @@
 <translation id="9130775360844693113">سيحصل أعضاء '<ph name="DESTINATION_NAME" />' على إمكانية الوصول إلى هذه العناصر.</translation>
 <translation id="9131598836763251128">اختيار ملف واحد أو أكثر</translation>
 <translation id="9133055936679483811">تعذّر الضغط. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">‏تم تصميم هذا الملف لأجهزة الكمبيوتر التي تستخدم برنامج Macintosh. هذا غير متوافق مع جهازك الذي يعمل بنظام تشغيل Chrome. يُرجى البحث في سوق Chrome الإلكتروني للحصول على تطبيق بديل مناسب.</translation>
 <translation id="9144340019284012223">الكتالانية</translation>
 <translation id="914873105831852105">رقم التعريف الشخصي غير صحيح. يتبقى لديك محاولة واحدة.</translation>
 <translation id="9153934054460603056">حفظ الهوية وكلمة المرور</translation>

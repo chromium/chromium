@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">שכתוב חומרה</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
-<translation id="1930797645656624981">‏שירות שיטת הקלט של Chrome OS</translation>
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">לא ניתן להתחבר לאינטרנט.</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
-<translation id="2585245331261708204">‏מה חדש ב-Chrome OS</translation>
 <translation id="2619761439309613843">רענון יומי</translation>
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2640549051766135490">האלבום <ph name="TITLE" /> <ph name="DESC" /> נבחר</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
-<translation id="475869545581454722">‏הסיסמה של Chrome OS עודכנה</translation>
 <translation id="4773299976671772492">הופסק</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
 <translation id="4791000909649665275">מספר התמונות: <ph name="NUMBER" /></translation>
@@ -739,6 +736,7 @@
 <translation id="917720651393141712">בדיקה</translation>
 <translation id="9204237731135241582">‏לא ניתן ליצור קשר עם השער מאפליקציות ל-Android</translation>
 <translation id="9211490828691860325">כל שולחנות העבודה הווירטואליים</translation>
+<translation id="932327136139879170">בית</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">לא פעיל</translation>
 <translation id="960719561871045870">קוד ספק</translation>

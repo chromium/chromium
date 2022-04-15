@@ -116,6 +116,7 @@
 <translation id="1923342640370224680">За апошнюю гадзіну</translation>
 <translation id="1930989359703290198">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы. Уліковыя запісы, выкарыстоўваць якія не дазволена, не паказваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Каб скапіраваць, націсніце двойчы.</translation>
+<translation id="1943478190258551035">Меню → Налады</translation>
 <translation id="1952172573699511566">Тэкст на вэб-сайтах будзе паказвацца на мове, выбранай вамі ў якасці прыярытэтнай, калі гэта магчыма.</translation>
 <translation id="1965935827552890526">Скончыце тое, што вы пачалі рабіць у іншым адкрытым акне Chrome.</translation>
 <translation id="196896377990863006">Паказаць перадпрагляд спасылкі</translation>
@@ -143,6 +144,7 @@
 <translation id="2218443599109088993">Паменшыць</translation>
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
+<translation id="2251686759395008410">Меню → Гісторыя</translation>
 <translation id="2256933947031277845">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы.</translation>
 <translation id="225943865679747347">Код памылкі: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Дадаць уліковы запіс</translation>
@@ -198,10 +200,12 @@
 <translation id="2712127207578915686">Немагчыма адкрыць файл</translation>
 <translation id="2718352093833049315">Толькі па Wi-Fi</translation>
 <translation id="2747003861858887689">Папярэдняе поле</translation>
+<translation id="2749231692441336879">Вы падпісаліся на канал "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="2764831210418622012">толькі што</translation>
 <translation id="2773292004659987824">Пошук у рэжыме інкогніта</translation>
 <translation id="277771892408211951">Выберыце мову</translation>
 <translation id="2780046210906776326">Няма ўліковых запісаў электроннай пошты</translation>
+<translation id="2781325423985810933">АДРАБІЦЬ</translation>
 <translation id="2781331604911854368">Уключана</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Не ўдалося стварыць спасылку</translation>
@@ -239,6 +243,7 @@
 <translation id="298306318844797842">Дадаць спосаб аплаты...</translation>
 <translation id="2989805286512600854">Адкрыць у новай укладцы</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
+<translation id="3039722182465315531">Не ўваходзіць</translation>
 <translation id="3076846064362030967">З Уліковага запісу Google вы не выйдзеце. <ph name="BEGIN_LINK" />Іншыя дзеянні<ph name="END_LINK" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.
 
 
@@ -340,6 +345,7 @@
 <translation id="3928666092801078803">Аб'яднаць мае даныя</translation>
 <translation id="3929457972718048006">Адрасы</translation>
 <translation id="3943492037546055397">Паролі</translation>
+<translation id="3959736869653157332">Меню → Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="3968505803272650567">Кіраваць інтарэсамі</translation>
 <translation id="3989635538409502728">Выйсці</translation>
@@ -353,6 +359,7 @@
 <translation id="4049507953662678203">Праверце, ці ёсць у вас падключэнне да сеткі, і паўтарыце спробу.</translation>
 <translation id="4063300985191096908">Перайсці да стужкі</translation>
 <translation id="408404951701638773">Панэллю пошуку цяпер карыстацца лягчэй</translation>
+<translation id="4108998448622696017">Выяўляе небяспечныя падзеі і папярэджвае пра іх.</translation>
 <translation id="411254640334432676">Збой спампоўкі.</translation>
 <translation id="4112644173421521737">Пошук</translation>
 <translation id="4113030288477039509">Кіруецца адміністратарам</translation>
@@ -604,6 +611,7 @@
 <translation id="6254066287920239840">Адкрываць спасылкі ў праграме замест браўзера.</translation>
 <translation id="6255097610484507482">Рэдагаванне крэдытнай карткі</translation>
 <translation id="6284652193729350524">Прапаноўваць перакласці з мовы: <ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">Вы адпісаліся ад канала "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="6293101329759844770">Каб уключыць Бяспечны прагляд, адкрыйце старонку <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" /> і націсніце на пункт "Бяспечны прагляд".</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
 <translation id="6324669097367352121">Налады ўваходу</translation>
@@ -774,6 +782,7 @@
 <translation id="7603852183842204213">Успл. вокны заблак. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Выдаліць пароль</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
+<translation id="7646263789464975852">Меню → Налады → Праверка бяспекі</translation>
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
@@ -782,6 +791,7 @@
 <translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
 <translation id="7726702057919861819">Меню → Гісторыя → Выдаліць гісторыю праглядаў</translation>
 <translation id="7741325291586284254">Старонка "Новая ўкладка ў рэжыме інкогніта"</translation>
+<translation id="7756478488453921771">Меню → Налады → Спосабы аплаты</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7781011649027948662">Перакласці старонку?</translation>
@@ -789,6 +799,7 @@
 <translation id="7781829728241885113">Учора</translation>
 <translation id="778855399387580014">Пачаць пошук у новай укладцы Chrome.</translation>
 <translation id="7791543448312431591">Дадаць</translation>
+<translation id="7807060072011926525">Ад кампаніі Google</translation>
 <translation id="7839985698273989086">Пазасеткавая старонка</translation>
 <translation id="7840771868269352570">Выбраныя элементы будуць выдалены.</translation>
 <translation id="7853202427316060426">Дзеянні</translation>
@@ -802,6 +813,7 @@
 <translation id="7939128259257418052">Экспарт пароляў...</translation>
 <translation id="794799177247607889">Спыніць вядзенне журнала</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
+<translation id="7959441099968534758">ПЕРАЙСЦІ ДА СТУЖКІ</translation>
 <translation id="7961015016161918242">Ніколі</translation>
 <translation id="7966516440812255683">Сайты могуць выкарыстоўваць файлы cookie для паляпшэння сваёй функцыянальнасці: напрыклад, для захавання інфармацыі пра тое, што вы ўвайшлі ва ўліковы запіс, або каб запамінаць тавары ў кошыку.
 
@@ -925,6 +937,7 @@
 <translation id="9037965129289936994">Паказаць арыгінал</translation>
 <translation id="9039373489628511875">Паласа прапускання</translation>
 <translation id="9055772144595778347">Не ўдалося ўвайсці</translation>
+<translation id="9057972802061533987">Не ўдалося падпісацца. Нешта пайшло не так.</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9079935439869366234">Пазн. усе як непрачытаныя</translation>
 <translation id="9081058212938299310">Змяніць пароль для карыстальніка <ph name="USERNAME" />?</translation>
@@ -932,6 +945,7 @@
 <translation id="9083838294503912307">Уключыце сінхранізацыю, каб сінхранізаваць некалькі прылад і персаналізаваць іх.</translation>
 <translation id="9087108903408689779">Прапанаваны браўзерам Chrome пароль:</translation>
 <translation id="9094033019050270033">Абнавіць пароль</translation>
+<translation id="9097506547406246598">Не ўдалося адпісацца. Нешта пайшло не так.</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="9107664647686727385">Праверка наяўнасці раскрытых пароляў</translation>
 <translation id="9124387962554796433">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google.</translation>

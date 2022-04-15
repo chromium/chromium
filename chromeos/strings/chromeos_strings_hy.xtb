@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
-<translation id="1930797645656624981">Chrome OS-ում ներածման եղանակի ծառայություն</translation>
 <translation id="1947737735496445907">Տպված է</translation>
 <translation id="1951012854035635156">Օգնական</translation>
 <translation id="1979103255016296513">Գաղտնաբառի փոփոխման ժամկետն անցել է</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
-<translation id="2585245331261708204">Ինչ է փոխվել Chrome OS-ում</translation>
 <translation id="2619761439309613843">Ամենօրյա թարմացում</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2640549051766135490">Ընտրվել է «<ph name="TITLE" />» (<ph name="DESC" />) ալբոմը</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4744944742468440486">Տեղեկություններ ձեր ընտրության վերաբերյալ</translation>
-<translation id="475869545581454722">Chrome OS-ի գաղտնաբառը փոխվել է</translation>
 <translation id="4773299976671772492">Դադարեցված է</translation>
 <translation id="4782311465517282004">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> լուսանկար</translation>
@@ -739,6 +736,7 @@
 <translation id="917720651393141712">Ստուգում</translation>
 <translation id="9204237731135241582">Չհաջողվեց կապ հաստատել անցախուցի հետ Android հավելվածներից</translation>
 <translation id="9211490828691860325">Բոլոր աշխատասեղանները</translation>
+<translation id="932327136139879170">Գլխավոր էջ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ակտիվացված չէ</translation>
 <translation id="960719561871045870">Օպերատորի կոդը</translation>

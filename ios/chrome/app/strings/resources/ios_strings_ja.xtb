@@ -277,6 +277,7 @@
 <translation id="3290875554372353449">アカウントの選択</translation>
 <translation id="3311748811247479259">オフ</translation>
 <translation id="3324193307694657476">住所2行目</translation>
+<translation id="3324298231050545260">カレンダー ファイルを使用できます</translation>
 <translation id="3328801116991980348">サイト情報</translation>
 <translation id="3329904751041170572">サーバーに接続できませんでした。</translation>
 <translation id="3335947283844343239">閉じたタブを開く</translation>
@@ -359,6 +360,7 @@
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="4063300985191096908">フィードに移動</translation>
 <translation id="408404951701638773">検索バーをより手軽に使用できるようになりました</translation>
+<translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
 <translation id="411254640334432676">ダウンロードできませんでした。</translation>
 <translation id="4112644173421521737">検索</translation>
 <translation id="4113030288477039509">管理者により管理されています</translation>
@@ -964,4 +966,5 @@
 <translation id="988141524645182168">他のデバイス</translation>
 <translation id="989988560359834682">住所の編集</translation>
 <translation id="994757059139821576">記事の候補表示</translation>
+<translation id="997742718232442409">このウェブサイトはカレンダー ファイルをダウンロードしようとしています。</translation>
 </translationbundle>

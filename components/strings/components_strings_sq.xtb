@@ -100,7 +100,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="124116460088058876">Gjuhë të tjera</translation>
 <translation id="1243027604378859286">Autori:</translation>
 <translation id="1246424317317450637">Të trashësuara</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e Chrome OS</translation>
 <translation id="1250759482327835220">Për të paguar më shpejt herën tjetër, ruaje kartën, emrin dhe adresën tënde të faturimit në "Llogarinë tënde të Google".</translation>
 <translation id="1252799212227771492">Butoni "Krijo fletë", shtyp Enter për të krijuar shpejt një "Fletë të re të Google"</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizuar)</translation>
@@ -139,6 +138,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1323433172918577554">Shfaq më shumë</translation>
 <translation id="132390688737681464">Ruaj dhe plotëso adresat</translation>
 <translation id="1330449323196174374">Palosje me dritare majtas</translation>
+<translation id="1333745675627230582">Luaj lojën Chrome Dino</translation>
 <translation id="1333989956347591814">Aktiviteti yt <ph name="BEGIN_EMPHASIS" />mund të jetë përsëri i dukshëm<ph name="END_EMPHASIS" /> për:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Sajtet e uebit që viziton
@@ -382,7 +382,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1919345977826869612">Reklamat</translation>
 <translation id="1919367280705858090">Merr ndihmë për një mesazh specifik gabimi</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Asnjë}=1{1 sajt}other{# sajte}}</translation>
-<translation id="1923390796829649802">Butoni "Menaxho cilësimet e qasshmërisë". Shtyp "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e Chrome OS</translation>
 <translation id="1924727005275031552">I ri</translation>
 <translation id="1927439593081478069">Ekzekuto butonin e kontrollit të sigurisë të Chrome, shtyp "Enter" për të ekzekutuar një kontroll sigurie te cilësimet e Chrome</translation>
 <translation id="1939175642807587452">Mund të kërkojë të dërgojë njoftime</translation>
@@ -641,7 +640,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të pastruar historikun e shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
 <translation id="2650446666397867134">Qasja te skedari u refuzua</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
-<translation id="2659491813326907275">Personalizo veglat e qasshmërisë te cilësimet e Chrome OS</translation>
 <translation id="2660779039299703961">Ngjarje</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Asnjë}=1{1 fjalëkalim (për <ph name="DOMAIN_LIST" />)}=2{2 fjalëkalime (për <ph name="DOMAIN_LIST" />)}other{# fjalëkalime (për <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">I sipërm</translation>
@@ -745,6 +743,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2972581237482394796">&amp;Ribëje</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktualisht e zgjedhur. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Hap skedën "e fshehtë"</translation>
 <translation id="2985306909656435243">Nëse aktivizohet, Chromium do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
 <translation id="2985398929374701810">Fut një adresë të vlefshme</translation>
 <translation id="2986368408720340940">Kjo mënyrë marrjeje nuk ofrohet. Provo një mënyrë tjetër.</translation>
@@ -1509,6 +1508,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5097099694988056070">Statistikat e pajisjes si p.sh. përdorimin e njësisë CPU/RAM</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Sajti nuk është i sigurt</translation>
+<translation id="5109892411553231226">Menaxho mënyrat e pagesës</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Tabakaja 18</translation>
 <translation id="5114987907971894280">realiteti virtual</translation>
@@ -1756,6 +1756,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Dëshiron që të plotësosh informacionet për <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Lejet</translation>
+<translation id="5808435672482059465">Shiko historikun tënd të Chrome</translation>
 <translation id="5808542072418270309">Lojërat me simulime</translation>
 <translation id="5810442152076338065">Lidhja jote me <ph name="DOMAIN" /> është enkriptuar duke përdorur një paketë të vjetër shifrimi.</translation>
 <translation id="5812947184178430888">Kur sinjalizohen ngjarje sigurie nga Chrome, të dhënat përkatëse rreth ngjarjeve i dërgohen administratorit tënd. Kjo mund të përfshijë URL-të e faqeve që viziton në Chrome, emrat e skedarëve ose të dhënat meta dhe emrin e përdoruesit që përdor për t'u identifikuar në aplikacionet me bazë uebi, pajisjen tënde dhe Chrome.</translation>

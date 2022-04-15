@@ -523,6 +523,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4095366824370681039">Pióro</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
 <translation id="4114315158543974537">Włącz Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Aby odblokować Chromebooka, sprawdź, czy na telefonie jest włączony Bluetooth</translation>
 <translation id="4129129681837227511">Aby wyświetlać powiadomienia na ekranie blokady, odblokuj ekran i zmień ustawienie</translation>
@@ -562,7 +563,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Naciśnięto skrót klawiszowy wysokiego kontrastu. Czy chcesz go włączyć?</translation>
 <translation id="4322742403972824594">Skrót klawiszowy Ctrl + Alt + strzałka w górę został zmieniony. Aby użyć klawisza Home, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w lewo.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Kiedy zalogowanych jest wielu użytkowników, przeglądarka Lacros nie jest obsługiwana.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Trwa ładowanie Asystenta…</translation>
@@ -795,7 +795,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5788127256798019331">Pliki Play</translation>
 <translation id="5790085346892983794">Udało się</translation>
 <translation id="5805809050170488595">Kliknij, aby włączyć sieć <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">System operacyjny Chromium</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1145,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="79341161159229895">Kontem zarządzają <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Naciśnij <ph name="SHORTCUT_KEY_NAME" /> + V, by przejrzeć zawartość schowka. Znajdziesz tam ostatnie 5 skopiowanych elementów.</translation>
 <translation id="7942349550061667556">Czerwony</translation>
-<translation id="7952747673138230804">Chrome OS proponuje nowe treści, które mogą Cię zainteresować. Wysyła statystyki, by ulepszać podpowiedzi, tylko wtedy, gdy zostało wybrane udostępnianie danych o korzystaniu. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Tryb wysokiego kontrastu</translation>
 <translation id="7968693143708939792">Wybierz folder...</translation>
 <translation id="7977927628060636163">Szukam sieci komórkowych…</translation>

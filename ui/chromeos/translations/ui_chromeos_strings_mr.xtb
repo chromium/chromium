@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">फिन्निश</translation>
 <translation id="1942765061641586207">इमेज रिझोल्युशन</translation>
 <translation id="1972984168337863910">फाइल फीडबॅक पॅनलचा विस्तार करा</translation>
-<translation id="1984456723671657197">या फाइलच्या प्रकाराला सपोर्ट नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">फाइल स्थानावर जा</translation>
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
@@ -702,7 +701,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6970230597523682626">बल्गेरियन</translation>
 <translation id="6973630695168034713">फोल्डर</translation>
 <translation id="6976795442547527108">सिंह</translation>
-<translation id="6978611942794658017">ही फाईल Windows सॉफ्‍टवेअर वापरून PC साठी डिझाइन केली आहे. ही Chrome OS चालविणार्‍या आपल्‍या डिव्‍हाइससह सुसंगत नाही. कृपया एका योग्य प्रतिस्थापन अ‍ॅपसाठी Chrome वेब स्‍टोअर शोधा.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
@@ -824,7 +822,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7972920761225148017">फ्रेंच (स्वित्झर्लंड)</translation>
 <translation id="7973962044839454485">अयोग्य वापरकर्तानावामुळे किंवा पासवर्डमुळे PPP ऑथेंटिकेशन अयशस्वी झाले</translation>
 <translation id="7980421588063892270">कोलमॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
-<translation id="79907182588096956">ही फाइल Windows सॉफ्टवेअर वापरणार्‍या PC साठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="8000066093800657092">कोणतेही नेटवर्क नाही</translation>
 <translation id="8008366997883261463">कुत्रा</translation>
 <translation id="8028993641010258682">आकार</translation>
@@ -935,7 +932,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8912078710089354287">शेपुट हलवत असलेला कुत्रा</translation>
 <translation id="8919081441417203123">डॅनिश</translation>
 <translation id="8965697826696209160">पुरेशी जागा नाही.</translation>
-<translation id="8970501467542182729">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरसाठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">चीनी (पारंपरिक) पिनयिन</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="9017798300203431059">रशियन ध्वन्यात्मक</translation>
@@ -954,7 +950,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' चे सदस्य या आयटमचा ॲक्सेस मिळवतील.</translation>
 <translation id="9131598836763251128">एक किंवा अधिक फाइल निवडा</translation>
 <translation id="9133055936679483811">झिप करणे अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरचा डिझाइन केली आहे. ही Chrome OS चालवणार्‍या तुमच्या डिव्हाइसशी सुसंगत नाही. कृपया एका योग्य रिप्लेसमेंट अ‍ॅपसाठी Chrome वेब स्टोअर शोधा.</translation>
 <translation id="9144340019284012223">कॅटलान</translation>
 <translation id="914873105831852105">अवैध पिन. तुमच्याकडे एक प्रयत्न शिल्लक आहे.</translation>
 <translation id="9153934054460603056">ओळख आणि पासवर्ड सेव्ह करा</translation>

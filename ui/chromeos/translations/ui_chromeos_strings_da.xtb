@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Finsk</translation>
 <translation id="1942765061641586207">Billedopløsning</translation>
 <translation id="1972984168337863910">Udvid paneler med feedback til filer</translation>
-<translation id="1984456723671657197">Denne filtype understøttes ikke. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
 <translation id="1995337122023280937">Gå til filplacering</translation>
 <translation id="2001796770603320721">Administrer i Drev</translation>
 <translation id="2009067268969781306">Formatering af et drev sletter alle de data, der er gemt på det. Denne handling kan ikke fortrydes.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">Bulgarsk</translation>
 <translation id="6973630695168034713">Mapper</translation>
 <translation id="6976795442547527108">Løve</translation>
-<translation id="6978611942794658017">Denne fil er designet til en pc, der kører Windows-software. Den er ikke kompatibel med din enhed, der kører Chrome OS. Søg på Chrome Webshop efter en passende app.</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Der er ikke mere plads</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">Fransk (Schweiz)</translation>
 <translation id="7973962044839454485">PPP-godkendelsen mislykkedes på grund af forkert brugernavn eller adgangskode</translation>
 <translation id="7980421588063892270">Engelsk (USA) med Colemak-tastatur</translation>
-<translation id="79907182588096956">Denne fil er beregnet til en pc med Windows-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
 <translation id="8000066093800657092">Intet netværk</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Størrelse</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Hund, der logrer med halen</translation>
 <translation id="8919081441417203123">Dansk</translation>
 <translation id="8965697826696209160">Der er ikke nok plads.</translation>
-<translation id="8970501467542182729">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
 <translation id="8997962250644902079">Kinesisk (traditionelt) pinyin</translation>
 <translation id="9003940392834790328">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, oplysninger</translation>
 <translation id="9017798300203431059">Russisk (fonetisk)</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">Medlemmer af "<ph name="DESTINATION_NAME" />" får adgang til disse elementer.</translation>
 <translation id="9131598836763251128">Vælg en eller flere filer</translation>
 <translation id="9133055936679483811">Komprimering mislykkedes. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. Søg i Chrome Webshop efter en passende app.</translation>
 <translation id="9144340019284012223">Catalansk</translation>
 <translation id="914873105831852105">Pinkoden er ugyldig. Du har 1 forsøg tilbage.</translation>
 <translation id="9153934054460603056">Gem identitet og adgangskode</translation>

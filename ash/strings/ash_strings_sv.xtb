@@ -87,6 +87,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
 <translation id="1364382257761975320">Använd ditt fingeravtryck om du vill låsa upp Chromebook</translation>
 <translation id="1364618750746929654">Det gick inte att generera transkriptionen</translation>
+<translation id="1372545819342940910">Spara skrivbordet till senare</translation>
 <translation id="1383597849754832576">Det gick inte att ladda ned röstfilerna. Försök igen senare.</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1391102559483454063">På</translation>
@@ -522,6 +523,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4095366824370681039">Bläckpenna</translation>
 <translation id="4112140312785995938">Sök bakåt</translation>
 <translation id="4114315158543974537">Aktivera Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">fönster</translation>
 <translation id="4123259114412175274">Kontrollera att Bluetooth är aktiverat på telefonen om du vill låsa upp Chromebook</translation>
 <translation id="4129129681837227511">Lås upp enheten för att ändra inställningen för aviseringar på låsskärmen</translation>
@@ -561,7 +563,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du tryckte på kortkommandot för högkontrastläge. Vill du aktivera funktionen?</translation>
 <translation id="4322742403972824594">Kortkommandot Ctrl + Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" /> tangenten + vänsterpil för att använda Home-tangenten.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Det finns inget stöd för Lacros när flera användare är inloggade.</translation>
 <translation id="4338109981321384717">Förstoringsglas</translation>
 <translation id="4351433414020964307">Assistenten läses in …</translation>
@@ -794,7 +795,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5790085346892983794">Klart</translation>
 <translation id="5805809050170488595">Klicka för att aktivera <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1146,6 @@ Nyligen installerad</translation>
 <translation id="79341161159229895">Kontot hanteras av <ph name="FIRST_PARENT_EMAIL" /> och <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tryck på <ph name="SHORTCUT_KEY_NAME" /> + V för att visa urklipp De senaste fem objekten du har kopierat sparas i urklipp.</translation>
 <translation id="7942349550061667556">Röd</translation>
-<translation id="7952747673138230804">Chrome OS visar förslag på nytt innehåll du kan utforska. Skickar bara statistik för att förbättra kvaliteten om du har valt att dela data om användning. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Högkontrastläge</translation>
 <translation id="7968693143708939792">Välj mapp …</translation>
 <translation id="7977927628060636163">Söker efter mobilnätverk …</translation>

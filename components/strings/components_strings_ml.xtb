@@ -100,7 +100,6 @@
 <translation id="124116460088058876">കൂടുതൽ ഭാഷകൾ</translation>
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
 <translation id="1246424317317450637">ബോള്‍ഡ്</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="1250759482327835220">അടുത്ത പ്രാവശ്യം കൂടുതൽ വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡ്, പേര്, ബില്ലിംഗ് വിലാസം എന്നിവ സംരക്ഷിക്കുക.</translation>
 <translation id="1252799212227771492">'ഷീറ്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, പുതിയൊരു Google ഷീറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (സമന്വയിപ്പിച്ചു)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">കൂടുതൽ കാണിക്കുക</translation>
 <translation id="132390688737681464">വിലാസങ്ങൾ സംരക്ഷിച്ച് സ്വമേധയാ പൂരിപ്പിക്കുക</translation>
 <translation id="1330449323196174374">ലെഫ്റ്റ് ഗേറ്റ് മടക്ക്</translation>
+<translation id="1333745675627230582">Chrome ദിനോസർ ഗെയിം കളിക്കുക</translation>
 <translation id="1333989956347591814">നിങ്ങളുടെ ആക്‌റ്റിവിറ്റി ഇനിപ്പറയുന്നവയ്‌ക്ക് <ph name="BEGIN_EMPHASIS" />തുടർന്നും ദൃശ്യമായേക്കും<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകൾക്ക്
@@ -382,7 +382,6 @@
 <translation id="1919345977826869612">പരസ്യങ്ങള്‍</translation>
 <translation id="1919367280705858090">നിർദ്ദിഷ്ട പിശക് സന്ദേശവുമായി ബന്ധപ്പെട്ട് സഹായം നേടുക</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റ്}other{# സൈറ്റുകൾ}}</translation>
-<translation id="1923390796829649802">ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക ബട്ടൺ, Chrome OS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Enter അമർത്തുക</translation>
 <translation id="1924727005275031552">പുതിയവ</translation>
 <translation id="1927439593081478069">'Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="1939175642807587452">അറിയിപ്പുകൾ അയയ്ക്കാൻ ആവശ്യപ്പെടാം</translation>
@@ -641,7 +640,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്ക്കാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="2650446666397867134">ഫയലിലേക്കുള്ള ആക്‌സസ് നിരസിച്ചു</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
-<translation id="2659491813326907275">Chrome OS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കുക</translation>
 <translation id="2660779039299703961">ഇവന്റ്</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ്}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള # പാസ്‌വേഡുകൾ}}</translation>
 <translation id="2666092431469916601">മുകളിലേക്ക്</translation>
@@ -745,6 +743,7 @@
 <translation id="2972581237482394796">&amp;വീണ്ടും ചെയ്യുക</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, നിലവിൽ തിരഞ്ഞെടുത്തു. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ഓപ്പറ</translation>
+<translation id="2983666748527428214">അദൃശ്യ ടാബ് തുറക്കുക</translation>
 <translation id="2985306909656435243">പ്രവർത്തനക്ഷമമാക്കിയെങ്കിൽ, വേഗത്തിൽ ഫോം പൂരിപ്പിക്കാൻ Chromium ഈ ഉപകരണത്തിൽ നിങ്ങളുടെ കാർഡിന്റെ ഒരു പകർപ്പ് സൂക്ഷിക്കും.</translation>
 <translation id="2985398929374701810">ശരിയായ വിലാസം നല്‍കുക</translation>
 <translation id="2986368408720340940">ഈ പിക്കപ്പ് രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
@@ -1508,6 +1507,7 @@
 <translation id="5097099694988056070">CPU/RAM ഉപയോഗം പോലുള്ള ഉപകരണ സ്ഥിതിവിവരക്കണക്കുകൾ</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">സൈറ്റ് സുരക്ഷിതമല്ല</translation>
+<translation id="5109892411553231226">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">ട്രേ 18</translation>
 <translation id="5114987907971894280">വെർച്വൽ റിയാലിറ്റി</translation>
@@ -1755,6 +1755,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">നിങ്ങളുടെ <ph name="CARD_DETAIL" /> പൂരിപ്പിക്കണോ?</translation>
 <translation id="5804241973901381774">അനുമതികൾ</translation>
+<translation id="5808435672482059465">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
 <translation id="5808542072418270309">സിമുലേഷൻ ഗെയിമുകൾ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> എന്നതിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷൻ കാലഹരണപ്പെട്ട സൈഫർ സ്യൂട്ട് ഉപയോഗിച്ച് എൻക്രിപ്റ്റുചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="5812947184178430888">Chrome സുരക്ഷാ ഇവന്റുകൾ ഫ്ലാഗ് ചെയ്യുമ്പോൾ, ഇവന്റുകളുമായി ബന്ധപ്പെട്ട പ്രസക്തമായ ഡാറ്റ നിങ്ങളുടെ അഡ്‌മിന് അയയ്ക്കുന്നു. Chrome-ൽ നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കൾ, ഫയലിന്റെ പേരുകൾ അല്ലെങ്കിൽ മെറ്റാഡാറ്റ, വെബ് അധിഷ്‌ഠിത ആപ്പുകളിലേക്കും ഉപകരണത്തിലേക്കും Chrome-ലേക്കും സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങൾ ഉപയോഗിക്കുന്ന ഉപയോക്തൃനാമം എന്നിവ ഇതിൽ ഉൾപ്പെടാം.</translation>

@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">ប៊ិក</translation>
 <translation id="4112140312785995938">សា​ថយក្រោយ</translation>
 <translation id="4114315158543974537">បើក Phone Hub</translation>
+<translation id="4115378294792113321">ស្វាយខ្ចី</translation>
 <translation id="412298498316631026">វិនដូ</translation>
 <translation id="4123259114412175274">ដើម្បីដោះសោ Chromebook​ របស់អ្នក សូមប្រាកដថាបើកប៊្លូធូសទូរសព្ទរបស់អ្នក</translation>
 <translation id="4129129681837227511">ដើម្បីមើលការជូនដំណឹង​នៅលើអេក្រង់ចាក់​សោរបស់អ្នក សូមដោះសោ ដើម្បីប្ដូរការកំណត់</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">អ្នក​បានចុច​ផ្លូវកាត់ក្ដារចុច​សម្រាប់កម្រិត​ពន្លឺខ្ពស់។ តើអ្នក​ចង់បើក​វាដែរទេ?</translation>
 <translation id="4322742403972824594">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Ctrl + Alt + ព្រួញឡើងលើ។ ដើម្បីប្រើគ្រាប់ចុច Home សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ព្រួញ​ទៅឆ្វេង។</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">មិនអាចប្រើ Lacros បានទេ នៅពេលមានអ្នកប្រើប្រាស់ច្រើនចូល។</translation>
 <translation id="4338109981321384717">កែវពង្រីក</translation>
 <translation id="4351433414020964307">ជំនួយការ​កំពុង​ផ្ទុក...</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">ឯកសារ Play</translation>
 <translation id="5790085346892983794">ជោគជ័យ</translation>
 <translation id="5805809050170488595">ចុចដើម្បីបើកដំណើរការ <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="FIRST_PARENT_EMAIL" /> និង <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">ចុច <ph name="SHORTCUT_KEY_NAME" /> + V ដើម្បីមើល​ឃ្លីបបតរបស់អ្នក។ ធាតុ 5 ចុងក្រោយ​ដែលអ្នកបានចម្លង​ត្រូវបានរក្សាទុក​ទៅក្នុងឃ្លីបបតរបស់អ្នក។</translation>
 <translation id="7942349550061667556">ក្រហម</translation>
-<translation id="7952747673138230804">Chrome OS បង្ហាញការណែនាំខ្លឹមសារថ្មី សម្រាប់ធ្វើការរុករក។ ផ្ញើ​ស្ថិតិ ដើម្បីកែលម្អគុណភាព ប្រសិនបើអ្នកបានជ្រើសរើស​ចែករំលែកទិន្នន័យ​ប្រើប្រាស់តែប៉ុណ្ណោះ។ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">មុខងារ​ភាពដិត​កម្រិតខ្ពស់</translation>
 <translation id="7968693143708939792">ជ្រើសរើស​ថត...</translation>
 <translation id="7977927628060636163">កំពុង​ស្វែងរក​បណ្ដាញ​ទូរសព្ទ​ចល័ត...</translation>

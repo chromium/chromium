@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">ഹാർഡ്‌വെയർ അവലോകനം</translation>
 <translation id="1905710495812624430">അനുവദനീയമായ പരമാവധി ശ്രമങ്ങൾ നടത്തിക്കഴിഞ്ഞു.</translation>
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
-<translation id="1930797645656624981">Chrome OS ഇൻപുട്ട് രീതി സേവനം</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
 <translation id="2584559707064218956">സജ്ജീകരിക്കാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
-<translation id="2585245331261708204">Chrome OS-ൽ പുതിയത്</translation>
 <translation id="2619761439309613843">പ്രതിദിന റീഫ്രഷ് ചെയ്യൽ</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ആൽബം തിരഞ്ഞെടുത്തു</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4744944742468440486">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ</translation>
-<translation id="475869545581454722">Chrome OS പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്തു</translation>
 <translation id="4773299976671772492">അവസാനിപ്പിച്ചു</translation>
 <translation id="4782311465517282004">നിങ്ങൾ വലത്-ക്ലിക്ക് ചെയ്യുമ്പോഴോ ടെക്സ്റ്റിൽ സ്‌പർശിച്ച് പിടിക്കുമ്പോഴോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടുക</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ഫോട്ടോ</translation>
@@ -738,6 +735,7 @@
 <translation id="917720651393141712">ടെസ്‌റ്റ്</translation>
 <translation id="9204237731135241582">Android ആപ്പുകളിൽ നിന്ന് ഗേറ്റ്‌വേയുമായി ബന്ധപ്പെടാനാകുന്നില്ല</translation>
 <translation id="9211490828691860325">എല്ലാ ഡെസ്കുകളും</translation>
+<translation id="932327136139879170">ഹോം</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">സജീവമാക്കിയില്ല</translation>
 <translation id="960719561871045870">ഓപ്പറേറ്റർ കോഡ്</translation>

@@ -116,6 +116,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1923342640370224680">Den seneste time</translation>
 <translation id="1930989359703290198">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Tryk to gange for at kopiere.</translation>
+<translation id="1943478190258551035">Menu → Indstillinger</translation>
 <translation id="1952172573699511566">Websites viser tekst på dit foretrukne sprog, når det er muligt.</translation>
 <translation id="1965935827552890526">Gør det færdigt, du var i gang med i dit andet åbne Chrome-vindue.</translation>
 <translation id="196896377990863006">Vis forhåndsvisning af link</translation>
@@ -143,6 +144,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="2218443599109088993">Zoom ud</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2239626343334228536">Browserdata ryddes...</translation>
+<translation id="2251686759395008410">Menu → Historik</translation>
 <translation id="2256933947031277845">Din organisation tillader kun login med bestemte konti.</translation>
 <translation id="225943865679747347">Fejlkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Tilføj konto</translation>
@@ -198,10 +200,12 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2712127207578915686">Filen kan ikke åbnes</translation>
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
+<translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">lige nu</translation>
 <translation id="2773292004659987824">Søgning i inkognitotilstand</translation>
 <translation id="277771892408211951">Vælg sprog</translation>
 <translation id="2780046210906776326">Ingen mailkonti</translation>
+<translation id="2781325423985810933">FORTRYD</translation>
 <translation id="2781331604911854368">Til</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Der kunne ikke oprettes et link</translation>
@@ -239,6 +243,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="298306318844797842">Tilføj betalingsmetode...</translation>
 <translation id="2989805286512600854">Åbn på ny fane</translation>
 <translation id="3037605927509011580">Øv, surt!</translation>
+<translation id="3039722182465315531">Log ikke ind</translation>
 <translation id="3076846064362030967">Du bliver ikke logget ud af din Google-konto. <ph name="BEGIN_LINK" />Andre former for aktivitet<ph name="END_LINK" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.
 
 
@@ -340,6 +345,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3943492037546055397">Adgangskoder</translation>
+<translation id="3959736869653157332">Menu → Ny inkognitofane</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3968505803272650567">Administrer interesser</translation>
 <translation id="3989635538409502728">Log ud</translation>
@@ -353,6 +359,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
 <translation id="4063300985191096908">Gå til feed</translation>
 <translation id="408404951701638773">Nu er det nemmere at bruge søgefeltet</translation>
+<translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="411254640334432676">Download mislykkedes.</translation>
 <translation id="4112644173421521737">Søg</translation>
 <translation id="4113030288477039509">Administreres af din administrator</translation>
@@ -604,6 +611,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6254066287920239840">Åbn links i appen i stedet for i browseren.</translation>
 <translation id="6255097610484507482">Rediger kreditkort</translation>
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">Følger ikke længere <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
 <translation id="6324669097367352121">Loginindstillinger</translation>
@@ -774,6 +782,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7603852183842204213">Pop op-vinduer er blokeret (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Slet adgangskode</translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
+<translation id="7646263789464975852">Menu → Indstillinger → Sikkerhedstjek</translation>
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
@@ -782,6 +791,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7720410380936703141">PRØV IGEN</translation>
 <translation id="7726702057919861819">Menu → Historik → Ryd browserdata</translation>
 <translation id="7741325291586284254">Ny side med inkognitofane</translation>
+<translation id="7756478488453921771">Menu → Indstillinger → Betalingsmetoder</translation>
 <translation id="7765158879357617694">Flyt</translation>
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
 <translation id="7781011649027948662">Vil du oversætte siden?</translation>
@@ -789,6 +799,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7781829728241885113">I går</translation>
 <translation id="778855399387580014">Start en søgning i en ny Chrome-fane.</translation>
 <translation id="7791543448312431591">Tilføj</translation>
+<translation id="7807060072011926525">Leveret af Google</translation>
 <translation id="7839985698273989086">Offlineside</translation>
 <translation id="7840771868269352570">De valgte elementer fjernes.</translation>
 <translation id="7853202427316060426">Aktivitet</translation>
@@ -802,6 +813,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7939128259257418052">Eksportér adgangskoder…</translation>
 <translation id="794799177247607889">Stop logføring</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Ingen kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
+<translation id="7959441099968534758">GÅ TIL FEED</translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7966516440812255683">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv.
 
@@ -925,6 +937,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
 <translation id="9055772144595778347">Kan ikke logge ind</translation>
+<translation id="9057972802061533987">Indholdet kan ikke følges. Der gik noget galt.</translation>
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="9079935439869366234">Markér alle som ulæste</translation>
 <translation id="9081058212938299310">Vil du opdatere adgangskoden til <ph name="USERNAME" />?</translation>
@@ -932,6 +945,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9083838294503912307">Aktivér synkronisering for at synkronisere og tilpasse på alle dine enheder.</translation>
 <translation id="9087108903408689779">Foreslået adgangskode fra Chrome:</translation>
 <translation id="9094033019050270033">Opdater adgangskoden</translation>
+<translation id="9097506547406246598">"Følg" kan ikke fortrydes. Der gik noget galt.</translation>
 <translation id="9100610230175265781">Adgangssætning kræves</translation>
 <translation id="9107664647686727385">Tjekker, om der er kompromitterede adgangskoder</translation>
 <translation id="9124387962554796433">Google kan bruge din historik til at tilpasse Søgning og andre Google-tjenester.</translation>

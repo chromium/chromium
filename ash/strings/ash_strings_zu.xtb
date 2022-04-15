@@ -523,6 +523,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4095366824370681039">Ipeni kayinki</translation>
 <translation id="4112140312785995938">Funela emuva</translation>
 <translation id="4114315158543974537">Vula ihabhu lefoni</translation>
+<translation id="4115378294792113321">I-Magenta</translation>
 <translation id="412298498316631026">iwindi</translation>
 <translation id="4123259114412175274">Ukuze uvule i-Chromebook yakho, qinisekisa ukuthi i-Bluetooth yefoni yakho ivuliwe</translation>
 <translation id="4129129681837227511">Ukuze ubone izaziso kusikrini sakho sokukhiya, vula ukuze uguqule isilungiselelo</translation>
@@ -562,7 +563,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4321179778687042513">i-ctrl</translation>
 <translation id="4321776623976362024">Ucindezele isinqamuleli sekhibhodi sokugqamisa okuphezulu. Uyafuna ukusivula?</translation>
 <translation id="4322742403972824594">Isifinyezo sekhibhodi sika-Ctrl + Alt + Umcibisholo Waphezulu sishintshile. Ukuze usebenzise ukhiye we-Home, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Wangakwesobunxele.</translation>
-<translation id="4331809312908958774">I-Chrome OS</translation>
 <translation id="4333628967105022692">I-Lacros ayisekelwa ngenkathi abasebenzisi abaningi bangene ngemvume.</translation>
 <translation id="4338109981321384717">Ingilazi yokusondeza</translation>
 <translation id="4351433414020964307">Umsizi uyalayisha...</translation>
@@ -795,7 +795,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="5788127256798019331">Amafayela e-Google Play</translation>
 <translation id="5790085346892983794">Impumelelo</translation>
 <translation id="5805809050170488595">Chofoza ukuze usebenzise i-<ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">I-Chromium OS</translation>
 <translation id="5825969630400862129">Izilungiselelo zamadivayisi axhunyiwe</translation>
 <translation id="583281660410589416">Akwaziwa</translation>
 <translation id="5837036133683224804">Misa i-<ph name="ROUTE_TITLE" /> ku-<ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@ Ukufaka okusha</translation>
 <translation id="79341161159229895">I-akhawunti iphethwe ngu-<ph name="FIRST_PARENT_EMAIL" /> no-<ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Cindezela u-<ph name="SHORTCUT_KEY_NAME" /> + V ukubuka ibhodi lakho lokunamathisela. Izinto ezi-5 zokugcina ozikopishile zilondolozwe ebhodini lakho lokunamathisela.</translation>
 <translation id="7942349550061667556">Okubomvu</translation>
-<translation id="7952747673138230804">I-Chrome OS ibonisa iziphakamiso zokuqukethwe okusha ongakuhlola. Ithumela izibalo ukuze ithuthukise ikhwalithi kuphela uma ukhethe ukwabelana ngedatha yokusetshenziswa. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Imodi yokugqama okuphezulu</translation>
 <translation id="7968693143708939792">Khetha ifolda...</translation>
 <translation id="7977927628060636163">Isesha amanethiwekhi eselula...</translation>

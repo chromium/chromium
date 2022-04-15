@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Digər dillər</translation>
 <translation id="1243027604378859286">Müəllif:</translation>
 <translation id="1246424317317450637">Qalın</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome OS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="1250759482327835220">Növbəti dəfə daha sürətli ödəniş etmək üçün kartı, adı və faktura ünvanını Google Hesabınızda yadda saxlayın.</translation>
 <translation id="1252799212227771492">"Cədvəl yaradın" düyməsi, Enter düyməsinə basaraq cəld yeni Google Cədvəli yaradın</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinxronlaşdırıldı)</translation>
@@ -384,7 +383,6 @@
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919367280705858090">Spesifik xəta mesajı ilə bağlı yardım əldə edin</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
-<translation id="1923390796829649802">"Əlçatımlılıq ayarlarını idarə edin" düyməsi, Enter düyməsinə basaraq Chrome OS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="1924727005275031552">Yeni</translation>
 <translation id="1927439593081478069">Chrome Təhlükəsizlik Yoxlanışını İcra Edin düyməsi, Chrome ayarlarında Təhlükəsizlik Yoxlanışını icra etmək üçün Enter düyməsinə basın</translation>
 <translation id="1939175642807587452">Saytlar bildirişlər göndərmək üçün icazə istəyə bilər</translation>
@@ -643,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında baxış tarixçəsi, kukilər, keş və daha çoxunu təmizləyin</translation>
 <translation id="2650446666397867134">Fayla giriş rədd edildi</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
-<translation id="2659491813326907275">Chrome OS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="2660779039299703961">Tədbir</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Heç biri}=1{1 parol (<ph name="DOMAIN_LIST" /> üçün)}=2{2 parol (<ph name="DOMAIN_LIST" /> üçün)}other{# parol (<ph name="DOMAIN_LIST" /> üçün)}}</translation>
 <translation id="2666092431469916601">Yuxarı</translation>

@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Mai multe limbi</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Aldin</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza instrumentele de accesibilitate în setările sistemului de operare Chrome</translation>
 <translation id="1250759482327835220">Pentru a plăti mai rapid data viitoare, salvează cardul, numele și adresa de facturare în Contul Google.</translation>
 <translation id="1252799212227771492">Butonul Creează o foaie, apasă pe Enter pentru a crea rapid o Foaie de calcul Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizate)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">Afișează mai multe</translation>
 <translation id="132390688737681464">Salvează și completează adresele</translation>
 <translation id="1330449323196174374">Îndoire tip fereastră spre stânga</translation>
+<translation id="1333745675627230582">Joacă Chrome Dino</translation>
 <translation id="1333989956347591814">Este posibil ca activitatea ta <ph name="BEGIN_EMPHASIS" />să fie în continuare vizibilă<ph name="END_EMPHASIS" /> pentru:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />site-urile pe care le accesezi;
@@ -383,7 +383,6 @@
 <translation id="1919345977826869612">Anunțuri</translation>
 <translation id="1919367280705858090">Obține ajutor în privința unui anumit mesaj de eroare</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Niciunul}=1{1 site}few{# site-uri}other{# de site-uri}}</translation>
-<translation id="1923390796829649802">Butonul Gestionează setările de accesibilitate, apasă pe Enter pentru a personaliza instrumentele de accesibilitate în setările sistemului de operare Chrome</translation>
 <translation id="1924727005275031552">Nou</translation>
 <translation id="1927439593081478069">Butonul Rulează verificarea de siguranță pentru Chrome, apasă pe Enter pentru a rula verificarea de siguranță în setările Chrome</translation>
 <translation id="1939175642807587452">Poate solicita permisiunea de a trimite notificări</translation>
@@ -642,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
 <translation id="2650446666397867134">Accesul la fișier a fost refuzat</translation>
 <translation id="2653659639078652383">Trimite</translation>
-<translation id="2659491813326907275">Personalizează instrumentele de accesibilitate în setările Chrome OS</translation>
 <translation id="2660779039299703961">Eveniment</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Niciuna}=1{O parolă (pentru <ph name="DOMAIN_LIST" />)}=2{2 parole (pentru <ph name="DOMAIN_LIST" />)}few{# parole (pentru <ph name="DOMAIN_LIST" />)}other{# de parole (pentru <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Sus</translation>
@@ -746,6 +744,7 @@
 <translation id="2972581237482394796">&amp;Repetă</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selectat(ă). <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Operă</translation>
+<translation id="2983666748527428214">Deschide o filă incognito</translation>
 <translation id="2985306909656435243">Dacă opțiunea este activată, Chromium va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="2985398929374701810">Introdu o adresă validă</translation>
 <translation id="2986368408720340940">Această metodă de preluare nu este disponibilă. Încearcă altă metodă.</translation>
@@ -1512,6 +1511,7 @@
 <translation id="5097099694988056070">Statistici privind dispozitivul, cum ar fi utilizarea CPU/RAM</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Site-ul nu este securizat</translation>
+<translation id="5109892411553231226">Gestionează metodele de plată</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Tava 18</translation>
 <translation id="5114987907971894280">Realitate virtuală</translation>
@@ -1759,6 +1759,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Dorești să completezi datele <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
+<translation id="5808435672482059465">Vezi istoricul Chrome</translation>
 <translation id="5808542072418270309">Jocuri de simulare</translation>
 <translation id="5810442152076338065">Conexiunea la <ph name="DOMAIN" /> este criptată folosind o suită de codificare învechită.</translation>
 <translation id="5812947184178430888">Când Chrome semnalează evenimente de securitate, datele relevante despre acele evenimente sunt trimise administratorului tău. Aici pot fi incluse adresele URL ale paginilor pe care le accesezi în Chrome, nume de fișiere sau metadate și numele de utilizator cu care te conectezi la aplicații bazate pe web, pe dispozitiv și la Chrome.</translation>

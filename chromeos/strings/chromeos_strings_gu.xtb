@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
-<translation id="1930797645656624981">Chrome OS ઇનપુટ પદ્ધતિ સેવા</translation>
 <translation id="1947737735496445907">પ્રિન્ટ થઈ ગયું</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">પાસવર્ડ બદલવાની તારીખ નીકળી ગઈ છે</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
-<translation id="2585245331261708204">Chrome OSમાં નવું શું છે</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2640549051766135490">આલ્બમ <ph name="TITLE" /> <ph name="DESC" />ની પસંદગી કરી</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4744944742468440486">તમારી પસંદગી સંબંધિત માહિતી</translation>
-<translation id="475869545581454722">Chrome OSનો પાસવર્ડ અપડેટ કરવામાં આવ્યો</translation>
 <translation id="4773299976671772492">રોક્યું</translation>
 <translation id="4782311465517282004">તમે જ્યારે રાઇટ ક્લિક કરો અથવા ટેક્સ્ટને ટચ કરીને થોડીવાર દબાવી રાખો ત્યારે વ્યાખ્યાઓ, અનુવાદો અથવા એકમના રૂપાંતરણો મેળવો</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ફોટો</translation>
@@ -738,6 +735,7 @@
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
 <translation id="9204237731135241582">Android ઍપથી ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="9211490828691860325">તમામ ડેસ્ક</translation>
+<translation id="932327136139879170">હોમ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>

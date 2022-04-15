@@ -148,7 +148,6 @@
 <translation id="1779766957982586368">ဝင်ဒိုး ပိတ်ရန်</translation>
 <translation id="1791662854739702043">ထည့်သွင်းပြီးပါပြီ</translation>
 <translation id="1792959175193046959">ဒေါင်းလုဒ်လုပ်ရန် နေရာမူရင်းကို အချိန်မရွေး ပြောင်းနိုင်သည်</translation>
-<translation id="1795251344124198516">Chrome နှင့် Chrome OS ထပ်တိုး ဝန်ဆောင်မှု စည်းမျဉ်းများ</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1810845389119482123">စင့်ခ်စတင်လုပ်ရန် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်မထားပါ</translation>
 <translation id="1829244130665387512">စာမျက်နှာတွင် ရှာရန်</translation>
@@ -185,7 +184,6 @@
 <translation id="2000419248597011803">လိပ်စာဘားနှင့် ရှာဖွေမှုအကွက်ထဲရှိ အချို့သော ကွတ်ကီးများနှင့် ရှာဖွေမှုများကို သင်၏မူရင်းရှာဖွေမှုအင်ဂျင်သို့ ပို့သည်</translation>
 <translation id="200114059308480249">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းမလား။</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ဖိုင်}other{# ဖိုင်}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK3" /> အတွက်လည်း အကျုံးဝင်သည်။</translation>
 <translation id="2020309681647789787">စင့်ခ်လုပ်ထားသော စက်အားလုံးတွင် သင်၏မှတ်တမ်း ရရှိမည်ဖြစ်သဖြင့် သင်လုပ်ဆောင်နေသည်များကို ရှေ့ဆက်နိုင်သည်</translation>
 <translation id="2021896219286479412">မျက်နှာပြင်အပြည့် ထိန်းချုပ်မှု</translation>
 <translation id="2038563949887743358">ဆိုဒ်ကြီး တောင်းဆိုမှု ဖွင့်မည်</translation>
@@ -462,7 +460,6 @@
 <translation id="3493531032208478708">အကြံပြုထားသည့် အကြောင်းအရာအကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်။</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Chrome ကို အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_TOS_LINK" /> နှင့် <ph name="BEGIN_ATOS_LINK" />Google Chrome နှင့် Chrome OS ထပ်တိုးဝန်ဆောင်မှု စည်းမျဉ်းများ<ph name="END_ATOS_LINK" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="3507132249039706973">'ပုံမှန် ကာကွယ်မှု' ကို ဖွင့်ထားသည်</translation>
 <translation id="3509330069915219067">အော့ဖ်လိုင်း။ Chrome က အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ။</translation>
 <translation id="3513704683820682405">လွန်ကဲပကတိအသွင်</translation>
@@ -589,6 +586,7 @@
 <translation id="4296252229500326964">ရုပ်ဖျက်တဘ် အသစ်</translation>
 <translation id="4298388696830689168">လင့်ခ်ချိတ်ထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">စကားဝှက်မန်နေဂျာ</translation>
 <translation id="4307992518367153382">အခြေခံများ</translation>
 <translation id="4320177379694898372">အင်တာနက် ချိတ်ဆက်မှု မရှိ</translation>
 <translation id="4321739720395210191">သင့်ကင်မရာကို ဖွင့်၍မရပါ။ သင့်စက်ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -956,7 +954,6 @@
 <translation id="6345878117466430440">ဖတ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="6363990818884053551">စင့်ခ်စတင်ရန် သင်ဖြစ်ကြောင်းအတည်ပြုပါ</translation>
 <translation id="6364438453358674297">အကြံပေးချက်ကို မှတ်တမ်း ထဲမှ ဖယ်ရှားမလား?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းအားဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="6380100320871303656">Chrome က သင်ဝင်ကြည့်လိုသည်ဟု ထင်သည့် စာမျက်နှာများကို မကြာခဏ ကြိုဖွင့်ပေးသည်။ ဤဆက်တင်သည် ဒေတာအသုံးပြုမှု များသွားစေနိုင်ပါသည်။</translation>
 <translation id="6385407407546870227">အစမ်းသုံးခြင်းများ ဖွင့်ထားပါက စပမ်းနှင့် လိမ်လည်မှုလျှော့ချခြင်းသည် ယုံကြည်မှုတိုကင်များပေါ် အမှီပြုပြီး ဝဘ်ဆိုက်များ လိမ်လည်မှုတိုက်ဖျက်ရာတွင်၊ လူနှင့် ဘော့တ်များကို ခွဲခြားဖော်ထုတ်ရာတွင် ကူညီပေးသည်။
 
@@ -1126,7 +1123,6 @@
 <translation id="7208109991155904980">တုံ့ပြန်မှုကို ရွှေ့လိုက်သည်</translation>
 <translation id="7222235798733126207">ဝဘ်ဆိုက်များကြား မျှဝေမှုကန့်သတ်ထားခြင်း</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခုကို စောင့်နေသည်}other{ဒေါင်းလုဒ် # ခုကို စောင့်နေသည်}}</translation>
-<translation id="7237045078887540010">Chrome အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_TOS_LINK" /> နှင့် <ph name="BEGIN_ATOS_LINK" />Google Chrome နှင့် Chrome OS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_ATOS_LINK" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_PRIVACY_LINK" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_PRIVACY_LINK" /> အတွက်လည်း အကျုံးဝင်သည်။</translation>
 <translation id="7242755609445462077">မြင်သာအောင်လုပ်ခြင်းတွင် ဟန်ပန်ပုံစံထည့်လိုက်သည် <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome တွင် <ph name="TARGET_DEVICE_NAME" /> က စင့်ခ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="7252076891734325316">သင့်ဖုန်းကို ကွန်ပျူတာအနီးတွင် ထားပါ</translation>

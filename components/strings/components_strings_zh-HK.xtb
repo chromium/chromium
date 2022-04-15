@@ -100,7 +100,6 @@
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1246424317317450637">粗體</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 作業系統設定度個人化您嘅無障礙工具</translation>
 <translation id="1250759482327835220">只要將您的付款卡、姓名和帳單地址儲存至您的 Google 帳戶，下次即可更快完成付款程序。</translation>
 <translation id="1252799212227771492">建立試算表掣，㩒一下 Enter 鍵就可以快速建立新嘅 Google 試算表</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" /> (已同步)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">顯示更多</translation>
 <translation id="132390688737681464">儲存和填入地址</translation>
 <translation id="1330449323196174374">左半邊對摺</translation>
+<translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="1333989956347591814">以下各方<ph name="BEGIN_EMPHASIS" />仍可看到<ph name="END_EMPHASIS" />您的活動：
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />您瀏覽的網站
@@ -379,7 +379,6 @@
 <translation id="1919345977826869612">廣告</translation>
 <translation id="1919367280705858090">瞭解如何修正特定錯誤訊息指出的錯誤</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
-<translation id="1923390796829649802">管理無障礙設定按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度將無障礙工具個人化。</translation>
 <translation id="1924727005275031552">新地址</translation>
 <translation id="1927439593081478069">執行 Chrome 安全檢查按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="1939175642807587452">可要求傳送通知</translation>
@@ -638,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度清除瀏覽記錄、Cookie、快取同更多資料</translation>
 <translation id="2650446666397867134">存取檔案被拒</translation>
 <translation id="2653659639078652383">提交</translation>
-<translation id="2659491813326907275">在 Chrome 作業系統設定中個人化您的無障礙工具</translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">返回頁首</translation>
@@ -742,6 +740,7 @@
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前揀咗<ph name="ROW_NAME" />。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌劇</translation>
+<translation id="2983666748527428214">開啟無痕分頁</translation>
 <translation id="2985306909656435243">啟用後，Chromium 會在此裝置上儲存信用卡資料副本，以加快填表速度。</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
 <translation id="2986368408720340940">不支援此取貨方式，請選擇其他方式。</translation>
@@ -1502,6 +1501,7 @@
 <translation id="5097099694988056070">CPU/RAM 使用情況等裝置統計資料</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">這是不安全的網站</translation>
+<translation id="5109892411553231226">管理付款方式</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">紙匣 18</translation>
 <translation id="5114987907971894280">虛擬實境﻿</translation>
@@ -1749,6 +1749,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">要填寫 <ph name="CARD_DETAIL" /> 的資料嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
+<translation id="5808435672482059465">查看 Chrome 歷史記錄</translation>
 <translation id="5808542072418270309">模擬遊戲</translation>
 <translation id="5810442152076338065">您與 <ph name="DOMAIN" /> 之間的連線透過過時的加密套件加密處理。</translation>
 <translation id="5812947184178430888">當 Chrome 標示安全性事件時，系統會向您的管理員發送該事件的相關資料。這些資料可包括您在 Chrome 瀏覽的網址、檔案名稱或元數據，以及用於登入網絡應用程式、裝置和 Chrome 的使用者名稱。</translation>

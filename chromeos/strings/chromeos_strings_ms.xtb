@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">Semakan perkakasan</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
-<translation id="1930797645656624981">Perkhidmatan Kaedah Input OS Chrome</translation>
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">Tidak dapat menyambung kepada Internet.</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
-<translation id="2585245331261708204">Item Baharu OS Chrome</translation>
 <translation id="2619761439309613843">Muat Semula Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> dipilih</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4744944742468440486">Maklumat yang berkaitan dengan pilihan anda</translation>
-<translation id="475869545581454722">Kata laluan OS Chrome dikemas kini</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4782311465517282004">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -739,6 +736,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9204237731135241582">Tidak dapat menghubungi get laluan daripada apl Android</translation>
 <translation id="9211490828691860325">Semua meja</translation>
+<translation id="932327136139879170">Laman Utama</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="960719561871045870">Kod operator</translation>

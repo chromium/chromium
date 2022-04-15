@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Plus de langues</translation>
 <translation id="1243027604378859286">Auteur :</translation>
 <translation id="1246424317317450637">Gras</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser vos outils d'accessibilité dans les paramètres de Chrome OS</translation>
 <translation id="1250759482327835220">Pour accélérer le paiement la prochaine fois, enregistrez votre carte, votre nom et votre adresse de facturation dans votre compte Google.</translation>
 <translation id="1252799212227771492">Bouton Créer une feuille, appuyez sur Entrée pour créer une feuille Google rapidement</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">Afficher plus</translation>
 <translation id="132390688737681464">Enregistrer et remplir les adresses</translation>
 <translation id="1330449323196174374">Pli du volet gauche</translation>
+<translation id="1333745675627230582">Jouer au jeu du dinosaure de Chrome</translation>
 <translation id="1333989956347591814">Votre activité <ph name="BEGIN_EMPHASIS" />peut encore être visible<ph name="END_EMPHASIS" /> pour :
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />les sites Web que vous consultez;
@@ -379,7 +379,6 @@
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919367280705858090">Obtenir de l'aide pour un message d'erreur spécifique</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Aucun}=1{1 site}one{# site}other{# sites}}</translation>
-<translation id="1923390796829649802">Bouton Gérer les paramètres d'accessibilité, appuyez sur la touche Entrée pour personnaliser vos outils d'accessibilité dans les paramètres de Chrome OS</translation>
 <translation id="1924727005275031552">Nouvelles</translation>
 <translation id="1927439593081478069">Bouton Effectuer une vérification de sécurité de Chrome, appuyez sur la touche Entrée pour effectuer une vérification de sécurité dans les paramètres de Chrome</translation>
 <translation id="1939175642807587452">Les sites peuvent demander à envoyer des notifications</translation>
@@ -638,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour effacer votre historique de navigation, vos témoins, votre cache et plus encore dans les paramètres de Chrome</translation>
 <translation id="2650446666397867134">Accès au fichier refusé</translation>
 <translation id="2653659639078652383">Envoyer</translation>
-<translation id="2659491813326907275">Personnalisez vos outils d'accessibilité dans les paramètres de Chrome OS</translation>
 <translation id="2660779039299703961">Événement</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Haut</translation>
@@ -742,6 +740,7 @@
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opéra</translation>
+<translation id="2983666748527428214">Ouvrir l'onglet de navigation privée</translation>
 <translation id="2985306909656435243">Si l'option est activée, Chromium conservera une copie de votre carte sur cet appareil pour vous permettre de remplir plus rapidement vos formulaires.</translation>
 <translation id="2985398929374701810">Entrez une adresse valide</translation>
 <translation id="2986368408720340940">Ce mode de ramassage n'est pas disponible. Essayez un autre mode.</translation>
@@ -1503,6 +1502,7 @@
 <translation id="5097099694988056070">Statistiques relatives à l'appareil, comme l'utilisation du processeur ou de la mémoire vive</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Ce site n'est pas sécurisé</translation>
+<translation id="5109892411553231226">Gérer les modes de paiement</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Bac 18</translation>
 <translation id="5114987907971894280">Réalité virtuelle</translation>
@@ -1750,6 +1750,7 @@
 <translation id="5789643057113097023">,</translation>
 <translation id="5803412860119678065">Voulez-vous fournir les renseignements concernant votre carte <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Autorisations</translation>
+<translation id="5808435672482059465">Afficher votre historique de Chrome</translation>
 <translation id="5808542072418270309">Jeux de simulation</translation>
 <translation id="5810442152076338065">Votre connexion au domaine <ph name="DOMAIN" /> est protégée par une suite de chiffrement obsolète.</translation>
 <translation id="5812947184178430888">Lorsque Chrome signale des événements relatifs à la sécurité, les données pertinentes sur les événements sont envoyées à votre administrateur. Ces données pourraient comprendre les URL des pages que vous visitez dans Chrome, les noms ou les métadonnées des fichiers ainsi que le nom d'utilisateur que vous utilisez pour vous connecter aux applications Web, à votre appareil et à Chrome.</translation>

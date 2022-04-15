@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">See konto ja kõik salvestamata andmed eemaldatakse Chrome'ist ja muudest selles seadmes olevatest Google'i rakendustest.</translation>
 <translation id="1968388653333775699">Tehke Chrome'iga rohkem</translation>
 <translation id="2009224836393115614">Chrome'il ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
+<translation id="2056123005618757196">Google Chrome on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
 <translation id="2147651015520127414">Chrome kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Chrome'i sünkroonimise teave</translation>
 <translation id="2313070403598893276">Google Chrome on lihtne, turvaline ja kiirem kui kunagi varem</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Desinstallige need:</translation>
 <translation id="4633328489441962921">Chrome ei saa värskendusi otsida</translation>
 <translation id="4698415050768537821">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Rakenduse täiustamiseks saadab Chrome Google'ile kasutus- ja krahhiandmeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ei toetata Chrome'i beetaversioonis</translation>
 <translation id="5030102366287574140">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest.</translation>
 <translation id="5108659628347594808">Chrome'i täiustamine</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Lülituge Chrome'ile</translation>
 <translation id="6238746320622508509">Laske Chrome'il oma inkognito vahelehed lukustada.</translation>
 <translation id="6387994324662817823">Paroolid salvestatakse Google'i rakendusse Paroolihaldur ainult selles seadmes.</translation>
+<translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6427126399757991875">Teie organisatsioon seadistab Chrome'i …</translation>
 <translation id="6600954340915313787">Chrome'i kopeeritud</translation>
 <translation id="6634107063912726160">Väljalogimisel ei sünkrooni Chrome teie Google'i kontoga uusi andmeid. Varem sünkroonitud andmed jäävad kontole.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Turvalisus Google Chrome'iga</translation>
 <translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>
 <translation id="8788269841521769222">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
+<translation id="8969290730818637510">Kui see on sisse lülitatud
+<ph name="BEGIN_INDENT" />  • Aitate täiustada Chrome'i inimeste jaoks, kes kasutavad seda nagu teie.<ph name="END_INDENT" />
+
+Olulised aspektid
+<ph name="BEGIN_INDENT" />  • Google'ile saadetakse teavet teie Chrome'i kasutuse kohta, kuid see teave pole teiega seotud.
+
+  • Kui Chrome jookseb kokku, võivad krahhi üksikasjad isiklikku teavet sisaldada.
+
+  • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>
 <translation id="9122931302567044771">See tähendab, et Chrome taotleb iga kord töölauasaiti.</translation>
 </translationbundle>

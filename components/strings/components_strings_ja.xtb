@@ -100,7 +100,6 @@
 <translation id="124116460088058876">その他の言語</translation>
 <translation id="1243027604378859286">作成者:</translation>
 <translation id="1246424317317450637">太字</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome OS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="1250759482327835220">カード、お名前、請求先住所を Google アカウントに保存すると、次回のお支払いが簡単になります。</translation>
 <translation id="1252799212227771492">[スプレッドシートを作成] ボタンです。Enter キーを押すと、新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（同期済み）</translation>
@@ -303,7 +302,7 @@
 <translation id="1711528724596764268">機械学習、人工知能</translation>
 <translation id="1712552549805331520"><ph name="URL" /> から、ローカルのパソコンにデータを永続的に保存する許可を求められています</translation>
 <translation id="1713628304598226412">トレイ 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">金</translation>
 <translation id="1717218214683051432">モーション センサー</translation>
 <translation id="1717494416764505390">用紙受け 3</translation>
 <translation id="1718029547804390981">ドキュメントのサイズが大きすぎるため注釈を追加できません</translation>
@@ -380,7 +379,6 @@
 <translation id="1919345977826869612">広告</translation>
 <translation id="1919367280705858090">特定のエラー メッセージに関する情報</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
-<translation id="1923390796829649802">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと Chrome OS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="1924727005275031552">新</translation>
 <translation id="1927439593081478069">[Chrome の安全確認を実行] ボタンです。Enter キーを押すと Chrome の設定で安全確認を実行できます</translation>
 <translation id="1939175642807587452">通知の送信を要求できる</translation>
@@ -639,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2650446666397867134">ファイルへのアクセスが拒否されました</translation>
 <translation id="2653659639078652383">送信</translation>
-<translation id="2659491813326907275">Chrome OS の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件}other{<ph name="DOMAIN_LIST" /> のパスワード # 件}}</translation>
 <translation id="2666092431469916601">一番上</translation>

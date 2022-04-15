@@ -359,6 +359,7 @@
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
 <translation id="4063300985191096908">Иди на фид</translation>
 <translation id="408404951701638773">Трака за претрагу је сада доступнија</translation>
+<translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="411254640334432676">Преузимање није успело.</translation>
 <translation id="4112644173421521737">Претражи</translation>
 <translation id="4113030288477039509">Овим управља администратор</translation>
@@ -609,6 +610,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6232736989810857397">Ово вам омогућава да једноставно правите догађаје у календару помоћу Google објективa.</translation>
 <translation id="6254066287920239840">Отварајте ликнове у апликацији уместо у прегледачу.</translation>
 <translation id="6255097610484507482">Измена кредитне картице</translation>
+<translation id="6277426346321820595">Без заштите</translation>
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
@@ -807,6 +809,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7884694604461143138">Историја претраге (пронађено је <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Ради заштите приватности Chrome неће аутоматски попуњавати ово поље.</translation>
 <translation id="7911190106180361398">Организација не дозвољава да синхронизујете све.</translation>
+<translation id="7920949005883349320">Приватност и безбедност</translation>
 <translation id="7930998711684428189">Упозорава вас ако су лозинке откривене при упаду у податке.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извези лозинке…</translation>

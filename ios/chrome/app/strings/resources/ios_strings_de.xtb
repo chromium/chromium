@@ -277,6 +277,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3290875554372353449">Konto auswählen</translation>
 <translation id="3311748811247479259">Aus</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
+<translation id="3324298231050545260">Kalender-Datei verfügbar</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="3329904751041170572">Verbindung zum Server konnte nicht hergestellt werden.</translation>
 <translation id="3335947283844343239">Geschlossenen Tab wieder öffnen</translation>
@@ -359,6 +360,7 @@ Gehe so vor:</translation>
 <translation id="4049507953662678203">Überprüfe deiner Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="4063300985191096908">Zum Feed</translation>
 <translation id="408404951701638773">Auf die Suchleiste kann jetzt noch einfacher zugegriffen werden</translation>
+<translation id="4108998448622696017">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt dich entsprechend.</translation>
 <translation id="411254640334432676">Fehler beim Download</translation>
 <translation id="4112644173421521737">Suche</translation>
 <translation id="4113030288477039509">Von deinem Administrator verwaltet</translation>
@@ -609,6 +611,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6232736989810857397">Dadurch kannst du mithilfe von Google Lens ganz einfach Kalendertermine erstellen.</translation>
 <translation id="6254066287920239840">Links in der App statt im Browser öffnen.</translation>
 <translation id="6255097610484507482">Kreditkarte bearbeiten</translation>
+<translation id="6277426346321820595">Kein Safe Browsing</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
 <translation id="6289501276895392862">Du folgst <ph name="CHANNEL_NAME" /> nicht mehr</translation>
 <translation id="6293101329759844770">Wenn du Safe Browsing aktivieren möchtest, öffne <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /> und tippe auf „Safe Browsing“.</translation>
@@ -807,6 +810,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7884694604461143138">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
 <translation id="7887198238286927132">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch aus.</translation>
 <translation id="7911190106180361398">Deine Organisation lässt nicht zu, dass du alles synchronisierst.</translation>
+<translation id="7920949005883349320">Datenschutz und Sicherheit</translation>
 <translation id="7930998711684428189">Du wirst gewarnt, wenn Passwörter durch eine Datenpanne preisgegeben werden.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Passwörter exportieren…</translation>
@@ -964,4 +968,5 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="988141524645182168">Andere Geräte</translation>
 <translation id="989988560359834682">Adresse bearbeiten</translation>
 <translation id="994757059139821576">Vorgeschlagene Artikel</translation>
+<translation id="997742718232442409">Diese Website versucht, eine Kalender-Datei herunterzuladen.</translation>
 </translationbundle>

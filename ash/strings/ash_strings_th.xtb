@@ -520,6 +520,7 @@
 <translation id="4095366824370681039">ปากกาหมึก</translation>
 <translation id="4112140312785995938">ย้อนกลับ</translation>
 <translation id="4114315158543974537">เปิด Phone Hub</translation>
+<translation id="4115378294792113321">สีม่วงแดง</translation>
 <translation id="412298498316631026">หน้าต่าง</translation>
 <translation id="4123259114412175274">หากต้องการปลดล็อก Chromebook ให้ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
 <translation id="4129129681837227511">หากต้องการดูการแจ้งเตือนในหน้าจอล็อก ให้ปลดล็อกเพื่อเปลี่ยนการตั้งค่า</translation>
@@ -559,7 +560,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">คุณกดแป้นพิมพ์ลัดสำหรับคอนทราสต์สูง จะเปิดคอนทราสต์สูงไหม</translation>
 <translation id="4322742403972824594">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรขึ้น หากต้องการใช้แป้น Home ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรซ้าย</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">ไม่รองรับ Lacros ขณะที่มีผู้ใช้ลงชื่อเข้าใช้หลายคน</translation>
 <translation id="4338109981321384717">แว่นขยาย</translation>
 <translation id="4351433414020964307">Assistant กำลังโหลด...</translation>
@@ -792,7 +792,6 @@
 <translation id="5788127256798019331">ไฟล์ Play</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
@@ -1143,7 +1142,6 @@
 <translation id="79341161159229895">บัญชีที่จัดการโดย <ph name="FIRST_PARENT_EMAIL" /> และ <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">กด <ph name="SHORTCUT_KEY_NAME" /> + V เพื่อดูคลิปบอร์ด ระบบจะบันทึก 5 รายการล่าสุดที่คุณคัดลอกไว้ในคลิปบอร์ด</translation>
 <translation id="7942349550061667556">สีแดง</translation>
-<translation id="7952747673138230804">Chrome OS จะแสดงคำแนะนำเนื้อหาใหม่ให้สำรวจ ส่งสถิติเพื่อปรับปรุงคุณภาพต่อเมื่อคุณเลือกที่จะแชร์ข้อมูลการใช้งาน <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">โหมดคอนทราสต์สูง</translation>
 <translation id="7968693143708939792">เลือกโฟลเดอร์...</translation>
 <translation id="7977927628060636163">กำลังค้นหาเครือข่ายมือถือ...</translation>

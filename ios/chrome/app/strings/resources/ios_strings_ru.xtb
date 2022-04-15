@@ -277,6 +277,7 @@
 <translation id="3290875554372353449">Выберите аккаунт</translation>
 <translation id="3311748811247479259">Отключено</translation>
 <translation id="3324193307694657476">Адрес, строка 2</translation>
+<translation id="3324298231050545260">Доступен файл календаря</translation>
 <translation id="3328801116991980348">Информация о сайте</translation>
 <translation id="3329904751041170572">Не удалось установить соединение с сервером.</translation>
 <translation id="3335947283844343239">Открыть закрытую вкладку</translation>
@@ -359,6 +360,7 @@
 <translation id="4049507953662678203">Проверьте подключение к Интернету и повторите попытку.</translation>
 <translation id="4063300985191096908">Перейти к ленте</translation>
 <translation id="408404951701638773">Пользоваться строкой поиска стало ещё удобнее</translation>
+<translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
 <translation id="411254640334432676">Ошибка при скачивании</translation>
 <translation id="4112644173421521737">Поиск</translation>
 <translation id="4113030288477039509">Управляется администратором</translation>
@@ -609,6 +611,7 @@
 <translation id="6232736989810857397">Вы сможете создавать мероприятия в календаре с помощью Google Объектива.</translation>
 <translation id="6254066287920239840">Открывать ссылки в приложении, а не в браузере.</translation>
 <translation id="6255097610484507482">Изменение данных кредитной карты</translation>
+<translation id="6277426346321820595">Защита отключена</translation>
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>
 <translation id="6289501276895392862">Подписка на "<ph name="CHANNEL_NAME" />" отменена.</translation>
 <translation id="6293101329759844770">Чтобы включить Безопасный просмотр, откройте <ph name="BEGIN_LINK" />сервисы Google<ph name="END_LINK" /> и нажмите "Безопасный просмотр".</translation>
@@ -807,6 +810,7 @@
 <translation id="7884694604461143138">Поиск в истории (совпадений: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
 <translation id="7911190106180361398">Синхронизация всех данных запрещена организацией</translation>
+<translation id="7920949005883349320">Конфиденциальность и безопасность</translation>
 <translation id="7930998711684428189">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспорт паролей...</translation>
@@ -964,4 +968,5 @@
 <translation id="988141524645182168">Другие устройства</translation>
 <translation id="989988560359834682">Изменение адреса</translation>
 <translation id="994757059139821576">Рекомендуемые статьи</translation>
+<translation id="997742718232442409">Этот сайт пытается скачать файл календаря.</translation>
 </translationbundle>

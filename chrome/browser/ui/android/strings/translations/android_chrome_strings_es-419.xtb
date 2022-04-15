@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Quitar</translation>
+<translation id="1193729455103054076">¿Quieres usar una contraseña segura?</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1202892408424955784">Productos con seguimiento</translation>
@@ -147,7 +148,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no pueden usarse para 
 <translation id="1779766957982586368">Cerrar ventana</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792959175193046959">Cambia la ubicación predeterminada de las descargas en cualquier momento</translation>
-<translation id="1795251344124198516">Condiciones del Servicio Adicionales de Chrome y el Sistema operativo Chrome</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">No se completó la configuración de la sincronización inicial</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
@@ -184,7 +184,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas de la barra de direcciones y del cuadro de búsqueda a tu motor de búsqueda predeterminado</translation>
 <translation id="200114059308480249">¿Quieres incluir el texto adyacente en las búsquedas de Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# archivo}other{# archivos}}</translation>
-<translation id="2015836039326522978">Se abrirá <ph name="APP_NAME" /> en Chrome. Si continúas, aceptas las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />. También se aplica la <ph name="BEGIN_LINK3" />Política de privacidad<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">Verás tu historial en todos los dispositivos sincronizados, por lo que podrás continuar con tus tareas desde donde sea.</translation>
 <translation id="2021896219286479412">Controles en pantalla completa</translation>
 <translation id="2038563949887743358">Activar la opción para solicitar versión de escritorio</translation>
@@ -461,7 +460,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
 <translation id="3495219333887281978">La hoja inferior de acceso está abierta a media altura.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Si usas Chrome, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio de Google<ph name="END_TOS_LINK" /> y las <ph name="BEGIN_ATOS_LINK" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Se activó la protección estándar</translation>
 <translation id="3509330069915219067">Sin conexión. Chrome no puede buscar actualizaciones.</translation>
 <translation id="3513704683820682405">Realidad aumentada</translation>
@@ -588,6 +586,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="4296252229500326964">Nueva pestaña de incógnito</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Administrador de contraseñas</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4320177379694898372">Sin conexión a Internet</translation>
 <translation id="4321739720395210191">No se puede abrir la cámara. Reinicia el dispositivo y vuelve a intentarlo.</translation>
@@ -956,7 +955,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6345878117466430440">Marcar como leído</translation>
 <translation id="6363990818884053551">Para iniciar la sincronización, verifica tu identidad.</translation>
 <translation id="6364438453358674297">¿Borrar la sugerencia del historial?</translation>
-<translation id="6379829913050047669">Se abrirá <ph name="APP_NAME" /> en Chrome. Si continúas, aceptas las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Google Chrome y el Sistema operativo Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Precarga con más frecuencia las páginas que Chrome considera que posiblemente visites. Esta configuración puede generar un mayor uso de datos.</translation>
 <translation id="6385407407546870227">Cuando comienzan las pruebas, la reducción de spam y fraude se basa en tokens de confianza que ayudan a los sitios a combatir el fraude y distinguir a los bots de las personas.
 
@@ -1126,7 +1124,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no pueden usarse para 
 <translation id="7208109991155904980">Se movió la reacción</translation>
 <translation id="7222235798733126207">Limitamos el uso compartido entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
-<translation id="7237045078887540010">Si usas Chrome, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio de Google<ph name="END_TOS_LINK" /> y las <ph name="BEGIN_ATOS_LINK" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_ATOS_LINK" />. También se aplica la <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidad<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Nota estilizada con contenido destacado (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Comprueba que <ph name="TARGET_DEVICE_NAME" /> tenga activada la sincronización en Chrome</translation>
 <translation id="7252076891734325316">Coloca el teléfono cerca de la computadora</translation>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Esta cuenta y los datos sin guardar se quitarán de Chrome y de las demás aplicaciones de Google instaladas en este dispositivo.</translation>
 <translation id="1968388653333775699">Haz mucho más con Chrome</translation>
 <translation id="2009224836393115614">Chrome no ha podido comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
+<translation id="2056123005618757196">Haz más cosas con Google Chrome: funciona más rápido que nunca y es sencillo y seguro.</translation>
 <translation id="2147651015520127414">Chrome ha verificado que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="2199719347983604670">Datos de Sincronización de Chrome</translation>
 <translation id="2313070403598893276">Google Chrome es sencillo, seguro y más rápido que nunca</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Algunos complementos hacen que Chrome falle. Desinstálalos.</translation>
 <translation id="4633328489441962921">Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="4698415050768537821">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Para ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_LINK" />Gestionar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">No compatible con Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más</translation>
 <translation id="5108659628347594808">Mejorar Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Cambiar a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee tus pestañas de incógnito.</translation>
 <translation id="6387994324662817823">Las contraseñas se guardan en el gestor de contraseñas de Google solo en este dispositivo.</translation>
+<translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="6427126399757991875">Tu organización está configurando Chrome...</translation>
 <translation id="6600954340915313787">Copiada a Chrome</translation>
 <translation id="6634107063912726160">Si cierras sesión, Chrome no sincronizará ningún dato nuevo con tu cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Protégete con Google Chrome</translation>
 <translation id="8772179140489533211">Muestra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">No tendrás que recordar esta contraseña. Se guardará en el gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
+<translation id="8969290730818637510">Si esta opción está activada:
+<ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma manera que tú.<ph name="END_INDENT" />
+
+Notas importantes:
+<ph name="BEGIN_INDENT" />  • Se envía información a Google sobre el uso que haces de Chrome, pero no está vinculada a ti.
+
+  • Si Chrome falla, puede que los detalles sobre el fallo incluyan alguna información personal.
+
+  • Si activas la sincronización, puede que las métricas también incluyan información sobre las URLs que visites.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">¿Establecer Chrome como predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome siempre solicitará la vista del sitio web como ordenador.</translation>
 </translationbundle>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
 <translation id="1968388653333775699">Realiza más tareas con Chrome</translation>
 <translation id="2009224836393115614">Chrome no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
+<translation id="2056123005618757196">Realiza más tareas con una versión de Google Chrome más simple, segura y rápida que nunca.</translation>
 <translation id="2147651015520127414">Chrome verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="2199719347983604670">Datos de Sincronización de Chrome</translation>
 <translation id="2313070403598893276">Google Chrome es simple, seguro y más rápido que nunca</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Algunos complementos causan bloqueos en Chrome. Desinstala:</translation>
 <translation id="4633328489441962921">Chrome no puede buscar actualizaciones</translation>
 <translation id="4698415050768537821">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">Para ayudarnos a mejorar la app, Chrome envía datos de uso y fallas a Google. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">No es compatible en la versión beta de Chrome</translation>
 <translation id="5030102366287574140">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="5108659628347594808">Cómo mejorar Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Cambia a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee tus pestañas de incógnito.</translation>
 <translation id="6387994324662817823">Las contraseñas se guardan en el Administrador de contraseñas de Google solo en este dispositivo.</translation>
+<translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="6427126399757991875">Tu organización está configurando Chrome…</translation>
 <translation id="6600954340915313787">Se copió en Chrome.</translation>
 <translation id="6634107063912726160">Si sales de la cuenta, Chrome no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Aprovecha la seguridad de Google Chrome</translation>
 <translation id="8772179140489533211">Muestra mensajes para acceder a Chrome.</translation>
 <translation id="8788269841521769222">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
+<translation id="8969290730818637510">Cuando se activa:
+<ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma forma que tú.<ph name="END_INDENT" />
+
+Aspectos para tener en cuenta:
+<ph name="BEGIN_INDENT" />  • Se envía información sobre tu uso de Chrome a Google, pero no está vinculada a ti.
+
+  • Si Chrome falla, los detalles sobre lo ocurrido pueden incluir información personal.
+
+  • Si desactivas la sincronización, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">¿Deseas establecer Chrome como navegador predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome solicitará la versión de escritorio del sitio cada vez.</translation>
 </translationbundle>

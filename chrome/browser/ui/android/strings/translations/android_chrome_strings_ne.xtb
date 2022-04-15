@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1193729455103054076">भरपर्दो पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1202892408424955784">ट्र्याक गरिएका उत्पादनहरू</translation>
@@ -147,7 +148,6 @@
 <translation id="1779766957982586368">सन्झ्याल बन्द गर्नुहोस्</translation>
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792959175193046959">डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
-<translation id="1795251344124198516">Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
@@ -184,7 +184,6 @@
 <translation id="2000419248597011803">यसले ठेगाना पट्टी र खोज बाकसका केही कुकी र खोजहरूलाई तपाईंको डिफल्ट खोज इन्जिनमा पठाउँछ</translation>
 <translation id="200114059308480249">Google मा कुनै शब्द वा वाक्यांशका बारेमा थप जानकारी खोज्दा सो शब्द वा वाक्यांश वरपरका पाठहरू पनि समावेश गर्ने हो?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइलहरू}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_LINK3" />गोपनीयता नीति<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="2020309681647789787">तपाईंका सबै डिभाइसमा तपाईंको ब्राउजिङ इतिहास सिंक गरिने भएकाले तपाईं जुनसुकै डिभाइसबाट आफूले गर्दै गरेको कार्य जारी राख्न सक्नुहुन्छ</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटप साइट खोल्नुहोस्</translation>
@@ -461,7 +460,6 @@
 <translation id="3493531032208478708">सुझाव दिइएको सामग्रीको बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">साइन इन गर्ने सुविधा पुछारको पानाको आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />Google का सेवाका सर्त<ph name="END_TOS_LINK" /> र <ph name="BEGIN_ATOS_LINK" />Google Chrome तथा Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_ATOS_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="3507132249039706973">'मानक सुरक्षा' सक्रिय छ</translation>
 <translation id="3509330069915219067">अफलाइन छ। Chrome ले अपडेट उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सकेन।</translation>
 <translation id="3513704683820682405">अग्मेन्टेड रियालिटी</translation>
@@ -588,6 +586,7 @@
 <translation id="4296252229500326964">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4298388696830689168">लिंक गरिएका साइटहरू</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
 <translation id="4307992518367153382">आधारभूत</translation>
 <translation id="4320177379694898372">इन्टरनेट छैन</translation>
 <translation id="4321739720395210191">तपाईंको क्यामेरा खोल्न सकिएन। आफ्नो यन्त्र पुनः सुरु गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -955,7 +954,6 @@
 <translation id="6345878117466430440">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="6363990818884053551">सिंक गर्ने कार्य सुरु गर्न यो काम गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। जारी राखेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ।</translation>
 <translation id="6380100320871303656">यो मोड अन हुँदा Chrome लाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज अझ छिटो अन्तरालमा प्रिलोड गरेर राखिन्छ। यो सेटिङ अन हुँदा बढी डेटा प्रयोग हुन सक्छ।</translation>
 <translation id="6385407407546870227">ट्रायल अन भएका बेला स्प्याम तथा ठगी न्यूनीकरण गर्ने सुविधाले साइटहरूलाई ठगी रोकथाम गर्न र बट तथा मान्छेबिचको फरक छुट्याउन सघाउन ट्रस्ट टोकनहरू प्रयोग गर्छ।
 
@@ -1125,7 +1123,6 @@
 <translation id="7208109991155904980">प्रतिक्रिया सारिएको छ</translation>
 <translation id="7222235798733126207">साइटहरूका बिचमा सीमित जानकारीको आदानप्रदान</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
-<translation id="7237045078887540010">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />Google का सेवाका सर्त<ph name="END_TOS_LINK" /> र <ph name="BEGIN_ATOS_LINK" />Google Chrome तथा Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_ATOS_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_LINK" /> पनि लागू हुन्छ।</translation>
 <translation id="7242755609445462077">शैलीबद्ध हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7252076891734325316">आफ्नो फोन कम्प्युटरको छेउमा राख्नुहोस्</translation>

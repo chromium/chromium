@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">Ծալել ընտրացանկը</translation>
 <translation id="1364382257761975320">Ապակողպեք ձեր Chromebook-ը մատնահետքի միջոցով</translation>
 <translation id="1364618750746929654">Չհաջողվեց ստեղծել տառադարձում</translation>
+<translation id="1372545819342940910">Պահել աշխատասեղանը</translation>
 <translation id="1383597849754832576">Չհաջողվեց ներբեռնել ենթագրերի ֆայլը։ Փորձեք ավելի ուշ։</translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1391102559483454063">Միացված է</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">Գրիչ</translation>
 <translation id="4112140312785995938">Հետ գնալ</translation>
 <translation id="4114315158543974537">Միացրեք Phone Hub-ը</translation>
+<translation id="4115378294792113321">Ծիրանեգույն</translation>
 <translation id="412298498316631026">պատուհան</translation>
 <translation id="4123259114412175274">Chromebook-ն ապակողպելու համար հեռախոսում միացրեք Bluetooth-ը</translation>
 <translation id="4129129681837227511">Ծանուցումները կողպէկրանին տեսնելու համար ապակողպեք սարքը և փոխեք կարգավորումները:</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Դուք սեղմել եք բարձր կոնտրաստի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
 <translation id="4322742403972824594">«Ctrl + Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Home ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ձախ սլաք» ստեղնային դյուրանցումը։</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros-ը չի աջակցվում, երբ մեկից ավելի օգտատերեր են մուտք գործում</translation>
 <translation id="4338109981321384717">Խոշորացույց</translation>
 <translation id="4351433414020964307">Օգնականը բեռնվում է...</translation>
@@ -794,7 +795,6 @@
 <translation id="5788127256798019331">Play-ի ֆայլեր</translation>
 <translation id="5790085346892983794">Հաջողվեց</translation>
 <translation id="5805809050170488595">Սեղմել՝ <ph name="NETWORK_NAME" /> ցանցն ակտիվացնելու համար</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
@@ -1146,7 +1146,6 @@
 <translation id="79341161159229895">Հաշվի կառավարիչներ՝ <ph name="FIRST_PARENT_EMAIL" /> և <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Սեղմեք <ph name="SHORTCUT_KEY_NAME" /> + V՝ սեղմատախտակը տեսնելու համար։ Վերջին 5 պատճենված տարրերը պահվել են սեղմատախտակում։</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
-<translation id="7952747673138230804">Chrome OS-ը ցուցադրում է նոր բովանդակության առաջարկներ։ Ուղարկում է վիճակագրություն՝ ծառայությունների որակը բարելավելու համար, միայն եթե դուք որոշել եք կիսվել օգտագործման տվյալներով։ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Բարձր կոնտրաստի ռեժիմ</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>

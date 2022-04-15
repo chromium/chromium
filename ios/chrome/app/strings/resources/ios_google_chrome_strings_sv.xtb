@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Det här kontot och data som inte har sparats tas bort från Chrome och andra Google-appar på den här enheten.</translation>
 <translation id="1968388653333775699">Få mer gjort med Chrome</translation>
 <translation id="2009224836393115614">Chrome kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
+<translation id="2056123005618757196">Få mer gjort med Google Chrome, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="2147651015520127414">Chrome har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
 <translation id="2199719347983604670">Data från Chrome sync</translation>
 <translation id="2313070403598893276">Google Chrome är enklare, säkrare och snabbare än någonsin</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Några tillägg har fått Chrome att krascha. Avinstallera följande:</translation>
 <translation id="4633328489441962921">Chrome kan inte söka efter uppdateringar</translation>
 <translation id="4698415050768537821">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Stöds inte på Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="5108659628347594808">Gör Chrome bättre</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Byt till Chrome</translation>
 <translation id="6238746320622508509">Låt Chrome låsa inkognitoflikarna.</translation>
 <translation id="6387994324662817823">Lösenorden sparas med Google Lösenordshantering endast på den här enheten.</translation>
+<translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6427126399757991875">Organisationen konfigurerar Chrome …</translation>
 <translation id="6600954340915313787">Kopierat till Chrome</translation>
 <translation id="6634107063912726160">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chrome. Data som redan har synkroniserats finns kvar i kontot.</translation>
@@ -118,6 +121,13 @@
 <translation id="8736550665979974340">Surfa säkert med Google Chrome</translation>
 <translation id="8772179140489533211">Visar meddelanden om att logga in i Chrome.</translation>
 <translation id="8788269841521769222">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">När detta är aktiverat:
+<ph name="BEGIN_INDENT" />  • Du hjälper oss att göra Chrome bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />
+
+Tänk på detta:
+<ph name="BEGIN_INDENT" />  • Information om hur du använder Chrome skickas till Google men kopplas inte till dig.
+  • Om Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen.
+  • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>
 <translation id="9122931302567044771">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chrome.</translation>
 </translationbundle>

@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">تصغير القائمة</translation>
 <translation id="1364382257761975320">‏لفتح قفل جهاز Chromebook، استخدِم بصمة إصبعك.</translation>
 <translation id="1364618750746929654">يتعذَّر تحويل الصوت إلى نص.</translation>
+<translation id="1372545819342940910">حفظ سطح المكتب لوقت لاحق</translation>
 <translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1391102559483454063">مُفعَّلة</translation>
@@ -523,6 +524,7 @@
 <translation id="4095366824370681039">قلم حبر</translation>
 <translation id="4112140312785995938">الانتقال إلى الخلف</translation>
 <translation id="4114315158543974537">‏تفعيل Phone Hub</translation>
+<translation id="4115378294792113321">أرجواني</translation>
 <translation id="412298498316631026">نافذة</translation>
 <translation id="4123259114412175274">‏يجب تفعيل البلوتوث على هاتفك لفتح قفل جهاز Chromebook.</translation>
 <translation id="4129129681837227511">للاطِّلاع على الإشعارات على شاشة القفل، يمكنك فتح القفل لتغيير الإعداد</translation>
@@ -562,7 +564,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">لقد ضغطت على اختصار لوحة المفاتيح للتباين العالي. هل ترغب في تفعيله؟</translation>
 <translation id="4322742403972824594">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Home، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليسار".</translation>
-<translation id="4331809312908958774">‏نظام تشغيل Chrome</translation>
 <translation id="4333628967105022692">‏لا يمكن استخدام متصفِّح Lacros إذا سجّل العديد من المستخدمين دخولهم.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
 <translation id="4351433414020964307">جارٍ تحميل المساعد...</translation>
@@ -795,7 +796,6 @@
 <translation id="5788127256798019331">‏ملفات Play</translation>
 <translation id="5790085346892983794">تم بنجاح</translation>
 <translation id="5805809050170488595">انقر لتفعيل <ph name="NETWORK_NAME" />.</translation>
-<translation id="5820394555380036790">‏نظام التشغيل Chromium</translation>
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5837036133683224804">إيقاف <ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1147,6 @@
 <translation id="79341161159229895">يُدير <ph name="FIRST_PARENT_EMAIL" /> و<ph name="SECOND_PARENT_EMAIL" /> الحساب.</translation>
 <translation id="793716872548410480">‏يُرجى الضغط على <ph name="SHORTCUT_KEY_NAME" /> + V للاطّلاع على الحافظة. تم حفظ آخر 5 عناصر نسختها إلى الحافظة.</translation>
 <translation id="7942349550061667556">أحمر</translation>
-<translation id="7952747673138230804">‏يعرِض "نظام التشغيل Chrome" اقتراحات لاستكشاف محتوى جديد. ولا يُرسِل إحصاءات لتحسين المحتوى المُقترح إلا إذا اختَرت مشاركة بيانات الاستخدام. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">وضع التباين العالي</translation>
 <translation id="7968693143708939792">اختيار مجلد...</translation>
 <translation id="7977927628060636163">جارٍ البحث عن شبكات الجوّال...</translation>

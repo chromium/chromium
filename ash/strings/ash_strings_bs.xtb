@@ -87,7 +87,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1351937230027495976">Sužavanje menija</translation>
 <translation id="1364382257761975320">Da otključate Chromebook, koristite otisak prsta</translation>
 <translation id="1364618750746929654">Nije moguće generirati transkripciju</translation>
-<translation id="1372545819342940910">Spremi radnu površinu za kasnije</translation>
+<translation id="1372545819342940910">Sačuvaj radnu površinu za kasnije</translation>
 <translation id="1383597849754832576">Nije moguće preuzeti fajlove govora. Pokušajte ponovo kasnije.</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
@@ -523,6 +523,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4095366824370681039">Nalivpero</translation>
 <translation id="4112140312785995938">Pomakni unazad</translation>
 <translation id="4114315158543974537">Uključite hub telefona</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">prozor</translation>
 <translation id="4123259114412175274">Da otključate Chromebook, provjerite je li Bluetooth na telefonu uključen</translation>
 <translation id="4129129681837227511">Za prikaz obavještenja na zaključanom ekranu, otključajte ga da izmijenite postavke</translation>
@@ -562,7 +563,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Pritisnuli ste prečicu na tastaturi za visoki kontrast. Želite li ga uključiti?</translation>
 <translation id="4322742403972824594">Prečica na tastaturi Ctrl + Alt + strelica nagore je promijenjena. Da koristite tipku Home, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu ulijevo.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Preglednik Lacros nije podržan dok je istovremeno prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Asistent se učitava…</translation>
@@ -795,7 +795,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5788127256798019331">Play fajlovi</translation>
 <translation id="5790085346892983794">Uspjeh</translation>
 <translation id="5805809050170488595">Kliknite da aktivirate mrežu <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na primaocu <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@ Nova instalacija</translation>
 <translation id="79341161159229895">Računom upravlja <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V da vidite međumemoriju. Posljednjih 5 kopiranih stavki se pohranjuje u međumemoriju.</translation>
 <translation id="7942349550061667556">Crvena</translation>
-<translation id="7952747673138230804">Chrome OS prikazuje prijedloge novog sadržaja za istraživanje. Statistika se šalje radi poboljšanja kvaliteta isključivo ako ste odabrali da dijelite podatke o korištenju. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Način rada visokog kontrasta</translation>
 <translation id="7968693143708939792">Odaberite folder...</translation>
 <translation id="7977927628060636163">Traženje mobilnih mreža...</translation>

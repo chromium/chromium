@@ -27,6 +27,7 @@
 <translation id="2195025571279539885">Dorești ca data viitoare Chromium să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
 <translation id="2218146227246548550">Organizația îți solicită să te conectezi pentru a folosi Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">Aceasta înseamnă că Chromium va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
+<translation id="2313870531055795960">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chromium. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chromium poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="2426113998523353159">Organizația îți solicită să te conectezi pentru a folosi Chromium.</translation>
 <translation id="2450140762465183767">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="2478931088402984578">Selectează <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -49,11 +50,13 @@
 <translation id="4099085513035183040">Nu se acceptă în Chromium Beta</translation>
 <translation id="4555020257205549924">Când această funcție este activată, Chromium se va oferi să traducă paginile scrise în alte limbi utilizând Google Traducere. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
+<translation id="4654936625574199632">Pentru a contribui la îmbunătățirea aplicației, Chromium trimite la Google statistici de utilizare și rapoarte de blocare. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activează scanerul din Chromium</translation>
 <translation id="4736424910885271643">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv</translation>
 <translation id="4806326830773390517">Ajută la îmbunătățirea Chromium trimițând statistici de utilizare și rapoarte de blocare la Google</translation>
 <translation id="4828317641996116749">Chromium nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="4985291216379576555">Offline, Chromium nu poate căuta actualizări</translation>
+<translation id="4996471330284142407">Poți să faci mai multe cu browserul Chromium, simplu, sigur și mai rapid ca oricând.</translation>
 <translation id="4999538639245140991">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chromium de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
 <translation id="5171868502429358653">Conectează-te la Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
@@ -111,6 +114,15 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="865600487977764604">Te protejează în Chromium și poate fi folosit pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>
 <translation id="8663480472502753423">Menține browserul Chromium actualizat</translation>
+<translation id="8747378496147986285">Când opțiunea este activă
+<ph name="BEGIN_INDENT" />  • Contribui la îmbunătățirea Chromium pentru cei care-l folosesc în mod similar cu tine.<ph name="END_INDENT" />
+
+De reținut
+<ph name="BEGIN_INDENT" />  • Google primește informații despre modul în care folosești Chromium, dar acestea nu pot fi asociate cu tine.
+
+  • Dacă Chromium se blochează, detaliile despre blocare pot include unele informații cu caracter personal.
+
+  • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Acest cont și toate datele nesalvate vor fi eliminate din Chromium.</translation>
 <translation id="894437814105052438">Când te deconectezi, Chromium nu va sincroniza datele noi cu Contul tău Google. Datele sincronizate anterior rămân în cont.</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>

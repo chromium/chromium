@@ -106,7 +106,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1753905327828125965">Mais visitados</translation>
 <translation id="1803264062614276815">Nome do titular do cartão</translation>
 <translation id="1809939268435598390">Excluir pasta</translation>
-<translation id="1813414402673211292">Limpar dados de navegação</translation>
+<translation id="1813414402673211292">Remover dados de navegação</translation>
 <translation id="1815941218935345331">Senha</translation>
 <translation id="1820259098641718022">Adicionada à lista de leitura</translation>
 <translation id="1832848789136765277">Para garantir o acesso aos seus dados sincronizados, confirme sua identidade</translation>
@@ -239,7 +239,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
 <translation id="2975121486251958312">Apenas o modo de navegação anônima está disponível</translation>
-<translation id="2982481275546140226">Limpar dados</translation>
+<translation id="2982481275546140226">Remover dados</translation>
 <translation id="298306318844797842">Adicionar forma de pagamento…</translation>
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
@@ -277,6 +277,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3290875554372353449">Escolher uma conta</translation>
 <translation id="3311748811247479259">Desativada</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
+<translation id="3324298231050545260">Arquivo do Calendário disponível</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3329904751041170572">Não foi possível se conectar ao servidor.</translation>
 <translation id="3335947283844343239">Reabrir guia fechada</translation>
@@ -359,6 +360,7 @@ Siga estas etapas:</translation>
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
 <translation id="4063300985191096908">Acessar o feed</translation>
 <translation id="408404951701638773">Ficou mais fácil acessar a barra de pesquisa</translation>
+<translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
 <translation id="411254640334432676">Falha no download.</translation>
 <translation id="4112644173421521737">Pesquisar</translation>
 <translation id="4113030288477039509">Gerenciado pelo seu administrador</translation>
@@ -609,6 +611,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6232736989810857397">Isso permite que você crie eventos da agenda de forma simples usando o Google Lens.</translation>
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
+<translation id="6277426346321820595">Sem proteção</translation>
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Você parou de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
@@ -788,7 +791,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7671141431838911305">INSTALAR</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
-<translation id="7726702057919861819">Menu → Histórico → Limpar dados de navegação</translation>
+<translation id="7726702057919861819">Menu → Histórico → Remover dados de navegação</translation>
 <translation id="7741325291586284254">Nova página de guia anônima</translation>
 <translation id="7756478488453921771">Menu → Configurações → Formas de pagamento</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -807,6 +810,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7884694604461143138">Histórico de pesquisa (<ph name="COUNT" /> encontrados)</translation>
 <translation id="7887198238286927132">Para proteger sua privacidade, o Chrome não preencherá esse campo automaticamente.</translation>
 <translation id="7911190106180361398">Sua organização não permite que você sincronize tudo.</translation>
+<translation id="7920949005883349320">Privacidade e segurança</translation>
 <translation id="7930998711684428189">Avisa se suas senhas foram expostas em uma violação de dados.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar senhas…</translation>
@@ -964,4 +968,5 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="988141524645182168">Outros dispositivos</translation>
 <translation id="989988560359834682">Editar endereço</translation>
 <translation id="994757059139821576">Artigos sugeridos</translation>
+<translation id="997742718232442409">O site está tentando fazer o download de um arquivo do calendário.</translation>
 </translationbundle>

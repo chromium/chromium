@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">ការផ្លាស់ប្តូរផ្នែករឹង</translation>
 <translation id="1905710495812624430">បាន​លើស​ការ​ព្យាយាម​ចូូល​អតិបរមា​ដែល​បាន​អនុញ្ញាត​ហើយ​។​</translation>
 <translation id="1908234395526491708">សំណើ UDP មិនបានសម្រេច</translation>
-<translation id="1930797645656624981">សេវាកម្ម​វិធី​បញ្ចូល Chrome OS</translation>
 <translation id="1947737735496445907">បានបោះពុម្ព</translation>
 <translation id="1951012854035635156">ជំនួយ​ការ</translation>
 <translation id="1979103255016296513">ការផ្លាស់ប្ដូរពាក្យសម្ងាត់​បានផុតកំណត់ហើយ</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">មិនអាចភ្ជាប់អ៊ីនធឺណិតបានទេ។</translation>
 <translation id="2570743873672969996">កំពុងដំណើរការតេស្ត <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ដើម្បីរៀបចំ សូមចូលទៅកាន់ការកំណត់</translation>
-<translation id="2585245331261708204">អ្វីដែលថ្មីសម្រាប់ Chrome OS</translation>
 <translation id="2619761439309613843">ការផ្ទុក​ឡើងវិញ​ប្រចាំថ្ងៃ</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2640549051766135490">បានជ្រើសរើស​អាល់ប៊ុម <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">សិទ្ធិចូលប្រើប្រាស់​សម្រាប់មាតាបិតា</translation>
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="4744944742468440486">ព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើសរបស់អ្នក</translation>
-<translation id="475869545581454722">បានប្ដូរពាក្យសម្ងាត់ Chrome OS</translation>
 <translation id="4773299976671772492">បានឈប់</translation>
 <translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
 <translation id="4791000909649665275">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
@@ -738,6 +735,7 @@
 <translation id="917720651393141712">ធ្វើតេស្ត</translation>
 <translation id="9204237731135241582">មិនអាចទាក់ទងច្រកពីកម្មវិធី Android បានទេ</translation>
 <translation id="9211490828691860325">តុនិម្មិត​ទាំងអស់</translation>
+<translation id="932327136139879170">ទំព័រដើម</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">មិនត្រូវបានធ្វើសកម្មភាពទេ</translation>
 <translation id="960719561871045870">លេខកូដប្រតិបត្តិករ</translation>

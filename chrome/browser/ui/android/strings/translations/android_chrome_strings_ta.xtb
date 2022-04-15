@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">மறுபெயரிடு</translation>
 <translation id="1177863135347784049">பிரத்தியேகம்</translation>
 <translation id="1181037720776840403">அகற்று</translation>
+<translation id="1193729455103054076">வலிமையான கடவுச்சொல்லைப் பயன்படுத்தவா?</translation>
 <translation id="1197267115302279827">புத்தகக்குறிகளை நகர்த்து</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1202892408424955784">கண்காணிக்கப்படும் தயாரிப்புகள்</translation>
@@ -147,7 +148,6 @@
 <translation id="1779766957982586368">சாளரத்தை மூடுக</translation>
 <translation id="1791662854739702043">நிறுவப்பட்டது</translation>
 <translation id="1792959175193046959">எப்போது வேண்டுமானாலும் இயல்புப் பதிவிறக்க இடத்தை மாற்றலாம்</translation>
-<translation id="1795251344124198516">Chrome &amp; Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகள்</translation>
 <translation id="1807246157184219062">வெளிச்சம்</translation>
 <translation id="1810845389119482123">ஒத்திசைவின் முதற்கட்ட அமைவு நிறைவடையவில்லை</translation>
 <translation id="1829244130665387512">இந்தப் பக்கத்தில் தேடு</translation>
@@ -184,7 +184,6 @@
 <translation id="2000419248597011803">முகவரிப் பட்டியிலிருந்தும், தேடல் பெட்டியிலிருந்தும் சில குக்கீகளையும் தேடல்களையும் உங்கள் இயல்புத் தேடல் இன்ஜினுக்கு அனுப்பும்</translation>
 <translation id="200114059308480249">சுற்றியுள்ள வார்த்தைகளையும் Google தேடல்களில் சேர்க்கவா?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ஃபைல்}other{# ஃபைல்கள் }}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> ஆப்ஸ் Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
 <translation id="2020309681647789787">ஒத்திசைக்கப்பட்டுள்ள சாதனங்கள் அனைத்திலும் உங்கள் தேடல் விவரங்கள் சேமிக்கப்படுவதால் விட்ட இடத்திலிருந்து செயல்பாட்டைத் தொடரலாம்</translation>
 <translation id="2021896219286479412">முழுத் திரை தளக் கட்டுப்பாடுகள்</translation>
 <translation id="2038563949887743358">டெஸ்க்டாப் தளத்திற்கான கோரிக்கையை இயக்கு</translation>
@@ -461,7 +460,6 @@
 <translation id="3493531032208478708">பரிந்துரைக்கப்படும் உள்ளடக்கம் பற்றி <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">உள்நுழைவதற்கான கீழ்ப்புறச் சீட்டு பாதித் திரையில் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_TOS_LINK" />Google சேவை விதிமுறைகள்<ph name="END_TOS_LINK" />, <ph name="BEGIN_ATOS_LINK" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_ATOS_LINK" /> ஆகியவற்றை ஏற்கிறீர்கள்.</translation>
 <translation id="3507132249039706973">நிலையான பாதுகாப்பு இயக்கப்பட்டுள்ளது</translation>
 <translation id="3509330069915219067">ஆஃப்லைன். Chrome உலாவியால் புதுப்பிப்புகள் உள்ளனவா எனப் பார்க்க முடியவில்லை.</translation>
 <translation id="3513704683820682405">ஆக்மென்ட்டட் ரியாலிட்டி</translation>
@@ -588,6 +586,7 @@
 <translation id="4296252229500326964">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="4298388696830689168">இணைக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="4303044213806199882">chrome_ஸ்கிரீன்ஷாட்_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
 <translation id="4307992518367153382">அடிப்படைகள்</translation>
 <translation id="4320177379694898372">இணைய இணைப்பு இல்லை</translation>
 <translation id="4321739720395210191">கேமராவைத் திறக்க முடியவில்லை. சாதனத்தை மீண்டும் தொடங்கி மறுபடியும் முயலவும்.</translation>
@@ -956,7 +955,6 @@
 <translation id="6345878117466430440">படித்ததாகக் குறி</translation>
 <translation id="6363990818884053551">ஒத்திசைவைத் தொடங்க, இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="6364438453358674297">வரலாற்றிலிருந்து பரிந்துரையை அகற்றவா?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeமில் திறக்கும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> ஏற்கிறீர்கள்.</translation>
 <translation id="6380100320871303656">நீங்கள் பார்வையிடக்கூடும் என Chrome கணிக்கும் பக்கங்களைப் பெரும்பாலும் முன்கூட்டியே ஏற்றும். இந்த அமைப்பின் காரணமாக டேட்டா உபயோகம் அதிகரிக்கக்கூடும்.</translation>
 <translation id="6385407407546870227">பரிசோதனைக் காலம் செயலில் இருக்கும்போது, மோசடி அபாயங்களுக்கு எதிராகச் செயல்படவும் ரோபோக்களுக்கும் நபர்களுக்கும் இடையே உள்ள வித்தியாசத்தைக் கண்டறியவும் தளங்களுக்கு உதவ, ‘ஸ்பேம் &amp; மோசடி குறைப்பு’ அம்சம் டிரஸ்ட் டோக்கன்களைச் சார்ந்துள்ளது.
 
@@ -1126,7 +1124,6 @@
 <translation id="7208109991155904980">உணர்வு வெளிப்பாடு நகர்த்தப்பட்டது</translation>
 <translation id="7222235798733126207">தளங்களுக்கிடையே குறைவான பகிர்வு</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் நிலுவையில் உள்ளது}other{# பதிவிறக்கங்கள் நிலுவையில் உள்ளன}}</translation>
-<translation id="7237045078887540010">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_TOS_LINK" />Google சேவை விதிமுறைகள்<ph name="END_TOS_LINK" />, <ph name="BEGIN_ATOS_LINK" />Google Chrome &amp; Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_ATOS_LINK" /> ஆகியவற்றை ஏற்கிறீர்கள். மேலும், <ph name="BEGIN_PRIVACY_LINK" />தனியுரிமைக் கொள்கையையும்<ph name="END_PRIVACY_LINK" /> ஏற்கிறீர்கள்.</translation>
 <translation id="7242755609445462077">மெருகூட்டப்பட்ட ஹைலைட் <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chromeமில் <ph name="TARGET_DEVICE_NAME" /> சாதன ஒத்திசைவு ஆன் செய்யப்பட்டுள்ளதை உறுதி செய்யவும்</translation>
 <translation id="7252076891734325316">கம்யூட்டருக்கு அருகில் உங்கள் மொபைலை வைக்கவும்</translation>

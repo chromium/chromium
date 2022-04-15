@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
-<translation id="1984456723671657197">Dit bestandstype wordt niet ondersteund. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="1995337122023280937">Naar bestandslocatie</translation>
 <translation id="2001796770603320721">Beheren in Drive</translation>
 <translation id="2009067268969781306">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
@@ -703,7 +702,6 @@
 <translation id="6970230597523682626">Bulgaars</translation>
 <translation id="6973630695168034713">Mappen</translation>
 <translation id="6976795442547527108">Leeuw</translation>
-<translation id="6978611942794658017">Dit bestand is bedoeld voor een pc met Windows-software. Dit is niet compatibel met je apparaat dat Chrome OS gebruikt. Zoek in de Chrome Web Store naar een geschikte vervangende app.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Zweeds</translation>
 <translation id="6990081529015358884">Er is onvoldoende ruimte beschikbaar</translation>
@@ -825,7 +823,6 @@
 <translation id="7972920761225148017">Frans (Zwitserland)</translation>
 <translation id="7973962044839454485">PPP-verificatie mislukt wegens een onjuiste gebruikersnaam of wachtwoord</translation>
 <translation id="7980421588063892270">Engels (VS) met Colemak-toetsenbord</translation>
-<translation id="79907182588096956">Dit bestand is bedoeld voor een pc met Windows-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="8000066093800657092">Geen netwerk</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
@@ -936,7 +933,6 @@
 <translation id="8912078710089354287">Hond die kwispelt</translation>
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Er is onvoldoende ruimte.</translation>
-<translation id="8970501467542182729">Dit bestand is bedoeld voor een computer met Macintosh-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="8997962250644902079">Chinees (traditioneel, Pinyin)</translation>
 <translation id="9003940392834790328">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="9017798300203431059">Russisch fonetisch</translation>
@@ -955,7 +951,6 @@
 <translation id="9130775360844693113">Leden van '<ph name="DESTINATION_NAME" />' krijgen toegang tot deze items.</translation>
 <translation id="9131598836763251128">Selecteer een of meer bestanden</translation>
 <translation id="9133055936679483811">Inpakken mislukt. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Dit bestand is bedoeld voor een computer met software van Macintosh. Het is niet compatibel met je apparaat, dat Chrome OS gebruikt. Zoek in de Chrome Web Store naar een geschikte vervangende app.</translation>
 <translation id="9144340019284012223">Catalaans</translation>
 <translation id="914873105831852105">Ongeldige pincode. Je hebt nog 1 poging.</translation>
 <translation id="9153934054460603056">Identiteit en wachtwoord opslaan</translation>

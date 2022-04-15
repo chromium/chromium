@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">হাৰ্ডৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="1905710495812624430">চেষ্টা কৰাৰ সৰ্বাধিক সীমা অতিক্ৰম কৰিছে।</translation>
 <translation id="1908234395526491708">বিফল UDP অনুৰোধসমূহ</translation>
-<translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি সেৱা</translation>
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1979103255016296513">পাছৱর্ড সলনি কৰাৰ সময় উকলিছে</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2584559707064218956">ছেট আপ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
-<translation id="2585245331261708204">Chrome OSত নতুন কি আছে</translation>
 <translation id="2619761439309613843">দৈনিক নতুন ৱালপেপাৰ</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="2640549051766135490">এলবাম <ph name="TITLE" /> <ph name="DESC" /> বাছনি কৰা হৈছে</translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
 <translation id="473775607612524610">আপডে'ট কৰক</translation>
 <translation id="4744944742468440486">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য</translation>
-<translation id="475869545581454722">Chrome OSৰ পাছৱৰ্ড আপডে’ট কৰা হৈছে</translation>
 <translation id="4773299976671772492">বন্ধ হৈছে</translation>
 <translation id="4782311465517282004">আপুনি ৰাইট ক্লিক কৰিলে অথবা পাঠ দীঘলীয়াকৈ টিপি ধৰি থাকিলে সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণ পাওক</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> খন ফট’</translation>
@@ -739,6 +736,7 @@
 <translation id="917720651393141712">পৰীক্ষা কৰক</translation>
 <translation id="9204237731135241582">Android এপৰ পৰা গে’টৱে’ সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="9211490828691860325">আটাইবোৰ ডেস্ক</translation>
+<translation id="932327136139879170">গৃহ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">সক্ৰিয় কৰা হোৱা নাই</translation>
 <translation id="960719561871045870">অপাৰেটৰ ক’ড</translation>

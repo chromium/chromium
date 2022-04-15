@@ -86,6 +86,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
 <translation id="1364382257761975320">Voit avata Chromebookin lukituksen käyttämällä sormenjälkeäsi</translation>
 <translation id="1364618750746929654">Transkriptiota ei voida luoda</translation>
+<translation id="1372545819342940910">Tallenna työpöytä myöhempää käyttöä varten</translation>
 <translation id="1383597849754832576">Puhetiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1391102559483454063">Päällä</translation>
@@ -521,6 +522,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4095366824370681039">Mustekynä</translation>
 <translation id="4112140312785995938">Kelaa taaksepäin</translation>
 <translation id="4114315158543974537">Laita Phone Hub päälle</translation>
+<translation id="4115378294792113321">Purppura</translation>
 <translation id="412298498316631026">ikkuna</translation>
 <translation id="4123259114412175274">Jos haluat avata Chromebookin lukituksen, varmista, että puhelimen Bluetooth-yhteys on päällä</translation>
 <translation id="4129129681837227511">Jos haluat nähdä ilmoituksia lukitusnäytöllä, avaa lukitus muuttaaksesi asetusta</translation>
@@ -560,7 +562,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Painoit suuren kontrastin pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="4322742403972824594">Pikanäppäinyhdistelmä Ctrl + Alt + ylänuoli on muuttunut. Jos haluat käyttää Home-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + vasen nuoli.</translation>
-<translation id="4331809312908958774">Chrome-käyttöjärjestelmä</translation>
 <translation id="4333628967105022692">Lacrosia ei tueta, kun useita käyttäjiä on sisään kirjautuneena.</translation>
 <translation id="4338109981321384717">Suurennuslasi</translation>
 <translation id="4351433414020964307">Assistantia ladataan…</translation>
@@ -793,7 +794,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5788127256798019331">Play-tiedostot</translation>
 <translation id="5790085346892983794">Onnistui</translation>
 <translation id="5805809050170488595">Aktivoi <ph name="NETWORK_NAME" /> klikkaamalla</translation>
-<translation id="5820394555380036790">Chromium-käyttöjärjestelmä</translation>
 <translation id="5825969630400862129">Yhdistettyjen laitteiden asetukset</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
@@ -1145,7 +1145,6 @@ Uusi asennus</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>
 <translation id="793716872548410480">Katso leikepöytä painamalla <ph name="SHORTCUT_KEY_NAME" /> + V. Viisi viimeksi kopioimaasi kohdetta tallennetaan leikepöydälle.</translation>
 <translation id="7942349550061667556">Punainen</translation>
-<translation id="7952747673138230804">Chrome-käyttöjärjestelmä näyttää ehdotuksia uudesta sisällöstä. Lähettää tilastoja laadun parantamiseksi vain, jos olet sallinut käyttödatan jakamisen. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Suurikontrastinen tila</translation>
 <translation id="7968693143708939792">Valitse kansio…</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>

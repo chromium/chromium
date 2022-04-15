@@ -360,6 +360,7 @@ Siga os passos abaixo:</translation>
 <translation id="4049507953662678203">Certifique-se de que tem uma ligação de rede e tente novamente.</translation>
 <translation id="4063300985191096908">Aceder ao feed</translation>
 <translation id="408404951701638773">Agora é mais fácil aceder à barra de pesquisa</translation>
+<translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="411254640334432676">A transferência falhou.</translation>
 <translation id="4112644173421521737">Pesquisar</translation>
 <translation id="4113030288477039509">Gerido pelo gestor</translation>
@@ -610,6 +611,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6232736989810857397">Isto permite-lhe criar facilmente eventos de calendário com o Google Lens.</translation>
 <translation id="6254066287920239840">Abrir links na aplicação em vez de no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
+<translation id="6277426346321820595">Sem proteção</translation>
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixou de seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
@@ -808,6 +810,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7884694604461143138">Histórico de pesquisas (<ph name="COUNT" /> encontrado[s])</translation>
 <translation id="7887198238286927132">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente este campo.</translation>
 <translation id="7911190106180361398">A sua entidade não permite que sincronize tudo.</translation>
+<translation id="7920949005883349320">Privacidade e segurança</translation>
 <translation id="7930998711684428189">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar palavras-passe...</translation>

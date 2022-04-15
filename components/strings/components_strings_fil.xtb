@@ -100,7 +100,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="124116460088058876">Higit pang wika</translation>
 <translation id="1243027604378859286">May-akda:</translation>
 <translation id="1246424317317450637">Bold</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para i-personalize ang iyong mga tool sa accessibility sa mga setting ng Chrome OS</translation>
 <translation id="1250759482327835220">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card, pangalan, at billing address sa Google Account mo.</translation>
 <translation id="1252799212227771492">Button na gumawa ng sheet, pindutin ang Enter para gumawa ng bagong Google Sheet nang mabilis</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (naka-sync)</translation>
@@ -384,7 +383,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1919345977826869612">Mga Ad</translation>
 <translation id="1919367280705858090">Humingi ng tulong sa partikular na mensahe ng error</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Wala}=1{1 site}one{# site}other{# na site}}</translation>
-<translation id="1923390796829649802">Button na Pamahalaan ang mga setting ng pagiging accessible, pindutin ang Enter para i-personalize ang iyong mga tool sa pagiging accessible sa mga setting ng Chrome OS</translation>
 <translation id="1924727005275031552">Bago</translation>
 <translation id="1927439593081478069">Pindutin ang button ng pag-check sa kaligtasan sa Chrome, pindutin ang Enter para magpatakbo ng pag-check sa kaligtasan sa Chrome sa mga setting ng Chrome</translation>
 <translation id="1939175642807587452">Puwedeng hilinging magpadala ng mga notification</translation>
@@ -643,7 +641,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para I-clear ang iyong history ng pag-browse, cookies, cache, at higit pa sa mga setting ng Chrome</translation>
 <translation id="2650446666397867134">Tinanggihan ang access sa file</translation>
 <translation id="2653659639078652383">Isumite</translation>
-<translation id="2659491813326907275">I-personalize ang iyong mga tool sa pagiging accessible sa mga setting ng Chrome OS</translation>
 <translation id="2660779039299703961">Kaganapan</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Wala}=1{1 password (para sa <ph name="DOMAIN_LIST" />)}=2{2 password (para sa <ph name="DOMAIN_LIST" />)}one{# password (para sa <ph name="DOMAIN_LIST" />)}other{# na password (para sa <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Tuktok</translation>

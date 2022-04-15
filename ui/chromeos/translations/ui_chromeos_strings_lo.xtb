@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">ພາສາແຟງລັງ</translation>
 <translation id="1942765061641586207">ຄວາມລະອຽດຂອງຮູບ</translation>
 <translation id="1972984168337863910">ຂະຫຍາຍແຜງຄຳຕິຊົມໄຟລ໌</translation>
-<translation id="1984456723671657197">ບໍ່ຮອງຮັບໄຟລ໌ປະເພດນີ້. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="1995337122023280937">ໄປຫາສະຖານທີ່ຂອງໄຟລ໌</translation>
 <translation id="2001796770603320721">ຈັດການໃນ Drive</translation>
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
@@ -701,7 +700,6 @@
 <translation id="6970230597523682626">ພາສາບຸນກາຣີ</translation>
 <translation id="6973630695168034713">ໂຟ​ລ​ເດີ</translation>
 <translation id="6976795442547527108">ສິງ</translation>
-<translation id="6978611942794658017">ໄຟລ໌ນີ້ຖືກອອກແບບສໍາລັບ PC ດ້ວຍການໃຊ້ຊອບແວ Windows. ອັນນີ້ບໍ່ເຂົ້າກັບອຸປະກອນຂອງທ່ານ ເຊິ່ງໃຊ້ Chrome OS. ກະລຸນາຊອກຫາ Chrome Web Store ສໍາລັບແອັບປ່ຽນແທນທີ່ເໝາະສົມ.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ພາສາສະວີດິດ</translation>
 <translation id="6990081529015358884">ທ່ານໝົດບ່ອນ​ວ່າງ​ແລ້ວ</translation>
@@ -823,7 +821,6 @@
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
 <translation id="7973962044839454485">ການຮັບຮອງ PPP ບໍ່ສໍາເລັດ ເນື່ອງຈາກຊື່ຜູ້ໃຊ້ ແລະລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7980421588063892270">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Colemak</translation>
-<translation id="79907182588096956">ໄຟລ໌ນີ້ຖືກອອກແບບມາສຳລັບຄອມພິວເຕີສ່ວນບຸກຄົນທີ່ໃຊ້ຊອບແວ Windows. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="8000066093800657092">ບໍ່​ມີເຄືອ​ຂ່າຍ​</translation>
 <translation id="8008366997883261463">ໝາ</translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
@@ -934,7 +931,6 @@
 <translation id="8912078710089354287">ໝາກະດິກຫາງ</translation>
 <translation id="8919081441417203123">ພາສາເດັນມາກ</translation>
 <translation id="8965697826696209160">ບໍ່ມີເນື້ອທີ່ພຽງພໍ.</translation>
-<translation id="8970501467542182729">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="8997962250644902079">ພາສາຈີນ (ຕົວຫຍໍ້) ພິນອິນ</translation>
 <translation id="9003940392834790328">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="9017798300203431059">ການ​ອອກສຽງພາ​ສາ​ລັດ​ເຊຍ</translation>
@@ -953,7 +949,6 @@
 <translation id="9130775360844693113">ສະມາຊິກຂອງ '<ph name="DESTINATION_NAME" />' ຈະມີການເຂົ້າເຖິງລາຍການເຫຼົ່ານີ້.</translation>
 <translation id="9131598836763251128">ເລືອກໜຶ່ງ ຫຼືຫຼາຍໄຟລ໌</translation>
 <translation id="9133055936679483811">ການຊິບບໍ່ສໍາເລັດ. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ອັນນີ້ບໍ່ເຂົ້າກັນໄດ້ກັບອຸປະກອນຂອງທ່ານ ເຊິ່ງໃຊ້ Chrome OS. ກະລຸນາຊອກຫາ Chrome Web Store ເພື່ອເອົາແອັບປ່ຽນແທນທີ່ເໝາະສົມ.</translation>
 <translation id="9144340019284012223">ພາສາກາຕາລັງ</translation>
 <translation id="914873105831852105">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ 1 ເທື່ອ.</translation>
 <translation id="9153934054460603056">ບັນທຶກເອ​ກະ​ລັກ​ ແລະ​ລະ​ຫັດ​ຜ່ານ</translation>

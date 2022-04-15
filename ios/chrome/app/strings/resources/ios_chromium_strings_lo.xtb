@@ -27,6 +27,7 @@
 <translation id="2195025571279539885">ທ່ານຕ້ອງການໃຫ້ Chromium ສະເໜີແປໜ້າ <ph name="LANGUAGE_NAME" /> ຈາກເວັບໄຊນີ້ໃນຄັ້ງຕໍ່ໄປບໍ?</translation>
 <translation id="2218146227246548550">ອົງການຂອງທ່ານຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chromium. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">ນີ້ໝາຍຄວາມວ່າ Chromium ຈະຮ້ອງຂໍເວັບໄຊເດັສທັອບທຸກເທື່ອ.</translation>
+<translation id="2313870531055795960">ກວດສອບ URL ກັບລາຍຊື່ເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ຈັດເກັບໄວ້ໃນ Chromium. ຖ້າມີເວັບໄຊໃດໜຶ່ງພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chromium ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນຂອງໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="2426113998523353159">ອົງການຂອງທ່ານຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chromium.</translation>
 <translation id="2450140762465183767">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="2478931088402984578">ເລືອກ <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -49,11 +50,13 @@
 <translation id="4099085513035183040">ບໍ່ຮອງຮັບໃນ Chromium Beta</translation>
 <translation id="4555020257205549924">ເມື່ອຄຸນສົມບັດນີ້ເປີດຢູ່, Chromium ຈະສະເໜີແປໜ້າຕ່າງໆທີ່ຂຽນເປັນພາສາອື່ນ ໂດຍໃຊ້ Google ແປພາສາ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ໄດ້ທຸກເວລາທີ່ທ່ານແຕະໃສ່ລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
+<translation id="4654936625574199632">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chromium ຈະສົ່ງລາຍງານການໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">ເປີດເຄື່ອງສະແກນ Chromium</translation>
 <translation id="4736424910885271643">ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ດັ່ງນັ້ນຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບລ້າງຈາກອຸປະກອນນີ້</translation>
 <translation id="4806326830773390517">ຊ່ວຍປັບປຸງ Chromium ໂດຍການສົ່ງສະຖິຕິການນຳໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງໄປໃຫ້ Google</translation>
 <translation id="4828317641996116749">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="4985291216379576555">ອອບລາຍຢູ່, Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
+<translation id="4996471330284142407">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Chromium ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
 <translation id="4999538639245140991">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="5171868502429358653">ເຂົ້າສູ່ລະບົບຫາ Chromium</translation>
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
@@ -110,6 +113,15 @@
 <translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="865600487977764604">ຮັກສາຄວາມປອດໄພຂອງທ່ານຢູ່ Chromium ແລະ ອາດຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພຂອງທ່ານໃນແອັບ Google ອື່ນໆເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="8663480472502753423">ຮັກສາໃຫ້ Chromium ໃໝ່ຫຼ້າສຸດ</translation>
+<translation id="8747378496147986285">ເມື່ອເປີດ:
+<ph name="BEGIN_INDENT" />  • ຊ່ວຍເຮັດໃຫ້ Chromium ດີຂຶ້ນສຳລັບຄົນທີ່ໃຊ້ມັນໃນແບບທີ່ທ່ານໃຊ້.<ph name="END_INDENT" />
+
+ສິ່ງທີ່ຕ້ອງພິຈາລະນາ:
+<ph name="BEGIN_INDENT" />  • ຂໍ້ມູນແມ່ນສົ່ງໄປໃຫ້ Google ກ່ຽວກັບການໃຊ້ Chromium ຂອງທ່ານ, ແຕ່ມັນບໍ່ຖືກຜູກມັດຫາທ່ານ.
+
+  • ຫາກ Chromium ຫຼົ້ມ, ລາຍລະອຽດກ່ຽວກັບການຫຼົ້ມອາດຮວມມີຂໍ້ມູນສ່ວນຕົວບາງຢ່າງ.
+
+  • ຫາກທ່ານເປີດໃຊ້ການຊິ້ງຂໍ້ມູນ, ການວັດແທກອາດຮວມມີຂໍ້ມູນກ່ຽວກັບ URL ທີ່ທ່ານເຂົ້າເບິ່ງນຳ.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chromium.</translation>
 <translation id="894437814105052438">ເມື່ອທ່ານອອກຈາກລະບົບ, Chromium ຈະບໍ່ຊິ້ງຂໍ້ມູນໃໝ່ໃດໆກັບບັນຊີ Google ຂອງທ່ານ. ຂໍ້ມູນທີ່ຊິ້ງໄວ້ກ່ອນໜ້າຈະຍັງຢູ່ໃນບັນຊີ.</translation>
 <translation id="9022552996538154597">ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium</translation>

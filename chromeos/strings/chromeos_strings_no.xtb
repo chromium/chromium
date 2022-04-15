@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Maskinvareversjon</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
-<translation id="1930797645656624981">Tjeneste for Chrome OS-inndatametode</translation>
 <translation id="1947737735496445907">Skrevet ut</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1977994649430373166">Google-profilbilde</translation>
 <translation id="1979103255016296513">Det er på høy tid å endre passordet</translation>
 <translation id="1999615961760456652">Obligatorisk side</translation>
 <translation id="2006864819935886708">Tilkobling</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Minst ett Kunst-gallerialbum må velges</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Slå av/på bakgrunnsbelysning for tastaturet</translation>
 <translation id="2240366984605217732">Oppsettsbytte</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Kan ikke koble til internett.</translation>
 <translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">For å konfigurere nettverket, gå til Innstillinger</translation>
-<translation id="2585245331261708204">Dette er nytt i Chrome OS</translation>
 <translation id="2619761439309613843">Daglig oppdatering</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2640549051766135490">Albumet <ph name="TITLE" /> med <ph name="DESC" /> er valgt</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
-<translation id="475869545581454722">Chrome OS-passordet er oppdatert</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4782311465517282004">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder inne på tekst</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> bilde</translation>
@@ -629,6 +628,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Slå på automatisk fargemodus</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
+<translation id="8045012663542226664">Kutt mikrofonlyden</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="8082366717211101304">Kan ikke foreta DNS-oppslag fra Android-apper</translation>
 <translation id="808894953321890993">Endre passord</translation>
@@ -739,6 +739,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Kan ikke kontakte gatewayen fra Android-apper</translation>
 <translation id="9211490828691860325">Alle skrivebord</translation>
+<translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ikke aktivert</translation>
 <translation id="960719561871045870">Operatørkode</translation>

@@ -117,6 +117,7 @@
 <translation id="1923342640370224680">الساعة الأخيرة</translation>
 <translation id="1930989359703290198">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
+<translation id="1943478190258551035">القائمة ← الإعدادات</translation>
 <translation id="1952172573699511566">ستعرض المواقع الإلكترونية النص بلغتك المفضّلة إن أمكن.</translation>
 <translation id="1965935827552890526">‏يجب إنهاء ما كنت تفعله في نافذة Chrome المفتوحة الأخرى.</translation>
 <translation id="196896377990863006">عرض معاينة الرابط</translation>
@@ -144,6 +145,7 @@
 <translation id="2218443599109088993">تصغير</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
+<translation id="2251686759395008410">القائمة ← السجلّ</translation>
 <translation id="2256933947031277845">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط.</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">إضافة حساب</translation>
@@ -199,10 +201,12 @@
 <translation id="2712127207578915686">تعذر فتح الملف</translation>
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
+<translation id="2749231692441336879">تتم متابعة <ph name="CHANNEL_NAME" /> حاليًا.</translation>
 <translation id="2764831210418622012">الآن</translation>
 <translation id="2773292004659987824">البحث في وضع التصفُّح المتخفي</translation>
 <translation id="277771892408211951">اختيار لغة</translation>
 <translation id="2780046210906776326">لا تتوفر حسابات بريد إلكتروني</translation>
+<translation id="2781325423985810933">تراجع</translation>
 <translation id="2781331604911854368">مفعّل</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">تعذّر إنشاء الرابط</translation>
@@ -240,6 +244,7 @@
 <translation id="298306318844797842">إضافة طريقة الدفع...</translation>
 <translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
+<translation id="3039722182465315531">عدم تسجيل الدخول</translation>
 <translation id="3076846064362030967">‏لن يتم تسجيل خروجك من حساب Google. قد يتم حفظ <ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.
 
 
@@ -341,6 +346,7 @@
 <translation id="3928666092801078803">جمع البيانات التابعة لي</translation>
 <translation id="3929457972718048006">العناوين</translation>
 <translation id="3943492037546055397">كلمات المرور</translation>
+<translation id="3959736869653157332">القائمة ← علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3968505803272650567">إدارة الاهتمامات</translation>
 <translation id="3989635538409502728">تسجيل الخروج</translation>
@@ -354,6 +360,7 @@
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
 <translation id="4063300985191096908">الانتقال إلى الخلاصة</translation>
 <translation id="408404951701638773">أصبح الوصول إلى شريط البحث أسهل الآن</translation>
+<translation id="4108998448622696017">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="411254640334432676">فشلت عملية التنزيل</translation>
 <translation id="4112644173421521737">بحث</translation>
 <translation id="4113030288477039509">يديره المسؤول</translation>
@@ -605,6 +612,7 @@
 <translation id="6254066287920239840">فتح الروابط في التطبيق بدلاً من المتصفح.</translation>
 <translation id="6255097610484507482">تعديل بطاقة الائتمان</translation>
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
+<translation id="6289501276895392862">تم إلغاء متابعة <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
 <translation id="6321526113093607004">إضافة إلى الإشارات المرجعية</translation>
 <translation id="6324669097367352121">إعدادات تسجيل الدخول</translation>
@@ -775,6 +783,7 @@
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
+<translation id="7646263789464975852">القائمة ← الإعدادات ← تأكيد السلامة</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
@@ -783,6 +792,7 @@
 <translation id="7720410380936703141">إعادة المحاولة</translation>
 <translation id="7726702057919861819">القائمة ← السجلّ ← محو بيانات التصفُّح</translation>
 <translation id="7741325291586284254">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
+<translation id="7756478488453921771">القائمة ← الإعدادات ← طُرق الدفع</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7781011649027948662">هل تريد ترجمة الصفحة؟</translation>
@@ -790,6 +800,7 @@
 <translation id="7781829728241885113">أمس</translation>
 <translation id="778855399387580014">‏يمكنك بدء البحث في علامة تبويب Chrome جديدة.</translation>
 <translation id="7791543448312431591">إضافة</translation>
+<translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
 <translation id="7839985698273989086">صفحة بلا إنترنت</translation>
 <translation id="7840771868269352570">ستتم إزالة العناصر التي اخترتها.</translation>
 <translation id="7853202427316060426">النشاط</translation>
@@ -803,6 +814,7 @@
 <translation id="7939128259257418052">جارٍ تصدير كلمات المرور...</translation>
 <translation id="794799177247607889">إيقاف التسجيل</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق.}=1{كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق.}two{كلمتا مرورٍ ({COUNT}) محتمَل تعرّضهما للاختراق.}few{{COUNT} كلمات مرور محتمَل تعرّضها للاختراق.}many{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق.}other{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق.}}</translation>
+<translation id="7959441099968534758">الانتقال إلى الخلاصة</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
 <translation id="7966516440812255683">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل إبقائك مُسجِّلاً الدخول أو تذكُّر عناصر في سلة التسوق.
 
@@ -926,6 +938,7 @@
 <translation id="9037965129289936994">عرض الصفحة الأصلية</translation>
 <translation id="9039373489628511875">النطاق الترددي</translation>
 <translation id="9055772144595778347">تعذر تسجيل الدخول</translation>
+<translation id="9057972802061533987">تتعذّر المتابعة. حدث خطأ.</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9079935439869366234">وضع علامة كغير مقروءة على الكل</translation>
 <translation id="9081058212938299310">هل تريد تحديث كلمة مرور <ph name="USERNAME" />؟</translation>
@@ -933,6 +946,7 @@
 <translation id="9083838294503912307">للمزامنة والتخصيص على جميع الأجهزة، يمكنك تفعيل المزامنة.</translation>
 <translation id="9087108903408689779">‏كلمة المرور المقترحة في Chrome:</translation>
 <translation id="9094033019050270033">تحديث كلمة المرور</translation>
+<translation id="9097506547406246598">يتعذّر إلغاء المتابعة. حدث خطأ.</translation>
 <translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
 <translation id="9107664647686727385">التحقُّق من كلمات المرور المحتمَل تعرّضها للاختراق</translation>
 <translation id="9124387962554796433">‏قد تستخدم Google سجلّك لتخصيص "بحث Google" وخدمات Google الأخرى.</translation>

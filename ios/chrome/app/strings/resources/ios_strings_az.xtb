@@ -277,6 +277,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3290875554372353449">Hesab seçin</translation>
 <translation id="3311748811247479259">Deaktiv</translation>
 <translation id="3324193307694657476">Ünvan 2</translation>
+<translation id="3324298231050545260">Təqvim faylı əlçatandır</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="3329904751041170572">Server qoşulmaq mümkün olması.</translation>
 <translation id="3335947283844343239">Bağlanmış Paneli yenidən açın</translation>
@@ -359,6 +360,7 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4049507953662678203">Şəbəkə bağlantısının olmasına əmin olun və yenidən cəhd edin.</translation>
 <translation id="4063300985191096908">Lentə keçin</translation>
 <translation id="408404951701638773">İndi axtarış panelinə daxil olmaq daha asandır</translation>
+<translation id="4108998448622696017">Təhlükəli hadisələr baş verdikdə onları aşkarlayır və sizə xəbərdarlıq edir.</translation>
 <translation id="411254640334432676">Endirmə uğursuz oldu.</translation>
 <translation id="4112644173421521737">Axtarın</translation>
 <translation id="4113030288477039509">Administrator tərəfindən idarə olunur</translation>
@@ -964,4 +966,5 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="988141524645182168">Digər Cihazlar</translation>
 <translation id="989988560359834682">Ünvana düzəliş edin</translation>
 <translation id="994757059139821576">Məqalə Təklifləri</translation>
+<translation id="997742718232442409">Bu vebsayt təqvim faylını endirməyə çalışır.</translation>
 </translationbundle>

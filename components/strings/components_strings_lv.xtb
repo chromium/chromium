@@ -100,7 +100,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="124116460088058876">Citas valodas…</translation>
 <translation id="1243027604378859286">Autors:</translation>
 <translation id="1246424317317450637">Treknraksts</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome OS iestatījumos personalizētu pieejamības rīkus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1250759482327835220">Lai nākamreiz veiktu maksājumu ātrāk, saglabājiet kartes datus, vārdu un norēķinu adresi savā Google kontā.</translation>
 <translation id="1252799212227771492">Izklājlapas izveides poga. Lai ātri izveidotu jaunu Google izklājlapu, nospiediet taustiņu Enter.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (veikta sinhronizācija)</translation>
@@ -139,6 +138,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1323433172918577554">Rādīt vairāk</translation>
 <translation id="132390688737681464">Saglabāt un aizpildīt adreses</translation>
 <translation id="1330449323196174374">Abpusējs locījums pa kreisi</translation>
+<translation id="1333745675627230582">Spēlēt Chrome dinozaura spēli</translation>
 <translation id="1333989956347591814">Iespējams, jūsu darbības <ph name="BEGIN_EMPHASIS" />joprojām būs redzamas<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />jūsu apmeklētajām vietnēm;
@@ -302,7 +302,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1711528724596764268">Mašīnmācīšanās un mākslīgais intelekts</translation>
 <translation id="1712552549805331520">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt datus lokālajā datorā.</translation>
 <translation id="1713628304598226412">2. paplāte</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">P</translation>
 <translation id="1717218214683051432">Kustību sensori</translation>
 <translation id="1717494416764505390">3. pastkaste</translation>
 <translation id="1718029547804390981">Dokuments ir pārāk liels, tādēļ tam nevar pievienot piezīmes</translation>
@@ -383,7 +383,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1919345977826869612">Reklāmas</translation>
 <translation id="1919367280705858090">Palīdzība par konkrētu kļūdas ziņojumu</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nav}=1{1 vietne}zero{# vietnes}one{# vietne}other{# vietnes}}</translation>
-<translation id="1923390796829649802">Poga Pārvaldīt pieejamības iestatījumus. Lai Chrome OS iestatījumos personalizētu pieejamības rīkus, nospiediet taustiņu Enter.</translation>
 <translation id="1924727005275031552">Jaunā</translation>
 <translation id="1927439593081478069">Poga Chrome drošības pārbaudes veikšanai. Lai Chrome iestatījumos veiktu drošības pārbaudi, nospiediet taustiņu Enter.</translation>
 <translation id="1939175642807587452">Var pieprasīt atļauju sūtīt paziņojumus</translation>
@@ -642,7 +641,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai notīrītu jūsu pārlūkošanas vēsturi, sīkfailus, kešatmiņu un citus datus Chrome iestatījumos, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
 <translation id="2650446666397867134">Piekļuve failam tika noraidīta.</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
-<translation id="2659491813326907275">Chrome OS iestatījumos personalizēt pieejamības rīkus</translation>
 <translation id="2660779039299703961">Notikums</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nav}=1{1 parole (šādam domēnam: <ph name="DOMAIN_LIST" />)}=2{2 paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}zero{# paroļu (šādiem domēniem: <ph name="DOMAIN_LIST" />)}one{# parole (šādiem domēniem: <ph name="DOMAIN_LIST" />)}other{# paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Augša</translation>
@@ -746,6 +744,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2972581237482394796">&amp;Pāratsaukt</translation>
 <translation id="2977665033722899841">Pašlaik ir atlasīta rinda “<ph name="ROW_NAME" />”. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Atvērt inkognito cilni</translation>
 <translation id="2985306909656435243">Ja šī opcija ir iespējota, Chromium saglabās jūsu kartes informāciju šajā ierīcē, lai nodrošinātu ātrāku veidlapu aizpildi.</translation>
 <translation id="2985398929374701810">Ievadiet derīgu adresi</translation>
 <translation id="2986368408720340940">Šis saņemšanas veids nav pieejams. Izmēģiniet citu veidu.</translation>
@@ -1511,6 +1510,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5097099694988056070">Ierīces statistika, piemēram, CPU/RAM lietojums</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Vietne nav droša</translation>
+<translation id="5109892411553231226">Pārvaldīt maksājumu veidus</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">18. paplāte</translation>
 <translation id="5114987907971894280">virtuālā realitāte</translation>
@@ -1758,6 +1758,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5789643057113097023">:</translation>
 <translation id="5803412860119678065">Vai vēlaties aizpildīt lauku ar informāciju “<ph name="CARD_DETAIL" />”?</translation>
 <translation id="5804241973901381774">Atļaujas</translation>
+<translation id="5808435672482059465">Skatīt Chrome vēsturi</translation>
 <translation id="5808542072418270309">Simulācijas spēles</translation>
 <translation id="5810442152076338065">Savienojums ar domēnu <ph name="DOMAIN" /> ir šifrēts, izmantojot novecojušu šifra komplektu.</translation>
 <translation id="5812947184178430888">Ja pārlūkā Chrome tiek atzīmēti ar drošību saistīti notikumi, atbilstošie dati par notikumiem tiek nosūtīti administratoram. Šie dati var būt, piemēram, pārlūkā Chrome apmeklēto lapu vietrāži URL, failu nosaukumi vai metadati un lietotājvārds, ar kuru pierakstāties tīmekļa lietojumprogrammās, savā ierīcē un pārlūkā Chrome.</translation>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Bu hesap ve kaydedilmemiş tüm veriler, Chrome'un yanı sıra bu cihazdaki diğer Google uygulamalarından kaldırılacak.</translation>
 <translation id="1968388653333775699">Chrome İle Daha Fazlasını Yapın</translation>
 <translation id="2009224836393115614">Chrome, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
+<translation id="2056123005618757196">Basit, güvenli ve her zamankinden daha hızlı Google Chrome ile daha fazlasını yapın.</translation>
 <translation id="2147651015520127414">Chrome, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="2199719347983604670">Chrome senkronizasyonundan veriler</translation>
 <translation id="2313070403598893276">Google Chrome basit, güvenli ve her zamankinden daha hızlı</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="4633328489441962921">Chrome, güncellemeleri denetleyemiyor</translation>
 <translation id="4698415050768537821">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta'da desteklenmiyor</translation>
 <translation id="5030102366287574140">Chrome; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir.</translation>
 <translation id="5108659628347594808">Chrome'u Daha İyi Hale Getirin</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Chrome'a Geçin</translation>
 <translation id="6238746320622508509">Chrome'un Gizli sekmeleri kilitlemesine izin verin.</translation>
 <translation id="6387994324662817823">Şifreler yalnızca bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
+<translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6427126399757991875">Kuruluşunuz, Chrome'u kuruyor...</translation>
 <translation id="6600954340915313787">Chrome'a kopyalandı</translation>
 <translation id="6634107063912726160">Oturumu kapattığınızda Chrome, hiçbir yeni veriyi Google Hesabınızla senkronize etmez. Önceden senkronize edilmiş veriler hesapta kalır.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Google Chrome ile Güvende Kalın</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
 <translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
+<translation id="8969290730818637510">İzni kabul ederek:
+<ph name="BEGIN_INDENT" />  • Sizinkine benzer kullanımı olan kişiler için Chrome'u daha iyi hale getirmemize yardımcı olun.<ph name="END_INDENT" />
+
+Dikkate alınması gereken noktalar:
+<ph name="BEGIN_INDENT" />  • Chrome kullanımınızla ilgili bilgiler Google'a gönderilir ancak bu bilgiler kimliğinizle ilişkilendirilmez.
+
+  • Chrome kilitlenirse bu kilitlenmeyle ilgili ayrıntılarda bazı kişisel bilgiler yer alabilir.
+
+  • Senkronizasyonu açarsanız ziyaret ettiğiniz URL'ler hakkındaki bilgiler de metriklerde yer alabilir.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome Varsayılan olarak ayarlansın mı?</translation>
 <translation id="9122931302567044771">Bu durumda Chrome her seferinde masaüstü siteyi ister.</translation>
 </translationbundle>

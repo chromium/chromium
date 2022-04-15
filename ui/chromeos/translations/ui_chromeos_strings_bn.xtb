@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">ফিনিশ</translation>
 <translation id="1942765061641586207">ছবির রেজোলিউশন</translation>
 <translation id="1972984168337863910">ফাইল ফিডব্যাক প্যানেল বড় করুন</translation>
-<translation id="1984456723671657197">এই ধরনের ফাইল ব্যবহার করা যায় না। Chrome OS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
 <translation id="1995337122023280937">ফাইল লোকেশনে যান</translation>
 <translation id="2001796770603320721">ড্রাইভে পরিচালনা করুন</translation>
 <translation id="2009067268969781306">ড্রাইভ ফরম্যাট করা হলে, সেটিতে সেভ করা সব ডেটা মুছে যাবে। সেটিকে আর আগের অবস্থায় ফেরানো যাবে না।</translation>
@@ -701,7 +700,6 @@
 <translation id="6970230597523682626">বুলগেরীয়</translation>
 <translation id="6973630695168034713">ফোল্ডারগুলি</translation>
 <translation id="6976795442547527108">সিংহ</translation>
-<translation id="6978611942794658017">Windows সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে৷ Chrome OS দ্বারা চালিত আপনার ডিভাইসটির সাথে এটি সামঞ্জস্যপূর্ণ নয়৷ একটি উপযুক্ত প্রতিস্থাপনযোগ্য অ্যাপের জন্য অনুগ্রহ করে Chrome ওয়েব স্টোর-এ সার্চ করুন৷</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">সুইডিশ</translation>
 <translation id="6990081529015358884">আপনার ডিভাইসে স্পেশ নেই৷</translation>
@@ -823,7 +821,6 @@
 <translation id="7972920761225148017">ফরাসি (সুইজারল্যান্ড)</translation>
 <translation id="7973962044839454485">একটি ভুল ইউজারনেম বা পাসওয়ার্ডের কারণে PPP যাচাই করা যায়নি৷</translation>
 <translation id="7980421588063892270">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় কোলম্যাক কীবোর্ড</translation>
-<translation id="79907182588096956">Windows সফ্টওয়্যার ব্যবহার করে এমন PC-র জন্য ফাইলটি তৈরি করা হয়েছে। আপনার ডিভাইস Chrome OS-এ চলে বলে সেটি এর জন্য মানানসই নয়। Chrome OS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
 <translation id="8008366997883261463">জ্যাক রাসেল ক্ষুদ্রকায় কুকুর</translation>
 <translation id="8028993641010258682">সাইজ</translation>
@@ -934,7 +931,6 @@
 <translation id="8912078710089354287">কুকুরের লেজ নাড়ানোর ছবি</translation>
 <translation id="8919081441417203123">ডেনিশ</translation>
 <translation id="8965697826696209160">সেখানে যথেষ্ট স্থান নেই৷</translation>
-<translation id="8970501467542182729">Macintosh সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে। আপনার ডিভাইস Chrome OS-এ চলে বলে সেটি এর জন্য মানানসই নয়। Chrome OS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
 <translation id="8997962250644902079">চীনা (ঐতিহ্যবাহী) পিনইন</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="9017798300203431059">রাশিয়ান ফনেটিক</translation>
@@ -953,7 +949,6 @@
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' এর সদস্যরা এই আইটেমগুলির অ্যাক্সেস পাবেন।</translation>
 <translation id="9131598836763251128">এক বা একাধিক ফাইল বেছে নিন৷</translation>
 <translation id="9133055936679483811">জিপ করা ব্যর্থ হয়েছে৷ <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Macintosh সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে৷ Chrome OS দ্বারা চালিত আপনার ডিভাইসটির সাথে এটি সামঞ্জস্যপূর্ণ নয়৷ একটি উপযুক্ত প্রতিস্থাপনযোগ্য অ্যাপের জন্য অনুগ্রহ করে Chrome ওয়েব স্টোর-এ সার্চ করুন৷</translation>
 <translation id="9144340019284012223">কাতালান</translation>
 <translation id="914873105831852105">ভুল পিন দিয়েছেন। আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>
 <translation id="9153934054460603056">পরিচয় এবং পাসওয়ার্ড সেভ করুন</translation>

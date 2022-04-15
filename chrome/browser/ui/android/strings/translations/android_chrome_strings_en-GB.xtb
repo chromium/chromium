@@ -148,7 +148,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="1779766957982586368">Close window</translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792959175193046959">Change the default download location at any time</translation>
-<translation id="1795251344124198516">Chrome &amp; Chrome OS Additional Terms of Service</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1829244130665387512">Find in page</translation>
@@ -185,7 +184,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
 <translation id="2020309681647789787">You’ll have your history on all your synced devices, so you can continue what you were doing</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
@@ -462,7 +460,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
 <translation id="3495219333887281978">Sign-in bottom sheet opened at half height.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Standard protection is on</translation>
 <translation id="3509330069915219067">Offline. Chrome can’t check for updates.</translation>
 <translation id="3513704683820682405">Augmented Reality</translation>
@@ -589,6 +586,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4296252229500326964">New Incognito tab</translation>
 <translation id="4298388696830689168">Linked sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Password Manager</translation>
 <translation id="4307992518367153382">Basics</translation>
 <translation id="4320177379694898372">No internet connection</translation>
 <translation id="4321739720395210191">Can't open your camera. Restart your device and try again.</translation>
@@ -957,7 +955,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6345878117466430440">Mark as read</translation>
 <translation id="6363990818884053551">To start sync, verify that it's you</translation>
 <translation id="6364438453358674297">Remove suggestion from history?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">More frequently preloads pages that Chrome thinks you are likely to visit. This setting may result in increased data use.</translation>
 <translation id="6385407407546870227">When trials are on, spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
 
@@ -1127,7 +1124,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7208109991155904980">Reaction moved</translation>
 <translation id="7222235798733126207">Limited sharing between sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
-<translation id="7237045078887540010">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_ATOS_LINK" />. The <ph name="BEGIN_PRIVACY_LINK" />privacy policy<ph name="END_PRIVACY_LINK" /> also applies.</translation>
 <translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
 <translation id="7252076891734325316">Place your phone close to the computer</translation>

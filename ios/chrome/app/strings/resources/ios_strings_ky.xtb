@@ -277,6 +277,7 @@
 <translation id="3290875554372353449">Аккаунт тандаңыз</translation>
 <translation id="3311748811247479259">Өчүк</translation>
 <translation id="3324193307694657476">2-дарек</translation>
+<translation id="3324298231050545260">Жылнаама файлы жеткиликтүү</translation>
 <translation id="3328801116991980348">Сайт жөнүндө маалымат</translation>
 <translation id="3329904751041170572">Серверге туташкан жок.</translation>
 <translation id="3335947283844343239">Жабылган терезени кайра ачуу</translation>
@@ -359,6 +360,7 @@
 <translation id="4049507953662678203">Тармакка туташып турганыңызды текшерип, кайталап көрүңүз.</translation>
 <translation id="4063300985191096908">Түрмөккө өтүү</translation>
 <translation id="408404951701638773">Издөө тилкесине өтүү оңой болуп калды</translation>
+<translation id="4108998448622696017">Кооптуу нерселер орун алганда аларды аныктап, сизге кабарлап турат.</translation>
 <translation id="411254640334432676">Жүктөлүп алынбай калды.</translation>
 <translation id="4112644173421521737">Издөө</translation>
 <translation id="4113030288477039509">Администраторуңуз башкарат</translation>
@@ -964,4 +966,5 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="988141524645182168">Бшк түзмкт</translation>
 <translation id="989988560359834682">Даректи өзгөртүү</translation>
 <translation id="994757059139821576">Макалаларды сунуштоо</translation>
+<translation id="997742718232442409">Бул вебсайт жылнаама файлын жүктөп алууга аракет кылып жатат.</translation>
 </translationbundle>

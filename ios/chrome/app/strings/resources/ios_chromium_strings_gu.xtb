@@ -27,6 +27,7 @@
 <translation id="2195025571279539885">શું તમે Chromiumને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાનું ઑફર કરવા માગો છો?</translation>
 <translation id="2218146227246548550">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">આનો અર્થ છે કે Chromium દરેક વખતે ડેસ્કટૉપ સાઇટની વિનંતી કરશે.</translation>
+<translation id="2313870531055795960">URLsને Chromiumમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chromium પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="2426113998523353159">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
 <translation id="2450140762465183767">હવે તમે જ્યારે પણ મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium <ph name="END_BOLD" />પસંદ કરો</translation>
@@ -49,11 +50,13 @@
 <translation id="4099085513035183040">Chromium બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4555020257205549924">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chromium, Google Translateનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પેજના અનુવાદ ઑફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">હવે તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="4654936625574199632">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chromium વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium સ્કૅન ચાલુ કરો</translation>
 <translation id="4736424910885271643">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="4806326830773390517">Googleને વપરાશનાં આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="4828317641996116749">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4985291216379576555">ઑફલાઇન, Chromium અપડેટ ચેક કરી શકતાં નથી</translation>
+<translation id="4996471330284142407">Chromiumના સરળ, સુરક્ષિત અને અત્યાર સુધીના સૌથી ઝડપી વર્ઝન વડે વધુ કાર્યો પૂર્ણ કરો.</translation>
 <translation id="4999538639245140991">કારણ કે તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો, આ ડિવાઇસમાંથી તમારા Chromium ડેટા ડિલીટ થઈ જશે. તમારો ડેટા તમારા Google એકાઉન્ટમાં જળવાઈ રહેશે.</translation>
 <translation id="5171868502429358653">Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="5224391634244552924">કોઈ સાચવેલા પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે.</translation>
@@ -111,6 +114,13 @@
 <translation id="8586442755830160949">કોપિરાઇટ <ph name="YEAR" /> The Chromium Authors. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="865600487977764604">તમને Chromium પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષાને બહેતર બનાવવા માટે કદાચ તેનો ઉપયોગ થઈ શકે છે.</translation>
 <translation id="8663480472502753423">Chromium અપ ટૂ ડેટ રાખો</translation>
+<translation id="8747378496147986285">જ્યારે ચાલુ હોય:
+<ph name="BEGIN_INDENT" />  • તમે જે રીતે કરો છો, તે રીતે Chromiumનો ઉપયોગ કરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો.<ph name="END_INDENT" />
+
+ધ્યાનમાં લેવા જેવી બાબતો:
+<ph name="BEGIN_INDENT" />  • Chromiumના તમારા વપરાશની માહિતી Googleને મોકલવામાં આવે છે, પણ તેને તમારી સાથે સાંકળવામાં આવતી નથી.
+  • જો Chromium ક્રૅશ થાય, તો ક્રૅશની વિગતોમાં અમુક વ્યક્તિગત માહિતીનો સમાવેશ થઈ શકે છે.
+  • જો તમે સિંક કરવાની સુવિધા ચાલુ કરો, તો મેટ્રિકમાં તમે જે URLsની મુલાકાત લીધી હોય, તેની માહિતીનો પણ સમાવેશ થઈ શકે છે.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Chromiumમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
 <translation id="894437814105052438">તમે સાઇન આઉટ કરશો, ત્યારે Chromium કોઈપણ નવા ડેટાને તમારા Google એકાઉન્ટ સાથે સિંક કરશે નહીં. અગાઉ સિંક કરેલો ડેટા એકાઉન્ટમાં રહે છે.</translation>
 <translation id="9022552996538154597">Chromium માં સાઇન ઇન કરો</translation>

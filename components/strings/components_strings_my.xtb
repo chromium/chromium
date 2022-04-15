@@ -100,7 +100,6 @@
 <translation id="124116460088058876">နောက်ထပ် ဘာသာစကားများ</translation>
 <translation id="1243027604378859286">စာရေးသူ-</translation>
 <translation id="1246424317317450637">စာလုံးထူ</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် တဘ်နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="1250759482327835220">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်၊ အမည်နှင့် ငွေတောင်းခံလွှာပို့ရန် လိပ်စာကို သင့် Google အကောင့်တွင် သိမ်းပါ။</translation>
 <translation id="1252799212227771492">စာရွက်ပြုလုပ်ရန် ခလုတ်၊ Google Sheet အသစ် အမြန်ပြုလုပ်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /> (စင့်ခ်လုပ်ထားသည်)</translation>
@@ -385,7 +384,6 @@
 <translation id="1919345977826869612">ကြော်ငြာများ</translation>
 <translation id="1919367280705858090">မှားယွင်းကြောင်း မက်ဆေ့ဂျ်အချို့အတွက် အကူအညီ ရယူရန်</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခု}other{ဝဘ်ဆိုက် # ခု}}</translation>
-<translation id="1923390796829649802">အများသုံးစွဲနိုင်မှု ဆက်တင်များ စီမံရန်ခလုတ်၊ Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှုတူးလ်ကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် Enter နှိပ်ပါ</translation>
 <translation id="1924727005275031552">အသစ်</translation>
 <translation id="1927439593081478069">Chrome လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန်ခလုတ်၊ Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန် Enter နှိပ်ပါ</translation>
 <translation id="1939175642807587452">အကြောင်းကြားချက်များ ပို့ရန် ခွင့်တောင်းနိုင်သည်</translation>
@@ -648,7 +646,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များရှိ သင့်ကြည့်ရှုခြင်းမှတ်တမ်း၊ ကွတ်ကီးများ၊ ကက်ရှ်နှင့် အခြားအရာများကို ရှင်းရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="2650446666397867134">ဖိုင်အား ရယူမှု ငြင်းပယ်ခံခဲ့ရ</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
-<translation id="2659491813326907275">Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ပါ</translation>
 <translation id="2660779039299703961">ဖြစ်ရပ်</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{မရှိ}=1{စကားဝှက် ၁ ခု (<ph name="DOMAIN_LIST" /> အတွက်)}=2{စကားဝှက် ၂ ခု (<ph name="DOMAIN_LIST" /> အတွက်)}other{စကားဝှက် # ခု (<ph name="DOMAIN_LIST" /> အတွက်)}}</translation>
 <translation id="2666092431469916601">ထိပ်</translation>

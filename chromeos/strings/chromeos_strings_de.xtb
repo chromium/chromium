@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
-<translation id="1930797645656624981">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google-Profilfoto</translation>
 <translation id="1979103255016296513">Passwortänderung überfällig</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Verbindung</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Es muss mindestens ein Art Gallery-Album ausgewählt werden</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Ein-/Aus-Taste für Hintergrundbeleuchtung der Tastatur</translation>
 <translation id="2240366984605217732">Layout</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Keine Verbindung zum Internet.</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
-<translation id="2585245331261708204">Neues bei Chrome OS</translation>
 <translation id="2619761439309613843">Tägliche Aktualisierung</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> ausgewählt</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Elternzugang</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
-<translation id="475869545581454722">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4782311465517282004">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
@@ -629,6 +628,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Automatischen Farbmodus aktivieren</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
+<translation id="8045012663542226664">Mikrofon stummschalten</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="8082366717211101304">Auflösen des DNS von Android-Apps aus nicht möglich</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
@@ -739,6 +739,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="917720651393141712">Testen</translation>
 <translation id="9204237731135241582">Gateway kann von Android-Apps aus nicht kontaktiert werden</translation>
 <translation id="9211490828691860325">Alle Desktops</translation>
+<translation id="932327136139879170">Startseite</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>
 <translation id="960719561871045870">Betreibercode</translation>

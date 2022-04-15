@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Finnois</translation>
 <translation id="1942765061641586207">Résolution de l'image</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
-<translation id="1984456723671657197">Ce type de fichier n'est pas pris en charge. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="1995337122023280937">Accéder au dossier du fichier</translation>
 <translation id="2001796770603320721">Gérer dans Google Disque</translation>
 <translation id="2009067268969781306">Le formatage d'un lecteur effacera toutes les données qu'il contient. Cette action est irréversible.</translation>
@@ -703,7 +702,6 @@
 <translation id="6970230597523682626">Bulgare</translation>
 <translation id="6973630695168034713">Dossiers</translation>
 <translation id="6976795442547527108">Lion</translation>
-<translation id="6978611942794658017">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une application de remplacement appropriée dans la boutique Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6989942356279143254">Suédois</translation>
 <translation id="6990081529015358884">Vous avez utilisé tout l'espace de stockage.</translation>
@@ -825,7 +823,6 @@
 <translation id="7972920761225148017">Français (Suisse)</translation>
 <translation id="7973962044839454485">L'authentification PPP a échoué en raison d'un nom d'utilisateur ou d'un mot de passe incorrect</translation>
 <translation id="7980421588063892270">Anglais (É.-U.) avec clavier Colemak</translation>
-<translation id="79907182588096956">Ce fichier est conçu pour un ordinateur fonctionnant sous un système d'exploitation Windows. Il est incompatible avec votre appareil, puisque celui-ci exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="8000066093800657092">Aucun réseau</translation>
 <translation id="8008366997883261463">Rex</translation>
 <translation id="8028993641010258682">Taille</translation>
@@ -936,7 +933,6 @@
 <translation id="8912078710089354287">Chien remuant la queue</translation>
 <translation id="8919081441417203123">Danois</translation>
 <translation id="8965697826696209160">Il n'y a pas suffisamment d'espace.</translation>
-<translation id="8970501467542182729">Ce fichier est conçu pour un ordinateur fonctionnant sous un système d'exploitation Macintosh. Il est incompatible avec votre appareil, puisque celui-ci exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="9017798300203431059">Russe (phonétique)</translation>
@@ -955,7 +951,6 @@
 <translation id="9130775360844693113">Les membres de « <ph name="DESTINATION_NAME" /> » pourront accéder à ces éléments.</translation>
 <translation id="9131598836763251128">Sélectionner un ou plusieurs fichiers</translation>
 <translation id="9133055936679483811">La compression au format ZIP a échoué. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une application de remplacement appropriée dans la boutique Chrome Web Store.</translation>
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">NIP incorrect. Il vous reste 1 tentative.</translation>
 <translation id="9153934054460603056">Enregistrer le nom d'utilisateur et le mot de passe</translation>

@@ -148,7 +148,6 @@
 <translation id="1779766957982586368">Κλείσιμο παραθύρου</translation>
 <translation id="1791662854739702043">Εγκατεστημένο</translation>
 <translation id="1792959175193046959">Αλλάξτε την προεπιλεγμένη τοποθεσία λήψης ανά πάσα στιγμή</translation>
-<translation id="1795251344124198516">Πρόσθετοι Όροι Παροχής Υπηρεσιών Chrome και Chrome OS</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
@@ -185,7 +184,6 @@
 <translation id="2000419248597011803">Στέλνει ορισμένα cookie και αναζητήσεις από τη γραμμή διευθύνσεων και το πλαίσιο αναζήτησης στην προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="200114059308480249">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google;</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Αρχείο}other{# Αρχεία}}</translation>
-<translation id="2015836039326522978">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">Το ιστορικό σας θα εμφανίζεται σε όλες τις συγχρονισμένες συσκευές, ώστε να μπορείτε να συνεχίζετε ό,τι κάνετε</translation>
 <translation id="2021896219286479412">Στοιχ. ελέγ. σε πλήρη οθόνη</translation>
 <translation id="2038563949887743358">Ενεργοποίηση αιτήματος ιστότοπου για υπολογιστές</translation>
@@ -462,7 +460,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
 <translation id="3495219333887281978">Το φύλλο κάτω μέρους για σύνδεση είναι ανοιχτό στο μισό ύψος.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους<ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Η Βασική προστασία είναι ενεργή.</translation>
 <translation id="3509330069915219067">Εκτός σύνδεσης. Το Chrome δεν μπορεί να ελέγξει για ενημερώσεις.</translation>
 <translation id="3513704683820682405">Επαυξημένη πραγματικότητα</translation>
@@ -589,6 +586,7 @@
 <translation id="4296252229500326964">Νέα καρτ. ανών. περιήγ.</translation>
 <translation id="4298388696830689168">Συνδεδεμένοι ιστότοποι</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Διαχειριστής κωδικών πρόσβασης</translation>
 <translation id="4307992518367153382">Βασικά στοιχεία</translation>
 <translation id="4320177379694898372">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="4321739720395210191">Δεν είναι δυνατό το άνοιγμα της κάμερας. Επανεκκινήστε τη συσκευή και δοκιμάστε ξανά.</translation>
@@ -957,7 +955,6 @@
 <translation id="6345878117466430440">Επισήμανση ως αναγνωσμένο</translation>
 <translation id="6363990818884053551">Για να ξεκινήσετε τον συγχρονισμό, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="6364438453358674297">Κατάργηση πρότασης από το ιστορικό;</translation>
-<translation id="6379829913050047669">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Προφορτώνει συχνότερα τις σελίδες που το Chrome θεωρεί πιθανό ότι θα επισκεφτείτε. Αυτή η ρύθμιση μπορεί να οδηγήσει σε αυξημένη χρήση δεδομένων.</translation>
 <translation id="6385407407546870227">Όταν είναι ενεργοποιημένες οι δοκιμές, η Μείωση ανεπιθύμητου περιεχομένου και απάτης βασίζεται σε διακριτικά αξιοπιστίας για να βοηθήσει τους ιστοτόπους να καταπολεμήσουν την απάτη και να διακρίνουν τα bot από τους πραγματικούς χρήστες.
 
@@ -1127,7 +1124,6 @@
 <translation id="7208109991155904980">Η αντίδραση μεταφέρθηκε</translation>
 <translation id="7222235798733126207">Περιορισμένη κοινοποίηση μεταξύ ιστοτόπων</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα}other{# λήψεις σε εκκρεμότητα}}</translation>
-<translation id="7237045078887540010">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους<ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />. Επίσης, ισχύει η <ph name="BEGIN_PRIVACY_LINK" />Πολιτική απορρήτου<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Στιλιζαρισμένη επισήμανση <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Βεβαιωθείτε ότι ο συγχρονισμός στο Chrome έχει ενεργοποιηθεί για τη συσκευή <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7252076891734325316">Τοποθετήστε το τηλέφωνό σας κοντά στον υπολογιστή</translation>

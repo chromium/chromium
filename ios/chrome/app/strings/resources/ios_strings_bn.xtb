@@ -277,6 +277,7 @@
 <translation id="3290875554372353449">একটি অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="3311748811247479259">বন্ধ করা আছে</translation>
 <translation id="3324193307694657476">ঠিকানা ২</translation>
+<translation id="3324298231050545260">ক্যালেন্ডার ফাইল উপলভ্য</translation>
 <translation id="3328801116991980348">সাইট তথ্য</translation>
 <translation id="3329904751041170572">সার্ভারের সাথে সংযোগ করা যাযনি৷</translation>
 <translation id="3335947283844343239">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
@@ -359,6 +360,7 @@
 <translation id="4049507953662678203">আপনি একটি নেটওয়ার্ক সংযোগে আছেন কিনা তা নিশ্চিত করুন এবং আবার চেষ্টা করুন।</translation>
 <translation id="4063300985191096908">ফিডে যান</translation>
 <translation id="408404951701638773">সার্চ বারে কাজ করা এখন সহজ</translation>
+<translation id="4108998448622696017">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="411254640334432676">ডাউনলোড করা যায়নি।</translation>
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">আপনার প্রশাসকের দ্বারা পরিচালিত</translation>
@@ -965,4 +967,5 @@
 <translation id="988141524645182168">অন্যান্য ডিভাইস</translation>
 <translation id="989988560359834682">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="994757059139821576">নিবন্ধ সম্পর্কিত প্রস্তাবনা</translation>
+<translation id="997742718232442409">এই ওয়েবসাইটটি একটি ক্যালেন্ডার ফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
 </translationbundle>

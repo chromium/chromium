@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Wersja sprzętu</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1908234395526491708">Nieudane żądania UDP</translation>
-<translation id="1930797645656624981">Usługa Metoda wprowadzania Chrome OS</translation>
 <translation id="1947737735496445907">Wydrukowano</translation>
 <translation id="1951012854035635156">Asystent</translation>
+<translation id="1977994649430373166">Zdjęcie profilowe Google</translation>
 <translation id="1979103255016296513">Zaległa zmiana hasła</translation>
 <translation id="1999615961760456652">Portal przechwytujący</translation>
 <translation id="2006864819935886708">Łączność</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Musi być wybrany co najmniej jeden album z Galerii sztuki</translation>
 <translation id="2230005943220647148">Stopnie Celsjusza</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Przełączenie podświetlenia klawiatury</translation>
 <translation id="2240366984605217732">Przełącznik układu</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
-<translation id="2585245331261708204">Co nowego w Chrome OS</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2640549051766135490">Wybrano album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4744944742468440486">Informacje związane z zaznaczoną treścią</translation>
-<translation id="475869545581454722">Hasło do Chrome OS zostało zaktualizowane</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4782311465517282004">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
 <translation id="4791000909649665275">Liczba zdjęć: <ph name="NUMBER" /></translation>
@@ -629,6 +628,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Włącz automatyczny tryb kolorów</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
+<translation id="8045012663542226664">Wyciszenie mikrofonu</translation>
 <translation id="8075838845814659848">Stan naładowania</translation>
 <translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
@@ -739,6 +739,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="917720651393141712">Przetestuj</translation>
 <translation id="9204237731135241582">Nie udało się połączyć z bramą w aplikacjach na Androida</translation>
 <translation id="9211490828691860325">Wszystkie biurka</translation>
+<translation id="932327136139879170">Strona główna</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nie aktywowano</translation>
 <translation id="960719561871045870">Kod operatora</translation>

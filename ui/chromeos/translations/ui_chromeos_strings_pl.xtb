@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Fiński</translation>
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
-<translation id="1984456723671657197">Ten typ pliku nie jest obsługiwany. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="1995337122023280937">Otwórz lokalizację pliku</translation>
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">Bułgarski</translation>
 <translation id="6973630695168034713">Foldery</translation>
 <translation id="6976795442547527108">Lew</translation>
-<translation id="6978611942794658017">To jest plik na komputery z Windows. Jest niezgodny z Twoim urządzeniem z Chrome OS. Poszukaj odpowiedniej aplikacji zastępczej w Chrome Web Store.</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6989942356279143254">Szwedzki</translation>
 <translation id="6990081529015358884">Nie masz już miejsca</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">Francuski (Szwajcaria)</translation>
 <translation id="7973962044839454485">Uwierzytelnianie PPP nie powiodło się z powodu nieprawidłowej nazwy użytkownika lub hasła</translation>
 <translation id="7980421588063892270">Angielski (USA) z klawiaturą Colemak</translation>
-<translation id="79907182588096956">To jest plik na komputery z oprogramowaniem Windows. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="8000066093800657092">Brak sieci</translation>
 <translation id="8008366997883261463">Pies</translation>
 <translation id="8028993641010258682">Rozmiar</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Pies merdający ogonem</translation>
 <translation id="8919081441417203123">Duński</translation>
 <translation id="8965697826696209160">Nie ma wystarczającej ilości miejsca.</translation>
-<translation id="8970501467542182729">To jest plik na komputery Mac. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="8997962250644902079">Chiński (tradycyjny) pinyin</translation>
 <translation id="9003940392834790328">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="9017798300203431059">rosyjska klawiatura fonetyczna</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">Osoby z uprawnieniami do: „<ph name="DESTINATION_NAME" />” uzyskają dostęp do tych elementów.</translation>
 <translation id="9131598836763251128">Wybierz jeden lub kilka plików</translation>
 <translation id="9133055936679483811">Pakowanie nie powiodło się. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Ten plik został opracowany z myślą o komputerach Mac. Jest niezgodny z Twoim urządzeniem z Chrome OS. Poszukaj odpowiedniej aplikacji zastępczej w Chrome Web Store.</translation>
 <translation id="9144340019284012223">Kataloński</translation>
 <translation id="914873105831852105">Nieprawidłowy kod PIN. Pozostała 1 próba.</translation>
 <translation id="9153934054460603056">Zapisz tożsamość i hasło</translation>

@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1181037720776840403">삭제</translation>
+<translation id="1193729455103054076">안전한 비밀번호를 사용하시겠습니까?</translation>
 <translation id="1197267115302279827">북마크 이동</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1202892408424955784">추적 중인 제품</translation>
@@ -147,7 +148,6 @@
 <translation id="1779766957982586368">창 닫기</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792959175193046959">언제든지 기본 다운로드 위치 변경 가능</translation>
-<translation id="1795251344124198516">Chrome 및 Chrome OS 추가 서비스 약관</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
@@ -184,7 +184,6 @@
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{파일 #개}other{파일 #개}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
 <translation id="2020309681647789787">동기화된 모든 기기에 방문 기록이 유지되므로 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
@@ -461,7 +460,6 @@
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">로그인 하단 시트가 절반 높이로 열렸습니다.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Chrome을 사용하면 <ph name="BEGIN_TOS_LINK" />Google 서비스 약관<ph name="END_TOS_LINK" />과 <ph name="BEGIN_ATOS_LINK" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_ATOS_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
 <translation id="3509330069915219067">오프라인 상태입니다. Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="3513704683820682405">증강 현실</translation>
@@ -588,6 +586,7 @@
 <translation id="4296252229500326964">새 시크릿 탭</translation>
 <translation id="4298388696830689168">연결된 사이트</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="4307992518367153382">기본설정</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
 <translation id="4321739720395210191">카메라를 열 수 없습니다. 기기를 다시 시작한 후 시도해 보세요.</translation>
@@ -956,7 +955,6 @@
 <translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6363990818884053551">동기화를 시작하려면 본인 여부를 확인하세요.</translation>
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="6380100320871303656">Chrome에서 사용자가 방문할 가능성이 높다고 생각되는 페이지를 더 자주 미리 로드합니다. 이 설정을 사용하면 데이터 사용량이 늘어날 수 있습니다.</translation>
 <translation id="6385407407546870227">무료 체험을 사용 설정한 경우 스팸 및 사기 감소 기능은 신뢰 토큰을 사용해 사이트에서 사기에 대응하고 사람과 봇을 구별하도록 돕습니다.
 
@@ -1126,7 +1124,6 @@
 <translation id="7208109991155904980">반응 이동됨</translation>
 <translation id="7222235798733126207">사이트 간 공유 제한</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
-<translation id="7237045078887540010">Chrome을 사용하면 <ph name="BEGIN_TOS_LINK" />Google 서비스 약관<ph name="END_TOS_LINK" />과 <ph name="BEGIN_ATOS_LINK" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_ATOS_LINK" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_PRIVACY_LINK" />개인정보처리방침<ph name="END_PRIVACY_LINK" />도 적용됩니다.</translation>
 <translation id="7242755609445462077">스타일 지정된 하이라이트 <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="7252076891734325316">휴대전화를 컴퓨터 가까이 두세요</translation>

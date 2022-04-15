@@ -93,7 +93,6 @@
 <translation id="1887850431809612466">مراجعة الأجهزة</translation>
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
 <translation id="1908234395526491708">‏تعذَّر طلب بروتوكول UDP.</translation>
-<translation id="1930797645656624981">‏خدمة أسلوب الإدخال لنظام التشغيل Chrome</translation>
 <translation id="1947737735496445907">تمت الطباعة</translation>
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1979103255016296513">تأخير تغيير كلمة المرور</translation>
@@ -150,7 +149,6 @@
 <translation id="2536159006530886390">تعذَّر الاتصال بالإنترنت.</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">لضبط إعدادات الشبكة، انتقِل إلى "الإعدادات".</translation>
-<translation id="2585245331261708204">‏ميزات نظام Chrome الجديدة</translation>
 <translation id="2619761439309613843">إعادة التحميل يوميًا</translation>
 <translation id="2620436844016719705">النظام</translation>
 <translation id="2640549051766135490">تمّ اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +321,6 @@
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
-<translation id="475869545581454722">‏تم تعديل كلمة مرور نظام التشغيل Chrome</translation>
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4782311465517282004">يمكنك الحصول على تعريفات أو ترجمات للنصوص أو تحويل الوحدات من خلال النقر بزر الماوس الأيمن على النص أو النقر عليه مع الاستمرار.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> صورة</translation>
@@ -739,6 +736,7 @@
 <translation id="917720651393141712">اختبار</translation>
 <translation id="9204237731135241582">‏تعذَّر الاتصال بالبوابة من خلال تطبيقات Android.</translation>
 <translation id="9211490828691860325">جميع أسطح المكتب</translation>
+<translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">غير نشطة</translation>
 <translation id="960719561871045870">رمز مشغل شبكة الجوال</translation>
