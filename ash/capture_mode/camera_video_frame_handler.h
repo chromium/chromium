@@ -112,6 +112,10 @@ class CameraVideoFrameHandler : public video_capture::mojom::VideoFrameHandler {
   // so it can be reused again by the video frames producer.
   void OnVideoFrameGone(int buffer_id);
 
+  // Called when a fatal error is reported in `OnError()` or the mojo remote to
+  // `VideoSource` gets disconnected.
+  void OnFatalErrorOrDisconnection();
+
   Delegate* const delegate_;
 
   mojo::Receiver<video_capture::mojom::VideoFrameHandler>

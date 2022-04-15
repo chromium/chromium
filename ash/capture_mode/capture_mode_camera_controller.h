@@ -208,6 +208,15 @@ class ASH_EXPORT CaptureModeCameraController
   void OnRecordingStarted(bool is_in_projector_mode);
   void OnRecordingEnded();
 
+  // Called when the `CameraVideoFrameHandler` of the current
+  // `camera_preview_widget_` encounters a fatal error. This is considered a
+  // camera disconnection, and sometimes doesn't get reported via
+  // `OnDevicesChanged()` below, or may get delayed a lot. We manually remove
+  // the current camera from `available_cameras_`, delete its preview, and
+  // request a new list of cameras from the video capture service.
+  // https://crbug/1316230.
+  void OnFrameHandlerFatalError();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 

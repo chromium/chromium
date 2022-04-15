@@ -34,6 +34,9 @@ class FakeVideoSourceProvider
   void Bind(mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider>
                 pending_receiver);
 
+  // Simulates a fatal error on the camera device whose `device_id` is given.
+  void TriggerFatalErrorOnCamera(const std::string& device_id);
+
   // Simulate connecting and disconnecting a camera device with the given
   // `device_id`, `display_name` and `model_id`.
   void AddFakeCamera(const std::string& device_id,

@@ -62,6 +62,12 @@ void FakeVideoSourceProvider::Bind(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+void FakeVideoSourceProvider::TriggerFatalErrorOnCamera(
+    const std::string& device_id) {
+  DCHECK(devices_map_.contains(device_id));
+  devices_map_.at(device_id)->TriggerFatalError();
+}
+
 void FakeVideoSourceProvider::AddFakeCamera(const std::string& device_id,
                                             const std::string& display_name,
                                             const std::string& model_id) {
