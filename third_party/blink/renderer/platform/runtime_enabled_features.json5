@@ -188,10 +188,6 @@
       status: "test",
     },
     {
-      name: "AOMAriaProperties",
-      status: "stable",
-    },
-    {
       name: "AOMAriaRelationshipProperties",
       status: "experimental",
     },

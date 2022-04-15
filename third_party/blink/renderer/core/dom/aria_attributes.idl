@@ -5,9 +5,7 @@
 // ARIA reflection, note this doesn't include relationship properties,
 // which is defined in AriaRelationshipAttributes.
 // https://w3c.github.io/aria/#idl-interface
-[
-    RuntimeEnabled=AOMAriaProperties
-] interface mixin AriaAttributes {
+interface mixin AriaAttributes {
     [CEReactions, Reflect=aria_atomic] attribute DOMString? ariaAtomic;
     [CEReactions, Reflect=aria_autocomplete] attribute DOMString? ariaAutoComplete;
     [CEReactions, Reflect=aria_busy] attribute DOMString? ariaBusy;
