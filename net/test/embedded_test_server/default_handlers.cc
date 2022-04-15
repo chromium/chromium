@@ -645,16 +645,18 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithSecureCookie(
   return http_response;
 }
 
-// /cross-site?URL
+// /cross-site?URL (also /cross-site-with-cookie?URL)
 // Returns a cross-site redirect to URL.
 std::unique_ptr<HttpResponse> HandleCrossSiteRedirect(
     EmbeddedTestServer* server,
+    const std::string& prefix,
+    bool set_cookie,
     const HttpRequest& request) {
-  if (!ShouldHandle(request, "/cross-site"))
+  if (!ShouldHandle(request, prefix))
     return nullptr;
 
   std::string dest_all = base::UnescapeBinaryURLComponent(
-      request.relative_url.substr(std::string("/cross-site").size() + 1));
+      request.relative_url.substr(prefix.size() + 1));
 
   std::string dest;
   size_t delimiter = dest_all.find("/");
@@ -667,6 +669,9 @@ std::unique_ptr<HttpResponse> HandleCrossSiteRedirect(
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(HTTP_MOVED_PERMANENTLY);
   http_response->AddCustomHeader("Location", dest);
+  if (set_cookie) {
+    http_response->AddCustomHeader("Set-Cookie", "server-redirect=true");
+  }
   http_response->set_content_type("text/html");
   http_response->set_content(base::StringPrintf(
       "<html><head></head><body>Redirecting to %s</body></html>",
@@ -996,8 +1001,12 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
       "/server-redirect-with-secure-cookie",
       &HandleServerRedirectWithSecureCookie, HTTP_MOVED_PERMANENTLY));
 
+  server->RegisterDefaultHandler(base::BindRepeating(&HandleCrossSiteRedirect,
+                                                     server, "/cross-site",
+                                                     /*set_cookie=*/false));
   server->RegisterDefaultHandler(
-      base::BindRepeating(&HandleCrossSiteRedirect, server));
+      base::BindRepeating(&HandleCrossSiteRedirect, server,
+                          "/cross-site-with-cookie", /*set_cookie=*/true));
   server->RegisterDefaultHandler(
       PREFIXED_HANDLER("/client-redirect", &HandleClientRedirect));
   server->RegisterDefaultHandler(
