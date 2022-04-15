@@ -21,6 +21,7 @@ class AccountCapabilitiesTestMutator {
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
   void set_can_stop_parental_supervision(bool value);
   void set_is_subject_to_parental_controls(bool value);
+  void set_can_toggle_auto_updates(bool value);
 
   // Modifies all supported capabilities at once.
   void SetAllSupportedCapabilities(bool value);

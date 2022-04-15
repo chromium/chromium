@@ -31,3 +31,7 @@ ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
 ACCOUNT_CAPABILITY(kCanStopParentalSupervisionCapabilityName,
                    CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME,
                    "accountcapabilities/guzdslldmfya")
+
+ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
+                   CAN_TOGGLE_AUTO_UPDATES_NAME,
+                   "accountcapabilities/gu4dmlldmfya")

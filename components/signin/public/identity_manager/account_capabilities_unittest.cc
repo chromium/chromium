@@ -73,6 +73,18 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControls) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanToggleAutoUpdates) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_toggle_auto_updates(), signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_toggle_auto_updates(true);
+  EXPECT_EQ(capabilities.can_toggle_auto_updates(), signin::Tribool::kTrue);
+
+  mutator.set_can_toggle_auto_updates(false);
+  EXPECT_EQ(capabilities.can_toggle_auto_updates(), signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Empty) {
   AccountCapabilities capabilities;
   EXPECT_FALSE(capabilities.AreAllCapabilitiesKnown());

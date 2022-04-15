@@ -96,6 +96,13 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canToggleAutoUpdates capability value.
+     */
+    public @Tribool int canToggleAutoUpdates() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME);
+    }
+
+    /**
      * @param capabilityName the name of the capability to lookup.
      * @return the capability value associated to the name.
      */

@@ -52,6 +52,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToParentalControls();
             case AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME:
                 return capabilities.canStopParentalSupervision();
+            case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
+                return capabilities.canToggleAutoUpdates();
         }
         assert false : "Capability name is not known.";
         return -1;
@@ -88,7 +90,10 @@ public final class AccountCapabilitiesTest {
                 new ParameterSet()
                         .name("CanOfferExtendedChromeSyncPromos")
                         .value(AccountCapabilitiesConstants
-                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME));
+                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME),
+                new ParameterSet()
+                        .name("CanToggleAutoUpdates")
+                        .value(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

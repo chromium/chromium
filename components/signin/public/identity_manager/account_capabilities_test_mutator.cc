@@ -42,6 +42,10 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
       value;
 }
 
+void AccountCapabilitiesTestMutator::set_can_toggle_auto_updates(bool value) {
+  capabilities_->capabilities_map_[kCanToggleAutoUpdatesName] = value;
+}
+
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
   for (const std::string& name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {

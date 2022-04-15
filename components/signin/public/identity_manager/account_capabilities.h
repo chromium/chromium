@@ -55,6 +55,9 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 
+  // Chrome can toggle auto updates with this capability.
+  signin::Tribool can_toggle_auto_updates() const;
+
   // Whether none of the capabilities has `signin::Tribool::kUnknown`.
   bool AreAllCapabilitiesKnown() const;
 
