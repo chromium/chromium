@@ -121,7 +121,7 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
     base::AutoLock auto_lock(lock_);
     for (auto [listener, wrapper] : listeners_) {
       listener->OnTickTaskQueue()->PostTask(webrtc::ToQueuedTask(
-          [wrapper = std::move(wrapper)] { wrapper->OnTick(); }));
+          [the_wrapper = std::move(wrapper)] { the_wrapper->OnTick(); }));
     }
   }
 
