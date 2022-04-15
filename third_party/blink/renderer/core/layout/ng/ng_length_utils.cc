@@ -1562,6 +1562,12 @@ LogicalSize CalculateReplacedChildPercentageSize(
   if (space.IsAnonymous() || node.IsAnonymousBlock())
     return space.ReplacedPercentageResolutionSize();
 
+  // Table cell children don't apply the "percentage-quirk". I.e. if their
+  // percentage resolution block-size is indefinite, they don't pass through
+  // their parent's percentage resolution block-size.
+  if (space.IsTableCellChild())
+    return child_available_size;
+
   // Replaced descendants of a table-cell which has a definite block-size,
   // always resolve their percentages against this size (even during the
   // "layout" pass where the fixed block-size may be different).
