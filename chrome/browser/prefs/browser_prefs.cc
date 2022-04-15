@@ -1016,6 +1016,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   RegisterScreenshotPrefs(registry);
   safe_browsing::RegisterLocalStatePrefs(registry);
   secure_origin_allowlist::RegisterPrefs(registry);
+  segmentation_platform::SegmentationPlatformService::RegisterLocalStatePrefs(
+      registry);
 #if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts::RegisterPrefs(registry);
   HidPolicyAllowedDevices::RegisterLocalStatePrefs(registry);
@@ -1150,8 +1152,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   policy::EuiccStatusUploader::RegisterLocalStatePrefs(registry);
   policy::TPMAutoUpdateModePolicyHandler::RegisterPrefs(registry);
   quirks::QuirksManager::RegisterPrefs(registry);
-  segmentation_platform::SegmentationPlatformService::RegisterLocalStatePrefs(
-      registry);
   UpgradeDetectorChromeos::RegisterPrefs(registry);
   RegisterNearbySharingLocalPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
