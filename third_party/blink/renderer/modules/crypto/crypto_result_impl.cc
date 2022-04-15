@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -134,6 +135,13 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
   if (!resolver_)
     return;
 
+  ScriptState* resolver_script_state = resolver_->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+  ScriptState::Scope script_state_scope(resolver_script_state);
+
   ExceptionCode exception_code = WebCryptoErrorToExceptionCode(error_type);
 
   // Handle TypeError separately, as it cannot be created using
@@ -141,12 +149,14 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
   if (exception_code == ToExceptionCode(ESErrorType::kTypeError)) {
     RejectWithTypeError(error_details, resolver_);
   } else if (IsDOMExceptionCode(exception_code)) {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
+    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_script_state->GetIsolate(),
         static_cast<DOMExceptionCode>(exception_code), error_details));
   } else {
     NOTREACHED();
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, error_details));
+    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+        error_details));
   }
   ClearResolver();
 }
