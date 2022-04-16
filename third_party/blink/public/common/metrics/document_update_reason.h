@@ -27,6 +27,7 @@ enum class DocumentUpdateReason {
   kEditing,
   kFindInPage,
   kFocus,
+  kFocusgroup,
   kForm,
   kHitTest,
   kInput,

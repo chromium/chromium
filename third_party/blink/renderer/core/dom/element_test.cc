@@ -898,7 +898,8 @@ TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
 TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
-    <div id=e1 focusgroup=grid></div> <!-- Error -->
+    <!-- Not an error, since an author might provide the table structure in CSS. -->
+    <div id=e1 focusgroup=grid></div>
     <table id=e2 focusgroup=grid></table>
     <table id=e3 focusgroup="grid wrap"></table>
     <table id=e4 focusgroup="grid row-wrap"></table>
@@ -968,7 +969,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   FocusgroupFlags e15_flags = e15->GetFocusgroupFlags();
   FocusgroupFlags e16_flags = e16->GetFocusgroupFlags();
 
-  ASSERT_EQ(e1_flags, FocusgroupFlags::kNone);
+  ASSERT_EQ(e1_flags, FocusgroupFlags::kGrid);
   ASSERT_EQ(e2_flags, FocusgroupFlags::kGrid);
   ASSERT_EQ(e3_flags,
             (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally |

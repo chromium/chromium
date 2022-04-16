@@ -8,6 +8,9 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
 
 namespace blink {
 
@@ -87,15 +90,34 @@ bool FocusgroupControllerUtils::FocusgroupExtendsInAxis(
 }
 
 Element* FocusgroupControllerUtils::FindNearestFocusgroupAncestor(
-    const Element* element) {
+    const Element* element,
+    FocusgroupType type) {
   if (!element)
     return nullptr;
 
   for (Element* ancestor = FlatTreeTraversal::ParentElement(*element); ancestor;
        ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
     FocusgroupFlags ancestor_flags = ancestor->GetFocusgroupFlags();
-    if (ancestor_flags != FocusgroupFlags::kNone)
-      return ancestor;
+    if (ancestor_flags != FocusgroupFlags::kNone) {
+      switch (type) {
+        case FocusgroupType::kGrid:
+          // TODO(bebeaudr): Support grid focusgroups that aren't based on the
+          // table layout objects.
+          if (ancestor_flags & FocusgroupFlags::kGrid &&
+              IsA<LayoutNGTable>(ancestor->GetLayoutObject())) {
+            return ancestor;
+          }
+          break;
+        case FocusgroupType::kLinear:
+          if (!(ancestor_flags & FocusgroupFlags::kGrid))
+            return ancestor;
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
+      return nullptr;
+    }
   }
 
   return nullptr;
@@ -155,9 +177,12 @@ bool FocusgroupControllerUtils::IsFocusgroupItem(const Element* element) {
   if (!element || !element->IsFocusable())
     return false;
 
-  // All children of a focusgroup are considered focusgroup item if they are
+  // All children of a focusgroup are considered focusgroup items if they are
   // focusable.
   Element* parent = FlatTreeTraversal::ParentElement(*element);
+  if (!parent)
+    return false;
+
   FocusgroupFlags parent_flags = parent->GetFocusgroupFlags();
   return parent_flags != FocusgroupFlags::kNone;
 }
@@ -209,7 +234,8 @@ Element* FocusgroupControllerUtils::AdjustElementOutOfUnrelatedFocusgroup(
   // of that focusgroup).
   FocusgroupFlags focusgroup_flags = stop_ancestor->GetFocusgroupFlags();
   if (focusgroup_flags == FocusgroupFlags::kNone) {
-    Element* focusgroup = FindNearestFocusgroupAncestor(stop_ancestor);
+    Element* focusgroup =
+        FindNearestFocusgroupAncestor(stop_ancestor, FocusgroupType::kLinear);
     DCHECK(focusgroup);
     focusgroup_flags = focusgroup->GetFocusgroupFlags();
   }
@@ -235,6 +261,29 @@ Element* FocusgroupControllerUtils::AdjustElementOutOfUnrelatedFocusgroup(
   }
 
   return adjusted_element;
+}
+
+bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
+  DCHECK(element);
+  if (!element->IsFocusable())
+    return false;
+
+  // TODO(bebeaudr): Add support for manual grids, where the grid focusgroup
+  // items aren't necessarily on an table cell layout object.
+  return IsA<LayoutNGTableCell>(element->GetLayoutObject());
+}
+
+GridFocusgroupStructureInfo*
+FocusgroupControllerUtils::CreateGridFocusgroupStructureInfoForGridRoot(
+    Element* root) {
+  if (IsA<LayoutNGTable>(root->GetLayoutObject()) &&
+      root->GetFocusgroupFlags() & FocusgroupFlags::kGrid) {
+    return MakeGarbageCollected<AutomaticGridFocusgroupStructureInfo>(
+        root->GetLayoutObject());
+  } else {
+    // TODO(bebeaudr): Handle manual-grid focusgroups.
+    return nullptr;
+  }
 }
 
 }  // namespace blink

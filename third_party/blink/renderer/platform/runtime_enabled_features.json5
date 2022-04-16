@@ -1136,6 +1136,7 @@
     },
     {
       name: "Focusgroup",
+      status: "experimental",
     },
     {
       name: "FocuslessSpatialNavigation",

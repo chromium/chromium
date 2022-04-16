@@ -35,6 +35,8 @@ blink_core_sources_page = [
   "focusgroup_controller.h",
   "frame_tree.cc",
   "frame_tree.h",
+  "grid_focusgroup_structure_info.cc",
+  "grid_focusgroup_structure_info.h",
   "link_highlight.cc",
   "link_highlight.h",
   "named_pages_mapper.cc",

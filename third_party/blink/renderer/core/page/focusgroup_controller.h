@@ -10,8 +10,9 @@
 
 namespace blink {
 
-class KeyboardEvent;
 class Element;
+class GridFocusgroupStructureInfo;
+class KeyboardEvent;
 class LocalFrame;
 
 enum class FocusgroupDirection;
@@ -40,10 +41,19 @@ class CORE_EXPORT FocusgroupController {
       bool check_wrap);
   static Element* WrapForward(Element* nearest_focusgroup,
                               FocusgroupDirection direction);
+
   static bool AdvanceBackward(Element* initial_element,
                               FocusgroupDirection direction);
   static Element* WrapBackward(Element* nearest_focusgroup,
                                FocusgroupDirection direction);
+
+  static bool AdvanceInGrid(Element* initial_element,
+                            Element* grid_root,
+                            FocusgroupDirection direction);
+  static Element* WrapOrFlowInGrid(Element* element,
+                                   FocusgroupDirection direction,
+                                   GridFocusgroupStructureInfo* helper);
+
   static void Focus(Element* element, FocusgroupDirection direction);
 };
 

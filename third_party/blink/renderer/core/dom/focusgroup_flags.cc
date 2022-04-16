@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
-#include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -137,18 +136,6 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
               WebString::FromUTF8(
                   "Focusgroup attribute values 'extend' and 'grid' present, "
                   "but grid focusgroup cannot extend. Ignoring focusgroup.")));
-      return FocusgroupFlags::kNone;
-    }
-
-    auto* html_table_element = DynamicTo<HTMLTableElement>(element);
-    if (!html_table_element) {
-      element->GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kError,
-              WebString::FromUTF8(
-                  "Focusgroup attribute value 'grid' used on an element other "
-                  "than an HTML table. Ignoring focusgroup.")));
       return FocusgroupFlags::kNone;
     }
 

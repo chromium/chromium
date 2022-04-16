@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
+#include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
 
 namespace blink {
 
@@ -41,16 +42,24 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
     return false;
   }
 
-  // Only allow focusgroup navigation when the focus is on a focusgroup item.
-  if (!utils::IsFocusgroupItem(focused))
-    return false;
-
   return Advance(focused, direction);
 }
 
 // static
 bool FocusgroupController::Advance(Element* initial_element,
                                    FocusgroupDirection direction) {
+  // Only allow grid focusgroup navigation when the focus is on a grid
+  // focusgroup item.
+  Element* grid_root = utils::FindNearestFocusgroupAncestor(
+      initial_element, FocusgroupType::kGrid);
+  if (grid_root && utils::IsGridFocusgroupItem(initial_element))
+    return AdvanceInGrid(initial_element, grid_root, direction);
+
+  // Only allow linear focusgroup navigation when the focus is on a focusgroup
+  // item.
+  if (!utils::IsFocusgroupItem(initial_element))
+    return false;
+
   if (utils::IsDirectionForward(direction)) {
     return AdvanceForward(initial_element, direction);
   } else {
@@ -66,8 +75,8 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
   DCHECK(utils::IsDirectionForward(direction));
   DCHECK(utils::IsFocusgroupItem(initial_element));
 
-  Element* nearest_focusgroup =
-      utils::FindNearestFocusgroupAncestor(initial_element);
+  Element* nearest_focusgroup = utils::FindNearestFocusgroupAncestor(
+      initial_element, FocusgroupType::kLinear);
   // We only allow focusgroup navigation when we are inside of a focusgroup that
   // supports the direction.
   if (!nearest_focusgroup ||
@@ -116,7 +125,8 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
     // the parent focusgroup if the axis is supported.
     if (current && current == first_element_after_focusgroup) {
       if (CanExitFocusgroupForward(nearest_focusgroup, current, direction)) {
-        nearest_focusgroup = utils::FindNearestFocusgroupAncestor(current);
+        nearest_focusgroup = utils::FindNearestFocusgroupAncestor(
+            current, FocusgroupType::kLinear);
         first_element_after_focusgroup =
             utils::NextElement(nearest_focusgroup, /* skip_subtree */ true);
       } else {
@@ -170,8 +180,8 @@ bool FocusgroupController::CanExitFocusgroupForward(
   DCHECK(utils::NextElement(exiting_focusgroup, /*skip_subtree */ true) ==
          next_element);
 
-  const Element* next_element_focusgroup =
-      utils::FindNearestFocusgroupAncestor(next_element);
+  const Element* next_element_focusgroup = utils::FindNearestFocusgroupAncestor(
+      next_element, FocusgroupType::kLinear);
   if (!next_element_focusgroup)
     return false;
 
@@ -204,8 +214,8 @@ bool FocusgroupController::CanExitFocusgroupForwardRecursive(
   if (!(exiting_focusgroup_flags & FocusgroupFlags::kExtend))
     return false;
 
-  const Element* parent_focusgroup =
-      utils::FindNearestFocusgroupAncestor(exiting_focusgroup);
+  const Element* parent_focusgroup = utils::FindNearestFocusgroupAncestor(
+      exiting_focusgroup, FocusgroupType::kLinear);
   FocusgroupFlags parent_focusgroup_flags =
       parent_focusgroup ? parent_focusgroup->GetFocusgroupFlags()
                         : FocusgroupFlags::kNone;
@@ -234,7 +244,8 @@ Element* FocusgroupController::WrapForward(Element* nearest_focusgroup,
   // extend behavior and return the wrong element.
   Element* focusgroup_wrap_root = nullptr;
   for (Element* focusgroup = nearest_focusgroup; focusgroup;
-       focusgroup = utils::FindNearestFocusgroupAncestor(focusgroup)) {
+       focusgroup = utils::FindNearestFocusgroupAncestor(
+           focusgroup, FocusgroupType::kLinear)) {
     FocusgroupFlags flags = focusgroup->GetFocusgroupFlags();
     if (!utils::WrapsInDirection(flags, direction))
       break;
@@ -264,8 +275,8 @@ bool FocusgroupController::AdvanceBackward(Element* initial_element,
 
   // 1. Validate that we're in a focusgroup. Keep the reference to the current
   // focusgroup we're in since we'll use it if we need to wrap.
-  Element* initial_focusgroup =
-      utils::FindNearestFocusgroupAncestor(initial_element);
+  Element* initial_focusgroup = utils::FindNearestFocusgroupAncestor(
+      initial_element, FocusgroupType::kLinear);
   if (!initial_focusgroup)
     return false;
   bool can_only_ascend = !utils::IsAxisSupported(
@@ -313,8 +324,8 @@ bool FocusgroupController::AdvanceBackward(Element* initial_element,
       } else {
         // Wrapping wasn't an option. Validate that we're still in a focusgroup
         // even though we went up to the parent element.
-        Element* parent_focusgroup =
-            utils::FindNearestFocusgroupAncestor(current);
+        Element* parent_focusgroup = utils::FindNearestFocusgroupAncestor(
+            current, FocusgroupType::kLinear);
         if (!parent_focusgroup ||
             !utils::IsAxisSupported(parent_focusgroup->GetFocusgroupFlags(),
                                     direction)) {
@@ -389,7 +400,8 @@ Element* FocusgroupController::WrapBackward(Element* current,
   // Don't wrap when on a focusgroup that got its wrapping behavior in this
   // axis from its parent focusgroup - that other focusgroup will handle the
   // wrapping once we'll reach it.
-  Element* parent_focusgroup = utils::FindNearestFocusgroupAncestor(current);
+  Element* parent_focusgroup =
+      utils::FindNearestFocusgroupAncestor(current, FocusgroupType::kLinear);
   if (current_flags & FocusgroupFlags::kExtend && parent_focusgroup &&
       utils::WrapsInDirection(parent_focusgroup->GetFocusgroupFlags(),
                               direction)) {
@@ -397,6 +409,164 @@ Element* FocusgroupController::WrapBackward(Element* current,
   }
 
   return utils::LastElementWithin(current);
+}
+
+// static
+bool FocusgroupController::AdvanceInGrid(Element* initial_element,
+                                         Element* grid_root,
+                                         FocusgroupDirection direction) {
+  DCHECK(initial_element);
+  DCHECK(grid_root);
+
+  grid_root->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kFocusgroup);
+
+  auto* helper = utils::CreateGridFocusgroupStructureInfoForGridRoot(grid_root);
+
+  Element* current = initial_element;
+  while (true) {
+    // 1. Move to the next cell in the appropriate |direction|.
+    Element* previous = current;
+    switch (direction) {
+      case FocusgroupDirection::kBackwardHorizontal:
+        current = helper->PreviousCellInRow(current);
+        break;
+      case FocusgroupDirection::kForwardHorizontal:
+        current = helper->NextCellInRow(current);
+        break;
+      case FocusgroupDirection::kBackwardVertical:
+        current = helper->PreviousCellInColumn(current);
+        break;
+      case FocusgroupDirection::kForwardVertical:
+        current = helper->NextCellInColumn(current);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+
+    // 2. If no next cell was found, attempt to wrap/flow.
+    if (!current) {
+      current = WrapOrFlowInGrid(previous, direction, helper);
+      if (!current) {
+        // There are no cell and we were unable to wrap/flow. The advance step
+        // failed.
+        break;
+      }
+    }
+
+    // Avoid looping infinitely by breaking when the new next/previous logical
+    // element is the one we started on.
+    if (current == initial_element)
+      break;
+
+    // 3. Only set the focus on grid focusgroup items. If we're on a cell that
+    // isn't a grid focusgroup item, keep going to the next/previous element
+    // until we find a valid item or we exhausted all the options.
+    if (utils::IsGridFocusgroupItem(current)) {
+      Focus(current, direction);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// static
+Element* FocusgroupController::WrapOrFlowInGrid(
+    Element* element,
+    FocusgroupDirection direction,
+    GridFocusgroupStructureInfo* helper) {
+  DCHECK(element);
+  DCHECK(helper->Root());
+  FocusgroupFlags flags = helper->Root()->GetFocusgroupFlags();
+
+  switch (direction) {
+    case FocusgroupDirection::kBackwardHorizontal:
+      // This is only possible when on the first cell within a row.
+      if (flags & FocusgroupFlags::kWrapHorizontally) {
+        // Wrapping backward in a row means that we should move the focus to the
+        // last cell in the same row.
+        Element* row = helper->RowForCell(element);
+        DCHECK(row);
+        return helper->LastCellInRow(row);
+      } else if (flags & FocusgroupFlags::kRowFlow) {
+        // Flowing backward in a row means that we should move the focus to the
+        // last cell of the previous row. If there is no previous row, move the
+        // focus to the last cell of the last row within the grid.
+        Element* row = helper->RowForCell(element);
+        Element* previous_row = helper->PreviousRow(row);
+        if (!previous_row) {
+          previous_row = helper->LastRow();
+        }
+        return helper->LastCellInRow(previous_row);
+      }
+      break;
+
+    case FocusgroupDirection::kForwardHorizontal:
+      // This is only possible when on the last cell within a row.
+      if (flags & FocusgroupFlags::kWrapHorizontally) {
+        // Wrapping forward in a row means that we should move the focus to the
+        // first cell of the same row.
+        Element* row = helper->RowForCell(element);
+        DCHECK(row);
+        return helper->FirstCellInRow(row);
+      } else if (flags & FocusgroupFlags::kRowFlow) {
+        // Flowing forward in a row means that we should move the focus to the
+        // first cell in the next row. If there is no next row, then we should
+        // move the focus to the first cell of the first row within the grid.
+        Element* row = helper->RowForCell(element);
+        Element* next_row = helper->NextRow(row);
+        if (!next_row) {
+          next_row = helper->FirstRow();
+        }
+        return helper->FirstCellInRow(next_row);
+      }
+      break;
+
+    case FocusgroupDirection::kBackwardVertical:
+      // This is only possible when on the first cell within a column.
+      if (flags & FocusgroupFlags::kWrapVertically) {
+        // Wrapping backward in a column means that we should move the focus to
+        // the last cell in the same column.
+        unsigned cell_index = helper->ColumnIndexForCell(element);
+        return helper->LastCellInColumn(cell_index);
+      } else if (flags & FocusgroupFlags::kColFlow) {
+        // Flowing backward in a column means that we should move the focus to
+        // the last cell of the previous column. If there is no previous
+        // column, then we should move the focus to the last cell of the last
+        // column in the grid.
+        unsigned cell_index = helper->ColumnIndexForCell(element);
+        if (cell_index == 0)
+          cell_index = helper->ColumnCount();
+        return helper->LastCellInColumn(cell_index - 1);
+      }
+      break;
+
+    case FocusgroupDirection::kForwardVertical:
+      // This is only possible when on the last cell within a column.
+      if (flags & FocusgroupFlags::kWrapVertically) {
+        // Wrapping forward in a column means that we should move the focus to
+        // first cell in the same column.
+        unsigned cell_index = helper->ColumnIndexForCell(element);
+        return helper->FirstCellInColumn(cell_index);
+      } else if (flags & FocusgroupFlags::kColFlow) {
+        // Flowing forward in a column means that we should move the focus to
+        // the first cell of the next column. If there is no next column, then
+        // we should move the focus to the first cell of the first column within
+        // the grid.
+        unsigned cell_index = helper->ColumnIndexForCell(element) + 1;
+        if (cell_index >= helper->ColumnCount())
+          cell_index = 0;
+        return helper->FirstCellInColumn(cell_index);
+      }
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  return nullptr;
 }
 
 // static

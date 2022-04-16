@@ -3168,6 +3168,7 @@ interface HTMLElement : Element
     getter draggable
     getter editContext
     getter enterKeyHint
+    getter focusgroup
     getter hidden
     getter inert
     getter innerText
@@ -3300,6 +3301,7 @@ interface HTMLElement : Element
     setter draggable
     setter editContext
     setter enterKeyHint
+    setter focusgroup
     setter hidden
     setter inert
     setter innerText
@@ -5091,6 +5093,7 @@ interface MathMLElement : Element
     attribute @@toStringTag
     getter autofocus
     getter dataset
+    getter focusgroup
     getter nonce
     getter onabort
     getter onanimationend
@@ -5198,6 +5201,7 @@ interface MathMLElement : Element
     method constructor
     method focus
     setter autofocus
+    setter focusgroup
     setter nonce
     setter onabort
     setter onanimationend
@@ -7297,6 +7301,7 @@ interface SVGElement : Element
     getter autofocus
     getter className
     getter dataset
+    getter focusgroup
     getter nonce
     getter onabort
     getter onanimationend
@@ -7406,6 +7411,7 @@ interface SVGElement : Element
     method constructor
     method focus
     setter autofocus
+    setter focusgroup
     setter nonce
     setter onabort
     setter onanimationend

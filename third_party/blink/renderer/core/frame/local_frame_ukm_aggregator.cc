@@ -326,6 +326,7 @@ void LocalFrameUkmAggregator::RecordForcedLayoutSample(
     case DocumentUpdateReason::kEditing:
     case DocumentUpdateReason::kFindInPage:
     case DocumentUpdateReason::kFocus:
+    case DocumentUpdateReason::kFocusgroup:
     case DocumentUpdateReason::kForm:
     case DocumentUpdateReason::kInput:
     case DocumentUpdateReason::kInspector:

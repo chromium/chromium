@@ -11,6 +11,7 @@
 namespace blink {
 
 class Element;
+class GridFocusgroupStructureInfo;
 class KeyboardEvent;
 
 enum FocusgroupFlags : uint8_t;
@@ -21,6 +22,11 @@ enum class FocusgroupDirection {
   kBackwardVertical,
   kForwardHorizontal,
   kForwardVertical,
+};
+
+enum class FocusgroupType {
+  kGrid,
+  kLinear,
 };
 
 class CORE_EXPORT FocusgroupControllerUtils {
@@ -40,15 +46,22 @@ class CORE_EXPORT FocusgroupControllerUtils {
                                       FocusgroupFlags focusgroup,
                                       FocusgroupDirection direction);
 
-  static Element* FindNearestFocusgroupAncestor(const Element* element);
+  static Element* FindNearestFocusgroupAncestor(const Element* element,
+                                                FocusgroupType type);
   static Element* NextElement(const Element* current, bool skip_subtree);
   static Element* PreviousElement(const Element* current);
   static Element* LastElementWithin(const Element* current);
-  static bool IsFocusgroupItem(const Element* element);
+
   static Element* AdjustElementOutOfUnrelatedFocusgroup(
       Element* element,
       Element* stop_ancestor,
       FocusgroupDirection direction);
+
+  static bool IsFocusgroupItem(const Element* element);
+  static bool IsGridFocusgroupItem(const Element* element);
+
+  static GridFocusgroupStructureInfo*
+  CreateGridFocusgroupStructureInfoForGridRoot(Element* root);
 };
 
 }  // namespace blink
