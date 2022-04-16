@@ -12,7 +12,6 @@
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -102,7 +101,7 @@ class VectorBuilder {
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
   const struct {
     String description;
-    AtomicString header;
+    String header;
     bool valid;
     mojom::blink::AttributionAggregatableSourcePtr source;
   } kTestCases[] = {
@@ -123,8 +122,8 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
                        /*high_bits=*/0, /*low_bits=*/345))
            .Build()},
       {"Two valid keys",
-       AtomicString(R"([{"id":"key1","key_piece":"0x159"},)") +
-           R"({"id":"key2","key_piece":"0x50000000000000159"}])",
+       R"([{"id":"key1","key_piece":"0x159"},
+           {"id":"key2","key_piece":"0x50000000000000159"}])",
        true,
        AggregatableSourceBuilder()
            .AddKey(/*key_id=*/"key1",
@@ -135,8 +134,8 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
                        /*high_bits=*/5, /*low_bits=*/345))
            .Build()},
       {"Second key invalid",
-       AtomicString(R"([{"id":"key1","key_piece":"0x159"},)") +
-           R"({"id":"key2","key_piece":""}])",
+       R"([{"id":"key1","key_piece":"0x159"},
+           {"id":"key2","key_piece":""}])",
        false, mojom::blink::AttributionAggregatableSource::New()},
   };
 
@@ -157,8 +156,9 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_count;
     wtf_size_t key_size;
 
-    AtomicString GetHeader() const {
+    String GetHeader() const {
       StringBuilder builder;
+      builder.Append("[");
 
       const char* separator = "";
       for (wtf_size_t i = 0u; i < key_count; ++i) {
@@ -169,7 +169,8 @@ TEST(AttributionResponseParsingTest,
         separator = ",";
       }
 
-      return "[" + builder.ToAtomicString() + "]";
+      builder.Append("]");
+      return builder.ToString();
     }
 
     mojom::blink::AttributionAggregatableSourcePtr GetSource() const {
@@ -220,7 +221,7 @@ TEST(AttributionResponseParsingTest,
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
   const struct {
     String description;
-    AtomicString header;
+    String header;
     bool valid;
     mojom::blink::AttributionAggregatableTriggerPtr trigger;
   } kTestCases[] = {
@@ -246,8 +247,12 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
                    /*not_filters=*/mojom::blink::AttributionFilterData::New()))
            .Build()},
       {"Valid trigger with filters",
-       AtomicString(R"([{"key_piece":"0x400","source_keys":["key"],)") +
-           R"("filters":{"filter":["value1"]},"not_filters":{"filter":["value2"]}}])",
+       R"([{
+         "key_piece": "0x400",
+         "source_keys": ["key"],
+         "filters": {"filter": ["value1"]},
+         "not_filters": {"filter": ["value2"]}
+       }])",
        true,
        AggregatableTriggerBuilder()
            .AddTriggerData(
@@ -265,8 +270,8 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
                        .Build()))
            .Build()},
       {"Two valid trigger data",
-       AtomicString(R"([{"key_piece":"0x400","source_keys":["key1"]},)") +
-           R"({"key_piece":"0xA80","source_keys":["key2"]}])",
+       R"([{"key_piece":"0x400","source_keys":["key1"]},
+           {"key_piece":"0xA80","source_keys":["key2"]}])",
        true,
        AggregatableTriggerBuilder()
            .AddTriggerData(
@@ -308,8 +313,10 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_count;
     wtf_size_t key_size;
 
-    AtomicString GetHeader() const {
+    String GetHeader() const {
       StringBuilder builder;
+      builder.Append("[");
+
       String key = GetKey();
 
       const char* separator = "";
@@ -330,7 +337,8 @@ TEST(AttributionResponseParsingTest,
         separator = ",";
       }
 
-      return "[" + builder.ToAtomicString() + "]";
+      builder.Append("]");
+      return builder.ToString();
     }
 
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
@@ -386,8 +394,8 @@ TEST(AttributionResponseParsingTest,
 
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableValues) {
   const struct {
-    AtomicString description;
-    AtomicString header;
+    String description;
+    String header;
     bool valid;
     WTF::HashMap<String, uint32_t> values;
   } kTestCases[] = {
@@ -418,8 +426,10 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_count;
     wtf_size_t key_size;
 
-    AtomicString GetHeader() const {
+    String GetHeader() const {
       StringBuilder builder;
+      builder.Append("{");
+
       const char* separator = "";
       for (wtf_size_t i = 0u; i < key_count; ++i) {
         builder.Append(separator);
@@ -429,7 +439,9 @@ TEST(AttributionResponseParsingTest,
         builder.AppendNumber(i + 1);
         separator = ",";
       }
-      return "{" + builder.ToAtomicString() + "}";
+
+      builder.Append("}");
+      return builder.ToString();
     }
 
     WTF::HashMap<String, uint32_t> GetValues() const {
@@ -619,7 +631,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
 
   const struct {
     String description;
-    AtomicString json;
+    String json;
     mojom::blink::AttributionSourceDataPtr expected;
   } kTestCases[] = {
       {
@@ -938,7 +950,7 @@ TEST(AttributionResponseParsingTest, ParseDebugKey) {
 TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
   const struct {
     String description;
-    AtomicString json;
+    String json;
     bool valid;
     Vector<mojom::blink::EventTriggerDataPtr> expected;
   } kTestCases[] = {

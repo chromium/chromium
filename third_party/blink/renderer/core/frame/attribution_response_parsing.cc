@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -122,7 +121,7 @@ bool ParseAttributionFilterData(
 }  // namespace
 
 bool ParseAttributionAggregatableSource(
-    const AtomicString& json_string,
+    const String& json_string,
     mojom::blink::AttributionAggregatableSource& source) {
   // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
@@ -172,7 +171,7 @@ mojom::blink::AttributionDebugKeyPtr ParseDebugKey(const String& string) {
 }
 
 bool ParseSourceRegistrationHeader(
-    const AtomicString& json_string,
+    const String& json_string,
     mojom::blink::AttributionSourceData& source_data) {
   // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
@@ -241,7 +240,7 @@ bool ParseSourceRegistrationHeader(
 }
 
 bool ParseEventTriggerData(
-    const AtomicString& json_string,
+    const String& json_string,
     WTF::Vector<mojom::blink::EventTriggerDataPtr>& event_trigger_data) {
   // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
@@ -331,7 +330,7 @@ bool ParseFilters(const String& json_string,
 }
 
 bool ParseAttributionAggregatableTriggerData(
-    const AtomicString& json_string,
+    const String& json_string,
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>&
         trigger_data) {
   // TODO(apaseltiner): Consider applying a max stack depth to this.
@@ -403,7 +402,7 @@ bool ParseAttributionAggregatableTriggerData(
 }
 
 bool ParseAttributionAggregatableValues(
-    const AtomicString& json_string,
+    const String& json_string,
     WTF::HashMap<String, uint32_t>& values) {
   // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);

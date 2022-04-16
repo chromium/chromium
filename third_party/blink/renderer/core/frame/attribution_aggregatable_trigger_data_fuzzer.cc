@@ -12,7 +12,7 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -26,7 +26,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << native_input << std::endl;
 
-  const AtomicString input(native_input.c_str());
+  const String input(native_input.c_str());
   WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr> output;
   attribution_response_parsing::ParseAttributionAggregatableTriggerData(input,
                                                                         output);
