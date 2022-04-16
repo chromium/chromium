@@ -18,13 +18,11 @@ class ReadAnythingToolbarView : public views::View {
     virtual void OnFontChoiceChanged(int new_choice) = 0;
   };
 
-  explicit ReadAnythingToolbarView(ReadAnythingToolbarView::Delegate* delegate);
+  explicit ReadAnythingToolbarView(ReadAnythingToolbarView::Delegate* delegate,
+                                   ui::ComboboxModel* model);
   ReadAnythingToolbarView(const ReadAnythingToolbarView&) = delete;
   ReadAnythingToolbarView& operator=(const ReadAnythingToolbarView&) = delete;
   ~ReadAnythingToolbarView() override;
-
-  // View bindings for the font style combobox.
-  void SetFontModel(ui::ComboboxModel* model);
 
  private:
   void FontNameChangedCallback();

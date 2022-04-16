@@ -17,7 +17,8 @@
 #include "ui/views/layout/layout_types.h"
 
 ReadAnythingToolbarView::ReadAnythingToolbarView(
-    ReadAnythingToolbarView::Delegate* delegate) {
+    ReadAnythingToolbarView::Delegate* delegate,
+    ui::ComboboxModel* model) {
   delegate_ = delegate;
 
   // Create and set a BoxLayout LayoutManager for this view.
@@ -38,13 +39,10 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   combobox->SetSizeToLargestLabel(true);
   // TODO(1266555): This is placeholder text, remove for final UI.
   combobox->SetTooltipTextAndAccessibleName(u"Font Choice");
+  combobox->SetModel(model);
 
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));
-}
-
-void ReadAnythingToolbarView::SetFontModel(ui::ComboboxModel* model) {
-  font_combobox_->SetModel(model);
 }
 
 void ReadAnythingToolbarView::FontNameChangedCallback() {

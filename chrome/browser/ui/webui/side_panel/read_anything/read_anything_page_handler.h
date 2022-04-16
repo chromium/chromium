@@ -13,15 +13,15 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/accessibility/ax_node_id_forward.h"
-
-namespace ui {
-struct AXTreeUpdate;
-}
 
 class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
                                 public ReadAnythingModel::Observer {
  public:
+  class Delegate {
+   public:
+    virtual void OnUIShown() = 0;
+  };
+
   explicit ReadAnythingPageHandler(
       mojo::PendingRemote<read_anything::mojom::Page> page,
       mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver);
@@ -34,12 +34,10 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
 
   // ReadAnythingModel::Observer:
   void OnFontNameUpdated(const std::string& new_font_name) override;
+  void OnContentUpdated(std::vector<std::string> content) override;
 
  private:
-  // Callback method which receives an AXTree snapshot and a list of AXNodes
-  // which correspond to nodes in the tree that contain main content.
-  void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
-                         const std::vector<ui::AXNodeID>& text_node_ids);
+  raw_ptr<ReadAnythingPageHandler::Delegate> delegate_;
 
   Browser* browser_;
 

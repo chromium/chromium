@@ -36,6 +36,7 @@ class ReadAnythingModel {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnFontNameUpdated(const std::string& new_font_name) = 0;
+    virtual void OnContentUpdated(std::vector<std::string> content) = 0;
   };
 
   ReadAnythingModel();
@@ -43,26 +44,21 @@ class ReadAnythingModel {
   ReadAnythingModel& operator=(const ReadAnythingModel&) = delete;
   ~ReadAnythingModel();
 
-  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
 
-  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
-
-  void SetSelectedFontIndex(int new_index) {
-    currently_selected_font_index_ = new_index;
-  }
-
-  void NotifyFontNameUpdated() {
-    for (Observer& obs : observers_) {
-      obs.OnFontNameUpdated(
-          font_model_->GetCurrentFontName(currently_selected_font_index_));
-    }
-  }
+  void SetSelectedFontIndex(int new_index);
+  void SetContent(std::vector<std::string> content_nodes);
 
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
 
  private:
+  void NotifyFontNameUpdated();
+  void NotifyContentUpdated();
+
   // State:
-  int currently_selected_font_index_ = 0;
+  std::string font_name_;
+  std::vector<std::string> content_;
 
   base::ObserverList<Observer> observers_;
   const std::unique_ptr<ReadAnythingFontModel> font_model_;

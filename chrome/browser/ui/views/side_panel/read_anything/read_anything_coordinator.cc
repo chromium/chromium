@@ -22,10 +22,11 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
   model_ = std::make_unique<ReadAnythingModel>();
 
   // Create the controller.
-  controller_ = std::make_unique<ReadAnythingController>(model_.get());
+  controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);
 
   // Create the views.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(controller_.get());
+  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
+      controller_.get(), model_.get()->GetFontModel());
 
   auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
       browser,
@@ -38,9 +39,6 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
           /* task_manager_string_id= */ IDS_READ_ANYTHING_TITLE,
           /* webui_resizes_host= */ false,
           /* esc_closes_ui= */ false));
-
-  // TODO(1266555): Move to a view binder or controller once model is finalized.
-  toolbar->SetFontModel(model_.get()->GetFontModel());
 
   // Create the component.
   // Note that a coordinator would normally maintain ownership of these objects,
@@ -59,6 +57,20 @@ void ReadAnythingCoordinator::CreateAndRegisterEntry(
       ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
       base::BindRepeating(&ReadAnythingCoordinator::GetContainerView,
                           base::Unretained(this))));
+}
+
+ReadAnythingPageHandler::Delegate*
+ReadAnythingCoordinator::GetPageHandlerDelegate() {
+  return controller_.get();
+}
+
+void ReadAnythingCoordinator::AddModelObserver(
+    ReadAnythingModel::Observer* observer) {
+  model_->AddObserver(observer);
+}
+void ReadAnythingCoordinator::RemoveModelObserver(
+    ReadAnythingModel::Observer* observer) {
+  model_->RemoveObserver(observer);
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::GetContainerView() {

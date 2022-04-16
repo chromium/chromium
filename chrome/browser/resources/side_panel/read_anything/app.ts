@@ -27,7 +27,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         value: () => [],
       },
 
-      fontName: {
+      fontName_: {
         type: String,
       }
     };
@@ -36,7 +36,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private apiProxy_: ReadAnythingApiProxy = ReadAnythingApiProxy.getInstance();
   private listenerIds_: number[];
   private paragraphs_: string[];
-  private fontName: string;
+  private fontName_: string;
 
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
@@ -82,9 +82,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const validFontName = this.validFontNames.find(
         (f: {name: string, cssClass: string}) => f.name === newFontName);
     if (!validFontName) {
-      this.fontName = this.defaultFontName;
+      this.fontName_ = this.defaultFontName;
     } else {
-      this.fontName = validFontName.cssClass;
+      this.fontName_ = validFontName.cssClass;
     }
   }
 }

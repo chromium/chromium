@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "ui/views/view.h"
 
-class ReadAnythingUI;
 class ReadAnythingToolbarView;
+class ReadAnythingUI;
 
 // Generic View to hold the entirety of the "Read Anything" component.
 class ReadAnythingContainerView : public views::View {

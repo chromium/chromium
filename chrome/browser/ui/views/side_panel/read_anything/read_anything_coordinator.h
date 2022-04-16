@@ -10,10 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 
 class Browser;
-class ReadAnythingController;
 class ReadAnythingContainerView;
+class ReadAnythingController;
 class SidePanelRegistry;
 
 namespace views {
@@ -29,13 +30,10 @@ class ReadAnythingCoordinator
   ~ReadAnythingCoordinator() override;
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  ReadAnythingPageHandler::Delegate* GetPageHandlerDelegate();
 
-  void AddObserver(ReadAnythingModel::Observer* observer) {
-    model_->AddObserver(observer);
-  }
-  void RemoveObserver(ReadAnythingModel::Observer* observer) {
-    model_->RemoveObserver(observer);
-  }
+  void AddModelObserver(ReadAnythingModel::Observer* observer);
+  void RemoveModelObserver(ReadAnythingModel::Observer* observer);
 
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;

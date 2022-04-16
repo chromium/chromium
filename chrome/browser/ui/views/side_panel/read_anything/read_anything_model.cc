@@ -11,6 +11,36 @@ ReadAnythingModel::ReadAnythingModel()
     : font_model_(std::make_unique<ReadAnythingFontModel>()) {}
 ReadAnythingModel::~ReadAnythingModel() = default;
 
+void ReadAnythingModel::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void ReadAnythingModel::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
+void ReadAnythingModel::SetSelectedFontIndex(int new_index) {
+  font_name_ = font_model_->GetCurrentFontName(new_index);
+  NotifyFontNameUpdated();
+}
+
+void ReadAnythingModel::SetContent(std::vector<std::string> content) {
+  content_ = content;
+  NotifyContentUpdated();
+}
+
+void ReadAnythingModel::NotifyFontNameUpdated() {
+  for (Observer& obs : observers_) {
+    obs.OnFontNameUpdated(font_name_);
+  }
+}
+
+void ReadAnythingModel::NotifyContentUpdated() {
+  for (Observer& obs : observers_) {
+    obs.OnContentUpdated(content_);
+  }
+}
+
 ReadAnythingFontModel::ReadAnythingFontModel() {
   // TODO(1266555): Replace these with proper versions once finalized.
   font_choices_.emplace_back(u"Standard font");
