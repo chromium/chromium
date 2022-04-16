@@ -242,7 +242,6 @@ TEST_F(ProjectorControllerTest, SetAnnotatorTool) {
 TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
-  mock_client_.SetSelfieCamVisible(/*visible=*/true);
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
 
@@ -259,10 +258,8 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   ON_CALL(mock_client_, IsDriveFsMounted())
       .WillByDefault(testing::Return(true));
 
-  mock_client_.SetSelfieCamVisible(/*visible=*/true);
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
-  EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
   EXPECT_CALL(mock_client_, OpenProjectorApp());
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(

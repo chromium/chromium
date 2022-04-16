@@ -75771,8 +75771,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Clear all markers"/>
   <int value="8" label="Start magnifier"/>
   <int value="9" label="Stop magnifier"/>
-  <int value="10" label="Start selfie camera"/>
-  <int value="11" label="Stop selfie camera"/>
+  <int value="10" label="Start selfie camera (Obsolete)"/>
+  <int value="11" label="Stop selfie camera (Obsolete)"/>
   <int value="12" label="Start closed captions"/>
   <int value="13" label="Stop closed captions"/>
   <int value="14" label="Toggle toolbar location to bottom left"/>

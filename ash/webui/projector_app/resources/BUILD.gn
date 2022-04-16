@@ -13,7 +13,6 @@ js_type_check("closure_compile") {
   deps = [
     ":message_types",
     ":projector_browser_proxy",
-    ":selfie_cam",
     ":trusted_annotator_closure_compile",
     ":trusted_app_closure_compile",
     ":untrusted_annotator_closure_compile",
@@ -23,10 +22,6 @@ js_type_check("closure_compile") {
 
 js_library("projector_browser_proxy") {
   sources = [ "communication/projector_browser_proxy.js" ]
-}
-
-js_library("selfie_cam") {
-  sources = [ "selfie_cam/selfie_cam.js" ]
 }
 
 js_library("message_types") {
@@ -106,9 +101,6 @@ generate_grd("build_trusted_grd") {
     "app/embedder.html",
     "app/embedder.css",
     "app/embedder.js",
-    "selfie_cam/selfie_cam.html",
-    "selfie_cam/selfie_cam.css",
-    "selfie_cam/selfie_cam.js",
     "assets/icon_16.png",
     "assets/icon_32.png",
     "assets/icon_48.png",

@@ -19,12 +19,4 @@ bool MockProjectorClient::GetDriveFsMountPointPath(
   return true;
 }
 
-bool MockProjectorClient::IsSelfieCamVisible() const {
-  return is_selfie_cam_visible_;
-}
-
-void MockProjectorClient::SetSelfieCamVisible(bool visible) {
-  is_selfie_cam_visible_ = visible;
-}
-
 }  // namespace ash

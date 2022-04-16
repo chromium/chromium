@@ -4329,14 +4329,6 @@ Here are some things you can try to get started.
         Stop magnifier
       </message>
 
-      <message name="IDS_START_SELFIE_CAMERA_BUTTON" desc="The name for the start selfie camera button.">
-        Start selfie camera
-      </message>
-
-      <message name="IDS_STOP_SELFIE_CAMERA_BUTTON" desc="The name for the stop selfie camera button.">
-        Stop selfie camera
-      </message>
-
       <message name="IDS_START_CLOSED_CAPTIONS_BUTTON" desc="The name for start closed captions button.">
         Start closed captions
       </message>

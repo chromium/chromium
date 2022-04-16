@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
-#include "chrome/browser/ui/webui/chromeos/projector/selfie_cam_bubble_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/soda/constants.h"
@@ -52,9 +51,6 @@ class ProjectorClientImpl
   // ash::ProjectorClient:
   void StartSpeechRecognition() override;
   void StopSpeechRecognition() override;
-  void ShowSelfieCam() override;
-  void CloseSelfieCam() override;
-  bool IsSelfieCamVisible() const override;
   bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   bool IsDriveFsMounted() const override;
   bool IsDriveFsMountFailed() const override;
@@ -103,7 +99,6 @@ class ProjectorClientImpl
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;
-  chromeos::SelfieCamBubbleManager selfie_cam_bubble_manager_;
 
   // TODO(b/221492092): Clean this duplicate code with PendingScreencastManager.
   // Create a new class to handle Drive related service.

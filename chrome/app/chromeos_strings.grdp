@@ -6163,19 +6163,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     You can restore your previous apps
   </message>
 
-   <!-- Strings for Projector-->
-  <message name="IDS_SELFIE_CAM_TITLE" desc="The title for the selfie camera dialog.">
-    Selfie Camera
-  </message>
-
-  <message name="IDS_SELFIE_CAMERA_BUBBLE_EXPANDED" desc="Tooltip for the selfie camera resize button in expanded state">
-    2x
-  </message>
-
-  <message name="IDS_SELFIE_CAMERA_BUBBLE_COLLAPSED" desc="Tooltip for the selfie camera resize button in collapsed state">
-    1x
-  </message>
-
+  <!-- Strings for Projector-->
   <message name="IDS_PROJECTOR_APP_NAME" desc="Name for the Projector app in the launcher">
     Projector
   </message>

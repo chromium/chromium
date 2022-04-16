@@ -137,26 +137,10 @@ class ProjectorClientTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, ShowOrCloseSelfieCamTest) {
-  EXPECT_FALSE(client()->IsSelfieCamVisible());
-  client()->ShowSelfieCam();
-  EXPECT_TRUE(client()->IsSelfieCamVisible());
-  client()->CloseSelfieCam();
-  EXPECT_FALSE(client()->IsSelfieCamVisible());
-}
-
-// This test verifies that the selfie cam WebUI URL is valid.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SelfieCamUrlValid) {
-  VerifyUrlValid(kChromeUITrustedProjectorSelfieCamUrl);
-}
-
 // This test verifies that the Projector app WebUI URL is valid.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlValid) {
   VerifyUrlValid(kChromeUITrustedProjectorAppUrl);
 }
-
-// TODO(crbug/1199396): Add a test to verify the selfie cam turns off when the
-// device goes inactive.
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   auto* profile = browser()->profile();

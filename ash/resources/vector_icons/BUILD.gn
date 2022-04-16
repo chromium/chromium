@@ -236,8 +236,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "projector_drag_handle.icon",
     "projector_key_idea.icon",
     "projector_marker.icon",
-    "projector_selfie_cam_off.icon",
-    "projector_selfie_cam_on.icon",
     "remove_outline.icon",
     "reorder.icon",
     "reorder_nudge_dark_clamshell.icon",

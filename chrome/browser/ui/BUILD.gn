@@ -2762,8 +2762,6 @@ static_library("ui") {
       "webui/chromeos/parent_access/parent_access_ui_handler_impl.h",
       "webui/chromeos/power_ui.cc",
       "webui/chromeos/power_ui.h",
-      "webui/chromeos/projector/selfie_cam_bubble_manager.cc",
-      "webui/chromeos/projector/selfie_cam_bubble_manager.h",
       "webui/chromeos/set_time_ui.cc",
       "webui/chromeos/set_time_ui.h",
       "webui/chromeos/shimless_rma_dialog.cc",

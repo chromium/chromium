@@ -50,12 +50,6 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui,
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
 
-  // The selfie cam doesn't have any dependencies on WebUIMessageHandlers;
-  // it also doesn't embed chrome-untrusted:// resources. Therefore, return
-  // early.
-  if (url == GURL(kChromeUITrustedProjectorSelfieCamUrl))
-    return;
-
   // The Annotator and Projector SWA embed contents in a sandboxed
   // chrome-untrusted:// iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

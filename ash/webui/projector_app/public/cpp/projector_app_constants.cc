@@ -18,9 +18,6 @@ const char kChromeUIUntrustedProjectorPwaUrl[] =
 const char kChromeUITrustedProjectorUrl[] = "chrome://projector/";
 const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/app/";
 
-const char kChromeUITrustedProjectorSelfieCamUrl[] =
-    "chrome://projector/selfie_cam/selfie_cam.html";
-
 const char kChromeUITrustedAnnotatorUrl[] = "chrome://projector-annotator/";
 const char kChromeUIUntrustedAnnotatorUrl[] =
     "chrome-untrusted://projector-annotator/";

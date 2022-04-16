@@ -13,8 +13,7 @@ class PrefService;
 
 namespace ash {
 
-// The implementation for the Projector selfie cam and player app WebUI.
-// TODO(b/193670945): Migrate to ash/components and ash/webui.
+// The implementation for the Projector player app WebUI.
 class TrustedProjectorUI : public ui::MojoBubbleWebUIController {
  public:
   TrustedProjectorUI(content::WebUI* web_ui,

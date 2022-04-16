@@ -277,10 +277,6 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
 
   DCHECK(projector_session_->is_active());
 
-  // TODO(b/197152209): move closing selfie cam to ProjectorUiController.
-  if (client_ && client_->IsSelfieCamVisible())
-    client_->CloseSelfieCam();
-
   // Close Projector toolbar if ui controller is present.
   if (ui_controller_)
     ui_controller_->CloseToolbar();
