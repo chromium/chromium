@@ -130,6 +130,7 @@ source_set("connections_implementation") {
     ":nearby_defines",
   ]
   sources = [
+    "src/connections/implementation/base_bwu_handler.cc",
     "src/connections/implementation/base_endpoint_channel.cc",
     "src/connections/implementation/base_pcp_handler.cc",
     "src/connections/implementation/ble_advertisement.cc",
