@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">פינית</translation>
 <translation id="1942765061641586207">רזולוציית תמונה</translation>
 <translation id="1972984168337863910">הרחבת חלוניות המשוב של קבצים</translation>
+<translation id="1984456723671657197">‏סוג הקובץ הזה אינו נתמך. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
 <translation id="1995337122023280937">מעבר אל מיקום הקובץ</translation>
 <translation id="2001796770603320721">‏ניהול ב-Drive</translation>
 <translation id="2009067268969781306">פירמוט של התקן אחסון מוחק את כל הנתונים שמאוחסנים בו. לא ניתן לבטל את הפעולה הזו.</translation>
@@ -702,6 +703,7 @@
 <translation id="6970230597523682626">בולגרית</translation>
 <translation id="6973630695168034713">תיקיות</translation>
 <translation id="6976795442547527108">אריה</translation>
+<translation id="6978611942794658017">‏קובץ זה מיועד עבור מחשב אישי המשתמש בתוכנת Windows. הוא אינו מתאים למכשיר שלך שעובד עם מערכת הפעלה של Chrome. יש לחפש אפליקציה חלופית מתאימה בחנות האינטרנט של Chrome.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">שוודית</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
@@ -823,6 +825,7 @@
 <translation id="7972920761225148017">צרפתית (שוויץ)</translation>
 <translation id="7973962044839454485">‏אימות PPP נכשל בשל שם משתמש או סיסמה שגויים</translation>
 <translation id="7980421588063892270">‏מקלדת Colemak באנגלית (US)</translation>
+<translation id="79907182588096956">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה Chrome OS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
 <translation id="8000066093800657092">אין רשת</translation>
 <translation id="8008366997883261463">כלב</translation>
 <translation id="8028993641010258682">גודל</translation>
@@ -933,6 +936,7 @@
 <translation id="8912078710089354287">כלב מקשקש בזנב</translation>
 <translation id="8919081441417203123">דנית</translation>
 <translation id="8965697826696209160">אין מספיק שטח.</translation>
+<translation id="8970501467542182729">‏קובץ זה מיועד למחשב המשתמש בתוכנה של Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה Chrome OS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
 <translation id="8997962250644902079">‏סינית (מסורתית) Pinyin</translation>
 <translation id="9003940392834790328">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="9017798300203431059">רוסית פונטית</translation>
@@ -951,6 +955,7 @@
 <translation id="9130775360844693113">חברים באחסון השיתופי '<ph name="DESTINATION_NAME" />' יקבלו גישה לפריטים האלה.</translation>
 <translation id="9131598836763251128">יש לבחור קובץ אחד או יותר</translation>
 <translation id="9133055936679483811">הכיווץ נכשל. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">‏קובץ זה מיועד למחשב המשתמש בתוכנה של Macintosh. הוא אינו מתאים למכשיר שלך שעובד עם מערכת הפעלה של Chrome. אפשר לחפש אפליקציה חלופית בחנות האינטרנט של Chrome.</translation>
 <translation id="9144340019284012223">קטלאנית</translation>
 <translation id="914873105831852105">קוד האימות לא חוקי. נותר לך עוד ניסיון אחד.</translation>
 <translation id="9153934054460603056">שמירת זהות וסיסמה</translation>

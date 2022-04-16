@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">ፊንላንድኛ</translation>
 <translation id="1942765061641586207">የምስል ጥራት</translation>
 <translation id="1972984168337863910">የፋይሎች ግብረመልስ ፓነሎችን ዘርጋ</translation>
+<translation id="1984456723671657197">ይህ የፋይል ዓይነት አይደገፍም። በChrome OS ላይ ፋይሎችን ስለመክፈት<ph name="BEGIN_LINK_HELP" />የበለጠ ይወቁ<ph name="END_LINK_HELP" />።</translation>
 <translation id="1995337122023280937">ወደ የፋይል ቦታ ሂድ</translation>
 <translation id="2001796770603320721">በDrive ውስጥ ያስተዳድሩ</translation>
 <translation id="2009067268969781306">አንጻፊን መቅረጽ በላዩ ላይ ያለን ሁሉንም ውሂብ ይሰርዛል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
@@ -701,6 +702,7 @@
 <translation id="6970230597523682626">ቡልጋሪኛ</translation>
 <translation id="6973630695168034713">አቃፊዎች</translation>
 <translation id="6976795442547527108">አንበሳ</translation>
+<translation id="6978611942794658017">ይህ ፋይል የተሰራው የWindows ሶፍትዌር ለሚጠቀም ተኮ ነው። ይሄ Chrome OSን ከሚያሄደው መሣሪያዎ ጋር ተኳሃኝ አይደለም። አግባብ የሆነውን ተተኪ መተግበሪያ ለማግኘት እባክዎ የChrome ድር መደብሩን ይፈልጉ።</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ስዊድንኛ</translation>
 <translation id="6990081529015358884">ቦታ አልቆዎብዎታል</translation>
@@ -822,6 +824,7 @@
 <translation id="7972920761225148017">ፈረንሳይኛ (ስዊዘርላንድ)</translation>
 <translation id="7973962044839454485">PPP ማረጋገጫ በተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል ምክንያት አልተሳካም</translation>
 <translation id="7980421588063892270">እንግሊዝኛ (አሜሪካ) ከኮልማክ ቁልፍ ሰሌዳ ጋር</translation>
+<translation id="79907182588096956">ይህ ፍፋይል የWindows ሶፍትዌርን ለሚጠቀም ፒሲ የተነደፈ ነው። ይህ Chrome OS ከሚያሄደው መሣሪያዎ ጋር ተኳኋኝ አይደለም። በChrome OS ላይ ፋይሎችን ስለመክፈት<ph name="BEGIN_LINK_HELP" />የበለጠ ይወቁ<ph name="END_LINK_HELP" />።</translation>
 <translation id="8000066093800657092">ምንም አውታረ መረብ የለም</translation>
 <translation id="8008366997883261463">ጃክ ራሰል ቴሪየር</translation>
 <translation id="8028993641010258682">መጠን</translation>
@@ -932,6 +935,7 @@
 <translation id="8912078710089354287">ጅራቱን የሚቆላ ውሻ</translation>
 <translation id="8919081441417203123">ዴኒሽ</translation>
 <translation id="8965697826696209160">በቂ ቦታ የለም።</translation>
+<translation id="8970501467542182729">ይህ ፋይል የMacintosh ሶፍትዌር ለሚጠቀም ኮምፒውተር ነው የተሰራው። ይህ Chrome OS ከሚያሄደው መሣሪያዎ ጋር ተኳኋኝ አይደለም። በChrome OS ላይ ፋይሎችን ስለመክፈት<ph name="BEGIN_LINK_HELP" />የበለጠ ይወቁ<ph name="END_LINK_HELP" />።</translation>
 <translation id="8997962250644902079">የቻይንኛ (ተለምዷዊ) ፒንዪን</translation>
 <translation id="9003940392834790328">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በአስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="9017798300203431059">የራሽያኛ ፎነቲክ</translation>
@@ -950,6 +954,7 @@
 <translation id="9130775360844693113">የ«<ph name="DESTINATION_NAME" />» አባላት የእነዚህ ንጥሎች መዳረሻ ያገኛሉ።</translation>
 <translation id="9131598836763251128">አንድ ወይም ተጨማሪ ፋይሎችን ይምረጡ</translation>
 <translation id="9133055936679483811">መጭመቅ አልተሳካም። <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">ይህ ፋይል የMacintosh ሶፍትዌር ለሚጠቀም ኮምፒውተር ነው የተሰራው። ይሄ Chrome OSን ከሚያሄደው መሣሪያዎ ጋር ተኳሃኝ አይደለም። አግባብ የሆነውን መተኪያ መተግበሪያ ለማግኘት እባክዎ Chrome የድር መደብሩን ይፈልጉ።</translation>
 <translation id="9144340019284012223">ካታላን</translation>
 <translation id="914873105831852105">ልክ ያልኾነ ፒን። 1 ቀሪ ሙከራ አለዎት።</translation>
 <translation id="9153934054460603056">ማንነት እና የይለፍ ቃል ያስቀምጡ</translation>

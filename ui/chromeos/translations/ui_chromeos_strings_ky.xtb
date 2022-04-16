@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">Финче</translation>
 <translation id="1942765061641586207">Сүрөттүн чечилиши</translation>
 <translation id="1972984168337863910">Файлдардын маалымат камтылган панелдерин жайып көрсөтүү</translation>
+<translation id="1984456723671657197">Бул файл түрү колдоого алынбайт. Файлдарды Chrome OS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="1995337122023280937">Файл жайгашкан папкага өтүү</translation>
 <translation id="2001796770603320721">Google Drive'да ачуу</translation>
 <translation id="2009067268969781306">Дискти форматтасаңыз, анда сакталган бардык маалыматтар өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">Болгарча</translation>
 <translation id="6973630695168034713">Куржундар</translation>
 <translation id="6976795442547527108">Арстан</translation>
+<translation id="6978611942794658017">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Желе дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Шведче</translation>
 <translation id="6990081529015358884">Бош орун калбай калды</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">Французча (Швейцария)</translation>
 <translation id="7973962044839454485">Колдонуучунун ысымы же сырсөзү туура эмес болуп калгандыктан, PPP аныктыгы текшерилбей калды</translation>
 <translation id="7980421588063892270">Англисче (АКШ) жана Colemak баскычтобу</translation>
+<translation id="79907182588096956">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Файлдарды Chrome OS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="8000066093800657092">Тармак жок</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Өлчөм</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">Куйругун шыйпаңдаткан ит</translation>
 <translation id="8919081441417203123">Датча</translation>
 <translation id="8965697826696209160">Бош орун жетишсиз.</translation>
+<translation id="8970501467542182729">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Файлдарды Chrome OS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="8997962250644902079">Кытайча пиньинь (салттуу)</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Чоо-жайы</translation>
 <translation id="9017798300203431059">Орус фонетикасы</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">"<ph name="DESTINATION_NAME" />" жалпы дискинин колдонуучулары бул файлдарды колдоно алышат.</translation>
 <translation id="9131598836763251128">Бир же бир нече файл тандаңыз</translation>
 <translation id="9133055936679483811">Кысылбай калды. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Желе дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
 <translation id="9144340019284012223">Каталанча</translation>
 <translation id="914873105831852105">PIN код жараксыз. 1 жолу аракет кыла аласыз.</translation>
 <translation id="9153934054460603056">Аныктыгын жана сырсөздү сактоо</translation>

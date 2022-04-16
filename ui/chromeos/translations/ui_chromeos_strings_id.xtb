@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">Finlandia</translation>
 <translation id="1942765061641586207">Resolusi gambar</translation>
 <translation id="1972984168337863910">Luaskan panel masukan file</translation>
+<translation id="1984456723671657197">Jenis file ini tidak didukung. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
 <translation id="1995337122023280937">Buka lokasi file</translation>
 <translation id="2001796770603320721">Kelola di Drive</translation>
 <translation id="2009067268969781306">Memformat drive akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
@@ -701,6 +702,7 @@
 <translation id="6970230597523682626">Bulgaria</translation>
 <translation id="6973630695168034713">Folder</translation>
 <translation id="6976795442547527108">Singa</translation>
+<translation id="6978611942794658017">File ini dirancang untuk PC yang menggunakan software Windows. File ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. Telusuri di Chrome Webstore untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Swedia</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
@@ -822,6 +824,7 @@
 <translation id="7972920761225148017">Prancis (Swiss)</translation>
 <translation id="7973962044839454485">Autentifikasi PDB gagal karena nama pengguna dan sandi salah</translation>
 <translation id="7980421588063892270">Inggris (AS) dengan keyboard Colemak</translation>
+<translation id="79907182588096956">File ini dirancang untuk PC yang menggunakan software Windows. Ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
 <translation id="8000066093800657092">Tidak ada jaringan</translation>
 <translation id="8008366997883261463">Anjing</translation>
 <translation id="8028993641010258682">Ukuran</translation>
@@ -932,6 +935,7 @@
 <translation id="8912078710089354287">Anjing mengibaskan ekor</translation>
 <translation id="8919081441417203123">Denmark</translation>
 <translation id="8965697826696209160">Ruang tidak cukup.</translation>
+<translation id="8970501467542182729">File ini dirancang untuk komputer yang menggunakan software Macintosh. Ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
 <translation id="8997962250644902079">Pinyin (Aksara Tradisional) China</translation>
 <translation id="9003940392834790328">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>
 <translation id="9017798300203431059">Fonetik Rusia</translation>
@@ -950,6 +954,7 @@
 <translation id="9130775360844693113">Anggota '<ph name="DESTINATION_NAME" />' akan mendapatkan akses ke item berikut.</translation>
 <translation id="9131598836763251128">Pilih satu atau beberapa file</translation>
 <translation id="9133055936679483811">Gagal membuat file zip. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. Telusuri di Chrome Webstore untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="9144340019284012223">Katala</translation>
 <translation id="914873105831852105">PIN tidak valid. Tersisa 1 upaya lagi.</translation>
 <translation id="9153934054460603056">Simpan identitas dan sandi</translation>

@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">finska</translation>
 <translation id="1942765061641586207">Bildupplösning</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
+<translation id="1984456723671657197">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="1995337122023280937">Gå till filens plats</translation>
 <translation id="2001796770603320721">Hantera i Drive</translation>
 <translation id="2009067268969781306">Om du formaterar en enhet raderas all data som lagras på den. Det går inte att ångra åtgärden.</translation>
@@ -701,6 +702,7 @@
 <translation id="6970230597523682626">bulgariska</translation>
 <translation id="6973630695168034713">Mappar</translation>
 <translation id="6976795442547527108">Lejon</translation>
+<translation id="6978611942794658017">Den här filen är avsedd för en dator med Windows-programvara. Den är inte kompatibel med din enhet, som har Chrome OS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">svenska</translation>
 <translation id="6990081529015358884">Du har slut på utrymme</translation>
@@ -822,6 +824,7 @@
 <translation id="7972920761225148017">franska (Schweiz)</translation>
 <translation id="7973962044839454485">PPP-autentisering misslyckades på grund av felaktigt användarnamn eller lösenord</translation>
 <translation id="7980421588063892270">engelska (USA) med Colemak-tangentbord</translation>
+<translation id="79907182588096956">Den här filen är avsedd för en Windows-dator. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="8000066093800657092">Inget nätverk</translation>
 <translation id="8008366997883261463">Hund</translation>
 <translation id="8028993641010258682">Storlek</translation>
@@ -932,6 +935,7 @@
 <translation id="8912078710089354287">Hund som viftar på svansen</translation>
 <translation id="8919081441417203123">danska</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
+<translation id="8970501467542182729">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="8997962250644902079">traditionell kinesiska (pinyin)</translation>
 <translation id="9003940392834790328">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="9017798300203431059">Ryska (fonetiskt)</translation>
@@ -950,6 +954,7 @@
 <translation id="9130775360844693113">De som använder <ph name="DESTINATION_NAME" /> får åtkomst till dessa objekt.</translation>
 <translation id="9131598836763251128">Välj en eller flera filer</translation>
 <translation id="9133055936679483811">Komprimeringen misslyckades. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Den här filen är avsedd för en dator med programvara från Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="9144340019284012223">katalanska</translation>
 <translation id="914873105831852105">Ogiltig pinkod. Du har 1 försök kvar</translation>
 <translation id="9153934054460603056">Spara identitet och lösenord</translation>

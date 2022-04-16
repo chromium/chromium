@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">фински</translation>
 <translation id="1942765061641586207">Резолуција на слика</translation>
 <translation id="1972984168337863910">Проширете ги таблите со повратни информации за датотеките</translation>
+<translation id="1984456723671657197">Типов датотека не е поддржан. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="1995337122023280937">Оди на локацијата на датотеката</translation>
 <translation id="2001796770603320721">Управување во Drive</translation>
 <translation id="2009067268969781306">Форматирањето на USB-дискот ќе ги избрише сите податоци складирани во него. Дејството не може да се врати.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">бугарски</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6976795442547527108">Лав</translation>
+<translation id="6978611942794658017">Оваа датотека е дизајнирана за компјутер кој користи софтвер на Windows. Таа не е компатибилна со вашиот уред кој работи на Chrome ОС. Пребарајте ја веб-продавницата на Chrome за да најдете соодветна апликација за замена.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6989942356279143254">шведски</translation>
 <translation id="6990081529015358884">Немате веќе простор</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">француски (Швајцарија)</translation>
 <translation id="7973962044839454485">PPP автентикацијата не успеа поради неправилно корисничко име и лозинка</translation>
 <translation id="7980421588063892270">англиска (САД) со тастатура Colemak</translation>
+<translation id="79907182588096956">Датотекава е создадена за компјутер што користи Windows. Таа не е компатибилна со вашиот уред којшто извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="8000066093800657092">Нема мрежа</translation>
 <translation id="8008366997883261463">Џек расел териер</translation>
 <translation id="8028993641010258682">Големина</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">Куче што мавта со опашката</translation>
 <translation id="8919081441417203123">дански</translation>
 <translation id="8965697826696209160">Нема доволно простор.</translation>
+<translation id="8970501467542182729">Датотекава е создадена за компјутер што користи Macintosh. Таа не е компатибилна со вашиот уред којшто извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="8997962250644902079">кинески (традиционален) пинјин</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>
 <translation id="9017798300203431059">фонетски руски</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">Членовите на „<ph name="DESTINATION_NAME" />“ ќе добијат пристап до ставкиве.</translation>
 <translation id="9131598836763251128">Изберете една или повеќе датотеки</translation>
 <translation id="9133055936679483811">Пакувањето не успеа. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Оваа датотека е дизајнирана за компјутер кој користи Macintosh софтвер. Таа не е компатибилна со вашиот уред кој работи со Chrome ОС. Пребарајте ја веб-продавницата на Chrome за да најдете соодветна апликација за замена.</translation>
 <translation id="9144340019284012223">каталонски</translation>
 <translation id="914873105831852105">Погрешен PIN. Имате уште 1 обид.</translation>
 <translation id="9153934054460603056">Зачувај идентитет и лозинка</translation>

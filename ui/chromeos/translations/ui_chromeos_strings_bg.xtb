@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">финландски</translation>
 <translation id="1942765061641586207">Разделителна способност на изображението</translation>
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
+<translation id="1984456723671657197">Този файлов тип не се поддържа. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
 <translation id="1995337122023280937">Към местоположението на файла</translation>
 <translation id="2001796770603320721">Управление в Диск</translation>
 <translation id="2009067268969781306">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни. Това действие не може да бъде отменено.</translation>
@@ -701,6 +702,7 @@
 <translation id="6970230597523682626">български</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6976795442547527108">Лъв</translation>
+<translation id="6978611942794658017">Този файл е предназначен за компютри със софтуер Windows и не е съвместим с устройството ви с Chrome OS. Моля, потърсете в уеб магазина на Chrome подходящо приложение със същата функционалност.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6989942356279143254">Шведски</translation>
 <translation id="6990081529015358884">Нямате свободно място</translation>
@@ -822,6 +824,7 @@
 <translation id="7972920761225148017">Френски (Швейцария)</translation>
 <translation id="7973962044839454485">Удостоверяването през PPP не бе успешно поради неправилно потребителско име или парола</translation>
 <translation id="7980421588063892270">Английски (САЩ) с клавиатура „Коулмак“</translation>
+<translation id="79907182588096956">Този файл е предназначен за компютри с Windows. Не е съвместим с устройството ви, което работи с Chrome OS. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
 <translation id="8000066093800657092">Няма мрежа</translation>
 <translation id="8008366997883261463">Джак Ръсел териер</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -932,6 +935,7 @@
 <translation id="8912078710089354287">Куче, което маха с опашка</translation>
 <translation id="8919081441417203123">датски</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
+<translation id="8970501467542182729">Този файл е предназначен за компютри със софтуер за Macintosh. Не е съвместим с устройството ви, което работи с Chrome OS. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
 <translation id="8997962250644902079">Китайски (традиционен, пинин)</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="9017798300203431059">Руска фонетична клавиатура</translation>
@@ -950,6 +954,7 @@
 <translation id="9130775360844693113">Членовете на „<ph name="DESTINATION_NAME" />“ ще получат достъп до тези елементи.</translation>
 <translation id="9131598836763251128">Изберете един или повече файлове</translation>
 <translation id="9133055936679483811">Компресирането не бе успешно. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Този файл е предназначен за компютри със софтуер за Macintosh и не е съвместим с устройството ви с Chrome OS. Моля, потърсете в уеб магазина на Chrome подходящо приложение със същата функционалност.</translation>
 <translation id="9144340019284012223">Каталонски</translation>
 <translation id="914873105831852105">Невалиден ПИН код. Остава ви 1 опит.</translation>
 <translation id="9153934054460603056">Запазване на самоличността и паролата</translation>

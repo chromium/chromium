@@ -3172,11 +3172,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="4528929591840709501">L'ora in cui interrompere la ricarica del dispositivo, nel fuso orario locale del dispositivo.</translation>
 <translation id="453031441196755904">Questa norma è obsoleta.</translation>
-<translation id="4531482429171731618">Se il criterio viene impostato, viene impostata anche la directory utilizzata da Chrome per il download dei file. Viene utilizzata la directory fornita, indipendentemente dal fatto che gli utenti ne abbiano specificata una o attivino il flag da attivare ogni volta per il percorso di download.
-
-      Se il criterio non viene configurato, Chrome utilizzerà la directory predefinita per il download, che gli utenti potranno modificare.
-
-      Nota: vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4531706050939927436">L'installazione di app Android può essere imposta dalla Console d'amministrazione Google tramite Google Play. Questa norma non viene utilizzata.</translation>
 <translation id="4534500438517478692">Nome della limitazione di Android:</translation>
 <translation id="4541530620466526913">Account del dispositivo</translation>
@@ -6889,11 +6884,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8768528324886802059">La configurazione del criterio consente di specificare quale host di messaggistica nativo non è soggetto all'elenco di host non consentiti. Il valore <ph name="WILDCARD_VALUE" /> nell'elenco di host non consentiti comporta il rifiuto di tutti gli host di messaggistica nativi, a meno che non siano consentiti in modo esplicito.
 
       Tutti gli host di messaggistica nativi sono consentiti per impostazione predefinita. Tuttavia, se gli host di messaggistica nativi vengono rifiutati dal criterio, l'amministratore può utilizzare la lista consentita per modificare tale criterio.</translation>
-<translation id="877185520360032968">L'impostazione del criterio modificherà la directory predefinita in cui Chrome scarica i file, che però gli utenti possono modificare.
-
-      Se il criterio non viene configurato, Chrome utilizzerà la directory predefinita specifica della piattaforma.
-
-      Nota: vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="877557628527387598">Accesso con password</translation>
 <translation id="8777369558049831576">Mostra una casella di controllo "Apri sempre" nella finestra di dialogo relativa ai protocolli esterni</translation>
 <translation id="8786409859071107656">Se il criterio viene impostato su Attivato, viene attivato il criterio di gestione per la condivisione dell'alimentazione USB.

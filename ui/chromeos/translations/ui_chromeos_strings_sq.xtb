@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">Finlandisht</translation>
 <translation id="1942765061641586207">Rezolucioni i imazhit</translation>
 <translation id="1972984168337863910">Zgjero panelet e komenteve të skedarëve</translation>
+<translation id="1984456723671657197">Ky lloj skedari nuk mbështetet. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në Chrome OS.</translation>
 <translation id="1995337122023280937">Shko te vendndodhja e skedarit</translation>
 <translation id="2001796770603320721">Menaxhoje te "Disku"</translation>
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">Bullgarisht</translation>
 <translation id="6973630695168034713">Dosjet</translation>
 <translation id="6976795442547527108">Luan</translation>
+<translation id="6978611942794658017">Ky skedar është i projektuar për kompjuterë që përdorin softuer të Windows. Ai nuk pajtohet me pajisjen tënde e cila funksionon me sistemin operativ Chrome. Kërko Dyqanin në Ueb të Chrome për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6989942356279143254">Suedisht</translation>
 <translation id="6990081529015358884">Nuk ke më hapësirë të lirë</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">Frëngjisht (Zvicër)</translation>
 <translation id="7973962044839454485">Vërtetimi i PPP-së dështoi për shkak të emrit të përdoruesit ose fjalëkalimit të gabuar</translation>
 <translation id="7980421588063892270">Anglisht (SHBA) me tastierë Colemak</translation>
+<translation id="79907182588096956">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Ai nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në Chrome OS.</translation>
 <translation id="8000066093800657092">Nuk ka rrjet</translation>
 <translation id="8008366997883261463">Qeni</translation>
 <translation id="8028993641010258682">Madhësia</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">Qen duke tundur bishtin</translation>
 <translation id="8919081441417203123">Danisht</translation>
 <translation id="8965697826696209160">Nuk ka hapësirë të mjaftueshme</translation>
+<translation id="8970501467542182729">Ky skedar është i projektuar për kompjuterë që përdorin softuer të Macintosh. Ai nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në Chrome OS.</translation>
 <translation id="8997962250644902079">Kinezisht (tradicionale) Pinyin</translation>
 <translation id="9003940392834790328">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, detaje</translation>
 <translation id="9017798300203431059">Fonetikë ruse</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">Anëtarët e "<ph name="DESTINATION_NAME" />" do të fitojnë qasje te këta artikuj.</translation>
 <translation id="9131598836763251128">Zgjidh një ose më shumë skedarë</translation>
 <translation id="9133055936679483811">Ngjeshja dështoi. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Ky skedar është i projektuar për kompjuterë që përdorin softuer të Macintosh. Ai nuk pajtohet me pajisjen tënde e cila funksionon me sistemin operativ Chrome. Kërko Dyqanin në Ueb të Chrome për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="9144340019284012223">Katalonisht</translation>
 <translation id="914873105831852105">Kodi PIN i pavlefshëm Ke 1 përpjekje të mbetur.</translation>
 <translation id="9153934054460603056">Ruaj identitetin dhe fjalëkalimin</translation>

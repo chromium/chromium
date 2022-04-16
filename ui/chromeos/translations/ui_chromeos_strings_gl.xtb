@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">Finés</translation>
 <translation id="1942765061641586207">Resolución da imaxe</translation>
 <translation id="1972984168337863910">Despregar paneis de comentarios de ficheiros</translation>
+<translation id="1984456723671657197">Este tipo de ficheiro non é compatible. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="1995337122023280937">Ir á localización do ficheiro</translation>
 <translation id="2001796770603320721">Xestionar contido en Drive</translation>
 <translation id="2009067268969781306">Ao formatar unha unidade, eliminaranse todos os datos que conteña. Esta acción non se pode desfacer.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">Búlgaro</translation>
 <translation id="6973630695168034713">Cartafoles</translation>
 <translation id="6976795442547527108">León</translation>
+<translation id="6978611942794658017">Este ficheiro está deseñado para un PC con software Windows. Non é compatible co teu dispositivo que dispón de Chrome OS. Busca en Chrome Web Store para descargar unha aplicación equivalente adecuada.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sueco</translation>
 <translation id="6990081529015358884">Quedaches sen espazo</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">Francés (Suíza)</translation>
 <translation id="7973962044839454485">Non se puido efectuar a autenticación de PPP debido a un nome de usuario ou un contrasinal incorrecto</translation>
 <translation id="7980421588063892270">Inglés (EUA) con teclado Colemak</translation>
+<translation id="79907182588096956">Este ficheiro está deseñado para un ordenador que utilice software de Windows. Non é compatible co teu dispositivo que executa Chrome OS. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="8000066093800657092">Sen rede</translation>
 <translation id="8008366997883261463">Can</translation>
 <translation id="8028993641010258682">Tamaño</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">Can movendo o rabo</translation>
 <translation id="8919081441417203123">Danés</translation>
 <translation id="8965697826696209160">Non hai espazo suficiente.</translation>
+<translation id="8970501467542182729">Este ficheiro está deseñado para un ordenador que utilice o software de Macintosh. Non é compatible co teu dispositivo que executa Chrome OS. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="8997962250644902079">Chinés tradicional (Pinyin)</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="9017798300203431059">Ruso fonético</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">Os membros de "<ph name="DESTINATION_NAME" />" terán acceso a estes elementos.</translation>
 <translation id="9131598836763251128">Seleccionar un ou máis ficheiros</translation>
 <translation id="9133055936679483811">Non se puido comprimir. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Este ficheiro está deseñado para ordenadores con software Macintosh. Non é compatible co teu dispositivo que dispón de Chrome OS. Busca en Chrome Web Store para descargar unha aplicación equivalente adecuada.</translation>
 <translation id="9144340019284012223">Catalán</translation>
 <translation id="914873105831852105">O PIN non é válido. Quédache 1 intento.</translation>
 <translation id="9153934054460603056">Gardar identidade e contrasinal</translation>

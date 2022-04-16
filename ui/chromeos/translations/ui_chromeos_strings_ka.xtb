@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">ფინური</translation>
 <translation id="1942765061641586207">სურათის გარჩევადობა</translation>
 <translation id="1972984168337863910">ფაილების გამოხმაურების არეების გაფართოება</translation>
+<translation id="1984456723671657197">ამ ტიპის ფაილი მხარდაუჭერელია. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> Chrome OS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="1995337122023280937">ფაილის მდებარეობაზე გადასვლა</translation>
 <translation id="2001796770603320721">Google Drive-ში მართვა</translation>
 <translation id="2009067268969781306">დისკის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ ქმედებას ვერ გააუქმებთ.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">ბულგარული</translation>
 <translation id="6973630695168034713">ფოლდერები</translation>
 <translation id="6976795442547527108">ლომი</translation>
+<translation id="6978611942794658017">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელშიც გაშვებულია Windows პროგრამული უზრუნველყოფა. იგი არ არის თავსებადი თქვენს მოწყობილობასთან, რომელშიც გაშვებულია Chrome OS. სწორი პროგრამა მოძებნეთ Chrome Web Store-ში.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">შვედური</translation>
 <translation id="6990081529015358884">ადგილი აღარ არის</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">ფრანგული (შვეიცარია)</translation>
 <translation id="7973962044839454485">PPP ავთენტიფიკაცია ვერ მოხერხდა არასწორი მომხმარებლის სახელის ან პაროლის გამო</translation>
 <translation id="7980421588063892270">ინგლისური (აშშ) Colemak კლავიატურით</translation>
+<translation id="79907182588096956">ეს ფაილი განკუთვნილია პერსონალური კომპიუტერისთვის, რომელიც იყენებს Windows-ის პროგრამულ უზრუნველყოფას. ის შეუთავსებელია თქვენს მოწყობილობასთან, რომელზეც გაშვებულია Chrome OS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> Chrome OS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="8000066093800657092">ქსელი არ არის</translation>
 <translation id="8008366997883261463">ჯეკ რასელ ტერიერი</translation>
 <translation id="8028993641010258682">ზომა</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">ძაღლი, რომელიც კუდს აქიცინებს</translation>
 <translation id="8919081441417203123">დანიური</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
+<translation id="8970501467542182729">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. ის შეუთავსებელია თქვენს მოწყობილობასთან, რომელზეც გაშვებულია Chrome OS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> Chrome OS-ზე ფაილების გახსნის შესახებ.</translation>
 <translation id="8997962250644902079">ჩინური (ტრადიციული) პინ-ინი</translation>
 <translation id="9003940392834790328">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>
 <translation id="9017798300203431059">რუსული ფონეტიკური</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">„<ph name="DESTINATION_NAME" />“-ის წევრები მიიღებენ წვდომას ამ ერთეულებზე.</translation>
 <translation id="9131598836763251128">აირჩიეთ ერთი ან რამდენიმე ფაილი</translation>
 <translation id="9133055936679483811">შეკუმშვა ვერ მოხერხდა. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელშიც გაშვებულია Macintosh პროგრამული უზრუნველყოფა. იგი არ არის თავსებადი თქვენს მოწყობილობასთან, რომელშიც გაშვებულია Chrome OS. სწორი პროგრამა მოძებნეთ Chrome Web Store-ში.</translation>
 <translation id="9144340019284012223">კატალანური</translation>
 <translation id="914873105831852105">PIN-კოდი არასწორია. 1 მცდელობა დაგრჩათ.</translation>
 <translation id="9153934054460603056">იდენტურობისა და პაროლის შენახვა</translation>

@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">Isi-Finnish</translation>
 <translation id="1942765061641586207">Ukulungiswa kwesithombe</translation>
 <translation id="1972984168337863910">Nweba amaphaneli wempendulo yamafayela</translation>
+<translation id="1984456723671657197">Lolu hlobo lwefayela alusekelwa. <ph name="BEGIN_LINK_HELP" />Funda kabanzi<ph name="END_LINK_HELP" /> ngokuvula amafayela ku-Chrome OS.</translation>
 <translation id="1995337122023280937">Iya endaweni yefayela</translation>
 <translation id="2001796770603320721">Phatha kuDrayivu</translation>
 <translation id="2009067268969781306">Ukufometha idrayivu kuzosula yonke idatha elondolozwe kuyo. Lesi senzo asikwazi ukuhlehliswa.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">Isi-Bulgarian</translation>
 <translation id="6973630695168034713">Amafolda</translation>
 <translation id="6976795442547527108">Ibhubezi</translation>
+<translation id="6978611942794658017">Leli fayela lidizayinelwe i-PC esebenzisa isofthiwe ye-Windows. Lokhu akuhambisani nedivayisi yakho esebenzisa i-Chrome OS. Sicela useshe Isitolo Sewebhu se-Chrome ukuze uthole uhlelo lokusebenza lokungena esikhundleni olufanele.</translation>
 <translation id="6979158407327259162">I-Google Drayivu</translation>
 <translation id="6989942356279143254">Isi-Swedish</translation>
 <translation id="6990081529015358884">Usuphelelwe yisikhala</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">Isi-French (Switzerland)</translation>
 <translation id="7973962044839454485">Ukuqinisekisa kwe-PPP kuhlulekile ngenxa yegama lomsebenzisi elingalungile noma iphasiwedi</translation>
 <translation id="7980421588063892270">I-English (US) enekhibhodi ye-Colemak</translation>
+<translation id="79907182588096956">Leli fayela lenzelwe i-PC esebenzisa isofthiwe ye-Windows. Lokhu akuhambelani nedivayisi yakho esebenzisa i-Chrome OS. <ph name="BEGIN_LINK_HELP" />Funda kabanzi<ph name="END_LINK_HELP" /> ngokuvula amafayela ku-Chrome OS.</translation>
 <translation id="8000066093800657092">Ayikho inethiwekhi</translation>
 <translation id="8008366997883261463">I-Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Usayizi</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">Inja enyakazisa umsila</translation>
 <translation id="8919081441417203123">Isi-Danish</translation>
 <translation id="8965697826696209160">Asikho isikhala esanele.</translation>
+<translation id="8970501467542182729">Leli fayela lidizayinelwe ikhompuyutha esebenzisa isofthiwe ye-Macintosh. Lokhu akuhambelani nedivayisi yakho esebenzisa i-Chrome OS. <ph name="BEGIN_LINK_HELP" />Funda kabanzi<ph name="END_LINK_HELP" /> ngokuvula amafayela ku-Chrome OS.</translation>
 <translation id="8997962250644902079">Isi-Chinese (Traditional) Pinyin</translation>
 <translation id="9003940392834790328">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, kuphethwe umlawuli wakho, imininingwane</translation>
 <translation id="9017798300203431059">Ifonethiki yesi-Russian</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">Amalungu e-'<ph name="DESTINATION_NAME" />' azothola ukufinyelela kulezi zinto.</translation>
 <translation id="9131598836763251128">Khetha ifayela elilodwa noma amaningi</translation>
 <translation id="9133055936679483811">Ukuzipha kuhlulekile. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Leli fayela lidizayinelwe ikhompyutha esebenzisa isofthiwe ye-Macintosh. Lokhu akuhambisani nedivayisi yakho esebenzisa i-Chrome OS. Sicela useshe Isitolo Sewebhu se-Chrome ukuze uthole uhlelo lokusebenza lokufaka esikhundleni elifanelekile.</translation>
 <translation id="9144340019284012223">Isi-Catalan</translation>
 <translation id="914873105831852105">Iphinikhodi engavumelekile Unokuzama oku-1 okusele.</translation>
 <translation id="9153934054460603056">Londoloza ubunikazi nephasiwedi</translation>

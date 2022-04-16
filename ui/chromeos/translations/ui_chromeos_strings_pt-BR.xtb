@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">Finlandês</translation>
 <translation id="1942765061641586207">Resolução da imagem</translation>
 <translation id="1972984168337863910">Expandir painéis de feedback de arquivos</translation>
+<translation id="1984456723671657197">Esse tipo de arquivo não é compatível. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
 <translation id="1995337122023280937">Acessar local do arquivo</translation>
 <translation id="2001796770603320721">Gerenciar no Drive</translation>
 <translation id="2009067268969781306">A formatação de uma unidade excluirá todos os dados armazenados nela. Esta ação não pode ser desfeita.</translation>
@@ -701,6 +702,7 @@
 <translation id="6970230597523682626">Búlgaro</translation>
 <translation id="6973630695168034713">Pastas</translation>
 <translation id="6976795442547527108">Leão</translation>
+<translation id="6978611942794658017">Este arquivo foi projetado para um computador que utilize o software Windows. Ele não é compatível com seu dispositivo, que executa o Chrome OS. Procure na Chrome Web Store por um app substituto adequado.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sueco</translation>
 <translation id="6990081529015358884">Não há espaço suficiente</translation>
@@ -822,6 +824,7 @@
 <translation id="7972920761225148017">Francês (Suíça)</translation>
 <translation id="7973962044839454485">Falha da autenticação PPC devido a senha ou nome de usuário incorreto</translation>
 <translation id="7980421588063892270">Inglês (EUA) com teclado Colemak</translation>
+<translation id="79907182588096956">Esse arquivo foi criado para computadores que usam o software do Windows. Ele não é compatível com seu dispositivo Chrome OS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Tamanho</translation>
@@ -932,6 +935,7 @@
 <translation id="8912078710089354287">Cachorro abanando o rabo</translation>
 <translation id="8919081441417203123">Dinamarquês</translation>
 <translation id="8965697826696209160">Não há espaço suficiente.</translation>
+<translation id="8970501467542182729">Esse arquivo foi criado para computadores que usam o software Macintosh. Ele não é compatível com seu dispositivo Chrome OS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
 <translation id="8997962250644902079">Chinês (tradicional, pinyin)</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, detalhes</translation>
 <translation id="9017798300203431059">Russo fonético</translation>
@@ -950,6 +954,7 @@
 <translation id="9130775360844693113">Membros de '<ph name="DESTINATION_NAME" />' terão acesso a esses itens.</translation>
 <translation id="9131598836763251128">Selecione um ou mais arquivos</translation>
 <translation id="9133055936679483811">Falha na compactação. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Este arquivo foi criado para um computador que utilize o software Macintosh. Ele não é compatível com seu dispositivo, que roda o Chrome OS. Procure na Chrome Web Store por um app substituto adequado.</translation>
 <translation id="9144340019284012223">Catalão</translation>
 <translation id="914873105831852105">PIN inválido. Você tem 1 tentativa restante.</translation>
 <translation id="9153934054460603056">Salvar identidade e senha</translation>

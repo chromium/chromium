@@ -3164,11 +3164,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       Politika değeri gün olarak belirtilmelidir.</translation>
 <translation id="4528929591840709501">Cihazın şarj olmayı bırakacağı zaman (cihazın yerel saat dilimine göre).</translation>
 <translation id="453031441196755904">Bu politika kullanımdan kaldırılmıştır.</translation>
-<translation id="4531482429171731618">Politika ayarlanırsa Chrome'un dosya indirmek için kullandığı dizin yapılandırılır. Chrome, kullanıcıların bir dizin belirtmesine veya her seferinde indirme konumunun sorulmasını sağlayan işareti etkinleştirmiş olmasına bakılmaksızın burada sağlanan dizini kullanır.
-
-      Politika ayarlanmadan bırakılırsa Chrome varsayılan indirme dizinini kullanır ve kullanıcılar bunu değiştirebilir.
-
-      Not: Kullanabileceğiniz değişkenlerin listesine bakın ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
 <translation id="4531706050939927436">Android uygulamaları, Google Play kullanılarak Google Yönetici Konsolu'ndan zorunlu şekilde yüklenebilir. Söz konusu uygulamalar bu politikayı kullanmaz.</translation>
 <translation id="4534500438517478692">Android kısıtlama adı:</translation>
 <translation id="4541530620466526913">Cihaz-yerel hesaplar</translation>
@@ -6883,11 +6878,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8768528324886802059">Politikanın ayarlanması, reddetme listesine tabi olmayan yerel mesajlaşma ana makinelerini belirtir. Reddetme listesi değerinin <ph name="WILDCARD_VALUE" /> olması, açıkça izin verilmediği sürece tüm yerel mesajlaşma ana makinelerinin reddedileceği anlamına gelir.
 
       Varsayılan olarak tüm yerel mesajlaşma ana makinelerine izin verilir. Ancak tüm yerel mesajlaşma ana makineleri politikaya göre yasaklandıysa yönetici, bu politikayı değiştirmek için izin verilenler listesini kullanabilir.</translation>
-<translation id="877185520360032968">Politika ayarlanırsa Chrome'un dosyaları indirdiği varsayılan dizin değişir, ancak kullanıcılar dizini değiştirebilir.
-
-      Politika ayarlanmadan bırakılırsa Chrome, platforma özgü varsayılan dizinini kullanır.
-
-      Not: Kullanabileceğiniz değişkenlerin listesine bakın ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
 <translation id="877557628527387598">Şifreyle oturum açma</translation>
 <translation id="8777369558049831576">Harici protokol iletişim kutusunda "Her zaman aç" onay kutusu göster.</translation>
 <translation id="8786409859071107656">Politikayı Etkin değerine ayarlamak USB güç paylaşımı güç yönetim politikasını etkinleştirir.

@@ -3197,11 +3197,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       El valor de esta política debe especificarse en número de días.</translation>
 <translation id="4528929591840709501">Hora a la que el dispositivo dejará de cargarse, interpretada en la zona horaria local del dispositivo.</translation>
 <translation id="453031441196755904">Esta política está obsoleta.</translation>
-<translation id="4531482429171731618">Si se le asigna un valor a esta política, se configurará el directorio donde Chrome guardará los archivos descargados. Chrome utilizará este directorio, aunque los usuarios especifiquen otro o activen la marca para que siempre se les pregunte dónde quieren descargar un archivo.
-
-      Si no se le asigna ningún valor, Chrome utilizará el directorio de descargas predeterminado y los usuarios podrán cambiarlo.
-
-      Nota: Consulta una lista de variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="4531706050939927436">Las aplicaciones para Android se pueden instalar de manera forzada desde la consola de administración de Google usando Google Play. No utilizan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
@@ -6952,11 +6947,6 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8768528324886802059">Si se establece esta política, se especificará qué hosts de mensajes nativos no están sujetos a la lista de bloqueados. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
 
       Todos los hosts de mensajes nativos están permitidos de forma predeterminada. Sin embargo, si la política deniega todos los hosts de mensajes nativos, el administrador podrá usar la lista de permitidos para anular dicha política.</translation>
-<translation id="877185520360032968">Si se le asigna un valor a esta política, cambia el directorio predeterminado donde Chrome descarga los archivos, pero los usuarios pueden cambiar el directorio.
-
-      Si no se le asigna ningún valor, Chrome usará su directorio predeterminado específico de la plataforma.
-
-      Nota: Consulta una lista de variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="877557628527387598">Inicio de sesión con contraseña</translation>
 <translation id="8777369558049831576">Permite mostrar la casilla Siempre abierto en el cuadro de diálogo de un protocolo externo.</translation>
 <translation id="8786409859071107656">Si se habilita esta política, se activa la política de gestión de energía compartida por USB.

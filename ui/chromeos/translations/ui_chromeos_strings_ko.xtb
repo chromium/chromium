@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">핀란드어</translation>
 <translation id="1942765061641586207">이미지 해상도</translation>
 <translation id="1972984168337863910">파일 의견 패널 펼치기</translation>
+<translation id="1984456723671657197">지원되지 않는 파일 형식입니다. Chrome OS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">파일 위치로 이동</translation>
 <translation id="2001796770603320721">드라이브에서 관리</translation>
 <translation id="2009067268969781306">드라이브를 포맷하면 드라이브에 저장된 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
@@ -701,6 +702,7 @@
 <translation id="6970230597523682626">불가리아어</translation>
 <translation id="6973630695168034713">폴더</translation>
 <translation id="6976795442547527108">사자</translation>
+<translation id="6978611942794658017">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환되지 않습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색하세요.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
@@ -822,6 +824,7 @@
 <translation id="7972920761225148017">프랑스어(스위스)</translation>
 <translation id="7973962044839454485">사용자 이름 또는 비밀번호가 잘못되어 PPP 인증에 실패했습니다.</translation>
 <translation id="7980421588063892270">영어(미국, 콜맥 키보드)</translation>
+<translation id="79907182588096956">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었습니다. 따라서 Chrome OS를 실행하는 기기와는 호환되지 않습니다. Chrome OS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="8000066093800657092">네트워크 없음</translation>
 <translation id="8008366997883261463">개</translation>
 <translation id="8028993641010258682">크기</translation>
@@ -932,6 +935,7 @@
 <translation id="8912078710089354287">꼬리를 흔드는 개</translation>
 <translation id="8919081441417203123">덴마크어</translation>
 <translation id="8965697826696209160">저장 공간이 부족합니다.</translation>
+<translation id="8970501467542182729">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었습니다. 따라서 Chrome OS를 실행하는 기기와는 호환되지 않습니다. Chrome OS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">중국어(번체, 병음)</translation>
 <translation id="9003940392834790328">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>
 <translation id="9017798300203431059">러시아어 표음</translation>
@@ -950,6 +954,7 @@
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' 멤버에게 이 항목에 액세스할 수 있는 권한이 부여됩니다.</translation>
 <translation id="9131598836763251128">파일을 한 개 이상 선택하세요.</translation>
 <translation id="9133055936679483811">압축에 실패했습니다. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환될 수 없습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색해 보세요.</translation>
 <translation id="9144340019284012223">카탈로니아어</translation>
 <translation id="914873105831852105">잘못된 PIN입니다. 기회가 1번 남았습니다.</translation>
 <translation id="9153934054460603056">ID와 비밀번호 저장</translation>

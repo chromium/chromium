@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">Finnskt</translation>
 <translation id="1942765061641586207">Upplausn myndar</translation>
 <translation id="1972984168337863910">Stækka svæði með ábendingum fyrir skrár</translation>
+<translation id="1984456723671657197">Þessi skráargerð er ekki studd. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="1995337122023280937">Fara í staðsetningu skráar</translation>
 <translation id="2001796770603320721">Stjórna á Drive</translation>
 <translation id="2009067268969781306">Þegar drif er forsniðið eyðast öll gögn af því. Ekki er hægt að afturkalla þessa aðgerð.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">Búlgarskt</translation>
 <translation id="6973630695168034713">Möppur</translation>
 <translation id="6976795442547527108">Ljón</translation>
+<translation id="6978611942794658017">Þessi skrá er hönnuð fyrir tölvu með Windows-hugbúnaði. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. Leitaðu að hentugu forriti í stað þessa í vefverslun Chrome.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sænska</translation>
 <translation id="6990081529015358884">Plássið er uppurið</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">Franska (Sviss)</translation>
 <translation id="7973962044839454485">PPP-auðkenning mistókst vegna þess að notandanafn eða aðgangsorð var rangt</translation>
 <translation id="7980421588063892270">Enska (bandarísk) með Colemak-lyklaborði</translation>
+<translation id="79907182588096956">Þessi skrá er hönnuð fyrir tölvu sem notar Windows-hugbúnað. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="8000066093800657092">Ekkert net</translation>
 <translation id="8008366997883261463">Frasier</translation>
 <translation id="8028993641010258682">Stærð</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">Hundur sem dillar skottinu</translation>
 <translation id="8919081441417203123">Danskt</translation>
 <translation id="8965697826696209160">Ekki er nægilegt pláss.</translation>
+<translation id="8970501467542182729">Þessi skrá er hönnuð fyrir tölvu sem notar Macintosh-hugbúnað. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="8997962250644902079">Kínverska (hefðbundin) Pinyin</translation>
 <translation id="9003940392834790328">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, stjórnað af kerfisstjóra, upplýsingar</translation>
 <translation id="9017798300203431059">Rússneskt hljóðritunarlyklaborð</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">Meðlimir „<ph name="DESTINATION_NAME" />“ fá aðgang að þessum atriðum.</translation>
 <translation id="9131598836763251128">Veldu eina eða fleiri skrár</translation>
 <translation id="9133055936679483811">Zip-þjöppun mistókst. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Þessi skrá er hönnuð fyrir tölvu með Macintosh-hugbúnaði. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. Leitaðu að hentugu forriti í stað þessa í vefverslun Chrome.</translation>
 <translation id="9144340019284012223">Katalónska</translation>
 <translation id="914873105831852105">Ógilt PIN-númer. Þú átt 1 tilraun eftir.</translation>
 <translation id="9153934054460603056">Vista auðkenni og aðgangsorð</translation>

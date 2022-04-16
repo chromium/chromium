@@ -2864,6 +2864,7 @@
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="END_LINK" /> ұйым басқарады.</translation>
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" сөзін <ph name="SEARCH_ENGINE" /> бойынша &amp;іздеу</translation>
 <translation id="3798449238516105146">Нұсқа</translation>
+<translation id="379850776451304458">Автоматты режим</translation>
 <translation id="3799128412641261490">Switch Access параметрлері</translation>
 <translation id="3800806661949714323">Барлығын көрсету (ұсынылады)</translation>
 <translation id="3800828618615365228">Google Chrome және ChromeOS қосымша шарттары</translation>
@@ -3244,6 +3245,7 @@
 <translation id="4150201353443180367">Дисплей</translation>
 <translation id="4150569944729499860">Экран контексі</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 қойынды}other{# қойынды}}</translation>
+<translation id="4154406342347435125">Күн шыққанда жарық режим, күн батқанда қараңғы режим қосылады. Режимдер автоматты түрде ауысады.</translation>
 <translation id="4154664944169082762">Саусақ іздері</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Тексеруден өтті</translation>
@@ -5439,6 +5441,7 @@
 <translation id="6410328738210026208">Арнаны өзгерту және Powerwash орындау</translation>
 <translation id="6410390304316730527">"Қауіпсіз шолу" функциясы сізді алдап, зиянды бағдарламалық құрал орнаттыратын немесе құпия сөздер, телефон нөмірлері мен несиелік карталар сияқты жеке ақпаратты біліп алатын шабуылдаушылардан қорғайды. Оны өшірсеңіз, таныс емес немесе сенімсіз сайттарды ашқанда абайлаңыз.</translation>
 <translation id="6410668567036790476">Іздеу жүйесін қосу</translation>
+<translation id="6412293788397766100">Шықпас бұрын…</translation>
 <translation id="641469293210305670">Жаңартылған нұсқалар мен қолданбаларды орнату</translation>
 <translation id="6414878884710400018">Ашық жүйе параметрлері</translation>
 <translation id="6414888972213066896">Ата-анаңыздан осы сайтқа кіру рұқсатын сұрадыңыз</translation>
@@ -6805,6 +6808,7 @@
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7770406201819593386">ChromeOS Flex диагностикалық сынақтарын іске қосу.</translation>
 <translation id="7770450735129978837">Тінтуірдің оң жақ пернесін түрту</translation>
+<translation id="7770566005197683248">Экрандағы кескінді жарық қылады.</translation>
 <translation id="7770612696274572992">Сурет басқа құрылғыдан көшірілді</translation>
 <translation id="7771452384635174008">Құрылым</translation>
 <translation id="7772032839648071052">Құпия фразаны растау</translation>
@@ -7359,6 +7363,7 @@
 <translation id="8300374739238450534">Қою көк</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Мекенжай}other{# мекенжай}}</translation>
 <translation id="8304383784961451596">Бұл құрылғыны пайдалануға рұқсатыңыз жоқ. Кіру рұқсатын алу үшін әкімшіге хабарласыңыз немесе Family Link арқылы қадағаланатын Google аккаунтымен кіріңіз.</translation>
+<translation id="8307094075368387939">"Жекелендіру" хабында кестені реттеуге болады, сондай-ақ тұсқағаз, скринсейвер орната және жүйе түстерін бейімдей аласыз.</translation>
 <translation id="8308016398665340540">Бұл желіні осы құрылғының басқа пайдаланушыларымен бөлісіп жатырсыз</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> камераны пайдаланғысы келгенде, рұқсат сұралсын</translation>
 <translation id="830868413617744215">Бета</translation>
@@ -7508,6 +7513,7 @@
 <translation id="846374874681391779">Жүктеп алынғандар жолағы</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> өшірілді.</translation>
 <translation id="8464132254133862871">Бұл пайдаланушы аккаунты осы қызмет үшін жарамайды.</translation>
+<translation id="8464735509712879725">Әлсіз жарықты бөлмелерге арналған. Сондай-ақ батарея жұмысының ұзақтығына бейімделген.</translation>
 <translation id="8465252176946159372">Жарамсыз</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> плагині іске қосылуы үшін рұқсатыңыз қажет</translation>
 <translation id="8466417995783206254">Бұл қойынды "суреттегі сурет" режимінде бейне ойнатуда.</translation>
@@ -7538,7 +7544,6 @@
 <translation id="8498214519255567734">Күңгірт жарық жағдайында экранға қарауды немесе одан оқуды оңайлатады</translation>
 <translation id="8498395510292172881">Chrome браузерінде оқуды жалғастыру</translation>
 <translation id="8499083585497694743">Микрофон дыбысын қосу</translation>
-<translation id="8502504667418600531">Бұрыннан бар браузерді пайдалану деректерін (бетбелгілерді, құпия сөздерді, тарихты) профильге енгізу</translation>
 <translation id="8502536196501630039">Google Play дүкеніндегі қолданбаларды пайдалану үшін алдымен қолданбаларды қалпына келтіруіңіз қажет. Кейбір деректер жоғалуы мүмкін.</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="850382998924680137">Бүгін көрілді</translation>

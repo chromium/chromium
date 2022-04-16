@@ -2796,7 +2796,7 @@
 <translation id="3739254215541673094">要打开 <ph name="APPLICATION" /> 吗？</translation>
 <translation id="3741056951918180319">您可以在任意网站上点击该扩展程序，即可随时使用它</translation>
 <translation id="3742235229730461951">韩语键盘布局</translation>
-<translation id="3742666961763734085">找不到使用该名称的组织单元。请重试。</translation>
+<translation id="3742666961763734085">找不到使用该名称的组织部门。请重试。</translation>
 <translation id="3743842571276656710">请输入 PIN 码以与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="3747077776423672805">要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
 <translation id="3747603683749989726">开启“增强型安全浏览”功能？</translation>
@@ -5779,7 +5779,7 @@
 <translation id="6762833852331690540">已开启</translation>
 <translation id="676560328519657314">您在 Google Pay 中的付款方式</translation>
 <translation id="6767566652486411142">选择另一种语言…</translation>
-<translation id="6767639283522617719">无法加入到该网域中。请确保这一组织单元的设置正确无误。</translation>
+<translation id="6767639283522617719">无法加入到该网域中。请确保这一组织部门的设置正确无误。</translation>
 <translation id="6768034047581882264">不允许显示不安全内容</translation>
 <translation id="6770042910635026163">您访问的可界定您的兴趣的网站</translation>
 <translation id="6770602306803890733">为您和网络上的所有人提供更好的安全保障</translation>
@@ -7531,7 +7531,6 @@
 <translation id="8498214519255567734">可让您更舒适地在黯淡的光线下查看屏幕或阅读文字</translation>
 <translation id="8498395510292172881">继续在 Chrome 中阅读</translation>
 <translation id="8499083585497694743">将麦克风取消静音</translation>
-<translation id="8502504667418600531">将现有浏览数据（书签、密码、历史记录）添加到资料中</translation>
 <translation id="8502536196501630039">要使用来自 Google Play 的应用，您必须先恢复自己的应用。某些数据可能已丢失。</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="850382998924680137">今天浏览过</translation>

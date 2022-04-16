@@ -117,6 +117,7 @@
 <translation id="1936717151811561466">фин</translation>
 <translation id="1942765061641586207">Кескін ажыратымдылығы</translation>
 <translation id="1972984168337863910">Файлдар пікірі панельдерін жаю</translation>
+<translation id="1984456723671657197">Мұндай файл түріне қолдау көрсетілмейді. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="1995337122023280937">Файл орнына өту</translation>
 <translation id="2001796770603320721">Drive қызметінде басқару</translation>
 <translation id="2009067268969781306">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекеттен бас тарту мүмкін емес.</translation>
@@ -700,6 +701,7 @@
 <translation id="6970230597523682626">болгар</translation>
 <translation id="6973630695168034713">Қалталар</translation>
 <translation id="6976795442547527108">Арыстан</translation>
+<translation id="6978611942794658017">Бұл файл Windows бағдарламалық жасақтамасын пайдаланатын компьютерге арналған. Бұл Chrome OS арқылы жұмыс істейін құрылғыңызбен үйлесімді емес. Chrome Web Store дүкенінен сәйкес келетін баламалы қолданбаны іздеңіз.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Бос орын жоқ</translation>
@@ -821,6 +823,7 @@
 <translation id="7972920761225148017">Француз (Швейцария)</translation>
 <translation id="7973962044839454485">Пайдаланушы аты немесе құпия сөз дұрыс болмағандықтан, PPP аутентификациясы сәтсіз аяқталды</translation>
 <translation id="7980421588063892270">Ағылшын (АҚШ), Колемак пернетақтасымен</translation>
+<translation id="79907182588096956">Бұл файл Windows бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейтін құрылғыңызбен үйлесімді емес. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="8000066093800657092">Желі жоқ</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Көлемі</translation>
@@ -931,6 +934,7 @@
 <translation id="8912078710089354287">Құйрығын бұлғаңдатқан ит</translation>
 <translation id="8919081441417203123">дат</translation>
 <translation id="8965697826696209160">Бос орын жеткіліксіз.</translation>
+<translation id="8970501467542182729">Бұл файл Macintosh бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейтін құрылғыңызбен үйлесімді емес. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="8997962250644902079">Қытай (дәстүрлі, пиньинь)</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="9017798300203431059">Орыс фонетикалық</translation>
@@ -949,6 +953,7 @@
 <translation id="9130775360844693113">"<ph name="DESTINATION_NAME" />" мүшелері бұл файлдарға кіру рұқсатын алады.</translation>
 <translation id="9131598836763251128">Бір немесе бірнеше файлды таңдаңыз</translation>
 <translation id="9133055936679483811">Қысу орындалмады. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Бұл файл Macintosh бағдарламалық жасақтамасын пайдаланатын компьютерге арналған. Бұл Chrome OS пайдаланатын құрылғыңызбен үйлесімді емес. Сәйкес ауыстыру қолданбасын Chrome веб-дүкенінен іздеңіз.</translation>
 <translation id="9144340019284012223">Каталан</translation>
 <translation id="914873105831852105">PIN коды жарамсыз. 1 әрекет қалды.</translation>
 <translation id="9153934054460603056">Идентификатор мен құпия сөзді сақтау</translation>
