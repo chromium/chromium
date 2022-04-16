@@ -1253,7 +1253,7 @@ const base::Feature kSettingsAppNotificationSettings{
 
 // Whether theme changes should be animated for the Settings app.
 const base::Feature kSettingsAppThemeChangeAnimation{
-    "SettingsAppThemeChangeAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
+    "SettingsAppThemeChangeAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables launcher nudge that animates the home button to guide users to open
 // the launcher.
