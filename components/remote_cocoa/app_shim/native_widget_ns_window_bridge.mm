@@ -41,6 +41,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -70,6 +71,11 @@ bool AreWindowShadowsDisabled() {
   //   https://crbug.com/515627, especially #63 and #67
   static bool is_headless = getenv("CHROME_HEADLESS") != nullptr;
   return is_headless;
+}
+
+// Returns the display that the specified window is on.
+display::Display GetDisplayForWindow(NSWindow* window) {
+  return display::Screen::GetScreen()->GetDisplayNearestWindow(window);
 }
 
 }  // namespace
@@ -764,10 +770,18 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     [window_ makeKeyAndOrderFront:nil];
     [NSApp activateIgnoringOtherApps:YES];
   } else if (!parent_ && ![window_ isMiniaturized]) {
-    // When showing a window without activation, avoid making it the front
-    // window (with e.g. orderFront:), which can cause a space switch.
-    [window_ orderWindow:NSWindowBelow
-              relativeTo:NSApp.mainWindow.windowNumber];
+    if (GetDisplayForWindow(NSApp.mainWindow).id() ==
+        GetDisplayForWindow(window_.get()).id()) {
+      // When the new window is on the same display as the main window, order
+      // the window relative to the main window. Avoid making it the front
+      // window (with e.g. orderFront:), which can cause a space switch.
+      [window_ orderWindow:NSWindowBelow
+                relativeTo:NSApp.mainWindow.windowNumber];
+    } else {
+      // When opening a window on another screen, put the window at the front.
+      // When relativeTo: is 0, it won't trigger a space switch.
+      [window_ orderWindow:NSWindowAbove relativeTo:0];
+    }
   }
 
   // For non-sheet modal types, use the constrained window animations to make
@@ -1321,9 +1335,7 @@ void NativeWidgetNSWindowBridge::FullscreenControllerCloseWindow() {
 }
 
 int64_t NativeWidgetNSWindowBridge::FullscreenControllerGetDisplayId() const {
-  return display::Screen::GetScreen()
-      ->GetDisplayNearestWindow(window_.get())
-      .id();
+  return GetDisplayForWindow(window_.get()).id();
 }
 
 gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrameForDisplay(
@@ -1667,8 +1679,7 @@ void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
       fullscreen_controller_->IsInFullscreenTransition())
     return;
 
-  host_->OnWindowDisplayChanged(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_.get()));
+  host_->OnWindowDisplayChanged(GetDisplayForWindow(window_.get()));
 }
 
 bool NativeWidgetNSWindowBridge::IsWindowModalSheet() const {
