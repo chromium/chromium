@@ -7,6 +7,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_service.grpc.pb.h"
@@ -116,6 +118,8 @@ class ActionService : public AsyncServiceDriver {
   // This sequence checker ensures that all callbacks are called on the main
   // sequence.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<::assistant::api::ActionService::AsyncService>
       async_service_weak_factory_{&service_};

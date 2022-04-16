@@ -29,7 +29,8 @@ ActionService::ActionService(::grpc::ServerBuilder* server_builder,
                              const std::string& assistant_service_address)
     : AsyncServiceDriver(server_builder),
       libassistant_client_(libassistant_client),
-      assistant_service_address_(assistant_service_address) {
+      assistant_service_address_(assistant_service_address),
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(server_builder);
   DCHECK(libassistant_client_);
 
@@ -40,6 +41,7 @@ ActionService::~ActionService() = default;
 
 void ActionService::RegisterActionModule(
     assistant_client::ActionModule* action_module) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!action_module_);
 
   action_module_ = action_module;
@@ -78,6 +80,8 @@ void ActionService::StartRegistration() {
 void ActionService::OnRegistrationDone(
     const ::grpc::Status& status,
     const ::assistant::api::RegisterActionModuleResponse& response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!status.ok()) {
     LOG(ERROR) << "Registration failed with status: " << status.error_code()
                << " and message: " << status.error_message();
@@ -105,7 +109,9 @@ void ActionService::OnHandleActionRequest(
     base::OnceCallback<void(const grpc::Status&,
                             const ::assistant::api::HandleActionResponse&)>
         done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
+
   if (!request->has_conversation_id() || !request->has_interaction_id()) {
     LOG(ERROR) << "Received invalid HandleActionRequest.";
     ::assistant::api::HandleActionResponse response;
@@ -211,6 +217,8 @@ void ActionService::OnActionDone(
         done,
     const std::string& action_id,
     const assistant_client::ActionModule::Result& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   ::assistant::api::HandleActionResponse response;
   PopulateHandleActionResponse(result, &response);
 
@@ -218,7 +226,14 @@ void ActionService::OnActionDone(
   if (action_iter != alive_actions_.end()) {
     DVLOG(3) << "Finished executing action with id: " << action_id
              << " and name: " << action_iter->second.first;
+    // Delete the action in the future to prevent deadlock on the WaitAction.
+    // When the WaitAction runs its callback in `OnScheduledWaitDone()` with
+    // lock, the callback (this function) will delete the action here. In the
+    // dtor of the WaitAction, it will try to call `OnScheduledWaitDone()` to
+    // clean up, which will end up with deadlock.
+    auto action = std::move(action_iter->second.second);
     alive_actions_.erase(action_id);
+    task_runner_->DeleteSoon(FROM_HERE, action.release());
   } else {
     LOG(ERROR)
         << "The action with id: " << action_id
@@ -234,6 +249,8 @@ void ActionService::OnGetActionServiceContextRequest(
     base::OnceCallback<
         void(const grpc::Status&,
              const ::assistant::api::GetActionServiceContextResponse&)> done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DVLOG(3) << "Getting service context.";
   ::assistant::api::GetActionServiceContextResponse response;
   PopulateGetActionServiceContextResponse(*action_module_, &response);
@@ -241,6 +258,8 @@ void ActionService::OnGetActionServiceContextRequest(
 }
 
 void ActionService::StartCQ(::grpc::ServerCompletionQueue* cq) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   action_handler_driver_ = std::make_unique<
       RpcMethodDriver<::assistant::api::HandleActionRequest,
                       ::assistant::api::HandleActionResponse>>(
