@@ -439,8 +439,6 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     type_ = SrcType::kTrigger;
     HandleTriggerRegistration(response);
   }
-
-  // TODO(johnidel): Add parsing for trigger and filter headers.
 }
 
 void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
