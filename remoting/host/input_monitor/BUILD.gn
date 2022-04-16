@@ -49,6 +49,12 @@ source_set("input_monitor") {
       "//ui/events/devices/x11",
       "//ui/gfx/x",
     ]
+  } else if (remoting_use_wayland && is_linux) {
+    sources += [
+      "local_hotkey_input_monitor_wayland.cc",
+      "local_keyboard_input_monitor_wayland.cc",
+      "local_mouse_input_monitor_wayland.cc",
+    ]
   }
 
   if (is_win) {

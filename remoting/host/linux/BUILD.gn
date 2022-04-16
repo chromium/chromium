@@ -131,6 +131,7 @@ source_set("unit_tests") {
   if (!remoting_use_x11) {
     sources -= [
       "unicode_to_keysym_unittest.cc",
+      "x11_character_injector_unittest.cc",
       "x_server_clipboard_unittest.cc",
     ]
   }

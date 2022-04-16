@@ -149,7 +149,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
       "//remoting/host:resources",
     ]
 
-    if (is_linux || is_chromeos_lacros) {
+    if ((is_linux || is_chromeos_lacros) && remoting_use_x11) {
       deps += [
         "//build/config/linux/gtk",
         "//ui/events/platform/x11:x11",
