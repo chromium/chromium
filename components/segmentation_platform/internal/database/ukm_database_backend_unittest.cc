@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
@@ -21,6 +22,14 @@ using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::UnorderedElementsAre;
+
+// Set path to protected file which fails to open the database.
+#if BUILDFLAG(IS_POSIX)
+constexpr base::FilePath::CharType kBadFilePath[] = FILE_PATH_LITERAL("/usr");
+#else
+constexpr base::FilePath::CharType kBadFilePath[] =
+    FILE_PATH_LITERAL("C:\\Windows");
+#endif
 
 // Stats about the database tables.
 struct DatabaseStats {
@@ -305,6 +314,37 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
   EXPECT_THAT(stats4.metric_count_for_url_id,
               UnorderedElementsAre(std::make_pair(UrlId(), 3)));
   test_util::AssertUrlsInTable(backend_->db(), {});
+}
+
+class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {
+ public:
+  void SetUp() override {
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+    backend_ = std::make_unique<UkmDatabaseBackend>(
+        base::FilePath(kBadFilePath), task_runner_);
+    base::RunLoop wait_for_init;
+    backend_->InitDatabase(base::BindOnce(
+        [](base::OnceClosure quit,
+           scoped_refptr<base::SequencedTaskRunner> task_runner, bool success) {
+          EXPECT_TRUE(task_runner->RunsTasksInCurrentSequence());
+          std::move(quit).Run();
+          ASSERT_FALSE(success);
+        },
+        wait_for_init.QuitClosure(), task_runner_));
+    wait_for_init.Run();
+  }
+  void TearDown() override {
+    backend_.reset();
+    task_runner_.reset();
+  }
+};
+
+TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
+  const GURL kUrl1("https://www.url1.com");
+  backend_->OnUrlValidated(kUrl1);
+  backend_->StoreUkmEntry(GetSampleUkmEntry());
+  backend_->UpdateUrlForUkmSource(10, kUrl1, true);
+  backend_->RemoveUrls({kUrl1});
 }
 
 }  // namespace segmentation_platform

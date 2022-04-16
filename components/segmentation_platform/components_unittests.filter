@@ -2,6 +2,7 @@ CustomInputProcessorTest.*
 DatabaseMaintenanceImplTest.*
 DefaultModelManagerTest.*
 DummySegmentationPlatformServiceTest.*
+FailedUkmDatabaseTest.*
 FeatureAggregatorImplTest.*
 FeatureListQueryProcessorTest.*
 HistogramSignalHandlerTest.*

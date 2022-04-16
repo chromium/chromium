@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/ukm_database_backend.h"
 
+#include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
@@ -35,18 +36,30 @@ UkmDatabaseBackend::~UkmDatabaseBackend() = default;
 void UkmDatabaseBackend::InitDatabase(
     UkmDatabaseBackend::SuccessCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_.Open(database_path_)) {
-    callback_task_runner_->PostTask(FROM_HERE,
-                                    base::BindOnce(std::move(callback), false));
-    return;
+  base::File::Error error{};
+  bool result = true;
+  if (!base::CreateDirectoryAndGetError(database_path_.DirName(), &error) ||
+      !db_.Open(database_path_)) {
+    // TODO(ssid): On failure retry opening the database or delete backend or
+    // open in memory for session.
+    LOG(ERROR) << "Failed to open UKM database: " << error << " "
+               << db_.GetErrorMessage();
+    result = false;
   }
-  bool result = metrics_table_.InitTable() && url_table_.InitTable();
+  if (result) {
+    result = metrics_table_.InitTable() && url_table_.InitTable();
+  }
+  status_ = result ? Status::INIT_SUCCESS : Status::INIT_FAILED;
   callback_task_runner_->PostTask(FROM_HERE,
                                   base::BindOnce(std::move(callback), result));
 }
 
 void UkmDatabaseBackend::StoreUkmEntry(ukm::mojom::UkmEntryPtr entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
   MetricsRowEventId event_id =
       MetricsRowEventId::FromUnsafeValue(base::RandUint64());
   // If we have an URL ID for the entry, then use it, otherwise the URL ID will
@@ -73,9 +86,14 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
                                                const GURL& url,
                                                bool is_validated) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UrlId url_id = UkmUrlTable::GenerateUrlId(url);
-  if (!SanityCheckUrl(url, url_id))
+  if (status_ != Status::INIT_SUCCESS) {
     return;
+  }
+
+  UrlId url_id = UkmUrlTable::GenerateUrlId(url);
+  if (!SanityCheckUrl(url, url_id)) {
+    return;
+  }
 
   if (!url_table_.IsUrlInTable(url_id)) {
     if (is_validated) {
@@ -94,6 +112,10 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
 
 void UkmDatabaseBackend::OnUrlValidated(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
   UrlId url_id = UkmUrlTable::GenerateUrlId(url);
   // Write URL to table only if it's needed and it's not already added.
   if (urls_not_validated_.count(url_id) && SanityCheckUrl(url, url_id)) {
@@ -104,6 +126,10 @@ void UkmDatabaseBackend::OnUrlValidated(const GURL& url) {
 
 void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
   std::vector<UrlId> url_ids;
   for (const GURL& url : urls) {
     UrlId id = UkmUrlTable::GenerateUrlId(url);

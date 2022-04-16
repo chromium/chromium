@@ -42,7 +42,12 @@ void UkmDataManagerImpl::InitiailizeImpl(
 
   ukm_observer_ = ukm_observer;
   ukm_observer_->set_ukm_data_manager(this);
+
   ukm_database_ = std::move(ukm_database);
+  // TODO(ssid): Move this call  to constructor to make it clear any transaction
+  // is posted after initialization.
+  ukm_database_->InitDatabase();
+
   GetOrCreateUrlHandler();
 }
 

@@ -65,6 +65,8 @@ class UkmDatabaseBackend {
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
   UkmMetricsTable metrics_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   UkmUrlTable url_table_ GUARDED_BY_CONTEXT(sequence_checker_);
+  enum class Status { CREATED, INIT_FAILED, INIT_SUCCESS };
+  Status status_ = Status::CREATED;
 
   // Map from source ID to URL. When URL updates are sent before metrics, this
   // map is used to set URL ID to the metrics rows. This is an in-memory cache

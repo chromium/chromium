@@ -16,6 +16,7 @@
 namespace segmentation_platform {
 
 UkmUrlTable::UkmUrlTable(sql::Database* db) : db_(db) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 }
 

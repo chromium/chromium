@@ -17,9 +17,8 @@
 
 namespace segmentation_platform {
 
-namespace {}  // namespace
-
 UkmMetricsTable::UkmMetricsTable(sql::Database* db) : db_(db) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 }
 

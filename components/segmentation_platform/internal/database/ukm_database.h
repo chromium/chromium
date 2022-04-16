@@ -30,8 +30,8 @@ class UkmDatabase {
   UkmDatabase(UkmDatabase&) = delete;
   UkmDatabase& operator=(UkmDatabase&) = delete;
 
-  using InitCallback = base::OnceCallback<void(bool)>;
-  void InitDatabase(InitCallback callback);
+  // Initialize the database.
+  virtual void InitDatabase();
 
   // Called once when an UKM event is added. All metrics from the event will be
   // added to the metrics table.

@@ -21,10 +21,10 @@ UkmDatabase::~UkmDatabase() {
   backend_task_runner_->DeleteSoon(FROM_HERE, std::move(backend_));
 }
 
-void UkmDatabase::InitDatabase(UkmDatabase::InitCallback callback) {
+void UkmDatabase::InitDatabase() {
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UkmDatabaseBackend::InitDatabase,
-                                backend_->GetWeakPtr(), std::move(callback)));
+                                backend_->GetWeakPtr(), base::DoNothing()));
 }
 
 void UkmDatabase::StoreUkmEntry(ukm::mojom::UkmEntryPtr ukm_entry) {
