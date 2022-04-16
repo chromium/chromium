@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -25,7 +24,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -61,14 +59,9 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     GeometryMapper::ClearCache();
 
   if (root_frame_view.GetFrame().IsMainFrame()) {
-    auto property_changed = VisualViewportPaintPropertyTreeBuilder::Update(
+    VisualViewportPaintPropertyTreeBuilder::Update(
         root_frame_view, root_frame_view.GetPage()->GetVisualViewport(),
         *context.tree_builder_context);
-
-    if (property_changed >
-        PaintPropertyChangeType::kChangedOnlyCompositedValues) {
-      root_frame_view.SetPaintArtifactCompositorNeedsUpdate();
-    }
   }
 
   Walk(root_frame_view, context);
@@ -79,8 +72,9 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     ShowAllPropertyTrees(root_frame_view);
 #endif
 
-  // If the frame is invalidated, we need to inform the frame's chrome client
-  // so that the client will initiate repaint of the contents.
+  // If the page has anything changed, we need to inform the chrome client
+  // so that the client will initiate repaint of the contents if needed (e.g.
+  // when this page is embedded as a non-composited content of another page).
   if (needs_invalidate_chrome_client_) {
     if (auto* client = root_frame_view.GetChromeClient())
       client->InvalidateContainer();
@@ -124,8 +118,6 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
   if (context.tree_builder_context) {
     PaintPropertyTreeBuilder::SetupContextForFrame(
         frame_view, *context.tree_builder_context);
-    context.tree_builder_context->supports_composited_raster_invalidation =
-        frame_view.GetFrame().GetSettings()->GetAcceleratedCompositingEnabled();
   }
 
   if (LayoutView* view = frame_view.GetLayoutView()) {
@@ -495,21 +487,10 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   UpdateAuxiliaryObjectProperties(object, context);
 
   absl::optional<PaintPropertyTreeBuilder> property_tree_builder;
-  PaintPropertyChangeType property_changed =
-      PaintPropertyChangeType::kUnchanged;
   if (context.tree_builder_context) {
     property_tree_builder.emplace(object, pre_paint_info,
                                   *context.tree_builder_context);
-
-    property_changed =
-        std::max(property_changed, property_tree_builder->UpdateForSelf());
-
-    if ((property_changed > PaintPropertyChangeType::kUnchanged) &&
-        !context.tree_builder_context
-             ->supports_composited_raster_invalidation) {
-      paint_invalidator_context.subtree_flags |=
-          PaintInvalidatorContext::kSubtreeFullInvalidation;
-    }
+    property_tree_builder->UpdateForSelf();
   }
 
   // This must happen before paint invalidation because background painting
@@ -527,26 +508,10 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   InvalidatePaintForHitTesting(object, context);
 
   if (context.tree_builder_context) {
-    property_changed =
-        std::max(property_changed, property_tree_builder->UpdateForChildren());
-
-    if (property_changed != PaintPropertyChangeType::kUnchanged) {
-      if (property_changed >
-          PaintPropertyChangeType::kChangedOnlyCompositedValues) {
-        object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
-      }
-
-      if (!context.tree_builder_context
-               ->supports_composited_raster_invalidation) {
-        paint_invalidator_context.subtree_flags |=
-            PaintInvalidatorContext::kSubtreeFullInvalidation;
-      }
-    }
-  }
-
-  if (property_changed != PaintPropertyChangeType::kUnchanged) {
-    CullRectUpdater::PaintPropertiesChanged(
-        object, *context.paint_invalidator_context.painting_layer);
+    property_tree_builder->UpdateForChildren();
+    property_tree_builder->IssueInvalidationsAfterUpdate();
+    needs_invalidate_chrome_client_ |=
+        property_tree_builder->PropertiesChanged();
   }
 }
 

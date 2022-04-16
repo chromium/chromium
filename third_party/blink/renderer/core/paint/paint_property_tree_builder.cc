@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/css_mask_painter.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/find_paint_offset_needing_update.h"
 #include "third_party/blink/renderer/core/paint/find_properties_needing_update.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
@@ -97,7 +98,6 @@ PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
     : force_subtree_update_reasons(0u),
       is_repeating_fixed_position(false),
       has_svg_hidden_container_ancestor(false),
-      supports_composited_raster_invalidation(true),
       was_layout_shift_root(false),
       was_main_thread_scrolling(false) {}
 
@@ -116,7 +116,7 @@ void PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext::Trace(
   visitor->Trace(paint_offset_root);
 }
 
-PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
+void VisualViewportPaintPropertyTreeBuilder::Update(
     LocalFrameView& main_frame_view,
     VisualViewport& visual_viewport,
     PaintPropertyTreeBuilderContext& full_context) {
@@ -153,10 +153,14 @@ PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
       layout_view->Layer()->SetNeedsRepaint();
   }
 
+  if (property_changed >
+      PaintPropertyChangeType::kChangedOnlyCompositedValues) {
+    main_frame_view.SetPaintArtifactCompositorNeedsUpdate();
+  }
+
 #if DCHECK_IS_ON()
   paint_property_tree_printer::UpdateDebugNames(visual_viewport);
 #endif
-  return property_changed;
 }
 
 void PaintPropertyTreeBuilder::SetupContextForFrame(
@@ -3715,7 +3719,7 @@ void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
   DCHECK(context_.painting_layer == object_.PaintingLayer());
 }
 
-PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
+void PaintPropertyTreeBuilder::UpdateForSelf() {
   // These are not inherited from the parent context but calculated here.
   context_.direct_compositing_reasons =
       CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
@@ -3738,12 +3742,10 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
 
   UpdatePaintingLayer();
 
-  PaintPropertyChangeType property_changed =
-      PaintPropertyChangeType::kUnchanged;
   if (ObjectTypeMightNeedPaintProperties() ||
       ObjectTypeMightNeedMultipleFragmentData()) {
     if (UpdateFragments())
-      property_changed = PaintPropertyChangeType::kNodeAddedOrRemoved;
+      property_changed_ = PaintPropertyChangeType::kNodeAddedOrRemoved;
   } else {
     DCHECK_EQ(context_.direct_compositing_reasons, CompositingReason::kNone);
     if (!IsInNGFragmentTraversal())
@@ -3756,7 +3758,7 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
                                              context_.fragments[0],
                                              *pre_paint_info_->fragment_data);
     builder.UpdateForSelf();
-    property_changed = std::max(property_changed, builder.PropertyChanged());
+    property_changed_ = std::max(property_changed_, builder.PropertyChanged());
   } else {
     auto* fragment_data = &object_.GetMutableForPainting().FirstFragment();
     for (auto& fragment_context : context_.fragments) {
@@ -3764,43 +3766,20 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
           object_, /* pre_paint_info */ nullptr, context_, fragment_context,
           *fragment_data);
       builder.UpdateForSelf();
-      property_changed = std::max(property_changed, builder.PropertyChanged());
+      property_changed_ =
+          std::max(property_changed_, builder.PropertyChanged());
       fragment_data = fragment_data->NextFragment();
     }
     DCHECK(!fragment_data);
   }
 
-  // We need to update property tree states of paint chunks.
-  if (property_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved) {
-    context_.painting_layer->SetNeedsRepaint();
-    if (object_.IsDocumentElement()) {
-      // View background painting depends on existence of the document element's
-      // paint properties (see callsite of ViewPainter::PaintRootGroup()).
-      // Invalidate view background display item clients.
-      // SetBackgroundNeedsFullPaintInvalidation() won't work here because we
-      // have already walked the LayoutView in PrePaintTreeWalk.
-      LayoutView* layout_view = object_.View();
-      layout_view->Layer()->SetNeedsRepaint();
-      auto reason = PaintInvalidationReason::kBackground;
-      static_cast<const DisplayItemClient*>(layout_view)->Invalidate(reason);
-      if (auto* scrollable_area = layout_view->GetScrollableArea()) {
-        scrollable_area->GetScrollingBackgroundDisplayItemClient().Invalidate(
-            reason);
-      }
-    }
-  }
-
   object_.GetMutableForPainting()
       .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(false);
-
-  return property_changed;
 }
 
-PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForChildren() {
-  PaintPropertyChangeType property_changed =
-      PaintPropertyChangeType::kUnchanged;
+void PaintPropertyTreeBuilder::UpdateForChildren() {
   if (!ObjectTypeMightNeedPaintProperties())
-    return property_changed;
+    return;
 
   FragmentData* fragment_data;
   if (pre_paint_info_) {
@@ -3826,7 +3805,7 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForChildren() {
     builder.UpdateForChildren();
     is_isolated &= builder.HasIsolationNodes();
 
-    property_changed = std::max(property_changed, builder.PropertyChanged());
+    property_changed_ = std::max(property_changed_, builder.PropertyChanged());
     fragment_data = fragment_data->NextFragment();
   }
 
@@ -3855,20 +3834,42 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForChildren() {
     context_.force_subtree_update_reasons &=
         ~PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationBlocked;
   }
+}
 
+void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
   // We need to update property tree states of paint chunks.
-  if (property_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved)
+  if (property_changed_ >= PaintPropertyChangeType::kNodeAddedOrRemoved) {
     context_.painting_layer->SetNeedsRepaint();
+    if (object_.IsDocumentElement()) {
+      // View background painting depends on existence of the document element's
+      // paint properties (see callsite of ViewPainter::PaintRootGroup()).
+      // Invalidate view background display item clients.
+      // SetBackgroundNeedsFullPaintInvalidation() won't work here because we
+      // have already walked the LayoutView in PrePaintTreeWalk.
+      LayoutView* layout_view = object_.View();
+      layout_view->Layer()->SetNeedsRepaint();
+      auto reason = PaintInvalidationReason::kBackground;
+      static_cast<const DisplayItemClient*>(layout_view)->Invalidate(reason);
+      if (auto* scrollable_area = layout_view->GetScrollableArea()) {
+        scrollable_area->GetScrollingBackgroundDisplayItemClient().Invalidate(
+            reason);
+      }
+    }
+  }
 
-  if (IsA<LayoutBox>(object_)) {
-    if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea()) {
+  if (property_changed_ > PaintPropertyChangeType::kChangedOnlyCompositedValues)
+    object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
+
+  if (property_changed_ > PaintPropertyChangeType::kUnchanged)
+    CullRectUpdater::PaintPropertiesChanged(object_, *context_.painting_layer);
+
+  if (auto* box = DynamicTo<LayoutBox>(object_)) {
+    if (auto* scrollable_area = box->GetScrollableArea()) {
       if (context_.was_main_thread_scrolling !=
           scrollable_area->ShouldScrollOnMainThread())
         scrollable_area->MainThreadScrollingDidChange();
     }
   }
-
-  return property_changed;
 }
 
 }  // namespace blink

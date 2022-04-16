@@ -1074,17 +1074,19 @@ TEST_F(PaintInvalidatorCustomClientTest,
   target->setAttribute(html_names::kStyleAttr, "opacity: 0.98");
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  EXPECT_TRUE(
+  // Only paint property change doesn't need repaint.
+  EXPECT_FALSE(
       GetDocument().View()->GetLayoutView()->Layer()->DescendantNeedsRepaint());
+  // Just needs to invalidate the chrome client.
   EXPECT_TRUE(InvalidationRecorded());
 
   ResetInvalidationRecorded();
-  // Let PrePaintTreeWalk do something instead of no-op.
+  // Let PrePaintTreeWalk do something instead of no-op, without any real
+  // change.
   GetDocument().View()->SetNeedsPaintPropertyUpdate();
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  // The layer DescendantNeedsRepaint flag is only cleared after paint.
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       GetDocument().View()->GetLayoutView()->Layer()->DescendantNeedsRepaint());
   EXPECT_FALSE(InvalidationRecorded());
 }

@@ -238,10 +238,6 @@ struct PaintPropertyTreeBuilderContext final {
   // ancestor.
   unsigned has_svg_hidden_container_ancestor : 1;
 
-  // Whether composited raster invalidation is supported for this object.
-  // If not, subtree invalidations occur on every property tree change.
-  unsigned supports_composited_raster_invalidation : 1;
-
   // Whether this object was a layout shift root during the previous render
   // (not this one).
   unsigned was_layout_shift_root : 1;
@@ -258,11 +254,10 @@ class VisualViewportPaintPropertyTreeBuilder {
 
  public:
   // Update the paint properties for the visual viewport and ensure the context
-  // is up to date. Returns the maximum paint property change type for any of
-  // the viewport nodes.
-  static PaintPropertyChangeType Update(LocalFrameView& main_frame_view,
-                                        VisualViewport&,
-                                        PaintPropertyTreeBuilderContext&);
+  // is up to date.
+  static void Update(LocalFrameView& main_frame_view,
+                     VisualViewport&,
+                     PaintPropertyTreeBuilderContext&);
 };
 
 struct NGPrePaintInfo {
@@ -317,13 +312,17 @@ class PaintPropertyTreeBuilder {
   // Update the paint properties that affect this object (e.g., properties like
   // paint offset translation) and ensure the context is up to date. Also
   // handles updating the object's paintOffset.
-  // Returns whether any paint property of the object has changed.
-  PaintPropertyChangeType UpdateForSelf();
+  void UpdateForSelf();
 
   // Update the paint properties that affect children of this object (e.g.,
   // scroll offset transform) and ensure the context is up to date.
-  // Returns whether any paint property of the object has changed.
-  PaintPropertyChangeType UpdateForChildren();
+  void UpdateForChildren();
+
+  void IssueInvalidationsAfterUpdate();
+
+  bool PropertiesChanged() const {
+    return property_changed_ > PaintPropertyChangeType::kUnchanged;
+  }
 
  private:
   ALWAYS_INLINE void InitFragmentPaintProperties(
@@ -365,6 +364,8 @@ class PaintPropertyTreeBuilder {
 
   const LayoutObject& object_;
   NGPrePaintInfo* pre_paint_info_;
+  PaintPropertyChangeType property_changed_ =
+      PaintPropertyChangeType::kUnchanged;
 
   PaintPropertyTreeBuilderContext& context_;
 };
