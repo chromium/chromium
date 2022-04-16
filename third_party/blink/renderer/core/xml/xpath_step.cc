@@ -306,7 +306,8 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
 
     case kAncestorAxis: {
       Node* n = context;
-      if (auto* attr = DynamicTo<Attr>(context)) {
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement()) {
         n = attr->ownerElement();
         if (NodeMatches(evaluation_context, n, kAncestorAxis, GetNodeTest()))
           nodes.Append(n);
@@ -342,8 +343,9 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
       nodes.MarkSorted(false);
       return;
 
-    case kFollowingAxis:
-      if (auto* attr = DynamicTo<Attr>(context)) {
+    case kFollowingAxis: {
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement()) {
         for (Node& p : NodeTraversal::StartsAfter(*attr->ownerElement())) {
           if (NodeMatches(evaluation_context, &p, kFollowingAxis,
                           GetNodeTest()))
@@ -364,9 +366,11 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
         }
       }
       return;
+    }
 
     case kPrecedingAxis: {
-      if (auto* attr = DynamicTo<Attr>(context))
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement())
         context = attr->ownerElement();
 
       Node* n = context;
@@ -450,7 +454,8 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
                       GetNodeTest()))
         nodes.Append(context);
       Node* n = context;
-      if (auto* attr = DynamicTo<Attr>(context)) {
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement()) {
         n = attr->ownerElement();
         if (NodeMatches(evaluation_context, n, kAncestorOrSelfAxis,
                         GetNodeTest()))
