@@ -124,45 +124,50 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audible.CloseNewestToExitConcurrentPlayback"
-    enum="ExitConcurrentPlaybackContents" expires_after="2019-05-30">
-  <owner>beccahughes@chromium.org</owner>
+    enum="ExitConcurrentPlaybackContents" expires_after="2023-04-15">
+  <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Records when an audible tab is closed and we now only have one audible tab
-    open.
+    open. Warning: this histogram was expired from 2019-05-30 to 4-18-22; data
+    may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audible.ConcurrentTabsTime" units="ms"
-    expires_after="2020-09-05">
-  <owner>mlamouri@google.com</owner>
+    expires_after="2023-04-15">
+  <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Records how long more than one tab is audible at the same time. The
     concurrent tabs might change during this period. The time recorded starts
     when the browser goes from one to two audbile tabs and stops when it is back
-    below two.
+    below two. Warning: this histogram was expired from 2020-09-05 to 4-18-22;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audible.ConcurrentTabsWhenStarting" units="units"
-    expires_after="2020-09-05">
-  <owner>mlamouri@google.com</owner>
+    expires_after="2023-04-15">
+  <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Records how many tabs were audible when a new tab started to be audible.
+    Warning: this histogram was expired from 2020-09-05 to 4-18-22; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audible.MaxConcurrentTabsInSession" units="units"
-    expires_after="2020-09-05">
-  <owner>mlamouri@google.com</owner>
+    expires_after="2023-04-15">
+  <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Records how many tabs are audible at the same time during the session. It is
     recording the maximum audible tab count everytime it increases. In other
     words, a session with N concurrent audible tabs will record entries from 1
-    through N exactly once.
+    through N exactly once. Warning: this histogram was expired from 2020-09-05
+    to 4-18-22; data may be missing.
   </summary>
 </histogram>
 
