@@ -81,8 +81,9 @@ export class ModulesElement extends PolymerElement {
         type: Boolean,
         computed:
             `computeModulesFreShown_(modulesLoaded_, modulesFreVisible_, modulesShownToUser)`,
-        reflectToAttribute: true,
+        observer: 'onModulesFreShownChange_',
         notify: true,
+        reflectToAttribute: true,
       },
 
       modulesFreVisible_: {
@@ -183,13 +184,6 @@ export class ModulesElement extends PolymerElement {
   override ready() {
     super.ready();
     this.renderModules_();
-  }
-
-  private computeModulesFreShown_(): boolean {
-    return (
-        loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
-        this.modulesLoaded_ && this.modulesFreVisible_ &&
-        this.modulesShownToUser);
   }
 
   private appendModuleContainers_(moduleContainers: HTMLElement[]) {
@@ -433,6 +427,24 @@ export class ModulesElement extends PolymerElement {
     const moduleContainers = [...this.shadowRoot!.querySelectorAll<HTMLElement>(
         '.module-container')];
     this.appendModuleContainers_(moduleContainers);
+  }
+
+  private computeModulesFreShown_(): boolean {
+    return loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
+        this.modulesLoaded_ && this.modulesFreVisible_ &&
+        this.modulesShownToUser;
+  }
+
+  private async onModulesFreShownChange_() {
+    chrome.metricsPrivate.recordBoolean(
+        `NewTabPage.Modules.FreLoaded`, this.modulesFreShown);
+    // The FRE only shows when modules are shown to users so we log a FRE
+    // impression whenever a module impression is detected and the FRE is set to
+    // show.
+    if (this.moduleImpressionDetected_) {
+      chrome.metricsPrivate.recordBoolean(
+          `NewTabPage.Modules.FreImpression`, this.modulesFreShown);
+    }
   }
 
   private onCustomizeModuleFre_() {

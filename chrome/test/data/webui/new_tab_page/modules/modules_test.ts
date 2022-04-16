@@ -182,15 +182,26 @@ suite('NewTabPageModulesModulesTest', () => {
     test(`fre can be opted out of and restored`, async () => {
       // Arrange.
       const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
-      moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+      const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
+
+      moduleRegistry.setResultFor(
+          'getDescriptors', [fooDescriptor, barDescriptor]);
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
           element: createElement(),
         },
+        {
+          descriptor: barDescriptor,
+          element: createElement(),
+        }
       ]);
       callbackRouterRemote.setModulesFreVisibility(true);
       callbackRouterRemote.setDisabledModules(false, []);
+      const moduleWrappers =
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+      moduleWrappers[0]!.dispatchEvent(new Event('detect-impression'));
+      moduleWrappers[1]!.dispatchEvent(new Event('detect-impression'));
       await callbackRouterRemote.$.flushForTesting();
 
       // Act
@@ -201,7 +212,7 @@ suite('NewTabPageModulesModulesTest', () => {
       assertDeepEquals(false, handler.getArgs('setModulesVisible')[0]);
       assertTrue(modulesElement.$.removeModuleFreToast.open);
       assertFalse(modulesElement.$.removeModuleToast.open);
-
+      assertEquals(1, metrics.count('NewTabPage.Modules.FreLoaded', false));
 
       // Act.
       modulesElement.$.undoRemoveModuleFreButton.click();
@@ -210,6 +221,8 @@ suite('NewTabPageModulesModulesTest', () => {
       assertFalse(modulesElement.$.removeModuleFreToast.open);
       assertDeepEquals(true, handler.getArgs('setModulesFreVisible')[1]);
       assertDeepEquals(true, handler.getArgs('setModulesVisible')[1]);
+      assertEquals(1, metrics.count('NewTabPage.Modules.FreImpression', true));
+      assertEquals(1, metrics.count('NewTabPage.Modules.FreLoaded', true));
     });
   });
 
