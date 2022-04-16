@@ -211,8 +211,6 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "'foo' in defs", {}, 'ios', {})
     AssertExpr(True, "is_linux", {}, 'linux2', {})
     AssertExpr(True, "is_linux", {'is_chromeos': True}, 'linux2', {})
-    AssertExpr(True, "is_linux", {'chromeos': True}, 'linux2', {})
-    AssertExpr(True, "is_linux", {'lacros': True}, 'linux2', {})
     # TODO(crbug.com/1307455): These two should be False once fixed.
     AssertExpr(True, "is_linux", {'chromeos_ash': True}, 'linux2', {})
     AssertExpr(True, "is_linux", {'chromeos_lacros': True}, 'linux2', {})
