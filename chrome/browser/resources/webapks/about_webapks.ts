@@ -2,65 +2,55 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
 
-/**
- * @typedef {{
- *   name: string,
- *   shortName: string,
- *   packageName: string,
- *   id: string,
- *   shellApkVersion: number,
- *   versionCode: number,
- *   uri: string,
- *   scope: string,
- *   manifestUrl: string,
- *   manifestStartUrl: string,
- *   displayMode: string,
- *   orientation: string,
- *   themeColor: string,
- *   backgroundColor: string,
- *   lastUpdateCheckTimeMs: number,
- *   lastUpdateCompletionTimeMs: number,
- *   relaxUpdates: boolean,
- *   backingBrowser: string,
- *   isBackingBrowser: boolean,
- *   updateStatus: string,
- * }}
- */
-let WebApkInfo;
-
-/**
- * @typedef {{
- *   id: string,
- *   status: string,
- * }}
- */
-let UpdateStatus;
+type WebApkInfo = {
+  name: string,
+  shortName: string,
+  packageName: string,
+  id: string,
+  shellApkVersion: number,
+  versionCode: number,
+  uri: string,
+  scope: string,
+  manifestUrl: string,
+  manifestStartUrl: string,
+  displayMode: string,
+  orientation: string,
+  themeColor: string,
+  backgroundColor: string,
+  lastUpdateCheckTimeMs: number,
+  lastUpdateCompletionTimeMs: number,
+  relaxUpdates: boolean,
+  backingBrowser: string,
+  isBackingBrowser: boolean,
+  updateStatus: string,
+};
 
 /**
  * Creates and returns an element (with |text| as content) assigning it the
  * |className| class.
  *
- * @param {string} text Text to be shown in the span.
- * @param {string} type Type of element to be added such as 'div'.
- * @param {string} className Class to be assigned to the new element.
- * @return {Element} The created element.
+ * @param text Text to be shown in the span.
+ * @param type Type of element to be added such as 'div'.
+ * @param className Class to be assigned to the new element.
+ * @return The created element.
  */
-function createElementWithTextAndClass(text, type, className) {
-  const element = createElementWithClassName(type, className);
+function createElementWithTextAndClass(
+    text: string, type: string, className: string): HTMLElement {
+  const element = document.createElement(type);
+  element.className = className;
   element.textContent = text;
   return element;
 }
 
 /**
- * @param {HTMLElement} webApkList List of elements which contain WebAPK
- * attributes.
- * @param {string} label Text that identifies the new element.
- * @param {string} value Text to set in the new element.
+ * @param webApkList List of elements which contain WebAPK attributes.
+ * @param label Text that identifies the new element.
+ * @param value Text to set in the new element.
  */
-function addWebApkField(webApkList, label, value) {
+function addWebApkField(webApkList: HTMLElement, label: string, value: string) {
   const divElement =
       createElementWithTextAndClass(label, 'div', 'app-property-label');
   divElement.appendChild(
@@ -69,13 +59,13 @@ function addWebApkField(webApkList, label, value) {
 }
 
 /**
- * @param {HTMLElement} webApkList List of elements which contain WebAPK
- * attributes.
- * @param {string} text For the button.
- * @param {function()} callback Invoked on click.
- * @return {Element} The button that was created.
+ * @param webApkList List of elements which contain WebAPK attributes.
+ * @param text For the button.
+ * @param callback Invoked on click.
+ * @return The button that was created.
  */
-function addWebApkButton(webApkList, text, callback) {
+function addWebApkButton(
+    webApkList: HTMLElement, text: string, callback: () => void): HTMLElement {
   const divElement =
       createElementWithTextAndClass(text, 'button', 'update-button');
   divElement.onclick = callback;
@@ -86,10 +76,11 @@ function addWebApkButton(webApkList, text, callback) {
 /**
  * Adds a new entry to the page with the information of a WebAPK.
  *
- * @param {!WebApkInfo} webApkInfo Information about an installed WebAPK.
+ * @param webApkInfo Information about an installed WebAPK.
  */
-function addWebApk(webApkInfo) {
-  /** @type {HTMLElement} */ const webApkList = $('webapk-list');
+function addWebApk(webApkInfo: WebApkInfo) {
+  const webApkList = document.body.querySelector<HTMLElement>('#webapk-list');
+  assert(webApkList);
 
   webApkList.appendChild(
       createElementWithTextAndClass(webApkInfo.name, 'span', 'app-name'));
@@ -131,22 +122,21 @@ function addWebApk(webApkInfo) {
     return;
   }
 
-  const buttonElement =
-      addWebApkButton(webApkList, 'Update ' + webApkInfo.name, () => {
-        alert(
-            'The WebAPK will check for an update the next time it launches. ' +
-            'If an update is available, the "Update Status" on this page ' +
-            'will switch to "Scheduled". The update will be installed once ' +
-            'the WebAPK is closed (this may take a few minutes). Update ' +
-            'requests don\'t work if they are requested right after (< 1 ' +
-            'minute) the completion of the previous update request.');
-        chrome.send('requestWebApkUpdate', [webApkInfo.id]);
-        window.location.reload();
-      });
+  addWebApkButton(webApkList, 'Update ' + webApkInfo.name, () => {
+    alert(
+        'The WebAPK will check for an update the next time it launches. ' +
+        'If an update is available, the "Update Status" on this page ' +
+        'will switch to "Scheduled". The update will be installed once ' +
+        'the WebAPK is closed (this may take a few minutes). Update ' +
+        'requests don\'t work if they are requested right after (< 1 ' +
+        'minute) the completion of the previous update request.');
+    chrome.send('requestWebApkUpdate', [webApkInfo.id]);
+    window.location.reload();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Add a WebUI listener for the 'web-apk-info' event emmitted from the
+  // Add a WebUI listener for the 'web-apk-info' event emitted from the
   // backend. This will be triggered once per WebAPK.
   addWebUIListener('web-apk-info', addWebApk);
   chrome.send('requestWebApksInfo');

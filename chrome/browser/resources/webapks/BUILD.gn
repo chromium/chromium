@@ -3,29 +3,27 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":about_webapks" ]
-}
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [ "about_webapks.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
 
-js_library("about_webapks") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }
 
 generate_grd("build_grd") {
   grd_prefix = "webapks"
   out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   input_files = [
     "about_webapks.css",
     "about_webapks.html",
-    "about_webapks.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
 }
