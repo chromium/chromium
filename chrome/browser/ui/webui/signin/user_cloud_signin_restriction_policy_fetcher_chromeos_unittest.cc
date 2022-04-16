@@ -23,7 +23,8 @@ namespace ash {
 namespace {
 const char kSecureConnectApiGetSecondaryGoogleAccountUsageUrl[] =
     "https://secureconnect-pa.clients6.google.com/"
-    "v1:getManagedAccountsSigninRestriction";
+    "v1:getManagedAccountsSigninRestriction?policy_name="
+    "SecondaryGoogleAccountUsage";
 const char kFakeAccessToken[] = "fake-access-token";
 const char kFakeRefreshToken[] = "fake-refresh-token";
 const char kFakeEnterpriseAccount[] = "alice@acme.com";

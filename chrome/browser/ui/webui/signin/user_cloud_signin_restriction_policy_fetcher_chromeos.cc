@@ -22,10 +22,9 @@ namespace {
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
 const char kSecureConnectApiGetSecondaryGoogleAccountUsageUrl[] =
     "https://secureconnect-pa.clients6.google.com/"
-    "v1:getManagedAccountsSigninRestriction";
+    "v1:getManagedAccountsSigninRestriction?policy_name="
+    "SecondaryGoogleAccountUsage";
 const char kJsonContentType[] = "application/json";
-const char kChromeOSPolicyHeader[] = "x-chromeos-policy";
-const char kSecondaryGoogleAccountUsage[] = "SecondaryGoogleAccountUsage";
 // Presence of this key in the user info response indicates whether the user is
 // on a hosted domain.
 const char kHostedDomainKey[] = "hd";
@@ -70,9 +69,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
       net::HttpRequestHeaders::kAuthorization,
       base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  // Add header to fetch the SecondaryGoogleAccountUsage policy from the API.
-  resource_request->headers.SetHeader(kChromeOSPolicyHeader,
-                                      kSecondaryGoogleAccountUsage);
+
   auto url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request), annotation);
   return url_loader;
