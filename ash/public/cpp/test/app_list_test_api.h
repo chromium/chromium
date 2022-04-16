@@ -11,14 +11,23 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 
+namespace base {
+class RunLoop;
+}  // namespace base
+
 namespace views {
 class View;
-}
+}  // namespace views
+
+namespace ui::test {
+class EventGenerator;
+}  // namespace ui::test
 
 namespace ash {
 class AppsGridView;
 class AppListModel;
 class PaginationModel;
+class AppListItemView;
 
 // Accesses ash data for app list view testing.
 class ASH_EXPORT AppListTestApi {
@@ -147,6 +156,89 @@ class ASH_EXPORT AppListTestApi {
   // Returns the view at the provided index in the list of visible search result
   // views in the launcher search UI. Expects the launcher UI to be shown.
   views::View* GetVisibleSearchResultView(int index);
+
+  // Finds an folder item view from the top level apps grid.
+  ash::AppListItemView* FindTopLevelFolderItemView();
+
+  // Verifies that all item views are visible.
+  void VerifyTopLevelItemVisibility();
+
+  // App list sort related methods ---------------------------------------------
+
+  enum class MenuType {
+    // The menu shown by right clicking at the app list page.
+    kAppListPageMenu,
+
+    // The menu shown by right clicking at a non-folder item.
+    kAppListNonFolderItemMenu,
+
+    // The menu shown by right clicking at a folder item.
+    kAppListFolderItemMenu
+  };
+
+  enum class ReorderAnimationEndState {
+    // Animation should be completed normally.
+    kCompleted,
+
+    // Apps grid fade out animation should be aborted.
+    kFadeOutAborted,
+
+    // Apps grid fade in animation should be aborted.
+    kFadeInAborted,
+  };
+
+  // Triggers app list reorder by mouse click at the context menu from the
+  // specified apps grid.
+  // `order` specifies the target sort order. `menu_type` indicates the type of
+  // the context menu where the reorder is triggered. `target_state` indicates
+  // the reorder animation's expected end state. `actual_state` is used to
+  // store the actual animation end state.
+  // NOTE: if `target_state` is `kFadeOutAborted` or `kFadeInAborted`, when
+  // this function returns, the reorder is still ongoing. In other words, data
+  // is not written into `actual_state` yet. The caller has the duty to
+  // interrupt the ongoing reorder process.
+  void ReorderByMouseClickAtContextMenuInAppsGrid(
+      ash::AppsGridView* apps_grid_view,
+      ash::AppListSortOrder order,
+      MenuType menu_type,
+      ui::test::EventGenerator* event_generator,
+      ReorderAnimationEndState target_state,
+      ReorderAnimationEndState* actual_state);
+
+  // Similar to `ReorderByMouseClickAtContextMenuInAppsGrid` but the context
+  // menu is from the top level apps grid.
+  void ReorderByMouseClickAtToplevelAppsGridMenu(
+      ash::AppListSortOrder order,
+      MenuType menu_type,
+      ui::test::EventGenerator* event_generator,
+      ReorderAnimationEndState target_state,
+      ReorderAnimationEndState* actual_state);
+
+  // Clicks on the redo button and waits until the reorder animation completes.
+  void ClickOnRedoButtonAndWaitForAnimation(
+      ui::test::EventGenerator* event_generator);
+
+ private:
+  // Adds a callback that runs at the end of the reorder animation.
+  void RegisterReorderAnimationDoneCallback(
+      ReorderAnimationEndState* actual_state);
+
+  // Called at the end of the reorder animation.
+  void OnReorderAnimationDone(ReorderAnimationEndState* result,
+                              bool abort,
+                              ash::AppListReorderAnimationStatus status);
+
+  // Waits until the whole reorder process (including fade in and fade out)
+  // ends. Then verifies the top level items visibility.
+  void WaitForReorderAnimationAndVerifyItemVisibility();
+
+  // Waits until the reorder fade out animation ends.
+  void WaitForFadeOutAnimation();
+
+  // The run loop used only for reorder-related functions.
+  std::unique_ptr<base::RunLoop> run_loop_for_reorder_;
+
+  base::WeakPtrFactory<AppListTestApi> weak_factory_{this};
 };
 
 }  // namespace ash
