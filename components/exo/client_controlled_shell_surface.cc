@@ -839,6 +839,10 @@ ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
   return frame_view;
 }
 
+bool ClientControlledShellSurface::ShouldSaveWindowPlacement() const {
+  return false;
+}
+
 void ClientControlledShellSurface::SaveWindowPlacement(
     const gfx::Rect& bounds,
     ui::WindowShowState show_state) {}

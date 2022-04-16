@@ -1839,7 +1839,7 @@ void Widget::SaveWindowPlacement() {
   // by go/crash) that in some circumstances we can end up here after
   // WM_DESTROY, at which point the window delegate is likely gone. So just
   // bail.
-  if (!widget_delegate_)
+  if (!widget_delegate_ || !widget_delegate_->ShouldSaveWindowPlacement())
     return;
 
   ui::WindowShowState show_state = ui::SHOW_STATE_NORMAL;

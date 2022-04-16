@@ -182,6 +182,10 @@ void WidgetDelegate::SaveWindowPlacement(const gfx::Rect& bounds,
   }
 }
 
+bool WidgetDelegate::ShouldSaveWindowPlacement() const {
+  return !GetWindowName().empty();
+}
+
 bool WidgetDelegate::GetSavedWindowPlacement(
     const Widget* widget,
     gfx::Rect* bounds,

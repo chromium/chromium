@@ -211,6 +211,9 @@ class VIEWS_EXPORT WidgetDelegate {
   // state restoration.
   virtual std::string GetWindowName() const;
 
+  // Returns true if the widget should save its placement and state.
+  virtual bool ShouldSaveWindowPlacement() const;
+
   // Saves the window's bounds and "show" state. By default this uses the
   // process' local state keyed by window name (See GetWindowName above). This
   // behavior can be overridden to provide additional functionality.

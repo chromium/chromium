@@ -3093,25 +3093,29 @@ std::string BrowserView::GetWindowName() const {
   return chrome::GetWindowName(browser_.get());
 }
 
-void BrowserView::SaveWindowPlacement(const gfx::Rect& bounds,
-                                      ui::WindowShowState show_state) {
+bool BrowserView::ShouldSaveWindowPlacement() const {
   // If IsFullscreen() is true, we've just changed into fullscreen mode, and
   // we're catching the going-into-fullscreen sizing and positioning calls,
   // which we want to ignore.
-  if (!IsFullscreen() && frame_->ShouldSaveWindowPlacement() &&
-      chrome::ShouldSaveWindowPlacement(browser_.get())) {
-    WidgetDelegate::SaveWindowPlacement(bounds, show_state);
-    gfx::Rect saved_bounds = bounds;
-    if (chrome::SavedBoundsAreContentBounds(browser_.get())) {
-      // Invert the transformation done in GetSavedWindowPlacement().
-      gfx::Size client_size =
-          frame_->GetFrameView()->GetBoundsForClientView().size();
-      if (IsToolbarVisible())
-        client_size.Enlarge(0, -toolbar_->GetPreferredSize().height());
-      saved_bounds.set_size(client_size);
-    }
-    chrome::SaveWindowPlacement(browser_.get(), saved_bounds, show_state);
+  return !IsFullscreen() && frame_->ShouldSaveWindowPlacement() &&
+         chrome::ShouldSaveWindowPlacement(browser_.get());
+}
+
+void BrowserView::SaveWindowPlacement(const gfx::Rect& bounds,
+                                      ui::WindowShowState show_state) {
+  DCHECK(ShouldSaveWindowPlacement());
+
+  WidgetDelegate::SaveWindowPlacement(bounds, show_state);
+  gfx::Rect saved_bounds = bounds;
+  if (chrome::SavedBoundsAreContentBounds(browser_.get())) {
+    // Invert the transformation done in GetSavedWindowPlacement().
+    gfx::Size client_size =
+        frame_->GetFrameView()->GetBoundsForClientView().size();
+    if (IsToolbarVisible())
+      client_size.Enlarge(0, -toolbar_->GetPreferredSize().height());
+    saved_bounds.set_size(client_size);
   }
+  chrome::SaveWindowPlacement(browser_.get(), saved_bounds, show_state);
 }
 
 bool BrowserView::GetSavedWindowPlacement(

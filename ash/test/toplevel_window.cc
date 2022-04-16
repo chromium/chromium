@@ -63,6 +63,10 @@ void ToplevelWindow::OnPaint(gfx::Canvas* canvas) {
   canvas->FillRect(GetLocalBounds(), SK_ColorDKGRAY);
 }
 
+bool ToplevelWindow::ShouldSaveWindowPlacement() const {
+  return true;
+}
+
 void ToplevelWindow::SaveWindowPlacement(const gfx::Rect& bounds,
                                          ui::WindowShowState show_state) {
   if (!saved_state)

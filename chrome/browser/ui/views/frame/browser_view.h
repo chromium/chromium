@@ -610,6 +610,7 @@ class BrowserView : public BrowserWindow,
   ui::ImageModel GetWindowIcon() override;
   bool ExecuteWindowsCommand(int command_id) override;
   std::string GetWindowName() const override;
+  bool ShouldSaveWindowPlacement() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
                            ui::WindowShowState show_state) override;
   bool GetSavedWindowPlacement(const views::Widget* widget,
