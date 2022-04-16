@@ -81,6 +81,19 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
                         BuildRiskDictionary(request_details_.risk_data));
   }
 
+  switch (request_details_.source) {
+    case VirtualCardEnrollmentSource::kUpstream:
+      request_dict.SetKey("channel_type", base::Value("CHROME_UPSTREAM"));
+      break;
+    case VirtualCardEnrollmentSource::kDownstream:
+    case VirtualCardEnrollmentSource::kSettingsPage:
+      request_dict.SetKey("channel_type", base::Value("CHROME_DOWNSTREAM"));
+      break;
+    case VirtualCardEnrollmentSource::kNone:
+      NOTREACHED();
+      break;
+  }
+
   std::string request_content;
   base::JSONWriter::Write(request_dict, &request_content);
   VLOG(3) << "GetDetailsForEnrollmentRequest request body: " << request_content;

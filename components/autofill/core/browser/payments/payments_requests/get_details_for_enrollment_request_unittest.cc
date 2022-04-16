@@ -12,7 +12,9 @@
 
 namespace autofill::payments {
 
-class GetDetailsForEnrollmentRequestTest : public testing::Test {
+class GetDetailsForEnrollmentRequestTest
+    : public testing::Test,
+      public testing::WithParamInterface<VirtualCardEnrollmentSource> {
  public:
   GetDetailsForEnrollmentRequestTest() = default;
   GetDetailsForEnrollmentRequestTest(
@@ -21,13 +23,13 @@ class GetDetailsForEnrollmentRequestTest : public testing::Test {
       const GetDetailsForEnrollmentRequestTest&) = delete;
   ~GetDetailsForEnrollmentRequestTest() override = default;
 
-  void CreateRequest() {
+  void SetUp() override {
     PaymentsClient::GetDetailsForEnrollmentRequestDetails request_details;
     request_details.instrument_id = 11223344;
     request_details.app_locale = "en";
     request_details.billing_customer_number = 55667788;
     request_details.risk_data = "fake risk data";
-    request_details.source = VirtualCardEnrollmentSource::kUpstream;
+    request_details.source = GetParam();
     request_ = std::make_unique<GetDetailsForEnrollmentRequest>(
         request_details, base::DoNothing());
   }
@@ -43,8 +45,7 @@ class GetDetailsForEnrollmentRequestTest : public testing::Test {
   std::unique_ptr<GetDetailsForEnrollmentRequest> request_;
 };
 
-TEST_F(GetDetailsForEnrollmentRequestTest, GetRequestContent) {
-  CreateRequest();
+TEST_P(GetDetailsForEnrollmentRequestTest, GetRequestContent) {
   EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
             "payments/apis/virtualcardservice/getdetailsforenroll");
   EXPECT_TRUE(!GetRequest()->GetRequestContent().empty());
@@ -58,10 +59,28 @@ TEST_F(GetDetailsForEnrollmentRequestTest, GetRequestContent) {
               std::string::npos);
   EXPECT_TRUE(GetRequest()->GetRequestContent().find("risk_data_encoded") !=
               std::string::npos);
+  EXPECT_TRUE(GetRequest()->GetRequestContent().find("channel_type") !=
+              std::string::npos);
+
+  std::string channel_type;
+  switch (GetParam()) {
+    case VirtualCardEnrollmentSource::kUpstream:
+      channel_type = "CHROME_UPSTREAM";
+      break;
+    case VirtualCardEnrollmentSource::kDownstream:
+    case VirtualCardEnrollmentSource::kSettingsPage:
+      channel_type = "CHROME_DOWNSTREAM";
+      break;
+    case VirtualCardEnrollmentSource::kNone:
+      NOTREACHED();
+      ASSERT_TRUE(false);
+      break;
+  }
+  EXPECT_TRUE(GetRequest()->GetRequestContent().find(channel_type) !=
+              std::string::npos);
 }
 
-TEST_F(GetDetailsForEnrollmentRequestTest, ParseResponse) {
-  CreateRequest();
+TEST_P(GetDetailsForEnrollmentRequestTest, ParseResponse) {
   absl::optional<base::Value> response = base::JSONReader::Read(
       "{ \"google_legal_message\": {}, \"external_legal_message\": {}, "
       "\"context_token\": \"some_token\" }");
@@ -73,5 +92,12 @@ TEST_F(GetDetailsForEnrollmentRequestTest, ParseResponse) {
   EXPECT_TRUE(GetParsedResponse().google_legal_message.empty());
   EXPECT_FALSE(GetRequest()->IsResponseComplete());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetDetailsForEnrollmentRequestTest,
+    testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                    VirtualCardEnrollmentSource::kDownstream,
+                    VirtualCardEnrollmentSource::kSettingsPage));
 
 }  // namespace autofill::payments
