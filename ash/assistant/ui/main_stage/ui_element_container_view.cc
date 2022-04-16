@@ -206,6 +206,9 @@ std::unique_ptr<ElementAnimator> UiElementContainerView::HandleUiElement(
     const AssistantUiElement* ui_element) {
   // Create a new view for the |ui_element|.
   auto view = view_factory_->Create(ui_element);
+  if (!view) {
+    return nullptr;
+  }
 
   // If the first UI element is a card, it has a unique margin requirement.
   const bool is_card = ui_element->type() == AssistantUiElementType::kCard;

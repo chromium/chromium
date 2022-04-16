@@ -30,6 +30,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
   // AssistantUiElement:
   void Process(ProcessingCallback callback) override;
 
+  bool has_contents_view() const;
   const std::string& html() const { return html_; }
   const std::string& fallback() const { return fallback_; }
   std::unique_ptr<AshWebView> MoveContentsView() {
