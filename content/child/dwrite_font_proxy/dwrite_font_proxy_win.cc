@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/child/dwrite_font_proxy/dwrite_localized_strings_win.h"
 #include "content/public/child/child_thread.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 
 namespace mswr = Microsoft::WRL;
 
@@ -565,6 +566,14 @@ blink::mojom::DWriteFontProxy& DWriteFontCollectionProxy::GetFontProxy() {
     }
   }
   return *font_proxy;
+}
+
+void DWriteFontCollectionProxy::BindFontProxyUsingBroker(
+    blink::ThreadSafeBrowserInterfaceBrokerProxy* interface_broker) {
+  mojo::Remote<blink::mojom::DWriteFontProxy>& font_proxy =
+      font_proxy_.GetOrCreateValue();
+  DCHECK(!font_proxy);
+  interface_broker->GetInterface(font_proxy.BindNewPipeAndPassReceiver());
 }
 
 void DWriteFontCollectionProxy::BindFontProxy(

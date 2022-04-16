@@ -22,7 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom.h"
-#include "third_party/blink/public/platform/web_font_prewarmer.h"
+#include "third_party/blink/public/platform/web_font_rendering_client.h"
 
 namespace content {
 
@@ -41,7 +41,7 @@ class DWriteFontCollectionProxy
           IDWriteFontCollection,
           IDWriteFontCollectionLoader,
           IDWriteFontFileLoader>,
-      public blink::WebFontPrewarmer {
+      public blink::WebFontRenderingClient {
  public:
   // Factory method to avoid exporting the class and all it derives from.
   //
@@ -109,7 +109,10 @@ class DWriteFontCollectionProxy
 
   bool LoadFamilyNames(UINT32 family_index, IDWriteLocalizedStrings** strings);
 
-  // blink::WebFontPrewarmer:
+  // `blink::WebFontRenderingClient` overrides
+  void BindFontProxyUsingBroker(
+      blink::ThreadSafeBrowserInterfaceBrokerProxy* interface_broker) override;
+
   void PrewarmFamily(const blink::WebString& family_name) override;
 
   blink::mojom::DWriteFontProxy& GetFontProxy();

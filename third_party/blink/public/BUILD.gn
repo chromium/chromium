@@ -426,6 +426,7 @@ source_set("blink_headers") {
   if (is_win) {
     sources += [
       "platform/web_font_prewarmer.h",
+      "platform/web_font_rendering_client.h",
       "web/win/web_font_family_names.h",
       "web/win/web_font_rendering.h",
     ]

@@ -15,12 +15,17 @@ class SkTypeface;
 
 namespace blink {
 
+class WebFontRenderingClient;
+
 class WebFontRendering {
  public:
   BLINK_EXPORT static void SetSkiaFontManager(sk_sp<SkFontMgr>);
   // Set an instance of |WebFontPrewarmer|. The instance must be kept alive
   // until the process exits.
   BLINK_EXPORT static void SetFontPrewarmer(WebFontPrewarmer*);
+  // Set an instance of `WebFontRenderingClient`. The instance must be kept
+  // alive until the process exits.
+  BLINK_EXPORT static void SetFontRenderingClient(WebFontRenderingClient*);
   BLINK_EXPORT static WebFontPrewarmer* GetFontPrewarmer();
   BLINK_EXPORT static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
   BLINK_EXPORT static void SetMenuFontMetrics(const WebString& family_name,
