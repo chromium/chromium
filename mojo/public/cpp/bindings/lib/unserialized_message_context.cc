@@ -4,6 +4,9 @@
 
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 
+#include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/lib/message_internal.h"
+
 namespace mojo {
 namespace internal {
 
