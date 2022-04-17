@@ -418,4 +418,19 @@ TEST_F(WindowCacheTest, GetWindowAtPoint) {
   EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), c);
 }
 
+// Regression test for https://crbug.com/1316735
+// If both a parent and child window have a WM_NAME, the child window
+// should be returned by GetWindowAtPoint().
+TEST_F(WindowCacheTest, NestedWmName) {
+  connection()->MapWindow(root());
+  SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "root");
+
+  Window a = CreateWindow(root());
+  connection()->MapWindow(a);
+  SetStringProperty(a, Atom::WM_NAME, Atom::STRING, "a");
+
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), a);
+}
+
 }  // namespace x11
