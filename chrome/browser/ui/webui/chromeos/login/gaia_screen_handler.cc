@@ -835,7 +835,6 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
       });
 
   if (password.empty() && !IsSamlUserPasswordless()) {
-    CHECK(using_saml);
     CHECK_NE(scraped_saml_passwords.size(), 1);
     complete_login_callback = base::BindOnce(
         &GaiaScreenHandler::SAMLConfirmPassword, weak_factory_.GetWeakPtr(),
