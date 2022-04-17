@@ -225,6 +225,7 @@ interface HTMLMetaElement : HTMLElement {
 interface HTMLStyleElement : HTMLElement {
   [HTMLConstructor] constructor();
 
+  attribute boolean disabled;
   [CEReactions] attribute DOMString media;
   [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 

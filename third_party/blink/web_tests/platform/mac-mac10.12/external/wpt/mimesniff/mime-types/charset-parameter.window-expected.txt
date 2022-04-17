@@ -16,28 +16,28 @@ PASS text/html;charset=gbk
 PASS text/html;charset=gbk
 PASS text/html;charset=gbk
 PASS text/html;charset='gbk'
-PASS text/html;charset='gbk
+FAIL text/html;charset='gbk Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 PASS text/html;charset=gbk'
-PASS text/html;charset=';charset=GBK
+FAIL text/html;charset=';charset=GBK Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 PASS text/html;test;charset=gbk
 PASS text/html;test=;charset=gbk
 PASS text/html;';charset=gbk
-PASS text/html;";charset=gbk
+FAIL text/html;";charset=gbk Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 PASS text/html ; ; charset=gbk
-FAIL text/html;;;;charset=gbk Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+PASS text/html;;;;charset=gbk
 FAIL text/html;charset= ";charset=GBK assert_equals: expected "GBK" but got "UTF-8"
 FAIL text/html;charset=";charset=foo";charset=GBK assert_equals: expected "GBK" but got "UTF-8"
 PASS text/html;charset="gbk"
 PASS text/html;charset="gbk
-FAIL text/html;charset=gbk" Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+PASS text/html;charset=gbk"
 PASS text/html;charset=" gbk"
 PASS text/html;charset="gbk "
-FAIL text/html;charset="\ gbk" Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-FAIL text/html;charset="\g\b\k" Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+PASS text/html;charset="\ gbk"
+PASS text/html;charset="\g\b\k"
 PASS text/html;charset="gbk"x
-FAIL text/html;charset="";charset=GBK Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+PASS text/html;charset="";charset=GBK
 PASS text/html;charset=";charset=GBK
-FAIL text/html;charset={gbk} Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+PASS text/html;charset={gbk}
 PASS text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk
 PASS text/html;test=ÿ;charset=gbk
 Harness: the test ran to completion.

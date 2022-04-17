@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 205 tests; 154 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 206 tests; 155 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -75,6 +75,7 @@ PASS BluetoothDevice interface: existence and properties of interface prototype 
 PASS BluetoothDevice interface: attribute id
 PASS BluetoothDevice interface: attribute name
 PASS BluetoothDevice interface: attribute gatt
+PASS BluetoothDevice interface: operation forget()
 PASS BluetoothDevice interface: operation watchAdvertisements(optional WatchAdvertisementsOptions)
 PASS BluetoothDevice interface: attribute watchingAdvertisements
 PASS BluetoothDevice interface: attribute onadvertisementreceived

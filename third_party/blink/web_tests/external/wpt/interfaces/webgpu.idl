@@ -96,6 +96,7 @@ enum GPUFeatureName {
     "texture-compression-astc",
     "timestamp-query",
     "indirect-first-instance",
+    "shader-f16",
 };
 
 [Exposed=(Window, DedicatedWorker), SecureContext]
@@ -570,7 +571,7 @@ dictionary GPUProgrammableStage {
     record<USVString, GPUPipelineConstantValue> constants;
 };
 
-typedef double GPUPipelineConstantValue; // May represent WGSL’s bool, f32, i32, u32.
+typedef double GPUPipelineConstantValue; // May represent WGSL’s bool, f32, i32, u32, and f16 if enabled.
 
 [Exposed=(Window, DedicatedWorker), SecureContext]
 interface GPUComputePipeline {
@@ -871,7 +872,7 @@ dictionary GPUImageCopyExternalImage {
     boolean flipY = false;
 };
 
-interface mixin GPUProgrammablePassEncoder {
+interface mixin GPUBindingCommandsMixin {
     undefined setBindGroup(GPUIndex32 index, GPUBindGroup bindGroup,
                       optional sequence<GPUBufferDynamicOffset> dynamicOffsets = []);
 
@@ -898,7 +899,7 @@ interface GPUComputePassEncoder {
 GPUComputePassEncoder includes GPUObjectBase;
 GPUComputePassEncoder includes GPUCommandsMixin;
 GPUComputePassEncoder includes GPUDebugCommandsMixin;
-GPUComputePassEncoder includes GPUProgrammablePassEncoder;
+GPUComputePassEncoder includes GPUBindingCommandsMixin;
 
 enum GPUComputePassTimestampLocation {
     "beginning",
@@ -915,23 +916,6 @@ typedef sequence<GPUComputePassTimestampWrite> GPUComputePassTimestampWrites;
 
 dictionary GPUComputePassDescriptor : GPUObjectDescriptorBase {
     GPUComputePassTimestampWrites timestampWrites = [];
-};
-
-interface mixin GPURenderEncoderBase {
-    undefined setPipeline(GPURenderPipeline pipeline);
-
-    undefined setIndexBuffer(GPUBuffer buffer, GPUIndexFormat indexFormat, optional GPUSize64 offset = 0, optional GPUSize64 size);
-    undefined setVertexBuffer(GPUIndex32 slot, GPUBuffer buffer, optional GPUSize64 offset = 0, optional GPUSize64 size);
-
-    undefined draw(GPUSize32 vertexCount, optional GPUSize32 instanceCount = 1,
-              optional GPUSize32 firstVertex = 0, optional GPUSize32 firstInstance = 0);
-    undefined drawIndexed(GPUSize32 indexCount, optional GPUSize32 instanceCount = 1,
-                     optional GPUSize32 firstIndex = 0,
-                     optional GPUSignedOffset32 baseVertex = 0,
-                     optional GPUSize32 firstInstance = 0);
-
-    undefined drawIndirect(GPUBuffer indirectBuffer, GPUSize64 indirectOffset);
-    undefined drawIndexedIndirect(GPUBuffer indirectBuffer, GPUSize64 indirectOffset);
 };
 
 [Exposed=(Window, DedicatedWorker), SecureContext]
@@ -955,8 +939,8 @@ interface GPURenderPassEncoder {
 GPURenderPassEncoder includes GPUObjectBase;
 GPURenderPassEncoder includes GPUCommandsMixin;
 GPURenderPassEncoder includes GPUDebugCommandsMixin;
-GPURenderPassEncoder includes GPUProgrammablePassEncoder;
-GPURenderPassEncoder includes GPURenderEncoderBase;
+GPURenderPassEncoder includes GPUBindingCommandsMixin;
+GPURenderPassEncoder includes GPURenderCommandsMixin;
 
 enum GPURenderPassTimestampLocation {
     "beginning",
@@ -1017,6 +1001,23 @@ dictionary GPURenderPassLayout: GPUObjectDescriptorBase {
     GPUSize32 sampleCount = 1;
 };
 
+interface mixin GPURenderCommandsMixin {
+    undefined setPipeline(GPURenderPipeline pipeline);
+
+    undefined setIndexBuffer(GPUBuffer buffer, GPUIndexFormat indexFormat, optional GPUSize64 offset = 0, optional GPUSize64 size);
+    undefined setVertexBuffer(GPUIndex32 slot, GPUBuffer buffer, optional GPUSize64 offset = 0, optional GPUSize64 size);
+
+    undefined draw(GPUSize32 vertexCount, optional GPUSize32 instanceCount = 1,
+              optional GPUSize32 firstVertex = 0, optional GPUSize32 firstInstance = 0);
+    undefined drawIndexed(GPUSize32 indexCount, optional GPUSize32 instanceCount = 1,
+                     optional GPUSize32 firstIndex = 0,
+                     optional GPUSignedOffset32 baseVertex = 0,
+                     optional GPUSize32 firstInstance = 0);
+
+    undefined drawIndirect(GPUBuffer indirectBuffer, GPUSize64 indirectOffset);
+    undefined drawIndexedIndirect(GPUBuffer indirectBuffer, GPUSize64 indirectOffset);
+};
+
 [Exposed=(Window, DedicatedWorker), SecureContext]
 interface GPURenderBundle {
 };
@@ -1032,8 +1033,8 @@ interface GPURenderBundleEncoder {
 GPURenderBundleEncoder includes GPUObjectBase;
 GPURenderBundleEncoder includes GPUCommandsMixin;
 GPURenderBundleEncoder includes GPUDebugCommandsMixin;
-GPURenderBundleEncoder includes GPUProgrammablePassEncoder;
-GPURenderBundleEncoder includes GPURenderEncoderBase;
+GPURenderBundleEncoder includes GPUBindingCommandsMixin;
+GPURenderBundleEncoder includes GPURenderCommandsMixin;
 
 dictionary GPURenderBundleEncoderDescriptor : GPURenderPassLayout {
     boolean depthReadOnly = false;
