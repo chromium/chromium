@@ -158,56 +158,84 @@ TEST_F(UkmMetricsTableTest, DeleteBeforeTimestamp) {
   const base::Time kTimestamp3 = kTimestamp1 + base::Seconds(2);
   const base::Time kTimestamp4 = kTimestamp1 + base::Seconds(3);
   const base::Time kTimestamp5 = kTimestamp1 + base::Seconds(4);
+  const UrlId kUrl1 = UrlId::FromUnsafeValue(1);
+  const UrlId kUrl2 = UrlId::FromUnsafeValue(2);
+  const UrlId kUrl3 = UrlId::FromUnsafeValue(3);
+  const UrlId kUrl4 = UrlId::FromUnsafeValue(4);
 
   ASSERT_TRUE(metrics_table().InitTable());
 
   // Delete on empty table does nothing.
-  EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(base::Time()));
+  std::vector<UrlId> empty_set;
+  EXPECT_EQ(empty_set,
+            metrics_table().DeleteEventsBeforeTimestamp(base::Time()));
   test_util::AssertRowsInMetricsTable(db(), {});
-  EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1));
+  EXPECT_EQ(empty_set,
+            metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1));
   test_util::AssertRowsInMetricsTable(db(), {});
 
   auto row1 = GetSampleMetricsRow();
   row1.event_timestamp = kTimestamp1;
+  row1.url_id = kUrl1;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row1));
   auto row2 = GetSampleMetricsRow();
   row2.event_timestamp = kTimestamp2;
+  row2.url_id = kUrl2;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row2));
   auto row3 = GetSampleMetricsRow();
   row3.event_timestamp = kTimestamp3;
+  row3.url_id = kUrl3;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row3));
   auto row4 = GetSampleMetricsRow();
   row4.event_timestamp = kTimestamp4;
+  row4.url_id = kUrl4;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row4));
 
   test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
 
   // Delete with time before all rows does nothing.
-  EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(base::Time()));
+  EXPECT_EQ(empty_set,
+            metrics_table().DeleteEventsBeforeTimestamp(base::Time()));
   test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
-  EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1 -
-                                                          base::Seconds(1)));
+  EXPECT_EQ(empty_set, metrics_table().DeleteEventsBeforeTimestamp(
+                           kTimestamp1 - base::Seconds(1)));
   test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
 
   // Remove single row.
-  EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1));
+  EXPECT_EQ(std::vector<UrlId>({kUrl1}),
+            metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1));
   test_util::AssertRowsInMetricsTable(db(), {row2, row3, row4});
 
+  // Add more rows with UrlId3.
   auto row5 = GetSampleMetricsRow();
   row5.event_timestamp = kTimestamp5;
+  row5.url_id = kUrl3;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row5));
-  test_util::AssertRowsInMetricsTable(db(), {row2, row3, row4, row5});
+  auto row6 = GetSampleMetricsRow();
+  row6.event_timestamp = kTimestamp5;
+  row6.url_id = kUrl3;
+  EXPECT_TRUE(metrics_table().AddUkmEvent(row6));
+  test_util::AssertRowsInMetricsTable(db(), {row2, row3, row4, row5, row6});
 
-  // Remove bunch of rows.
-  EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp3));
-  test_util::AssertRowsInMetricsTable(db(), {row4, row5});
+  // Remove bunch of rows. UrlId3 should not be part of removed list since 2
+  // other metrics reference it.
+  EXPECT_EQ(std::vector<UrlId>({kUrl2, kUrl4}),
+            metrics_table().DeleteEventsBeforeTimestamp(kTimestamp4));
+  test_util::AssertRowsInMetricsTable(db(), {row5, row6});
 
   // Insert entry with an older timestamp out of order and remove old entries
   // should still work.
   EXPECT_TRUE(metrics_table().AddUkmEvent(row1));
-  test_util::AssertRowsInMetricsTable(db(), {row4, row5, row1});
-  EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp3));
-  test_util::AssertRowsInMetricsTable(db(), {row4, row5});
+  test_util::AssertRowsInMetricsTable(db(), {row5, row6, row1});
+  EXPECT_EQ(std::vector<UrlId>({kUrl1}),
+            metrics_table().DeleteEventsBeforeTimestamp(kTimestamp4));
+  test_util::AssertRowsInMetricsTable(db(), {row5, row6});
+
+  // Removing multiple entries with same timestamp and url should return the
+  // right url to be removed.
+  EXPECT_EQ(std::vector<UrlId>({kUrl3}),
+            metrics_table().DeleteEventsBeforeTimestamp(kTimestamp5));
+  test_util::AssertRowsInMetricsTable(db(), {});
 }
 
 TEST_F(UkmMetricsTableTest, MatchHashesTest) {

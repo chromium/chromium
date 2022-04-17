@@ -70,4 +70,10 @@ void UkmDatabase::RunReadonlyQueries(const QueryList& queries,
   // TODO(haileywang): Implement.
 }
 
+void UkmDatabase::DeleteEntriesOlderThan(base::Time time) {
+  backend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::DeleteEntriesOlderThan,
+                                backend_->GetWeakPtr(), time));
+}
+
 }  // namespace segmentation_platform

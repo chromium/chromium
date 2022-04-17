@@ -145,14 +145,52 @@ bool UkmMetricsTable::DeleteEventsForUrls(const std::vector<UrlId>& urls) {
   return success;
 }
 
-bool UkmMetricsTable::DeleteEventsBeforeTimestamp(base::Time time) {
+std::vector<UrlId> UkmMetricsTable::DeleteEventsBeforeTimestamp(
+    base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<UrlId> url_list;
+
+  // Get a list of URL IDs of the metrics that will be removed.
+  static constexpr char kGetOldEntries[] =
+      "SELECT DISTINCT url_id FROM metrics WHERE event_timestamp<=? ORDER BY "
+      "url_id";
+  sql::Statement find_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetOldEntries));
+  find_statement.BindTime(0, time);
+  while (find_statement.Step()) {
+    url_list.push_back(UrlId::FromUnsafeValue(find_statement.ColumnInt64(0)));
+  }
+
+  // Delete the metrics.
   static constexpr char kDeleteoldEntries[] =
-      "DELETE FROM metrics WHERE event_timestamp <= ?";
+      "DELETE FROM metrics WHERE event_timestamp<=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteoldEntries));
   statement.BindTime(0, time);
-  return statement.Run();
+  if (!statement.Run()) {
+    return {};
+  }
+
+  // Find the list of URL IDs that are no longer needed in the URL table by
+  // checking if there are any other metrics referring to the removed URL IDs.
+  for (auto it = url_list.begin(); it != url_list.end();) {
+    if (HasEntriesWithUrl(*it)) {
+      it = url_list.erase(it);
+    } else {
+      it++;
+    }
+  }
+  return url_list;
+}
+
+bool UkmMetricsTable::HasEntriesWithUrl(UrlId url_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kGetUrlQuery[] =
+      "SELECT 1 FROM metrics WHERE url_id=? LIMIT 1";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetUrlQuery));
+  statement.BindInt64(0, url_id.GetUnsafeValue());
+  return statement.Step();
 }
 
 }  // namespace segmentation_platform

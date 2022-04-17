@@ -51,7 +51,7 @@ bool UkmUrlTable::InitTable() {
 
 bool UkmUrlTable::IsUrlInTable(UrlId url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr char kGetUrlQuery[] = "SELECT 1 FROM urls WHERE url_id = ?";
+  static constexpr char kGetUrlQuery[] = "SELECT 1 FROM urls WHERE url_id=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetUrlQuery));
   statement.BindInt64(0, url_id.GetUnsafeValue());
@@ -70,7 +70,7 @@ bool UkmUrlTable::WriteUrl(const GURL& url, UrlId url_id) {
 
 bool UkmUrlTable::RemoveUrls(const std::vector<UrlId>& urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr char kDeleteQuery[] = "DELETE FROM urls WHERE url_id = ?";
+  static constexpr char kDeleteQuery[] = "DELETE FROM urls WHERE url_id=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteQuery));
   bool success = true;

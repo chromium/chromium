@@ -12,6 +12,19 @@
 
 namespace segmentation_platform {
 
+namespace {
+
+// Delay for running clean up task from startup.
+const base::TimeDelta kDatabaseCleanupDelayStartup = base::Minutes(2);
+
+// Periodic interval between two cleanup tasks.
+const base::TimeDelta kDatabaseCleanupDelayNormal = base::Days(1);
+
+// Number of days to keep UKM metrics in database.
+constexpr base::TimeDelta kUkmEntriesTTL = base::Days(30);
+
+}  // namespace
+
 UkmDataManagerImpl::UkmDataManagerImpl() = default;
 
 UkmDataManagerImpl::~UkmDataManagerImpl() {
@@ -49,6 +62,12 @@ void UkmDataManagerImpl::InitiailizeImpl(
   ukm_database_->InitDatabase();
 
   GetOrCreateUrlHandler();
+
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&UkmDataManagerImpl::RunCleanupTask,
+                     weak_factory_.GetWeakPtr()),
+      kDatabaseCleanupDelayStartup);
 }
 
 bool UkmDataManagerImpl::IsUkmEngineEnabled() {
@@ -101,6 +120,19 @@ void UkmDataManagerImpl::RemoveRef() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK_GT(ref_count_, 0);
   ref_count_--;
+}
+
+void UkmDataManagerImpl::RunCleanupTask() {
+  DCHECK(ukm_database_);
+  ukm_database_->DeleteEntriesOlderThan(base::Time::Now() - kUkmEntriesTTL);
+
+  // Consider waiting for the above task to finish successfully before posting
+  // the next one.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&UkmDataManagerImpl::RunCleanupTask,
+                     weak_factory_.GetWeakPtr()),
+      kDatabaseCleanupDelayNormal);
 }
 
 }  // namespace segmentation_platform

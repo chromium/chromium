@@ -143,4 +143,11 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls) {
   metrics_table_.DeleteEventsForUrls(url_ids);
 }
 
+void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<UrlId> deleted_urls =
+      metrics_table_.DeleteEventsBeforeTimestamp(time);
+  url_table_.RemoveUrls(deleted_urls);
+}
+
 }  // namespace segmentation_platform

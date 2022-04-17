@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -88,6 +89,10 @@ class UkmDatabase {
   // |callback| as a mapping of indexed vectors of ProcessedValue.
   virtual void RunReadonlyQueries(const QueryList& queries,
                                   QueryCallback callback);
+
+  // Removes metrics older than the given time from the database. URLs are
+  // removed when there are no references to the metrics.
+  virtual void DeleteEntriesOlderThan(base::Time time);
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -232,7 +232,7 @@ class SegmentationPlatformServiceImplTest
     // Database maintenance tasks should try to cleanup the signals after a
     // short delay, which starts with looking up data from the
     // SegmentInfoDatabase.
-    task_environment_.FastForwardUntilNoTasksRemain();
+    task_environment_.FastForwardBy(base::Hours(1));
     segment_db_->LoadCallback(true);
 
     AssertSelectedSegment(

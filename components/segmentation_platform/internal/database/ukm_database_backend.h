@@ -46,6 +46,7 @@ class UkmDatabaseBackend {
                              bool is_validated);
   void OnUrlValidated(const GURL& url);
   void RemoveUrls(const std::vector<GURL>& urls);
+  void DeleteEntriesOlderThan(base::Time time);
 
   sql::Database& db() { return db_; }
 

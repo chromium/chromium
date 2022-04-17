@@ -31,6 +31,8 @@ class MockUkmDatabase : public UkmDatabase {
 
   MOCK_METHOD2(RunReadonlyQueries,
                void(const QueryList& queries, QueryCallback callback));
+
+  MOCK_METHOD1(DeleteEntriesOlderThan, void(base::Time time));
 };
 
 }  // namespace segmentation_platform

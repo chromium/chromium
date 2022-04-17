@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,6 +49,8 @@ class UkmDataManagerImpl : public UkmDataManager {
   void InitiailizeImpl(std::unique_ptr<UkmDatabase> ukm_database,
                        UkmObserver* ukm_observer);
 
+  void RunCleanupTask();
+
   int ref_count_ = 0;
   raw_ptr<UkmObserver> ukm_observer_ = nullptr;
   std::unique_ptr<UkmDatabase> ukm_database_;
@@ -57,6 +60,8 @@ class UkmDataManagerImpl : public UkmDataManager {
   absl::optional<bool> is_ukm_allowed_;
 
   SEQUENCE_CHECKER(sequence_check_);
+
+  base::WeakPtrFactory<UkmDataManagerImpl> weak_factory_{this};
 };
 
 }  // namespace segmentation_platform

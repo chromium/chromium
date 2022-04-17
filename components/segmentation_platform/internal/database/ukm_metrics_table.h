@@ -76,10 +76,14 @@ class UkmMetricsTable {
   // Deletes all rows associated with any of the ID from |urls|.
   bool DeleteEventsForUrls(const std::vector<UrlId>& urls);
 
-  // Deletes all entries that have an event timestamp earlier to |time|.
-  bool DeleteEventsBeforeTimestamp(base::Time time);
+  // Deletes all entries that have an event timestamp earlier to |time|. Returns
+  // a list of URL IDs that were removed by this task and no longer referred to
+  // by any other metrics.
+  std::vector<UrlId> DeleteEventsBeforeTimestamp(base::Time time);
 
  private:
+  bool HasEntriesWithUrl(UrlId url_id);
+
   SEQUENCE_CHECKER(sequence_checker_);
   const raw_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
