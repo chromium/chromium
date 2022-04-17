@@ -218,11 +218,10 @@ int CalendarModel::EventsNumberOfDayInternal(base::Time day,
 
 int CalendarModel::EventsNumberOfDay(base::Time day,
                                      SingleDayEventList* events) {
-  int event_number = EventsNumberOfDayInternal(day, events);
-  if (event_number != 0) {
-    PromoteMonth(calendar_utils::GetStartOfMonthUTC(day));
-  }
-  return event_number;
+  const base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(day);
+  if (base::Contains(event_months_, start_of_month))
+    PromoteMonth(start_of_month);
+  return EventsNumberOfDayInternal(day, events);
 }
 
 void CalendarModel::OnEventsFetched(
@@ -248,8 +247,10 @@ void CalendarModel::OnEventsFetched(
   event_months_.erase(start_of_month);
 
   if (!events || events->items().empty()) {
-    SingleMonthEventMap empty_event_list;
-    event_months_.emplace(start_of_month, empty_event_list);
+    // Even though `start_of_month` has no events, we insert an empty map to
+    // indicate a successful fetch.
+    SingleMonthEventMap empty_event_map;
+    event_months_.emplace(start_of_month, empty_event_map);
     PromoteMonth(start_of_month);
   } else {
     // Store the incoming events.
