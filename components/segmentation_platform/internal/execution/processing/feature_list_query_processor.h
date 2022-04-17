@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_FEATURE_LIST_QUERY_PROCESSOR_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_FEATURE_LIST_QUERY_PROCESSOR_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_FEATURE_LIST_QUERY_PROCESSOR_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_FEATURE_LIST_QUERY_PROCESSOR_H_
 
 #include <deque>
 #include <memory>
@@ -12,16 +12,20 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
-#include "components/segmentation_platform/internal/execution/custom_input_processor.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
-#include "components/segmentation_platform/internal/execution/query_processor.h"
-#include "components/segmentation_platform/internal/execution/uma_feature_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
+class SignalDatabase;
+
+namespace processing {
+
 class FeatureAggregator;
 class FeatureProcessorState;
-class SignalDatabase;
+
+using optimization_guide::proto::OptimizationTarget;
 
 // FeatureListQueryProcessor takes a segmentation model's metadata, processes
 // each feature in the metadata's feature list in order and computes an input
@@ -84,6 +88,7 @@ class FeatureListQueryProcessor {
   base::WeakPtrFactory<FeatureListQueryProcessor> weak_ptr_factory_{this};
 };
 
+}  // namespace processing
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_FEATURE_LIST_QUERY_PROCESSOR_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_FEATURE_LIST_QUERY_PROCESSOR_H_

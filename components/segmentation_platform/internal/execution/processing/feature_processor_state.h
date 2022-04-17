@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_FEATURE_PROCESSOR_STATE_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_FEATURE_PROCESSOR_STATE_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_FEATURE_PROCESSOR_STATE_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_FEATURE_PROCESSOR_STATE_H_
 
 #include <deque>
 #include <vector>
@@ -12,10 +12,12 @@
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
-#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
+
+using optimization_guide::proto::OptimizationTarget;
 
 // FeatureProcessorState is responsible for storing all necessary state during
 // the processing of a model's metadata.
@@ -75,6 +77,6 @@ class FeatureProcessorState {
   FeatureListQueryProcessor::FeatureProcessorCallback callback_;
 };
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_FEATURE_PROCESSOR_STATE_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_FEATURE_PROCESSOR_STATE_H_

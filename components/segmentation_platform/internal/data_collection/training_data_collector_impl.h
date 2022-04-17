@@ -23,7 +23,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                                   public HistogramSignalHandler::Observer {
  public:
   TrainingDataCollectorImpl(SegmentInfoDatabase* segment_info_database,
-                            FeatureListQueryProcessor* processor,
+                            processing::FeatureListQueryProcessor* processor,
                             HistogramSignalHandler* histogram_signal_handler,
                             SignalStorageConfig* signal_storage_config,
                             base::Clock* clock);
@@ -57,7 +57,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   bool CanReportImmediateTrainingData(const proto::SegmentInfo& segment_info);
 
   raw_ptr<SegmentInfoDatabase> segment_info_database_;
-  raw_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+  raw_ptr<processing::FeatureListQueryProcessor> feature_list_query_processor_;
   raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
   raw_ptr<SignalStorageConfig> signal_storage_config_;
   raw_ptr<base::Clock> clock_;

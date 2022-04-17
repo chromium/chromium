@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -13,12 +13,12 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_aggregator.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 using Sample = SignalDatabase::Sample;
 
 namespace {
@@ -283,4 +283,4 @@ void FeatureAggregatorImpl::FilterEnumSamples(
   samples.erase(new_end, samples.end());
 }
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing

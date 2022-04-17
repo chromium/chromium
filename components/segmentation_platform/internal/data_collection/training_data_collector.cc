@@ -16,7 +16,7 @@ namespace segmentation_platform {
 // static
 std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
     SegmentInfoDatabase* segment_info_database,
-    FeatureListQueryProcessor* processor,
+    processing::FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
     SignalStorageConfig* signal_storage_config,
     base::Clock* clock) {

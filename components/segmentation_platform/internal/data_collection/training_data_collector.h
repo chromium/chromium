@@ -15,7 +15,9 @@ class Clock;
 
 namespace segmentation_platform {
 
+namespace processing {
 class FeatureListQueryProcessor;
+}
 class HistogramSignalHandler;
 class SegmentInfoDatabase;
 class SignalStorageConfig;
@@ -27,7 +29,7 @@ class TrainingDataCollector {
  public:
   static std::unique_ptr<TrainingDataCollector> Create(
       SegmentInfoDatabase* segment_info_database,
-      FeatureListQueryProcessor* processor,
+      processing::FeatureListQueryProcessor* processor,
       HistogramSignalHandler* histogram_signal_handler,
       SignalStorageConfig* signal_storage_config,
       base::Clock* clock);

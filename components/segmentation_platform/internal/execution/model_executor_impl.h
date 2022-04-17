@@ -16,18 +16,22 @@
 
 namespace segmentation_platform {
 
+namespace processing {
 class FeatureListQueryProcessor;
+}
 
-// Uses SignalDatabase (raw signals), and uses a FeatureListQueryProcessor for
-// each feature to go from metadata and raw signals to create an input tensor to
-// use when executing the ML model. It then uses this input tensor to execute
-// the model and returns the result through a callback. Uses a state within
-// callbacks for executing multiple models simultaneously, or the same model
-// multiple times without waiting for the requests to finish.
+// Uses SignalDatabase (raw signals), and uses a
+// processing::FeatureListQueryProcessor for each feature to go from metadata
+// and raw signals to create an input tensor to use when executing the ML model.
+// It then uses this input tensor to execute the model and returns the result
+// through a callback. Uses a state within callbacks for executing multiple
+// models simultaneously, or the same model multiple times without waiting for
+// the requests to finish.
 class ModelExecutorImpl : public ModelExecutor {
  public:
-  ModelExecutorImpl(base::Clock* clock,
-                    FeatureListQueryProcessor* feature_list_query_processor);
+  ModelExecutorImpl(
+      base::Clock* clock,
+      processing::FeatureListQueryProcessor* feature_list_query_processor);
   ~ModelExecutorImpl() override;
 
   ModelExecutorImpl(ModelExecutorImpl&) = delete;
@@ -69,7 +73,8 @@ class ModelExecutorImpl : public ModelExecutor {
   const raw_ptr<base::Clock> clock_;
 
   // Feature list processor for processing a model metadata's feature list.
-  const raw_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+  const raw_ptr<processing::FeatureListQueryProcessor>
+      feature_list_query_processor_;
 
   base::WeakPtrFactory<ModelExecutorImpl> weak_ptr_factory_{this};
 };

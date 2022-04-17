@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_CUSTOM_INPUT_PROCESSOR_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_CUSTOM_INPUT_PROCESSOR_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_CUSTOM_INPUT_PROCESSOR_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_CUSTOM_INPUT_PROCESSOR_H_
 
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
-#include "components/segmentation_platform/internal/execution/query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 class FeatureProcessorState;
 
 // CustomInputProcessor adds support to a larger variety of data type
@@ -90,6 +90,6 @@ class CustomInputProcessor : public QueryProcessor {
   base::WeakPtrFactory<CustomInputProcessor> weak_ptr_factory_{this};
 };
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_CUSTOM_INPUT_PROCESSOR_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_CUSTOM_INPUT_PROCESSOR_H_

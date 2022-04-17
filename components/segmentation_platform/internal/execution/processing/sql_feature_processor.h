@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_SQL_FEATURE_PROCESSOR_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_SQL_FEATURE_PROCESSOR_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_SQL_FEATURE_PROCESSOR_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_SQL_FEATURE_PROCESSOR_H_
 
 #include <memory>
 #include <vector>
@@ -11,10 +11,10 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
-#include "components/segmentation_platform/internal/execution/query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 class CustomInputProcessor;
 class FeatureProcessorState;
 
@@ -75,6 +75,6 @@ class SqlFeatureProcessor : public QueryProcessor {
   base::WeakPtrFactory<SqlFeatureProcessor> weak_ptr_factory_{this};
 };
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_SQL_FEATURE_PROCESSOR_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_SQL_FEATURE_PROCESSOR_H_

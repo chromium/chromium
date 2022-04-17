@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_UMA_FEATURE_PROCESSOR_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_UMA_FEATURE_PROCESSOR_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_UMA_FEATURE_PROCESSOR_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_UMA_FEATURE_PROCESSOR_H_
 
 #include <memory>
 #include <vector>
@@ -12,11 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
-#include "components/segmentation_platform/internal/execution/query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_aggregator.h"
+#include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 class FeatureProcessorState;
 
 // A query processor that takes a list of UMAFeatures, fetches samples from the
@@ -86,6 +86,6 @@ class UmaFeatureProcessor : public QueryProcessor {
   base::WeakPtrFactory<UmaFeatureProcessor> weak_ptr_factory_{this};
 };
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_UMA_FEATURE_PROCESSOR_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_UMA_FEATURE_PROCESSOR_H_

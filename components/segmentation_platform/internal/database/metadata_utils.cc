@@ -202,7 +202,7 @@ ValidationResult ValidateMetadataAndFeatures(
 }
 
 ValidationResult ValidateIndexedTensors(
-    const QueryProcessor::IndexedTensors& tensor,
+    const processing::QueryProcessor::IndexedTensors& tensor,
     size_t expected_size) {
   if (tensor.size() != expected_size)
     return ValidationResult::kIndexedTensorsInvalid;

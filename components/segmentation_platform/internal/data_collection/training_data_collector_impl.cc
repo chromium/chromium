@@ -10,7 +10,7 @@
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
-#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
@@ -44,7 +44,7 @@ std::map<uint64_t, int> ParseUmaOutputs(
 
 TrainingDataCollectorImpl::TrainingDataCollectorImpl(
     SegmentInfoDatabase* segment_info_database,
-    FeatureListQueryProcessor* processor,
+    processing::FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
     SignalStorageConfig* signal_storage_config,
     base::Clock* clock)

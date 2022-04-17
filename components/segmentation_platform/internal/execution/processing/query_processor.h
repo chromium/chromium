@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_QUERY_PROCESSOR_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_QUERY_PROCESSOR_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_QUERY_PROCESSOR_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_QUERY_PROCESSOR_H_
 
 #include <memory>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 class FeatureProcessorState;
 
 // Interface that converts aribitrary data to a list of tensor in asynchronous
@@ -43,6 +43,6 @@ class QueryProcessor {
   QueryProcessor() = default;
 };
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_QUERY_PROCESSOR_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_QUERY_PROCESSOR_H_

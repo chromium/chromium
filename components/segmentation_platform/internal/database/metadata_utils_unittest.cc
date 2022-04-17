@@ -7,7 +7,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
-#include "components/segmentation_platform/internal/execution/query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -350,7 +350,7 @@ TEST_F(MetadataUtilsTest, ValidateMetadataAndInputFeatures) {
 
 TEST_F(MetadataUtilsTest, MetadataIndexedTensorsValidation) {
   // Empty indexed tensors are valid.
-  QueryProcessor::IndexedTensors tensor;
+  processing::QueryProcessor::IndexedTensors tensor;
   EXPECT_EQ(
       metadata_utils::ValidationResult::kValidationSuccess,
       metadata_utils::ValidateIndexedTensors(tensor, /* expected_size */ 0));

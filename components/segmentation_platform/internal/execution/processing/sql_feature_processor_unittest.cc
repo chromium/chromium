@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/sql_feature_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/sql_feature_processor.h"
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
@@ -13,14 +13,14 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
-#include "components/segmentation_platform/internal/execution/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 
 class SqlFeatureProcessorTest : public testing::Test {
  public:
@@ -190,4 +190,4 @@ TEST_F(SqlFeatureProcessorTest, MultipleSqlFeatures) {
   ExpectQueryResult(std::move(data), processed_queries, result);
 }
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing

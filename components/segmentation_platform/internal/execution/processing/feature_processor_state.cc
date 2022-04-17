@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 
 FeatureProcessorState::FeatureProcessorState()
     : prediction_time_(base::Time::Now()),
@@ -69,4 +69,4 @@ void FeatureProcessorState::AppendInputTensor(
                        tensor_result.end());
 }
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing

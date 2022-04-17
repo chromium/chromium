@@ -23,10 +23,10 @@
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
+#include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
@@ -65,7 +65,7 @@ class ModelExecutorTest : public testing::Test {
 
   void CreateModelExecutor() {
     feature_list_query_processor_ =
-        std::make_unique<MockFeatureListQueryProcessor>();
+        std::make_unique<processing::MockFeatureListQueryProcessor>();
     model_executor_ = std::make_unique<ModelExecutorImpl>(
         &clock_, feature_list_query_processor_.get());
   }
@@ -99,7 +99,8 @@ class ModelExecutorTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
 
-  std::unique_ptr<MockFeatureListQueryProcessor> feature_list_query_processor_;
+  std::unique_ptr<processing::MockFeatureListQueryProcessor>
+      feature_list_query_processor_;
   std::unique_ptr<ModelExecutorImpl> model_executor_;
 };
 

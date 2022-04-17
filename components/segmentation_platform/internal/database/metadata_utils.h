@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
-#include "components/segmentation_platform/internal/execution/query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
@@ -71,7 +71,7 @@ ValidationResult ValidateMetadataAndFeatures(
 // Whether the given indexed tensor is valid to be used for the current
 // segmentation platform.
 ValidationResult ValidateIndexedTensors(
-    const QueryProcessor::IndexedTensors& tensor,
+    const processing::QueryProcessor::IndexedTensors& tensor,
     size_t expected_size);
 
 // Whether the given SegmentInfo, metadata and feature metadata is valid to be

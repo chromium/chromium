@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
-#include "components/segmentation_platform/internal/execution/mock_feature_aggregator.h"
+#include "components/segmentation_platform/internal/execution/processing/mock_feature_aggregator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
@@ -22,7 +22,7 @@ using testing::_;
 using testing::Return;
 using testing::SetArgReferee;
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 
 namespace {
 constexpr base::TimeDelta kOneSecond = base::Seconds(1);
@@ -547,4 +547,4 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
   ExpectProcessedFeatureList(false, std::vector<float>{1, 2, 3, 4, 5, 6, 7});
 }
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing

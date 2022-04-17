@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 
 #include <cstdint>
 #include <memory>
@@ -12,13 +12,13 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_aggregator.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 using Sample = SignalDatabase::Sample;
 using proto::Aggregation;
 using proto::SignalType;
@@ -312,4 +312,4 @@ TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {
   EXPECT_EQ(4, samples[1].second);
 }
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing

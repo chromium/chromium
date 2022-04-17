@@ -10,9 +10,9 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
-#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
@@ -27,7 +27,7 @@ ExecutionService::ExecutionService() = default;
 ExecutionService::~ExecutionService() = default;
 
 void ExecutionService::InitForTesting(
-    std::unique_ptr<FeatureListQueryProcessor> feature_processor,
+    std::unique_ptr<processing::FeatureListQueryProcessor> feature_processor,
     std::unique_ptr<ModelExecutor> executor,
     std::unique_ptr<ModelExecutionScheduler> scheduler) {
   feature_list_query_processor_ = std::move(feature_processor);
@@ -48,8 +48,10 @@ void ExecutionService::Initialize(
     std::vector<ModelExecutionScheduler::Observer*>&& observers,
     const PlatformOptions& platform_options,
     PrefService* pref_service) {
-  feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-      signal_database, nullptr, std::make_unique<FeatureAggregatorImpl>());
+  feature_list_query_processor_ =
+      std::make_unique<processing::FeatureListQueryProcessor>(
+          signal_database, nullptr,
+          std::make_unique<processing::FeatureAggregatorImpl>());
 
   training_data_collector_ = TrainingDataCollector::Create(
       segment_info_database, feature_list_query_processor_.get(),

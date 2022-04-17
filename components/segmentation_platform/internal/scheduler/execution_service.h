@@ -18,10 +18,12 @@
 class PrefService;
 
 namespace segmentation_platform {
+namespace processing {
+class FeatureListQueryProcessor;
+}
 
 struct PlatformOptions;
 class DataCollectionScheduler;
-class FeatureListQueryProcessor;
 class ModelExecutor;
 class ModelProviderFactory;
 class SegmentInfoDatabase;
@@ -40,7 +42,7 @@ class ExecutionService {
   ExecutionService& operator=(ExecutionService&) = delete;
 
   void InitForTesting(
-      std::unique_ptr<FeatureListQueryProcessor> feature_processor,
+      std::unique_ptr<processing::FeatureListQueryProcessor> feature_processor,
       std::unique_ptr<ModelExecutor> executor,
       std::unique_ptr<ModelExecutionScheduler> scheduler);
 
@@ -91,7 +93,8 @@ class ExecutionService {
 
  private:
   // Training/inference input data generation.
-  std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+  std::unique_ptr<processing::FeatureListQueryProcessor>
+      feature_list_query_processor_;
 
   // Traing data collection logic.
   std::unique_ptr<TrainingDataCollector> training_data_collector_;

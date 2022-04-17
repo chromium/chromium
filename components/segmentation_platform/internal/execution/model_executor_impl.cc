@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -79,7 +79,7 @@ ModelExecutorImpl::ModelExecutionTraceEvent::~ModelExecutionTraceEvent() {
 
 ModelExecutorImpl::ModelExecutorImpl(
     base::Clock* clock,
-    FeatureListQueryProcessor* feature_list_query_processor)
+    processing::FeatureListQueryProcessor* feature_list_query_processor)
     : clock_(clock),
       feature_list_query_processor_(feature_list_query_processor) {}
 

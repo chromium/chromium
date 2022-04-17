@@ -14,7 +14,7 @@
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/mock_feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
@@ -155,7 +155,7 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   ukm::TestAutoSetUkmRecorder test_recorder_;
-  NiceMock<MockFeatureListQueryProcessor> feature_list_processor_;
+  NiceMock<processing::MockFeatureListQueryProcessor> feature_list_processor_;
   NiceMock<MockHistogramSignalHandler> histogram_signal_handler_;
   NiceMock<MockSignalStorageConfig> signal_storage_config_;
   std::unique_ptr<test::TestSegmentInfoDatabase> test_segment_info_db_;

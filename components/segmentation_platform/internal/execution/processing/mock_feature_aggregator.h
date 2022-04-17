@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MOCK_FEATURE_AGGREGATOR_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MOCK_FEATURE_AGGREGATOR_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_MOCK_FEATURE_AGGREGATOR_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_MOCK_FEATURE_AGGREGATOR_H_
 
 #include <vector>
 
-#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_aggregator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 
 // Mock of feature aggregator class. Used for testing.
 class MockFeatureAggregator : public FeatureAggregator {
@@ -33,6 +33,6 @@ class MockFeatureAggregator : public FeatureAggregator {
               (const override));
 };
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MOCK_FEATURE_AGGREGATOR_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_MOCK_FEATURE_AGGREGATOR_H_

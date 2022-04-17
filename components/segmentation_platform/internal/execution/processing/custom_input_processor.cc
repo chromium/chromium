@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/custom_input_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
-#include "components/segmentation_platform/internal/execution/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 
 namespace {
 // Index not actually used for legacy code in FeatureQueryProcessor.
@@ -180,4 +180,4 @@ bool CustomInputProcessor::AddTimeRangeBeforePrediction(
   return true;
 }
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing

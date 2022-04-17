@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/uma_feature_processor.h"
+#include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -11,11 +11,11 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
-#include "components/segmentation_platform/internal/execution/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 
-namespace segmentation_platform {
+namespace segmentation_platform::processing {
 
 UmaFeatureProcessor::UmaFeatureProcessor(
     base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
@@ -148,4 +148,4 @@ void UmaFeatureProcessor::OnGetSamplesForUmaFeature(
   ProcessNextUmaFeature();
 }
 
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::processing
