@@ -706,12 +706,24 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
                                request->scale_from().y());
       }
 
-      bool success = RenderSurface(surface, src_rect, scaling,
-                                   is_downscale_or_identity_in_both_dimensions,
-                                   scoped_write->surface(), begin_semaphores,
-                                   end_semaphores);
-      if (!success) {
-        DLOG(ERROR) << "failed to render surface.";
+      scoped_write->surface()->wait(begin_semaphores.size(),
+                                    begin_semaphores.data());
+
+      RenderSurface(surface, src_rect, scaling,
+                    is_downscale_or_identity_in_both_dimensions,
+                    scoped_write->surface());
+
+      bool should_submit = !end_semaphores.empty();
+
+      if (!FlushSurface(scoped_write->surface(), end_semaphores,
+                        scoped_write->end_state())) {
+        // TODO(penghuang): handle vulkan device lost.
+        FailedSkiaFlush("CopyOutputRGBA dest_surface->flush()");
+        return;
+      }
+
+      if (should_submit && !gr_context()->submit()) {
+        DLOG(ERROR) << "CopyOutputRGBA gr_context->submit() failed";
         return;
       }
 
@@ -735,16 +747,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
   }
 }
 
-bool SkiaOutputSurfaceImplOnGpu::RenderSurface(
+void SkiaOutputSurfaceImplOnGpu::RenderSurface(
     SkSurface* surface,
     const SkIRect& source_selection,
     absl::optional<SkVector> scaling,
     bool is_downscale_or_identity_in_both_dimensions,
-    SkSurface* dest_surface,
-    std::vector<GrBackendSemaphore>& begin_semaphores,
-    std::vector<GrBackendSemaphore>& end_semaphores) {
-  dest_surface->wait(begin_semaphores.size(), begin_semaphores.data());
-
+    SkSurface* dest_surface) {
   SkCanvas* dest_canvas = dest_surface->getCanvas();
   int state_depth = dest_canvas->save();
 
@@ -770,21 +778,18 @@ bool SkiaOutputSurfaceImplOnGpu::RenderSurface(
                 sampling, /*paint=*/nullptr);
 
   dest_canvas->restoreToCount(state_depth);
+}
 
+bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
+    SkSurface* surface,
+    std::vector<GrBackendSemaphore>& end_semaphores,
+    const GrBackendSurfaceMutableState* end_state) {
   GrFlushInfo flush_info;
   flush_info.fNumSemaphores = end_semaphores.size();
   flush_info.fSignalSemaphores = end_semaphores.data();
   gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
-  GrSemaphoresSubmitted flush_result = dest_surface->flush(
-      SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
-  if (flush_result != GrSemaphoresSubmitted::kYes &&
-      !(begin_semaphores.empty() && end_semaphores.empty())) {
-    // TODO(penghuang): handle vulkan device lost.
-    FailedSkiaFlush("dest_surface->flush() failed.");
-    return false;
-  }
-
-  return true;
+  GrSemaphoresSubmitted flush_result = surface->flush(flush_info, end_state);
+  return flush_result == GrSemaphoresSubmitted::kYes || end_semaphores.empty();
 }
 
 SkiaOutputSurfaceImplOnGpu::PlaneAccessData::PlaneAccessData() = default;
@@ -998,15 +1003,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                                  request->scale_from().y());
   }
 
-  bool success = RenderSurface(
-      surface, src_rect, scaling, is_downscale_or_identity_in_both_dimensions,
-      scoped_write->surface(), begin_semaphores, end_semaphores);
-  if (!success) {
-    DLOG(ERROR) << "failed to render surface.";
-    return;
-  }
+  scoped_write->surface()->wait(begin_semaphores.size(),
+                                begin_semaphores.data());
 
-  representation->SetCleared();
+  RenderSurface(surface, src_rect, scaling,
+                is_downscale_or_identity_in_both_dimensions,
+                scoped_write->surface());
 
   if (request->has_blit_request()) {
     BlendBitmapOverlays(scoped_write->surface()->getCanvas(),
@@ -1041,24 +1043,35 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   skia::BlitRGBAToYUVA(source_image.get(), plane_surfaces.data(), yuva_info,
                        dst_region);
 
+  bool should_submit = false;
+
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
     plane_access_datas[i].representation->SetCleared();
 
-    GrFlushInfo flush_info;
-    flush_info.fNumSemaphores = plane_access_datas[i].end_semaphores.size();
-    flush_info.fSignalSemaphores = plane_access_datas[i].end_semaphores.data();
+    should_submit |= !plane_access_datas[i].end_semaphores.empty();
 
-    gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
-                                          &flush_info);
-
-    auto flush_result = plane_surfaces[i]->flush(
-        SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
-    if (flush_result != GrSemaphoresSubmitted::kYes &&
-        !(begin_semaphores.empty() && end_semaphores.empty())) {
+    if (!FlushSurface(plane_surfaces[i], plane_access_datas[i].end_semaphores,
+                      plane_access_datas[i].scoped_write->end_state())) {
       // TODO(penghuang): handle vulkan device lost.
-      FailedSkiaFlush("plane_surfaces[i]->flush()");
+      FailedSkiaFlush("CopyOutputNV12 plane_surfaces[i]->flush()");
       return;
     }
+  }
+
+  representation->SetCleared();
+
+  should_submit |= !end_semaphores.empty();
+
+  if (!FlushSurface(scoped_write->surface(), end_semaphores,
+                    scoped_write->end_state())) {
+    // TODO(penghuang): handle vulkan device lost.
+    FailedSkiaFlush("CopyOutputNV12 dest_surface->flush()");
+    return;
+  }
+
+  if (should_submit && !gr_context()->submit()) {
+    DLOG(ERROR) << "CopyOutputNV12 gr_context->submit() failed";
+    return;
   }
 
   switch (request->result_destination()) {
@@ -1153,6 +1166,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       scoped_access;
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
+  GrBackendSurfaceMutableState* end_state = nullptr;
   if (from_framebuffer) {
     surface = scoped_output_device_paint_->sk_surface();
   } else {
@@ -1167,6 +1181,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         &end_semaphores,
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
     surface = scoped_access->surface();
+    end_state = scoped_access->end_state();
     if (!begin_semaphores.empty()) {
       auto result =
           surface->wait(begin_semaphores.size(), begin_semaphores.data(),
@@ -1274,20 +1289,14 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     }
   }
 
-  if (!end_semaphores.empty()) {
-    GrFlushInfo flush_info;
-    flush_info.fNumSemaphores = end_semaphores.size();
-    flush_info.fSignalSemaphores = end_semaphores.data();
-    gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
-                                          &flush_info);
-    auto flush_result =
-        surface->flush(SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
-    if (flush_result != GrSemaphoresSubmitted::kYes &&
-        !(begin_semaphores.empty() && end_semaphores.empty())) {
-      // TODO(penghuang): handle vulkan device lost.
-      FailedSkiaFlush("surface->flush() failed.");
-      return;
-    }
+  // Render pass images shouldn't have semaphores or need state transitions
+  // because they're never shared with other clients.
+  DCHECK(end_semaphores.empty());
+  DCHECK(!end_state);
+  if (!FlushSurface(surface, end_semaphores, end_state)) {
+    // TODO(penghuang): handle vulkan device lost.
+    FailedSkiaFlush("surface->flush() failed.");
+    return;
   }
 
   ScheduleCheckReadbackCompletion();

@@ -336,17 +336,17 @@ class SkiaOutputSurfaceImplOnGpu
   // |surface| into |dest_surface|'s canvas, cropping and scaling the results
   // appropriately. |source_selection| is the area of the |surface| that will be
   // rendered to the destination.
-  // |begin_semaphores| will be submitted to the GPU backend prior to issuing
-  // draw calls to the |dest_surface|.
-  // |end_semaphores| will be submitted to the GPU backend alongside the draw
-  // calls to the |dest_surface|.
-  bool RenderSurface(SkSurface* surface,
+  void RenderSurface(SkSurface* surface,
                      const SkIRect& source_selection,
                      absl::optional<SkVector> scaling,
                      bool is_downscale_or_identity_in_both_dimensions,
-                     SkSurface* dest_surface,
-                     std::vector<GrBackendSemaphore>& begin_semaphores,
-                     std::vector<GrBackendSemaphore>& end_semaphores);
+                     SkSurface* dest_surface);
+
+  // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, flushes writes
+  // to |surface| with |end_semaphores| and |end_state|.
+  bool FlushSurface(SkSurface* surface,
+                    std::vector<GrBackendSemaphore>& end_semaphores,
+                    const GrBackendSurfaceMutableState* end_state);
 
   // Creates surfaces needed to store the data in NV12 format.
   // |plane_access_datas| will be populated with information needed to access
