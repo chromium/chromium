@@ -221,6 +221,8 @@ TEST_F(ShareServiceUnitTest, DangerousMimeType) {
 
 TEST_F(ShareServiceUnitTest, Multimedia) {
   EXPECT_EQ(ShareError::OK,
+            ShareGeneratedFileData(FILE_PATH_LITERAL(".avif"), "image/avif"));
+  EXPECT_EQ(ShareError::OK,
             ShareGeneratedFileData(FILE_PATH_LITERAL(".bmp"), "image/bmp"));
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(FILE_PATH_LITERAL(".xbm"),
                                                    "image/x-xbitmap"));

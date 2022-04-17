@@ -70,6 +70,7 @@ void ShareServiceImpl::Create(
 // static
 bool ShareServiceImpl::IsDangerousFilename(const base::FilePath& path) {
   constexpr const base::FilePath::CharType* kPermitted[] = {
+      FILE_PATH_LITERAL(".avif"),   // image/avif
       FILE_PATH_LITERAL(".bmp"),    // image/bmp / image/x-ms-bmp
       FILE_PATH_LITERAL(".css"),    // text/css
       FILE_PATH_LITERAL(".csv"),    // text/csv / text/comma-separated-values
@@ -122,7 +123,7 @@ bool ShareServiceImpl::IsDangerousFilename(const base::FilePath& path) {
 
 // static
 bool ShareServiceImpl::IsDangerousMimeType(base::StringPiece content_type) {
-  constexpr std::array<const char*, 27> kPermitted = {
+  constexpr std::array<const char*, 28> kPermitted = {
       "application/pdf",
       "audio/flac",
       "audio/mp3",
@@ -131,6 +132,7 @@ bool ShareServiceImpl::IsDangerousMimeType(base::StringPiece content_type) {
       "audio/wav",
       "audio/webm",
       "audio/x-m4a",
+      "image/avif",
       "image/bmp",
       "image/gif",
       "image/jpeg",

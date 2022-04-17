@@ -72,6 +72,7 @@ public class ShareServiceImpl implements ShareService {
     // clang-format off
     private static final Set<String> PERMITTED_EXTENSIONS =
             Collections.unmodifiableSet(CollectionUtil.newHashSet(
+                    "avif", // image/avif
                     "bmp", // image/bmp / image/x-ms-bmp
                     "css", // text/css
                     "csv", // text/csv / text/comma-separated-values
@@ -124,6 +125,7 @@ public class ShareServiceImpl implements ShareService {
                      "audio/wav",
                      "audio/webm",
                      "audio/x-m4a",
+                     "image/avif",
                      "image/bmp",
                      "image/gif",
                      "image/jpeg",

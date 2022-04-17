@@ -17,6 +17,7 @@ The following list should be kept in sync with
                     "wav"  -  audio/wav
                     "weba"  -  audio/webm
 # Image
+                    "avif"  -  image/avif
                     "bmp"  -  image/bmp
                     "gif"  -  image/gif
                     "ico"  -  image/x-icon
