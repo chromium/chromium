@@ -5,17 +5,18 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="/client-hints/resources/export.js"></script>
 <script src="resources/feature-policy-navigation.js"></script>
 <script>
 (async () => {
   await test_frame(
     "HTTPS_ORIGIN",
-    "sec-ch-device-memory=true&device-memory=true&sec-ch-dpr=true&dpr=true&sec-ch-viewport-width=true&viewport-width=true&sec-ch-ua=true&sec-ch-ua-mobile=true",
+    meta_name_client_hints,
     "",
     "Client hints loaded on same-origin iframe include hints with a default permissions policy of self and *.");
   await test_frame(
     "HTTPS_REMOTE_ORIGIN",
-    "sec-ch-device-memory=false&device-memory=false&sec-ch-dpr=false&dpr=false&sec-ch-viewport-width=false&viewport-width=false&sec-ch-ua=true&sec-ch-ua-mobile=true",
+    expect_iframe_no_hints,
     "",
     "Client hints loaded on cross-origin iframe only include hints with a default permissions policy of *.");
 })();
