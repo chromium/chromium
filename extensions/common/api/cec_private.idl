@@ -10,7 +10,7 @@ namespace cecPrivate {
     // There was an error querying the power state of the display.
     error,
 
-    // The kernel adapter for the CEC endpoint isn’t configured (no EDID set).
+    // The kernel adapter for the CEC endpoint isn't configured (no EDID set).
     adapterNotConfigured,
 
     // No device ACKed the request on the CEC bus.
