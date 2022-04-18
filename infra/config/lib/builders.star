@@ -191,7 +191,7 @@ xcode = struct(
     # Default Xcode 13 for chromium iOS.
     x13main = xcode_enum("13c100"),
     # A newer Xcode version used on beta bots.
-    x13betabots = xcode_enum("13e5104i"),
+    x13betabots = xcode_enum("13e113"),
     # in use by ios-webkit-tot
     x13wk = xcode_enum("13a1030dwk"),
 )
