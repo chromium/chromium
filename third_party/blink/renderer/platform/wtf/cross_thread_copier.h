@@ -36,10 +36,6 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace gpu {
-struct SyncToken;
-}
-
 namespace WTF {
 
 template <typename T>
@@ -75,18 +71,19 @@ struct CrossThreadCopier
   STATIC_ONLY(CrossThreadCopier);
 };
 
-// CrossThreadCopier specializations follow.
-// See cross_thread_copier_*.h too.
-
-template <>
-struct CrossThreadCopier<gpu::SyncToken>
-    : public CrossThreadCopierPassThrough<gpu::SyncToken> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-// To allow a type to be passed across threads using its copy constructor, add a
-// forward declaration of the type and provide a specialization of
-// CrossThreadCopier<T> in this file.
+// To allow a type to be passed across threads using its copy constructor,
+// provide a specialization of CrossThreadCopier<T>.
+//
+// * If the type is not defined in third_party/blink/
+//   ==> Choose one of the existing cross_thread_copier_*.h or add new one,
+//       and add a forward declaration and a CrossThreadCopier specialization
+//       for the type to the file.
+// * If the type is defined in third_party/blink/public/
+//   ==> Add a forward declaration and a CrossThreadCopier specialization for
+//       the type to cross_thread_copier_public.h.
+// * If the type is defined in third_party/blink/
+//   ==> Include cross_thread_copier.h from the header defining the type, and
+//       add a CrossThreadCopier specialization for the type to the header.
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 struct CrossThreadCopier<Vector<T, inlineCapacity, Allocator>> {

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gpu.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
