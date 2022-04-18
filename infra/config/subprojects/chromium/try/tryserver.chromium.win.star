@@ -86,10 +86,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win_chromium_dbg_ng",
-)
-
-try_.builder(
     name = "win_chromium_x64_rel_ng",
     mirrors = [
         "ci/Win x64 Builder",
