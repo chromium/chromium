@@ -6,7 +6,9 @@
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_MAPPER_H_
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <stdint.h>
 
@@ -18,24 +20,22 @@ class BASE_EXPORT PlatformSharedMemoryMapper {
  public:
   PlatformSharedMemoryMapper() = delete;
 
-  static bool Map(subtle::PlatformSharedMemoryHandle handle,
-                  bool write_allowed,
-                  uint64_t offset,
-                  size_t size,
-                  void** memory,
-                  size_t* mapped_size);
+  static absl::optional<span<uint8_t>> Map(
+      subtle::PlatformSharedMemoryHandle handle,
+      bool write_allowed,
+      uint64_t offset,
+      size_t size);
 
-  static void Unmap(void* memory, size_t size);
+  static void Unmap(span<uint8_t> mapping);
 
  private:
-  static bool MapInternal(subtle::PlatformSharedMemoryHandle handle,
-                          bool write_allowed,
-                          uint64_t offset,
-                          size_t size,
-                          void** memory,
-                          size_t* mapped_size);
+  static absl::optional<span<uint8_t>> MapInternal(
+      subtle::PlatformSharedMemoryHandle handle,
+      bool write_allowed,
+      uint64_t offset,
+      size_t size);
 
-  static void UnmapInternal(void* memory, size_t size);
+  static void UnmapInternal(span<uint8_t> mapping);
 };
 
 }  // namespace base

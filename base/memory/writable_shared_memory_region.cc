@@ -73,13 +73,11 @@ WritableSharedMemoryMapping WritableSharedMemoryRegion::MapAt(
   if (!IsValid())
     return {};
 
-  void* memory = nullptr;
-  size_t mapped_size = 0;
-  if (!handle_.MapAt(offset, size, &memory, &mapped_size))
+  auto result = handle_.MapAt(offset, size);
+  if (!result.has_value())
     return {};
 
-  return WritableSharedMemoryMapping(memory, size, mapped_size,
-                                     handle_.GetGUID());
+  return WritableSharedMemoryMapping(result.value(), size, handle_.GetGUID());
 }
 
 bool WritableSharedMemoryRegion::IsValid() const {

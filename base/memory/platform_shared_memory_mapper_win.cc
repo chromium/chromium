@@ -24,35 +24,34 @@ size_t GetMemorySectionSize(void* address) {
 }  // namespace
 
 // static
-bool PlatformSharedMemoryMapper::MapInternal(
+absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
-    size_t size,
-    void** memory,
-    size_t* mapped_size) {
+    size_t size) {
   // Try to map the shared memory. On the first failure, release any reserved
   // address space for a single retry.
+  void* address;
   for (int i = 0; i < 2; ++i) {
-    *memory = MapViewOfFile(
+    address = MapViewOfFile(
         handle, FILE_MAP_READ | (write_allowed ? FILE_MAP_WRITE : 0),
         static_cast<DWORD>(offset >> 32), static_cast<DWORD>(offset), size);
-    if (*memory)
+    if (address)
       break;
     ReleaseReservation();
   }
-  if (!*memory) {
+  if (!address) {
     DPLOG(ERROR) << "Failed executing MapViewOfFile";
-    return false;
+    return absl::nullopt;
   }
 
-  *mapped_size = GetMemorySectionSize(*memory);
-  return true;
+  return make_span(reinterpret_cast<uint8_t*>(address),
+                   GetMemorySectionSize(address));
 }
 
 // static
-void PlatformSharedMemoryMapper::UnmapInternal(void* memory, size_t size) {
-  if (!UnmapViewOfFile(memory))
+void PlatformSharedMemoryMapper::UnmapInternal(span<uint8_t> mapping) {
+  if (!UnmapViewOfFile(mapping.data()))
     DPLOG(ERROR) << "UnmapViewOfFile";
 }
 

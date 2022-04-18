@@ -45,39 +45,38 @@ PlatformSharedMemoryRegion::PassPlatformHandle() {
   return std::move(handle_);
 }
 
-bool PlatformSharedMemoryRegion::MapAt(uint64_t offset,
-                                       size_t size,
-                                       void** memory,
-                                       size_t* mapped_size) const {
+absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
+    uint64_t offset,
+    size_t size) const {
   if (!IsValid())
-    return false;
+    return absl::nullopt;
 
   if (size == 0)
-    return false;
+    return absl::nullopt;
 
   size_t end_byte;
   if (!CheckAdd(offset, size).AssignIfValid(&end_byte) || end_byte > size_) {
-    return false;
+    return absl::nullopt;
   }
 
   if (!SharedMemorySecurityPolicy::AcquireReservationForMapping(size)) {
     RecordMappingWasBlockedHistogram(/*blocked=*/true);
-    return false;
+    return absl::nullopt;
   }
 
   RecordMappingWasBlockedHistogram(/*blocked=*/false);
 
   bool write_allowed = mode_ != Mode::kReadOnly;
-  bool success = PlatformSharedMemoryMapper::Map(
-      GetPlatformHandle(), write_allowed, offset, size, memory, mapped_size);
+  auto result = PlatformSharedMemoryMapper::Map(GetPlatformHandle(),
+                                                write_allowed, offset, size);
 
-  if (success) {
-    DCHECK(IsAligned(*memory, kMapMinimumAlignment));
+  if (result.has_value()) {
+    DCHECK(IsAligned(result.value().data(), kMapMinimumAlignment));
   } else {
     SharedMemorySecurityPolicy::ReleaseReservationForMapping(size);
   }
 
-  return success;
+  return result;
 }
 
 }  // namespace subtle

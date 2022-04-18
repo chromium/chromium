@@ -122,10 +122,9 @@ ClientBase* CastToClientBase(void* data) {
 
 class MemfdMemoryMapping : public base::SharedMemoryMapping {
  public:
-  MemfdMemoryMapping(void* memory, size_t size)
-      : base::SharedMemoryMapping(memory,
-                                  size,
-                                  size /* mapped_size */,
+  MemfdMemoryMapping(base::span<uint8_t> mapped_span)
+      : base::SharedMemoryMapping(mapped_span,
+                                  mapped_span.size(),
                                   base::UnguessableToken::Create()) {}
 };
 
@@ -969,7 +968,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
         return nullptr;
       }
 
-      buffer->shared_memory_mapping = MemfdMemoryMapping(mapped_data, length);
+      base::span<uint8_t> mapped_span = base::make_span(mapped_data, length);
+      buffer->shared_memory_mapping = MemfdMemoryMapping(mapped_span);
       buffer->shm_pool.reset(
           wl_shm_create_pool(globals_.shm.get(), memfd, length));
 

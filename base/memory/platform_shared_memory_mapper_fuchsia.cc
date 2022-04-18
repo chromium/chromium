@@ -12,13 +12,11 @@
 namespace base {
 
 // static
-bool PlatformSharedMemoryMapper::MapInternal(
+absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
-    size_t size,
-    void** memory,
-    size_t* mapped_size) {
+    size_t size) {
   uintptr_t addr;
   zx_vm_option_t options = ZX_VM_REQUIRE_NON_RESIZABLE | ZX_VM_PERM_READ;
   if (write_allowed)
@@ -27,18 +25,16 @@ bool PlatformSharedMemoryMapper::MapInternal(
                                                   *handle, offset, size, &addr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmar_map";
-    return false;
+    return absl::nullopt;
   }
 
-  *memory = reinterpret_cast<void*>(addr);
-  *mapped_size = size;
-  return true;
+  return make_span(reinterpret_cast<uint8_t*>(addr), size);
 }
 
 // static
-void PlatformSharedMemoryMapper::UnmapInternal(void* memory, size_t size) {
-  uintptr_t addr = reinterpret_cast<uintptr_t>(memory);
-  zx_status_t status = zx::vmar::root_self()->unmap(addr, size);
+void PlatformSharedMemoryMapper::UnmapInternal(span<uint8_t> mapping) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(mapping.data());
+  zx_status_t status = zx::vmar::root_self()->unmap(addr, mapping.size());
   if (status != ZX_OK)
     ZX_DLOG(ERROR, status) << "zx_vmar_unmap";
 }

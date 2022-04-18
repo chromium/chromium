@@ -12,29 +12,26 @@
 namespace base {
 
 // static
-bool PlatformSharedMemoryMapper::MapInternal(
+absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
-    size_t size,
-    void** memory,
-    size_t* mapped_size) {
-  *memory = mmap(nullptr, size, PROT_READ | (write_allowed ? PROT_WRITE : 0),
-                 MAP_SHARED, handle.fd, checked_cast<off_t>(offset));
+    size_t size) {
+  void* address =
+      mmap(nullptr, size, PROT_READ | (write_allowed ? PROT_WRITE : 0),
+           MAP_SHARED, handle.fd, checked_cast<off_t>(offset));
 
-  bool mmap_succeeded = *memory && *memory != MAP_FAILED;
-  if (!mmap_succeeded) {
+  if (address == MAP_FAILED) {
     DPLOG(ERROR) << "mmap " << handle.fd << " failed";
-    return false;
+    return absl::nullopt;
   }
 
-  *mapped_size = size;
-  return true;
+  return make_span(reinterpret_cast<uint8_t*>(address), size);
 }
 
 // static
-void PlatformSharedMemoryMapper::UnmapInternal(void* memory, size_t size) {
-  if (munmap(memory, size) < 0)
+void PlatformSharedMemoryMapper::UnmapInternal(span<uint8_t> mapping) {
+  if (munmap(mapping.data(), mapping.size()) < 0)
     DPLOG(ERROR) << "munmap";
 }
 

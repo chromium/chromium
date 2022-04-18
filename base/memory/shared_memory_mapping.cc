@@ -18,17 +18,15 @@ namespace base {
 SharedMemoryMapping::SharedMemoryMapping() = default;
 
 SharedMemoryMapping::SharedMemoryMapping(SharedMemoryMapping&& mapping) noexcept
-    : memory_(std::exchange(mapping.memory_, nullptr)),
+    : mapped_span_(std::exchange(mapping.mapped_span_, span<uint8_t>())),
       size_(mapping.size_),
-      mapped_size_(mapping.mapped_size_),
       guid_(mapping.guid_) {}
 
 SharedMemoryMapping& SharedMemoryMapping::operator=(
     SharedMemoryMapping&& mapping) noexcept {
   Unmap();
-  memory_ = std::exchange(mapping.memory_, nullptr);
+  mapped_span_ = std::exchange(mapping.mapped_span_, span<uint8_t>());
   size_ = mapping.size_;
-  mapped_size_ = mapping.mapped_size_;
   guid_ = mapping.guid_;
   return *this;
 }
@@ -37,11 +35,10 @@ SharedMemoryMapping::~SharedMemoryMapping() {
   Unmap();
 }
 
-SharedMemoryMapping::SharedMemoryMapping(void* memory,
+SharedMemoryMapping::SharedMemoryMapping(span<uint8_t> mapped_span,
                                          size_t size,
-                                         size_t mapped_size,
                                          const UnguessableToken& guid)
-    : memory_(memory), size_(size), mapped_size_(mapped_size), guid_(guid) {
+    : mapped_span_(mapped_span), size_(size), guid_(guid) {
   SharedMemoryTracker::GetInstance()->IncrementMemoryUsage(*this);
 }
 
@@ -52,7 +49,7 @@ void SharedMemoryMapping::Unmap() {
   SharedMemorySecurityPolicy::ReleaseReservationForMapping(size_);
   SharedMemoryTracker::GetInstance()->DecrementMemoryUsage(*this);
 
-  PlatformSharedMemoryMapper::Unmap(memory_, mapped_size_);
+  PlatformSharedMemoryMapper::Unmap(mapped_span_);
 }
 
 ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping() = default;
@@ -61,11 +58,10 @@ ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping(
 ReadOnlySharedMemoryMapping& ReadOnlySharedMemoryMapping::operator=(
     ReadOnlySharedMemoryMapping&&) noexcept = default;
 ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping(
-    void* address,
+    span<uint8_t> mapped_span,
     size_t size,
-    size_t mapped_size,
     const UnguessableToken& guid)
-    : SharedMemoryMapping(address, size, mapped_size, guid) {}
+    : SharedMemoryMapping(mapped_span, size, guid) {}
 
 WritableSharedMemoryMapping::WritableSharedMemoryMapping() = default;
 WritableSharedMemoryMapping::WritableSharedMemoryMapping(
@@ -73,10 +69,9 @@ WritableSharedMemoryMapping::WritableSharedMemoryMapping(
 WritableSharedMemoryMapping& WritableSharedMemoryMapping::operator=(
     WritableSharedMemoryMapping&&) noexcept = default;
 WritableSharedMemoryMapping::WritableSharedMemoryMapping(
-    void* address,
+    span<uint8_t> mapped_span,
     size_t size,
-    size_t mapped_size,
     const UnguessableToken& guid)
-    : SharedMemoryMapping(address, size, mapped_size, guid) {}
+    : SharedMemoryMapping(mapped_span, size, guid) {}
 
 }  // namespace base

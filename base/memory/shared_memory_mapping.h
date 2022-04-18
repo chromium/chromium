@@ -43,7 +43,7 @@ class BASE_EXPORT SharedMemoryMapping {
 
   // Returns true iff the mapping is valid. False means there is no
   // corresponding area of memory.
-  bool IsValid() const { return memory_ != nullptr; }
+  bool IsValid() const { return !mapped_span_.empty(); }
 
   // Returns the logical size of the mapping in bytes. This is precisely the
   // size requested by whoever created the mapping, and it is always less than
@@ -58,7 +58,7 @@ class BASE_EXPORT SharedMemoryMapping {
   // constraints. This is undefined for invalid instances.
   size_t mapped_size() const {
     DCHECK(IsValid());
-    return mapped_size_;
+    return mapped_span_.size();
   }
 
   // Returns 128-bit GUID of the region this mapping belongs to.
@@ -68,20 +68,20 @@ class BASE_EXPORT SharedMemoryMapping {
   }
 
  protected:
-  SharedMemoryMapping(void* address,
+  SharedMemoryMapping(span<uint8_t> mapped_span,
                       size_t size,
-                      size_t mapped_size,
                       const UnguessableToken& guid);
-  void* raw_memory_ptr() const { return memory_; }
+  void* raw_memory_ptr() const {
+    return reinterpret_cast<void*>(mapped_span_.data());
+  }
 
  private:
   friend class SharedMemoryTracker;
 
   void Unmap();
 
-  void* memory_ = nullptr;
+  span<uint8_t> mapped_span_;
   size_t size_ = 0;
-  size_t mapped_size_ = 0;
   UnguessableToken guid_;
 };
 
@@ -154,9 +154,8 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
 
  private:
   friend class ReadOnlySharedMemoryRegion;
-  ReadOnlySharedMemoryMapping(void* address,
+  ReadOnlySharedMemoryMapping(span<uint8_t> mapped_span,
                               size_t size,
-                              size_t mapped_size,
                               const UnguessableToken& guid);
 };
 
@@ -234,9 +233,8 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   friend class ReadOnlySharedMemoryRegion;
   friend class WritableSharedMemoryRegion;
   friend class UnsafeSharedMemoryRegion;
-  WritableSharedMemoryMapping(void* address,
+  WritableSharedMemoryMapping(span<uint8_t> mapped_span,
                               size_t size,
-                              size_t mapped_size,
                               const UnguessableToken& guid);
 };
 

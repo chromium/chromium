@@ -9,19 +9,17 @@
 namespace base {
 
 // static
-bool PlatformSharedMemoryMapper::Map(subtle::PlatformSharedMemoryHandle handle,
-                                     bool write_allowed,
-                                     uint64_t offset,
-                                     size_t size,
-                                     void** memory,
-                                     size_t* mapped_size) {
-  return MapInternal(std::move(handle), write_allowed, offset, size, memory,
-                     mapped_size);
+absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+    subtle::PlatformSharedMemoryHandle handle,
+    bool write_allowed,
+    uint64_t offset,
+    size_t size) {
+  return MapInternal(std::move(handle), write_allowed, offset, size);
 }
 
 // static
-void PlatformSharedMemoryMapper::Unmap(void* memory, size_t size) {
-  return UnmapInternal(memory, size);
+void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {
+  return UnmapInternal(mapping);
 }
 
 }  // namespace base

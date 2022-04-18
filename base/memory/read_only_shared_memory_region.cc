@@ -23,15 +23,13 @@ MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(size_t size) {
   if (!handle.IsValid())
     return {};
 
-  void* memory_ptr = nullptr;
-  size_t mapped_size = 0;
-  if (!handle.MapAt(0, handle.GetSize(), &memory_ptr, &mapped_size))
+  auto result = handle.MapAt(0, handle.GetSize());
+  if (!result.has_value())
     return {};
 
-  WritableSharedMemoryMapping mapping(memory_ptr, size, mapped_size,
-                                      handle.GetGUID());
+  WritableSharedMemoryMapping mapping(result.value(), size, handle.GetGUID());
 #if BUILDFLAG(IS_MAC)
-  handle.ConvertToReadOnly(memory_ptr);
+  handle.ConvertToReadOnly(mapping.memory());
 #else
   handle.ConvertToReadOnly();
 #endif  // BUILDFLAG(IS_MAC)
@@ -77,13 +75,11 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
   if (!IsValid())
     return {};
 
-  void* memory = nullptr;
-  size_t mapped_size = 0;
-  if (!handle_.MapAt(offset, size, &memory, &mapped_size))
+  auto result = handle_.MapAt(offset, size);
+  if (!result.has_value())
     return {};
 
-  return ReadOnlySharedMemoryMapping(memory, size, mapped_size,
-                                     handle_.GetGUID());
+  return ReadOnlySharedMemoryMapping(result.value(), size, handle_.GetGUID());
 }
 
 bool ReadOnlySharedMemoryRegion::IsValid() const {

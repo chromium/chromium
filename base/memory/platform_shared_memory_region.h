@@ -6,11 +6,13 @@
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/platform_shared_memory_handle.h"
 #include "base/memory/platform_shared_memory_mapper.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <stdint.h>
 
@@ -193,10 +195,7 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   // and leaves output parameters in unspecified state otherwise. The mapped
   // address is guaranteed to have an alignment of at least
   // |kMapMinimumAlignment|.
-  bool MapAt(uint64_t offset,
-             size_t size,
-             void** memory,
-             size_t* mapped_size) const;
+  absl::optional<span<uint8_t>> MapAt(uint64_t offset, size_t size) const;
 
   const UnguessableToken& GetGUID() const { return guid_; }
 
