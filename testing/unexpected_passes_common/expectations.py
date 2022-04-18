@@ -117,7 +117,8 @@ class Expectations(object):
       if not isinstance(expectation_files, list):
         expectation_files = [expectation_files]
       for ef in expectation_files:
-        expectation_file_name = os.path.normpath(ef)
+        # Normalize to '/' as the path separator.
+        expectation_file_name = os.path.normpath(ef).replace(os.path.sep, '/')
         content = self._GetNonRecentExpectationContent(expectation_file_name,
                                                        grace_period)
         AddContentToMap(content, expectation_map, expectation_file_name)
