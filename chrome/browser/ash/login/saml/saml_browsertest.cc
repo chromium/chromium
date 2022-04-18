@@ -812,7 +812,8 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
 
 // Tests the password confirm flow when more than one password is scraped: show
 // error on the first failure and fatal error on the second failure.
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, PasswordConfirmFlow) {
+// TODO(crbug.com/1315447): Disabled as this has been flaky throughout builds.
+IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, DISABLED_PasswordConfirmFlow) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
