@@ -710,8 +710,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
           !old_style->RadiiEqual(new_style) ||
           (HasControlClip() && !old_style->PaddingEqual(new_style))) {
         SetNeedsPaintPropertyUpdate();
-        if (Layer())
-          Layer()->SetNeedsCompositingInputsUpdate();
       }
     }
 

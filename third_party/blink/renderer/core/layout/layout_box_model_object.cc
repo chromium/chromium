@@ -235,8 +235,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     // that if the HasLayer() value changed, then all of this was already set in
     // CreateLayerAfterStyleChange() or DestroyLayer().
     SetNeedsPaintPropertyUpdate();
-    if (Layer())
-      Layer()->SetNeedsCompositingInputsUpdate();
   }
 
   if (old_style && Parent()) {

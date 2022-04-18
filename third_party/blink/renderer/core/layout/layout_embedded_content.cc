@@ -379,11 +379,6 @@ void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
   // tree so setting the flags ensures the required updates.
   SetNeedsPaintPropertyUpdate();
   SetShouldDoFullPaintInvalidation();
-  // Showing/hiding the embedded content view and changing the view between null
-  // and non-null affect compositing (see: PaintLayerCompositor::CanBeComposited
-  // and RootShouldAlwaysComposite).
-  if (HasLayer())
-    Layer()->SetNeedsCompositingInputsUpdate();
 }
 
 void LayoutEmbeddedContent::UpdateGeometry(

@@ -715,10 +715,8 @@ void DocumentTransitionStyleTracker::VerifySharedElements() {
 
     // Invalidate the element since we should no longer be compositing it.
     auto* box = active_element->GetLayoutBox();
-    if (box && box->HasSelfPaintingLayer()) {
+    if (box && box->HasSelfPaintingLayer())
       box->SetNeedsPaintPropertyUpdate();
-      box->Layer()->SetNeedsCompositingInputsUpdate();
-    }
     active_element = nullptr;
   }
 }
@@ -759,11 +757,8 @@ void DocumentTransitionStyleTracker::InvalidateStyle() {
                                                    invalidate_style);
 
   // Invalidate layout view compositing properties.
-  if (auto* layout_view = document_->GetLayoutView()) {
+  if (auto* layout_view = document_->GetLayoutView())
     layout_view->SetNeedsPaintPropertyUpdate();
-    if (layout_view->HasSelfPaintingLayer())
-      layout_view->Layer()->SetNeedsCompositingInputsUpdate();
-  }
 
   for (auto& entry : element_data_map_) {
     if (!entry.value->target_element)
@@ -780,9 +775,6 @@ void DocumentTransitionStyleTracker::InvalidateStyle() {
     auto* box = entry.value->target_element->GetLayoutBox();
     if (!box || !box->HasSelfPaintingLayer())
       continue;
-
-    // We might need to composite or decomposite this layer.
-    box->Layer()->SetNeedsCompositingInputsUpdate();
   }
 }
 
