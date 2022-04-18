@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -91,10 +92,10 @@ class AlwaysSetCookieChecker : public AttributionCookieChecker {
 
 class SentReportAccumulator : public AttributionReportSender {
  public:
-  SentReportAccumulator(base::Value::ListStorage& event_level_reports,
-                        base::Value::ListStorage& debug_event_level_reports,
-                        base::Value::ListStorage& aggregatable_reports,
-                        base::Value::ListStorage& debug_aggregatable_reports,
+  SentReportAccumulator(base::Value::List& event_level_reports,
+                        base::Value::List& debug_event_level_reports,
+                        base::Value::List& aggregatable_reports,
+                        base::Value::List& debug_aggregatable_reports,
                         bool remove_report_ids,
                         AttributionReportTimeFormat report_time_format,
                         bool remove_assembled_report)
@@ -132,32 +133,31 @@ class SentReportAccumulator : public AttributionReportSender {
       report_body.RemoveKey("source_registration_time");
     }
 
-    base::DictionaryValue value;
-    value.SetKey("report", std::move(report_body));
-    value.SetStringKey("report_url", report.ReportURL(is_debug_report).spec());
+    base::Value::Dict value;
+    value.Set("report", std::move(report_body));
+    value.Set("report_url", report.ReportURL(is_debug_report).spec());
 
     static constexpr char kKeyReportTime[] = "report_time";
     base::TimeDelta report_time_delta = base::Time::Now() - time_origin_;
     switch (report_time_format_) {
       case AttributionReportTimeFormat::kSecondsSinceUnixEpoch:
-        value.SetIntKey(kKeyReportTime, report_time_delta.InSeconds());
+        value.Set(kKeyReportTime,
+                  base::checked_cast<int>(report_time_delta.InSeconds()));
         break;
       case AttributionReportTimeFormat::kISO8601:
-        value.SetStringKey(
-            kKeyReportTime,
-            base::TimeToISO8601(base::Time::UnixEpoch() + report_time_delta));
+        value.Set(kKeyReportTime, base::TimeToISO8601(base::Time::UnixEpoch() +
+                                                      report_time_delta));
         break;
     }
 
-    base::Value::ListStorage* reports;
+    base::Value::List* reports;
 
-    base::DictionaryValue test_info;
+    base::Value::Dict test_info;
     if (absl::holds_alternative<AttributionReport::EventLevelData>(
             report.data())) {
-      test_info.SetBoolKey(
-          "randomized_trigger",
-          report.attribution_info().source.attribution_logic() ==
-              StoredSource::AttributionLogic::kFalsely);
+      test_info.Set("randomized_trigger",
+                    report.attribution_info().source.attribution_logic() ==
+                        StoredSource::AttributionLogic::kFalsely);
 
       reports =
           is_debug_report ? &debug_event_level_reports_ : &event_level_reports_;
@@ -166,22 +166,22 @@ class SentReportAccumulator : public AttributionReportSender {
           absl::get_if<AttributionReport::AggregatableAttributionData>(
               &report.data());
       DCHECK(aggregatable_data);
-      auto list = std::make_unique<base::ListValue>();
+      base::Value::List list;
       for (const auto& contribution : aggregatable_data->contributions) {
-        auto dict = std::make_unique<base::DictionaryValue>();
-        dict->SetString("key", HexEncodeAggregatableKey(contribution.key()));
-        dict->SetInteger("value", contribution.value());
+        base::Value::Dict dict;
+        dict.Set("key", HexEncodeAggregatableKey(contribution.key()));
+        dict.Set("value", base::checked_cast<int>(contribution.value()));
 
-        list->Append(std::move(dict));
+        list.Append(std::move(dict));
       }
-      test_info.SetList("histograms", std::move(list));
+      test_info.Set("histograms", std::move(list));
 
       reports = is_debug_report ? &debug_aggregatable_reports_
                                 : &aggregatable_reports_;
     }
-    value.SetKey("test_info", std::move(test_info));
+    value.Set("test_info", std::move(test_info));
 
-    reports->push_back(std::move(value));
+    reports->Append(std::move(value));
 
     std::move(sent_callback)
         .Run(std::move(report), SendResult(SendResult::Status::kSent,
@@ -192,10 +192,10 @@ class SentReportAccumulator : public AttributionReportSender {
   const bool remove_report_ids_;
   const AttributionReportTimeFormat report_time_format_;
   const bool remove_assembled_report_;
-  base::Value::ListStorage& event_level_reports_;
-  base::Value::ListStorage& debug_event_level_reports_;
-  base::Value::ListStorage& aggregatable_reports_;
-  base::Value::ListStorage& debug_aggregatable_reports_;
+  base::Value::List& event_level_reports_;
+  base::Value::List& debug_event_level_reports_;
+  base::Value::List& aggregatable_reports_;
+  base::Value::List& debug_aggregatable_reports_;
 };
 
 // Registers sources and triggers in the `AttributionManagerImpl` and records
@@ -203,8 +203,8 @@ class SentReportAccumulator : public AttributionReportSender {
 class AttributionEventHandler : public AttributionObserver {
  public:
   AttributionEventHandler(AttributionManagerImpl* manager,
-                          base::Value::ListStorage& rejected_sources,
-                          base::Value::ListStorage& rejected_triggers)
+                          base::Value::List& rejected_sources,
+                          base::Value::List& rejected_triggers)
       : manager_(manager),
         rejected_sources_(rejected_sources),
         rejected_triggers_(rejected_triggers) {
@@ -254,11 +254,11 @@ class AttributionEventHandler : public AttributionObserver {
         break;
     }
 
-    base::DictionaryValue dict;
-    dict.SetStringKey("reason", reason.str());
-    dict.SetKey("source", std::move(input_value));
+    base::Value::Dict dict;
+    dict.Set("reason", reason.str());
+    dict.Set("source", std::move(input_value));
 
-    rejected_sources_.push_back(std::move(dict));
+    rejected_sources_.Append(std::move(dict));
   }
 
   void OnTriggerHandled(const AttributionTrigger& trigger,
@@ -327,7 +327,7 @@ class AttributionEventHandler : public AttributionObserver {
 
     dict.SetKey("trigger", std::move(input_value));
 
-    rejected_triggers_.push_back(std::move(dict));
+    rejected_triggers_.Append(std::move(dict));
   }
 
   base::ScopedObservation<AttributionManagerImpl, AttributionObserver>
@@ -335,8 +335,8 @@ class AttributionEventHandler : public AttributionObserver {
 
   base::raw_ptr<AttributionManagerImpl> manager_;
 
-  base::Value::ListStorage& rejected_sources_;
-  base::Value::ListStorage& rejected_triggers_;
+  base::Value::List& rejected_sources_;
+  base::Value::List& rejected_triggers_;
 
   base::circular_deque<base::Value> input_values_;
 };
@@ -374,10 +374,10 @@ base::Value RunAttributionSimulation(
     rng = std::make_unique<AttributionDefaultRandomGenerator>();
   }
 
-  base::Value::ListStorage event_level_reports;
-  base::Value::ListStorage debug_event_level_reports;
-  base::Value::ListStorage aggregatable_reports;
-  base::Value::ListStorage debug_aggregatable_reports;
+  base::Value::List event_level_reports;
+  base::Value::List debug_event_level_reports;
+  base::Value::List aggregatable_reports;
+  base::Value::List debug_aggregatable_reports;
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
@@ -396,8 +396,8 @@ base::Value RunAttributionSimulation(
           options.report_time_format, options.remove_assembled_report),
       storage_partition);
 
-  base::Value::ListStorage rejected_sources;
-  base::Value::ListStorage rejected_triggers;
+  base::Value::List rejected_sources;
+  base::Value::List rejected_triggers;
   AttributionEventHandler handler(manager.get(), rejected_sources,
                                   rejected_triggers);
 
