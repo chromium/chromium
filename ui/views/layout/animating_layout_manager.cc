@@ -95,7 +95,7 @@ struct AnimatingLayoutManager::LayoutFadeInfo {
   // The view next (trailing side) to the fading view which is in both the
   // starting and target layout, or null if none.
   View* next_view = nullptr;
-  // The full-size bounds, normalized to the orientation of the layout manaer,
+  // The full-size bounds, normalized to the orientation of the layout manager,
   // that |child_view| starts with, if fading out, or ends with, if fading in.
   NormalizedRect reference_bounds;
   // The offset from the end of |prev_view| and the start of |next_view|. Insets
@@ -370,6 +370,11 @@ bool AnimatingLayoutManager::HasObserver(Observer* observer) const {
 gfx::Size AnimatingLayoutManager::GetPreferredSize(const View* host) const {
   if (!target_layout_manager())
     return gfx::Size();
+
+  // If animation is disabled, preferred size does not change with current
+  // animation state.
+  if (!gfx::Animation::ShouldRenderRichAnimation())
+    return target_layout_manager()->GetPreferredSize(host);
 
   switch (bounds_animation_mode_) {
     case BoundsAnimationMode::kUseHostBounds:
