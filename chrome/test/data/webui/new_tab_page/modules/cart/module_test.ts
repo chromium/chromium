@@ -738,6 +738,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertTrue(!!moduleElement, 'Module should exist');
       document.body.append(moduleElement);
       moduleElement.$.consentCardElement.render();
+      let transitionend =
+          eventToPromise('transitionend', moduleElement.$.consentContainer);
 
       // Assert.
       const consentCard = $$<HTMLElement>(moduleElement, '#consentCard')!;
@@ -763,6 +765,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Act.
       consentCard.querySelector<HTMLElement>('#cancelButton')!.click();
       await flushTasks();
+      await transitionend;
 
       // Assert.
       assertEquals(
@@ -790,15 +793,19 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Act.
       moduleElement.showDiscountConsent = true;
       moduleElement.$.consentCardElement.render();
+      assertEquals(true, isVisible(consentCard));
+      transitionend =
+          eventToPromise('transitionend', moduleElement.$.consentContainer);
 
       // Assert.
       assertEquals(
-          true, isVisible(consentCard), 'Consent card should be visible');
+          true, isVisible(consentCard), 'Consent card should be visible1');
       assertEquals(0, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
 
       // Act.
       consentCard.querySelector<HTMLElement>('#actionButton')!.click();
       await flushTasks();
+      await transitionend;
 
       // Assert.
       assertEquals(
@@ -1189,16 +1196,20 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
     async function testClickingAcceptButtonOnConsentCard() {
       // Arrange.
+      const transitionend =
+          eventToPromise('transitionend', moduleElement.$.consentContainer);
       const consentToast = moduleElement.$.confirmDiscountConsentToast;
-      assertEquals(0, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
       const consentCard =
           $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
+      assertEquals(0, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
+      assertEquals(true, isVisible(consentCard));
       nextStep(consentCard);
       await flushTasks();
 
       // Act.
       clickAcceptButton(consentCard);
       await flushTasks();
+      await transitionend;
 
       // Assert.
       assertEquals(
@@ -1274,12 +1285,16 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           'Verify clicking close button in step 1 hides consent card',
           async () => {
             // Arrange.
+            assertEquals(true, isVisible(consentCard));
+            const transitionend = eventToPromise(
+                'transitionend', moduleElement.$.consentContainer);
             assertEquals(
                 0, metrics.count('NewTabPage.Carts.DismissDiscountConsent'),
                 'Dismissed count should be 0 before clicking');
             // Act.
             clickCloseButton(consentCard);
             await flushTasks();
+            await transitionend;
 
             // Assert.
             assertEquals(false, isVisible(consentCard));
@@ -1293,6 +1308,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           'Verify clicking close button in step 2 hides consent card',
           async () => {
             // Arrange.
+            assertEquals(true, isVisible(consentCard));
+            const transitionend = eventToPromise(
+                'transitionend', moduleElement.$.consentContainer);
             const consentToast = moduleElement.$.confirmDiscountConsentToast;
             assertEquals(
                 0, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
@@ -1302,6 +1320,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             // Act.
             clickCloseButton(consentCard);
             await flushTasks();
+            await transitionend;
 
             // Assert.
             assertEquals(false, isVisible(consentCard));
@@ -1356,6 +1375,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           'Verify clicking reject button in step 2 hides consent card',
           async () => {
             // Arrange.
+            assertEquals(true, isVisible(consentCard));
+            const transitionend = eventToPromise(
+                'transitionend', moduleElement.$.consentContainer);
             const consentToast = moduleElement.$.confirmDiscountConsentToast;
             assertEquals(
                 0, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
@@ -1365,6 +1387,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             // Act.
             clickRejectButton(consentCard);
             await flushTasks();
+            await transitionend;
 
             // Assert.
             assertEquals(false, isVisible(consentCard));
