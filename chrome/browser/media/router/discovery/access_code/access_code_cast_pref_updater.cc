@@ -97,7 +97,7 @@ void AccessCodeCastPrefUpdater::UpdateDiscoveredNetworksDict(
 //     "<sink_id_1>": "1237234734723747234",
 //     "<sink_id_2>": "12372347312312347234",
 //   }
-void AccessCodeCastPrefUpdater::UpdateDeviceAdditionTimeDict(
+void AccessCodeCastPrefUpdater::UpdateDeviceAddedTimeDict(
     const MediaSink::Id sink_id) {
   ScopedDictionaryPrefUpdate update(pref_service_,
                                     prefs::kAccessCodeCastDeviceAdditionTime);
@@ -119,7 +119,7 @@ const base::Value* AccessCodeCastPrefUpdater::GetDiscoveredNetworksDict() {
   return pref_service_->GetDictionary(prefs::kAccessCodeCastDiscoveredNetworks);
 }
 
-const base::Value* AccessCodeCastPrefUpdater::GetDeviceAdditionTimeDict() {
+const base::Value* AccessCodeCastPrefUpdater::GetDeviceAddedTimeDict() {
   return pref_service_->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
 }
 
@@ -151,6 +151,21 @@ const base::Value* AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
   if (!device_value)
     return nullptr;
   return device_value;
+}
+
+absl::optional<base::Time> AccessCodeCastPrefUpdater::GetDeviceAddedTime(
+    const MediaSink::Id sink_id) {
+  auto* device_Added_dict = GetDeviceAddedTimeDict();
+  if (!device_Added_dict)
+    return absl::nullopt;
+
+  // If found, it returns a pointer to the element. Otherwise it returns
+  // nullptr.
+  auto* device_Added_value = device_Added_dict->FindKey(sink_id);
+
+  if (!device_Added_value)
+    return absl::nullopt;
+  return base::ValueToTime(device_Added_value);
 }
 
 void AccessCodeCastPrefUpdater::RemoveSinkIdFromDevicesDict(
@@ -204,7 +219,7 @@ void AccessCodeCastPrefUpdater::RemoveSinkIdFromDiscoveredNetworksDict(
   }
 }
 
-void AccessCodeCastPrefUpdater::RemoveSinkIdFromDeviceAdditionTimeDict(
+void AccessCodeCastPrefUpdater::RemoveSinkIdFromDeviceAddedTimeDict(
     const MediaSink::Id sink_id) {
   ScopedDictionaryPrefUpdate update(pref_service_,
                                     prefs::kAccessCodeCastDeviceAdditionTime);

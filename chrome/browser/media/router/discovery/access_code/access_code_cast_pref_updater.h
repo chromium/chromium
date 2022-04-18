@@ -39,7 +39,7 @@ class AccessCodeCastPrefUpdater {
   // Sets the key for the |sink_id| with the time it is added. This is
   // calculated at the time of the functions calling. If the |sink_id| already
   // exist, then update the value of that |sink_id| with a new time.
-  void UpdateDeviceAdditionTimeDict(const MediaSink::Id sink_id);
+  void UpdateDeviceAddedTimeDict(const MediaSink::Id sink_id);
 
   // Returns a nullptr if the device dictionary does not exist in the pref
   // service for some reason.
@@ -49,9 +49,9 @@ class AccessCodeCastPrefUpdater {
   // service for some reason.
   const base::Value* GetDiscoveredNetworksDict();
 
-  // Returns a nullptr if the device addition dictionary does not exist in the
+  // Returns a nullptr if the device Added dictionary does not exist in the
   // pref service for some reason.
-  const base::Value* GetDeviceAdditionTimeDict();
+  const base::Value* GetDeviceAddedTimeDict();
 
   // If found, it returns a pointer to the element. Otherwise it returns
   // nullptr.
@@ -61,6 +61,9 @@ class AccessCodeCastPrefUpdater {
   // nullptr.
   const base::Value* GetMediaSinkInternalValueBySinkId(
       const MediaSink::Id sink_id);
+
+  // If found and a valid time value, returns the time of Addeds.
+  absl::optional<base::Time> GetDeviceAddedTime(const MediaSink::Id sink_id);
 
   // Removes the given |sink_id| from all instances in the devices dictionary
   // stored in the pref service. Nothing occurs if the |sink_id| was not there
@@ -72,10 +75,10 @@ class AccessCodeCastPrefUpdater {
   // in the first place.
   void RemoveSinkIdFromDiscoveredNetworksDict(const MediaSink::Id sink_id);
 
-  // Removes the given |sink_id| from all instances in the device addition
+  // Removes the given |sink_id| from all instances in the device Added
   // dictionary stored in the pref service. Nothing occurs if the |sink_id| was
   // not there in the first place.
-  void RemoveSinkIdFromDeviceAdditionTimeDict(const MediaSink::Id sink_id);
+  void RemoveSinkIdFromDeviceAddedTimeDict(const MediaSink::Id sink_id);
 
   base::WeakPtr<AccessCodeCastPrefUpdater> GetWeakPtr();
 

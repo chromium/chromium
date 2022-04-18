@@ -167,26 +167,25 @@ TEST_F(AccessCodeCastPrefUpdaterTest, EnsureNoDuplicatesInSameNetworkList) {
   EXPECT_EQ(*network_list, *expected_network_list.get());
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAdditionTimeDict) {
+TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
-  pref_updater()->UpdateDeviceAdditionTimeDict(cast_sink.id());
+  pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
   auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
   auto* time_of_addition = dict->FindKey(cast_sink.id());
   EXPECT_TRUE(time_of_addition);
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest,
-       TestUpdateDeviceAdditionTimeDictOverwrite) {
+TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDictOverwrite) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
-  pref_updater()->UpdateDeviceAdditionTimeDict(cast_sink.id());
+  pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
   auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
   auto initial_time_of_addition =
       base::ValueToTime(dict->FindKey(cast_sink.id())).value();
 
   task_env().AdvanceClock(base::Seconds(10));
-  pref_updater()->UpdateDeviceAdditionTimeDict(cast_sink.id());
+  pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
   auto final_time_of_addition =
       base::ValueToTime(dict->FindKey(cast_sink.id())).value();
 
@@ -314,18 +313,27 @@ TEST_F(AccessCodeCastPrefUpdaterTest,
   EXPECT_FALSE(updated_dict.FindList(network2));
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest,
-       TestRemoveSinkIdFromDeviceAdditionTimeDict) {
+TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
-  pref_updater()->UpdateDeviceAdditionTimeDict(cast_sink.id());
+  pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
 
-  pref_updater()->RemoveSinkIdFromDeviceAdditionTimeDict(cast_sink.id());
+  pref_updater()->RemoveSinkIdFromDeviceAddedTimeDict(cast_sink.id());
   auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
   EXPECT_FALSE(dict->FindKey(cast_sink.id()));
 
-  pref_updater()->RemoveSinkIdFromDeviceAdditionTimeDict(cast_sink2.id());
+  pref_updater()->RemoveSinkIdFromDeviceAddedTimeDict(cast_sink2.id());
+}
+
+TEST_F(AccessCodeCastPrefUpdaterTest, TestGetDeviceAddedTime) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+
+  pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
+
+  EXPECT_TRUE(pref_updater()->GetDeviceAddedTime(cast_sink.id()));
+  EXPECT_FALSE(pref_updater()->GetDeviceAddedTime(cast_sink2.id()));
 }
 
 }  // namespace media_router
