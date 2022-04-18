@@ -362,4 +362,20 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, SetState) {
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
 }
 
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
+                       StopWhenNeverStarted) {
+  absl::optional<std::string> locale;
+  absl::optional<bool> interim_results;
+  // Attempt to start speech recognition. Don't wait for `on_start_callback` to
+  // be run.
+  HandleStart(locale, interim_results);
+  ASSERT_FALSE(ran_on_start_callback());
+  // Immediately turn speech recognition off.
+  HandleStopAndWait();
+  // Ensure there are no dangling callbacks e.g. that both `on_start_callback`
+  // and `on_stop_callback` should be run.
+  ASSERT_TRUE(ran_on_start_callback());
+  ASSERT_TRUE(ran_on_stop_once_callback());
+}
+
 }  // namespace extensions
