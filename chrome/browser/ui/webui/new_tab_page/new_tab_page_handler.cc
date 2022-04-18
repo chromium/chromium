@@ -70,6 +70,7 @@
 namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
+const int64_t kMaxModuleFreImpressions = 8;
 
 new_tab_page::mojom::ThemePtr MakeTheme(
     const ui::ColorProvider& color_provider,
@@ -690,15 +691,42 @@ void NewTabPageHandler::UpdateModulesFreVisibility() {
   auto ntp_modules_fre_visible =
       profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible);
 
-  // Hide Modular NTP Desktop v1 First Run Experience after 8 impressions or 1
-  // day, whichever comes first.
-  if (ntp_modules_shown_count >= 8 ||
+  // Hide Modular NTP Desktop v1 First Run Experience after
+  // |kMaxModuleFreImpressions| impressions or 1 day, whichever comes first.
+  if (ntp_modules_shown_count >= kMaxModuleFreImpressions ||
       (!ntp_modules_first_shown_time.is_null() &&
        (base::Time::Now() - ntp_modules_first_shown_time) > base::Days(1))) {
     ntp_modules_fre_visible = false;
     SetModulesFreVisible(ntp_modules_fre_visible);
   } else {
     page_->SetModulesFreVisibility(ntp_modules_fre_visible);
+  }
+
+  if (ntp_modules_shown_count == kMaxModuleFreImpressions ||
+      (!ntp_modules_first_shown_time.is_null() &&
+       (base::Time::Now() - ntp_modules_first_shown_time) == base::Days(1))) {
+    LogModulesFreOptInStatus(new_tab_page::mojom::OptInStatus::kImplicitOptIn);
+  }
+}
+
+void NewTabPageHandler::LogModulesFreOptInStatus(
+    new_tab_page::mojom::OptInStatus opt_in_status) {
+  const auto ntp_modules_shown_count =
+      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
+  switch (opt_in_status) {
+    case new_tab_page::mojom::OptInStatus::kExplicitOptIn:
+      base::UmaHistogramExactLinear("NewTabPage.Modules.FreExplicitOptIn",
+                                    ntp_modules_shown_count,
+                                    kMaxModuleFreImpressions);
+      break;
+    case new_tab_page::mojom::OptInStatus::kImplicitOptIn:
+      base::UmaHistogramBoolean("NewTabPage.Modules.FreImplicitOptIn", true);
+      break;
+
+    case new_tab_page::mojom::OptInStatus::kOptOut:
+      base::UmaHistogramExactLinear("NewTabPage.Modules.FreOptOut",
+                                    ntp_modules_shown_count,
+                                    kMaxModuleFreImpressions);
   }
 }
 

@@ -448,6 +448,22 @@ TEST_F(NewTabPageHandlerTest, Histograms) {
       std::string(NewTabPageHandler::kModuleRestoredHistogram) +
           ".kaleidoscope",
       1);
+
+  // NewTabPage.Modules.FreOptIn and NewTabPage.Modules.FreOptOut log how many
+  // times the FRE is shown, so we increment the shown count to make sure the
+  // histogram is logging correctly
+  handler_->IncrementModulesShownCount();
+  handler_->LogModulesFreOptInStatus(
+      new_tab_page::mojom::OptInStatus::kExplicitOptIn);
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.FreExplicitOptIn", 1);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.FreExplicitOptIn", 1));
+
+  handler_->IncrementModulesShownCount();
+  handler_->LogModulesFreOptInStatus(new_tab_page::mojom::OptInStatus::kOptOut);
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.FreOptOut", 1);
+  ASSERT_EQ(
+      1, histogram_tester_.GetBucketCount("NewTabPage.Modules.FreOptOut", 2));
 }
 
 TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
@@ -726,6 +742,9 @@ TEST_F(NewTabPageHandlerTest,
 
   EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
             false);
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.FreImplicitOptIn", 1);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.FreImplicitOptIn", true));
 
   mock_page_.FlushForTesting();
 }

@@ -179,7 +179,7 @@ suite('NewTabPageModulesModulesTest', () => {
       assertTrue(customizeModule.received);
     });
 
-    test(`fre can be opted out of and restored`, async () => {
+    test(`fre buttons work`, async () => {
       // Arrange.
       const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
       const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
@@ -221,8 +221,15 @@ suite('NewTabPageModulesModulesTest', () => {
       assertFalse(modulesElement.$.removeModuleFreToast.open);
       assertDeepEquals(true, handler.getArgs('setModulesFreVisible')[1]);
       assertDeepEquals(true, handler.getArgs('setModulesVisible')[1]);
-      assertEquals(1, metrics.count('NewTabPage.Modules.FreImpression', true));
+      assertEquals(1, handler.getCallCount('logModulesFreOptInStatus'));
       assertEquals(1, metrics.count('NewTabPage.Modules.FreLoaded', true));
+
+      // Act.
+      $$<HTMLElement>(modulesElement, '.action-button')!.click();
+
+      // Assert.
+      assertDeepEquals(false, handler.getArgs('setModulesFreVisible')[2]);
+      assertEquals(2, handler.getCallCount('logModulesFreOptInStatus'));
     });
   });
 
