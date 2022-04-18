@@ -225,6 +225,9 @@ base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
   dict.Set("mayCreateShortcuts", is_locally_installed);
   dict.Set("isLocallyInstalled", is_locally_installed);
 
+  const bool hide_display_mode = registrar.IsIsolated(app_id);
+  dict.Set("hideDisplayMode", hide_display_mode);
+
   absl::optional<std::string> icon_big;
   absl::optional<std::string> icon_small;
 
@@ -418,6 +421,8 @@ base::Value::Dict AppLauncherHandler::CreateExtensionInfo(
   // Run on OS Login is not implemented for extension/bookmark apps.
   dict.Set("mayShowRunOnOsLoginMode", false);
   dict.Set("mayToggleRunOnOsLoginMode", false);
+
+  dict.Set("hideDisplayMode", false);
   return dict;
 }
 

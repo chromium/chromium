@@ -20,6 +20,7 @@
  *            is_deprecated_app: boolean,
  *            is_webstore: boolean,
  *            isLocallyInstalled: boolean,
+ *            hideDisplayMode: boolean,
  *            kioskEnabled: boolean,
  *            kioskMode: boolean,
  *            kioskOnly: boolean,

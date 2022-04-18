@@ -169,6 +169,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const apps::ProtocolHandlers* GetAppProtocolHandlers(
       const AppId& app_id) const;
   bool IsAppFileHandlerPermissionBlocked(const web_app::AppId& app_id) const;
+  bool IsIsolated(const AppId& app_id) const;
+
   // Returns the state of the File Handling API for the given app.
   ApiApprovalState GetAppFileHandlerApprovalState(const AppId& app_id) const;
   // Returns true iff it's expected that File Handlers have been, **or are in
@@ -416,8 +418,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool registry_profile_being_deleted_ = false;
 
  private:
-  bool IsIsolated(const AppId& app_id) const;
-
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppPolicyManager> policy_manager_ = nullptr;
   raw_ptr<WebAppTranslationManager> translation_manager_ = nullptr;

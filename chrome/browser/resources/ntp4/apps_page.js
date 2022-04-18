@@ -181,11 +181,16 @@ AppContextMenu.prototype = {
     this.forAllLaunchTypes_(function(launchTypeButton, id) {
       launchTypeButton.disabled = false;
       launchTypeButton.checked = app.appData.launch_type === id;
-      // There are two cases when a launch type is hidden:
+      // There are three cases when a launch type is hidden:
       //  1. if the launch type can't be changed.
       //  2. type is anything except launchTypeWindow
-      launchTypeButton.hidden = !app.appData.mayChangeLaunchType ||
-          launchTypeButton !== launchTypeWindow;
+      //  3. type is launchTypeWindow and hideDisplayMode is true.
+      if (launchTypeButton === launchTypeWindow) {
+        launchTypeButton.hidden = app.appData.hideDisplayMode;
+      } else {
+        launchTypeButton.hidden = !app.appData.mayChangeLaunchType;
+      }
+
       if (!launchTypeButton.hidden) {
         hasLaunchType = true;
       }
