@@ -48,7 +48,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   const scoped_refptr<base::SingleThreadTaskRunner>
       task_runner_for_screen_observer_;
 
-  // Communication interface to the camera HAL.
+  // The thread that all the Mojo operations of |camera_hal_delegate_| take
+  // place.  Started in Init and stopped when the class instance is destroyed.
+  base::Thread camera_hal_ipc_thread_;
+
+  // Communication interface to the camera HAL.  |camera_hal_delegate_| is
+  // created on the thread on which Init is called.  All the Mojo communication
+  // that |camera_hal_delegate_| issues and receives must be sequenced through
+  // |camera_hal_ipc_thread_|.
   std::unique_ptr<CameraHalDelegate> camera_hal_delegate_;
 
   bool initialized_;
