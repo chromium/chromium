@@ -2,7 +2,6 @@
 #   Componentization and iOS: droger@chromium.org
 #                             jzw@chromium.org
 #   "Bubble" UI and translate internals: megjablon@chromium.org
-#                                        hajimehoshi@chromium.org
 #   CSP and isolated worlds: toyoshim@chromium.org
 anthonyvd@chromium.org
 droger@chromium.org
