@@ -12,9 +12,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_key.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 
@@ -36,7 +36,7 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
   AttributionAggregatableTriggerData& operator=(
       AttributionAggregatableTriggerData&&);
 
-  const AttributionAggregatableKey& key() const { return key_; }
+  absl::uint128 key() const { return key_; }
 
   const base::flat_set<std::string>& source_keys() const {
     return source_keys_;
@@ -47,12 +47,12 @@ class CONTENT_EXPORT AttributionAggregatableTriggerData {
   const AttributionFilterData& not_filters() const { return not_filters_; }
 
  private:
-  AttributionAggregatableTriggerData(AttributionAggregatableKey key,
+  AttributionAggregatableTriggerData(absl::uint128 key,
                                      base::flat_set<std::string> source_keys,
                                      AttributionFilterData filters,
                                      AttributionFilterData not_filters);
 
-  AttributionAggregatableKey key_;
+  absl::uint128 key_;
   base::flat_set<std::string> source_keys_;
   AttributionFilterData filters_;
   AttributionFilterData not_filters_;

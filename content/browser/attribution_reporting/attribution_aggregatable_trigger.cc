@@ -40,10 +40,9 @@ AttributionAggregatableTriggerData::FromMojo(
   if (!not_filters.has_value())
     return absl::nullopt;
 
-  AttributionAggregatableKey key{.high_bits = mojo->key->high_bits,
-                                 .low_bits = mojo->key->low_bits};
   return AttributionAggregatableTriggerData(
-      std::move(key),
+      absl::MakeUint128(/*high=*/mojo->key->high_bits,
+                        /*low=*/mojo->key->low_bits),
       base::flat_set<std::string>(
           std::make_move_iterator(mojo->source_keys.begin()),
           std::make_move_iterator(mojo->source_keys.end())),
@@ -54,11 +53,11 @@ AttributionAggregatableTriggerData::AttributionAggregatableTriggerData() =
     default;
 
 AttributionAggregatableTriggerData::AttributionAggregatableTriggerData(
-    AttributionAggregatableKey key,
+    absl::uint128 key,
     base::flat_set<std::string> source_keys,
     AttributionFilterData filters,
     AttributionFilterData not_filters)
-    : key_(std::move(key)),
+    : key_(key),
       source_keys_(std::move(source_keys)),
       filters_(std::move(filters)),
       not_filters_(std::move(not_filters)) {}

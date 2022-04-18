@@ -51,8 +51,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
       if (bucket == buckets_map.end())
         continue;
 
-      bucket->second |=
-          absl::MakeUint128(data.key().high_bits, data.key().low_bits);
+      bucket->second |= data.key();
     }
   }
 

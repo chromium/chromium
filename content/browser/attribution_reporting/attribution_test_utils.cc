@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_key.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
@@ -894,14 +893,6 @@ bool operator==(const DeactivatedSource& a, const DeactivatedSource& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const AttributionAggregatableKey& a,
-                const AttributionAggregatableKey& b) {
-  const auto tie = [](const AttributionAggregatableKey& key) {
-    return std::make_tuple(key.high_bits, key.low_bits);
-  };
-  return tie(a) == tie(b);
-}
-
 bool operator==(const AttributionAggregatableTriggerData& a,
                 const AttributionAggregatableTriggerData& b) {
   const auto tie = [](const AttributionAggregatableTriggerData& trigger_data) {
@@ -1277,12 +1268,6 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
     case StorableSource::Result::kProhibitedByBrowserPolicy:
       return out << "prohibitedByBrowserPolicy";
   }
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionAggregatableKey& key) {
-  return out << "{high_bits=" << key.high_bits << ",low_bits=" << key.low_bits
-             << "}";
 }
 
 std::ostream& operator<<(

@@ -67,8 +67,6 @@ class AttributionManagerImpl;
 class AttributionObserver;
 class AttributionTrigger;
 
-struct AttributionAggregatableKey;
-
 enum class RateLimitResult : int;
 
 const AttributionSourceType kSourceTypes[] = {
@@ -697,9 +695,6 @@ bool operator==(const SendResult& a, const SendResult& b);
 
 bool operator==(const DeactivatedSource& a, const DeactivatedSource& b);
 
-bool operator==(const AttributionAggregatableKey& a,
-                const AttributionAggregatableKey& b);
-
 bool operator==(const AttributionAggregatableTriggerData& a,
                 const AttributionAggregatableTriggerData& b);
 
@@ -769,9 +764,6 @@ std::ostream& operator<<(std::ostream& out,
                          const DeactivatedSource& deactivated_source);
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
-
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionAggregatableKey& key);
 
 std::ostream& operator<<(
     std::ostream& out,
