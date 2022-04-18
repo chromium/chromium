@@ -245,6 +245,14 @@
         android:theme="@style/Theme.Chromium.DialogWhenLarge"
         android:windowSoftInputMode="stateAlwaysHidden">
     </activity>  # DIFF-ANCHOR: 0a21ad35
+    <activity  # DIFF-ANCHOR: be2dce69
+        android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:taskAffinity=""
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+    </activity>  # DIFF-ANCHOR: be2dce69
     <activity  # DIFF-ANCHOR: 209b5ded
         android:name="org.chromium.chrome.browser.browserservices.ClearDataDialogActivity"
         android:exported="false"
@@ -926,10 +934,6 @@
         android:name="org.chromium.chrome.browser.app.send_tab_to_self.SendTabToSelfNotificationReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: f6d77f5a
-    <receiver  # DIFF-ANCHOR: be2dce69
-        android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: be2dce69
     <receiver  # DIFF-ANCHOR: 31a8399a
         android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver"
         android:exported="true">

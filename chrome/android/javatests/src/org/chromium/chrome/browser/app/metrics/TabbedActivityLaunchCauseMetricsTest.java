@@ -174,13 +174,14 @@ public final class TabbedActivityLaunchCauseMetricsTest {
     @MediumTest
     public void testBookmarkWidgetMetrics() throws Throwable {
         Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClass(ContextUtils.getApplicationContext(), BookmarkWidgetProxy.class);
         intent.setData(Uri.parse("about:blank"));
         final int count =
                 1 + histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET);
         mActivityTestRule.setActivity(ApplicationTestUtils.waitForActivityWithClass(
                 ChromeTabbedActivity.class, Stage.RESUMED,
-                () -> ContextUtils.getApplicationContext().sendBroadcast(intent)));
+                () -> ContextUtils.getApplicationContext().startActivity(intent)));
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(
                     histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET),

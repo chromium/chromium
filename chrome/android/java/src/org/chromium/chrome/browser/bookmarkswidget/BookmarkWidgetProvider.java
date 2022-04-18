@@ -119,8 +119,9 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
 
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.bookmarks_list);
             Intent ic = new Intent(context, BookmarkWidgetProxy.class);
+            ic.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             views.setPendingIntentTemplate(R.id.bookmarks_list,
-                    PendingIntent.getBroadcast(context, 0, ic,
+                    PendingIntent.getActivity(context, 0, ic,
                             PendingIntent.FLAG_UPDATE_CURRENT
                                     | IntentUtils.getPendingIntentMutabilityFlag(true)));
             appWidgetManager.updateAppWidget(appWidgetId, views);

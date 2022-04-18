@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.bookmarkswidget;
 
-import android.content.BroadcastReceiver;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -16,20 +17,25 @@ import org.chromium.components.webapps.ShortcutSource;
 /**
  * Proxy that responds to tapping on the Bookmarks widget.
  */
-public class BookmarkWidgetProxy extends BroadcastReceiver {
+public class BookmarkWidgetProxy extends Activity {
     private static final String TAG = "BookmarkWidgetProxy";
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+
         if (BookmarkWidgetServiceImpl.getChangeFolderAction().equals(intent.getAction())) {
             BookmarkWidgetServiceImpl.changeFolder(intent);
         } else {
             Intent view = new Intent(intent);
-            view.setClass(context, ChromeLauncherActivity.class);
+            view.setClass(this, ChromeLauncherActivity.class);
             view.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.BOOKMARK_NAVIGATOR_WIDGET);
             view.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-            startActivity(context, view);
+            startActivity(this, view);
         }
+
+        finish();
     }
 
     void startActivity(Context context, Intent intent) {
