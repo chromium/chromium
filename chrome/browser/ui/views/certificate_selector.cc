@@ -229,6 +229,9 @@ void CertificateSelector::InitWithText(
   }
   columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SERIAL_COLUMN,
                                     ui::TableColumn::LEFT, -1, 0.2f));
+  for (auto& column : columns) {
+    column.sortable = true;
+  }
   auto table = std::make_unique<views::TableView>(
       model_.get(), columns, views::TEXT_ONLY, true /* single_selection */);
   table_ = table.get();
