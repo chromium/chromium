@@ -32,6 +32,8 @@ blink_modules_sources("webaudio") {
     "audio_destination_node.h",
     "audio_graph_tracer.cc",
     "audio_graph_tracer.h",
+    "audio_handler.cc",
+    "audio_handler.h",
     "audio_listener.cc",
     "audio_listener.h",
     "audio_node.cc",
