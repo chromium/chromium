@@ -173,7 +173,7 @@ bool FirstPartySetsDatabase::LazyInit() {
   if (db_status_ != InitStatus::kUnattempted)
     return db_status_ == InitStatus::kSuccess;
 
-  DCHECK_EQ(db_, nullptr);
+  DCHECK_EQ(db_.get(), nullptr);
   db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
       .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("FirstPartySets");
@@ -196,7 +196,7 @@ bool FirstPartySetsDatabase::LazyInit() {
 }
 
 bool FirstPartySetsDatabase::OpenDatabase() {
-  DCHECK_NE(db_, nullptr);
+  DCHECK(db_);
   if (db_->is_open() || db_->Open(db_path_)) {
     db_->Preload();
     return true;
@@ -206,7 +206,7 @@ bool FirstPartySetsDatabase::OpenDatabase() {
 
 void FirstPartySetsDatabase::DatabaseErrorCallback(int extended_error,
                                                    sql::Statement* stmt) {
-  DCHECK_NE(db_, nullptr);
+  DCHECK(db_);
   // Attempt to recover a corrupt database.
   if (sql::Recovery::ShouldRecover(extended_error)) {
     // Prevent reentrant calls.
