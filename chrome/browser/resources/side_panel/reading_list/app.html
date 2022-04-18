@@ -1,14 +1,4 @@
 <style include="mwb-shared-style mwb-element-shared-style cr-hidden-style">
-  #top-container {
-    display: flex;
-    height: var(--mwb-item-height);
-    justify-content: flex-end;
-  }
-
-  :host([side-panel]) #top-container {
-    display: none;
-  }
-
   #header {
     align-items: center;
     color: var(--cr-primary-text-color);
@@ -32,13 +22,9 @@
   }
 
   #readingListList {
-    max-height: 500px;
-    overflow: auto;
-  }
-
-  :host([side-panel]) #readingListList {
     margin-block-start: 8px;
     max-height: none;
+    overflow: auto;
   }
 
   #currentPageActionButton {
@@ -47,13 +33,9 @@
             var(--cr-hover-background-color));
     --hover-border-color: var(--border-color);
     border-radius: 4px;
-    margin: 0 16px 24px;
+    margin: 8px 16px 0 16px;
     padding: 8px;
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  :host([side-panel]) #currentPageActionButton {
-    margin: 8px 16px 0 16px;
   }
 
   #empty-state-container:not([hidden]) ~ #currentPageActionButton {
@@ -85,30 +67,22 @@
 
   .sub-heading {
     align-items: center;
-    border-bottom: 1px solid #dbdbdb;
     color: var(--cr-secondary-text-color);
     display: flex;
     font-size: 11px;
-    height: 24px;
-    margin-inline-start: var(--mwb-list-item-horizontal-margin);
-    margin-top: 4px;
-  }
-
-  :host([side-panel]) .sub-heading {
-    border: none;
     font-weight: 600;
     height: 28px;
     margin: 0;
-    padding: 8px 16px;
+    padding: 8px var(--mwb-list-item-horizontal-margin);
   }
 
-  :host([side-panel]) .hr {
+  .hr {
     border-top: 1px solid var(--google-grey-300);
     margin-block-start: 8px;
   }
 
   @media (prefers-color-scheme: dark) {
-    :host([side-panel]) .hr {
+    .hr {
       border-top: 1px solid var(--google-grey-700);
     }
   }
@@ -121,12 +95,8 @@
     content: url(images/read_later_empty.svg);
     height: 160px;
     margin-bottom: 8px;
-    margin-top: 16px;
-    width: 240px;
-  }
-
-  :host([side-panel]) #empty-state-image {
     margin-top: 0;
+    width: 240px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -146,21 +116,10 @@
     color: var(--cr-secondary-text-color);
     font-size: var(--mwb-primary-text-font-size);
     line-height: 20px;
-    padding: 4px var(--mwb-list-item-horizontal-margin) 24px;
-  }
-
-  :host([side-panel]) #empty-state-subheader {
-    padding-bottom: 16px;
+    padding: 4px var(--mwb-list-item-horizontal-margin) 16px;
   }
 </style>
 
-<div id="top-container" hidden="[[unifiedSidePanel_]]">
-  <div id="header">$i18n{title}</div>
-  <cr-icon-button id="closeButton" aria-label="$i18n{tooltipClose}"
-      iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
-      on-click="onCloseClick_" title="$i18n{tooltipClose}">
-  </cr-icon-button>
-</div>
 <div id="content" hidden="[[loadingContent_]]">
   <div id="empty-state-container"
        hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">

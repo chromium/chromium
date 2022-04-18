@@ -178,13 +178,6 @@ suite('ReadingListAppTest', () => {
     assertEquals(expectedUrl, url.url);
   });
 
-  test('Click on menu button triggers actions', async () => {
-    const readingListCloseButton =
-        readingListApp.shadowRoot!.querySelector<HTMLElement>('#closeButton')!;
-    readingListCloseButton.click();
-    await testProxy.whenCalled('closeUI');
-  });
-
   test('Enter key triggers action and passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
     const readingListItem =

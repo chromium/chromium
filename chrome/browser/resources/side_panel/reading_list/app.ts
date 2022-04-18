@@ -222,11 +222,6 @@ export class ReadingListAppElement extends PolymerElement {
         (e.currentTarget as ReadingListItemElement).dataset.url!;
   }
 
-  private onCloseClick_(e: Event) {
-    e.stopPropagation();
-    this.apiProxy_.closeUI();
-  }
-
   private shouldShowHr_(): boolean {
     return this.unreadItems_.length > 0 && this.readItems_.length > 0;
   }
