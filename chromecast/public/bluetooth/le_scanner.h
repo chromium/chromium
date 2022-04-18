@@ -18,13 +18,13 @@ namespace bluetooth_v2_shlib {
 class CHROMECAST_EXPORT LeScanner {
  public:
   struct ScanResult {
-    ScanResult();
+    ScanResult(Addr addr, const std::vector<uint8_t>& adv_data, int rssi);
     ScanResult(const ScanResult& other);
     ~ScanResult();
 
-    Addr addr;
-    std::vector<uint8_t> adv_data;
-    int rssi;
+    const Addr addr;
+    const std::vector<uint8_t> adv_data;
+    const int rssi;
   };
 
   class Delegate {
@@ -45,7 +45,7 @@ class CHROMECAST_EXPORT LeScanner {
       __attribute__((__weak__));
 };
 
-inline LeScanner::ScanResult::ScanResult() = default;
+inline LeScanner::ScanResult::ScanResult(Addr addr, const std::vector<uint8_t>& adv_data, int rssi) : addr(std::move(addr)), adv_data(adv_data), rssi(rssi) {} 
 inline LeScanner::ScanResult::ScanResult(const LeScanner::ScanResult& other) =
     default;
 inline LeScanner::ScanResult::~ScanResult() = default;

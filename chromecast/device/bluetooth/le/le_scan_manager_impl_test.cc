@@ -189,9 +189,7 @@ TEST_F(LeScanManagerTest, TestEnableScanFails) {
 
 TEST_F(LeScanManagerTest, TestGetScanResults) {
   // Simulate some scan results.
-  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result;
-  raw_scan_result.addr = kTestAddr1;
-  raw_scan_result.rssi = 1234;
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result(kTestAddr1, {}, 1234);
 
   EXPECT_CALL(mock_observer_, OnNewScanResult(_));
   delegate()->OnScanResult(raw_scan_result);
@@ -213,17 +211,14 @@ TEST_F(LeScanManagerTest, TestGetScanResultsWithService) {
   EXPECT_CALL(mock_observer_, OnNewScanResult(_)).Times(2);
 
   // Add a scan result with service 0x4444.
-  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result;
-  raw_scan_result.addr = kTestAddr1;
-  raw_scan_result.adv_data = {0x03, 0x02, 0x44, 0x44};
-  raw_scan_result.rssi = 1234;
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result(
+    kTestAddr1, {0x03, 0x02, 0x44, 0x44}, 1234);
   delegate()->OnScanResult(raw_scan_result);
 
   // Add a scan result with service 0x5555.
-  raw_scan_result.addr = kTestAddr2;
-  raw_scan_result.adv_data = {0x03, 0x02, 0x55, 0x55};
-  raw_scan_result.rssi = 1234;
-  delegate()->OnScanResult(raw_scan_result);
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result_two(
+    kTestAddr2, {0x03, 0x02, 0x55, 0x55}, 1234);
+  delegate()->OnScanResult(raw_scan_result_two);
 
   task_environment_.RunUntilIdle();
 
@@ -265,23 +260,19 @@ TEST_F(LeScanManagerTest, TestGetScanResultsSortedByRssi) {
   EXPECT_CALL(mock_observer_, OnNewScanResult(_)).Times(3);
 
   // Add a scan result with service 0x4444.
-  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result;
-  raw_scan_result.addr = kTestAddr1;
-  raw_scan_result.adv_data = {0x03, 0x02, 0x44, 0x44};
-  raw_scan_result.rssi = 1;
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result(
+    kTestAddr1, {0x03, 0x02, 0x44, 0x44}, 1);
   delegate()->OnScanResult(raw_scan_result);
 
   // Add a scan result with service 0x5555.
-  raw_scan_result.addr = kTestAddr2;
-  raw_scan_result.adv_data = {0x03, 0x02, 0x55, 0x55};
-  raw_scan_result.rssi = 3;
-  delegate()->OnScanResult(raw_scan_result);
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result_two(
+    kTestAddr2, {0x03, 0x02, 0x55, 0x55}, 3);
+  delegate()->OnScanResult(raw_scan_result_two);
 
   // Add a scan result with service 0x5555.
-  raw_scan_result.addr = kTestAddr1;
-  raw_scan_result.adv_data = {0x03, 0x02, 0x55, 0x55};
-  raw_scan_result.rssi = 2;
-  delegate()->OnScanResult(raw_scan_result);
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result_three(
+    kTestAddr1, {0x03, 0x02, 0x55, 0x55}, 2);
+  delegate()->OnScanResult(raw_scan_result_three);
 
   task_environment_.RunUntilIdle();
 
@@ -308,10 +299,8 @@ TEST_F(LeScanManagerTest, TestOnNewScanResult) {
           Invoke([&result](LeScanResult result_in) { result = result_in; }));
 
   // Add a scan result with service 0x4444.
-  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result;
-  raw_scan_result.addr = kTestAddr1;
-  raw_scan_result.adv_data = {0x03, 0x02, 0x44, 0x44};
-  raw_scan_result.rssi = 1;
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result(
+    kTestAddr1, {0x03, 0x02, 0x44, 0x44}, 1);
   delegate()->OnScanResult(raw_scan_result);
   task_environment_.RunUntilIdle();
 
@@ -326,13 +315,11 @@ TEST_F(LeScanManagerTest, TestMaxScanResultEntries) {
       .Times(LeScanManagerImpl::kMaxScanResultEntries + 5);
 
   // Add scan results with different addrs.
-  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result;
   for (int i = 0; i < LeScanManagerImpl::kMaxScanResultEntries + 5; ++i) {
     uint8_t addr_bit0 = i & 0xFF;
     uint8_t addr_bit1 = (i & 0xFF00) >> 8;
-    raw_scan_result.addr = {{addr_bit0, addr_bit1, 0xFF, 0xFF, 0xFF, 0xFF}};
-    raw_scan_result.adv_data = {0x03, 0x02, 0x44, 0x44};
-    raw_scan_result.rssi = -i;
+    bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result(
+      {{addr_bit0, addr_bit1, 0xFF, 0xFF, 0xFF, 0xFF}}, {0x03, 0x02, 0x44, 0x44}, -i);
     delegate()->OnScanResult(raw_scan_result);
   }
 
