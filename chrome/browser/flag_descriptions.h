@@ -2411,6 +2411,9 @@ extern const char kDefaultLinkCapturingInBrowserDescription[];
 extern const char kDesksCloseAllName[];
 extern const char kDesksCloseAllDescription[];
 
+extern const char kDesksSaveAndRecallName[];
+extern const char kDesksSaveAndRecallDescription[];
+
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 

@@ -4212,6 +4212,11 @@ const char kDesksCloseAllName[] = "Desks Close All";
 const char kDesksCloseAllDescription[] =
     "Close a desk along with all of its windows and tabs.";
 
+const char kDesksSaveAndRecallName[] = "Desks Save and Recall";
+const char kDesksSaveAndRecallDescription[] =
+    "Save a desk and its applications so that they can be recalled at a later "
+    "time.";
+
 const char kDesksTemplatesName[] = "Desk Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "
