@@ -102,10 +102,5 @@ ChromeVoxKbHandler.basicKeyDownActionsListener = function(evt) {
     returnValue = false;
   }
 
-  // If the whole document is hidden from screen readers, let the app
-  // catch keys as well.
-  if (ChromeVox.entireDocumentIsHidden) {
-    returnValue = true;
-  }
   return returnValue;
 };

@@ -353,3 +353,12 @@ LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 1000;
 document.addEventListener('DOMContentLoaded', function() {
   LearnMode.init();
 }, false);
+
+/**
+ * Shortcut for document.getElementById.
+ * @param {string} id of the element.
+ * @return {Element} with the id.
+ */
+function $(id) {
+  return document.getElementById(id);
+}

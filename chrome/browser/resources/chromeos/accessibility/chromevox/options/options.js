@@ -556,3 +556,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 window.addEventListener('beforeunload', function(e) {
   OptionsPage.bluetoothBrailleDisplayUI.detach();
 });
+
+/**
+ * Shortcut for document.getElementById.
+ * @param {string} id of the element.
+ * @return {Element} with the id.
+ */
+function $(id) {
+  return document.getElementById(id);
+}

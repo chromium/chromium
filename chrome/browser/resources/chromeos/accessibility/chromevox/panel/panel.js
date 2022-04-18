@@ -1348,3 +1348,12 @@ window.addEventListener('hashchange', function() {
         'toggleStickyMode');
   }
 }, false);
+
+/**
+ * Shortcut for document.getElementById.
+ * @param {string} id of the element.
+ * @return {Element} with the id.
+ */
+function $(id) {
+  return document.getElementById(id);
+}

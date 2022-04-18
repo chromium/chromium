@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Defines a global object. The initialization of this
- *   object happens in init.js.
- *
+ * @fileoverview Defines a global object.
  */
 
 // Forward declare.
@@ -38,15 +36,6 @@ ChromeVox = class {
 
 // Constants
 /**
- * Constant for verbosity setting (ChromeVox.verbosity).
- * @enum {number}
- */
-ChromeVox.VerbosityType = {
-  VERBOSE: 0,
-  BRIEF: 1
-};
-
-/**
  * @type {TtsInterface}
  */
 ChromeVox.tts;
@@ -54,10 +43,6 @@ ChromeVox.tts;
  * @type {BrailleInterface}
  */
 ChromeVox.braille;
-/**
- * @type {?string}
- */
-ChromeVox.version = null;
 /**
  * @type {AbstractEarcons}
  */
@@ -77,34 +62,10 @@ ChromeVox.isStickyPrefOn = false;
  */
 ChromeVox.stickyOverride = null;
 /**
- * @type {boolean}
- */
-ChromeVox.keyPrefixOn = false;
-/**
- * Verbosity setting.
- * See: VERBOSITY_VERBOSE and VERBOSITY_BRIEF
- * @type {number}
- */
-ChromeVox.verbosity = ChromeVox.VerbosityType.VERBOSE;
-/**
  * @type {number}
  */
 ChromeVox.typingEcho = 0;
 /**
- * Echoing on key press events.
- * @type {Object<boolean>}
- */
-ChromeVox.keyEcho = {};
-/**
  * @type {Object<string, constants.Point>}
  */
 ChromeVox.position = {};
-
-/**
- * Shortcut for document.getElementById.
- * @param {string} id of the element.
- * @return {Element} with the id.
- */
-function $(id) {
-  return document.getElementById(id);
-}

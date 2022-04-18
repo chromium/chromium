@@ -332,12 +332,7 @@ export class ChromeVoxEditableTextBase {
         // Moved by one character; read it.
         if (!ChromeVoxEditableTextBase.useIBeamCursor) {
           if (evt.start === this.value.length) {
-            if (ChromeVox.verbosity === ChromeVox.VerbosityType.VERBOSE) {
-              this.speak(
-                  Msgs.getMsg('end_of_text_verbose'), evt.triggeredByUser);
-            } else {
-              this.speak(Msgs.getMsg('end_of_text_brief'), evt.triggeredByUser);
-            }
+            this.speak(Msgs.getMsg('end_of_text_verbose'), evt.triggeredByUser);
           } else {
             this.speak(
                 this.value.substr(evt.start, 1), evt.triggeredByUser,

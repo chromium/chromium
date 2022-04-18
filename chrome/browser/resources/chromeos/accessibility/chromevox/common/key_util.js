@@ -66,11 +66,6 @@ export class KeyUtil {
         keySequence.doubleTap = true;
         util.prevKeySequence = null;
         util.sequencing = false;
-        // Resets the search key state tracked for ChromeOS because in OOBE,
-        // we never get a key up for the key down (keyCode 91).
-        if (keyEvent.keyCode === KeyUtil.getStickyKeyCode()) {
-          ChromeVox.searchKeyHeld = false;
-        }
         return keySequence;
       }
       // The user double tapped the sticky key but didn't do it within the
