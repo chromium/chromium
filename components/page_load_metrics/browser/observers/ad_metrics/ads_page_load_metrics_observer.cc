@@ -172,6 +172,9 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
 bool AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
     content::RenderFrameHost* sub_host) {
   DCHECK(sub_host);
+  // In navigation for prerendering, `AdsPageLoadMetricsObserver` is removed
+  // from PageLoadTracker.
+  DCHECK(sub_host->IsActive());
   content::RenderFrameHost* main_host =
       content::WebContents::FromRenderFrameHost(sub_host)->GetMainFrame();
   url::Origin subframe_origin = sub_host->GetLastCommittedOrigin();
