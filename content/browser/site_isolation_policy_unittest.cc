@@ -100,8 +100,7 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, Disabled) {
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, MatchingOrigin) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins,
-      "https://www.foo.com,https://www.bar.com");
+      switches::kIsolatedAppOrigins, "https://www.foo.com,https://www.bar.com");
 
   GURL origin_url("https://www.bar.com");
   EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
@@ -111,8 +110,7 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, MatchingOrigin) {
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, NotMatchingOrigin) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins,
-      "https://www.foo.com,https://www.bar.com");
+      switches::kIsolatedAppOrigins, "https://www.foo.com,https://www.bar.com");
 
   GURL origin_url("https://www.not-allowed.com");
   EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
@@ -123,7 +121,7 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, NotMatchingOrigin) {
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, InvalidOrigin) {
   std::string origin_string = "hdsdhdfhdh";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins, origin_string);
+      switches::kIsolatedAppOrigins, origin_string);
 
   // Fails to convert into an origin, which leads to an empty origin.
   GURL origin_url(origin_string);
@@ -139,7 +137,7 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, FlagTypo) {
   std::string invalid_origin_string = "htps://www.app.com";
   std::string valid_origin_string = "https://www.app.com";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins, invalid_origin_string);
+      switches::kIsolatedAppOrigins, invalid_origin_string);
 
   GURL valid_origin_url(valid_origin_string);
   EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
@@ -148,11 +146,11 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, FlagTypo) {
 }
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, PortRemoved) {
-  // Verifies that ports given to kRestrictedApiOrigins are ignored, and all
+  // Verifies that ports given to kIsolatedAppOrigins are ignored, and all
   // ports on the provided scheme+hostname pair will gain restricted API access.
   std::string origin_string = "https://app.com:1234";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins, origin_string);
+      switches::kIsolatedAppOrigins, origin_string);
 
   EXPECT_TRUE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
   EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(

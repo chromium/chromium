@@ -283,8 +283,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     std::string origin_list =
         GetTestOpenPageURL().spec() + "," + GetTestPageURL().spec();
 
-    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
-                                    origin_list);
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins, origin_list);
   }
 
  private:

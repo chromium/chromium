@@ -76,8 +76,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     std::string origin_list = GetTestPageURL().spec();
 
-    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
-                                    origin_list);
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins, origin_list);
   }
 
   std::pair<net::IPEndPoint, network::test::UDPSocketTestHelper>

@@ -46,7 +46,7 @@ class IsolatedAppsDeveloperModeAllowedPolicyTest
 
     const std::string isolated_app_origins =
         std::string("https://") + kIsolatedAppHost;
-    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
                                     isolated_app_origins);
   }
 

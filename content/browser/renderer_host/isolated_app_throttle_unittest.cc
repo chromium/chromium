@@ -86,7 +86,7 @@ class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kRestrictedApiOrigins, kAppUrl);
+        switches::kIsolatedAppOrigins, kAppUrl);
     content::SiteIsolationPolicy::DisableFlagCachingForTesting();
 
     old_client_ = SetBrowserClientForTesting(&test_client_);

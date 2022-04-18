@@ -432,7 +432,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/direct-sockets",
     	      "wpt_internal/direct-sockets"],
-    "args": ["--restricted-api-origins=https://web-platform.test"]
+    "args": ["--isolated-app-origins=https://web-platform.test"]
   },
   {
     "prefix": "webrtc-wpt-plan-b",

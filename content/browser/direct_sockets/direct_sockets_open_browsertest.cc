@@ -305,8 +305,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     std::string origin_list = GetTestOpenPageURL().spec();
 
-    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
-                                    origin_list);
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins, origin_list);
   }
 };
 
@@ -664,7 +663,7 @@ class DirectSocketsOpenCorsBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
                                     GetTestOpenPageURL().spec());
   }
 

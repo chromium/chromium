@@ -832,7 +832,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest, NonIsolatedPWA) {
 TEST_F(ChromeContentBrowserClientStoragePartitionTest, IsolationEnabled) {
   RegisterAppIsolationState(kAppId, kScope, /*isolated=*/true);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins, kScope);
+      switches::kIsolatedAppOrigins, kScope);
 
   TestChromeContentBrowserClient test_content_browser_client;
   content::StoragePartitionConfig config =

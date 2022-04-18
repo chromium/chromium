@@ -504,7 +504,7 @@ class IsolatedAppUsbBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedAppBrowserTestHarness::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
                                     std::string("https://") + kIsolatedAppHost);
   }
 

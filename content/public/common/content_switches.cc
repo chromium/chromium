@@ -55,11 +55,6 @@ const char kChangeStackGuardOnForkDisabled[] = "disable";
 // Causes the Conversion Measurement API to run without delays or noise.
 const char kConversionsDebugMode[] = "conversions-debug-mode";
 
-// Enable restricted APIs for a set of origins, specified as a
-// comma-separated list. For example:
-//   --restricted-api-origins=https://www.foo.com,https://www.bar.com
-const char kRestrictedApiOrigins[] = "restricted-api-origins";
-
 // Enables gating of getDisplayMedia by the display-capture permissions-policy.
 // This switch supports the shipping of display-capture, as it allows admins to
 // temporarily disable display-capture gating with an Enterprise policy.
@@ -501,6 +496,11 @@ const char kInProcessGPU[]                  = "in-process-gpu";
 // Overrides the timeout, in seconds, that a child process waits for a
 // connection from the browser before killing itself.
 const char kIPCConnectionTimeout[]          = "ipc-connection-timeout";
+
+// Enable Isolated App restrictions for a set of origins, specified as a
+// comma-separated list. For example:
+//   --isolated-app-origins=https://www.foo.com,https://www.bar.com
+const char kIsolatedAppOrigins[] = "isolated-app-origins";
 
 // Require dedicated processes for a set of origins, specified as a
 // comma-separated list. For example:

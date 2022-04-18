@@ -187,7 +187,7 @@ class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
 
     std::string isolated_app_origins =
         std::string("https://") + kAppHost + ",https://" + kApp2Host;
-    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
                                     isolated_app_origins);
   }
 

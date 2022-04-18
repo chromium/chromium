@@ -147,7 +147,7 @@ static const char* kBadFlags[] = {
     // This flag enables restricted APIs (which unlock capabilities
     // with a high potential for security / privacy abuse) for specified
     // origins.
-    switches::kRestrictedApiOrigins,
+    switches::kIsolatedAppOrigins,
 
     // Allows the specified origin to make Web Authentication API requests on
     // behalf of other origins, if a corresponding Google-internal
