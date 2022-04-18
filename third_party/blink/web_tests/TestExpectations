@@ -7765,6 +7765,10 @@ crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/c
 crbug.com/1306848 http/tests/inspector-protocol/conversion/attribution-invalid-data.js [ Failure Pass Timeout ]
 crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass ]
 
+# Sheriff 2022-03-24
+crbug.com/1309756 http/tests/images/force-reload.html [ Skip ]
+crbug.com/1309756 [ Mac11-arm64 ] http/tests/images/force-reload-image-document.html [ Skip ]
+
 # Tests that need updates due to rounding math in layout
 crbug.com/1309975 http/tests/devtools/console/console-viewport-indices.js [ Failure ]
 crbug.com/1309975 http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Failure ]
