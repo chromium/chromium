@@ -684,7 +684,15 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 }
 
-TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
+// TODO(crbug.com/1316604): Flaky on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
+  FLAKY_WriteIntoNewStorageQueueReopenAndWriteMore
+#else
+#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
+  WriteIntoNewStorageQueueReopenAndWriteMore
+#endif
+TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -698,7 +706,15 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
   WriteStringOrDie(kMoreData[2]);
 }
 
-TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
+// TODO(crbug.com/1316604): Flaky on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_WriteIntoNewStorageQueueAndUpload \
+  FLAKY_WriteIntoNewStorageQueueAndUpload
+#else
+#define MAYBE_WriteIntoNewStorageQueueAndUpload \
+  WriteIntoNewStorageQueueAndUpload
+#endif
+TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -721,7 +737,15 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
+// TODO(crbug.com/1316604): Flaky on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_WriteIntoNewStorageQueueAndUploadWithFailures \
+  FLAKY_WriteIntoNewStorageQueueAndUploadWithFailures
+#else
+#define MAYBE_WriteIntoNewStorageQueueAndUploadWithFailures \
+  WriteIntoNewStorageQueueAndUploadWithFailures
+#endif
+TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndUploadWithFailures) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -747,7 +771,16 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
+// TODO(crbug.com/1316604): Flaky on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload \
+  FLAKY_WriteIntoNewStorageQueueReopenWriteMoreAndUpload
+#else
+#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload \
+  WriteIntoNewStorageQueueReopenWriteMoreAndUpload
+#endif
+TEST_P(StorageQueueTest,
+       MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1053,7 +1086,15 @@ TEST_P(StorageQueueTest, DISABLED_ValidateVariousRecordSizes) {
   storage_queue_->Flush();
 }
 
-TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
+// TODO(crbug.com/1316604): Flaky on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_WriteAndRepeatedlyUploadWithConfirmations \
+  FLAKY_WriteAndRepeatedlyUploadWithConfirmations
+#else
+#define MAYBE_WriteAndRepeatedlyUploadWithConfirmations \
+  WriteAndRepeatedlyUploadWithConfirmations
+#endif
+TEST_P(StorageQueueTest, MAYBE_WriteAndRepeatedlyUploadWithConfirmations) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
   WriteStringOrDie(kData[0]);
@@ -1159,7 +1200,16 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   }
 }
 
-TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
+// TODO(crbug.com/1316604): Flaky on iPad device.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_WriteAndRepeatedlyUploadWithConfirmationsAndReopen \
+  FLAKY_WriteAndRepeatedlyUploadWithConfirmationsAndReopen
+#else
+#define MAYBE_WriteAndRepeatedlyUploadWithConfirmationsAndReopen \
+  WriteAndRepeatedlyUploadWithConfirmationsAndReopen
+#endif
+TEST_P(StorageQueueTest,
+       MAYBE_WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
   WriteStringOrDie(kData[0]);
