@@ -671,6 +671,62 @@ bug. A malicious site may exploit a security vulnerability (for instance,
 spoofing the URL in the **Location Bar**). This would be tracked as a security
 vulnerability in the relevant feature, not Safe Browsing itself.
 
+<a name="TOC-I-can-download-a-file-with-an-unsafe-extension-and-it-is-not-classified-as-dangerous-"></a>
+## I can download a file with an unsafe extension and it is not classified as dangerous - is this a security bug?
+
+Chrome tries to warn users before they open files that might modify their
+system. What counts as a dangerous file will vary depending on the operating
+system Chrome is running on, the default set of file handlers, Chrome settings,
+Enterprise policy and verdicts on both the site and the file from [Safe
+Browsing](https://code.google.com/apis/safebrowsing/). Because of this it will
+often be okay for a user to download and run a file. However, if you can clearly
+demonstrate how to bypass one of these protections then we’d like to hear about
+it. You can see if a Safe Browsing check happened by opening
+chrome://safe-browsing before starting the download.
+
+<a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
+## I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
+<a name="TOC-Extensions-for-downloaded-files-are-not-shown-in-a-file-dialog-"></a>
+## Extensions for downloaded files are not shown in a file dialog - is this a security bug?
+<a name="TOC-The-wrong-description-for-a-file-type-is-added-by-Chrome-"></a>
+## The wrong description for a file type is added by Chrome - is this a security bug?
+
+Chrome tries to let users know what they will be saving and downloading before
+they do so. Often operating systems will obscure a file’s type or extension and
+there is little we can do about that. Chrome shows information to help users
+make these decisions, both in Chrome-owned UI and in information that Chrome
+passes to OS-owned UI. If this information can be manipulated from a web site to
+mislead a user, then we’d like to hear about it.
+[Example](https://crbug.com/1137247).
+
+<a name="TOC-I-can-download-a-file-and-OS-indicators-for-its-provenance-are-not-applied-"></a>
+## I can download a file and OS indicators for its provenance are not applied - is this a security bug?
+
+Chrome attempts to label files downloaded from the internet with metadata using
+operating system APIs where these are available – for instance applying the Mark
+of the Web on Windows. This is often not possible (for instance on non-NTFS file
+systems on Windows, or for files inside downloaded archives) or disabled by
+policy. If a web site can cause Chrome to download a file without Chrome then
+adding this metadata as usual, we’d like to hear about it.
+
+<a name="TOC-I-can-cause-a-hard-or-soft-link-to-be-written-to-a-directory-bypassing-normal-OS-blocks-"></a>
+## I can cause a hard or soft link to be written to a directory bypassing normal OS blocks - is this a security bug?
+
+Chrome should not allow filesystem links to be created by initiating a download.
+[Example](https://crbug.com/1140417). [Example](https://crbug.com/1137247#c12).
+
+<a name="TOC-I-can-hijack-a-user-gesture-and-trick-a-user-into-accepting-a-permission-or-downloading-a-file-"></a>
+## I can hijack a user gesture and trick a user into accepting a permission or downloading a file - is this a security bug?
+
+Chrome tries to design its prompts to select safe defaults. If a prompt can
+accidentally be accepted without the user having an opportunity to make a
+decision about the prompt then we’d like to know. Examples might include poor
+defaults so that a user holding down an enter key might accept a dialog they
+would want to dismiss. [Example](https://crbug.com/854455#c11).
+
+Note that a user navigating to a download will cause a file to be
+[downloaded](https://crbug.com/1114592).
+
 <a name="TOC-What-is-the-security-story-for-Service-Workers-"></a>
 ## What is the security story for Service Workers?
 
