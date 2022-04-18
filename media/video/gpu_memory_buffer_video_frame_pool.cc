@@ -74,7 +74,8 @@ const std::string PixelFormatToString(VideoPixelFormat format) {
 
 void RecordVideoFrameSizeAndOffsetHistogram(VideoPixelFormat pixel_format,
                                             gfx::Size coded_size,
-                                            gfx::Rect visible_rect) {
+                                            gfx::Rect visible_rect,
+                                            bool mappable) {
   bool odd_width = (coded_size.width() % 2) == 1;
   bool odd_height = (coded_size.height() % 2) == 1;
   bool odd_x = (visible_rect.x() % 2) == 1;
@@ -111,6 +112,11 @@ void RecordVideoFrameSizeAndOffsetHistogram(VideoPixelFormat pixel_format,
   base::UmaHistogramEnumeration("Media.GpuMemoryBufferVideoFramePool.Offset." +
                                     PixelFormatToString(pixel_format),
                                 offset_enum);
+
+  // Mappable for video frames with odd offset
+  if (offset_enum != gfx::OddOffset::kEvenXAndY)
+    base::UmaHistogramBoolean(
+        "Media.GpuMemoryBufferVideoFramePool.OddOffset.Mappable", mappable);
 }
 }  // namespace
 
@@ -815,7 +821,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_NV12:
       RecordVideoFrameSizeAndOffsetHistogram(
-          pixel_format, video_frame->coded_size(), video_frame->visible_rect());
+          pixel_format, video_frame->coded_size(), video_frame->visible_rect(),
+          video_frame->IsMappable());
       break;
     // Unsupported cases.
     case PIXEL_FORMAT_I422:
