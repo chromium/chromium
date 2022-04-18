@@ -15,6 +15,7 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -85,7 +87,7 @@ class ToastManagerImplTest : public AshTestBase {
     return overlay ? overlay->text_ : std::u16string();
   }
 
-  absl::optional<std::u16string> GetCurrentDismissText() {
+  std::u16string GetCurrentDismissText() {
     ToastOverlay* overlay = GetCurrentOverlay();
     return overlay ? overlay->dismiss_text_ : std::u16string();
   }
@@ -112,16 +114,12 @@ class ToastManagerImplTest : public AshTestBase {
   std::string ShowToastWithDismiss(
       const std::string& text,
       base::TimeDelta duration,
-      const absl::optional<std::string>& dismiss_text) {
-    absl::optional<std::u16string> localized_dismiss;
-    if (dismiss_text.has_value())
-      localized_dismiss = base::ASCIIToUTF16(dismiss_text.value());
-
+      const std::u16string& dismiss_text = std::u16string()) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
     manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
                               base::ASCIIToUTF16(text), duration,
                               /*visible_on_lock_screen=*/false,
-                              localized_dismiss));
+                              /*has_dismiss_button=*/true, dismiss_text));
     return id;
   }
 
@@ -158,7 +156,7 @@ TEST_F(ToastManagerImplTest, ShowAndCloseAutomatically) {
 }
 
 TEST_F(ToastManagerImplTest, ShowAndCloseManually) {
-  ShowToastWithDismiss("DUMMY", ToastData::kInfiniteDuration, "Dismiss");
+  ShowToastWithDismiss("DUMMY", ToastData::kInfiniteDuration, u"Dismiss");
 
   EXPECT_EQ(1, GetToastSerial());
 
@@ -174,7 +172,7 @@ TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
   ui::ScopedAnimationDurationScaleMode slow_animation_duration(
       ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
-  ShowToastWithDismiss("DUMMY", ToastData::kInfiniteDuration, "Dismiss");
+  ShowToastWithDismiss("DUMMY", ToastData::kInfiniteDuration, u"Dismiss");
   EXPECT_TRUE(GetCurrentWidget()->GetLayer()->GetAnimator()->is_animating());
   base::RunLoop().RunUntilIdle();
 
@@ -193,8 +191,7 @@ TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
 
 // TODO(crbug.com/959781): Test is flaky.
 TEST_F(ToastManagerImplTest, DISABLED_NullMessageHasNoDismissButton) {
-  ShowToastWithDismiss("DUMMY", base::Milliseconds(10),
-                       absl::optional<std::string>());
+  ShowToastWithDismiss("DUMMY", base::Milliseconds(10));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetDismissButton());
 }
@@ -625,6 +622,43 @@ TEST_F(ToastManagerImplTest, NotDeferToastForLockScreen) {
   // Confirm that it gets visible again.
   EXPECT_NE(nullptr, GetCurrentOverlay());
   EXPECT_EQ(u"TEXT1", GetCurrentText());
+}
+
+TEST_F(ToastManagerImplTest, DismissButton) {
+  // Show a toast without dismiss button.
+  std::string id1 = ShowToast("TEXT1", ToastData::kInfiniteDuration);
+
+  // Queue a toast with custom dismiss button.
+  std::string id2 =
+      ShowToastWithDismiss("TEXT2", ToastData::kInfiniteDuration, u"Stop");
+
+  // Queue a toast with default dismiss button.
+  std::string id3 = ShowToastWithDismiss("TEXT3", ToastData::kInfiniteDuration);
+
+  // Confirm that the first toast is shown.
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
+
+  // Expect current toast to not have a dismiss button.
+  EXPECT_EQ(std::u16string(), GetCurrentDismissText());
+
+  // Cancel the current toast.
+  CancelToast(id1);
+
+  // Confirm that the next toast is visible.
+  EXPECT_EQ(u"TEXT2", GetCurrentText());
+
+  // Expect toast to have a dismiss button with custom text.
+  EXPECT_EQ(u"Stop", GetCurrentDismissText());
+
+  // Cancel the current toast.
+  CancelToast(id2);
+
+  // Confirm that the next toast is visible.
+  EXPECT_EQ(u"TEXT3", GetCurrentText());
+
+  // Expect toast to have a dismiss button with default text.
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON),
+            GetCurrentDismissText());
 }
 
 }  // namespace ash

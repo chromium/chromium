@@ -17,7 +17,8 @@ TEST(ToastDataTest, InitializedWithProvidedValues) {
       /*id=*/"some_id", ToastCatalogName::kDebugCommand, /*text=*/u"some_text",
       base::Seconds(1),
       /*visible_on_lock_screen=*/true,
-      /*dismiss_text=*/u"Dismiss now");
+      /*has_dismiss_button=*/true,
+      /*custom_dismiss_text=*/u"Dismiss now");
 
   EXPECT_EQ(data.id, "some_id");
   EXPECT_EQ(data.catalog_name, ash::ToastCatalogName::kDebugCommand);
@@ -33,7 +34,7 @@ TEST(ToastDataTest, InitializedWithDefaultValues) {
 
   EXPECT_EQ(data.duration, ToastData::kDefaultToastDuration);
   EXPECT_EQ(data.visible_on_lock_screen, false);
-  EXPECT_EQ(data.dismiss_text, absl::nullopt);
+  EXPECT_EQ(data.dismiss_text, std::u16string());
 }
 
 TEST(ToastDataTest, InitializedWithInfiniteDuration) {

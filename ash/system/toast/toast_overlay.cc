@@ -93,7 +93,7 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 //  ToastOverlay
 ToastOverlay::ToastOverlay(Delegate* delegate,
                            const std::u16string& text,
-                           absl::optional<std::u16string> dismiss_text,
+                           const std::u16string& dismiss_text,
                            bool show_on_lock_screen,
                            bool is_managed,
                            base::RepeatingClosure dismiss_callback)

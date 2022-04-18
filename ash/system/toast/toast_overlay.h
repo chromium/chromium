@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -45,13 +44,12 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   // Creates the Toast overlay UI. |text| is the message to be shown, and
   // |dismiss_text| is the message for the button to dismiss the toast message.
-  // If |dismiss_text| is null, no dismiss button will be shown. If
-  // |dismiss_text| has a value but the string is empty, the default text is
-  // used. |dismiss_callback| will be called when the button is pressed.
+  // The dismiss button will only be displayed if |dismiss_text| is not empty.
+  // |dismiss_callback| will be called when the button is pressed.
   // If |is_managed| is true, a managed icon will be added to the toast.
   ToastOverlay(Delegate* delegate,
                const std::u16string& text,
-               absl::optional<std::u16string> dismiss_text,
+               const std::u16string& dismiss_text,
                bool show_on_lock_screen,
                bool is_managed,
                base::RepeatingClosure dismiss_callback);
@@ -92,7 +90,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   Delegate* const delegate_;
   const std::u16string text_;
-  const absl::optional<std::u16string> dismiss_text_;
+  const std::u16string dismiss_text_;
   std::unique_ptr<views::Widget> overlay_widget_;
   std::unique_ptr<SystemToastStyle> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;

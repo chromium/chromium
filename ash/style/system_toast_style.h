@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -31,7 +30,7 @@ class ASH_EXPORT SystemToastStyle : public views::View {
 
   SystemToastStyle(base::RepeatingClosure dismiss_callback,
                    const std::u16string& text,
-                   const absl::optional<std::u16string>& dismiss_text,
+                   const std::u16string& dismiss_text,
                    const bool is_managed);
   SystemToastStyle(const SystemToastStyle&) = delete;
   SystemToastStyle& operator=(const SystemToastStyle&) = delete;

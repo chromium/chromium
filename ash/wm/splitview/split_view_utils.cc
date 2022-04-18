@@ -403,7 +403,10 @@ bool ShouldAllowSplitView() {
 void ShowAppCannotSnapToast() {
   Shell::Get()->toast_manager()->Show(
       ToastData(kAppCannotSnapToastId, ToastCatalogName::kAppCannotSnap,
-                l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP)));
+                l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
+                ToastData::kDefaultToastDuration,
+                /*visible_on_lock_screen=*/false,
+                /*has_dismiss_button=*/true));
 }
 
 SplitViewController::SnapPosition GetSnapPositionForLocation(

@@ -11,7 +11,6 @@
 #include "ash/public/cpp/system/toast_catalog.h"
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -33,13 +32,16 @@ struct ASH_PUBLIC_EXPORT ToastData {
   // is automatically dismissed. The `duration` will be set to
   // `kMinimumDuration` for any value provided that is smaller than
   // `kMinimumDuration`. To disable automatically dismissing the toast, set the
-  // `duration` to `kInfiniteDuration`.
+  // `duration` to `kInfiniteDuration`. If `has_dismiss_button` is true, it will
+  // use the default dismiss text unless a non-empty `custom_dismiss_text` is
+  // given.
   ToastData(std::string id,
             ToastCatalogName catalog_name,
             const std::u16string& text,
             base::TimeDelta duration = kDefaultToastDuration,
             bool visible_on_lock_screen = false,
-            const absl::optional<std::u16string>& dismiss_text = absl::nullopt);
+            bool has_dismiss_button = false,
+            const std::u16string& custom_dismiss_text = std::u16string());
 
   ToastData(const ToastData& other);
   ~ToastData();
@@ -49,7 +51,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   std::u16string text;
   base::TimeDelta duration;
   bool visible_on_lock_screen;
-  absl::optional<std::u16string> dismiss_text;
+  std::u16string dismiss_text;
   bool is_managed = false;
   base::RepeatingClosure dismiss_callback;
 };

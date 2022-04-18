@@ -137,10 +137,12 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
   if (loading()) {
     // Repetitive presses will create toasts with the same id which will be
     // ignored.
-    Shell::Get()->toast_manager()->Show(
-        ToastData(kToastId, ToastCatalogName::kAssistantLoading,
-                  l10n_util::GetStringUTF16(
-                      IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING)));
+    Shell::Get()->toast_manager()->Show(ToastData(
+        kToastId, ToastCatalogName::kAssistantLoading,
+        l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING),
+        ToastData::kDefaultToastDuration,
+        /*visible_on_lock_screen=*/false,
+        /*has_dismiss_button=*/true));
   } else {
     delegate()->RecordPaletteOptionsUsage(
         PaletteToolIdToPaletteTrayOptions(GetToolId()),
