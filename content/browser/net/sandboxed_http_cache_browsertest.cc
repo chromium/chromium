@@ -494,5 +494,63 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, WriteAndReadSparseData) {
+  const std::string kKey = "key";
+  constexpr int kOffset = 1024;
+  std::vector<uint8_t> original_data;
+  for (int i = 0; i < 2048; ++i) {
+    original_data.push_back(static_cast<uint8_t>(i % 26 + 'A'));
+  }
+
+  mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
+  ASSERT_TRUE(simple_cache.is_bound());
+  mojo::Remote<SimpleCacheEntry> entry = CreateEntry(simple_cache.get(), kKey);
+  ASSERT_TRUE(entry.is_bound());
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  {
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    entry->WriteSparseData(
+        kOffset, original_data, base::BindLambdaForTesting([&](int result) {
+          EXPECT_EQ(result, static_cast<int>(original_data.size()));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  {
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    entry->Close(run_loop.QuitClosure());
+    entry.reset();
+    simple_cache.reset();
+  }
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  simple_cache = CreateSimpleCache();
+  ASSERT_TRUE(simple_cache.is_bound());
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  entry = OpenEntry(simple_cache.get(), kKey);
+  ASSERT_TRUE(entry);
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  {
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    entry->ReadSparseData(
+        kOffset, original_data.size() + 1024,
+        base::BindLambdaForTesting(
+            [&](const std::vector<uint8_t>& data, int result) {
+              EXPECT_EQ(result, static_cast<int>(original_data.size()));
+              EXPECT_EQ(data, original_data);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+}
+
 }  // namespace
 }  // namespace content

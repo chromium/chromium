@@ -819,7 +819,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
   int written_so_far = 0;
   int appended_so_far = 0;
 
-  if (!sparse_file_open() && !CreateSparseFile()) {
+  if (!sparse_file_open() && !CreateSparseFile(file_operations)) {
     Doom();
     *out_result = net::ERR_CACHE_WRITE_FAILURE;
     return;
@@ -1806,7 +1806,8 @@ bool SimpleSynchronousEntry::OpenSparseFileIfExists(
   return true;
 }
 
-bool SimpleSynchronousEntry::CreateSparseFile() {
+bool SimpleSynchronousEntry::CreateSparseFile(
+    BackendFileOperations* file_operations) {
   DCHECK(!sparse_file_open());
 
   FilePath filename =
@@ -1814,7 +1815,7 @@ bool SimpleSynchronousEntry::CreateSparseFile() {
   int flags = base::File::FLAG_CREATE | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   std::unique_ptr<base::File> sparse_file =
-      std::make_unique<base::File>(filename, flags);
+      std::make_unique<base::File>(file_operations->OpenFile(filename, flags));
   if (!sparse_file->IsValid())
     return false;
   if (!InitializeSparseFile(sparse_file.get()))

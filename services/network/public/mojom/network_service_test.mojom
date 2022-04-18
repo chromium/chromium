@@ -49,6 +49,15 @@ interface SimpleCacheEntry {
            int32 offset,
            uint32 length) => (array<uint8> data, int32 result);
 
+  // Writes data into the entry. See disk_cache::Entry::WriteSparseData for
+  // details.
+  WriteSparseData(int32 offset, array<uint8> data) => (int32 result);
+
+  // Reads data from the entry. See disk_cache::Entry::ReadSparseData for
+  // details.
+  ReadSparseData(int32 offset,
+                 uint32 length) => (array<uint8> data, int32 result);
+
   // Closes the entry.
   Close() => ();
 };
