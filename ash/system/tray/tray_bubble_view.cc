@@ -514,10 +514,8 @@ void TrayBubbleView::OnThemeChanged() {
     SetBorder(std::make_unique<HighlightBorder>(
         params_.corner_radius, HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
-    SetBackground(views::CreateRoundedRectBackground(
-        AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80),
-        params_.corner_radius));
+    set_color(AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80));
     return;
   }
 
