@@ -106,7 +106,7 @@
   {
     "name": "allow-insecure-localhost",
     "owners": [ "security-dev" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 110
   },
   {
     "name": "allow-repeated-updates",
