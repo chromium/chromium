@@ -2071,7 +2071,9 @@ public class BookmarkTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:bookmark_visuals_enabled/true"})
+            "force-fieldtrial-params="
+                    + "Study.Group:bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/false"})
     public void
     testBookmarksVisualRefreshBookmarks() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -2101,7 +2103,42 @@ public class BookmarkTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:bookmark_visuals_enabled/true"})
+            "force-fieldtrial-params="
+                    + "Study.Group:bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/true"})
+    public void
+    testBookmarksCompactVisualRefreshBookmarks() throws Exception {
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        openBookmarkManager();
+
+        RecyclerView.Adapter adapter = getAdapter();
+        final BookmarkManager manager = getBookmarkManager();
+
+        mRenderTestRule.render(manager.getView(), "bookmarks_visual_refresh_bookmarks");
+        BookmarkRow itemView = (BookmarkRow) manager.getRecyclerViewForTests()
+                                       .findViewHolderForAdapterPosition(0)
+                                       .itemView;
+
+        toggleSelectionAndEndAnimation(getIdByPosition(0), itemView);
+
+        // Make sure the Item "test" is selected.
+        CriteriaHelper.pollUiThread(
+                itemView::isChecked, "Expected item \"test\" to become selected");
+
+        mRenderTestRule.render(
+                manager.getView(), "bookmarks_compact_visual_refresh_bookmarks_selected");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params="
+                    + "Study.Group:bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/false"})
     public void
     testBookmarksVisualRefreshBookmarksAndFolder() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -2133,6 +2170,47 @@ public class BookmarkTest {
 
         mRenderTestRule.render(
                 manager.getView(), "bookmarks_visual_refresh_bookmarksandfolders_selected");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params="
+                    + "Study.Group:bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/true"})
+    public void
+    testBookmarksCompactVisualRefreshBookmarksAndFolder() throws Exception {
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        addFolder(TEST_FOLDER_TITLE);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        addFolder(TEST_FOLDER_TITLE);
+        openBookmarkManager();
+
+        RecyclerView.Adapter adapter = getAdapter();
+        final BookmarkManager manager = getBookmarkManager();
+
+        mRenderTestRule.render(manager.getView(), "bookmarks_visual_refresh_bookmarksandfolders");
+        BookmarkRow itemView1 = (BookmarkRow) manager.getRecyclerViewForTests()
+                                        .findViewHolderForAdapterPosition(0)
+                                        .itemView;
+        BookmarkRow itemView2 = (BookmarkRow) manager.getRecyclerViewForTests()
+                                        .findViewHolderForAdapterPosition(1)
+                                        .itemView;
+
+        toggleSelectionAndEndAnimation(getIdByPosition(0), itemView1);
+        toggleSelectionAndEndAnimation(getIdByPosition(1), itemView2);
+
+        // Make sure the Item "test" is selected.
+        CriteriaHelper.pollUiThread(
+                itemView1::isChecked, "Expected item \"test\" to become selected");
+        CriteriaHelper.pollUiThread(
+                itemView2::isChecked, "Expected item \"test\" to become selected");
+
+        mRenderTestRule.render(
+                manager.getView(), "bookmarks_compact_visual_refresh_bookmarksandfolders_selected");
     }
 
     @Test

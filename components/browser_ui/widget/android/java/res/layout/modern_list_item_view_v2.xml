@@ -14,35 +14,8 @@
       style="@style/ListItemStartIconV2"
       android:importantForAccessibility="no" />
 
-    <!-- TODO(crbug.com/1244152) Extract and share this title/description layout. -->
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_gravity="center_vertical" >
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
-        <FrameLayout
-            android:id="@+id/custom_content_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    <!-- Common title/description shared between list item views. -->
+    <include layout="@layout/title_and_description_layout" />
 
     <!-- TODO(crbug.com/1241509): Allow an arbitrary amount of buttons to be added here. -->
     <org.chromium.ui.widget.ChromeImageButton

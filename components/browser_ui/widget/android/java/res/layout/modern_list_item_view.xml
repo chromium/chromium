@@ -12,29 +12,8 @@
         android:id="@+id/start_icon"
         style="@style/ListItemStartIcon" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_gravity="center_vertical" >
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-    </LinearLayout>
+    <!-- Common title/description shared between list item views. -->
+    <include layout="@layout/title_and_description_layout" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/end_button"
