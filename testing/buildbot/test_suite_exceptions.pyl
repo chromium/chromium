@@ -402,27 +402,6 @@
           "shards": 28
         },
       },
-      'Win7 Tests (dbg)(1)': {
-        'args': [
-          '--debug',
-          '--timeout-ms',
-          '60000'
-        ],
-        'experiment_percentage': 100,
-        # TODO(kbr): the "Windows-7-SP1" Swarming dimension set is implicit,
-        # from prefered_os_dimension in
-        # tools/build/scripts/slave/recipe_modules/swarming/api.py. Ideally,
-        # Swarming dimensions would be either specified for all testers on the
-        # waterfall (and therefore, explicitly specified for all tests in the
-        # generated JSON), or this would be removed, and the implicit one used.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Windows-7-SP1',
-            }
-          ],
-        },
-      },
       # tryserver.chromium.android
       'android_blink_rel': {
         'args': [
@@ -729,11 +708,6 @@
         # swarming jobs. crbug.com/868114
         'swarming': {
           'shards': 15,
-        },
-      },
-      'Win7 Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 20,
         },
       },
       'linux-chromeos-chrome': {
@@ -1857,7 +1831,6 @@
       # (https://crbug.com/1218989)
       'Win 7 Tests x64 (1)',
       'Win7 Tests (1)',
-      'Win7 Tests (dbg)(1)',
       # TODO(https://crbug.com/1267125): Re-enable.
       'mac11-arm64-rel-tests',
     ],
@@ -2019,11 +1992,6 @@
       # temporary, https://crbug.com/818832
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,
-      },
-      'Win7 Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 4,
-        },
       },
       # TODO(crbug.com/970649): Remove these filters.
       'linux-chromeos-chrome': {
@@ -2473,7 +2441,6 @@
       # (https://crbug.com/813553)
       'Win 7 Tests x64 (1)',
       'Win7 Tests (1)',
-      'Win7 Tests (dbg)(1)',
       # all these bots run Windows 7.
       'ToTWin',
       'ToTWin(dbg)',
@@ -2561,11 +2528,6 @@
           '--browser=debug_x64',
         ],
         'experiment_percentage': 100,
-      },
-      'Win7 Tests (dbg)(1)': {
-        'args': [
-          '--browser=debug',
-        ],
       },
     },
   },
@@ -2911,11 +2873,6 @@
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100, # https://crbug.com/840369
       },
-      'Win7 Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'linux-chromeos-code-coverage': {
         'swarming': {
           'shards': 4,
@@ -3017,15 +2974,6 @@
       },
       'Mac11 Tests': {
         'ci_only': True,
-      },
-      'Win7 Tests (dbg)(1)': {
-        'args': [
-          '--jobs=1',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-        'experiment_percentage': 100,
       },
       'chromeos-amd64-generic-rel': {
         'swarming': {
