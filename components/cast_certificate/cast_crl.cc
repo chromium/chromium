@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/numerics/clamped_math.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parse_certificate.h"

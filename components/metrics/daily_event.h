@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_DAILY_EVENT_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

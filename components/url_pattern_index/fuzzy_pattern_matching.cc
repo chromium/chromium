@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
+
 namespace url_pattern_index {
 
 namespace {

@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"

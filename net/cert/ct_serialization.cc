@@ -5,6 +5,7 @@
 #include "net/cert/ct_serialization.h"
 
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "crypto/sha2.h"
 #include "net/cert/merkle_tree_leaf.h"
 #include "net/cert/signed_certificate_timestamp.h"

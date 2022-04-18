@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "crypto/ec_signature_creator.h"
 
 namespace enterprise_connectors {

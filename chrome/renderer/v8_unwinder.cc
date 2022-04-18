@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "v8/include/v8-isolate.h"
 

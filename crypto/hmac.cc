@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "crypto/openssl_util.h"

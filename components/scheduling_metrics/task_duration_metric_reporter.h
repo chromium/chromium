@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/metrics/histogram.h"
+#include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 
 namespace base {

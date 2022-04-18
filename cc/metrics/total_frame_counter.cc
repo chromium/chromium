@@ -4,6 +4,8 @@
 
 #include "cc/metrics/total_frame_counter.h"
 
+#include <cmath>
+
 #include "base/logging.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 

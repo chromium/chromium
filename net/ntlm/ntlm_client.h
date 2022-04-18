@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"

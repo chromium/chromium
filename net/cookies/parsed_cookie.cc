@@ -46,6 +46,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"

@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+
 bool NormalizeExtensionResourcePath(const base::FilePath& path,
                                     base::FilePath* result) {
   DCHECK(result);

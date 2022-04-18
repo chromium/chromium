@@ -4,6 +4,7 @@
 
 #include "net/server/http_server_response_info.h"
 
+#include "base/check.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"

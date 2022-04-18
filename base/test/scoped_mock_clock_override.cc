@@ -6,6 +6,8 @@
 
 #include <ostream>
 
+#include "base/check_op.h"
+
 namespace base {
 
 ScopedMockClockOverride* ScopedMockClockOverride::scoped_mock_clock_ = nullptr;

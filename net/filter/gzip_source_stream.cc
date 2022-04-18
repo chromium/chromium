@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "net/base/io_buffer.h"
 #include "third_party/zlib/zlib.h"
 

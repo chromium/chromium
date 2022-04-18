@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/check_op.h"
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/tile.h"
 

@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"

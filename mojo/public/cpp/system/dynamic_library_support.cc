@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/functions.h"

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 

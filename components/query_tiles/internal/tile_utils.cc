@@ -5,6 +5,7 @@
 #include "components/query_tiles/internal/tile_utils.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 
 #include "base/rand_util.h"

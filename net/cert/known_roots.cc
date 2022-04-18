@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "net/base/hash_value.h"
 #include "net/cert/root_cert_list_generated.h"
 

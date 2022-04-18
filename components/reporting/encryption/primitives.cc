@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "crypto/aead.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"

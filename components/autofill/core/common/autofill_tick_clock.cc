@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/common/autofill_tick_clock.h"
 
+#include "base/check.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 

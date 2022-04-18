@@ -4,6 +4,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 
+#include "base/check_op.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "crypto/hmac.h"
 

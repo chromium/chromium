@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

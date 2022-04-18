@@ -4,6 +4,7 @@
 
 #include "base/i18n/message_formatter.h"
 
+#include "base/check.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
