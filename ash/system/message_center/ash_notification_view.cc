@@ -186,9 +186,7 @@ CreateGroupedNotificationsContainerBuilder(
   return views::Builder<
              ash::AshNotificationView::GroupedNotificationsContainer>()
       .SetParentNotificationView(parent_notification_view)
-      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetInsideBorderInsets(ash::kGroupedNotificationContainerCollapsedInsets)
-      .SetBetweenChildSpacing(ash::kGroupedNotificationsCollapsedSpacing);
+      .SetOrientation(views::BoxLayout::Orientation::kVertical);
 }
 
 // Perform a scale and translate animation by scale from (scale_value_x,
@@ -400,8 +398,8 @@ AshNotificationView::AshNotificationView(
                                       views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kStart))));
 
-  // Main right view contains all the views besides control buttons and
-  // icon.
+  // Main right view contains all the views besides control buttons, app icon,
+  // grouped container and action buttons.
   auto main_right_view_builder =
       CreateMainRightViewBuilder()
           .CopyAddressTo(&main_right_view_)
@@ -431,9 +429,6 @@ AshNotificationView::AshNotificationView(
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .CopyAddressTo(&control_buttons_container_)
-          .SetInsideBorderInsets(IsExpanded()
-                                     ? kControlButtonsContainerExpandedPadding
-                                     : kControlButtonsContainerCollapsedPadding)
           .SetMainAxisAlignment(MainAxisAlignment::kEnd)
           .SetMinimumCrossAxisSize(kControlButtonsContainerMinimumHeight)
           .SetVisible(!notification.group_child())
@@ -486,6 +481,8 @@ AshNotificationView::AshNotificationView(
   AddChildView(CreateActionsRow(std::make_unique<views::FlexLayout>()));
 
   // Custom layout and paddings for views in `AshNotificationView`.
+  // Note that we also change the padding for some particular views in
+  // UpdateViewForExpandedState().
   action_buttons_row()
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetDefault(views::kMarginsKey,
