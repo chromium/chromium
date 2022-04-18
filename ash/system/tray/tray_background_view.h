@@ -171,6 +171,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Returns true if the view is showing a context menu.
   bool IsShowingMenu() const;
 
+  // Returns the corners based on the `corner_behavior_`;
+  gfx::RoundedCornersF GetRoundedCorners();
+
  protected:
   // ActionableView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
