@@ -72920,13 +72920,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="44" label="xo0/jittery_trim_dis"/>
 </enum>
 
-<enum name="PlayPromiseRejectReason">
-  <int value="0" label="Failed autoplay policy"/>
-  <int value="1" label="Sources not supported"/>
-  <int value="2" label="Interrupted by pause()"/>
-  <int value="3" label="Interrupted by load()"/>
-</enum>
-
 <enum name="PluginAvailabilityStatus">
   <int value="0" label="PLUGIN_NOT_REGISTERED"/>
   <int value="1" label="PLUGIN_AVAILABLE"/>

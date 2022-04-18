@@ -3081,16 +3081,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaElement.PlayPromiseReject"
-    enum="PlayPromiseRejectReason" expires_after="2021-04-01">
-  <owner>mlamouri@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Recorded when an HTMLMediaElement play() promise is rejected (handled or
-    not) with the type of rejection.
-  </summary>
-</histogram>
-
 <histogram name="Media.MediaFoundation.VideoColorSpace.PrimaryID"
     enum="VideoColorSpace.PrimaryID" expires_after="2022-08-30">
   <owner>dalecurtis@chromium.org</owner>
