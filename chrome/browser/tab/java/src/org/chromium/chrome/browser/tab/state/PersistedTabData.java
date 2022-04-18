@@ -148,7 +148,7 @@ public abstract class PersistedTabData implements UserData {
             PersistedTabDataConfiguration config, PersistedTabDataFactory<T> factory,
             Callback<Callback<T>> tabDataCreator, Tab tab, Class<T> clazz, String key) {
         factory.create(data, config.getStorage(), config.getId(), (persistedTabDataFromStorage) -> {
-            if (persistedTabDataFromStorage.needsUpdate()) {
+            if (persistedTabDataFromStorage != null && persistedTabDataFromStorage.needsUpdate()) {
                 tabDataCreator.onResult((tabData) -> {
                     updateLastUpdatedMs(tabData);
                     onPersistedTabDataResult(tabData, tab, clazz, key);
