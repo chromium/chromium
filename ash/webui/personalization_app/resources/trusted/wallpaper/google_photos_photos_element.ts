@@ -18,6 +18,7 @@ import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-s
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
+import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto} from '../utils.js';
@@ -27,6 +28,7 @@ import {getTemplate} from './google_photos_photos_element.html.js';
 import {fetchGooglePhotosPhotos, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
+const ERROR_ID = 'GooglePhotosPhotos';
 const PLACEHOLDER_ID = 'placeholder';
 
 /** Returns placeholders to show while Google Photos photos are loading. */
@@ -253,6 +255,9 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Invoked on changes to this element's |hidden| state. */
   private onHiddenChanged_(hidden: GooglePhotosPhotos['hidden']) {
     if (hidden) {
+      // If |hidden|, the error associated with this element will have lost
+      // user-facing context so it should be dismissed.
+      this.dispatch(dismissErrorAction(ERROR_ID, /*fromUser=*/ false));
       return;
     }
 
@@ -274,6 +279,33 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Invoked on changes to |photosBySection_|. */
   private onPhotosBySectionChanged_(
       photosBySection: GooglePhotosPhotos['photosBySection_']) {
+    if (photosBySection === null) {
+      // If the list of photos fails to load and is currently showing, display
+      // an error to the user that allows them to make another attempt.
+      if (!this.hidden) {
+        this.dispatch(setErrorAction({
+          id: ERROR_ID,
+          message: this.i18n('googlePhotosError'),
+          dismiss: {
+            message: this.i18n('googlePhotosRetry'),
+            callback: (fromUser: boolean) => {
+              if (fromUser) {
+                // Post the reattempt instead of performing it immediately to
+                // avoid updating the personalization store from the same
+                // sequence that generated this event.
+                setTimeout(
+                    () => fetchGooglePhotosPhotos(
+                        this.wallpaperProvider_, this.getStore()));
+              }
+            },
+          },
+        }));
+      }
+      // Whether the list of photos is currently showing or not, placeholders
+      // should not be removed on load failure.
+      return;
+    }
+
     // NOTE: |photosByRow_| is updated in place to avoid resetting the scroll
     // position of the grid which would otherwise occur during reassignment.
     this.updateList(

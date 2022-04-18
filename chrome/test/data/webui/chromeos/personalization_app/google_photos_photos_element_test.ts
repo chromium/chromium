@@ -4,7 +4,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotos, GooglePhotosPhotosSection, initializeGooglePhotosData, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotos, GooglePhotosPhotosSection, initializeGooglePhotosData, PersonalizationActionName, SetErrorAction, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
@@ -101,6 +101,57 @@ suite('GooglePhotosPhotosTest', function() {
     await teardownElement(googlePhotosPhotosElement);
     googlePhotosPhotosElement = null;
   });
+
+  [true, false].forEach(
+      (dismissFromUser: boolean) =>
+          test('displays error when photos fail to load', async () => {
+            // Set values returned by |wallpaperProvider|.
+            wallpaperProvider.setGooglePhotosCount(1);
+            wallpaperProvider.setGooglePhotosPhotos(undefined);
+
+            // Initialize |googlePhotosPhotosElement|.
+            googlePhotosPhotosElement =
+                initElement(GooglePhotosPhotos, {hidden: false});
+            await waitAfterNextRender(googlePhotosPhotosElement);
+
+            // Initialize Google Photos data in the |personalizationStore| and
+            // expect an |error|.
+            personalizationStore.expectAction(
+                PersonalizationActionName.SET_ERROR);
+            await initializeGooglePhotosData(
+                wallpaperProvider, personalizationStore);
+            const {error} =
+                await personalizationStore.waitForAction(
+                    PersonalizationActionName.SET_ERROR) as SetErrorAction;
+
+            // Verify |error| expectations.
+            assertEquals(error.message, 'Something went wrong.');
+            assertEquals(error.dismiss?.message, 'Retry');
+            assertNotEquals(error.dismiss?.callback, undefined);
+
+            wallpaperProvider.reset();
+
+            // Simulate dismissal of |error| conditionally |fromUser| and verify
+            // expected interactions with wallpaper provider.
+            error.dismiss?.callback?.(/*fromUser=*/ dismissFromUser);
+            await new Promise<void>(resolve => setTimeout(resolve));
+            assertEquals(
+                wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'),
+                dismissFromUser ? 1 : 0);
+
+            wallpaperProvider.reset();
+
+            // Simulate hiding |googlePhotosPhotosElement| and verify the
+            // |error| is dismissed though not |fromUser|.
+            const dismissCallbackPromise = new Promise<boolean>(resolve => {
+              personalizationStore.data.error!.dismiss!.callback = resolve;
+            });
+            googlePhotosPhotosElement.hidden = true;
+            assertEquals(await dismissCallbackPromise, /*fromUser=*/ false);
+            await new Promise<void>(resolve => setTimeout(resolve));
+            assertEquals(
+                wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+          }));
 
   test('displays photos', async () => {
     const photos: GooglePhotosPhoto[] = [

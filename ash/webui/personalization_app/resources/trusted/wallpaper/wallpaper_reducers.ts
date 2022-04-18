@@ -461,7 +461,7 @@ function googlePhotosReducer(
       };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
       // The list of photos should be loaded only while additional photos exist.
-      assert(state.photos === undefined || state.resumeTokens.photos);
+      assert(!state.photos || state.resumeTokens.photos);
       return state;
     case WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS:
       assert(action.photos !== undefined);
