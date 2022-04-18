@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_resource_fetch_restriction.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -24,8 +23,10 @@ namespace blink {
 
 class CSSStyleSheet;
 class Document;
+class ExecutionContext;
 class StyleRuleKeyframe;
 class StyleSheetContents;
+enum class SecureContextMode;
 
 class CORE_EXPORT CSSParserContext final
     : public GarbageCollected<CSSParserContext> {
