@@ -455,7 +455,8 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
-                       SameProcessAMPSubframe) {
+                       // TODO(crbug.com/1295025): Re-enable this test
+                       DISABLED_SameProcessAMPSubframe) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
