@@ -31,7 +31,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -87,39 +86,34 @@ base::Value GetUiDevToolsTargets() {
 }
 
 // DevToolsFrontEndObserver ----------------------------------------
-
-class DevToolsFrontEndObserver
-    : public content::WebContentsUserData<DevToolsFrontEndObserver>,
-      public content::WebContentsObserver {
+// Owned by the WebContents passed in.
+class DevToolsFrontEndObserver : public content::WebContentsObserver {
  public:
+  DevToolsFrontEndObserver(WebContents* web_contents,
+                           base::OnceClosure closure);
+
   ~DevToolsFrontEndObserver() override;
 
   DevToolsFrontEndObserver(const DevToolsFrontEndObserver&) = delete;
   DevToolsFrontEndObserver& operator=(const DevToolsFrontEndObserver&) = delete;
 
- protected:
-  DevToolsFrontEndObserver(WebContents* web_contents,
-                           base::OnceClosure closure);
-
  private:
-  friend class content::WebContentsUserData<DevToolsFrontEndObserver>;
-
   // contents::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
+  void WebContentsDestroyed() override;
 
   bool front_end_page_committed_ = false;
 
   // Callback function executed when the front end is finished.
   base::OnceClosure on_front_end_finished_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 DevToolsFrontEndObserver::DevToolsFrontEndObserver(WebContents* web_contents,
                                                    base::OnceClosure closure)
-    : content::WebContentsUserData<DevToolsFrontEndObserver>(*web_contents),
-      WebContentsObserver(web_contents),
-      on_front_end_finished_(std::move(closure)) {}
+    : WebContentsObserver(web_contents),
+      on_front_end_finished_(std::move(closure)) {
+  DCHECK(web_contents);
+}
 
 DevToolsFrontEndObserver::~DevToolsFrontEndObserver() {
   if (!on_front_end_finished_.is_null()) {
@@ -132,12 +126,12 @@ void DevToolsFrontEndObserver::PrimaryPageChanged(content::Page& page) {
     front_end_page_committed_ = true;
     return;
   }
-
-  // Delete this.
-  web_contents()->RemoveUserData(UserDataKey());
+  delete this;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DevToolsFrontEndObserver);
+void DevToolsFrontEndObserver::WebContentsDestroyed() {
+  delete this;
+}
 
 // DevToolsUIBindingsEnabler ----------------------------------------
 
@@ -446,7 +440,7 @@ void InspectMessageHandler::CreateNativeUIInspectionSession(
   inspect_ui_->ShowNativeUILaunchButton(/* enabled = */ false);
 
   // The observer will delete itself when the front-end finishes.
-  DevToolsFrontEndObserver::CreateForWebContents(
+  new DevToolsFrontEndObserver(
       front_end, base::BindOnce(&InspectMessageHandler::OnFrontEndFinished,
                                 weak_factory_.GetWeakPtr()));
 }
