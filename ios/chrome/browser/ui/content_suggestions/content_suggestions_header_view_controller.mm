@@ -120,12 +120,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if (self.traitCollection.horizontalSizeClass !=
       previousTraitCollection.horizontalSizeClass) {
     [self updateFakeboxDisplay];
-    if (IsContentSuggestionsHeaderMigrationEnabled()) {
-      self.headerViewHeightConstraint.constant =
-          content_suggestions::heightForLogoHeader(
-              self.logoIsShowing, self.logoVendor.isShowingDoodle,
-              self.promoCanShow, YES, [self topInset], self.traitCollection);
-    }
   }
 }
 
@@ -515,7 +509,15 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                       self.logoVendor.isShowingDoodle, self.traitCollection)];
   self.fakeOmnibox.hidden =
       IsRegularXRegularSizeClass(self) && !self.logoIsShowing;
-  [self.collectionSynchronizer invalidateLayout];
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    [self.headerView layoutIfNeeded];
+    self.headerViewHeightConstraint.constant =
+        content_suggestions::heightForLogoHeader(
+            self.logoIsShowing, self.logoVendor.isShowingDoodle,
+            self.promoCanShow, YES, [self topInset], self.traitCollection);
+  } else {
+    [self.collectionSynchronizer invalidateLayout];
+  }
 }
 
 // If Google is not the default search engine, hides the logo, doodle and
