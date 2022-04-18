@@ -3239,8 +3239,7 @@ TEST_F(
       p.doDefault();
 
       // This comes when the <select>'s value changes.
-      await TestUtils.waitForEvent(
-          application, EventType.SELECTED_VALUE_CHANGED);
+      await this.waitForEvent(application, EventType.SELECTED_VALUE_CHANGED);
 
       // Nothing should have been spoken.
       assertEquals(undefined, nextSpeech);

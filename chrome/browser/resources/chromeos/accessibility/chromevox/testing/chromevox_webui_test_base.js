@@ -43,46 +43,6 @@ ChromeVoxWebUITestBase = class extends AccessibilityTestBase {
   }
 
   /**
-   * Loads some inlined html into the current document, replacing
-   * whatever was there previously. This version takes the html
-   * encoded as a multiline string. `
-   * <button>
-   * `
-   * OBSOLETE: prior to multiline string support in js.
-   * Use a comment inside a function, so you can use it like this:
-   *
-   * this.loadDoc(function() {/*!
-   *     <p>Html goes here</p>
-   * * /});
-   *
-   * @param {Function} commentEncodedHtml The html to load, embedded as a
-   *     comment inside an anonymous function - see example, above.
-   */
-  loadDoc(commentEncodedHtml) {
-    const html =
-        TestUtils.extractHtmlFromCommentEncodedString(commentEncodedHtml);
-    this.loadHtml(html);
-  }
-
-  /**
-   * Appends some inlined html into the current document, at the end of
-   * the body element. Takes the html encoded as a comment inside a function,
-   * so you can use it like this:
-   *
-   * this.appendDoc(function() {/*!
-   *     <p>Html goes here</p>
-   * * /});
-   *
-   * @param {Function} commentEncodedHtml The html to load, embedded as a
-   *     comment inside an anonymous function - see example, above.
-   */
-  appendDoc(commentEncodedHtml) {
-    const html =
-        TestUtils.extractHtmlFromCommentEncodedString(commentEncodedHtml);
-    this.appendHtml(html);
-  }
-
-  /**
    * Appends some inlined html into the current document, at the end of
    * the body element.
    * @param {string} html The html to load as a string.
