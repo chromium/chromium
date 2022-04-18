@@ -4909,6 +4909,7 @@
                         "ZeroSuggestPrefetchBypassCache": "true"
                     },
                     "enable_features": [
+                        "AndroidAuxiliarySearch",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxURLMatches",
