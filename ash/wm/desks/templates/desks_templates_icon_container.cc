@@ -260,9 +260,12 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
     auto icon_info = icon_identifier_to_icon_info[i].second;
     // Don't create new icons once we have reached the max, or if the app is
     // unavailable (uninstalled or unsupported). Count the amount of skipped
-    // apps so we know what to display on the overflow.
+    // apps so we know what to display on the overflow. In addition, dialog
+    // popups may show incognito window icons. Saved templates will not have
+    // incognito window icon identifiers and will not count them here.
     if (children().size() < kMaxIcons &&
-        delegate->IsAppAvailable(icon_info.app_id)) {
+        (icon_identifier == DeskTemplate::kIncognitoWindowIdentifier ||
+         delegate->IsAppAvailable(icon_info.app_id))) {
       DesksTemplatesIconView* icon_view = AddChildView(
           views::Builder<DesksTemplatesIconView>()
               .SetBackground(views::CreateRoundedRectBackground(
