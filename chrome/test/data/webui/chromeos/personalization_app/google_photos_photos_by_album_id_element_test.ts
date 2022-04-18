@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fetchGooglePhotosAlbum, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, GooglePhotosPhotosByAlbumId, initializeGooglePhotosData, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {fetchGooglePhotosAlbum, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, GooglePhotosPhotosByAlbumId, initializeGooglePhotosData, PersonalizationActionName, SetErrorAction, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -57,6 +57,71 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     await teardownElement(googlePhotosPhotosByAlbumIdElement);
     googlePhotosPhotosByAlbumIdElement = null;
   });
+
+  [true, false].forEach(
+      (dismissFromUser: boolean) =>
+          test('displays error when selected album fails to load', async () => {
+            personalizationStore.setReducersEnabled(true);
+
+            const album: GooglePhotosAlbum = {
+              id: '1',
+              title: 'foo',
+              photoCount: 1,
+              preview: {url: 'foo.com'},
+            };
+
+            // Set values returned by |wallpaperProvider|.
+            wallpaperProvider.setGooglePhotosAlbums([album]);
+            wallpaperProvider.setGooglePhotosCount(1);
+            wallpaperProvider.setGooglePhotosPhotosByAlbumId(
+                album.id, undefined);
+
+            // Initialize Google Photos data in the |personalizationStore|.
+            await initializeGooglePhotosData(
+                wallpaperProvider, personalizationStore);
+
+            // Initialize |googlePhotosPhotosByAlbumIdElement|.
+            googlePhotosPhotosByAlbumIdElement =
+                initElement(GooglePhotosPhotosByAlbumId, {hidden: false});
+            await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
+
+            // Select |album| and expect an |error|.
+            personalizationStore.expectAction(
+                PersonalizationActionName.SET_ERROR);
+            googlePhotosPhotosByAlbumIdElement.setAttribute(
+                'album-id', album.id);
+            const {error} =
+                await personalizationStore.waitForAction(
+                    PersonalizationActionName.SET_ERROR) as SetErrorAction;
+
+            // Verify |error| expectations.
+            assertEquals(error.message, 'Something went wrong.');
+            assertEquals(error.dismiss?.message, 'Retry');
+            assertNotEquals(error.dismiss?.callback, undefined);
+
+            wallpaperProvider.reset();
+
+            // Simulate dismissal of |error| conditionally |fromUser| and verify
+            // expected interactions with wallpaper provider.
+            error.dismiss?.callback?.(/*fromUser=*/ dismissFromUser);
+            await new Promise<void>(resolve => setTimeout(resolve));
+            assertEquals(
+                wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'),
+                dismissFromUser ? 1 : 0);
+
+            wallpaperProvider.reset();
+
+            // Simulate hiding |googlePhotosPhotosByAlbumIdElement| and verify
+            // the |error| is dismissed though not |fromUser|.
+            const dismissCallbackPromise = new Promise<boolean>(resolve => {
+              personalizationStore.data.error!.dismiss!.callback = resolve;
+            });
+            googlePhotosPhotosByAlbumIdElement.hidden = true;
+            assertEquals(await dismissCallbackPromise, /*fromUser=*/ false);
+            await new Promise<void>(resolve => setTimeout(resolve));
+            assertEquals(
+                wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+          }));
 
   test('displays photos for the selected album id', async () => {
     const album: GooglePhotosAlbum = {

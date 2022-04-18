@@ -63,7 +63,7 @@ export {TopicSourceItem} from './ambient/topic_source_item_element.js';
 export {TopicSourceList} from './ambient/topic_source_list_element.js';
 export {AmbientZeroState} from './ambient/zero_state_element.js';
 export {IFrameApi} from './iframe_api.js';
-export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName} from './personalization_actions.js';
+export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
 export {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, AnimationTheme, CurrentWallpaper, DefaultUserImage, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, OnlineImageType, TemperatureUnit, ThemeObserverInterface, ThemeObserverRemote, ThemeProviderInterface, TopicSource, UserImage, UserImageObserverInterface, UserImageObserverRemote, UserInfo, UserProviderInterface, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from './personalization_app.mojom-webui.js';
 export {PersonalizationBreadcrumb} from './personalization_breadcrumb_element.js';
 export {PersonalizationMain} from './personalization_main_element.js';

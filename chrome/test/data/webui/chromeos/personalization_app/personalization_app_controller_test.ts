@@ -907,7 +907,7 @@ suite('local images available but no internet connection', () => {
               // Set local images.
               // Error displays once local images are loaded.
               {
-                'error': loadTimeData.getString('networkError'),
+                'error': {message: loadTimeData.getString('networkError')},
               },
             ],
             personalizationStore.states.map(filterAndFlattenState(['error'])));

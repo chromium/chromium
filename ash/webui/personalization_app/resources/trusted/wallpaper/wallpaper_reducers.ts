@@ -348,7 +348,7 @@ function googlePhotosReducer(
       assert(!!state.albums);
       assert(state.albums.some(album => album.id === action.albumId));
       assert(
-          state.photosByAlbumId[action.albumId] === undefined ||
+          !state.photosByAlbumId[action.albumId] ||
           state.resumeTokens.photosByAlbumId[action.albumId]);
       return state;
     case WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM:

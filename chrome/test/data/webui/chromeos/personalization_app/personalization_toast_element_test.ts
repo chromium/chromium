@@ -5,8 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {PersonalizationActionName, PersonalizationToastElement} from 'chrome://personalization/trusted/personalization_app.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {DismissErrorAction, PersonalizationActionName, PersonalizationToastElement} from 'chrome://personalization/trusted/personalization_app.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -32,25 +32,87 @@ suite('PersonalizationToastTest', function() {
     assertEquals('', personalizationToastElement.innerHTML);
   });
 
-  test('visible when error is present', async () => {
-    personalizationStore.data.error = 'There was an error';
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(personalizationToastElement);
-    assertTrue(
-        !!personalizationToastElement.shadowRoot!.getElementById('container'));
-    assertEquals(
-        personalizationStore.data.error,
-        personalizationToastElement.shadowRoot!.querySelector('p')!.innerText);
-  });
+  [true, false].forEach(
+      (overrideDismissMessage:
+           boolean) => test('visible when error is present', async () => {
+        personalizationStore.data.error = {message: 'There was an error'};
+        if (overrideDismissMessage) {
+          personalizationStore.data.error.dismiss = {message: 'Overridden'};
+        }
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(personalizationToastElement);
+        assertTrue(!!personalizationToastElement.shadowRoot!.getElementById(
+            'container'));
+        assertEquals(
+            personalizationStore.data.error.message,
+            personalizationToastElement.shadowRoot!.querySelector(
+                                                       'p')!.innerText);
+        assertEquals(
+            overrideDismissMessage ? 'Overridden' : 'Dismiss',
+            personalizationToastElement.shadowRoot!.querySelector(
+                                                       'cr-button')!.innerText);
+      }));
 
-  test('deploys an dismiss action when dismiss is clicked', async () => {
-    personalizationStore.data.error = 'There was an error';
+  test('dispatches a dismiss action when dismiss is clicked', async () => {
+    personalizationStore.data.error = {message: 'There was an error'};
     personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationToastElement);
 
     personalizationStore.expectAction(PersonalizationActionName.DISMISS_ERROR);
     personalizationToastElement.shadowRoot!.querySelector('cr-button')!.click();
-    await personalizationStore.waitForAction(
-        PersonalizationActionName.DISMISS_ERROR);
+    const dismissErrorAction =
+        await personalizationStore.waitForAction(
+            PersonalizationActionName.DISMISS_ERROR) as DismissErrorAction;
+    assertEquals(dismissErrorAction.fromUser, true);
+  });
+
+  test('invokes callback when dismiss is clicked', async () => {
+    let dismissCallback: ((byUser: boolean) => void)|undefined = undefined;
+    const dismissCallbackPromise = new Promise<boolean>(resolve => {
+      dismissCallback = resolve;
+    });
+
+    personalizationStore.data.error = {
+      message: 'There was an error',
+      dismiss: {callback: dismissCallback}
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(personalizationToastElement);
+
+    personalizationStore.setReducersEnabled(true);
+    personalizationToastElement.shadowRoot!.querySelector('cr-button')!.click();
+    assertEquals(await dismissCallbackPromise, /*fromUser=*/ true);
+  });
+
+  test('automatically dismisses after ten seconds', async () => {
+    // Spy on calls to |window.setTimeout|.
+    let setTimeout = window.setTimeout;
+    let setTimeoutCalls: {handler: Function|string, delay?: number}[] = [];
+    window.setTimeout =
+        (handler: Function|string, delay?: number, ...args: any[]): number => {
+          setTimeoutCalls.push({handler, delay});
+          return setTimeout(handler, delay, args);
+        };
+
+    // Create and render an error.
+    personalizationStore.data.error = {message: 'There was an error.'};
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(personalizationToastElement);
+
+    // Expect that a timeout will have been scheduled for 10 seconds.
+    let setTimeoutCall: {handler: Function|string, delay?: number}|undefined =
+        setTimeoutCalls.find((setTimeoutCall) => {
+          return typeof setTimeoutCall.handler === 'function' &&
+              setTimeoutCall.delay === 10000;
+        });
+    assertNotEquals(setTimeoutCall, undefined);
+
+    // Expect that the timeout will result in error dismissal.
+    personalizationStore.expectAction(PersonalizationActionName.DISMISS_ERROR);
+    (setTimeoutCall!.handler as Function)();
+    const dismissErrorAction =
+        await personalizationStore.waitForAction(
+            PersonalizationActionName.DISMISS_ERROR) as DismissErrorAction;
+    assertEquals(dismissErrorAction.fromUser, false);
   });
 });

@@ -2064,7 +2064,7 @@ Try tapping the mic to ask me anything.
       <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_MAC_ADDRESS_LABEL" desc="Label for Mac Address.">
         MAC
       </message>
-      <message translateable="false" name="IDS_DIAGNOSTICS_TEST_ON_COMPLETED_TEXT" desc="Message annouced in aria-live when all test routines finished.">
+      <message translateable="false" name="IDS_DIAGNOSTICS_TEST_ON_COMPLETED_TEXT" desc="Message announced in aria-live when all test routines finished.">
         Diagnostics completed
       </message>
 
@@ -2086,6 +2086,12 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS" desc="Label for the Google Photos page in the wallpaper app.">
         Google Photos
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ERROR" desc="Message for the error shown when something goes wrong in the Google Photos page in the wallpaper app.">
+        Something went wrong.
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_RETRY" desc="Message for the retry button shown when something goes wrong in the Google Photos page in the wallpaper app.">
+        Retry
       </message>
       <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB" desc="Label for the Albums tab in the Google Photos page in the wallpaper app.">
         Albums

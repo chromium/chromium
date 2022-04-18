@@ -61,13 +61,13 @@ function errorReducer(
       if (success) {
         return null;
       }
-      return state || loadTimeData.getString('setWallpaperError');
+      return state || {message: loadTimeData.getString('setWallpaperError')};
     case WallpaperActionName.SET_SELECTED_IMAGE:
       const {image} = action;
       if (image) {
         return state;
       }
-      return state || loadTimeData.getString('loadWallpaperError');
+      return state || {message: loadTimeData.getString('loadWallpaperError')};
     // Show network error toast if local images are available but online
     // collections are failed to load. As local images and online collections
     // are loaded asynchronously, we need to check the above condition for both
@@ -77,7 +77,7 @@ function errorReducer(
       if (isNonEmptyArray(images) &&
           !globalState.wallpaper.loading.collections &&
           !isNonEmptyArray(globalState.wallpaper.backdrop.collections)) {
-        return state || loadTimeData.getString('networkError');
+        return state || {message: loadTimeData.getString('networkError')};
       }
       return state;
     case WallpaperActionName.SET_COLLECTIONS:
@@ -85,13 +85,25 @@ function errorReducer(
       if (!globalState.wallpaper.loading.local.images &&
           isNonEmptyArray(globalState.wallpaper.local.images) &&
           !isNonEmptyArray(collections)) {
-        return state || loadTimeData.getString('networkError');
+        return state || {message: loadTimeData.getString('networkError')};
       }
       return state;
+    case PersonalizationActionName.SET_ERROR:
+      if (state && state.dismiss && state.dismiss.callback) {
+        state.dismiss.callback(/*fromUser=*/ false);
+      }
+      return action.error;
     case PersonalizationActionName.DISMISS_ERROR:
       if (!state) {
         console.warn(
             'Received dismiss error action when error is already null');
+        return null;
+      }
+      if (action.id && (!state.id || action.id !== state.id)) {
+        return state;
+      }
+      if (state && state.dismiss && state.dismiss.callback) {
+        state.dismiss.callback(action.fromUser);
       }
       return null;
     default:

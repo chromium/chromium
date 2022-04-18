@@ -41,6 +41,7 @@
   }
 
   #container {
+    align-items: center;
     background-color: var(--personalization-app-bg-color-elevation-2);
     border-radius: 4px;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px rgba(0, 0, 0, 0.15);
@@ -60,9 +61,9 @@
 </style>
 <template is="dom-if" if="[[showError_]]">
   <div id="container">
-    <p>[[error_]]</p>
+    <p>[[getErrorMessage_(error_)]]</p>
     <cr-button on-click="onDismissClicked_">
-      $i18n{dismiss}
+      [[getDismissMessage_(error_)]]
     </cr-button>
   </div>
 </template>

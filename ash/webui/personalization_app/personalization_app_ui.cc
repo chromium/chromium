@@ -185,7 +185,10 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER},
 
       // Google Photos strings
+      // TODO(b/229149314): Finalize error and retry strings.
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
+      {"googlePhotosError", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ERROR},
+      {"googlePhotosRetry", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_RETRY},
       {"googlePhotosAlbumsTabLabel",
        IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB},
       {"googlePhotosPhotosTabLabel",
