@@ -2105,7 +2105,7 @@ const char kPrivacyGuide2Description[] =
 
 const char kPrivacySandboxAdsAPIsOverrideName[] = "Privacy Sandbox Ads APIs";
 const char kPrivacySandboxAdsAPIsOverrideDescription[] =
-    "Enables Privacy Sandbox APIs: Attribtuion Reporting, Fledge, Topics and "
+    "Enables Privacy Sandbox APIs: Attribution Reporting, Fledge, Topics and "
     "their associated features.";
 
 const char kPrivacySandboxV3Name[] = "Privacy Sandbox V3";
