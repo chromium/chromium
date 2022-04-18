@@ -7768,3 +7768,7 @@ crbug.com/1317007 [ Mac ] external/wpt/mimesniff/mime-types/charset-parameter.wi
 
 # Sheriff 2022-04-18
 crbug.com/1317029 [ Mac10.13 ] external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
+
+# Sheriff 2022-04-18
+# TODO(crbug.com/1316144): Re-enable this test
+crbug.com/1316144 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Skip ]
