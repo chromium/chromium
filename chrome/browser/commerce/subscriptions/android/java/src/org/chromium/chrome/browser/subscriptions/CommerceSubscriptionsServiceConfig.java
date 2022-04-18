@@ -28,6 +28,9 @@ public class CommerceSubscriptionsServiceConfig {
     public static final String IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM =
             "implicit_subscriptions_enabled";
 
+    private static final String PARSE_SEEN_OFFER_TO_SERVER_PARAM =
+            "price_tracking_parse_seen_offer_to_server";
+
     private static final int DEFAULT_STALE_TAB_LOWER_BOUND_DAYS = 1;
 
     public static String getDefaultServiceUrl() {
@@ -57,5 +60,14 @@ public class CommerceSubscriptionsServiceConfig {
                     false);
         }
         return false;
+    }
+
+    public static boolean shouldParseSeenOfferToServer() {
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, PARSE_SEEN_OFFER_TO_SERVER_PARAM,
+                    true);
+        }
+        return true;
     }
 }

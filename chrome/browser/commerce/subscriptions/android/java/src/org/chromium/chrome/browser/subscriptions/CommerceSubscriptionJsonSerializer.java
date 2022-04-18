@@ -57,7 +57,8 @@ class CommerceSubscriptionJsonSerializer {
             subscriptionJson.put(SUBSCRIPTION_IDENTIFIER_KEY, subscription.getTrackingId());
 
             PriceTrackableOffer seenOffer = subscription.getSeenOffer();
-            if (seenOffer != null) {
+            if (CommerceSubscriptionsServiceConfig.shouldParseSeenOfferToServer()
+                    && seenOffer != null) {
                 JSONObject seenOfferJson = new JSONObject();
                 seenOfferJson.put(SEEN_OFFER_ID_KEY, seenOffer.offerId);
                 seenOfferJson.put(SEEN_OFFER_PRICE_KEY, seenOffer.currentPrice);
