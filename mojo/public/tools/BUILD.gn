@@ -10,7 +10,11 @@ group("mojo_python_unittests") {
     "run_all_python_unittests.py",
     "//testing/scripts/run_isolated_script_test.py",
   ]
-  deps = [ "//mojo/public/tools/mojom/mojom:tests" ]
+  deps = [
+    "//mojo/public/tools/bindings:tests",
+    "//mojo/public/tools/mojom:tests",
+    "//mojo/public/tools/mojom/mojom:tests",
+  ]
   data_deps = [
     "//testing:test_scripts_shared",
     "//third_party/catapult/third_party/typ/",

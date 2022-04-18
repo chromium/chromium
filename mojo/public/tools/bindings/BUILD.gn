@@ -107,3 +107,14 @@ action("precompile_templates") {
     "precompile",
   ]
 }
+
+group("tests") {
+  data = [
+    mojom_generator_script,
+    "mojom_bindings_generator_unittest.py",
+    "//tools/diagnosis/crbug_1001171.py",
+    "//third_party/markupsafe/",
+  ]
+  data += mojom_generator_sources
+  data += jinja2_sources
+}
