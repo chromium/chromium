@@ -5,7 +5,7 @@
 """Script used to generate the tests definitions for Web App testing framework.
 See the README.md file in this directory for more information.
 
-Usage: python3 chrome/test/web_apps/generate_framework_tests_and_coverage.py
+Usage: python3 chrome/test/webapps/generate_framework_tests_and_coverage.py
 """
 
 import argparse
