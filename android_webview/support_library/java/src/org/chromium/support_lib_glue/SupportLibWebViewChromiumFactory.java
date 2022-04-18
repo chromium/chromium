@@ -86,6 +86,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.PROXY_OVERRIDE_REVERSE_BYPASS,
                     Features.REQUESTED_WITH_HEADER_CONTROL + Features.DEV_SUFFIX,
                     Features.GET_VARIATIONS_HEADER,
+                    Features.ALGORITHMIC_DARKENING,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
