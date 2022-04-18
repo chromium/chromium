@@ -751,16 +751,6 @@ void ContentSubresourceFilterThrottleManager::
 
 void ContentSubresourceFilterThrottleManager::OnFrameIsAdSubframe(
     content::RenderFrameHost* render_frame_host) {
-  // `FrameIsAdSubframe()` can only be called for an initial empty document. As
-  // it won't pass through `ReadyToCommitNavigation()` (and has not yet passed
-  // through `DidFinishNavigation()`), we know it won't be updated further.
-  //
-  // The fenced frame root will not report this for the initial empty document
-  // as the fenced frame is isolated from the embedder cannot be scripted. In
-  // that case we do can rely on passing through ReadyToCommitNavigation and we
-  // do so since fenced frame ad tagging varies significantly from regular
-  // iframes, see `AdScriptDidCreateFencedFrame`.
-  DCHECK(!render_frame_host->IsFencedFrameRoot());
   EnsureFrameAdEvidence(render_frame_host).set_is_complete();
 
   // The renderer has indicated that the frame is an ad.
@@ -835,6 +825,18 @@ void ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource() {
 }
 
 void ContentSubresourceFilterThrottleManager::FrameIsAdSubframe() {
+  // `FrameIsAdSubframe()` can only be called for an initial empty document. As
+  // it won't pass through `ReadyToCommitNavigation()` (and has not yet passed
+  // through `DidFinishNavigation()`), we know it won't be updated further.
+  //
+  // The fenced frame root will not report this for the initial empty document
+  // as the fenced frame is isolated from the embedder cannot be scripted. In
+  // that case we do can rely on passing through ReadyToCommitNavigation and we
+  // do so since fenced frame ad tagging varies significantly from regular
+  // iframes, see `AdScriptDidCreateFencedFrame`.
+  content::RenderFrameHost* render_frame_host =
+      receiver_.GetCurrentTargetFrame();
+  DCHECK(!render_frame_host->IsFencedFrameRoot());
   OnFrameIsAdSubframe(receiver_.GetCurrentTargetFrame());
 }
 
