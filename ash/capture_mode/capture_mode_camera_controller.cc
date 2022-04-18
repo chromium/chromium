@@ -632,6 +632,24 @@ void CaptureModeCameraController::OnRecordingEnded() {
   in_recording_camera_disconnections_.reset();
 }
 
+void CaptureModeCameraController::OnFrameHandlerFatalError() {
+  if (!camera_preview_widget_)
+    return;
+
+  DCHECK(camera_preview_view_);
+  DCHECK_EQ(selected_camera_, camera_preview_view_->camera_id());
+
+  base::EraseIf(available_cameras_, [&](const CameraInfo& info) {
+    return selected_camera_ == info.camera_id;
+  });
+
+  for (auto& observer : observers_)
+    observer.OnAvailableCamerasChanged(available_cameras_);
+
+  RefreshCameraPreview();
+  GetCameraDevices();
+}
+
 void CaptureModeCameraController::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE)

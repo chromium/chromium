@@ -50,6 +50,11 @@ class ASH_EXPORT FakeCameraDevice
   void Bind(mojo::PendingReceiver<video_capture::mojom::VideoSource>
                 pending_receiver);
 
+  // Simulates a fatal error on this camera device, by sending an error of type
+  // `kCrosHalV3DeviceDelegateMojoConnectionError` to the `VideoFrameHandler`.
+  // See https://crbug.com/1316230 for more details.
+  void TriggerFatalError();
+
   // video_capture::mojom::VideoSource:
   void CreatePushSubscription(
       mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber,

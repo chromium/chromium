@@ -3321,6 +3321,30 @@ TEST_P(CaptureModeCameraFramesTest, SelectAnotherCameraWhileRendering) {
   WaitForAndVerifyRenderedVideoFrame();
 }
 
+// Regression test for https://crbug.com/1316230.
+TEST_P(CaptureModeCameraFramesTest, CameraFatalErrors) {
+  CaptureModeTestApi().StartForFullscreen(/*for_video=*/true);
+  auto* camera_controller = GetCameraController();
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  WaitForAndVerifyRenderedVideoFrame();
+
+  // When a camera fatal error happens during rendering, we detect that an
+  // consider it as a camera disconnection, which will result in the temporary
+  // removal of the preview, before it gets re-added again when we refresh the
+  // list of cameras.
+  auto* video_source_provider = GetTestDelegate()->video_source_provider();
+  video_source_provider->TriggerFatalErrorOnCamera(kDefaultCameraDeviceId);
+  CameraDevicesChangeWaiter().Wait();
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+
+  // Now wait for the camera to be re-added again.
+  CameraDevicesChangeWaiter().Wait();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  WaitForAndVerifyRenderedVideoFrame();
+}
+
 INSTANTIATE_TEST_SUITE_P(All, CaptureModeCameraFramesTest, testing::Bool());
 
 }  // namespace ash
