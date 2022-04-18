@@ -4,7 +4,6 @@
 
 import logging
 import os
-import platform
 import re
 import sys
 
@@ -108,6 +107,10 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--webgl2-only',
         help='Whether we include webgl 1 tests if version is 2.0.0 or above.',
         default='false')
+    parser.add_option('--enable-metal-debug-layers',
+                      action='store_true',
+                      default=False,
+                      help='Whether to enable Metal debug layers')
 
   @classmethod
   def GenerateGpuTests(cls, options):
@@ -221,11 +224,8 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def _ModifyBrowserEnvironment(cls):
     super(WebGLConformanceIntegrationTest, cls)._ModifyBrowserEnvironment()
-    # This is called before browser startup, so we can't grab information
-    # directly from the browser like usual. However, we should be able to
-    # determine if we're on Mac w/ an Intel CPU directly through Python. See
-    # anglebug.com/7003 for more information.
-    if sys.platform == 'darwin' and platform.machine() == 'x86_64':
+    if (sys.platform == 'darwin'
+        and cls.GetOriginalFinderOptions().enable_metal_debug_layers):
       if cls._original_environ is None:
         cls._original_environ = os.environ.copy()
       os.environ['MTL_DEBUG_LAYER'] = '1'

@@ -3359,11 +3359,23 @@
       'Mac FYI ASAN (Intel)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
+          '--enable-metal-debug-layers',
+        ],
+      },
+      'Mac FYI Release (Intel)': {
+        'args': [
+          '--enable-metal-debug-layers',
         ],
       },
       'Mac FYI Retina ASAN (AMD)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
+          '--enable-metal-debug-layers',
+        ],
+      },
+      'Mac FYI Retina Release (AMD)': {
+        'args': [
+          '--enable-metal-debug-layers',
         ],
       },
     },
@@ -3429,11 +3441,23 @@
       'Mac FYI ASAN (Intel)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
+          '--enable-metal-debug-layers',
+        ],
+      },
+      'Mac FYI Release (Intel)': {
+        'args': [
+          '--enable-metal-debug-layers',
         ],
       },
       'Mac FYI Retina ASAN (AMD)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
+          '--enable-metal-debug-layers',
+        ],
+      },
+      'Mac FYI Retina Release (AMD)': {
+        'args': [
+          '--enable-metal-debug-layers',
         ],
       },
     },
