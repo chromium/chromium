@@ -124,10 +124,8 @@ const char* UpdateQueryParams::GetNaclArch() {
 #else
   return "x86-32";
 #endif
-#elif defined(ARCH_CPU_ARMEL)
+#elif defined(ARCH_CPU_ARM_FAMILY)
   return "arm";
-#elif defined(ARCH_CPU_ARM64)
-  return "arm64";
 #elif defined(ARCH_CPU_MIPSEL)
   return "mips32";
 #elif defined(ARCH_CPU_MIPS64EL)
