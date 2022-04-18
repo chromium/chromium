@@ -952,7 +952,6 @@ class ChromeAndroidBase(Browser):
     def __init__(self, logger):
         super().__init__(logger)
         self.device_serial = None
-        self.adb_binary = "adb"
 
     def download(self, dest=None, channel=None, rename=None):
         raise NotImplementedError
@@ -978,7 +977,7 @@ class ChromeAndroidBase(Browser):
             self.logger.warning("No package name provided.")
             return None
 
-        command = [self.adb_binary]
+        command = ['adb']
         if self.device_serial:
             # Assume we have same version of browser on all devices
             command.extend(['-s', self.device_serial[0]])
@@ -1037,9 +1036,9 @@ class AndroidWebview(ChromeAndroidBase):
         # For WebView, it is not trivial to change the WebView provider, so
         # we will just grab whatever is available.
         # https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/channels.md
-        command = [self.adb_binary]
+        command = ['adb']
         if self.device_serial:
-            command.extend(['-s', self.device_serial[0]])
+            command.extend(['-s', self.device_serial])
         command.extend(['shell', 'dumpsys', 'webviewupdate'])
         try:
             output = call(*command)
