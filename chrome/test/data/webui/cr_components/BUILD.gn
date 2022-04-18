@@ -25,6 +25,7 @@ non_preprocessed_files = [
   "app_management/app_management_test_support.ts",
   "app_management/file_handling_item_test.ts",
   "app_management/permission_item_test.ts",
+  "app_management/window_mode_item_test.ts",
   "customize_themes_test.ts",
   "managed_dialog_test.ts",
   "most_visited_focus_test.ts",

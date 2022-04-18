@@ -41,6 +41,7 @@ export function createTestApp(): App {
     hidePinToShelf: false,
     isPreferredApp: false,
     windowMode: WindowMode.kWindow,
+    hideWindowMode: false,
     resizeLocked: false,
     hideResizeLocked: true,
     supportedLinks: [],

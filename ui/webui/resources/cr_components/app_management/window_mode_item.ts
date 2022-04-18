@@ -28,6 +28,9 @@ export class AppManagementWindowModeElement extends PolymerElement {
       windowModeLabel: String,
 
       app: Object,
+
+      hidden:
+          {type: Boolean, computed: 'isHidden_(app)', reflectToAttribute: true},
     };
   }
 
@@ -88,6 +91,10 @@ export class AppManagementWindowModeElement extends PolymerElement {
   private getWindowModeBoolean(windowMode: WindowMode): boolean {
     assert(windowMode !== WindowMode.kUnknown, 'Window Mode Not Set');
     return this.convertWindowModeToBool(windowMode);
+  }
+
+  private isHidden_(app: App): Boolean {
+    return app.hideWindowMode;
   }
 }
 

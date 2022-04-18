@@ -137,3 +137,15 @@ var CrComponentsAppManagementFileHandlingItemTest =
 TEST_F('CrComponentsAppManagementFileHandlingItemTest', 'All', function() {
   mocha.run();
 });
+
+var CrComponentsAppManagementWindowModeTest =
+    class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_components/app_management/window_mode_item_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrComponentsAppManagementWindowModeTest', 'All', function() {
+  mocha.run();
+});
