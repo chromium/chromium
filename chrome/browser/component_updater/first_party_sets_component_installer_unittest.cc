@@ -217,12 +217,9 @@ TEST_F(FirstPartySetsComponentInstallerFeatureDisabledTest,
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
-              UnorderedElementsAre(
-                  Pair(FirstPartySetsComponentInstallerPolicy::
-                           kDogfoodInstallerAttributeName,
-                       "false"),
-                  Pair(FirstPartySetsComponentInstallerPolicy::kV2FormatOptIn,
-                       "true")));
+              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
+                                            kDogfoodInstallerAttributeName,
+                                        "false")));
 }
 
 class FirstPartySetsComponentInstallerNonDogFooderTest
@@ -244,12 +241,9 @@ TEST_F(FirstPartySetsComponentInstallerNonDogFooderTest,
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
-              UnorderedElementsAre(
-                  Pair(FirstPartySetsComponentInstallerPolicy::
-                           kDogfoodInstallerAttributeName,
-                       "false"),
-                  Pair(FirstPartySetsComponentInstallerPolicy::kV2FormatOptIn,
-                       "true")));
+              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
+                                            kDogfoodInstallerAttributeName,
+                                        "false")));
 }
 
 class FirstPartySetsComponentInstallerDogFooderTest
@@ -269,37 +263,9 @@ TEST_F(FirstPartySetsComponentInstallerDogFooderTest,
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
-              UnorderedElementsAre(
-                  Pair(FirstPartySetsComponentInstallerPolicy::
-                           kDogfoodInstallerAttributeName,
-                       "true"),
-                  Pair(FirstPartySetsComponentInstallerPolicy::kV2FormatOptIn,
-                       "true")));
-}
-
-class FirstPartySetsComponentInstallerV2FormatTest
-    : public FirstPartySetsComponentInstallerTest {
- public:
-  FirstPartySetsComponentInstallerV2FormatTest() { InitializeFeatureList(); }
-
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kFirstPartySets,
-             features::kFirstPartySetsV2ComponentFormat});
-  }
-};
-
-TEST_F(FirstPartySetsComponentInstallerV2FormatTest,
-       GetInstallerAttributes_V2OptOut) {
-  FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
-
-  EXPECT_THAT(policy.GetInstallerAttributes(),
-              UnorderedElementsAre(
-                  Pair(FirstPartySetsComponentInstallerPolicy::
-                           kDogfoodInstallerAttributeName,
-                       "false"),
-                  Pair(FirstPartySetsComponentInstallerPolicy::kV2FormatOptIn,
-                       "false")));
+              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
+                                            kDogfoodInstallerAttributeName,
+                                        "true")));
 }
 
 }  // namespace component_updater

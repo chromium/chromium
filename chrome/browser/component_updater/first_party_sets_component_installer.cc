@@ -123,9 +123,6 @@ const char
     FirstPartySetsComponentInstallerPolicy::kDogfoodInstallerAttributeName[] =
         "_internal_experimental_sets";
 
-const char FirstPartySetsComponentInstallerPolicy::kV2FormatOptIn[] =
-    "_v2_format_plz";
-
 bool FirstPartySetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
   return true;
@@ -197,11 +194,6 @@ FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
       {
           kDogfoodInstallerAttributeName,
           BoolToString(features::kFirstPartySetsIsDogfooder.Get()),
-      },
-      {
-          kV2FormatOptIn,
-          BoolToString(base::FeatureList::IsEnabled(
-              features::kFirstPartySetsV2ComponentFormat)),
       },
   };
 }

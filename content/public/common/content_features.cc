@@ -364,11 +364,6 @@ constexpr base::Feature kFirstPartySets{"FirstPartySets",
 const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
     &kFirstPartySets, "FirstPartySetsIsDogfooder", false};
 
-// When enabled, the client will opt in to the V2 component format for the
-// First-Party Sets component.
-const base::Feature kFirstPartySetsV2ComponentFormat{
-    "FirstPartySetsV2ComponentFormat", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether to initialize the font manager when the renderer starts on a
 // background thread.
 const base::Feature kFontManagerEarlyInit{"FontManagerEarlyInit",
