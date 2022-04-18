@@ -294,10 +294,11 @@ void* EntityAnnotatorNativeLibrary::CreateEntityAnnotator(
     recorder.set_status(EntityAnnotatorCreationStatus::kInitializationFailure);
     DeleteEntityAnnotator(entity_annotator);
     entity_annotator = nullptr;
+  } else {
+    recorder.set_status(EntityAnnotatorCreationStatus::kSuccess);
   }
 
   options_delete_func_(options);
-  recorder.set_status(EntityAnnotatorCreationStatus::kSuccess);
   return entity_annotator;
 }
 
