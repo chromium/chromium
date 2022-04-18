@@ -475,9 +475,11 @@ static void PartitionDumpSlotSpanStats(
 
   if (slot_span->CanStoreRawSize()) {
     stats_out->active_bytes += static_cast<uint32_t>(slot_span->GetRawSize());
+    stats_out->active_count += 1;
   } else {
     stats_out->active_bytes +=
         (slot_span->num_allocated_slots * stats_out->bucket_slot_size);
+    stats_out->active_count += slot_span->num_allocated_slots;
   }
 
   size_t slot_span_bytes_resident = RoundUpToSystemPage(
@@ -521,6 +523,7 @@ static void PartitionDumpBucketStats(
   size_t bucket_useful_storage = stats_out->bucket_slot_size * bucket_num_slots;
   stats_out->allocated_slot_span_size = bucket->get_bytes_per_span();
   stats_out->active_bytes = bucket->num_full_slot_spans * bucket_useful_storage;
+  stats_out->active_count = bucket->num_full_slot_spans * bucket_num_slots;
   stats_out->resident_bytes =
       bucket->num_full_slot_spans * stats_out->allocated_slot_span_size;
 
@@ -1179,6 +1182,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
       if (bucket_stats[i].is_valid) {
         stats.total_resident_bytes += bucket_stats[i].resident_bytes;
         stats.total_active_bytes += bucket_stats[i].active_bytes;
+        stats.total_active_count += bucket_stats[i].active_count;
         stats.total_decommittable_bytes += bucket_stats[i].decommittable_bytes;
         stats.total_discardable_bytes += bucket_stats[i].discardable_bytes;
       }
@@ -1198,6 +1202,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
 
     stats.total_resident_bytes += direct_mapped_allocations_total_size;
     stats.total_active_bytes += direct_mapped_allocations_total_size;
+    stats.total_active_count += num_direct_mapped_allocations;
 
     stats.has_thread_cache = with_thread_cache;
     if (stats.has_thread_cache) {
@@ -1225,6 +1230,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
       mapped_stats.allocated_slot_span_size = size;
       mapped_stats.bucket_slot_size = size;
       mapped_stats.active_bytes = size;
+      mapped_stats.active_count = 1;
       mapped_stats.resident_bytes = size;
       dumper->PartitionsDumpBucketStats(partition_name, &mapped_stats);
     }

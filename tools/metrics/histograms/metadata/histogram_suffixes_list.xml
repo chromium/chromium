@@ -8098,9 +8098,23 @@ chromium-metrics-reviews@google.com.
   <suffix name="History" label="Only counting memory used by History service."/>
   <suffix name="LevelDatabase"
       label="Only counting memory used by Level databases."/>
+  <suffix name="Malloc.Aligned.ObjectCount"
+      label="Number of allocated objects. Only counting malloc memory
+             allocated in the partition_alloc aligned partition."/>
+  <suffix name="Malloc.AllocatedObjects.ObjectCount"
+      label="Number of allocated objects."/>
+  <suffix name="Malloc.Allocator.ObjectCount"
+      label="Number of allocated objects. Only counting malloc memory
+             allocated in the partition_alloc allocator partition."/>
   <suffix name="Malloc.BRPQuarantined"
       label="Memory used by objects quarantined by BRP, recorded when
              USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="Malloc.BRPQuarantinedCount"
+      label="Number of slots quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="Malloc.Original.ObjectCount"
+      label="Number of allocated objects. Only counting malloc memory
+             allocated in the partition_alloc original partition."/>
   <suffix name="Malloc.ThreadCache"
       label="Memory used by all thread caches, recorded when PartitionAlloc
              is used as malloc()."/>
@@ -8165,9 +8179,6 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ProcessMemoryAllocatorTiny2" separator=".">
-  <suffix name="Malloc.BRPQuarantinedCount"
-      label="Number of slots quarantined by BRP, recorded when
-             USE_BACKUP_REF_PTR build flag is enabled."/>
   <suffix name="Malloc.SyscallsPerMinute"
       label="Number of system calls made per minute, averaged during the last
              memory dump interval. Only collected when PartitionAlloc is

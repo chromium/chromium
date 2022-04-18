@@ -114,6 +114,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                size_t* total_virtual_size,
                                size_t* resident_size,
                                size_t* allocated_objects_size,
+                               size_t* allocated_objects_count,
                                uint64_t* syscall_count) {
   MemoryDumpPartitionStatsDumper partition_stats_dumper("malloc", pmd,
                                                         level_of_detail);
@@ -144,6 +145,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   *total_virtual_size += partition_stats_dumper.total_resident_bytes();
   *resident_size += partition_stats_dumper.total_resident_bytes();
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
+  *allocated_objects_count += partition_stats_dumper.total_active_count();
   *syscall_count += partition_stats_dumper.syscall_count();
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -314,7 +316,7 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ReportPartitionAllocStats(pmd, args.level_of_detail, &total_virtual_size,
                             &resident_size, &allocated_objects_size,
-                            &syscall_count);
+                            &allocated_objects_count, &syscall_count);
 
   pa_only_resident_size = resident_size;
   pa_only_allocated_objects_size = allocated_objects_size;
@@ -427,6 +429,7 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   total_mmapped_bytes_ += memory_stats->total_mmapped_bytes;
   total_resident_bytes_ += memory_stats->total_resident_bytes;
   total_active_bytes_ += memory_stats->total_active_bytes;
+  total_active_count_ += memory_stats->total_active_count;
   syscall_count_ += memory_stats->syscall_count;
 
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
@@ -446,6 +449,8 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   allocator_dump->AddScalar("allocated_objects_size",
                             MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->total_active_bytes);
+  allocator_dump->AddScalar("allocated_objects_count", "count",
+                            memory_stats->total_active_count);
   allocator_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->total_mmapped_bytes);
   allocator_dump->AddScalar("virtual_committed_size",

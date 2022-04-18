@@ -51,6 +51,7 @@ struct PartitionMemoryStats {
   size_t max_allocated_bytes;    // Max size of allocations.
   size_t total_resident_bytes;   // Total bytes provisioned by the partition.
   size_t total_active_bytes;     // Total active bytes in the partition.
+  size_t total_active_count;  // Total count of active objects in the partition.
   size_t total_decommittable_bytes;  // Total bytes that could be decommitted.
   size_t total_discardable_bytes;    // Total bytes that could be discarded.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -80,6 +81,7 @@ struct PartitionBucketMemoryStats {
   uint32_t allocated_slot_span_size;  // Total size the slot span allocated
                                       // from the system (committed pages).
   uint32_t active_bytes;              // Total active bytes used in the bucket.
+  uint32_t active_count;  // Total active objects allocated in the bucket.
   uint32_t resident_bytes;            // Total bytes provisioned in the bucket.
   uint32_t decommittable_bytes;       // Total bytes that could be decommitted.
   uint32_t discardable_bytes;         // Total bytes that could be discarded.

@@ -2363,6 +2363,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(stats->is_valid);
       EXPECT_EQ(2048u, stats->bucket_slot_size);
       EXPECT_EQ(2048u, stats->active_bytes);
+      EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(SystemPageSize(), stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->discardable_bytes);
@@ -2384,6 +2385,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(stats->is_valid);
       EXPECT_EQ(2048u, stats->bucket_slot_size);
       EXPECT_EQ(0u, stats->active_bytes);
+      EXPECT_EQ(0u, stats->active_count);
       EXPECT_EQ(SystemPageSize(), stats->resident_bytes);
       EXPECT_EQ(SystemPageSize(), stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->discardable_bytes);
@@ -2409,6 +2411,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(stats->is_valid);
       EXPECT_EQ(2048u, stats->bucket_slot_size);
       EXPECT_EQ(0u, stats->active_bytes);
+      EXPECT_EQ(0u, stats->active_count);
       EXPECT_EQ(0u, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->discardable_bytes);
@@ -2443,6 +2446,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(stats->is_valid);
       EXPECT_EQ(PartitionPageSize(), stats->bucket_slot_size);
       EXPECT_EQ(PartitionPageSize(), stats->active_bytes);
+      EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(PartitionPageSize(), stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->discardable_bytes);
@@ -2478,6 +2482,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(stats->is_direct_map);
       EXPECT_EQ(real_size_smaller, stats->bucket_slot_size);
       EXPECT_EQ(real_size_smaller, stats->active_bytes);
+      EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(real_size_smaller, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->discardable_bytes);
@@ -2492,6 +2497,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(stats->is_direct_map);
       EXPECT_EQ(real_size_bigger, stats->bucket_slot_size);
       EXPECT_EQ(real_size_bigger, stats->active_bytes);
+      EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(real_size_bigger, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->discardable_bytes);
@@ -2532,6 +2538,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_FALSE(stats->is_direct_map);
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
       EXPECT_EQ(requested_size + 1 + kExtraAllocSize, stats->active_bytes);
+      EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
       EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
@@ -2558,6 +2565,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_FALSE(stats->is_direct_map);
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
       EXPECT_EQ(0u, stats->active_bytes);
+      EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
       EXPECT_EQ(slot_size, stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->num_full_slot_spans);
@@ -2586,6 +2594,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
       EXPECT_EQ(requested_size + SystemPageSize() + 1 + kExtraAllocSize,
                 stats->active_bytes);
+      EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
       EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);

@@ -92,6 +92,7 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
   size_t total_mmapped_bytes() const { return total_mmapped_bytes_; }
   size_t total_resident_bytes() const { return total_resident_bytes_; }
   size_t total_active_bytes() const { return total_active_bytes_; }
+  size_t total_active_count() const { return total_active_count_; }
   uint64_t syscall_count() const { return syscall_count_; }
 
  private:
@@ -101,6 +102,7 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
   size_t total_mmapped_bytes_ = 0;
   size_t total_resident_bytes_ = 0;
   size_t total_active_bytes_ = 0;
+  size_t total_active_count_ = 0;
   uint64_t syscall_count_ = 0;
   bool detailed_;
 };
