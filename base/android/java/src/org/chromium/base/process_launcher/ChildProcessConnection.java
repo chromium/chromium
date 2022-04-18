@@ -7,17 +7,24 @@ package org.chromium.base.process_launcher;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BaseFeatureList;
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
@@ -27,7 +34,11 @@ import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -94,6 +105,12 @@ public class ChildProcessConnection {
          *                    library.
          */
         void onReceivedZygoteInfo(ChildProcessConnection connection, Bundle relroBundle);
+    }
+
+    private static class ChildProcessMismatchException extends RuntimeException {
+        ChildProcessMismatchException(String msg) {
+            super(msg);
+        }
     }
 
     /**
@@ -504,6 +521,28 @@ public class ChildProcessConnection {
         }
     }
 
+    /**
+     * UMA histogram values for child app info mismatches.
+     * Note: this should stay in sync with ChildAppInfoError in enums.xml.
+     */
+    @IntDef({ChildAppInfoError.SUCCESS, ChildAppInfoError.SOURCE_DIR_MISMATCH,
+            ChildAppInfoError.SHARED_LIB_MISMATCH, ChildAppInfoError.REMOTE_EXCEPTION,
+            ChildAppInfoError.MAX_VALUE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ChildAppInfoError {
+        int SUCCESS = 0;
+        int SOURCE_DIR_MISMATCH = 1;
+        int SHARED_LIB_MISMATCH = 2;
+        int REMOTE_EXCEPTION = 3;
+        // New elements go above.
+        int MAX_VALUE = REMOTE_EXCEPTION;
+    }
+
+    private void recordChildAppInfoError(@ChildAppInfoError int error) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.ChildMismatch.AppInfoError", error, ChildAppInfoError.MAX_VALUE);
+    }
+
     @VisibleForTesting
     protected void onServiceConnectedOnLauncherThread(IBinder service) {
         assert isRunningOnLauncherThread();
@@ -532,6 +571,59 @@ public class ChildProcessConnection {
                     Log.e(TAG, "Failed to bind service to connection.", ex);
                     return;
                 }
+            }
+
+            // Validate that the child process is running the same code as the parent process.
+            String childMismatchError;
+            try {
+                ApplicationInfo child = mService.getAppInfo();
+                ApplicationInfo parent = BuildInfo.getInstance().getBrowserApplicationInfo();
+
+                if (!Objects.equals(parent.sourceDir, child.sourceDir)) {
+                    recordChildAppInfoError(ChildAppInfoError.SOURCE_DIR_MISMATCH);
+                    childMismatchError = "sourceDir mismatch; parent=" + parent.sourceDir
+                            + " child=" + child.sourceDir;
+                }
+                if (!Arrays.equals(parent.sharedLibraryFiles, child.sharedLibraryFiles)) {
+                    recordChildAppInfoError(ChildAppInfoError.SHARED_LIB_MISMATCH);
+                    childMismatchError = "sharedLibraryFiles mismatch; parent="
+                            + Arrays.toString(parent.sharedLibraryFiles)
+                            + " child=" + Arrays.toString(child.sharedLibraryFiles);
+                }
+                // Don't compare splitSourceDirs as isolatedSplits/dynamic feature modules/etc make
+                // this potentially complicated.
+                childMismatchError = null;
+            } catch (RemoteException ex) {
+                recordChildAppInfoError(ChildAppInfoError.REMOTE_EXCEPTION);
+                childMismatchError = "child didn't handle getAppInfo()";
+            }
+            if (childMismatchError != null) {
+                // Check if it looks like the browser's package version has been changed since the
+                // browser process launched (i.e. if the install somehow did not kill our process)
+                boolean versionHasChanged;
+                try {
+                    PackageInfo latestPackage =
+                            ContextUtils.getApplicationContext().getPackageManager().getPackageInfo(
+                                    BuildInfo.getInstance().packageName, 0);
+                    long latestVersionCode = BuildInfo.packageVersionCode(latestPackage);
+                    long loadedVersionCode = BuildInfo.getInstance().versionCode;
+                    versionHasChanged = latestVersionCode != loadedVersionCode;
+                } catch (PackageManager.NameNotFoundException e) {
+                    // Package uninstalled since we launched? Then the version has "changed"...
+                    versionHasChanged = true;
+                }
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.ChildMismatch.BrowserVersionChanged", versionHasChanged);
+                childMismatchError += "; browser version has changed: " + versionHasChanged;
+                Log.e(TAG, "Child process code mismatch: %s", childMismatchError);
+                boolean crashIfBrowserChanged = BaseFeatureList.isEnabled(
+                        BaseFeatures.CRASH_BROWSER_ON_CHILD_MISMATCH_IF_BROWSER_CHANGED);
+                if (BaseFeatureList.isEnabled(BaseFeatures.CRASH_BROWSER_ON_ANY_CHILD_MISMATCH)
+                        || (versionHasChanged && crashIfBrowserChanged)) {
+                    throw new ChildProcessMismatchException(childMismatchError);
+                }
+            } else {
+                recordChildAppInfoError(ChildAppInfoError.SUCCESS);
             }
 
             if (mServiceCallback != null) {

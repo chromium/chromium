@@ -13067,6 +13067,13 @@ Called by update_protocol_commands_enum.py.-->
   <int value="10" label="Image was not required for activation."/>
 </enum>
 
+<enum name="ChildAppInfoError">
+  <int value="0" label="No error (app info matches)"/>
+  <int value="1" label="sourceDir mismatch"/>
+  <int value="2" label="sharedLibraryFiles mismatch"/>
+  <int value="3" label="RemoteException when calling getAppInfo()"/>
+</enum>
+
 <enum name="ChildUserTypeMismatchError">
   <int value="0" label="Recieved a non-child ID token for a child user"/>
   <int value="1" label="Recieved a child ID token for a non-child user"/>

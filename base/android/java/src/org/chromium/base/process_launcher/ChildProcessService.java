@@ -7,6 +7,7 @@ package org.chromium.base.process_launcher;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
@@ -139,6 +140,11 @@ public class ChildProcessService {
                 }
             }
             return true;
+        }
+
+        @Override
+        public ApplicationInfo getAppInfo() {
+            return mApplicationContext.getApplicationInfo();
         }
 
         @Override
