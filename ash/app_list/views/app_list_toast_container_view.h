@@ -15,7 +15,7 @@
 namespace views {
 class Button;
 class LabelButton;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -24,6 +24,7 @@ class AppListNudgeController;
 class AppListToastView;
 class AppsGridContextMenu;
 enum class AppListSortOrder;
+enum class AppListToastType;
 
 // A container view accommodating a toast view with type `ToastType`. See
 // `ToastType` for more detail.
@@ -38,18 +39,6 @@ class AppListToastContainerView : public views::View {
     kShownInBackground,
     // The toast container is hidden.
     kHidden
-  };
-
-  // The type of toast that the container is currently showing.
-  enum class ToastType {
-    // The container is not showing any toast.
-    kNone,
-    // Shows the nudge to guide the users to use apps reordering using context
-    // menu.
-    kReorderNudge,
-    // Shows the notification that the apps are temporarily sorted and allows
-    // users to undo the sorting actions.
-    kReorderUndo,
   };
 
   class Delegate {
@@ -127,7 +116,7 @@ class AppListToastContainerView : public views::View {
 
   AppListToastView* toast_view() { return toast_view_; }
   bool is_toast_visible() const { return toast_view_; }
-  ToastType current_toast() const { return current_toast_; }
+  AppListToastType current_toast() const { return current_toast_; }
 
   AppListA11yAnnouncer* a11y_announcer_for_test() { return a11y_announcer_; }
 
@@ -162,12 +151,12 @@ class AppListToastContainerView : public views::View {
   Delegate* const delegate_;
   AppListNudgeController* const nudge_controller_;
 
+  // Caches the current toast type.
+  AppListToastType current_toast_;
+
   // Caches the current visibility state which is used to help tracking the
   // status of reorder nudge..
   VisibilityState visibility_state_ = VisibilityState::kHidden;
-
-  // Caches the current toast type.
-  ToastType current_toast_ = ToastType::kNone;
 
   // Caches the column of previously focused app. Used when passing focus
   // between apps grid view and recent apps.

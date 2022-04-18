@@ -248,6 +248,20 @@ enum class AppListBubblePage {
   kAssistant
 };
 
+// The type of the toast that shows on the app list.
+enum class AppListToastType {
+  // The toast container is not showing any toast.
+  kNone,
+
+  // Shows the nudge to guide the users to use apps reordering using context
+  // menu.
+  kReorderNudge,
+
+  // Shows the notification that the apps are temporarily sorted and allows
+  // users to undo the sorting actions.
+  kReorderUndo,
+};
+
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
                                            AppListBubblePage page);
 

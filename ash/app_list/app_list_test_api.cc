@@ -535,12 +535,11 @@ views::View* AppListTestApi::GetFullscreenReorderUndoButton() {
   return GetToastContainerViewFromFullscreenAppList()->GetToastButton();
 }
 
-bool AppListTestApi::GetBubbleReorderUndoToastVisibility() const {
-  return GetToastContainerViewFromBubble()->is_toast_visible();
-}
-
-bool AppListTestApi::GetFullscreenReorderUndoToastVisibility() const {
-  return GetToastContainerViewFromFullscreenAppList()->is_toast_visible();
+AppListToastType AppListTestApi::GetToastType() const {
+  AppListToastContainerView* toast_container =
+      ShouldUseBubbleAppList() ? GetToastContainerViewFromBubble()
+                               : GetToastContainerViewFromFullscreenAppList();
+  return toast_container->current_toast();
 }
 
 void AppListTestApi::SetFolderViewAnimationCallback(

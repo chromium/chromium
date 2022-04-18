@@ -1375,7 +1375,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, ShowPrivacyNotice) {
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest, AcceptPrivacyNotice) {
@@ -1391,7 +1391,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, AcceptPrivacyNotice) {
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 
   GestureTapOn(
       GetContinueSectionView()->GetPrivacyNoticeForTest()->toast_button());
@@ -1405,7 +1405,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, AcceptPrivacyNotice) {
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kReorderNudge);
   EXPECT_EQ(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
@@ -1421,7 +1421,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 
   ASSERT_TRUE(GetContinueSectionView()->FirePrivacyNoticeShownTimerForTest());
 
@@ -1429,7 +1429,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest,
@@ -1446,7 +1446,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 
   // Close the launcher without waiting long enough for the privacy notice to be
   // considered shown.
@@ -1459,7 +1459,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest,
@@ -1473,7 +1473,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kReorderNudge);
   EXPECT_EQ(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 
   // Wait for long enough for the reorder nudge to be considered shown.
   task_environment()->AdvanceClock(base::Seconds(1));
@@ -1496,7 +1496,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kReorderNudge);
   EXPECT_EQ(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
   // Wait for long enough for the reorder nudge to be considered shown.
   task_environment()->AdvanceClock(base::Seconds(1));
   HideLauncher();
@@ -1507,7 +1507,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kReorderNudge);
   EXPECT_EQ(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
   // Wait for long enough for the reorder nudge to be considered shown.
   task_environment()->AdvanceClock(base::Seconds(1));
   HideLauncher();
@@ -1519,7 +1519,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest,
@@ -1534,7 +1534,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kReorderNudge);
   EXPECT_EQ(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 
   // Add some search results while the launcher is open.
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
@@ -1549,7 +1549,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kReorderNudge);
   EXPECT_EQ(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
 
   // Wait for long enough for the reorder nudge to be considered shown.
   task_environment()->AdvanceClock(base::Seconds(1));
@@ -1576,7 +1576,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
             AppListNudgeController::NudgeType::kPrivacyNotice);
   EXPECT_NE(GetToastContainerView()->current_toast(),
-            AppListToastContainerView::ToastType::kReorderNudge);
+            AppListToastType::kReorderNudge);
   HideLauncher();
 }
 
