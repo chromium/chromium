@@ -7758,3 +7758,6 @@ crbug.com/1295980 [ Mac ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_fr
 
 # Sheriff 2022-04-15
 crbug.com/1316559 [ Mac11-arm64 ] inspector-protocol/page/set-font-families-generic-names.js [ Failure Pass ]
+
+# Sheriff 2022-04-18
+crbug.com/1317007 [ Mac10.12 ] external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
