@@ -24,27 +24,33 @@ const char* PageLoadMetricsForwardObserver::GetObserverName() const {
   return PageLoadMetricsObserver::GetObserverName();
 }
 
-// OnStart, OnFencedFramesStart, and OnPrerenderingStart should not be forwarded
-// as they are expected to be called only once at the beginning.
+// Registration and initialization of PageLoadMetricsForwardObserver is
+// different from ones of other PageLoadMetricsObserver subclasses.
+// PageLoadMetricsForwardObserver is registered in
+// `components/page_load_metrics/browser/page_load_tracker.cc` and methods
+// OnStart, OnFencedFramesStart, and OnPrerenderingStart are never called.
 PageLoadMetricsObserver::ObservePolicy PageLoadMetricsForwardObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  return CONTINUE_OBSERVING;
+  NOTREACHED();
+  return STOP_OBSERVING;
 }
 
 PageLoadMetricsObserver::ObservePolicy
 PageLoadMetricsForwardObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return CONTINUE_OBSERVING;
+  NOTREACHED();
+  return STOP_OBSERVING;
 }
 
 PageLoadMetricsObserver::ObservePolicy
 PageLoadMetricsForwardObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return CONTINUE_OBSERVING;
+  NOTREACHED();
+  return STOP_OBSERVING;
 }
 
 // Main frame events will be converted as sub-frame events on forwarding, and
