@@ -6739,6 +6739,21 @@
     },
   },
   {
+    'name': 'tryserver.blink',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      # Should be kept in sync with v8_linux_blink_rel in tryserver.v8
+      'linux-blink-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
+        },
+      },
+    },
+  },
+  {
     'name': 'tryserver.chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -6831,6 +6846,21 @@
         },
       },
     }
+  },
+  {
+    'name': 'tryserver.v8',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      # Should be kept in sync with linux-blink-rel in tryserver.blink
+      'v8_linux_blink_rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
+        },
+      },
+    },
   },
   {
     'name': 'tryserver.webrtc',
