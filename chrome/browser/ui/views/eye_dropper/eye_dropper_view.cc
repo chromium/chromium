@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -128,10 +129,11 @@ SkBitmap EyeDropperView::ScreenCapturer::GetBitmap() const {
 }
 
 SkColor EyeDropperView::ScreenCapturer::GetColor(int x, int y) const {
-  DCHECK(x < frame_.width());
-  DCHECK(y < frame_.height());
-  return x < frame_.width() && y < frame_.height() ? frame_.getColor(x, y)
-                                                   : SK_ColorBLACK;
+  // It's not clear how control can reach here with out-of-bounds coordinates,
+  // but avoid a crash if it does.
+  return (x < 0 || x >= frame_.width() || y < 0 || y >= frame_.height())
+             ? gfx::kPlaceholderColor
+             : frame_.getColor(x, y);
 }
 
 int EyeDropperView::ScreenCapturer::original_offset_x() const {
