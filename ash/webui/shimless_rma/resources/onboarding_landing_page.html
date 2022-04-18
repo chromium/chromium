@@ -17,6 +17,10 @@
     margin-inline-start: 5px;
     width: 20px;
   }
+
+  iron-icon[icon='shimless-icon:warning'] {
+    fill: var(--cros-icon-color-warning);
+  }
 </style>
 
 <base-page>
@@ -28,7 +32,7 @@
           hidden$="[[!verificationInProgress_]]" active>
       </paper-spinner-lite>
       <iron-icon id="verificationIcon"
-        icon="[[getVerificationIcon_(isCompliant_)]]"
+        icon$="[[getVerificationIcon_(isCompliant_)]]"
         hidden$="[[verificationInProgress_]]" class="small-icon">
       </iron-icon>
       <span hidden$="[[!verificationInProgress_]]" class="instructions">
