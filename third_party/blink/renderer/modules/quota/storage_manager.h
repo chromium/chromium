@@ -33,10 +33,10 @@ class StorageManager final : public EventTargetWithInlineData,
   explicit StorageManager(ExecutionContext*);
   ~StorageManager() override;
 
-  ScriptPromise persisted(ScriptState*);
-  ScriptPromise persist(ScriptState*);
+  ScriptPromise persisted(ScriptState*, ExceptionState&);
+  ScriptPromise persist(ScriptState*, ExceptionState&);
 
-  ScriptPromise estimate(ScriptState*);
+  ScriptPromise estimate(ScriptState*, ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 
