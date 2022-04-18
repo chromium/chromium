@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -236,6 +237,43 @@ WebAppFileHandlerProto::LaunchType LaunchTypeToProto(
       return WebAppFileHandlerProto_LaunchType_SINGLE_CLIENT;
     case apps::FileHandler::LaunchType::kMultipleClients:
       return WebAppFileHandlerProto_LaunchType_MULTIPLE_CLIENTS;
+  }
+}
+
+WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
+  switch (type) {
+    case web_app::WebAppManagementProto::WEBAPPMANAGEMENT_UNSPECIFIED:
+      NOTREACHED();
+      [[fallthrough]];
+    case web_app::WebAppManagementProto::SYSTEM:
+      return WebAppManagement::Type::kSystem;
+    case web_app::WebAppManagementProto::POLICY:
+      return WebAppManagement::Type::kPolicy;
+    case web_app::WebAppManagementProto::SUBAPP:
+      return WebAppManagement::Type::kSubApp;
+    case web_app::WebAppManagementProto::WEBAPPSTORE:
+      return WebAppManagement::Type::kWebAppStore;
+    case web_app::WebAppManagementProto::SYNC:
+      return WebAppManagement::Type::kSync;
+    case web_app::WebAppManagementProto::DEFAULT:
+      return WebAppManagement::Type::kDefault;
+  }
+}
+
+WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
+  switch (type) {
+    case WebAppManagement::Type::kSystem:
+      return web_app::WebAppManagementProto::SYSTEM;
+    case WebAppManagement::Type::kPolicy:
+      return web_app::WebAppManagementProto::POLICY;
+    case WebAppManagement::Type::kSubApp:
+      return web_app::WebAppManagementProto::SUBAPP;
+    case WebAppManagement::Type::kWebAppStore:
+      return web_app::WebAppManagementProto::WEBAPPSTORE;
+    case WebAppManagement::Type::kSync:
+      return web_app::WebAppManagementProto::SYNC;
+    case WebAppManagement::Type::kDefault:
+      return web_app::WebAppManagementProto::DEFAULT;
   }
 }
 
@@ -619,6 +657,22 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       proto_policy.set_matches_all_origins(decl.matches_all_origins);
       proto_policy.set_matches_opaque_src(decl.matches_opaque_src);
       policy.Add(std::move(proto_policy));
+    }
+  }
+
+  local_data->set_is_placeholder(web_app.is_placeholder());
+
+  if (!web_app.management_to_install_urls_map_without_sync().empty()) {
+    for (const auto& entry :
+         web_app.management_to_install_urls_map_without_sync()) {
+      ManagementToInstallURLsInfoProto* management_urls_proto =
+          local_data->add_management_to_install_urls_map_without_sync();
+      management_urls_proto->set_management(
+          WebAppManagementToProto(entry.first));
+      for (const auto& url : entry.second) {
+        DCHECK(url.is_valid());
+        management_urls_proto->add_install_urls(url.spec());
+      }
     }
   }
 
@@ -1167,6 +1221,27 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     }
     web_app->SetPermissionsPolicy(policy);
   }
+
+  web_app->SetIsPlaceholder(local_data.is_placeholder());
+
+  WebAppManagementToInstallURLsMap management_install_urls_map;
+  for (const auto& management_data_proto :
+       local_data.management_to_install_urls_map_without_sync()) {
+    base::flat_set<GURL> install_urls;
+    for (const auto& install_url_proto : management_data_proto.install_urls()) {
+      GURL install_url(install_url_proto);
+      if (install_url.is_empty() || !install_url.is_valid()) {
+        DLOG(ERROR) << "WebApp proto install_url parse error: "
+                    << install_url.possibly_invalid_spec();
+        return nullptr;
+      }
+      install_urls.emplace(install_url);
+    }
+    management_install_urls_map.insert_or_assign(
+        ProtoToWebAppManagement(management_data_proto.management()),
+        install_urls);
+  }
+  web_app->SetManagementToInstallURLsMap(management_install_urls_map);
 
   return web_app;
 }

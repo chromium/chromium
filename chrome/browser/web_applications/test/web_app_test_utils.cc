@@ -300,21 +300,39 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   absl::optional<SkColor> dark_mode_background_color;
   const absl::optional<SkColor> synced_theme_color = random.next_uint();
   auto app = std::make_unique<WebApp>(app_id);
+  std::vector<WebAppManagement::Type> management_types;
 
   // Generate all possible permutations of field values in a random way:
-  if (AreSystemWebAppsSupported() && random.next_bool())
+  if (AreSystemWebAppsSupported() && random.next_bool()) {
     app->AddSource(WebAppManagement::kSystem);
-  if (random.next_bool())
+    management_types.push_back(WebAppManagement::kSystem);
+  }
+  if (random.next_bool()) {
     app->AddSource(WebAppManagement::kPolicy);
-  if (random.next_bool())
+    management_types.push_back(WebAppManagement::kPolicy);
+  }
+  if (random.next_bool()) {
     app->AddSource(WebAppManagement::kWebAppStore);
-  if (random.next_bool())
+    management_types.push_back(WebAppManagement::kWebAppStore);
+  }
+  if (random.next_bool()) {
     app->AddSource(WebAppManagement::kSync);
-  if (random.next_bool())
+    management_types.push_back(WebAppManagement::kSync);
+  }
+  if (random.next_bool()) {
     app->AddSource(WebAppManagement::kDefault);
+    management_types.push_back(WebAppManagement::kDefault);
+  }
+  if (random.next_bool()) {
+    app->AddSource(WebAppManagement::kSubApp);
+    management_types.push_back(WebAppManagement::kSubApp);
+  }
+
   // Must always be at least one source.
-  if (!app->HasAnySources())
+  if (!app->HasAnySources()) {
     app->AddSource(WebAppManagement::kSync);
+    management_types.push_back(WebAppManagement::kSync);
+  }
 
   if (random.next_bool()) {
     dark_mode_theme_color = SkColorSetA(random.next_uint(), SK_AlphaOPAQUE);
@@ -490,6 +508,21 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     chromeos_data->oem_installed = cros_random.next_bool();
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
+
+  app->SetIsPlaceholder(random.next_bool());
+  WebAppManagementToInstallURLsMap management_to_install_urls_map_without_sync;
+  for (WebAppManagement::Type type : management_types) {
+    base::flat_set<GURL> install_urls;
+    if (random.next_bool())
+      install_urls.emplace(base_url.Resolve("installer1_" + seed_str + "/"));
+    if (random.next_bool())
+      install_urls.emplace(base_url.Resolve("installer2_" + seed_str + "/"));
+    management_to_install_urls_map_without_sync.insert_or_assign(type,
+                                                                 install_urls);
+  }
+
+  app->SetManagementToInstallURLsMap(
+      management_to_install_urls_map_without_sync);
 
   return app;
 }

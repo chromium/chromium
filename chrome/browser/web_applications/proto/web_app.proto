@@ -50,7 +50,9 @@ message WebAppUrlHandlerProto {
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install
-// sources.
+// sources. This should stay in sync with |WebAppManagement| in
+// chrome/browser/web_applications/web_app_constants.h
+// and the WebAppManagementProto enum below.
 message SourcesProto {
   required bool system = 1;
   required bool policy = 2;
@@ -95,6 +97,25 @@ message WebAppPermissionsPolicy {
   repeated string allowed_origins = 2;
   optional bool matches_all_origins = 3;
   optional bool matches_opaque_src = 4;
+}
+
+// This enum should be synced with |WebAppManagement| in
+// chrome/browser/web_applications/web_app_constants.h as well as
+// with the SourcesProto message defined above.
+enum WebAppManagementProto {
+  WEBAPPMANAGEMENT_UNSPECIFIED = 0;
+  SYSTEM = 1;
+  POLICY = 2;
+  SUBAPP = 3;
+  WEBAPPSTORE = 4;
+  SYNC = 5;
+  DEFAULT = 6;
+}
+
+message ManagementToInstallURLsInfoProto {
+  optional WebAppManagementProto management = 1;
+  // The collection of install_urls per web_app per WebAppManagement::Type.
+  repeated string install_urls = 2;
 }
 
 // Full WebApp object data. See detailed comments in
@@ -313,4 +334,12 @@ message WebAppProto {
 
   // Whether the app should be registered to run during OS Login time.
   optional RunOnOsLoginMode run_on_os_login_os_integration_state = 51;
+
+  // Map of WebAppManagement enum to install_url.
+  // There should only be one entry per WebAppManagement source.
+  repeated ManagementToInstallURLsInfoProto
+      management_to_install_urls_map_without_sync = 52;
+
+  // Stores whether the app is a placeholder app or not.
+  optional bool is_placeholder = 53;
 }

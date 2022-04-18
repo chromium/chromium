@@ -390,6 +390,17 @@ void WebApp::SetInstallSourceForMetrics(
   install_source_for_metrics_ = install_source;
 }
 
+void WebApp::SetIsPlaceholder(bool is_placeholder) {
+  is_placeholder_ = is_placeholder;
+}
+
+void WebApp::SetManagementToInstallURLsMap(
+    const WebAppManagementToInstallURLsMap
+        management_to_install_urls_map_without_sync) {
+  management_to_install_urls_map_without_sync_ =
+      management_to_install_urls_map_without_sync;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -489,7 +500,9 @@ bool WebApp::operator==(const WebApp& other) const {
         app.launch_handler_,
         app.parent_app_id_,
         app.permissions_policy_,
-        app.install_source_for_metrics_
+        app.install_source_for_metrics_,
+        app.is_placeholder_,
+        app.management_to_install_urls_map_without_sync_
         // clang-format on
     );
   };
@@ -526,6 +539,24 @@ base::Value WebApp::AsDebugValue() const {
   auto ConvertOptional = [](const auto& value) {
     return value ? base::Value(*value) : base::Value();
   };
+
+  auto ConvertWebAppManagementToStringType =
+      [](const WebAppManagement::Type& source) {
+        switch (source) {
+          case WebAppManagement::Type::kSystem:
+            return "System";
+          case WebAppManagement::Type::kPolicy:
+            return "Policy";
+          case WebAppManagement::Type::kSubApp:
+            return "SubApp";
+          case WebAppManagement::Type::kWebAppStore:
+            return "WebAppStore";
+          case WebAppManagement::Type::kSync:
+            return "Sync";
+          case WebAppManagement::Type::kDefault:
+            return "Default";
+        }
+      };
 
   // Prefix with a ! so these fields appear at the top when serialized.
   root.SetStringKey("!app_id", app_id_);
@@ -607,6 +638,20 @@ base::Value WebApp::AsDebugValue() const {
   } else {
     root.SetStringKey("install_source_for_metrics", "not set");
   }
+
+  root.SetBoolKey("is_placeholder", false);
+
+  base::Value::Dict install_urls_map;
+  for (auto it : management_to_install_urls_map_without_sync_) {
+    base::Value::List install_urls;
+    for (auto set_it : it.second) {
+      install_urls.Append(set_it.spec());
+    }
+    install_urls_map.Set(ConvertWebAppManagementToStringType(it.first),
+                         base::Value(std::move(install_urls)));
+  }
+  root.SetKey("management_to_install_urls_map_without_sync",
+              base::Value(std::move(install_urls_map)));
 
   root.SetStringKey("install_time", ConvertToString(install_time_));
 

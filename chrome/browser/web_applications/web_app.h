@@ -31,6 +31,9 @@
 namespace web_app {
 
 using WebAppSources = std::bitset<WebAppManagement::kMaxValue + 1>;
+using WebAppManagementToInstallURLsMap =
+    base::flat_map<WebAppManagement::Type, base::flat_set<GURL>>;
+
 class WebApp {
  public:
   explicit WebApp(const AppId& app_id);
@@ -260,6 +263,12 @@ class WebApp {
     return install_source_for_metrics_;
   }
 
+  bool is_placeholder() const { return is_placeholder_; }
+  WebAppManagementToInstallURLsMap management_to_install_urls_map_without_sync()
+      const {
+    return management_to_install_urls_map_without_sync_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -339,6 +348,10 @@ class WebApp {
   void SetPermissionsPolicy(blink::ParsedPermissionsPolicy permissions_policy);
   void SetInstallSourceForMetrics(
       absl::optional<webapps::WebappInstallSource> install_source);
+  void SetIsPlaceholder(bool is_placeholder);
+  void SetManagementToInstallURLsMap(
+      const WebAppManagementToInstallURLsMap
+          management_to_install_urls_map_without_sync);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -426,6 +439,20 @@ class WebApp {
   // since this used to be tracked as a pref. It might also be null if the value
   // read from the database is not recognized by this client.
   absl::optional<webapps::WebappInstallSource> install_source_for_metrics_;
+  // The following fields are used during the migration of
+  // ExternallyInstalledWebAppPrefs to the web_app DB.
+  // This shows if the app is a placeholder app or not.
+  bool is_placeholder_ = false;
+  // This mapping of install URLs to a given WebAppManagement source
+  // is used for optimized access to the install source and the install URLs
+  // for a particular web_app.
+  // Currently the install URLs are only stored for all externally installed
+  // apps (policy/default) but not user installed apps or sync apps.
+  // The "Sync" source is still stored, but installed URLs are not added for
+  // that. If printed this looks like: "Sync" : [ "" ].
+  // This will help future developers adding this functionality
+  // have an existing data structure that can be re-used.
+  WebAppManagementToInstallURLsMap management_to_install_urls_map_without_sync_;
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()
