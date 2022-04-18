@@ -265,9 +265,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
       status = response['s']
       logs_pieces = [response['l']]
-      # Default value is currently necessary until the Dawn code is updated to
-      # include it.
-      is_final_payload = response.get('final', True)
+      is_final_payload = response['final']
       # Get multiple log pieces if necessary, e.g. if a monolithic log would
       # have gone over the max payload size.
       while not is_final_payload:
@@ -278,14 +276,9 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         response = future.result()
         response = json.loads(response)
         logs_pieces.append(response['l'])
-        is_final_payload = response.get('final', True)
+        is_final_payload = response['final']
 
-      log_str = ''
-      for piece in logs_pieces:
-        if isinstance(piece, list):
-          log_str += '\n'.join(piece)
-        else:
-          log_str += piece
+      log_str = ''.join(logs_pieces)
       if status == 'skip':
         self.skipTest('WebGPU CTS JavaScript reported test skip with logs ' +
                       log_str)
