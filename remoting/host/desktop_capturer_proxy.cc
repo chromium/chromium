@@ -29,6 +29,10 @@
 #include "remoting/host/chromeos/aura_desktop_capturer.h"
 #endif
 
+#if defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/wayland_desktop_capturer.h"
+#endif
+
 namespace remoting {
 
 class DesktopCapturerProxy::Core : public webrtc::DesktopCapturer::Callback {
@@ -81,6 +85,12 @@ void DesktopCapturerProxy::Core::CreateCapturer(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
       std::make_unique<AuraDesktopCapturer>());
+#elif defined(REMOTING_USE_WAYLAND)
+  if (options.allow_pipewire() && DesktopCapturer::IsRunningUnderWayland()) {
+    capturer_ = std::make_unique<WaylandDesktopCapturer>(options);
+  } else {
+    capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+  }
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
