@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
+import glob
 import os
 import sys
 
@@ -33,6 +35,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
     def __init__(self, host=None):
         super(BaseWptScriptAdapter, self).__init__()
+        self._parser = self._override_options(self._parser)
         if not host:
             host = Host()
         self.fs = host.filesystem
@@ -42,6 +45,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         # run, parsed after this constructor. Can be overwritten by tests.
         self.wpt_output = None
         self.wptreport = None
+        self._include_filename = None
         self.layout_test_results_subdir = 'layout-test-results'
         default_wpt_binary = os.path.join(
             common.SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
@@ -67,20 +71,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             '--target',
             default='Release',
             help='Target build subdirectory under //out')
-        parser.add_argument(
-            '--repeat',
-            '--gtest_repeat',
-            type=int,
-            default=1,
-            help='Number of times to run the tests')
-        # TODO(crbug/1306222): wptrunner currently cannot rerun individual
-        # failed tests, so this flag is accepted but not used.
-        parser.add_argument(
-            '--test-launcher-retry-limit',
-            metavar='LIMIT',
-            type=int,
-            default=0,
-            help='Maximum number of times to rerun a failed test')
         parser.add_argument(
             '--default-exclude',
             action='store_true',
@@ -117,11 +107,45 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             default=0,
             help='Increase verbosity')
 
-        # Parser will format the epilog for us.
-        parser.epilog = (parser.epilog or '') + ' ' + (
-            'All unrecognized arguments are passed through to wptrunner. '
-            "Use '--wpt-help' to see wptrunner's usage."
+    def _override_options(self, base_parser):
+        """Create a parser that overrides existing options.
+
+        `argument.ArgumentParser` can extend other parsers and override their
+        options, with the caveat that the child parser only inherits options
+        that the parent had at the time of the child's initialization. There is
+        not a clean way to add option overrides in `add_extra_arguments`, where
+        the provided parser is only passed up the inheritance chain, so we add
+        overridden options here at the very end.
+
+        See Also:
+            https://docs.python.org/3/library/argparse.html#parents
+        """
+        parser = argparse.ArgumentParser(
+            parents=[base_parser],
+            # Allow overriding existing options in the parent parser.
+            conflict_handler='resolve',
+            epilog=('All unrecognized arguments are passed through '
+                    "to wptrunner. Use '--wpt-help' to see wptrunner's usage."),
         )
+        parser.add_argument(
+            '--isolated-script-test-repeat',
+            '--repeat',
+            '--gtest_repeat',
+            metavar='REPEAT',
+            type=int,
+            default=1,
+            help='Number of times to run the tests')
+        parser.add_argument(
+            '--isolated-script-test-launcher-retry-limit',
+            '--test-launcher-retry-limit',
+            metavar='LIMIT',
+            type=int,
+            default=0,
+            help='Maximum number of times to rerun a failed test')
+        # `--gtest_filter` and `--isolated-script-test-filter` have slightly
+        # different formats and behavior, so keep them as separate options.
+        # See: crbug/1316164#c4
+        return parser
 
     def maybe_set_default_isolated_script_test_output(self):
         if self.options.isolated_script_test_output:
@@ -134,6 +158,52 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
     def generate_test_output_args(self, output):
         return ['--log-chromium', output]
+
+    def _resolve_tests_from_isolate_filter(self, test_filter):
+        """Resolve an isolated script-style filter string into lists of tests.
+
+        Arguments:
+            test_filter (str): Glob patterns delimited by double colons ('::').
+                The glob is prefixed with '-' to indicate that tests matching
+                the pattern should not run. Assume a valid wpt name cannot start
+                with '-'.
+
+        Returns:
+            tuple[list[str], list[str]]: Tests to include and exclude,
+                respectively.
+        """
+        included_tests, excluded_tests = [], []
+        for pattern in common.extract_filter_list(test_filter):
+            test_group = included_tests
+            if pattern.startswith('-'):
+                test_group, pattern = excluded_tests, pattern[1:]
+            pattern_on_disk = self.fs.join(
+                self.wpt_root_dir,
+                self.path_finder.strip_wpt_path(pattern),
+            )
+            test_group.extend(glob.glob(pattern_on_disk))
+        return included_tests, excluded_tests
+
+    def generate_test_filter_args(self, test_filter_str):
+        included_tests, excluded_tests = \
+            self._resolve_tests_from_isolate_filter(test_filter_str)
+        include_file, self._include_filename = self.fs.open_text_tempfile()
+        with include_file:
+            for test in included_tests:
+                include_file.write(test)
+                include_file.write('\n')
+        wpt_args = ['--include-file=%s' % self._include_filename]
+        for test in excluded_tests:
+            wpt_args.append('--exclude=%s' % test)
+        return wpt_args
+
+    def generate_test_repeat_args(self, repeat_count):
+        return ['--repeat=%d' % repeat_count]
+
+    def generate_test_launcher_retry_limit_args(self, retry_limit):
+        # TODO(crbug/1306222): wptrunner currently cannot rerun individual
+        # failed tests, so this flag is accepted but not used.
+        return []
 
     def generate_sharding_args(self, total_shards, shard_index):
         return ['--total-chunks=%d' % total_shards,
@@ -195,7 +265,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             '--no-manifest-download',
             '--tests=%s' % self.wpt_root_dir,
             '--mojojs-path=%s' % self.mojo_js_directory,
-            '--repeat=%d' % self.options.repeat,
         ])
 
         if self.options.default_exclude:
@@ -240,6 +309,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         if self.wptreport:
             command.extend(['--wpt-report', self.wptreport])
         common.run_command(command)
+
+        if self._include_filename:
+            self.fs.remove(self._include_filename)
 
     def wpt_product_name(self):
         raise NotImplementedError
