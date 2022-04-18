@@ -248,6 +248,28 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   void AddOptionalDataPackFromPath(const base::FilePath& path,
                                    ResourceScaleFactor scale_factor);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Same as AddDataPackFromPath but loads main source `shared_resource_path`
+  // with ash resources `ash_path`.
+  // When creating and adding ResourceHandle for `lacros_path`, we map lacros
+  // resources to ash resources if a resource is common and remove it from
+  // lacros resources. This is for saving memory.
+  // If `shared_resource_path` is not successfully loaded, load `lacros_path`
+  // as DataPack instead. In this case, the memory saving does not work.
+  void AddDataPackFromPathWithAshResources(
+      const base::FilePath& shared_resource_path,
+      const base::FilePath& ash_path,
+      const base::FilePath& lacros_path,
+      ResourceScaleFactor scale_factor);
+
+  // Same as above but does not log an error if the pack fails to load.
+  void AddOptionalDataPackFromPathWithAshResources(
+      const base::FilePath& shared_resource_path,
+      const base::FilePath& ash_path,
+      const base::FilePath& lacros_path,
+      ResourceScaleFactor scale_factor);
+#endif
+
   // Changes the locale for an already-initialized ResourceBundle, returning the
   // name of the newly-loaded locale, or an empty string if initialization
   // failed (e.g. resource bundle not found or corrupted). Future calls to get
@@ -438,6 +460,18 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   void AddDataPackFromPathInternal(const base::FilePath& path,
                                    ResourceScaleFactor scale_factor,
                                    bool optional);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Implementation for the public methods which add a DataPack from a path with
+  // ash resources. If |optional| is false, an error is logged on failure to
+  // load.
+  void AddDataPackFromPathWithAshResourcesInternal(
+      const base::FilePath& shared_resource_path,
+      const base::FilePath& ash_path,
+      const base::FilePath& lacros_path,
+      ResourceScaleFactor scale_factor,
+      bool optional);
+#endif
 
   // Inserts |resource_handle| to |resource_handle_| and updates
   // |max_scale_factor_| accordingly.

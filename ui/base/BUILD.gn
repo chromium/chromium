@@ -48,6 +48,13 @@ component("ui_data_pack") {
     "resource/scoped_file_writer.h",
   ]
 
+  if (is_chromeos_lacros) {
+    sources += [
+      "resource/data_pack_with_resource_sharing_lacros.cc",
+      "resource/data_pack_with_resource_sharing_lacros.h",
+    ]
+  }
+
   deps = [
     "//base",
     "//net",
@@ -317,6 +324,10 @@ component("base") {
       "l10n/l10n_util_mac.mm",
       "resource/resource_bundle_mac.mm",
     ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [ "resource/resource_bundle_lacros.cc" ]
   }
 
   if (is_ios) {
@@ -932,6 +943,9 @@ test("ui_base_unittests") {
       "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
     ]
+  }
+  if (is_chromeos_lacros) {
+    sources += [ "resource/data_pack_with_resource_sharing_lacros_unittest.cc" ]
   }
   if (!is_ios) {
     sources += [

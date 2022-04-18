@@ -275,7 +275,7 @@ TEST_P(DataPackTest, Write) {
   EXPECT_EQ(fifteen, data);
 
   EXPECT_EQ(5U, pack.GetResourceTableSizeForTesting());
-  EXPECT_EQ(0U, pack.GetAliasTableSizeForTesting());
+  EXPECT_EQ(0U, pack.GetAliasTableSize());
 }
 
 TEST_P(DataPackTest, WriteWithAliases) {
@@ -330,7 +330,7 @@ TEST_P(DataPackTest, WriteWithAliases) {
   EXPECT_EQ(data.data(), data2.data());
 
   EXPECT_EQ(5U, pack.GetResourceTableSizeForTesting());
-  EXPECT_EQ(2U, pack.GetAliasTableSizeForTesting());
+  EXPECT_EQ(2U, pack.GetAliasTableSize());
 }
 
 #if BUILDFLAG(IS_POSIX)
