@@ -88,9 +88,6 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
     del total_shards, shard_index  # unused
     return []
 
-  def generate_test_output_args(self, output):
-    return ['--write-full-results-to', output]
-
   def generate_test_filter_args(self, test_filter_str):
     filter_list = common.extract_filter_list(test_filter_str)
     self._temp_filter_file = tempfile.NamedTemporaryFile(
@@ -102,6 +99,15 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
       arg_name = 'file-list'
 
     return ['--%s=' % arg_name + self._temp_filter_file.name]
+
+  def generate_test_output_args(self, output):
+    return ['--write-full-results-to', output]
+
+  def generate_test_launcher_retry_limit_args(self, retry_limit):
+    return ['--isolated-script-test-launcher-retry-limit=%d' % retry_limit]
+
+  def generate_test_repeat_args(self, repeat_count):
+    return ['--isolated-script-test-repeat=%d' % repeat_count]
 
   def clean_up_after_test_run(self):
     if self._temp_filter_file:
