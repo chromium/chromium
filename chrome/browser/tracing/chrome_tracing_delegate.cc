@@ -30,6 +30,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/tracing/common/background_tracing_utils.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/background_tracing_config.h"
@@ -56,6 +57,8 @@
 #endif
 
 namespace {
+
+using tracing::BackgroundTracingSetupMode;
 
 constexpr char kTracingStateKey[] = "state";
 constexpr char kUploadTimesKey[] = "upload_times";
@@ -85,8 +88,9 @@ void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
 }
 
 bool IsBackgroundTracingCommandLine() {
-  if (tracing::GetBackgroundTracingSetupMode() ==
-      tracing::BackgroundTracingSetupMode::kFromConfigFile) {
+  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
+  if (tracing_mode == BackgroundTracingSetupMode::kFromConfigFile ||
+      tracing_mode == BackgroundTracingSetupMode::kFromFieldTrialLocalOutput) {
     return true;
   }
   return false;

@@ -264,6 +264,8 @@ source_set("browser") {
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
     "//components/tracing:background_tracing_metrics_provider",
+    "//components/tracing:background_tracing_utils",
+    "//components/tracing:startup_tracing",
     "//components/url_formatter",
     "//components/user_prefs",
     "//components/variations",

@@ -5875,6 +5875,8 @@ test("unit_tests") {
     "//components/sync_user_events:test_support",
     "//components/tab_count_metrics",
     "//components/tab_groups",
+    "//components/tracing:background_tracing_utils",
+    "//components/tracing:startup_tracing",
     "//components/translate/core/browser:test_support",
     "//components/ukm/content",
     "//components/unified_consent",

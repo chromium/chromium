@@ -2284,6 +2284,7 @@ static_library("browser") {
     "//components/tab_count_metrics",
     "//components/tab_groups",
     "//components/tracing:background_tracing_metrics_provider",
+    "//components/tracing:background_tracing_utils",
     "//components/tracing:startup_tracing",
     "//components/translate/content/browser",
     "//components/translate/core/browser",

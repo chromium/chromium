@@ -50,6 +50,21 @@ component("background_tracing_metrics_provider") {
   ]
 }
 
+component("background_tracing_utils") {
+  sources = [
+    "common/background_tracing_utils.cc",
+    "common/background_tracing_utils.h",
+  ]
+
+  defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
+
+  deps = [
+    ":startup_tracing",
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -68,6 +83,13 @@ source_set("unit_tests") {
     sources = [ "common/trace_startup_config_unittest.cc" ]
     deps += [ ":startup_tracing" ]
   }
+
+  sources += [ "common/background_tracing_utils_unittest.cc" ]
+  deps += [
+    ":background_tracing_utils",
+    ":startup_tracing",
+    "//content/public/browser",
+  ]
 }
 
 test("tracing_perftests") {

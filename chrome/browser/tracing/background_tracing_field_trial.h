@@ -7,20 +7,6 @@
 
 namespace tracing {
 
-enum class BackgroundTracingSetupMode {
-  // Background tracing config comes from a field trial.
-  kFromFieldTrial,
-
-  // Background tracing config comes from a config file passed on the
-  // command-line (for local testing).
-  kFromConfigFile,
-
-  // Background tracing is disabled due to invalid command-line flags.
-  kDisabledInvalidCommandLine,
-};
-
-BackgroundTracingSetupMode GetBackgroundTracingSetupMode();
-
 void SetupBackgroundTracingFieldTrial();
 
 }  // namespace tracing
