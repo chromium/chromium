@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/strings/string_piece.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -138,8 +139,10 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // effect.
   virtual void SetLocaleAndExit(const std::string& locale_iso_code) = 0;
 
-  // Shows the access code casting dialog.
-  virtual void ShowAccessCodeCastingDialog() = 0;
+  // Shows the access code casting dialog. |open_location| is the location
+  // where the dialog was opened.
+  virtual void ShowAccessCodeCastingDialog(
+      AccessCodeCastDialogOpenLocation open_location) = 0;
 
   // Shows a calendar event. If an event is present then we open it, otherwise
   // we open Google Calendar with no arguments, which as of now just opens on

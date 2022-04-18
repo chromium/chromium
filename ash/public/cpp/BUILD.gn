@@ -373,6 +373,7 @@ component("cpp") {
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//chromeos/ui/vector_icons",
+    "//components/access_code_cast/common",
     "//components/language/core/browser:browser",
     "//components/pref_registry",
     "//components/prefs",
@@ -479,6 +480,7 @@ source_set("test_support") {
   deps = [
     ":cpp",
     "//base",
+    "//components/access_code_cast/common",
     "//services/device/public/cpp:test_support",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",

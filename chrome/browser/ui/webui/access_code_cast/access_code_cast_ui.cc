@@ -100,11 +100,8 @@ void AccessCodeCastDialog::Show(
       open_location);
 }
 
-void AccessCodeCastDialog::ShowForDesktopMirroring() {
-  // Temporarily use kSystemTrayCastMenu until we can pipe true location
-  // through SystemTrayClient.
-  AccessCodeCastDialogOpenLocation open_location =
-      AccessCodeCastDialogOpenLocation::kSystemTrayCastMenu;
+void AccessCodeCastDialog::ShowForDesktopMirroring(
+    AccessCodeCastDialogOpenLocation open_location) {
   Show({media_router::MediaCastMode::DESKTOP_MIRROR}, nullptr, nullptr,
       open_location);
 }

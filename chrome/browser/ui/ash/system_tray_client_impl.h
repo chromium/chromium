@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/system/system_clock_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -95,7 +96,8 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowFirmwareUpdate() override;
   void RequestRestartForUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
-  void ShowAccessCodeCastingDialog() override;
+  void ShowAccessCodeCastingDialog(
+      AccessCodeCastDialogOpenLocation open_location) override;
   void ShowCalendarEvent(const absl::optional<GURL>& event_url,
                          bool& opened_pwa,
                          GURL& finalized_event_url) override;

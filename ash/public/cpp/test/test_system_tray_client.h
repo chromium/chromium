@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "base/strings/string_piece.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -59,7 +60,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowFirmwareUpdate() override;
   void RequestRestartForUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
-  void ShowAccessCodeCastingDialog() override;
+  void ShowAccessCodeCastingDialog(
+      AccessCodeCastDialogOpenLocation open_location) override;
   void ShowCalendarEvent(const absl::optional<GURL>& event_url,
                          bool& opened_pwa,
                          GURL& final_event_url) override;

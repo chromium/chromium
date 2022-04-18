@@ -43,7 +43,8 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
                        start_presentation_context,
                    AccessCodeCastDialogOpenLocation open_location);
   // Show the access code dialog box for desktop mirroring.
-  static void ShowForDesktopMirroring();
+  static void ShowForDesktopMirroring(
+      AccessCodeCastDialogOpenLocation open_location);
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

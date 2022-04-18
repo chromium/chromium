@@ -111,7 +111,8 @@ void TestSystemTrayClient::RequestRestartForUpdate() {}
 void TestSystemTrayClient::SetLocaleAndExit(
     const std::string& locale_iso_code) {}
 
-void TestSystemTrayClient::ShowAccessCodeCastingDialog() {}
+void TestSystemTrayClient::ShowAccessCodeCastingDialog(
+    AccessCodeCastDialogOpenLocation open_location) {}
 
 void TestSystemTrayClient::ShowCalendarEvent(
     const absl::optional<GURL>& event_url,

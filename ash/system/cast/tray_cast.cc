@@ -21,6 +21,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -144,7 +145,8 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
   } else if (view == add_access_code_device_) {
     base::RecordAction(base::UserMetricsAction(
         "StatusArea_Cast_Detailed_Launch_AccesCastDialog"));
-    Shell::Get()->system_tray_model()->client()->ShowAccessCodeCastingDialog();
+    Shell::Get()->system_tray_model()->client()-> ShowAccessCodeCastingDialog(
+        AccessCodeCastDialogOpenLocation::kSystemTrayCastMenu);
   }
 }
 

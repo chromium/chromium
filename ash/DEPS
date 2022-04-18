@@ -3,6 +3,7 @@ include_rules = [
   "+cc/debug",
   "+cc/output",
   "+cc/paint",
+  "+components/access_code_cast",
   "+components/account_id",
   "+components/app_constants",
   "+components/app_restore",

@@ -2219,6 +2219,7 @@ component("ash") {
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//chromeos/ui/wm",
+    "//components/access_code_cast/common",
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",

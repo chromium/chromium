@@ -656,8 +656,9 @@ void SystemTrayClientImpl::SetLocaleAndExit(
   chrome::AttemptUserExit();
 }
 
-void SystemTrayClientImpl::ShowAccessCodeCastingDialog() {
-  AccessCodeCastDialog::ShowForDesktopMirroring();
+void SystemTrayClientImpl::ShowAccessCodeCastingDialog(
+    AccessCodeCastDialogOpenLocation open_location) {
+  AccessCodeCastDialog::ShowForDesktopMirroring(open_location);
 }
 
 void SystemTrayClientImpl::ShowCalendarEvent(

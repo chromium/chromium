@@ -12,6 +12,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -53,7 +54,8 @@ void CastFeaturePodController::OnIconPressed() {
   // casting immediately.
   if (cast_config && !cast_config->HasSinksAndRoutes() &&
       cast_config->AccessCodeCastingEnabled()) {
-    Shell::Get()->system_tray_model()->client()->ShowAccessCodeCastingDialog();
+    Shell::Get()->system_tray_model()->client()->ShowAccessCodeCastingDialog(
+        AccessCodeCastDialogOpenLocation::kSystemTrayCastFeaturePod);
   } else {
     tray_controller_->ShowCastDetailedView();
   }
