@@ -443,11 +443,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
-      bool is_payment_credential_get_assertion) override;
+      bool is_payment_credential_get_assertion,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override) override;
   blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
-      bool is_payment_credential_creation) override;
+      bool is_payment_credential_creation,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override) override;
   void SetIsXrOverlaySetup() override;
   ukm::SourceId GetPageUkmSourceId() override;
   StoragePartitionImpl* GetStoragePartition() override;

@@ -176,7 +176,9 @@ blink::mojom::AuthenticatorStatus
 WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
-    RequestType request_type) {
+    RequestType request_type,
+    const blink::mojom::RemoteDesktopClientOverridePtr&
+        remote_desktop_client_override) {
   if (GetContentClient()
           ->browser()
           ->GetWebAuthenticationDelegate()
@@ -199,7 +201,20 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   if (request_type == RequestType::kGetPaymentCredentialAssertion)
     return blink::mojom::AuthenticatorStatus::SUCCESS;
 
-  if (!OriginIsAllowedToClaimRelyingPartyId(relying_party_id, caller_origin)) {
+  url::Origin relying_party_origin = caller_origin;
+  if (remote_desktop_client_override) {
+    if (!GetContentClient()
+             ->browser()
+             ->GetWebAuthenticationDelegate()
+             ->OriginMayUseRemoteDesktopClientOverride(
+                 render_frame_host_->GetBrowserContext(), caller_origin)) {
+      return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+    }
+    relying_party_origin = remote_desktop_client_override->origin;
+  }
+
+  if (!OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
+                                            relying_party_origin)) {
     return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID;
   }
   return blink::mojom::AuthenticatorStatus::SUCCESS;

@@ -69,7 +69,9 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   blink::mojom::AuthenticatorStatus ValidateDomainAndRelyingPartyID(
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
-      RequestType request_type);
+      RequestType request_type,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override);
 
   // Checks whether a given URL is an a-priori authenticated URL.
   // https://w3c.github.io/webappsec-credential-management/#dom-credentialuserdata-iconurl

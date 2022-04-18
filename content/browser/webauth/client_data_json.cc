@@ -65,19 +65,25 @@ std::string ToJSONString(base::StringPiece in) {
 
 }  // namespace
 
-std::string BuildClientDataJson(
-    ClientDataRequestType type,
-    const std::string& origin,
-    base::span<const uint8_t> challenge,
-    bool is_cross_origin,
-    blink::mojom::PaymentOptionsPtr payment_options /* = nullptr */,
-    const std::string& payment_rp /* = "" */,
-    const std::string& payment_top_origin /* = "" */) {
+ClientDataJsonParams::ClientDataJsonParams(ClientDataRequestType type,
+                                           url::Origin origin,
+                                           std::vector<uint8_t> challenge,
+                                           bool is_cross_origin_iframe)
+    : type(type),
+      origin(std::move(origin)),
+      challenge(std::move(challenge)),
+      is_cross_origin_iframe(is_cross_origin_iframe) {}
+ClientDataJsonParams::ClientDataJsonParams(ClientDataJsonParams&&) = default;
+ClientDataJsonParams& ClientDataJsonParams::operator=(ClientDataJsonParams&&) =
+    default;
+ClientDataJsonParams::~ClientDataJsonParams() = default;
+
+std::string BuildClientDataJson(ClientDataJsonParams params) {
   std::string ret;
   ret.reserve(128);
 
   // U2F uses "typ", while WebAuthn uses "type" for the type key.
-  switch (type) {
+  switch (params.type) {
     case ClientDataRequestType::kU2fRegister:
       ret.append(R"({"typ":"navigator.id.finishEnrollment")");
       break;
@@ -96,50 +102,51 @@ std::string BuildClientDataJson(
   }
 
   ret.append(R"(,"challenge":)");
-  ret.append(ToJSONString(Base64UrlEncode(challenge)));
+  ret.append(ToJSONString(Base64UrlEncode(params.challenge)));
 
   ret.append(R"(,"origin":)");
-  ret.append(ToJSONString(origin));
+  ret.append(ToJSONString(params.origin.Serialize()));
 
-  if (is_cross_origin) {
+  if (params.is_cross_origin_iframe) {
     ret.append(R"(,"crossOrigin":true)");
   } else {
     ret.append(R"(,"crossOrigin":false)");
   }
 
-  if (payment_options) {
+  if (params.payment_options) {
     ret.append(R"(,"payment":{)");
 
     ret.append(R"("rp":)");
-    ret.append(ToJSONString(payment_rp));
+    ret.append(ToJSONString(params.payment_rp));
 
     ret.append(R"(,"topOrigin":)");
-    ret.append(ToJSONString(payment_top_origin));
+    ret.append(ToJSONString(params.payment_top_origin));
 
-    if (payment_options->payee_name.has_value()) {
+    if (params.payment_options->payee_name.has_value()) {
       ret.append(R"(,"payeeName":)");
-      ret.append(ToJSONString(payment_options->payee_name.value()));
+      ret.append(ToJSONString(params.payment_options->payee_name.value()));
     }
-    if (payment_options->payee_origin.has_value()) {
+    if (params.payment_options->payee_origin.has_value()) {
       ret.append(R"(,"payeeOrigin":)");
-      ret.append(ToJSONString(payment_options->payee_origin->Serialize()));
+      ret.append(
+          ToJSONString(params.payment_options->payee_origin->Serialize()));
     }
 
     ret.append(R"(,"total":{)");
 
     ret.append(R"("value":)");
-    ret.append(ToJSONString(payment_options->total->value));
+    ret.append(ToJSONString(params.payment_options->total->value));
 
     ret.append(R"(,"currency":)");
-    ret.append(ToJSONString(payment_options->total->currency));
+    ret.append(ToJSONString(params.payment_options->total->currency));
 
     ret.append(R"(},"instrument":{)");
 
     ret.append(R"("icon":)");
-    ret.append(ToJSONString(payment_options->instrument->icon.spec()));
+    ret.append(ToJSONString(params.payment_options->instrument->icon.spec()));
 
     ret.append(R"(,"displayName":)");
-    ret.append(ToJSONString(payment_options->instrument->display_name));
+    ret.append(ToJSONString(params.payment_options->instrument->display_name));
 
     ret.append("}}");
   }

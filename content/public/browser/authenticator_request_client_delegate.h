@@ -66,6 +66,16 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       const url::Origin& caller_origin,
       const std::string& relying_party_id);
 
+  // Returns whether |caller_origin| is permitted to use the
+  // RemoteDesktopClientOverride extension.
+  //
+  // This is an access control decision: RP IDs are used to control access to
+  // credentials. If this method returns true, the respective origin is able to
+  // claim any RP ID.
+  virtual bool OriginMayUseRemoteDesktopClientOverride(
+      BrowserContext* browser_context,
+      const url::Origin& caller_origin);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Permits the embedder to override the Relying Party ID for a WebAuthn call,
   // given the claimed relying party ID and the origin of the caller.

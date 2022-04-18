@@ -497,86 +497,84 @@ TEST_F(ChromeAuthenticatorRequestDelegateWindowsBehaviorTest,
 
 #endif  // BUILDFLAG(IS_WIN)
 
-class CorpCrdOverrideOriginAndRpIdValidationTest
+class OriginMayUseRemoteDesktopClientOverrideTest
     : public ChromeAuthenticatorRequestDelegateTest {
- private:
+ protected:
+  static constexpr char kCorpCrdOrigin[] =
+      "https://remotedesktop.corp.google.com";
+  static constexpr char kExampleOrigin[] = "https://example.com";
+
   base::test::ScopedFeatureList scoped_feature_list_{
       device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
 };
 
-TEST_F(CorpCrdOverrideOriginAndRpIdValidationTest, Test) {
-  constexpr char kCorpCrdOrigin[] = "https://remotedesktop.corp.google.com";
-  constexpr char kExampleOrigin[] = "https://example.com";
-  constexpr char kTestRpId[] = "random.test.site.com";
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       RemoteProxiedRequestsAllowedPolicy) {
+  // The "webauthn.remote_proxied_requests_allowed" policy pref should enable
+  // Google's internal CRD origin to use the RemoteDesktopClientOverride
+  // extension.
   enum class Policy {
     kUnset,
     kDisabled,
     kEnabled,
   };
-  struct {
-    Policy policy_value;
-    std::string switch_value;
-    std::string origin;
-    bool expected;
-  } kTestCases[] = {
-      // With the policy disabled, the override should be off.
-      {Policy::kUnset, "", kCorpCrdOrigin, false},
-      {Policy::kUnset, kExampleOrigin, kExampleOrigin, false},
-      {Policy::kDisabled, "", kCorpCrdOrigin, false},
-      {Policy::kDisabled, kExampleOrigin, kExampleOrigin, false},
-
-      // The origin must match the hard-coded value from the policy or the
-      // switch value exactly.
-      {Policy::kEnabled, "", kCorpCrdOrigin, true},
-      {Policy::kEnabled, kExampleOrigin, kCorpCrdOrigin, true},
-      {Policy::kEnabled, kExampleOrigin, kExampleOrigin, true},
-      {Policy::kEnabled, "", kExampleOrigin, false},
-      {Policy::kEnabled, kExampleOrigin, "http://remotedesktop.corp.google.com",
-       false},
-      {Policy::kEnabled, kExampleOrigin, "https://remotedesktop.google.com",
-       false},
-      {Policy::kEnabled, kExampleOrigin, "https://google.com", false},
-      {Policy::kEnabled, kExampleOrigin, "https://a.google.com", false},
-      {Policy::kEnabled, kExampleOrigin, "https://sub.example.com", false},
-      {Policy::kEnabled, kExampleOrigin, "http://example.com", false},
-      {Policy::kEnabled, kExampleOrigin, "example.com2", false},
-
-      // The switch takes exactly one origin. No lists, or wildcards allowed.
-      {Policy::kEnabled, "https://example.com,https://other.com",
-       kExampleOrigin, false},
-      {Policy::kEnabled, "", kExampleOrigin, false},
-      {Policy::kEnabled, "", kExampleOrigin, false},
-      {Policy::kEnabled, "https://*", kExampleOrigin, false},
-      {Policy::kEnabled, "*.example.com", kExampleOrigin, false},
-      {Policy::kEnabled, "https://*.example.com", kExampleOrigin, false},
-  };
   ChromeWebAuthenticationDelegate delegate;
-  for (const auto& test : kTestCases) {
-    PrefService* prefs =
-        Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-        webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
-        test.switch_value);
-    switch (test.policy_value) {
-      case Policy::kUnset:
-        prefs->ClearPref(webauthn::pref_names::kRemoteProxiedRequestsAllowed);
-        break;
-      case Policy::kDisabled:
-        prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
-                          false);
-        break;
-      case Policy::kEnabled:
-        prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
-                          true);
-        break;
-    }
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  for (auto* origin : {kCorpCrdOrigin, kExampleOrigin}) {
+    for (const auto policy :
+         {Policy::kUnset, Policy::kDisabled, Policy::kEnabled}) {
+      switch (policy) {
+        case Policy::kUnset:
+          prefs->ClearPref(webauthn::pref_names::kRemoteProxiedRequestsAllowed);
+          break;
+        case Policy::kDisabled:
+          prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
+                            false);
+          break;
+        case Policy::kEnabled:
+          prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
+                            true);
+          break;
+      }
 
-    EXPECT_EQ(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
-                  GetBrowserContext(), url::Origin::Create(GURL(test.origin)),
-                  kTestRpId),
-              test.expected);
+      EXPECT_EQ(delegate.OriginMayUseRemoteDesktopClientOverride(
+                    browser_context(), url::Origin::Create(GURL(origin))),
+                origin == kCorpCrdOrigin && policy == Policy::kEnabled);
+    }
   }
+}
+
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       OriginMayUseRemoteDesktopClientOverrideAdditionalOriginSwitch) {
+  // The --webauthn-remote-proxied-requests-allowed-additional-origin switch
+  // allows passing an additional origin for testing.
+  ChromeWebAuthenticationDelegate delegate;
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
+      kExampleOrigin);
+
+  // The flag shouldn't have an effect without the policy enabled.
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kCorpCrdOrigin))));
+
+  // With the policy enabled, both the hard-coded and flag origin should be
+  // allowed.
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed, true);
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+  EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kCorpCrdOrigin))));
+
+  // Other origins still shouldn't be permitted.
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(),
+      url::Origin::Create(GURL("https://other.example.com"))));
 }
 
 }  // namespace

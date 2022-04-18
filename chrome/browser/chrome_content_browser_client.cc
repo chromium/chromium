@@ -154,6 +154,7 @@
 #include "chrome/browser/web_applications/web_app_offline.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -2394,6 +2395,16 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableBackForwardCache);
       }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+      // Make the WebAuthenticationRemoteProxiedRequestsAllowed policy enable
+      // the experimental WebAuthenticationRemoteDesktopSupport Blink runtime
+      // feature.
+      if (prefs->GetBoolean(
+              webauthn::pref_names::kRemoteProxiedRequestsAllowed)) {
+        command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
+      }
+#endif
     }
 
     MaybeAppendBlinkSettingsSwitchForFieldTrial(browser_command_line,

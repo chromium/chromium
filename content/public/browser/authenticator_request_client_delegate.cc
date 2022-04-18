@@ -33,6 +33,13 @@ bool WebAuthenticationDelegate::OverrideCallerOriginAndRelyingPartyIdValidation(
   return false;
 }
 
+bool WebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
+    BrowserContext* browser_context,
+    const url::Origin& caller_origin) {
+  // No origin is permitted to claim RP IDs on behalf of another origin.
+  return false;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 absl::optional<std::string>
 WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(

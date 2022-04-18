@@ -26,6 +26,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -43,6 +44,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/test/test_render_frame_host.h"
 #include "crypto/sha2.h"
@@ -135,6 +137,8 @@ using blink::mojom::PublicKeyCredentialRpEntityPtr;
 using blink::mojom::PublicKeyCredentialType;
 using blink::mojom::PublicKeyCredentialUserEntity;
 using blink::mojom::PublicKeyCredentialUserEntityPtr;
+using blink::mojom::RemoteDesktopClientOverride;
+using blink::mojom::RemoteDesktopClientOverridePtr;
 using blink::mojom::WebAuthnDOMExceptionDetails;
 using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 using cbor::Reader;
@@ -444,9 +448,9 @@ url::Origin GetTestOrigin() {
 }
 
 std::string GetTestClientDataJSON(ClientDataRequestType type) {
-  return BuildClientDataJson(std::move(type), GetTestOrigin().Serialize(),
-                             GetTestChallengeBytes(),
-                             /*is_cross_origin=*/false);
+  return BuildClientDataJson({std::move(type), GetTestOrigin(),
+                              GetTestChallengeBytes(),
+                              /*is_cross_origin_iframe=*/false});
 }
 
 std::vector<uint8_t> StringToVector(const std::string& string) {
@@ -704,41 +708,41 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   // the returned value.
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_EQ(
-      BuildClientDataJson(ClientDataRequestType::kWebAuthnCreate, "ori\"gin",
-                          challenge_bytes, false)
+      BuildClientDataJson({ClientDataRequestType::kWebAuthnCreate,
+                           GetTestOrigin(), challenge_bytes, false})
           .find(
               "{\"type\":\"webauthn.create\",\"challenge\":\"AQID\",\"origin\":"
-              "\"ori\\\"gin\",\"crossOrigin\":false"),
+              "\"https://a.google.com\",\"crossOrigin\":false"),
       0u);
 
   // Second, check that a generic JSON parser correctly parses the result.
   static const struct {
     const ClientDataRequestType type;
-    const char* origin;
+    url::Origin origin;
     std::vector<uint8_t> challenge;
     bool is_cross_origin;
   } kTestCases[] = {
       {
           ClientDataRequestType::kWebAuthnGet,
-          "origin",
+          GetTestOrigin(),
           {1, 2, 3},
           false,
       },
       {
           ClientDataRequestType::kU2fRegister,
-          "ori\"gin",
+          GetTestOrigin(),
           {1, 2, 3, 4},
           true,
       },
       {
           ClientDataRequestType::kU2fSign,
-          "\x01\x02\x03\x04{}\x05c",
+          GetTestOrigin(),
           {1, 2, 3, 4, 5},
           true,
       },
       {
           ClientDataRequestType::kPaymentGet,
-          "origin",
+          GetTestOrigin(),
           {1, 2, 3},
           false,
       },
@@ -749,7 +753,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
     SCOPED_TRACE(num++);
 
     const std::string json = BuildClientDataJson(
-        test.type, test.origin, test.challenge, test.is_cross_origin);
+        {test.type, test.origin, test.challenge, test.is_cross_origin});
 
     const auto parsed = base::JSONReader::Read(json);
     ASSERT_TRUE(parsed.has_value());
@@ -779,7 +783,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
     }
 
     EXPECT_EQ(*parsed->FindStringKey(type_key), expected_type);
-    EXPECT_EQ(*parsed->FindStringKey("origin"), test.origin);
+    EXPECT_EQ(*parsed->FindStringKey("origin"), test.origin.Serialize());
     std::string expected_challenge;
     base::Base64UrlEncode(
         base::StringPiece(reinterpret_cast<const char*>(test.challenge.data()),
@@ -1843,6 +1847,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
       RenderFrameHost*) override {
     return is_uvpaa_override;
   }
+
   bool OverrideCallerOriginAndRelyingPartyIdValidation(
       content::BrowserContext* browser_context,
       const url::Origin& origin,
@@ -1887,6 +1892,12 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
     return request_proxy.get();
   }
 
+  bool OriginMayUseRemoteDesktopClientOverride(
+      content::BrowserContext* browser_context,
+      const url::Origin& caller_origin) override {
+    return caller_origin == remote_desktop_client_override_origin;
+  }
+
   // If set, the return value of IsUVPAA() will be overridden with this value.
   // Platform-specific implementations will not be invoked.
   absl::optional<bool> is_uvpaa_override;
@@ -1916,6 +1927,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   // The WebAuthenticationRequestProxy returned by |MaybeGetRequestProxy|.
   std::unique_ptr<TestWebAuthenticationRequestProxy> request_proxy = nullptr;
+
+  // The origin permitted to use the RemoteDesktopClientOverride extension.
+  absl::optional<url::Origin> remote_desktop_client_override_origin;
 };
 
 enum class EnterprisePolicy {
@@ -3392,6 +3406,96 @@ TEST_F(AuthenticatorContentBrowserClientWithCableFlagTest,
 
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+class AuthenticatorImplRemoteDesktopClientOverrideTest
+    : public AuthenticatorContentBrowserClientTest {
+ protected:
+  static constexpr char kCorpCrdOrigin[] =
+      "https://remotedesktop.corp.google.com";
+  static constexpr char kOtherRdpOrigin[] = "https://myrdp.test";
+  static constexpr char kExampleOrigin[] = "https://example.test";
+  static constexpr char kExampleRpId[] = "example.test";
+  static constexpr char kOtherRpId[] = "other.test";
+
+  void SetUp() override {
+    AuthenticatorContentBrowserClientTest ::SetUp();
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kWebAuthRemoteDesktopSupport);
+    test_client_.GetTestWebAuthenticationDelegate()
+        ->remote_desktop_client_override_origin =
+        url::Origin::Create(GURL(kCorpCrdOrigin));
+  }
+
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
+};
+
+TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredential) {
+  const struct TestCase {
+    std::string local_origin;
+    std::string remote_origin;
+    std::string rp_id;
+    bool success;
+  } test_cases[] = {
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, true},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, false},
+      {kOtherRdpOrigin, kExampleOrigin, kOtherRpId, false},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, false},
+  };
+
+  for (const auto& test : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "local=" << test.local_origin
+                 << " remote=" << test.remote_origin << " rp=" << test.rp_id);
+    NavigateAndCommit(GURL(test.local_origin));
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->relying_party.id = test.rp_id;
+    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
+        url::Origin::Create(GURL(test.remote_origin)), true);
+
+    EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+              test.success ? AuthenticatorStatus::SUCCESS
+                           : AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  }
+}
+
+TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertion) {
+  const struct TestCase {
+    std::string local_origin;
+    std::string remote_origin;
+    std::string rp_id;
+    bool success;
+  } test_cases[] = {
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, true},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, false},
+      {kOtherRdpOrigin, kExampleOrigin, kOtherRpId, false},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, false},
+  };
+
+  for (const auto& test : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "local=" << test.local_origin
+                 << " remote=" << test.remote_origin << " rp=" << test.rp_id);
+    ResetVirtualDevice();
+    NavigateAndCommit(GURL(test.local_origin));
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->relying_party_id = test.rp_id;
+    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
+        url::Origin::Create(GURL(test.remote_origin)), true);
+
+    ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+        options->allow_credentials[0].id, test.rp_id));
+
+    EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+              test.success ? AuthenticatorStatus::SUCCESS
+                           : AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  }
 }
 
 class MockAuthenticatorRequestDelegateObserver

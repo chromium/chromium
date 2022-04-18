@@ -28,17 +28,31 @@ enum class ClientDataRequestType {
   kPaymentGet,
 };
 
+// ClientDataJsonParams is the parameter struct for `BuildClientDataJson()`.
+struct CONTENT_EXPORT ClientDataJsonParams {
+  ClientDataJsonParams(ClientDataRequestType type,
+                       url::Origin origin,
+                       std::vector<uint8_t> challenge,
+                       bool is_cross_origin_iframe = false);
+  ClientDataJsonParams(ClientDataJsonParams&&);
+  ClientDataJsonParams& operator=(ClientDataJsonParams&&);
+  ~ClientDataJsonParams();
+
+  ClientDataRequestType type;
+  url::Origin origin;
+  std::vector<uint8_t> challenge;
+  bool is_cross_origin_iframe = false;
+
+  // The following fields are only set if `type` is `kPaymentGet`.
+  blink::mojom::PaymentOptionsPtr payment_options = nullptr;
+  std::string payment_rp;
+  std::string payment_top_origin;
+};
+
 // Builds the CollectedClientData[1] dictionary with the given values,
 // serializes it to JSON, and returns the resulting string.
 // [1] https://w3c.github.io/webauthn/#dictdef-collectedclientdata
-CONTENT_EXPORT std::string BuildClientDataJson(
-    ClientDataRequestType type,
-    const std::string& origin,
-    base::span<const uint8_t> challenge,
-    bool is_cross_origin,
-    blink::mojom::PaymentOptionsPtr payment_options = nullptr,
-    const std::string& payment_rp = "",
-    const std::string& payment_top_origin = "");
+CONTENT_EXPORT std::string BuildClientDataJson(ClientDataJsonParams params);
 
 }  // namespace content
 

@@ -634,25 +634,23 @@ void AuthenticatorCommon::MakeCredential(
   BeginRequestTimeout(options->timeout);
 
   if (options->remote_desktop_client_override) {
-    // TODO(crbug.com/1314480): Implement remoteDesktopClientOverride
-    // browser-side.
+    // WebAuthRequestSecurityChecker will validate whether use of the extension
+    // is authorized.
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kWebAuthRemoteDesktopSupport)) {
       mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
+      return;
     }
-    CompleteMakeCredentialRequest(
-        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    return;
   }
 
   WebAuthRequestSecurityChecker::RequestType request_type =
       options->is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
           : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
-  bool is_cross_origin;
+  bool is_cross_origin_iframe;
   blink::mojom::AuthenticatorStatus status =
       security_checker_->ValidateAncestorOrigins(caller_origin, request_type,
-                                                 &is_cross_origin);
+                                                 &is_cross_origin_iframe);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     CompleteMakeCredentialRequest(status);
     return;
@@ -667,7 +665,8 @@ void AuthenticatorCommon::MakeCredential(
   }
 
   status = security_checker_->ValidateDomainAndRelyingPartyID(
-      caller_origin, options->relying_party.id, request_type);
+      caller_origin, options->relying_party.id, request_type,
+      options->remote_desktop_client_override);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     CompleteMakeCredentialRequest(status);
     return;
@@ -835,19 +834,22 @@ void AuthenticatorCommon::MakeCredential(
     request_delegate_->DisableUI();
   }
 
+  // Assemble clientDataJSON.
+  ClientDataJsonParams client_data_json_params(
+      ClientDataRequestType::kWebAuthnCreate, caller_origin_,
+      options->challenge, is_cross_origin_iframe);
   if (origin_is_crypto_token_extension) {
     // Cryptotoken passes the real caller origin in |relying_party.name|.
-    const url::Origin client_data_origin =
+    client_data_json_params.type = ClientDataRequestType::kU2fRegister;
+    client_data_json_params.origin =
         url::Origin::Create(GURL(*options->relying_party.name));
-    client_data_json_ = BuildClientDataJson(
-        ClientDataRequestType::kU2fRegister, client_data_origin.Serialize(),
-        options->challenge, is_cross_origin);
-  } else {
-    // Regular WebAuthn request
-    client_data_json_ = BuildClientDataJson(
-        ClientDataRequestType::kWebAuthnCreate, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin);
+  } else if (options->remote_desktop_client_override) {
+    client_data_json_params.origin =
+        options->remote_desktop_client_override->origin;
+    client_data_json_params.is_cross_origin_iframe =
+        !options->remote_desktop_client_override->same_origin_with_ancestors;
   }
+  client_data_json_ = BuildClientDataJson(std::move(client_data_json_params));
 
   ctap_make_credential_request_ = device::CtapMakeCredentialRequest(
       client_data_json_, options->relying_party, options->user,
@@ -912,7 +914,7 @@ void AuthenticatorCommon::MakeCredential(
 void AuthenticatorCommon::GetAssertion(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-    blink::mojom::PaymentOptionsPtr payment,
+    blink::mojom::PaymentOptionsPtr payment_options,
     blink::mojom::Authenticator::GetAssertionCallback callback) {
   if (has_pending_request_) {
     if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
@@ -935,15 +937,13 @@ void AuthenticatorCommon::GetAssertion(
   get_assertion_response_callback_ = std::move(callback);
 
   if (options->remote_desktop_client_override) {
-    // TODO(crbug.com/1314480): Implement remoteDesktopClientOverride
-    // browser-side.
+    // WebAuthRequestSecurityChecker will validate whether use of the extension
+    // is authorized.
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kWebAuthRemoteDesktopSupport)) {
       mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
+      return;
     }
-    CompleteGetAssertionRequest(
-        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    return;
   }
 
   if (!options->is_conditional) {
@@ -951,20 +951,20 @@ void AuthenticatorCommon::GetAssertion(
   }
 
   WebAuthRequestSecurityChecker::RequestType request_type =
-      payment.is_null()
+      payment_options.is_null()
           ? WebAuthRequestSecurityChecker::RequestType::kGetAssertion
           : WebAuthRequestSecurityChecker::RequestType::
                 kGetPaymentCredentialAssertion;
-  if (!payment.is_null() && options->allow_credentials.empty()) {
+  if (!payment_options.is_null() && options->allow_credentials.empty()) {
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     NOTREACHED();
     return;
   }
-  bool is_cross_origin;
+  bool is_cross_origin_iframe;
   blink::mojom::AuthenticatorStatus status =
       security_checker_->ValidateAncestorOrigins(caller_origin, request_type,
-                                                 &is_cross_origin);
+                                                 &is_cross_origin_iframe);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     CompleteGetAssertionRequest(status);
     return;
@@ -979,7 +979,8 @@ void AuthenticatorCommon::GetAssertion(
   }
 
   status = security_checker_->ValidateDomainAndRelyingPartyID(
-      caller_origin, options->relying_party_id, request_type);
+      caller_origin, options->relying_party_id, request_type,
+      options->remote_desktop_client_override);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     CompleteGetAssertionRequest(status);
     return;
@@ -1018,24 +1019,31 @@ void AuthenticatorCommon::GetAssertion(
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin_);
 
+  // Assemble clientDataJSON.
+  ClientDataJsonParams client_data_json_params(
+      ClientDataRequestType::kWebAuthnGet, caller_origin, options->challenge,
+      is_cross_origin_iframe);
   if (origin_is_crypto_token_extension) {
     // Cryptotoken provides the sender origin for U2F sign requests in the
     // |relying_party_id| attribute.
-    client_data_json_ = BuildClientDataJson(
-        ClientDataRequestType::kU2fSign, options->relying_party_id,
-        options->challenge, /*is_cross_origin=*/false);
-  } else if (payment) {
-    url::Origin top_origin =
-        GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin();
-    client_data_json_ = BuildClientDataJson(
-        ClientDataRequestType::kPaymentGet, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin, std::move(payment),
-        relying_party_id_, top_origin.Serialize());
-  } else {
-    client_data_json_ = BuildClientDataJson(
-        ClientDataRequestType::kWebAuthnGet, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin);
+    client_data_json_params.type = ClientDataRequestType::kU2fSign;
+    client_data_json_params.origin =
+        url::Origin::Create(GURL(options->relying_party_id));
+  } else if (payment_options) {
+    client_data_json_params.type = ClientDataRequestType::kPaymentGet;
+    client_data_json_params.payment_options = std::move(payment_options);
+    client_data_json_params.payment_rp = relying_party_id_;
+    client_data_json_params.payment_top_origin = GetRenderFrameHost()
+                                                     ->GetOutermostMainFrame()
+                                                     ->GetLastCommittedOrigin()
+                                                     .Serialize();
+  } else if (options->remote_desktop_client_override) {
+    client_data_json_params.origin =
+        options->remote_desktop_client_override->origin;
+    client_data_json_params.is_cross_origin_iframe =
+        !options->remote_desktop_client_override->same_origin_with_ancestors;
   }
+  client_data_json_ = BuildClientDataJson(std::move(client_data_json_params));
 
   device::fido_filter::MaybeInitialize();
   if (device::fido_filter::Evaluate(
