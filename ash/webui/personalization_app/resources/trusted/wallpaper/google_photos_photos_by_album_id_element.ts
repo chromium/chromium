@@ -172,8 +172,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     if (hidden) {
       // If |hidden|, the error associated with this element will have lost
       // user-facing context so it should be dismissed.
-      this.getStore().dispatch(
-          dismissErrorAction(ERROR_ID, /*fromUser=*/ false));
+      this.dispatch(dismissErrorAction(ERROR_ID, /*fromUser=*/ false));
       return;
     }
 
@@ -216,7 +215,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     // user that allows them to make another attempt.
     if (photosByAlbumId[albumId] === null) {
       if (!this.hidden) {
-        this.getStore().dispatch(setErrorAction({
+        this.dispatch(setErrorAction({
           id: ERROR_ID,
           message: this.i18n('googlePhotosError'),
           dismiss: {

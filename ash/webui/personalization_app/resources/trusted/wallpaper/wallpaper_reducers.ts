@@ -404,7 +404,7 @@ function googlePhotosReducer(
       };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS:
       // The list of albums should be loaded only while additional albums exist.
-      assert(state.albums === undefined || state.resumeTokens.albums);
+      assert(!state.albums || state.resumeTokens.albums);
       return state;
     case WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUMS:
       assert(action.albums !== undefined);

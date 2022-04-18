@@ -17,14 +17,16 @@ import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-s
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getCountText, getLoadingPlaceholders, isSelectionEvent} from '../../common/utils.js';
+import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {GooglePhotosAlbum, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getTemplate} from './google_photos_albums_element.html.js';
 
+import {getTemplate} from './google_photos_albums_element.html.js';
 import {fetchGooglePhotosAlbums} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
+const ERROR_ID = 'GooglePhotosAlbums';
 const PLACEHOLDER_ID = 'placeholder';
 
 /** Returns placeholders to show while Google Photos albums are loading. */
@@ -120,6 +122,31 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
 
   /** Invoked on changes to |albums_|. */
   private onAlbumsChanged_(albums: GooglePhotosAlbums['albums_']) {
+    // If the list of albums fails to load, display an error to the user that
+    // allows them to make another attempt.
+    if (albums === null) {
+      if (!this.hidden) {
+        this.dispatch(setErrorAction({
+          id: ERROR_ID,
+          message: this.i18n('googlePhotosError'),
+          dismiss: {
+            message: this.i18n('googlePhotosRetry'),
+            callback: (fromUser: boolean) => {
+              if (fromUser) {
+                // Post the reattempt instead of performing it immediately to
+                // avoid updating the personalization store from the same
+                // sequence that generated this event.
+                setTimeout(
+                    () => fetchGooglePhotosAlbums(
+                        this.wallpaperProvider_, this.getStore()));
+              }
+            },
+          },
+        }));
+      }
+      return;
+    }
+
     // NOTE: |albumsForDisplay_| is updated in place to avoid resetting the
     // scroll position of the grid which would otherwise occur during
     // reassignment but it will be deeply equal to |albums_| after updating.
@@ -159,6 +186,9 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** Invoked on changes to this element's |hidden| state. */
   private onHiddenChanged_(hidden: GooglePhotosAlbums['hidden']) {
     if (hidden) {
+      // If |hidden|, the error associated with this element will have lost
+      // user-facing context so it should be dismissed.
+      this.dispatch(dismissErrorAction(ERROR_ID, /*fromUser=*/ false));
       return;
     }
 
