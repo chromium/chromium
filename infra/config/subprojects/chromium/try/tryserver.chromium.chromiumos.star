@@ -4,6 +4,7 @@
 """Definitions of builders in the tryserver.chromium.chromiumos builder group."""
 
 load("//lib/branches.star", "branches")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -115,11 +116,21 @@ try_.builder(
 
 try_.builder(
     name = "chromeos-kevin-compile-rel",
+    mirrors = [
+        "ci/chromeos-kevin-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
 )
 
 try_.builder(
     name = "chromeos-kevin-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
+    mirrors = [
+        "ci/chromeos-kevin-rel",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
