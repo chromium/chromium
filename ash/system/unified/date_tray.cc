@@ -70,6 +70,10 @@ void DateTray::UpdateLayout() {
   time_view_->UpdateAlignmentForShelf(shelf());
 }
 
+void DateTray::UpdateAfterLoginStatusChange() {
+  SetVisiblePreferred(true);
+}
+
 BEGIN_METADATA(DateTray, ActionableView)
 END_METADATA
 
