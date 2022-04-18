@@ -6400,6 +6400,12 @@
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
+      'Win7 Tests (dbg)(1)': {
+        'test_suites': {
+          'gtest_tests': 'chromium_win_gtests',
+          'isolated_scripts': 'chromium_dbg_isolated_scripts',
+        },
+      },
     },
   },
   {
