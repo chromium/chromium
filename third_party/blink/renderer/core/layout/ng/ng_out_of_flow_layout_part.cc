@@ -106,6 +106,8 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
   // fragmentation? If not, what should |allow_first_tier_oof_cache_| be set to
   // in this case?
   if (!container_builder->HasOutOfFlowPositionedCandidates() &&
+      !container_builder->HasOutOfFlowFragmentainerDescendants() &&
+      !container_builder->HasMulticolsWithPendingOOFs() &&
       !To<LayoutBlock>(container_builder_->GetLayoutObject())
            ->HasPositionedObjects())
     return;
