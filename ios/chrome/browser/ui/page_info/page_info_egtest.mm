@@ -158,7 +158,16 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
 
 // Tests that single accessible permission is shown in Permissions section with
 // toggle.
-- (void)testShowOneAccessiblePermissionInPageInfo {
+// TODO(crbug.com/1316705): Test fails on device due to asking for microphone
+// permission.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testShowOneAccessiblePermissionInPageInfo \
+  DISABLED_testShowOneAccessiblePermissionInPageInfo
+#else
+#define MAYBE_testShowOneAccessiblePermissionInPageInfo \
+  testShowOneAccessiblePermissionInPageInfo
+#endif
+- (void)MAYBE_testShowOneAccessiblePermissionInPageInfo {
   if (@available(iOS 15.0, *)) {
     // Open a page that requests microphone permissions.
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -198,7 +207,16 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
 
 // Tests that two accessible permissions are shown in Permissions section with
 // toggle.
-- (void)testShowTwoAccessiblePermissionsInPageInfo {
+// TODO(crbug.com/1316705): Test fails on device due to asking for microphone
+// permission.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testShowTwoAccessiblePermissionsInPageInfo \
+  DISABLED_testShowTwoAccessiblePermissionsInPageInfo
+#else
+#define MAYBE_testShowTwoAccessiblePermissionsInPageInfo \
+  testShowTwoAccessiblePermissionsInPageInfo
+#endif
+- (void)MAYBE_testShowTwoAccessiblePermissionsInPageInfo {
   if (@available(iOS 15.0, *)) {
     // Open a page that requests microphone permissions.
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

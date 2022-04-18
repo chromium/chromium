@@ -26,7 +26,7 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1312064): Re-enable tests on devices once
+// TODO(crbug.com/1316705): Re-enable tests on devices once
 // "https://openradar.appspot.com/radar?id=5520542106910720" is fixed.
 #if TARGET_OS_SIMULATOR
 
