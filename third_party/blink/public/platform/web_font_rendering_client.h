@@ -13,6 +13,7 @@ class ThreadSafeBrowserInterfaceBrokerProxy;
 
 // The interface accessing `DWriteFontCollectionProxy` functions from Blink.
 class WebFontRenderingClient : public WebFontPrewarmer {
+ public:
   // Bind `DWriteFontCollectionProxy` to browser for calling thread.
   virtual void BindFontProxyUsingBroker(
       ThreadSafeBrowserInterfaceBrokerProxy* interface_broker) = 0;
