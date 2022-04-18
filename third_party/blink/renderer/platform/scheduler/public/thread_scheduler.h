@@ -151,6 +151,10 @@ class PLATFORM_EXPORT ThreadScheduler {
   // running on the compositor thread.
   virtual bool IsBeginMainFrameScheduled() const { return false; }
 
+  // Returns true if BeginMainFrame should be called soon, for example if it
+  // hasn't been called for a long period of time.
+  virtual bool DontDeferBeginMainFrame() const { return true; }
+
   // Associates |isolate| to the scheduler.
   virtual void SetV8Isolate(v8::Isolate* isolate) = 0;
 
