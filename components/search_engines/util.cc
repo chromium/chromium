@@ -180,41 +180,39 @@ TemplateURL* FindURLByPrepopulateID(
   return nullptr;
 }
 
-void MergeIntoPrepopulatedEngineData(const TemplateURL* original_turl,
-                                     TemplateURLData* prepopulated_url) {
+void MergeIntoEngineData(const TemplateURL* original_turl,
+                         TemplateURLData* url_to_update) {
   DCHECK(original_turl->prepopulate_id() == 0 ||
-         original_turl->prepopulate_id() == prepopulated_url->prepopulate_id);
+         original_turl->prepopulate_id() == url_to_update->prepopulate_id);
   // When the user modified search engine's properties or search engine is
   // imported from Play API data we need to preserve certain search engine
   // properties from overriding with prepopulated data.
   if (!original_turl->safe_for_autoreplace() ||
       original_turl->created_from_play_api()) {
-    prepopulated_url->safe_for_autoreplace =
-        original_turl->safe_for_autoreplace();
-    prepopulated_url->SetShortName(original_turl->short_name());
-    prepopulated_url->SetKeyword(original_turl->keyword());
+    url_to_update->safe_for_autoreplace = original_turl->safe_for_autoreplace();
+    url_to_update->SetShortName(original_turl->short_name());
+    url_to_update->SetKeyword(original_turl->keyword());
     if (original_turl->created_from_play_api()) {
       // TODO(crbug/1002271): Search url from Play API might contain attribution
       // info and therefore should be preserved through prepopulated data
       // update. In the future we might decide to take different approach to
       // pass attribution info to search providers.
-      prepopulated_url->SetURL(original_turl->url());
+      url_to_update->SetURL(original_turl->url());
     }
   }
-  prepopulated_url->id = original_turl->id();
-  prepopulated_url->sync_guid = original_turl->sync_guid();
-  prepopulated_url->date_created = original_turl->date_created();
-  prepopulated_url->last_modified = original_turl->last_modified();
-  prepopulated_url->created_from_play_api =
-      original_turl->created_from_play_api();
+  url_to_update->id = original_turl->id();
+  url_to_update->sync_guid = original_turl->sync_guid();
+  url_to_update->date_created = original_turl->date_created();
+  url_to_update->last_modified = original_turl->last_modified();
+  url_to_update->created_from_play_api = original_turl->created_from_play_api();
 }
 
-ActionsFromPrepopulateData::ActionsFromPrepopulateData() {}
+ActionsFromCurrentData::ActionsFromCurrentData() = default;
 
-ActionsFromPrepopulateData::ActionsFromPrepopulateData(
-    const ActionsFromPrepopulateData& other) = default;
+ActionsFromCurrentData::ActionsFromCurrentData(
+    const ActionsFromCurrentData& other) = default;
 
-ActionsFromPrepopulateData::~ActionsFromPrepopulateData() {}
+ActionsFromCurrentData::~ActionsFromCurrentData() = default;
 
 void MergeEnginesFromPrepopulateData(
     KeywordWebDataService* service,
@@ -225,8 +223,99 @@ void MergeEnginesFromPrepopulateData(
   DCHECK(prepopulated_urls);
   DCHECK(template_urls);
 
-  ActionsFromPrepopulateData actions(CreateActionsFromCurrentPrepopulateData(
+  ActionsFromCurrentData actions(CreateActionsFromCurrentPrepopulateData(
       prepopulated_urls, *template_urls, default_search_provider));
+
+  ApplyActionsFromCurrentData(actions, service, template_urls,
+                              default_search_provider, removed_keyword_guids);
+}
+
+ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
+    std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
+    const TemplateURLService::OwnedTemplateURLVector& existing_urls,
+    const TemplateURL* default_search_provider) {
+  // Create a map to hold all provided |template_urls| that originally came from
+  // prepopulate data (i.e. have a non-zero prepopulate_id()).
+  TemplateURL* play_api_turl = nullptr;
+  std::map<int, TemplateURL*> id_to_turl;
+  for (auto& turl : existing_urls) {
+    if (turl->created_from_play_api()) {
+      DCHECK_EQ(nullptr, play_api_turl);
+      play_api_turl = turl.get();
+    }
+    int prepopulate_id = turl->prepopulate_id();
+    if (prepopulate_id > 0)
+      id_to_turl[prepopulate_id] = turl.get();
+  }
+
+  // For each current prepopulated URL, check whether |template_urls| contained
+  // a matching prepopulated URL.  If so, update the passed-in URL to match the
+  // current data.  (If the passed-in URL was user-edited, we persist the user's
+  // name and keyword.)  If not, add the prepopulated URL.
+  ActionsFromCurrentData actions;
+  for (auto& prepopulated_url : *prepopulated_urls) {
+    const int prepopulated_id = prepopulated_url->prepopulate_id;
+    DCHECK_NE(0, prepopulated_id);
+
+    auto existing_url_iter = id_to_turl.find(prepopulated_id);
+    TemplateURL* existing_url = nullptr;
+    if (existing_url_iter != id_to_turl.end()) {
+      existing_url = existing_url_iter->second;
+      id_to_turl.erase(existing_url_iter);
+    } else if (play_api_turl &&
+               play_api_turl->keyword() == prepopulated_url->keyword()) {
+      existing_url = play_api_turl;
+    }
+
+    if (existing_url != nullptr) {
+      // Update the data store with the new prepopulated data. Preserve user
+      // edits to the name and keyword.
+      MergeIntoEngineData(existing_url, prepopulated_url.get());
+      // Update last_modified to ensure that if this entry is later merged with
+      // entries from Sync, the conflict resolution logic knows that this was
+      // updated and propagates the new values to the server.
+      prepopulated_url->last_modified = base::Time::Now();
+      actions.edited_engines.push_back({existing_url, *prepopulated_url});
+    } else {
+      actions.added_engines.push_back(*prepopulated_url);
+    }
+  }
+
+  // The block above removed all the URLs from the |id_to_turl| map that were
+  // found in the prepopulate data.  Any remaining URLs that haven't been
+  // user-edited or made default can be removed from the data store.
+  // We assume that this entry is equivalent to the DSE if its prepopulate ID
+  // and keyword both match. If the prepopulate ID _does_ match all properties
+  // will be replaced with those from |default_search_provider| anyway.
+  for (auto& i : id_to_turl) {
+    TemplateURL* template_url = i.second;
+    if ((template_url->safe_for_autoreplace()) &&
+        (!default_search_provider ||
+         (template_url->prepopulate_id() !=
+          default_search_provider->prepopulate_id()) ||
+         (template_url->keyword() != default_search_provider->keyword()))) {
+      if (template_url->created_from_play_api()) {
+        // Don't remove the entry created from Play API. Just reset
+        // prepopulate_id for it.
+        TemplateURLData data = template_url->data();
+        data.prepopulate_id = 0;
+        actions.edited_engines.push_back({template_url, data});
+      } else {
+        actions.removed_engines.push_back(template_url);
+      }
+    }
+  }
+
+  return actions;
+}
+
+void ApplyActionsFromCurrentData(
+    ActionsFromCurrentData actions,
+    KeywordWebDataService* service,
+    TemplateURLService::OwnedTemplateURLVector* template_urls,
+    TemplateURL* default_search_provider,
+    std::set<std::string>* removed_keyword_guids) {
+  DCHECK(template_urls);
 
   // Remove items.
   for (const auto* removed_engine : actions.removed_engines) {
@@ -257,85 +346,6 @@ void MergeEnginesFromPrepopulateData(
   // Add items.
   for (const auto& added_engine : actions.added_engines)
     template_urls->push_back(std::make_unique<TemplateURL>(added_engine));
-}
-
-ActionsFromPrepopulateData CreateActionsFromCurrentPrepopulateData(
-    std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
-    const TemplateURLService::OwnedTemplateURLVector& existing_urls,
-    const TemplateURL* default_search_provider) {
-  // Create a map to hold all provided |template_urls| that originally came from
-  // prepopulate data (i.e. have a non-zero prepopulate_id()).
-  TemplateURL* play_api_turl = nullptr;
-  std::map<int, TemplateURL*> id_to_turl;
-  for (auto& turl : existing_urls) {
-    if (turl->created_from_play_api()) {
-      DCHECK_EQ(nullptr, play_api_turl);
-      play_api_turl = turl.get();
-    }
-    int prepopulate_id = turl->prepopulate_id();
-    if (prepopulate_id > 0)
-      id_to_turl[prepopulate_id] = turl.get();
-  }
-
-  // For each current prepopulated URL, check whether |template_urls| contained
-  // a matching prepopulated URL.  If so, update the passed-in URL to match the
-  // current data.  (If the passed-in URL was user-edited, we persist the user's
-  // name and keyword.)  If not, add the prepopulated URL.
-  ActionsFromPrepopulateData actions;
-  for (auto& prepopulated_url : *prepopulated_urls) {
-    const int prepopulated_id = prepopulated_url->prepopulate_id;
-    DCHECK_NE(0, prepopulated_id);
-
-    auto existing_url_iter = id_to_turl.find(prepopulated_id);
-    TemplateURL* existing_url = nullptr;
-    if (existing_url_iter != id_to_turl.end()) {
-      existing_url = existing_url_iter->second;
-      id_to_turl.erase(existing_url_iter);
-    } else if (play_api_turl &&
-               play_api_turl->keyword() == prepopulated_url->keyword()) {
-      existing_url = play_api_turl;
-    }
-
-    if (existing_url != nullptr) {
-      // Update the data store with the new prepopulated data. Preserve user
-      // edits to the name and keyword.
-      MergeIntoPrepopulatedEngineData(existing_url, prepopulated_url.get());
-      // Update last_modified to ensure that if this entry is later merged with
-      // entries from Sync, the conflict resolution logic knows that this was
-      // updated and propagates the new values to the server.
-      prepopulated_url->last_modified = base::Time::Now();
-      actions.edited_engines.push_back({existing_url, *prepopulated_url});
-    } else {
-      actions.added_engines.push_back(*prepopulated_url);
-    }
-  }
-
-  // The block above removed all the URLs from the |id_to_turl| map that were
-  // found in the prepopulate data.  Any remaining URLs that haven't been
-  // user-edited or made default can be removed from the data store.
-  // We assume that this entry is equivalent to the DSE if its prepopulate ID
-  // and keyword both match. If the prepopulate ID _does_ match all properties
-  // will be replaced with those from |default_search_provider| anyway.
-  for (auto i = id_to_turl.begin(); i != id_to_turl.end(); ++i) {
-    TemplateURL* template_url = i->second;
-    if ((template_url->safe_for_autoreplace()) &&
-        (!default_search_provider ||
-         (template_url->prepopulate_id() !=
-          default_search_provider->prepopulate_id()) ||
-         (template_url->keyword() != default_search_provider->keyword()))) {
-      if (template_url->created_from_play_api()) {
-        // Don't remove the entry created from Play API. Just reset
-        // prepopulate_id for it.
-        TemplateURLData data = template_url->data();
-        data.prepopulate_id = 0;
-        actions.edited_engines.push_back({template_url, data});
-      } else {
-        actions.removed_engines.push_back(template_url);
-      }
-    }
-  }
-
-  return actions;
 }
 
 void GetSearchProvidersUsingKeywordResult(

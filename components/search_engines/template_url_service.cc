@@ -828,7 +828,7 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(prefs_, nullptr);
   DCHECK(!prepopulated_urls.empty());
-  ActionsFromPrepopulateData actions(CreateActionsFromCurrentPrepopulateData(
+  ActionsFromCurrentData actions(CreateActionsFromCurrentPrepopulateData(
       &prepopulated_urls, template_urls_, default_search_provider_));
 
   // Remove items.
@@ -1716,7 +1716,7 @@ void TemplateURLService::UpdateTemplateURLIfPrepopulated(
 
   for (const auto& url : prepopulated_urls) {
     if (url->prepopulate_id == prepopulate_id) {
-      MergeIntoPrepopulatedEngineData(template_url, url.get());
+      MergeIntoEngineData(template_url, url.get());
       template_url->CopyFrom(TemplateURL(*url));
     }
   }

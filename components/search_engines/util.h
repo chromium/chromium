@@ -33,10 +33,10 @@ TemplateURL* FindURLByPrepopulateID(
     const TemplateURLService::TemplateURLVector& template_urls,
     int prepopulate_id);
 
-// Modifies |prepopulated_url| so that it contains user-modified fields from
+// Modifies |url_to_update| so that it contains user-modified fields from
 // |original_turl|. Both URLs must have the same prepopulate_id.
-void MergeIntoPrepopulatedEngineData(const TemplateURL* original_turl,
-                                     TemplateURLData* prepopulated_url);
+void MergeIntoEngineData(const TemplateURL* original_turl,
+                         TemplateURLData* url_to_update);
 
 // CreateActionsFromCurrentPrepopulateData() (see below) takes in the current
 // prepopulated URLs as well as the user's current URLs, and returns an instance
@@ -57,10 +57,10 @@ void MergeIntoPrepopulatedEngineData(const TemplateURL* original_turl,
 typedef std::pair<TemplateURL*, TemplateURLData> EditedSearchEngine;
 typedef std::vector<EditedSearchEngine> EditedEngines;
 
-struct ActionsFromPrepopulateData {
-  ActionsFromPrepopulateData();
-  ActionsFromPrepopulateData(const ActionsFromPrepopulateData& other);
-  ~ActionsFromPrepopulateData();
+struct ActionsFromCurrentData {
+  ActionsFromCurrentData();
+  ActionsFromCurrentData(const ActionsFromCurrentData& other);
+  ~ActionsFromCurrentData();
 
   TemplateURLService::TemplateURLVector removed_engines;
   EditedEngines edited_engines;
@@ -70,7 +70,7 @@ struct ActionsFromPrepopulateData {
 // MergeEnginesFromPrepopulateData merges search engines from
 // |prepopulated_urls| into |template_urls|. Calls
 // CreateActionsFromCurrentPrepopulateData() to collect actions and then applies
-// them on |tempate_urls|. MergeEnginesFromPrepopulateData is invoked when the
+// them on |template_urls|. MergeEnginesFromPrepopulateData is invoked when the
 // version of the prepopulate data changes. If |removed_keyword_guids| is not
 // nullptr, the Sync GUID of each item removed from the DB will be added to it.
 // Note that this function will take ownership of |prepopulated_urls| and will
@@ -89,10 +89,20 @@ void MergeEnginesFromPrepopulateData(
 // placing the current default provider on the "to be removed" list.
 //
 // NOTE: Takes ownership of, and clears, |prepopulated_urls|.
-ActionsFromPrepopulateData CreateActionsFromCurrentPrepopulateData(
+ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
     const TemplateURLService::OwnedTemplateURLVector& existing_urls,
     const TemplateURL* default_search_provider);
+
+// Takes in an ActionsFromCurrentData (see above) and applies the actions (add,
+// edit, or remove) to the user's current URLs.  This is called by
+// MergeEnginesFromPrepopulateData().
+void ApplyActionsFromCurrentData(
+    ActionsFromCurrentData actions,
+    KeywordWebDataService* service,
+    TemplateURLService::OwnedTemplateURLVector* template_urls,
+    TemplateURL* default_search_provider,
+    std::set<std::string>* removed_keyword_guids);
 
 // Processes the results of KeywordWebDataService::GetKeywords, combining it
 // with prepopulated search providers to result in:
