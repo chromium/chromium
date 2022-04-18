@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.AccountCheck.Status{ArcUserTypes}"
-    enum="ArcAuthAccountCheckStatus" expires_after="2022-07-04">
+    enum="ArcAuthAccountCheckStatus" expires_after="2022-12-04">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -429,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.AccountCheck.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2022-07-04">
+    expires_after="2022-12-04">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.Checkin.Attempts{ArcUserTypes}" units="attempts"
-    expires_after="2022-07-04">
+    expires_after="2022-12-04">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.MainAccountResolution.Status{ArcUserTypes}"
-    enum="ArcAuthMainAccountResolutionStatus" expires_after="2022-07-04">
+    enum="ArcAuthMainAccountResolutionStatus" expires_after="2022-12-04">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1279,16 +1279,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
-    expires_after="2022-03-17">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
-  <summary>Arc OptIn action taken by user.</summary>
+    expires_after="2022-12-04">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Arc OptIn action taken by user. Warning: this histogram was expired from
+    2022-03-17 to 2022-04-18; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Arc.OptInCancel" enum="ArcOptInCancel"
-    expires_after="2022-07-04">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
+    expires_after="2022-12-04">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>Arc OptIn cancelation reason.</summary>
 </histogram>
 
