@@ -64,7 +64,7 @@ class TrustedAnnotatorRequestHandler extends RequestHandler {
    *     be used to handle the messages.
    */
   constructor(iframeElement, browserProxy) {
-    super(iframeElement.contentWindow, TARGET_URL, TARGET_URL);
+    super(iframeElement, TARGET_URL, TARGET_URL);
     this.browserProxy_ = browserProxy;
 
     this.registerMethod('onUndoRedoAvailabilityChanged', (values) => {
