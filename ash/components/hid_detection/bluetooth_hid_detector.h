@@ -64,10 +64,23 @@ class BluetoothHidDetector {
 
   virtual ~BluetoothHidDetector();
 
+  // Begins scanning for Bluetooth devices. Invokes
+  // OnBluetoothHidStatusChanged() for |delegate| whenever the HID detection
+  // status updates. Calling this method when HID detection has already started
+  // is an error.
   virtual void StartBluetoothHidDetection(
       Delegate* delegate,
       InputDevicesStatus input_devices_status) = 0;
+
+  // Stops scanning for Bluetooth devices. Calling this method when HID
+  // detection has not been started is an error.
   virtual void StopBluetoothHidDetection() = 0;
+
+  // Informs BluetoothHidDetector which HID types have been connected.
+  virtual void SetInputDevicesStatus(
+      InputDevicesStatus input_devices_status) = 0;
+
+  // Fetches the current Bluetooth HID detection status.
   virtual const BluetoothHidDetectionStatus
   GetBluetoothHidDetectionStatus() = 0;
 

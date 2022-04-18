@@ -85,7 +85,11 @@ void FakeDevicePairingHandler::PerformFinishCurrentPairingRequest(
     absl::optional<device::ConnectionFailureReason> failure_reason,
     base::TimeDelta duration) {}
 
-void FakeDevicePairingHandler::CancelPairing() {}
+void FakeDevicePairingHandler::CancelPairing() {
+  base::RunLoop().RunUntilIdle();
+  FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
+  base::RunLoop().RunUntilIdle();
+}
 
 void FakeDevicePairingHandler::OnRequestPinCode(const std::string& pin_code) {}
 

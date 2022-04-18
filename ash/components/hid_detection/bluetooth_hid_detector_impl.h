@@ -31,6 +31,7 @@ class BluetoothHidDetectorImpl
       Delegate* delegate,
       InputDevicesStatus input_devices_status) override;
   void StopBluetoothHidDetection() override;
+  void SetInputDevicesStatus(InputDevicesStatus input_devices_status) override;
   const BluetoothHidDetectionStatus GetBluetoothHidDetectionStatus() override;
 
  private:
@@ -85,6 +86,7 @@ class BluetoothHidDetectorImpl
                       ConfirmPasskeyCallback callback) override;
   void AuthorizePairing(AuthorizePairingCallback callback) override;
 
+  bool IsHidTypeMissing(BluetoothHidDetector::BluetoothHidType hid_type);
   bool ShouldAttemptToPairWithDevice(
       const chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr&
           device);
@@ -92,6 +94,10 @@ class BluetoothHidDetectorImpl
   void ProcessQueue();
   void OnPairDevice(
       chromeos::bluetooth_config::mojom::PairingResult pairing_result);
+
+  // Removes any state related to the current pairing device. This will cancel
+  // pairing with the device if there is an ongoing pairing.
+  void ClearCurrentPairingState();
 
   // Resets properties related to discovery, pairing handlers and queueing.
   void ResetDiscoveryState();
