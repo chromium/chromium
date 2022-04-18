@@ -1813,6 +1813,9 @@
       status: "stable",
     },
     {
+      name: "PendingBeaconAPI"
+    },
+    {
       name: "PercentBasedScrolling",
       settable_from_internals: true,
     },
