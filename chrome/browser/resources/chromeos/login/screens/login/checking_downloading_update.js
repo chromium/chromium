@@ -121,8 +121,9 @@ const CheckingDownloadingUpdateBase = Polymer.mixinBehaviors(
 
   computeProgressMessage_(
       hasEstimate, defaultProgressMessage, estimatedTimeLeftMsg_) {
-    if (hasEstimate)
+    if (hasEstimate) {
       return estimatedTimeLeftMsg_;
+    }
     return defaultProgressMessage;
   }
 

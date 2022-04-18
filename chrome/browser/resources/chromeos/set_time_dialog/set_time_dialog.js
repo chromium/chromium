@@ -68,8 +68,9 @@ function getMinDate() {
   minDate.setDate(minDate.getDate() - 1);
   // Make sure the ostensible date is in range.
   const now = new Date();
-  if (now < minDate)
+  if (now < minDate) {
     minDate = now;
+  }
   // Convert to string for date input min attribute.
   return dateToHtmlValues(minDate).date;
 }
@@ -83,8 +84,9 @@ function getMaxDate() {
   maxDate.setFullYear(maxDate.getFullYear() + 20);
   // Make sure the ostensible date is in range.
   const now = new Date();
-  if (now > maxDate)
+  if (now > maxDate) {
     maxDate = now;
+  }
   // Convert to string for date input max attribute.
   return dateToHtmlValues(maxDate).date;
 }

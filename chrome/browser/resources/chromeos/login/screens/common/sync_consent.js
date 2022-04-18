@@ -179,11 +179,13 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    */
   getConsentConfirmation_(path) {
     for (const element of path) {
-      if (!element.hasAttribute)
+      if (!element.hasAttribute) {
         continue;
+      }
 
-      if (element.hasAttribute('consent-confirmation'))
+      if (element.hasAttribute('consent-confirmation')) {
         return element.innerHTML.trim();
+      }
 
       // Search down in case of click on a button with description below.
       const labels = element.querySelectorAll('[consent-confirmation]');
@@ -212,8 +214,9 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   }
 
   getReviewSettingText_(locale, isArcRestricted) {
-    if (isArcRestricted)
+    if (isArcRestricted) {
       return this.i18n('syncConsentReviewSyncOptionsWithArcRestrictedText');
+    }
     return this.i18n('syncConsentReviewSyncOptionsText');
   }
 

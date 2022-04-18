@@ -107,10 +107,11 @@ Polymer({
   /** @private */
   onShowSpinnerChanged_() {
     // Dialog is on top, spinner is underneath, so showing dialog hides spinner.
-    if (this.showSpinner_)
+    if (this.showSpinner_) {
       this.$.dialog.close();
-    else
+    } else {
       this.$.dialog.showModal();
+    }
   },
 
   /** @private */

@@ -25,8 +25,9 @@ function SurpriseWallpaper() {}
  * @return {SurpriseWallpaper} A SurpriseWallpaper instance.
  */
 SurpriseWallpaper.getInstance = function() {
-  if (!surpriseWallpaper)
+  if (!surpriseWallpaper) {
     surpriseWallpaper = new SurpriseWallpaper();
+  }
   return surpriseWallpaper;
 };
 
@@ -212,14 +213,16 @@ chrome.app.runtime.onLaunched.addListener(function() {
               'wallpaper-set-successfully');
       // Cancel preview if the app exits before user confirming the
       // wallpaper (e.g. when the app is closed in overview mode).
-      if (isDuringPreview && !isWallpaperSet)
+      if (isDuringPreview && !isWallpaperSet) {
         chrome.wallpaperPrivate.cancelPreviewWallpaper(() => {});
+      }
       // Do not restore the minimized windows if the app exits because of
       // confirming preview: prefer to continue showing the new wallpaper to
       // user.
       const isExitingAfterPreviewConfirm = isDuringPreview && isWallpaperSet;
-      if (!isExitingAfterPreviewConfirm)
+      if (!isExitingAfterPreviewConfirm) {
         chrome.wallpaperPrivate.restoreMinimizedWindows();
+      }
     });
     // By design, the wallpaper picker should never be shown on top of
     // another window.
@@ -233,272 +236,287 @@ chrome.app.runtime.onLaunched.addListener(function() {
 // TODO(qasid): run git cl format --js to indent this appropriately. Didn't do
 // so the first time to make the diff easier to review.
 chrome.syncFileSystem.onFileStatusChanged.addListener(function(detail) {
-chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
-  if (swaEnabled)
-    return;
-
-  WallpaperUtil.enabledSyncThemesCallback(function(syncEnabled) {
-    if (!syncEnabled)
+  chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+    if (swaEnabled) {
       return;
-    if (detail.status != 'synced' || detail.direction != 'remote_to_local')
-      return;
-    if (detail.action == 'added') {
-      // TODO(xdai): Get rid of this setCustomWallpaperFromSyncFS logic.
-      // WallpaperInfo might have been saved in the sync filesystem before the
-      // corresonding custom wallpaper and thumbnail are saved, thus the
-      // onChanged() might not set the custom wallpaper correctly. So we need
-      // setCustomWallpaperFromSyncFS() to be called here again to make sure
-      // custom wallpaper is set.
-      Constants.WallpaperLocalStorage.get(
-          Constants.AccessLocalWallpaperInfoKey, function(items) {
-            var localData = items[Constants.AccessLocalWallpaperInfoKey];
-            if (localData && localData.url == detail.fileEntry.name &&
-                localData.source == Constants.WallpaperSourceEnum.Custom) {
-              WallpaperUtil.setCustomWallpaperFromSyncFS(
-                  localData.url, localData.layout);
-            }
-          });
-      // We only need to store the custom wallpaper if it was set by the
-      // built-in wallpaper picker.
-      if (!detail.fileEntry.name.startsWith(
-              Constants.ThirdPartyWallpaperPrefix)) {
-        WallpaperUtil.storeWallpaperFromSyncFSToLocalFS(detail.fileEntry);
-      }
-    } else if (detail.action == 'deleted') {
-      var fileName = detail.fileEntry.name.replace(
-          Constants.CustomWallpaperThumbnailSuffix, '');
-      WallpaperUtil.deleteWallpaperFromLocalFS(fileName);
     }
+
+    WallpaperUtil.enabledSyncThemesCallback(function(syncEnabled) {
+      if (!syncEnabled) {
+        return;
+      }
+      if (detail.status != 'synced' || detail.direction != 'remote_to_local') {
+        return;
+      }
+      if (detail.action == 'added') {
+        // TODO(xdai): Get rid of this setCustomWallpaperFromSyncFS logic.
+        // WallpaperInfo might have been saved in the sync filesystem before the
+        // corresonding custom wallpaper and thumbnail are saved, thus the
+        // onChanged() might not set the custom wallpaper correctly. So we need
+        // setCustomWallpaperFromSyncFS() to be called here again to make sure
+        // custom wallpaper is set.
+        Constants.WallpaperLocalStorage.get(
+            Constants.AccessLocalWallpaperInfoKey, function(items) {
+              var localData = items[Constants.AccessLocalWallpaperInfoKey];
+              if (localData && localData.url == detail.fileEntry.name &&
+                  localData.source == Constants.WallpaperSourceEnum.Custom) {
+                WallpaperUtil.setCustomWallpaperFromSyncFS(
+                    localData.url, localData.layout);
+              }
+            });
+        // We only need to store the custom wallpaper if it was set by the
+        // built-in wallpaper picker.
+        if (!detail.fileEntry.name.startsWith(
+                Constants.ThirdPartyWallpaperPrefix)) {
+          WallpaperUtil.storeWallpaperFromSyncFSToLocalFS(detail.fileEntry);
+        }
+      } else if (detail.action == 'deleted') {
+        var fileName = detail.fileEntry.name.replace(
+            Constants.CustomWallpaperThumbnailSuffix, '');
+        WallpaperUtil.deleteWallpaperFromLocalFS(fileName);
+      }
+    });
   });
-});
 });
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
-chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
-  if (swaEnabled)
-    return;
+  chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+    if (swaEnabled) {
+      return;
+    }
 
-  WallpaperUtil.enabledSyncThemesCallback(function(syncEnabled) {
-    var updateDailyRefreshStates = key => {
-      if (!changes[key])
-        return;
-
-      // If the user did not change Daily Refresh in this sync update,
-      // changes[key].oldValue will be empty
-      var oldDailyRefreshInfo =
-          changes[key].oldValue ? JSON.parse(changes[key].oldValue) : '';
-      var newDailyRefreshInfo = JSON.parse(changes[key].newValue);
-
-      // The resume token is expected to change after a new daily refresh
-      // wallpaper is set. Ignore it if it's the only change.
-      if (oldDailyRefreshInfo.enabled === newDailyRefreshInfo.enabled &&
-          oldDailyRefreshInfo.collectionId ===
-              newDailyRefreshInfo.collectionId) {
-        return;
-      }
-      // Although the old and new values may both have enabled == true, they can
-      // have different collection ids, so the old alarm should always be
-      // cleared.
-      chrome.alarms.clearAll();
-      if (newDailyRefreshInfo.enabled)
-        SurpriseWallpaper.getInstance().next();
-    };
-    updateDailyRefreshStates(
-        syncEnabled ? Constants.AccessSyncDailyRefreshInfoKey :
-                      Constants.AccessLocalDailyRefreshInfoKey);
-
-    if (syncEnabled) {
-      // If sync theme is enabled, use values from chrome.storage.sync to sync
-      // wallpaper changes.
-      if (changes[Constants.AccessSyncSurpriseMeEnabledKey]) {
-        if (changes[Constants.AccessSyncSurpriseMeEnabledKey].newValue) {
-          SurpriseWallpaper.getInstance().next();
-        } else {
-          SurpriseWallpaper.getInstance().disable();
-        }
-      }
-
-      // If the built-in Wallpaper Picker App is open, update the check mark
-      // and the corresponding message in time.
-      var updateCheckMarkAndAppNameIfAppliable = function(appName) {
-        if (!wallpaperPickerWindow)
+    WallpaperUtil.enabledSyncThemesCallback(function(syncEnabled) {
+      var updateDailyRefreshStates = key => {
+        if (!changes[key]) {
           return;
-        var wpDocument = wallpaperPickerWindow.contentWindow.document;
-        var messageContent = wpDocument.querySelector('#message-content');
-
-        chrome.wallpaperPrivate.getStrings(strings => {
-          if (appName) {
-            wpDocument.querySelector('#message-container').display = 'block';
-            var message =
-                strings.currentWallpaperSetByMessage.replace(/\$1/g, appName);
-            messageContent.textContent = message;
-            wpDocument.querySelector('#checkbox').classList.remove('checked');
-            wpDocument.querySelector('#categories-list').disabled = false;
-            wpDocument.querySelector('#wallpaper-grid').disabled = false;
-          } else {
-            Constants.WallpaperSyncStorage.get(
-                Constants.AccessSyncSurpriseMeEnabledKey, function(item) {
-                  // TODO(crbug.com/810169): Try to combine this part with
-                  // |WallpaperManager.onSurpriseMeStateChanged_|. The logic is
-                  // duplicate.
-                  var enable = item[Constants.AccessSyncSurpriseMeEnabledKey];
-                  if (enable) {
-                    wpDocument.querySelector('#checkbox')
-                        .classList.add('checked');
-                  } else {
-                    wpDocument.querySelector('#checkbox')
-                        .classList.remove('checked');
-                    if (wpDocument.querySelector('.check'))
-                      wpDocument.querySelector('.check').style.visibility =
-                          'visible';
-                  }
-                });
-          }
-        });
-      };
-
-      if (changes[Constants.AccessLocalWallpaperInfoKey]) {
-        // If the old wallpaper is a third party wallpaper we should remove it
-        // from the local & sync file system to free space.
-        var oldInfo = changes[Constants.AccessLocalWallpaperInfoKey].oldValue;
-        if (oldInfo &&
-            oldInfo.url.indexOf(Constants.ThirdPartyWallpaperPrefix) != -1) {
-          WallpaperUtil.deleteWallpaperFromLocalFS(oldInfo.url);
-          WallpaperUtil.deleteWallpaperFromSyncFS(oldInfo.url);
         }
 
-        var newInfo = changes[Constants.AccessLocalWallpaperInfoKey].newValue;
-        if (newInfo && newInfo.hasOwnProperty('appName'))
-          updateCheckMarkAndAppNameIfAppliable(newInfo.appName);
-      }
+        // If the user did not change Daily Refresh in this sync update,
+        // changes[key].oldValue will be empty
+        var oldDailyRefreshInfo =
+            changes[key].oldValue ? JSON.parse(changes[key].oldValue) : '';
+        var newDailyRefreshInfo = JSON.parse(changes[key].newValue);
 
-      if (changes[Constants.AccessSyncWallpaperInfoKey]) {
-        var syncInfo = changes[Constants.AccessSyncWallpaperInfoKey].newValue;
+        // The resume token is expected to change after a new daily refresh
+        // wallpaper is set. Ignore it if it's the only change.
+        if (oldDailyRefreshInfo.enabled === newDailyRefreshInfo.enabled &&
+            oldDailyRefreshInfo.collectionId ===
+                newDailyRefreshInfo.collectionId) {
+          return;
+        }
+        // Although the old and new values may both have enabled == true, they
+        // can have different collection ids, so the old alarm should always be
+        // cleared.
+        chrome.alarms.clearAll();
+        if (newDailyRefreshInfo.enabled) {
+          SurpriseWallpaper.getInstance().next();
+        }
+      };
+      updateDailyRefreshStates(
+          syncEnabled ? Constants.AccessSyncDailyRefreshInfoKey :
+                        Constants.AccessLocalDailyRefreshInfoKey);
 
-        Constants.WallpaperSyncStorage.get(
-            Constants.AccessSyncSurpriseMeEnabledKey, function(enabledItems) {
-              var syncSurpriseMeEnabled =
-                  enabledItems[Constants.AccessSyncSurpriseMeEnabledKey];
+      if (syncEnabled) {
+        // If sync theme is enabled, use values from chrome.storage.sync to sync
+        // wallpaper changes.
+        if (changes[Constants.AccessSyncSurpriseMeEnabledKey]) {
+          if (changes[Constants.AccessSyncSurpriseMeEnabledKey].newValue) {
+            SurpriseWallpaper.getInstance().next();
+          } else {
+            SurpriseWallpaper.getInstance().disable();
+          }
+        }
 
+        // If the built-in Wallpaper Picker App is open, update the check mark
+        // and the corresponding message in time.
+        var updateCheckMarkAndAppNameIfAppliable = function(appName) {
+          if (!wallpaperPickerWindow) {
+            return;
+          }
+          var wpDocument = wallpaperPickerWindow.contentWindow.document;
+          var messageContent = wpDocument.querySelector('#message-content');
+
+          chrome.wallpaperPrivate.getStrings(strings => {
+            if (appName) {
+              wpDocument.querySelector('#message-container').display = 'block';
+              var message =
+                  strings.currentWallpaperSetByMessage.replace(/\$1/g, appName);
+              messageContent.textContent = message;
+              wpDocument.querySelector('#checkbox').classList.remove('checked');
+              wpDocument.querySelector('#categories-list').disabled = false;
+              wpDocument.querySelector('#wallpaper-grid').disabled = false;
+            } else {
               Constants.WallpaperSyncStorage.get(
-                  Constants.AccessLastSurpriseWallpaperChangedDate,
-                  function(items) {
-                    var syncLastSurpriseMeChangedDate =
-                        items[Constants.AccessLastSurpriseWallpaperChangedDate];
-
-                    var today = new Date().toDateString();
-                    // If SurpriseMe is enabled and surprise wallpaper hasn't
-                    // been changed today, we should not sync the change,
-                    // instead onAlarm() will be triggered to update a surprise
-                    // me wallpaper.
-                    if (!syncSurpriseMeEnabled ||
-                        (syncSurpriseMeEnabled &&
-                         syncLastSurpriseMeChangedDate == today)) {
-                      Constants.WallpaperLocalStorage.get(
-                          Constants.AccessLocalWallpaperInfoKey,
-                          function(infoItems) {
-                            var localInfo =
-                                infoItems[Constants
-                                              .AccessLocalWallpaperInfoKey];
-                            // Normally, the wallpaper info saved in local
-                            // storage and sync storage are the same. If the
-                            // synced value changed by sync service, they may
-                            // different. In that case, change wallpaper to the
-                            // one saved in sync storage and update the local
-                            // value.
-                            if (!localInfo || localInfo.url != syncInfo.url ||
-                                localInfo.layout != syncInfo.layout ||
-                                localInfo.source != syncInfo.source) {
-                              if (syncInfo.source ==
-                                  Constants.WallpaperSourceEnum.Online) {
-                                // TODO(bshe): Consider schedule an alarm to set
-                                // online wallpaper later when failed. Note that
-                                // we need to cancel the retry if user set
-                                // another wallpaper before retry alarm invoked.
-                                WallpaperUtil.setOnlineWallpaperWithoutPreview(
-                                    syncInfo.url, syncInfo.layout,
-                                    function() {}, function() {});
-                              } else if (
-                                  syncInfo.source ==
-                                  Constants.WallpaperSourceEnum.Custom) {
-                                WallpaperUtil.setCustomWallpaperFromSyncFS(
-                                    syncInfo.url, syncInfo.layout);
-                              } else if (
-                                  syncInfo.source ==
-                                  Constants.WallpaperSourceEnum.Default) {
-                                chrome.wallpaperPrivate.resetWallpaper();
-                              }
-
-                              // If the old wallpaper is a third party wallpaper
-                              // we should remove it from the local & sync file
-                              // system to free space.
-                              if (localInfo &&
-                                  localInfo.url.indexOf(
-                                      Constants.ThirdPartyWallpaperPrefix) !=
-                                      -1) {
-                                WallpaperUtil.deleteWallpaperFromLocalFS(
-                                    localInfo.url);
-                                WallpaperUtil.deleteWallpaperFromSyncFS(
-                                    localInfo.url);
-                              }
-
-                              if (syncInfo &&
-                                  syncInfo.hasOwnProperty('appName'))
-                                updateCheckMarkAndAppNameIfAppliable(
-                                    syncInfo.appName);
-
-                              WallpaperUtil.saveToLocalStorage(
-                                  Constants.AccessLocalWallpaperInfoKey,
-                                  syncInfo);
-                            }
-                          });
+                  Constants.AccessSyncSurpriseMeEnabledKey, function(item) {
+                    // TODO(crbug.com/810169): Try to combine this part with
+                    // |WallpaperManager.onSurpriseMeStateChanged_|. The logic
+                    // is duplicate.
+                    var enable = item[Constants.AccessSyncSurpriseMeEnabledKey];
+                    if (enable) {
+                      wpDocument.querySelector('#checkbox')
+                          .classList.add('checked');
+                    } else {
+                      wpDocument.querySelector('#checkbox')
+                          .classList.remove('checked');
+                      if (wpDocument.querySelector('.check')) {
+                        wpDocument.querySelector('.check').style.visibility =
+                            'visible';
+                      }
                     }
                   });
-            });
-      }
-    } else {
-      // If sync theme is disabled, use values from chrome.storage.local to
-      // track wallpaper changes.
-      if (changes[Constants.AccessLocalSurpriseMeEnabledKey]) {
-        if (changes[Constants.AccessLocalSurpriseMeEnabledKey].newValue) {
-          SurpriseWallpaper.getInstance().next();
-        } else {
-          SurpriseWallpaper.getInstance().disable();
+            }
+          });
+        };
+
+        if (changes[Constants.AccessLocalWallpaperInfoKey]) {
+          // If the old wallpaper is a third party wallpaper we should remove it
+          // from the local & sync file system to free space.
+          var oldInfo = changes[Constants.AccessLocalWallpaperInfoKey].oldValue;
+          if (oldInfo &&
+              oldInfo.url.indexOf(Constants.ThirdPartyWallpaperPrefix) != -1) {
+            WallpaperUtil.deleteWallpaperFromLocalFS(oldInfo.url);
+            WallpaperUtil.deleteWallpaperFromSyncFS(oldInfo.url);
+          }
+
+          var newInfo = changes[Constants.AccessLocalWallpaperInfoKey].newValue;
+          if (newInfo && newInfo.hasOwnProperty('appName')) {
+            updateCheckMarkAndAppNameIfAppliable(newInfo.appName);
+          }
+        }
+
+        if (changes[Constants.AccessSyncWallpaperInfoKey]) {
+          var syncInfo = changes[Constants.AccessSyncWallpaperInfoKey].newValue;
+
+          Constants.WallpaperSyncStorage.get(
+              Constants.AccessSyncSurpriseMeEnabledKey, function(enabledItems) {
+                var syncSurpriseMeEnabled =
+                    enabledItems[Constants.AccessSyncSurpriseMeEnabledKey];
+
+                Constants.WallpaperSyncStorage.get(
+                    Constants.AccessLastSurpriseWallpaperChangedDate,
+                    function(items) {
+                      var syncLastSurpriseMeChangedDate =
+                          items[Constants
+                                    .AccessLastSurpriseWallpaperChangedDate];
+
+                      var today = new Date().toDateString();
+                      // If SurpriseMe is enabled and surprise wallpaper hasn't
+                      // been changed today, we should not sync the change,
+                      // instead onAlarm() will be triggered to update a
+                      // surprise me wallpaper.
+                      if (!syncSurpriseMeEnabled ||
+                          (syncSurpriseMeEnabled &&
+                           syncLastSurpriseMeChangedDate == today)) {
+                        Constants.WallpaperLocalStorage.get(
+                            Constants.AccessLocalWallpaperInfoKey,
+                            function(infoItems) {
+                              var localInfo =
+                                  infoItems[Constants
+                                                .AccessLocalWallpaperInfoKey];
+                              // Normally, the wallpaper info saved in local
+                              // storage and sync storage are the same. If the
+                              // synced value changed by sync service, they may
+                              // different. In that case, change wallpaper to
+                              // the one saved in sync storage and update the
+                              // local value.
+                              if (!localInfo || localInfo.url != syncInfo.url ||
+                                  localInfo.layout != syncInfo.layout ||
+                                  localInfo.source != syncInfo.source) {
+                                if (syncInfo.source ==
+                                    Constants.WallpaperSourceEnum.Online) {
+                                  // TODO(bshe): Consider schedule an alarm to
+                                  // set online wallpaper later when failed.
+                                  // Note that we need to cancel the retry if
+                                  // user set another wallpaper before retry
+                                  // alarm invoked.
+                                  WallpaperUtil
+                                      .setOnlineWallpaperWithoutPreview(
+                                          syncInfo.url, syncInfo.layout,
+                                          function() {}, function() {});
+                                } else if (
+                                    syncInfo.source ==
+                                    Constants.WallpaperSourceEnum.Custom) {
+                                  WallpaperUtil.setCustomWallpaperFromSyncFS(
+                                      syncInfo.url, syncInfo.layout);
+                                } else if (
+                                    syncInfo.source ==
+                                    Constants.WallpaperSourceEnum.Default) {
+                                  chrome.wallpaperPrivate.resetWallpaper();
+                                }
+
+                                // If the old wallpaper is a third party
+                                // wallpaper we should remove it from the local
+                                // & sync file system to free space.
+                                if (localInfo &&
+                                    localInfo.url.indexOf(
+                                        Constants.ThirdPartyWallpaperPrefix) !=
+                                        -1) {
+                                  WallpaperUtil.deleteWallpaperFromLocalFS(
+                                      localInfo.url);
+                                  WallpaperUtil.deleteWallpaperFromSyncFS(
+                                      localInfo.url);
+                                }
+
+                                if (syncInfo &&
+                                    syncInfo.hasOwnProperty('appName')) {
+                                  updateCheckMarkAndAppNameIfAppliable(
+                                      syncInfo.appName);
+                                }
+
+                                WallpaperUtil.saveToLocalStorage(
+                                    Constants.AccessLocalWallpaperInfoKey,
+                                    syncInfo);
+                              }
+                            });
+                      }
+                    });
+              });
+        }
+      } else {
+        // If sync theme is disabled, use values from chrome.storage.local to
+        // track wallpaper changes.
+        if (changes[Constants.AccessLocalSurpriseMeEnabledKey]) {
+          if (changes[Constants.AccessLocalSurpriseMeEnabledKey].newValue) {
+            SurpriseWallpaper.getInstance().next();
+          } else {
+            SurpriseWallpaper.getInstance().disable();
+          }
         }
       }
-    }
+    });
   });
-});
 });
 
 chrome.alarms.onAlarm.addListener(function() {
-chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
-  if (swaEnabled)
-    return;
+  chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+    if (swaEnabled) {
+      return;
+    }
 
-  SurpriseWallpaper.getInstance().next();
-});
+    SurpriseWallpaper.getInstance().next();
+  });
 });
 
 chrome.wallpaperPrivate.onWallpaperChangedBy3rdParty.addListener(function(
     wallpaper, thumbnail, layout, appName) {
-chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
-  if (swaEnabled)
-    return;
+  chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+    if (swaEnabled) {
+      return;
+    }
 
-  WallpaperUtil.saveToLocalStorage(
-      Constants.AccessLocalSurpriseMeEnabledKey, false, function() {
-        WallpaperUtil.saveToSyncStorage(
-            Constants.AccessSyncSurpriseMeEnabledKey, false);
-      });
+    WallpaperUtil.saveToLocalStorage(
+        Constants.AccessLocalSurpriseMeEnabledKey, false, function() {
+          WallpaperUtil.saveToSyncStorage(
+              Constants.AccessSyncSurpriseMeEnabledKey, false);
+        });
 
-  // Make third party wallpaper syncable through different devices.
-  var fileName = Constants.ThirdPartyWallpaperPrefix + new Date().getTime();
-  var thumbnailFileName = fileName + Constants.CustomWallpaperThumbnailSuffix;
-  WallpaperUtil.storeWallpaperToSyncFS(fileName, wallpaper);
-  WallpaperUtil.storeWallpaperToSyncFS(thumbnailFileName, thumbnail);
-  WallpaperUtil.saveWallpaperInfo(
-      fileName, layout, Constants.WallpaperSourceEnum.ThirdParty, appName);
+    // Make third party wallpaper syncable through different devices.
+    var fileName = Constants.ThirdPartyWallpaperPrefix + new Date().getTime();
+    var thumbnailFileName = fileName + Constants.CustomWallpaperThumbnailSuffix;
+    WallpaperUtil.storeWallpaperToSyncFS(fileName, wallpaper);
+    WallpaperUtil.storeWallpaperToSyncFS(thumbnailFileName, thumbnail);
+    WallpaperUtil.saveWallpaperInfo(
+        fileName, layout, Constants.WallpaperSourceEnum.ThirdParty, appName);
 
     WallpaperUtil.saveDailyRefreshInfo(
         {enabled: false, collectionId: null, resumeToken: null});
@@ -509,17 +527,18 @@ chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
           {detail: {wallpaperFileName: fileName}});
       wallpaperPickerWindow.contentWindow.dispatchEvent(event);
     }
-});
+  });
 });
 
 chrome.wallpaperPrivate.onClosePreviewWallpaper.addListener(function() {
-chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
-  if (swaEnabled)
-    return;
+  chrome.wallpaperPrivate.isSwaEnabled(function(swaEnabled) {
+    if (swaEnabled) {
+      return;
+    }
 
-  if (wallpaperPickerWindow) {
-    var event = new CustomEvent(Constants.ClosePreviewWallpaper);
-    wallpaperPickerWindow.contentWindow.dispatchEvent(event);
-  }
-});
+    if (wallpaperPickerWindow) {
+      var event = new CustomEvent(Constants.ClosePreviewWallpaper);
+      wallpaperPickerWindow.contentWindow.dispatchEvent(event);
+    }
+  });
 });

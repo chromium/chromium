@@ -136,8 +136,9 @@ class OfflineLogin extends OfflineLoginBase {
 
   attached() {
     super.attached();
-    if (this.isRTL_())
+    if (this.isRTL_()) {
       this.setAttribute('rtl', '');
+    }
   }
 
   focus() {
@@ -155,8 +156,9 @@ class OfflineLogin extends OfflineLoginBase {
   onBeforeShow() {
     this.$.dialog.onBeforeShow();
     this.$.emailInput.pattern = INPUT_EMAIL_PATTERN;
-    if (!this.email_)
+    if (!this.email_) {
       this.switchToEmailCard(false /* animated */);
+    }
   }
 
   reset() {
@@ -175,10 +177,12 @@ class OfflineLogin extends OfflineLoginBase {
    */
   loadParams(params) {
     this.reset();
-    if ('enterpriseDomainManager' in params)
+    if ('enterpriseDomainManager' in params) {
       this.manager = params['enterpriseDomainManager'];
-    if ('emailDomain' in params)
+    }
+    if ('emailDomain' in params) {
       this.emailDomain = '@' + params['emailDomain'];
+    }
   }
 
   proceedToPasswordPage() {
@@ -223,8 +227,9 @@ class OfflineLogin extends OfflineLoginBase {
     this.$.emailInput.invalid = false;
     this.$.passwordInput.invalid = false;
     this.password_ = '';
-    if (this.isEmailSectionActive_())
+    if (this.isEmailSectionActive_()) {
       return;
+    }
 
     this.animationInProgress = animated;
     this.activeSection = LOGIN_SECTION.EMAIL;
@@ -234,8 +239,9 @@ class OfflineLogin extends OfflineLoginBase {
    * @param {boolean} animated
    */
   switchToPasswordCard(animated) {
-    if (!this.isEmailSectionActive_())
+    if (!this.isEmailSectionActive_()) {
       return;
+    }
 
     this.animationInProgress = animated;
     this.activeSection = LOGIN_SECTION.PASSWORD;
@@ -256,8 +262,9 @@ class OfflineLogin extends OfflineLoginBase {
   }
 
   onPasswordSubmitted_() {
-    if (!this.$.passwordInput.validate())
+    if (!this.$.passwordInput.validate()) {
       return;
+    }
     this.email_ = this.fullEmail_;
     chrome.send('completeOfflineAuthentication', [this.email_, this.password_]);
     this.password_ = '';
@@ -284,8 +291,9 @@ class OfflineLogin extends OfflineLoginBase {
    * @param {string} email
    */
   computeDomain_(domain, email) {
-    if (email && email.indexOf('@') !== -1)
+    if (email && email.indexOf('@') !== -1) {
       return '';
+    }
     return domain;
   }
 
@@ -294,10 +302,11 @@ class OfflineLogin extends OfflineLoginBase {
    */
   computeFullEmail_(email) {
     if (email.indexOf('@') === -1) {
-      if (this.emailDomain)
+      if (this.emailDomain) {
         email = email + this.emailDomain;
-      else
+      } else {
         email = email + DEFAULT_EMAIL_DOMAIN;
+      }
     }
     return email;
   }

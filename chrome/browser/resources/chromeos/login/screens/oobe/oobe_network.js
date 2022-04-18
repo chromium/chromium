@@ -190,10 +190,11 @@ class NetworkScreen extends NetworkScreenBase {
   onShown_() {
     this.$.networkSelectLogin.refresh();
     setTimeout(() => {
-      if (this.isConnected_)
+      if (this.isConnected_) {
         this.$.nextButton.focus();
-      else
+      } else {
         this.$.networkSelectLogin.focus();
+      }
     }, 300);
     // Timeout is a workaround to correctly propagate focus to
     // RendererFrameHostImpl see https://crbug.com/955129 for details.

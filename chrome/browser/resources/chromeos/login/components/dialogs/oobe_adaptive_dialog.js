@@ -68,10 +68,11 @@ Polymer({
 
     // If `Read more` button is not set, upgrade the state directly to hidden,
     // otherwise, the state will stay unknown until the content is redndered.
-    if (this.readMore)
+    if (this.readMore) {
       this.readMoreState = ReadMoreState.UNKNOWN;
-    else
+    } else {
       this.readMoreState = ReadMoreState.HIDDEN;
+    }
 
     var scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
     var contentContainer = this.shadowRoot.querySelector('#contentContainer');
@@ -122,8 +123,9 @@ Polymer({
   maybeUpgradeReadMoreState_(read_more_clicked) {
     // HIDDEN is the final state. We cannot move from HIDDEN state to SHOWN or
     // UNKNOWN state.
-    if (this.readMoreState == ReadMoreState.HIDDEN)
+    if (this.readMoreState == ReadMoreState.HIDDEN) {
       return;
+    }
 
     if (read_more_clicked) {
       this.readMoreState = ReadMoreState.HIDDEN;
@@ -189,8 +191,9 @@ Polymer({
     var focusedElements = this.getElementsByClassName('focus-on-show');
     var focused = false;
     for (var i = 0; i < focusedElements.length; ++i) {
-      if (focusedElements[i].hidden)
+      if (focusedElements[i].hidden) {
         continue;
+      }
 
       focused = true;
       Polymer.RenderStatus.afterNextRender(
@@ -213,8 +216,9 @@ Polymer({
 
   /** @private */
   onNoLazyChanged_() {
-    if (this.noLazy)
+    if (this.noLazy) {
       this.shadowRoot.querySelector('#lazy').get();
+    }
   },
 
   /** @private */
@@ -231,8 +235,9 @@ Polymer({
     // Once a tab reaches an element outside of the visible area, call
     // maybeUpgradeReadMoreState_ to apply changes.
     contentContainer.addEventListener('keyup', (event) => {
-      if (!this.showReadMoreButton_)
+      if (!this.showReadMoreButton_) {
         return;
+      }
       if (event.which === 9) {
         if (contentContainer.scrollTop > 0) {
           this.maybeUpgradeReadMoreState_(true /* read_more_clicked */);
@@ -250,8 +255,9 @@ Polymer({
     // If `read more` button is focused after it was removed, move focus to the
     // 'focus-on-show' element.
     var readMoreButton = this.shadowRoot.querySelector('#readMoreButton');
-    if (this.shadowRoot.activeElement == readMoreButton)
+    if (this.shadowRoot.activeElement == readMoreButton) {
       this.focusOnShow_();
+    }
 
     this.scrollToBottom();
   },

@@ -24,8 +24,9 @@ function ProgressManager() {
  *     grid item. It extends from cr.ui.ListItem.
  */
 ProgressManager.prototype.reset = function(xhr, selectedGridItem) {
-  if (this.xhr_)
+  if (this.xhr_) {
     this.removeEventListeners_();
+  }
   this.hideProgressBar(this.selectedGridItem_);
   this.xhr_ = xhr;
   this.selectedGridItem_ = selectedGridItem;
@@ -36,8 +37,9 @@ ProgressManager.prototype.reset = function(xhr, selectedGridItem) {
     'error': this.onDownloadErrorOrAbort_.bind(this),
     'load': this.onDownloadComplete_.bind(this)
   };
-  for (var eventType in this.xhrListeners_)
+  for (var eventType in this.xhrListeners_) {
     this.xhr_.addEventListener(eventType, this.xhrListeners_[eventType]);
+  }
 };
 
 /**
@@ -45,8 +47,9 @@ ProgressManager.prototype.reset = function(xhr, selectedGridItem) {
  * @private
  */
 ProgressManager.prototype.removeEventListeners_ = function() {
-  for (var eventType in this.xhrListeners_)
+  for (var eventType in this.xhrListeners_) {
     this.xhr_.removeEventListener(eventType, this.xhrListeners_[eventType]);
+  }
 };
 
 /**
@@ -111,6 +114,7 @@ ProgressManager.prototype.onDownloadComplete_ = function(e) {
  * @param {Event} e A progress ProgressEvent from XMLHttpRequest.
  */
 ProgressManager.prototype.onDownloadProgress_ = function(e) {
-  if (e.lengthComputable)
+  if (e.lengthComputable) {
     this.setProgress_(e.loaded / e.total);
+  }
 };

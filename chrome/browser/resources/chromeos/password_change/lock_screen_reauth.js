@@ -311,13 +311,15 @@ Polymer({
 
   /** @private */
   onConfirm_() {
-    if (!this.$.passwordInput.validate())
+    if (!this.$.passwordInput.validate()) {
       return;
+    }
     if (this.isManualInput_) {
       // When using manual password entry, both passwords must match.
       const confirmPasswordInput = this.$$('#confirmPasswordInput');
-      if (!confirmPasswordInput.validate())
+      if (!confirmPasswordInput.validate()) {
         return;
+      }
 
       if (confirmPasswordInput.value != this.$.passwordInput.value) {
         this.$.passwordInput.invalid = true;

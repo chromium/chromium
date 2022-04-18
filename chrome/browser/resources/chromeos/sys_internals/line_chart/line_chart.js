@@ -95,8 +95,9 @@ export class LineChart {
    * @param {Element} rootDiv
    */
   attachRootDiv(rootDiv) {
-    if (this.rootDiv_ != null)
+    if (this.rootDiv_ != null) {
       return;
+    }
 
     this.rootDiv_ = rootDiv;
 
@@ -185,8 +186,9 @@ export class LineChart {
    */
   onMouseMove_(event) {
     event.preventDefault();
-    if (!this.isDragging_)
+    if (!this.isDragging_) {
       return;
+    }
     const /** number */ dragDeltaX = event.clientX - this.dragX_;
     this.scroll(DRAG_RATE * dragDeltaX);
     this.dragX_ = event.clientX;
@@ -233,8 +235,9 @@ export class LineChart {
    */
   onTouchMove_(event) {
     event.preventDefault();
-    if (!this.isTouching_)
+    if (!this.isTouching_) {
       return;
+    }
     const /** TouchList */ touches = event.targetTouches;
     if (touches.length == 1) {
       const /** number */ dragDeltaX = this.touchX_ - touches[0].clientX;
@@ -275,8 +278,9 @@ export class LineChart {
     const /** number */ newScale = this.scale_ * rate;
     this.scale_ = Math.max(MIN_SCALE, Math.min(newScale, MAX_SCALE));
 
-    if (this.scale_ == oldScale)
+    if (this.scale_ == oldScale) {
       return;
+    }
 
     if (this.scrollbar_.isScrolledToRightEdge()) {
       this.updateScrollBar_();
@@ -308,8 +312,9 @@ export class LineChart {
     const /** number */ newPosition = oldPosition + Math.round(delta);
 
     this.scrollbar_.setPosition(newPosition);
-    if (this.scrollbar_.getPosition() == oldPosition)
+    if (this.scrollbar_.getPosition() == oldPosition) {
       return;
+    }
 
     this.update();
   }
@@ -333,8 +338,9 @@ export class LineChart {
   resize_() {
     const width = this.getChartVisibleWidth();
     const height = this.getChartVisibleHeight();
-    if (this.canvas_.width == width && this.canvas_.height == height)
+    if (this.canvas_.width == width && this.canvas_.height == height) {
       return;
+    }
 
     this.canvas_.width = width;
     this.canvas_.height = height;
@@ -481,8 +487,9 @@ export class LineChart {
    */
   update() {
     clearTimeout(this.chartUpdateTimer_);
-    if (!this.shouldRender())
+    if (!this.shouldRender()) {
       return;
+    }
     this.chartUpdateTimer_ = setTimeout(this.render_.bind(this));
   }
 
@@ -493,8 +500,9 @@ export class LineChart {
   shouldRender() {
     const subCharts = this.subCharts_;
     for (let /** number */ i = 0; i < subCharts.length; ++i) {
-      if (subCharts[i] != null && subCharts[i].shouldRender())
+      if (subCharts[i] != null && subCharts[i].shouldRender()) {
         return true;
+      }
     }
     return false;
   }
@@ -580,8 +588,9 @@ export class LineChart {
     let /** number */ time = firstTimeTick;
     while (true) {
       const /** number */ xCoord = Math.round((time - startTime) / this.scale_);
-      if (xCoord >= width)
+      if (xCoord >= width) {
         break;
+      }
       const /** string */ text = (new Date(time)).toLocaleTimeString();
       context.fillText(text, xCoord, yCoord);
       context.moveTo(xCoord, 0);
@@ -637,8 +646,9 @@ export class LineChart {
      * chart will render the data points at the same absolute position. */
     const /** number */ offset = position % SAMPLE_RATE;
     for (let /** number */ i = 0; i < subCharts.length; ++i) {
-      if (subCharts[i] == undefined)
+      if (subCharts[i] == undefined) {
         continue;
+      }
       subCharts[i].setLayout(
           graphWidth, graphHeight, fontHeight, visibleStartTime, this.scale_,
           offset);

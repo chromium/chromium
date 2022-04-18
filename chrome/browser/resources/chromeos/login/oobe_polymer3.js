@@ -49,8 +49,9 @@ import {commonScreensList, loginScreensList, oobeScreensList} from 'chrome://oob
 }
 
 function initializeDebugger() {
-  if (document.readyState === 'loading')
+  if (document.readyState === 'loading') {
     return;
+  }
   document.removeEventListener('DOMContentLoaded', initializeDebugger);
   OobeDebugger.DebuggerUI.getInstance().register(document.body);
 }

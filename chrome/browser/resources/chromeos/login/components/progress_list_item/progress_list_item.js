@@ -80,8 +80,9 @@ class ProgressListItem extends ProgressListItemBase {
 
   /** @private */
   fallbackText(locale, key, fallbackKey) {
-    if (key === null || key === '')
+    if (key === null || key === '') {
       return this.i18n(fallbackKey);
+    }
     return this.i18n(key);
   }
 }

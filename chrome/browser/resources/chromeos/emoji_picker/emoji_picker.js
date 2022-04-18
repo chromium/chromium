@@ -555,8 +555,9 @@ export class EmojiPicker extends PolymerElement {
    */
   updateActiveGroup(updateTabsScroll) {
     // no need to update scroll state if search is showing.
-    if (this.search)
+    if (this.search) {
       return;
+    }
 
     const activeGroupId = this.getActiveGroupIdFromScrollPosition();
     this.set('pagination', this.getPaginationFromGroupId(activeGroupId));

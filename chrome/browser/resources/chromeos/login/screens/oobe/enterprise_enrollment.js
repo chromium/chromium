@@ -211,10 +211,11 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     // When we get the advancing focus command message from injected content
     // script, we can execute it on host script context.
     window.addEventListener('message', function(e) {
-      if (e.data == 'forwardFocus')
+      if (e.data == 'forwardFocus') {
         keyboard.onAdvanceFocus(false);
-      else if (e.data == 'backwardFocus')
+      } else if (e.data == 'backwardFocus') {
         keyboard.onAdvanceFocus(true);
+      }
     });
 
     this.$['step-ad-join'].addEventListener('authCompleted', (e) => {
@@ -283,8 +284,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     gaiaParams.enableGaiaActionButtons = true;
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, gaiaParams);
-    if (data.gaia_buttons_type)
+    if (data.gaia_buttons_type) {
       this.gaiaDialogButtonsType_ = data.gaia_buttons_type;
+    }
     this.isManualEnrollment_ = 'enrollment_mode' in data ?
         data.enrollment_mode === 'manual' :
         undefined;
@@ -348,8 +350,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * screen (either the next authentication or the login screen).
    */
   cancel() {
-    if (this.isCancelDisabled)
+    if (this.isCancelDisabled) {
       return;
+    }
     this.isCancelDisabled = true;
     this.closeEnrollment_('cancel');
   }
@@ -495,8 +498,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   }
 
   onReady() {
-    if (this.uiStep != OobeTypes.EnrollmentStep.SIGNIN)
+    if (this.uiStep != OobeTypes.EnrollmentStep.SIGNIN) {
       return;
+    }
     this.isCancelDisabled = false;
     chrome.send('frameLoadingCompleted');
   }
@@ -571,8 +575,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * @private
    */
   getWorkingTitleKey_(licenseType) {
-    if (licenseType == OobeTypes.LicenseType.ENTERPRISE)
+    if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
       return 'oauthEnrollScreenTitle';
+    }
     return 'oauthEnrollKioskEnrollmentWorkingTitle';
   }
 
@@ -583,8 +588,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * @private
    */
   getSuccessTitle_(locale, licenseType) {
-    if (licenseType == OobeTypes.LicenseType.ENTERPRISE)
+    if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
       return this.i18n('oauthEnrollSuccessTitle');
+    }
     return this.i18n('oauthEnrollKioskEnrollmentSuccessTitle');
   }
 

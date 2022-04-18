@@ -94,8 +94,9 @@ export class UnitLabel {
       return;
     }
     if (this.height_ == height && this.fontHeight_ == fontHeight &&
-        this.precision_ == precision)
+        this.precision_ == precision) {
       return;
+    }
 
     this.height_ = height;
     this.fontHeight_ = fontHeight;
@@ -108,8 +109,9 @@ export class UnitLabel {
    * @param {number} maxValue
    */
   setMaxValue(maxValue) {
-    if (this.maxValueCache_ == maxValue)
+    if (this.maxValueCache_ == maxValue) {
       return;
+    }
     this.maxValueCache_ = maxValue;
 
     const /** Array<string> */ units = this.units_;
@@ -148,12 +150,14 @@ export class UnitLabel {
    * Update the labels and scale if the status is changed.
    */
   updateLabelsAndScale_() {
-    if (this.isCache_)
+    if (this.isCache_) {
       return;
+    }
     this.isCache_ = true;
 
-    if (this.maxValue_ == 0)
+    if (this.maxValue_ == 0) {
       return;
+    }
 
     const /** {stepSize: number, stepSizePrecision: number} */ result =
         this.getSuitableStepSize_();
@@ -196,8 +200,9 @@ export class UnitLabel {
      */
     let stepSizePrecision = Math.max(this.precision_, 0);
     while (true) {
-      if (this.getNumberOfLabelWithStepSize_(stepSize) <= maxLabelNum)
+      if (this.getNumberOfLabelWithStepSize_(stepSize) <= maxLabelNum) {
         break;
+      }
       if (this.getNumberOfLabelWithStepSize_(stepSize * 2) <= maxLabelNum) {
         stepSize *= 2;
         break;
@@ -209,8 +214,9 @@ export class UnitLabel {
 
       /* Reduce the precision. */
       stepSize *= 10;
-      if (stepSizePrecision > 0)
+      if (stepSizePrecision > 0) {
         --stepSizePrecision;
+      }
     }
 
     return {

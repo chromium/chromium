@@ -83,8 +83,9 @@ class AppLaunchSplash extends AppLaunchSplashBase {
   }
 
   onConfigNetworkTransitionend_(e) {
-    if (this.$.configNetworkContainer.classList.contains('faded'))
+    if (this.$.configNetworkContainer.classList.contains('faded')) {
       this.$.configNetwork.hidden = true;
+    }
   }
 
   /**
@@ -106,8 +107,9 @@ class AppLaunchSplash extends AppLaunchSplashBase {
   toggleNetworkConfig(visible) {
     var currVisible =
         !this.$.configNetworkContainer.classList.contains('faded');
-    if (currVisible == visible)
+    if (currVisible == visible) {
       return;
+    }
 
     if (visible) {
       this.$.configNetwork.hidden = false;

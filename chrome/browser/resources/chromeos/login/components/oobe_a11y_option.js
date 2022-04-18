@@ -5,7 +5,9 @@
 /* #js_imports_placeholder */
 
 /* #export */ class OobeA11yOption extends Polymer.Element {
-  static get is() { return 'oobe-a11y-option'; }
+  static get is() {
+    return 'oobe-a11y-option';
+  }
 
   /* #html_template_placeholder */
 

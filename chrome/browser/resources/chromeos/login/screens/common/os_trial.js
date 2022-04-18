@@ -73,10 +73,11 @@ class OsTrial extends OsTrialScreenElementBase {
    * @private
    */
   onNextButtonClick_() {
-    if (this.selectedTrialOption == TrialOption.TRY)
+    if (this.selectedTrialOption == TrialOption.TRY) {
       this.userActed('os-trial-try');
-    else
+    } else {
       this.userActed('os-trial-install');
+    }
   }
 
   /**

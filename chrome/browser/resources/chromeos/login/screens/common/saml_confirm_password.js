@@ -37,8 +37,9 @@ SamlConfirmPasswordBase.$;
  * @polymer
  */
 class SamlConfirmPassword extends SamlConfirmPasswordBase {
-
-  static get is() { return 'saml-confirm-password-element'; }
+  static get is() {
+    return 'saml-confirm-password-element';
+  }
 
   /* #html_template_placeholder */
 
@@ -114,8 +115,9 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
   }
 
   reset_() {
-    if (this.$.cancelConfirmDlg.open)
+    if (this.$.cancelConfirmDlg.open) {
       this.$.cancelConfirmDlg.hideDialog();
+    }
     this.setUIStep(SamlConfirmPasswordState.PASSWORD);
     this.resetFields_();
   }
@@ -135,13 +137,15 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
   }
 
   submit_() {
-    if (!this.$.passwordInput.validate())
+    if (!this.$.passwordInput.validate()) {
       return;
+    }
     if (this.isManualInput) {
       // When using manual password entry, both passwords must match.
       var confirmPasswordInput = this.shadowRoot.querySelector('#confirmPasswordInput');
-      if (!confirmPasswordInput.validate())
+      if (!confirmPasswordInput.validate()) {
         return;
+      }
 
       if (confirmPasswordInput.value != this.$.passwordInput.value) {
         this.$.passwordInput.invalid = true;

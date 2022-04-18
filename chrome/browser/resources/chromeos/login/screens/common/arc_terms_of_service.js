@@ -276,13 +276,16 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
    * @private
    */
   applyOobeConfiguration_() {
-    if (this.configuration_applied_)
+    if (this.configuration_applied_) {
       return;
+    }
     var configuration = Oobe.getInstance().getOobeConfiguration();
-    if (!configuration)
+    if (!configuration) {
       return;
-    if (this.arcTosButtonsDisabled)
+    }
+    if (this.arcTosButtonsDisabled) {
       return;
+    }
     if (configuration.arcTosAutoAccept) {
       this.onAccept_();
     }
@@ -297,10 +300,12 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
   buttonsDisabledStateChanged_(newValue, oldValue) {
     // Trigger applyOobeConfiguration_ if buttons are enabled and dialog is
     // visible.
-    if (this.arcTosButtonsDisabled)
+    if (this.arcTosButtonsDisabled) {
       return;
-    if (!this.is_shown_)
+    }
+    if (!this.is_shown_) {
       return;
+    }
     window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
   }
 
@@ -569,8 +574,9 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
    */
   reloadPlayStoreToS() {
     if (this.reloadsLeftForTesting_ !== undefined) {
-      if (this.reloadsLeftForTesting_ <= 0)
+      if (this.reloadsLeftForTesting_ <= 0) {
         return;
+      }
       --this.reloadsLeftForTesting_;
     }
     this.termsError = false;
@@ -662,8 +668,9 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     this.setUIStep(ArcTosState.LOADED);
     this.enableButtons_(true);
     this.showFullDialog = false;
-    if (this.is_shown_)
+    if (this.is_shown_) {
       this.$.arcTosNextButton.focus();
+    }
   }
 
   /**

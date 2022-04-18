@@ -32,8 +32,9 @@ const CONNECTION = {
   Polymer.Element);
 
 class HidDetectionScreen extends HidDetectionScreenBase {
-
-  static get is() { return 'hid-detection-element'; }
+  static get is() {
+    return 'hid-detection-element';
+  }
 
   /* #html_template_placeholder */
 
@@ -162,10 +163,11 @@ class HidDetectionScreen extends HidDetectionScreenBase {
   }
 
   getPrerequisitesText_(locale, touchscreenDetected) {
-    if (touchscreenDetected)
+    if (touchscreenDetected) {
       return this.i18n('hidDetectionPrerequisitesTouchscreen');
-    else
+    } else {
       return this.i18n('hidDetectionPrerequisites');
+    }
   }
 
   /**
@@ -180,10 +182,11 @@ class HidDetectionScreen extends HidDetectionScreenBase {
       [CONNECTION.PAIRED, 'hidDetectionBTMousePaired'],
     ]);
 
-    if (stateToStrMap.has(this.mouseState_))
+    if (stateToStrMap.has(this.mouseState_)) {
       return this.i18n(stateToStrMap.get(this.mouseState_));
-    else
+    } else {
       return '';
+    }
   }
 
   /**
@@ -264,8 +267,9 @@ class HidDetectionScreen extends HidDetectionScreenBase {
     for (let i = 0; i < PINCODE_LENGTH; i++) {
       const pincodeSymbol = this.$['hid-pincode-sym-' + (i + 1)];
       pincodeSymbol.classList.toggle('key-next', i == keysEntered);
-      if (i < PINCODE_LENGTH)
+      if (i < PINCODE_LENGTH) {
         pincodeSymbol.textContent = this.pinCode[i] ? this.pinCode[i] : '';
+      }
     }
   }
 

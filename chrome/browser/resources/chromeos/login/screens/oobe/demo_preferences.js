@@ -105,11 +105,13 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
 
   /** Called when dialog is shown for the first time */
   applyOobeConfiguration_() {
-    if (this.configuration_applied_)
+    if (this.configuration_applied_) {
       return;
+    }
     const configuration = Oobe.getInstance().getOobeConfiguration();
-    if (!configuration)
+    if (!configuration) {
       return;
+    }
     if (configuration.demoPreferencesNext) {
       this.onNextClicked_();
     }
@@ -148,8 +150,9 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
       keyboard.selected = true;
       found = true;
     }
-    if (!found)
+    if (!found) {
       return;
+    }
 
     // Force i18n-dropdown to refresh.
     this.keyboards = this.keyboards.slice();

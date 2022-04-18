@@ -211,8 +211,9 @@ Polymer({
     var val = input.value.replace(/[^a-f0-9]/ig, '');
 
     // Insert a ':' in the middle of every four hex characters.
-    while (regex.test(val))
+    while (regex.test(val)) {
       val = val.replace(regex, '$1:$2');
+    }
 
     input.value = val;
   },
@@ -330,8 +331,9 @@ Polymer({
     /** @type {!Array<!BluetoothDevice>} */ var deviceList = [];
 
     for (var i = 0; i < devices.length; ++i) {
-      if (this.devicePaths[devices[i].path] != undefined)
+      if (this.devicePaths[devices[i].path] != undefined) {
         continue;
+      }
 
       // Get the label for the device class which should be selected.
       devices[i].class = this.getTextForDeviceClass(devices[i].classValue);
@@ -354,8 +356,9 @@ Polymer({
   devicePairedFromTray_(path) {
     var obj = this.devicePaths[path];
 
-    if (obj == undefined)
+    if (obj == undefined) {
       return;
+    }
 
     var index = obj.index;
     var devicePath = (obj.predefined ? 'predefinedDevices.' : 'devices.');
@@ -405,8 +408,9 @@ Polymer({
   pairFailed_(path) {
     var obj = this.devicePaths[path];
 
-    if (obj == undefined)
+    if (obj == undefined) {
       return;
+    }
 
     var devicePath = (obj.predefined ? 'predefinedDevices.' : 'devices.');
     devicePath += obj.index.toString();
@@ -538,8 +542,9 @@ Polymer({
    * @private
    */
   deviceRemovedFromMainAdapter_(path) {
-    if (this.devicePaths[path] == undefined)
+    if (this.devicePaths[path] == undefined) {
       return;
+    }
 
     var obj = this.devicePaths[path];
     var devicePath = (obj.predefined ? 'predefinedDevices.' : 'devices.');
@@ -556,8 +561,9 @@ Polymer({
    */
   getTextForDeviceClass(classValue) {
     for (var i = 0; i < this.deviceClassOptions.length; ++i) {
-      if (this.deviceClassOptions[i].value == classValue)
+      if (this.deviceClassOptions[i].value == classValue) {
         return this.deviceClassOptions[i].text;
+      }
     }
     return '';
   },
@@ -569,8 +575,9 @@ Polymer({
    */
   getValueForDeviceClass(classText) {
     for (var i = 0; i < this.deviceClassOptions.length; ++i) {
-      if (this.deviceClassOptions[i].text == classText)
+      if (this.deviceClassOptions[i].text == classText) {
         return this.deviceClassOptions[i].value;
+      }
     }
     return 0;
   },

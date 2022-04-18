@@ -109,14 +109,16 @@ export class EmojiSearch extends PolymerElement {
     if (isEnter && focusedResult) {
       focusedResult.click();
     }
-    if (!isUp && !isDown)
+    if (!isUp && !isDown) {
       return;
+    }
 
     ev.preventDefault();
     ev.stopPropagation();
 
-    if (!focusedResult)
+    if (!focusedResult) {
       return;
+    }
 
     const prev = focusedResult.previousElementSibling;
     const next = focusedResult.nextElementSibling;
@@ -142,8 +144,9 @@ export class EmojiSearch extends PolymerElement {
   onSearchKeyDown(ev) {
     // if not searching or no results, do nothing.
     if (!this.search ||
-        (this.emojiResults.length === 0 && this.emoticonResults.length === 0))
+        (this.emojiResults.length === 0 && this.emoticonResults.length === 0)) {
       return;
+    }
 
     const isDown = ev.key === 'ArrowDown';
     const isEnter = ev.key === 'Enter';
@@ -243,8 +246,9 @@ export class EmojiSearch extends PolymerElement {
    * @param {CategoryEnum} category
    */
   computeSearchResults(search, category) {
-    if (!search)
+    if (!search) {
       return [];
+    }
     // Add an initial space to force prefix matching only.
     const prefixSearchTerm = ` ${search}`;
     let fuseResults = [];

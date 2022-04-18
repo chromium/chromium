@@ -15,8 +15,9 @@ var I18nMenuItem;
  * @polymer
  */
 class OobeI18nDropdown extends Polymer.Element {
-
-  static get is() { return 'oobe-i18n-dropdown'; }
+  static get is() {
+    return 'oobe-i18n-dropdown';
+  }
 
   /* #html_template_placeholder */
 

@@ -33,10 +33,12 @@ class NotificationCard extends Polymer.Element {
    * @private
    */
   iconNameByType_(type) {
-    if (type == NotificationCardType.FAIL)
+    if (type == NotificationCardType.FAIL) {
       return 'cr:warning';
-    if (type == NotificationCardType.SUCCESS)
+    }
+    if (type == NotificationCardType.SUCCESS) {
       return 'oobe-24:done';
+    }
     console.error('Unknown type "' + type + '".');
     return '';
   }

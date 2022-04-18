@@ -73,8 +73,9 @@
    * @return {Array<string>}
    */
   listSteps() {
-    if (Array.isArray(this.UI_STEPS))
+    if (Array.isArray(this.UI_STEPS)) {
       return this.UI_STEPS.slice();
+    }
     const result = [];
     for (const [key, value] of Object.entries(this.UI_STEPS)) {
       result.push(value);
@@ -107,8 +108,9 @@
   },
 
   onBeforeHide() {
-    if (this.uiStep)
+    if (this.uiStep) {
       this.hideUIStep_(this.uiStep);
+    }
     this.shown_ = false;
   },
 
@@ -132,8 +134,9 @@
 
   setUIStep(step) {
     if (this.uiStep) {
-      if (this.uiStep == step)
+      if (this.uiStep == step) {
         return;
+      }
       this.hideUIStep_(this.uiStep);
     }
     this.uiStep = step;

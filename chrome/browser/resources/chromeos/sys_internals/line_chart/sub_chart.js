@@ -132,8 +132,9 @@ export class SubChart {
    * @return {number}
    */
   getMaxValueFromDataSeries_(dataSeries) {
-    if (!dataSeries.isVisible())
+    if (!dataSeries.isVisible()) {
       return 0;
+    }
     return dataSeries.getMaxValue(
         this.queryStartTime_, this.stepSize_, this.numOfPoint_);
   }
@@ -163,8 +164,9 @@ export class SubChart {
     for (let /** number */ i = 0; i < dataSeriesList.length; ++i) {
       const /** Array<number> */ values =
           this.getValuesFromDataSeries_(dataSeriesList[i]);
-      if (!values)
+      if (!values) {
         continue;
+      }
       this.renderLineOfDataSeries_(context, dataSeriesList[i], values);
     }
   }
@@ -175,8 +177,9 @@ export class SubChart {
    * @return {Array<number>}
    */
   getValuesFromDataSeries_(dataSeries) {
-    if (!dataSeries.isVisible())
+    if (!dataSeries.isVisible()) {
       return [];
+    }
     return dataSeries.getValues(
         this.queryStartTime_, this.stepSize_, this.numOfPoint_);
   }
@@ -227,8 +230,9 @@ export class SubChart {
    */
   renderUnitLabels(context) {
     const /** Array<string> */ labelTexts = this.label_.getLabels();
-    if (labelTexts.length == 0)
+    if (labelTexts.length == 0) {
       return;
+    }
 
     let /** number */ tickStartX;
     let /** number */ tickEndX;

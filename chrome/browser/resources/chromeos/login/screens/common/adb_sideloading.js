@@ -40,8 +40,9 @@ const ADB_SIDELOADING_SCREEN_STATE = {
  * @polymer
  */
 class AdbSideloading extends AdbSideloadingBase {
-
-  static get is() { return 'adb-sideloading-element'; }
+  static get is() {
+    return 'adb-sideloading-element';
+  }
 
   /* #html_template_placeholder */
 

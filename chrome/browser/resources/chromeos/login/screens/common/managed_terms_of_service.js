@@ -123,8 +123,9 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
     // Ignore on-tap events when disabled.
     // TODO: Polymer Migration - Remove this when the migration is finished.
     // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.acceptButtonDisabled_)
+    if (this.acceptButtonDisabled_) {
       return;
+    }
 
     this.backButtonDisabled_ = true;
     this.acceptButtonDisabled_ = true;
@@ -139,8 +140,9 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
     // Ignore on-tap events when disabled.
     // TODO: Polymer Migration - Remove this when the migration is finished.
     // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.backButtonDisabled_)
+    if (this.backButtonDisabled_) {
       return;
+    }
 
     this.backButtonDisabled_ = true;
     this.retryButtonDisabled_ = true;
@@ -156,8 +158,9 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
     // Ignore on-tap events when disabled.
     // TODO: Polymer Migration - Remove this when the migration is finished.
     // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.retryButtonDisabled_)
+    if (this.retryButtonDisabled_) {
       return;
+    }
 
     this.retryButtonDisabled_ = true;
     this.userActed('retry');

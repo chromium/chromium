@@ -71,10 +71,12 @@ class GaiaInputForm extends GaiaInputFormBase {
 
   /** @private */
   onKeyDown_(e) {
-    if (e.keyCode != 13 || this.$.button.disabled)
+    if (e.keyCode != 13 || this.$.button.disabled) {
       return;
-    if (this.getInputs_().indexOf(e.target) == -1)
+    }
+    if (this.getInputs_().indexOf(e.target) == -1) {
       return;
+    }
     this.onButtonClicked_();
   }
 

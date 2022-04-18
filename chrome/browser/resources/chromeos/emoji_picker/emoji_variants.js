@@ -124,8 +124,9 @@ export class EmojiVariants extends PolymerElement {
    * @param {!KeyboardEvent} ev
    */
   onKeyDown(ev) {
-    if (ev.key !== 'Escape')
+    if (ev.key !== 'Escape') {
       return;
+    }
 
     // hide visible variants when escape is pressed.
     // TODO(crbug.com/1177020): does not work (whole dialog is closed instead).

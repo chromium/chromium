@@ -1462,8 +1462,9 @@ cr.define('cr.ui.login.debug', function() {
     }
 
     showDebugUI() {
-      if (this.debuggerVisible_)
+      if (this.debuggerVisible_) {
         return;
+      }
       this.refreshScreensPanel();
       this.debuggerVisible_ = true;
       this.debuggerOverlay_.removeAttribute('hidden');
@@ -1484,10 +1485,12 @@ cr.define('cr.ui.login.debug', function() {
 
     getScreenshotId() {
       var result = 'unknown';
-      if (this.currentScreenId_)
+      if (this.currentScreenId_) {
         result = this.currentScreenId_;
-      if (this.lastScreenState_ && this.lastScreenState_ !== 'default')
+      }
+      if (this.lastScreenState_ && this.lastScreenState_ !== 'default') {
         result = result + '_' + this.lastScreenState_;
+      }
       return result;
     }
 
@@ -1496,8 +1499,9 @@ cr.define('cr.ui.login.debug', function() {
      * function with a delay before executing next one.
      */
     runIterator_() {
-      if (!this.commandIterator_)
+      if (!this.commandIterator_) {
         return;
+      }
       const command = this.commandIterator_.next();
       if (command.done) {
         this.commandIterator_ = undefined;
@@ -1591,8 +1595,9 @@ cr.define('cr.ui.login.debug', function() {
      */
     * iterateScreens() {
       for (const screen of this.knownScreens) {
-        if (screen.skipScreenshots)
+        if (screen.skipScreenshots) {
           continue;
+        }
         yield* this.iterateStates(screen.id);
       }
     }
@@ -1733,12 +1738,14 @@ cr.define('cr.ui.login.debug', function() {
             }
             const handledSteps = new Set();
             if (screenDef.handledSteps) {
-              for (const step of screenDef.handledSteps.split(','))
+              for (const step of screenDef.handledSteps.split(',')) {
                 handledSteps.add(step);
+              }
             }
             for (const step of screenElement.listSteps()) {
-              if (handledSteps.has(step))
+              if (handledSteps.has(step)) {
                 continue;
+              }
               const state = {
                 id: 'step-' + step,
                 data: screenDef.data,
@@ -1749,8 +1756,9 @@ cr.define('cr.ui.login.debug', function() {
               screenDef.states.push(state);
               screenDef.stateMap_[state.id] = state;
             }
-            if (screenDef.defaultState === 'default')
+            if (screenDef.defaultState === 'default') {
               screenDef.defaultState = 'step-' + screenElement.defaultUIStep();
+            }
           }
           this.knownScreens.push(screenDef);
           this.screenMap[id] = screenDef;

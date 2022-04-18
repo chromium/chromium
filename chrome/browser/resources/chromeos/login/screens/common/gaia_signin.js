@@ -456,8 +456,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onLoadingTimeOut_() {
-    if (Oobe.getInstance().currentScreen.id != 'gaia-signin')
+    if (Oobe.getInstance().currentScreen.id != 'gaia-signin') {
       return;
+    }
     this.loadingTimer_ = undefined;
     chrome.send('showLoadingTimeoutError');
   }
@@ -528,8 +529,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
     this.isShown_ = true;
 
-    if (data && 'hasUserPods' in data)
+    if (data && 'hasUserPods' in data) {
       this.isClosable_ = data.hasUserPods;
+    }
 
     cr.ui.login.invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
   }
@@ -544,8 +546,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   /** @private */
   getActiveFrame_() {
-    if (this.flagRedirectToDefaultIdPEnabled_)
+    if (this.flagRedirectToDefaultIdPEnabled_) {
       return this.getSigninFrame_();
+    }
     switch (this.screenMode_) {
       case ScreenAuthMode.DEFAULT:
         return this.getSigninFrame_();
@@ -562,8 +565,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   /** Event handler that is invoked after the screen is shown. */
   onAfterShow() {
-    if (!this.isLoadingUiShown_)
+    if (!this.isLoadingUiShown_) {
       this.focusActiveFrame_();
+    }
   }
 
   /**
@@ -591,8 +595,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // `screenMode_` is not used when `flagRedirectToDefaultIdPEnabled_` is true
     // and will be removed after RedirectToDefaultIdP will be enabled by
     // default.
-    if (!this.flagRedirectToDefaultIdPEnabled_)
+    if (!this.flagRedirectToDefaultIdPEnabled_) {
       this.screenMode_ = data.screenMode;
+    }
     this.authCompleted_ = false;
     this.navigationButtonsHidden_ = false;
 
@@ -672,8 +677,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onVideoTimeout_() {
-    if (!this.flagRedirectToDefaultIdPEnabled_)
+    if (!this.flagRedirectToDefaultIdPEnabled_) {
       return this.cancel();
+    }
     // Explicitly disable video here to let `onVideoEnabledChange_()` handle
     // timer start next time when `videoEnabled_` will be set to true on SAML
     // page.
@@ -696,8 +702,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onSamlChanged_(newValue, oldValue) {
-    if (this.isSaml_)
+    if (this.isSaml_) {
       this.usedSaml_ = true;
+    }
 
     chrome.send('samlStateChanged', [this.isSaml_]);
 
@@ -732,8 +739,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onShowView_() {
-    if (this.showViewProcessed_)
+    if (this.showViewProcessed_) {
       return;
+    }
 
     this.showViewProcessed_ = true;
     this.clearLoadAnimationGuardTimer_();
@@ -878,8 +886,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * Reloads extension frame.
    */
   doReload() {
-    if (this.screenMode_ != ScreenAuthMode.DEFAULT)
+    if (this.screenMode_ != ScreenAuthMode.DEFAULT) {
       return;
+    }
     this.authenticator_.reload();
     this.loadingFrameContents_ = true;
     this.isAllowlistErrorShown_ = false;
@@ -967,8 +976,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // To make animations correct, we need to make sure Gaia is completely
     // reloaded. Otherwise ChromeOS overlays hide and Gaia page is shown
     // somewhere in the middle of animations.
-    if (this.screenMode_ == ScreenAuthMode.DEFAULT)
+    if (this.screenMode_ == ScreenAuthMode.DEFAULT) {
       this.authenticator_.resetWebview();
+    }
 
     this.$['gaia-allowlist-error'].submitButton.focus();
     this.isAllowlistErrorShown_ = true;
@@ -1064,8 +1074,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    */
   refreshDialogStep_(
       isScreenShown, mode, pinParams, isLoading, isAllowlistError) {
-    if (!isScreenShown)
+    if (!isScreenShown) {
       return;
+    }
     if (pinParams !== null) {
       this.setUIStep(DialogMode.PIN_DIALOG);
       return;

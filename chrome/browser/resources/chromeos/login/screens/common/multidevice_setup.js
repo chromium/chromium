@@ -65,8 +65,9 @@ class MultiDeviceSetupScreenDelegate {
  * @polymer
  */
 class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
-
-  static get is() { return 'multidevice-setup-element'; }
+  static get is() {
+    return 'multidevice-setup-element';
+  }
 
   /* #html_template_placeholder */
 

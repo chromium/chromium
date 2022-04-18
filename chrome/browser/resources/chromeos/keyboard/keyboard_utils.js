@@ -51,8 +51,9 @@ keyboard.onAdvanceFocus = function(reverse) {
 keyboard.onKeyIgnore_ = function(event) {
   event = /** @type {!KeyboardEvent} */ (event);
 
-  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)
+  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
     return;
+  }
 
   if (event.key == 'ArrowLeft' || event.key == 'ArrowRight' ||
       event.key == 'ArrowUp' || event.key == 'ArrowDown') {
@@ -69,8 +70,9 @@ keyboard.onKeyIgnore_ = function(event) {
 keyboard.onKeyDown_ = function(event) {
   event = /** @type {!KeyboardEvent} */ (event);
 
-  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey)
+  if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
     return;
+  }
 
   // This file also gets embedded inside of the CfM/hotrod enrollment webview.
   // Events will bubble down into the webview, which means that the event
@@ -113,23 +115,26 @@ keyboard.onKeyDown_ = function(event) {
     // (since it is not available) we send an event to the host script
     // which will make the chrome.send call on our behalf.
     if (event.key == 'ArrowLeft' || event.key == 'ArrowUp') {
-      if (!keyboardHostWindow)
+      if (!keyboardHostWindow) {
         keyboard.onAdvanceFocus(true);
-      else
+      } else {
         keyboardHostWindow.postMessage('backwardFocus', keyboardHostOrigin);
+      }
       event.preventDefault();
     } else if (event.key == 'ArrowRight' || event.key == 'ArrowDown') {
-      if (!keyboardHostWindow)
+      if (!keyboardHostWindow) {
         keyboard.onAdvanceFocus(false);
-      else
+      } else {
         keyboardHostWindow.postMessage('forwardFocus', keyboardHostOrigin);
+      }
       event.preventDefault();
     }
   }
 
   if (event.key == 'ArrowLeft' || event.key == 'ArrowUp' ||
-      event.key == 'ArrowRight' || event.key == 'ArrowDown')
+      event.key == 'ArrowRight' || event.key == 'ArrowDown') {
     event.stopPropagation();
+  }
 };
 
 /**
@@ -140,6 +145,7 @@ keyboard.initializeKeyboardFlow = function(injected) {
   document.addEventListener('keydown', keyboard.onKeyDown_, true);
   document.addEventListener('keypress', keyboard.onKeyIgnore_, true);
   document.addEventListener('keyup', keyboard.onKeyIgnore_, true);
-  if (injected)
+  if (injected) {
     window.addEventListener('message', keyboard.onInitMessage_);
+  }
 };

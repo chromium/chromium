@@ -38,8 +38,9 @@
     var focusedElements = root.getElementsByClassName('focus-on-show');
     var focused = false;
     for (var i = 0; i < focusedElements.length; ++i) {
-      if (focusedElements[i].hidden)
+      if (focusedElements[i].hidden) {
         continue;
+      }
 
       focused = true;
       Polymer.RenderStatus.afterNextRender(

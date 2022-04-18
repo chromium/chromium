@@ -32,8 +32,9 @@ const EnableKioskMode = {
  * @polymer
  */
 class EnableKiosk extends EnableKioskBase {
-
-  static get is() { return 'enable-kiosk-element'; }
+  static get is() {
+    return 'enable-kiosk-element';
+  }
 
   /* #html_template_placeholder */
 
@@ -109,8 +110,9 @@ class EnableKiosk extends EnableKioskBase {
    * @private
    */
   primaryButtonTextKey_(state) {
-    if (state === EnableKioskMode.CONFIRM)
+    if (state === EnableKioskMode.CONFIRM) {
       return 'kioskOKButton';
+    }
     return 'kioskCancelButton';
   }
 }

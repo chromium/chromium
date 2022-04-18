@@ -471,8 +471,9 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    * Cancels error screen and drops to user pods.
    */
   cancel() {
-    if (this.closable)
+    if (this.closable) {
       this.userActed('cancel');
+    }
   }
 
   /**

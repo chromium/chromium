@@ -98,12 +98,15 @@ class DeviceDisabled extends DeviceDisabledElementBase {
    * @param {Object} data Screen init payload
    */
   onBeforeShow(data) {
-    if ('serial' in data)
+    if ('serial' in data) {
       this.serial_ = data.serial;
-    if ('domain' in data)
+    }
+    if ('domain' in data) {
       this.enrollmentDomain_ = data.domain;
-    if ('message' in data)
+    }
+    if ('message' in data) {
       this.message_ = data.message;
+    }
   }
 
   /**

@@ -59,10 +59,11 @@ function updateGCacheContents(gcacheContents, gcacheSummary) {
 
     // Add some suffix based on the type.
     var path = entry.path;
-    if (entry.is_directory)
+    if (entry.is_directory) {
       path += '/';
-    else if (entry.is_symbolic_link)
+    } else if (entry.is_symbolic_link) {
       path += '@';
+    }
 
     tr.appendChild(createElementFromText('td', path));
     tr.appendChild(createElementFromText('td', entry.size));
@@ -126,8 +127,9 @@ function updateInFlightOperations(inFlightOperations) {
   var existingNodes = container.childNodes;
   for (var i = existingNodes.length - 1; i >= 0; i--) {
     var node = existingNodes[i];
-    if (node.className == 'in-flight-operation')
+    if (node.className == 'in-flight-operation') {
       container.removeChild(node);
+    }
   }
 
   // Add in-flight operations.
@@ -287,12 +289,14 @@ function updateKeyValueList(ul, list) {
   for (var i = 0; i < list.length; i++) {
     var item = list[i];
     var text = item.key;
-    if (item.value != '')
+    if (item.value != '') {
       text += ': ' + item.value;
+    }
 
     var li = createElementFromText('li', text);
-    if (item.class)
+    if (item.class) {
       li.classList.add(item.class);
+    }
     ul.appendChild(li);
   }
 }

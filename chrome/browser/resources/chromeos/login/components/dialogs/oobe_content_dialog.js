@@ -50,7 +50,8 @@ Polymer({
 
   /** @private */
   onNoLazyChanged_() {
-    if (this.noLazy)
+    if (this.noLazy) {
       this.shadowRoot.querySelector('#lazy').get();
+    }
   }
 });

@@ -27,10 +27,12 @@ const OobeI18nBehaviorImpl = {
    * @return {string} A translated, sanitized, substituted string.
    */
   i18n(id, var_args) {
-    if (typeof this.locale === 'undefined')
+    if (typeof this.locale === 'undefined') {
       return '';
-    if (typeof id === 'undefined')
+    }
+    if (typeof id === 'undefined') {
       return '';
+    }
     return I18nBehavior.i18n.apply(this, arguments);
   },
 

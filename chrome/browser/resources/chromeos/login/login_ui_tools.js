@@ -14,8 +14,9 @@ cr.define('cr.ui.LoginUITools', function() {
    */
   /* #export */ function addSubmitListener(element, callback) {
     element.addEventListener('keydown', (function(callback, e) {
-                                          if (e.keyCode != 13)
+                                          if (e.keyCode != 13) {
                                             return;
+                                          }
                                           callback();
                                         }).bind(undefined, callback));
   }

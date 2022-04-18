@@ -41,8 +41,9 @@ export class Scrollbar {
    */
   onScroll_() {
     const /** number */ newPosition = this.outerDiv_.scrollLeft;
-    if (newPosition == this.position_)
+    if (newPosition == this.position_) {
       return;
+    }
     this.position_ = newPosition;
     this.callback_();
   }
@@ -79,8 +80,9 @@ export class Scrollbar {
    * @param {number} width
    */
   resize(width) {
-    if (this.width_ == width)
+    if (this.width_ == width) {
       return;
+    }
     this.width_ = width;
     this.updateOuterDivWidth_();
   }
@@ -135,8 +137,9 @@ export class Scrollbar {
    * range. See crbug.com/760425.
    */
   updateScrollbarPosition_() {
-    if (this.outerDiv_.scrollLeft == this.position_)
+    if (this.outerDiv_.scrollLeft == this.position_) {
       return;
+    }
     this.outerDiv_.scrollLeft = this.position_;
   }
 

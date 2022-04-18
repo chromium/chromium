@@ -207,8 +207,9 @@ let networkCustomItemCustomData;
     const networkState = event.detail.type ? event.detail : undefined;
     this.isNetworkConnected = !!networkState &&
         OncMojo.connectionStateIsConnected(networkState.connectionState);
-    if (!this.isNetworkConnected || !this.is_shown_)
+    if (!this.isNetworkConnected || !this.is_shown_) {
       return;
+    }
     this.attemptApplyConfiguration_();
   }
 
@@ -231,8 +232,9 @@ let networkCustomItemCustomData;
    * @private
    */
   onNetworkListChanged_(event) {
-    if (!this.is_shown_)
+    if (!this.is_shown_) {
       return;
+    }
     this.attemptApplyConfiguration_();
   }
 
@@ -241,11 +243,13 @@ let networkCustomItemCustomData;
    * @private
    */
   attemptApplyConfiguration_() {
-    if (this.configuration_applied_)
+    if (this.configuration_applied_) {
       return;
+    }
     const configuration = Oobe.getInstance().getOobeConfiguration();
-    if (!configuration)
+    if (!configuration) {
       return;
+    }
     if (configuration.networkOfflineDemo && this.isOfflineDemoModeSetup) {
       window.setTimeout(() => this.onOfflineDemoSetupClicked_(), 0);
       this.configuration_applied_ = true;

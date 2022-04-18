@@ -523,8 +523,9 @@ Polymer({
   getConfigureMessageTitle_() {
     // If the flags only allow username config, then we show a username specific
     // subtitle instead of a generic configure subtitle.
-    if (!this.showDiskResizing_())
+    if (!this.showDiskResizing_()) {
       return loadTimeData.getString('usernameMessage');
+    }
     return loadTimeData.getString('configureMessage');
   },
 

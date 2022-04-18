@@ -316,8 +316,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getPowerwashStateSubtitle_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.subtitleText);
   }
@@ -329,8 +330,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getPowerwashButtonTextKey_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     return POWERWASH_MODE_DETAILS.get(this.powerwashMode_).buttonTextKey;
   }
 
@@ -354,8 +356,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getConfirmationDialogTitle_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.dialogTitle);
   }
@@ -367,8 +370,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getConfirmationDialogText_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.dialogContent);
   }

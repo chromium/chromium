@@ -53,8 +53,9 @@ const CALLBACK_USER_ACTED = 'userActed';
       console.error('LoginScreenBehavior: send prefix is not defined');
       return;
     }
-    if (typeof args === 'string')
+    if (typeof args === 'string') {
       args = [args];
+    }
     chrome.send(this.sendPrefix_ + CALLBACK_USER_ACTED, args);
   },
 

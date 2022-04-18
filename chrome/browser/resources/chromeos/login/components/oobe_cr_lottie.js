@@ -55,19 +55,22 @@ class OobeCrLottie extends OobeCrLottieBase {
   }
 
   onPlayingChanged_() {
-    if (this.$)
+    if (this.$) {
       this.$.animation.setPlay(this.playing);
+    }
   }
 
   getIcon_(playing) {
-    if (playing)
+    if (playing) {
       return 'oobe-48:pause';
+    }
     return 'oobe-48:play';
   }
 
   getAria_() {
-    if (this.playing)
+    if (this.playing) {
       return this.i18n('pauseAnimationAriaLabel');
+    }
     return this.i18n('playAnimationAriaLabel');
   }
 }

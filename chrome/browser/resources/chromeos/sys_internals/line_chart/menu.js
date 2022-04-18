@@ -74,8 +74,9 @@ export class Menu {
    */
   addDataSeries(dataSeries) {
     const /** number */ idx = this.dataSeries_.indexOf(dataSeries);
-    if (idx != -1)
+    if (idx != -1) {
       return;
+    }
     const /** Element */ button = this.createButton_(dataSeries);
     this.buttons_.push(button);
     this.buttonOuterDiv_.appendChild(button);
@@ -144,8 +145,9 @@ export class Menu {
    */
   removeDataSeries(dataSeries) {
     const /** number */ idx = this.dataSeries_.indexOf(dataSeries);
-    if (idx == -1)
+    if (idx == -1) {
       return;
+    }
     this.dataSeries_.splice(idx, 1);
     const /** Element */ button = this.buttons_.splice(idx, 1)[0];
     this.buttonOuterDiv_.removeChild(button);

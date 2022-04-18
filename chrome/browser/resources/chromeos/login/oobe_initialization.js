@@ -10,8 +10,9 @@
 'use strict';
 
 function initializeOobe() {
-  if (document.readyState === 'loading')
+  if (document.readyState === 'loading') {
     return;
+  }
   document.removeEventListener('DOMContentLoaded', initializeOobe);
 
   // TODO(crbug.com/1082670): Remove excessive logging after investigation.
@@ -42,8 +43,9 @@ function initializeOobe() {
 
 // Install a global error handler so stack traces are included in logs.
 window.onerror = function(message, file, line, column, error) {
-  if (error && error.stack)
+  if (error && error.stack) {
     console.error(error.stack);
+  }
 };
 
 // TODO(crbug.com/1082670): Remove excessive logging after investigation.

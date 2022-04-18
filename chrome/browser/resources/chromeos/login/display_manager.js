@@ -45,21 +45,25 @@ cr.define('cr.ui.login', function() {
    */
   /* #export */ function invokePolymerMethod(element, name, ...args) {
     const method = element[name];
-    if (!method || typeof method !== 'function')
+    if (!method || typeof method !== 'function') {
       return;
+    }
     method.apply(element, args);
-    if (!element.behaviors)
+    if (!element.behaviors) {
       return;
+    }
 
     // If element has behaviors call functions on them in reverse order,
     // ignoring case when method on element was derived from behavior.
     for (var i = element.behaviors.length - 1; i >= 0; i--) {
       const behavior = element.behaviors[i];
       const behaviorMethod = behavior[name];
-      if (!behaviorMethod || typeof behaviorMethod !== 'function')
+      if (!behaviorMethod || typeof behaviorMethod !== 'function') {
         continue;
-      if (behaviorMethod == method)
+      }
+      if (behaviorMethod == method) {
         continue;
+      }
       behaviorMethod.apply(element, args);
     }
   }
@@ -264,8 +268,9 @@ cr.define('cr.ui.login', function() {
           this.currentScreen.cancel();
         }
       } else if (name == ACCELERATOR_VERSION) {
-        if (this.allowToggleVersion_)
+        if (this.allowToggleVersion_) {
           $('version-labels').hidden = !$('version-labels').hidden;
+        }
       } else if (name == ACCELERATOR_RESET) {
         if (currentStepId == SCREEN_OOBE_RESET) {
           $('reset').userActed(USER_ACTION_ROLLBACK_TOGGLED);
@@ -275,11 +280,13 @@ cr.define('cr.ui.login', function() {
           chrome.send('toggleResetScreen');
         }
       } else if (name == ACCELERATOR_APP_LAUNCH_BAILOUT) {
-        if (currentStepId == SCREEN_APP_LAUNCH_SPLASH)
+        if (currentStepId == SCREEN_APP_LAUNCH_SPLASH) {
           chrome.send('cancelAppLaunch');
+        }
       } else if (name == ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG) {
-        if (currentStepId == SCREEN_APP_LAUNCH_SPLASH)
+        if (currentStepId == SCREEN_APP_LAUNCH_SPLASH) {
           chrome.send('networkConfigRequest');
+        }
       }
     }
 
@@ -299,8 +306,9 @@ cr.define('cr.ui.login', function() {
 
       invokePolymerMethod(oldStep, 'onBeforeHide');
 
-      if (oldStep.defaultControl)
+      if (oldStep.defaultControl) {
         invokePolymerMethod(oldStep.defaultControl, 'onBeforeHide');
+      }
 
       $('oobe').className = nextStepId;
 
@@ -321,11 +329,13 @@ cr.define('cr.ui.login', function() {
       //
       // TODO(alemate): make every screen a single Polymer element, so that
       // we could simply use OobeDialogHostBehavior in stead of this.
-      for (const dialog of newStep.getElementsByTagName('oobe-dialog'))
+      for (const dialog of newStep.getElementsByTagName('oobe-dialog')) {
         invokePolymerMethod(dialog, 'onBeforeShow', screenData);
+      }
 
-      if (newStep.defaultControl)
+      if (newStep.defaultControl) {
         invokePolymerMethod(newStep.defaultControl, 'onBeforeShow', screenData);
+      }
 
       newStep.classList.remove('hidden');
 
@@ -341,8 +351,9 @@ cr.define('cr.ui.login', function() {
           !oldStep.classList.contains('hidden')) {
         oldStep.classList.add('hidden');
         oldStep.hidden = true;
-        if (defaultControl)
+        if (defaultControl) {
           defaultControl.focus();
+        }
       } else {
         // First screen on OOBE launch.
         if (this.isOobeUI() && innerContainer.classList.contains('down')) {
@@ -351,14 +362,16 @@ cr.define('cr.ui.login', function() {
             innerContainer.removeEventListener('transitionend', f);
             // Refresh defaultControl. It could have changed.
             const defaultControl = newStep.defaultControl;
-            if (defaultControl)
+            if (defaultControl) {
               defaultControl.focus();
+            }
           });
           ensureTransitionEndEvent(
               innerContainer, MAX_SCREEN_TRANSITION_DURATION);
         } else {
-          if (defaultControl)
+          if (defaultControl) {
             defaultControl.focus();
+          }
         }
       }
       this.currentStep_ = nextStepIndex;
@@ -378,8 +391,9 @@ cr.define('cr.ui.login', function() {
      */
     showScreen(screen) {
       // Do not allow any other screen to clobber the device disabled screen.
-      if (this.currentScreen.id == SCREEN_DEVICE_DISABLED)
+      if (this.currentScreen.id == SCREEN_DEVICE_DISABLED) {
         return;
+      }
 
       // Prevent initial GAIA signin load from interrupting the kiosk splash
       // screen.
@@ -397,8 +411,9 @@ cr.define('cr.ui.login', function() {
 
       const data = screen.data;
       const index = this.getScreenIndex_(screenId);
-      if (index >= 0)
+      if (index >= 0) {
         this.toggleStep_(index, data);
+      }
     }
 
     /**
@@ -408,8 +423,9 @@ cr.define('cr.ui.login', function() {
      */
     getScreenIndex_(screenId) {
       for (let i = 0; i < this.screens_.length; ++i) {
-        if (this.screens_[i] == screenId)
+        if (this.screens_[i] == screenId) {
           return i;
+        }
       }
       return -1;
     }
@@ -430,8 +446,9 @@ cr.define('cr.ui.login', function() {
       this.screens_.push(screenId);
       this.screensAttributes_.push(attributes);
 
-      if (el.updateOobeConfiguration && this.oobe_configuration_)
+      if (el.updateOobeConfiguration && this.oobe_configuration_) {
         el.updateOobeConfiguration(this.oobe_configuration_);
+      }
     }
 
     /**
@@ -442,8 +459,9 @@ cr.define('cr.ui.login', function() {
       for (let i = 0; i < this.screens_.length; ++i) {
         const screenId = this.screens_[i];
         const screen = $(screenId);
-        if (screen.updateLocalizedContent)
+        if (screen.updateLocalizedContent) {
           screen.updateLocalizedContent();
+        }
       }
       const dynamicElements = document.getElementsByClassName('i18n-dynamic');
       for (var child of dynamicElements) {
@@ -464,8 +482,9 @@ cr.define('cr.ui.login', function() {
       for (let i = 0; i < this.screens_.length; ++i) {
         const screenId = this.screens_[i];
         const screen = $(screenId);
-        if (screen.updateOobeConfiguration)
+        if (screen.updateOobeConfiguration) {
           screen.updateOobeConfiguration(configuration);
+        }
       }
     }
 
@@ -477,8 +496,9 @@ cr.define('cr.ui.login', function() {
       for (let i = 0; i < this.screens_.length; ++i) {
         const screenId = this.screens_[i];
         const screen = $(screenId);
-        if (screen.setTabletModeState)
+        if (screen.setTabletModeState) {
           screen.setTabletModeState(isInTabletMode);
+        }
       }
     }
 

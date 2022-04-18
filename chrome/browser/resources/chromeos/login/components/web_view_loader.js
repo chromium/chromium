@@ -48,8 +48,9 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
     assert(webview.tagName === 'WEBVIEW');
 
     // Do not create multiple loaders.
-    if (WebViewLoader.instances[webview.id])
+    if (WebViewLoader.instances[webview.id]) {
       return WebViewLoader.instances[webview.id];
+    }
 
     this.webview_ = webview;
     this.timeout_ = timeout;
@@ -113,10 +114,11 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
       this.loadWithFallbackTimer();
     } else {
       // Same URL was requested again. Reload later if a request is under way.
-      if (this.isPerformingRequests_)
+      if (this.isPerformingRequests_) {
         this.reloadRequested_ = true;
-      else
+      } else {
         this.loadWithFallbackTimer();
+      }
     }
   }
 
@@ -125,8 +127,9 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
   // See: https://developer.chrome.com/extensions/webRequest
   onTimeoutError_() {
     // Return if we are no longer monitoring requests. Confidence check.
-    if (!this.isPerformingRequests_)
+    if (!this.isPerformingRequests_) {
       return;
+    }
 
     if (this.reloadRequested_) {
       this.loadWithFallbackTimer();
@@ -141,13 +144,15 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
    * @param {!Object} details
    */
   onErrorOccurred_(details) {
-    if (!this.isPerformingRequests_)
+    if (!this.isPerformingRequests_) {
       return;
+    }
 
-    if (this.reloadRequested_)
+    if (this.reloadRequested_) {
       this.loadWithFallbackTimer();
-    else
+    } else {
       this.loadAfterBackoff();
+    }
   }
 
   /**
@@ -156,16 +161,18 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
    * @param {!Object} details
    */
   onCompleted_(details) {
-    if (!this.isPerformingRequests_)
+    if (!this.isPerformingRequests_) {
       return;
+    }
 
     // Http errors such as 4xx, 5xx hit here instead of 'onErrorOccurred'.
     if (details.statusCode != 200) {
       // Not a successful request. Perform a reload if requested.
-      if (this.reloadRequested_)
+      if (this.reloadRequested_) {
         this.loadWithFallbackTimer();
-      else
+      } else {
         this.loadAfterBackoff();
+      }
     } else {
       // Success!
       this.clearInternalState();
@@ -192,10 +199,11 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
 
     // A request is being made
     this.isPerformingRequests_ = true;
-    if (this.webview_.src === this.url_)
+    if (this.webview_.src === this.url_) {
       this.webview_.reload();
-    else
+    } else {
       this.webview_.src = this.url_;
+    }
   }
 }
 

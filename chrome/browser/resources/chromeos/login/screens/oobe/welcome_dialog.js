@@ -24,8 +24,9 @@
 OobeWelcomeDialogBase.$;
 
 /* #export */ class OobeWelcomeDialog extends OobeWelcomeDialogBase {
-
-  static get is() { return 'oobe-welcome-dialog'; }
+  static get is() {
+    return 'oobe-welcome-dialog';
+  }
 
   /* #html_template_placeholder */
 
@@ -156,8 +157,9 @@ OobeWelcomeDialogBase.$;
       this.focusedElement_ = 'getStarted';
     }
     const focusedElement = this.$[this.focusedElement_];
-    if (focusedElement)
+    if (focusedElement) {
       focusedElement.focus();
+    }
   }
 
   /*
@@ -180,8 +182,9 @@ OobeWelcomeDialogBase.$;
    * @suppress {missingProperties}
    */
   setVideoPlay_(play) {
-    if (this.isMeet_)
+    if (this.isMeet_) {
       return;
+    }
     this.$.welcomeAnimation.playing = play;
   }
 

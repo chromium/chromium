@@ -110,8 +110,9 @@ Polymer({
    * @private
    */
   getError_() {
-    if (this.i18nExists(this.error_))
+    if (this.i18nExists(this.error_)) {
       return this.i18n(this.error_);
+    }
     return this.i18n('networkErrorUnknown');
   },
 

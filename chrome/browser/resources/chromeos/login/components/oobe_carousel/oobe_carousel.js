@@ -121,8 +121,9 @@ Polymer({
    */
   hideNonActiveSlides_() {
     for (let idx = 0; idx < this.totalSlides; ++idx) {
-      if (idx != this.slideIndex)
+      if (idx != this.slideIndex) {
         this.hideSlide(this.slides[idx]);
+      }
     }
   },
 
@@ -309,8 +310,9 @@ Polymer({
    */
   onKeypress_(e) {
     // Space (32) and enter (13) key codes.
-    if (e.keyCode == 32 || e.keyCode == 13)
+    if (e.keyCode == 32 || e.keyCode == 13) {
       this.slideIndex = e.model.item;
+    }
   },
 
   /**

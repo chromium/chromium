@@ -88,10 +88,12 @@ function str(id) {
  *     centering vertically.
  */
 function centerElement(element, totalWidth, totalHeight) {
-  if (totalWidth)
+  if (totalWidth) {
     element.style.left = (totalWidth - element.offsetWidth) / 2 + 'px';
-  if (totalHeight)
+  }
+  if (totalHeight) {
     element.style.top = (totalHeight - element.offsetHeight) / 2 + 'px';
+  }
 }
 
 /**
@@ -99,8 +101,9 @@ function centerElement(element, totalWidth, totalHeight) {
  * @param {String} elementID The element to be centered.
  */
 function addRippleOverlay(elementID) {
-  if(!$(elementID))
+  if (!$(elementID)) {
     return;
+  }
   $(elementID).querySelectorAll('.ink').forEach(e => e.remove());
   var inkEl = document.createElement('span');
   inkEl.classList.add('ink');
@@ -135,8 +138,9 @@ function addRippleOverlay(elementID) {
 WallpaperManager.initStrings = function(callback) {
   chrome.wallpaperPrivate.getStrings(function(strings) {
     loadTimeData.data = strings;
-    if (callback)
+    if (callback) {
       callback();
+    }
   });
 };
 
@@ -170,8 +174,9 @@ WallpaperManager.prototype.getCollectionsInfo_ = function() {
                     // Prefer to build |collectionsInfo_| from |imagesInfoMap_|
                     // than to save it in local storage separately, in case of
                     // version mismatch.
-                    if (!this.collectionsInfo_)
+                    if (!this.collectionsInfo_) {
                       this.collectionsInfo_ = [];
+                    }
                     this.collectionsInfo_.push({
                       collectionId: imageInfo.collectionId,
                       collectionName: imageInfo.collectionName
@@ -303,8 +308,9 @@ WallpaperManager.prototype.showCollection_ = function(index) {
 WallpaperManager.prototype.placeWallpaperPicker_ = function() {
   // Wallpaper preview must always be in full screen. Exit preview if the
   // window is not in full screen for any reason (e.g. when device locks).
-  if (!chrome.app.window.current().isFullscreen() && this.isDuringPreview_())
+  if (!chrome.app.window.current().isFullscreen() && this.isDuringPreview_()) {
     $('cancel-preview-wallpaper').click();
+  }
 
   var totalWidth = this.document_.body.offsetWidth;
   var totalHeight = this.document_.body.offsetHeight;
@@ -375,8 +381,9 @@ WallpaperManager.prototype.showError_ = function(errorMessage) {
 WallpaperManager.prototype.preDownloadDomInit_ = function() {
   // Ensure that wallpaper manager exits preview if the window gets hidden.
   document.addEventListener('visibilitychange', () => {
-    if (this.isDuringPreview_() && document.hidden)
+    if (this.isDuringPreview_() && document.hidden) {
       $('cancel-preview-wallpaper').click();
+    }
   });
   this.document_.defaultView.addEventListener(
       'resize', this.onResize_.bind(this));
@@ -437,10 +444,11 @@ WallpaperManager.prototype.postDownloadDomInit_ = function() {
     Constants.WallpaperLocalStorage.get(
         Constants.AccessLocalWallpaperInfoKey, function(items) {
           var localInfo = items[Constants.AccessLocalWallpaperInfoKey];
-          if (localInfo && localInfo.hasOwnProperty('appName'))
+          if (localInfo && localInfo.hasOwnProperty('appName')) {
             callback(localInfo.appName);
-          else
+          } else {
             callback('');
+          }
         });
   };
 
@@ -463,8 +471,9 @@ WallpaperManager.prototype.postDownloadDomInit_ = function() {
   });
   window.addEventListener('online', () => {
     // Fetch the collection info (if not yet) when device gets online.
-    if (!this.collectionsInfo_)
+    if (!this.collectionsInfo_) {
       this.getCollectionsInfo_();
+    }
     // Force refreshing the images.
     this.wallpaperGrid_.dataModel = null;
     this.onCategoriesChange_();
@@ -494,8 +503,9 @@ WallpaperManager.prototype.presetCategory_ = function() {
         for (var index = 0; index < this.collectionsInfo_.length; ++index) {
           // Find the index of the category which the current wallpaper
           // belongs to based on the collection id.
-          if (this.collectionsInfo_[index]['collectionId'] == collectionId)
+          if (this.collectionsInfo_[index]['collectionId'] == collectionId) {
             categoryIndex = index;
+          }
         }
       }
     }
@@ -623,12 +633,14 @@ WallpaperManager.prototype.decorateCurrentWallpaperInfoBar_ = function() {
               thumbnail => {
                 // If the current wallpaper already changed when this function
                 // returns, do nothing.
-                if (currentWallpaper != this.currentWallpaper_)
+                if (currentWallpaper != this.currentWallpaper_) {
                   return;
+                }
 
                 // If the current wallpaper is third_party, remove checkmark.
-                if (this.currentWallpaper_.includes('third_party'))
+                if (this.currentWallpaper_.includes('third_party')) {
                   this.wallpaperGrid_.activeItem = null;
+                }
 
                 WallpaperUtil.displayImage(
                     imageElement, thumbnail, null /*opt_callback=*/);
@@ -647,8 +659,9 @@ WallpaperManager.prototype.decorateCurrentWallpaperInfoBar_ = function() {
   var currentWallpaperInfo;
   Object.values(this.imagesInfoMap_).forEach(imagesInfo => {
     for (var i = 0; i < imagesInfo.length; ++i) {
-      if (this.currentWallpaper_.includes(imagesInfo.item(i).baseURL))
+      if (this.currentWallpaper_.includes(imagesInfo.item(i).baseURL)) {
         currentWallpaperInfo = imagesInfo.item(i);
+      }
     }
   });
 
@@ -698,8 +711,9 @@ WallpaperManager.prototype.onChange_ = function() {
   // splice. Check if the new selected element equals to the previous selected
   // element before continuing. Otherwise, wallpaper may reset to previous one
   // as described in http://crbug.com/229036.
-  if (this.selectedItem_ == this.wallpaperGrid_.selectedItem)
+  if (this.selectedItem_ == this.wallpaperGrid_.selectedItem) {
     return;
+  }
   this.selectedItem_ = this.wallpaperGrid_.selectedItem;
   this.onSelectedItemChanged_();
 };
@@ -736,8 +750,9 @@ WallpaperManager.prototype.onWallpaperChanged_ = function(
   this.wallpaperGrid_.checkmark.focus();
 
   // Disables daily refresh if user selects a non-daily wallpaper.
-  if (activeItem && activeItem.source !== Constants.WallpaperSourceEnum.Daily)
+  if (activeItem && activeItem.source !== Constants.WallpaperSourceEnum.Daily) {
     this.disableDailyRefresh_();
+  }
 
   if (activeItem) {
     WallpaperUtil.saveWallpaperInfo(
@@ -964,8 +979,9 @@ WallpaperManager.prototype.setSelectedOnlineWallpaper_ = function(
  */
 WallpaperManager.prototype.onPreviewModeStarted_ = function(
     wallpaperInfo, optConfirmCallback, optCancelCallback, optOnRefreshClicked) {
-  if (this.isDuringPreview_())
+  if (this.isDuringPreview_()) {
     return;
+  }
 
   addRippleOverlay('center-button');
   addRippleOverlay('center-cropped-button');
@@ -985,32 +1001,36 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
 
   var onConfirmClicked = () => {
     chrome.wallpaperPrivate.confirmPreviewWallpaper(() => {
-      if (optConfirmCallback)
+      if (optConfirmCallback) {
         optConfirmCallback();
+      }
       this.showSuccessMessageAndQuit_();
     });
   };
   this.addEventToButton_($('confirm-preview-wallpaper'), onConfirmClicked);
 
   var onRefreshClicked = () => {
-    if (optOnRefreshClicked)
+    if (optOnRefreshClicked) {
       optOnRefreshClicked();
+    }
   };
   this.addEventToButton_($('refresh-wallpaper'), onRefreshClicked);
 
   // Enable swiping to show the previous/next preview wallpaper.
   var onTouchStarted = e => {
     // Do not enable swiping if a non-null |optOnRefreshClicked| is provided.
-    if (optOnRefreshClicked)
+    if (optOnRefreshClicked) {
       return;
+    }
     this.xStart_ = e.touches[0].clientX;
     this.yStart_ = e.touches[0].clientY;
   };
   $('preview-canvas').addEventListener('touchstart', onTouchStarted);
 
   var onTouchMoved = e => {
-    if (!this.xStart_ || !this.yStart_)
+    if (!this.xStart_ || !this.yStart_) {
       return;
+    }
 
     var xDiff = e.touches[0].clientX - this.xStart_;
     var yDiff = e.touches[0].clientY - this.yStart_;
@@ -1018,8 +1038,9 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
     this.xStart_ = null;
     this.yStart_ = null;
     // Ignore vertical swipes.
-    if (Math.abs(xDiff) <= Math.abs(yDiff))
+    if (Math.abs(xDiff) <= Math.abs(yDiff)) {
       return;
+    }
 
     // When swiping to the left(right), the next(previous) wallpaper should
     // be previewed.
@@ -1039,8 +1060,9 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
       // The wallpaper being previewed may not come from the data model
       // (e.g. when it's from the current wallpaper info bar). In this case
       // do nothing.
-      if (this.currentPreviewIndex_ == null)
+      if (this.currentPreviewIndex_ == null) {
         return;
+      }
 
       // Find the previous/next wallpaper to be previewed based on the swipe
       // direction.
@@ -1048,8 +1070,9 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
         var getNextPreviewIndexImpl = (index, left) => {
           index += left ? 1 : -1;
           index = index % dataModel.length;
-          if (index < 0)
+          if (index < 0) {
             index += dataModel.length;
+          }
           return index;
         };
 
@@ -1060,8 +1083,9 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
           index = getNextPreviewIndexImpl(index, left);
           // Return null if none of the items within the data model is
           // previewable.
-          if (firstFoundIndex === index)
+          if (firstFoundIndex === index) {
             return null;
+          }
         }
         return index;
       };
@@ -1075,8 +1099,9 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
         return;
       }
       var nextPreviewImage = dataModel.item(nextPreviewIndex);
-      if (nextPreviewImage.source == Constants.WallpaperSourceEnum.Online)
+      if (nextPreviewImage.source == Constants.WallpaperSourceEnum.Online) {
         this.updateSpinnerVisibility_(true);
+      }
       $('message-container').style.display = 'none';
       this.setWallpaperAttribution(nextPreviewImage);
       this.setSelectedWallpaper_(nextPreviewImage);
@@ -1093,8 +1118,9 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
     $('preview-canvas').removeEventListener('touchmove', onTouchMoved);
 
     chrome.wallpaperPrivate.cancelPreviewWallpaper(() => {
-      if (optCancelCallback)
+      if (optCancelCallback) {
         optCancelCallback();
+      }
       // Deselect the image.
       this.wallpaperGrid_.selectedItem = null;
       this.currentlySelectedLayout_ = null;
@@ -1103,8 +1129,9 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
       this.document_.body.classList.remove('preview-animation');
       this.updateSpinnerVisibility_(false);
       // Exit full screen, but the window should still be maximized.
-      if (chrome.app.window.current().isFullscreen())
+      if (chrome.app.window.current().isFullscreen()) {
         chrome.app.window.current().maximize();
+      }
       // TODO(crbug.com/841968): Force refreshing the images. This is a
       // workaround until the issue is fixed.
       this.wallpaperGrid_.dataModel = null;
@@ -1137,8 +1164,9 @@ WallpaperManager.prototype.showSuccessMessageAndQuit_ = function() {
  * Handles changing of selectedItem in wallpaper manager.
  */
 WallpaperManager.prototype.onSelectedItemChanged_ = function() {
-  if (!this.selectedItem_)
+  if (!this.selectedItem_) {
     return;
+  }
   this.setWallpaperAttribution(this.selectedItem_);
 
   if (this.selectedItem_.baseURL) {
@@ -1168,8 +1196,9 @@ WallpaperManager.prototype.setWallpaperAttribution = function(selectedItem) {
     $('wallpaper-description').textContent = '';
     if (selectedItem) {
       // The first element in |displayText| is used as title.
-      if (selectedItem.displayText)
+      if (selectedItem.displayText) {
         $('image-title').textContent = selectedItem.displayText[0];
+      }
 
       if (selectedItem.displayText && selectedItem.displayText.length > 1) {
         for (var i = 1; i < selectedItem.displayText.length; ++i) {
@@ -1194,8 +1223,9 @@ WallpaperManager.prototype.onResize_ = function() {
   // running, the bit for chrome.app.window.current().isFullscreen() may
   // not have been flipped on yet, causing placeWallpaperPicker_() to
   // initiate an unintended early cancellation of preview mode.
-  if (this.isDuringPreview_())
+  if (this.isDuringPreview_()) {
     return;
+  }
   this.placeWallpaperPicker_();
   this.wallpaperGrid_.redraw();
   this.categoriesList_.redraw();
@@ -1233,8 +1263,9 @@ WallpaperManager.prototype.initCategoriesList_ = function() {
       'change', this.onCategoriesChange_.bind(this));
 
     if (this.collectionsInfo_) {
-      for (var colletionInfo of this.collectionsInfo_)
+      for (var colletionInfo of this.collectionsInfo_) {
         this.categoriesList_.dataModel.push(colletionInfo['collectionName']);
+      }
     }
   // Adds custom category as last category.
   this.categoriesList_.dataModel.push(str('customCategoryLabel'));
@@ -1258,8 +1289,9 @@ WallpaperManager.prototype.setCustomWallpaperLayout_ = function(newLayout) {
       WallpaperUtil.saveWallpaperInfo(
           this.currentWallpaper_, layout, Constants.WallpaperSourceEnum.Custom,
           '');
-      if (onSuccess)
+      if (onSuccess) {
         onSuccess();
+      }
     });
   };
 
@@ -1328,10 +1360,11 @@ WallpaperManager.prototype.onSurpriseMeStateChanged_ = function(enabled) {
   WallpaperUtil.setSurpriseMeCheckboxValue(enabled);
   $('categories-list').disabled = enabled;
   $('wallpaper-grid').disabled = enabled;
-  if (enabled)
+  if (enabled) {
     this.document_.body.removeAttribute('surprise-me-disabled');
-  else
+  } else {
     this.document_.body.setAttribute('surprise-me-disabled', '');
+  }
 };
 
 /**
@@ -1340,8 +1373,9 @@ WallpaperManager.prototype.onSurpriseMeStateChanged_ = function(enabled) {
 WallpaperManager.prototype.onCategoriesChange_ = function() {
   var categoriesList = this.categoriesList_;
   var selectedIndex = categoriesList.selectionModel.selectedIndex;
-  if (selectedIndex == -1)
+  if (selectedIndex == -1) {
     return;
+  }
   // Cancel any ongoing wallpaper request if user clicks on another category.
   if (this.wallpaperRequest_) {
     this.wallpaperRequest_.abort();
@@ -1410,8 +1444,9 @@ WallpaperManager.prototype.onCategoriesChange_ = function() {
           var item = wallpapersDataModel.item(i);
           // TODO(crbug/947543): Using the filename will not cover the case
           // when the image changes but not the fileName.
-          if (item.fileName == desiredFileName)
+          if (item.fileName == desiredFileName) {
             this.wallpaperGrid_.activeItem = item;
+          }
         }
       };
 
@@ -1427,8 +1462,9 @@ WallpaperManager.prototype.onCategoriesChange_ = function() {
               // If the last used image is third party, the Wallpaper app is
               // used for the first time, or the Wallpaper app local storage is
               // cleared, lastUsedImageInfo will be falsy.
-              if (!lastUsedImageInfo)
+              if (!lastUsedImageInfo) {
                 return;
+              }
               findAndUpdateActiveItem(lastUsedImageInfo);
             });
       }
@@ -1438,8 +1474,9 @@ WallpaperManager.prototype.onCategoriesChange_ = function() {
     });
   } else {
     this.document_.body.removeAttribute('custom');
-    if (this.collectionsInfo_)
+    if (this.collectionsInfo_) {
       this.showCollection_(selectedIndex);
+    }
   }
 };
 
@@ -1449,8 +1486,9 @@ WallpaperManager.prototype.onCategoriesChange_ = function() {
  * @private
  */
 WallpaperManager.prototype.updateNoImagesVisibility_ = function(visible) {
-  if (visible == this.document_.body.classList.contains('no-images'))
+  if (visible == this.document_.body.classList.contains('no-images')) {
     return;
+  }
   this.document_.body.classList.toggle('no-images', visible);
   this.placeWallpaperPicker_();
 };
@@ -1552,8 +1590,9 @@ WallpaperManager.prototype.initializeDailyRefreshStates_ = function() {
  */
 WallpaperManager.prototype.updateDailyRefreshItemStates_ = function(
     dailyRefreshInfo) {
-  if (!this.dailyRefreshItemMap_ || !dailyRefreshInfo)
+  if (!this.dailyRefreshItemMap_ || !dailyRefreshInfo) {
     return;
+  }
 
   Object.entries(this.dailyRefreshItemMap_)
       .forEach(([collectionId, dailyRefreshItem]) => {
@@ -1573,8 +1612,9 @@ WallpaperManager.prototype.updateDailyRefreshItemStates_ = function(
  */
 WallpaperManager.prototype.decorateDailyRefreshItem = function(
     collectionId, dailyRefreshItem) {
-  if (!this.dailyRefreshItemMap_)
+  if (!this.dailyRefreshItemMap_) {
     this.dailyRefreshItemMap_ = {};
+  }
 
   this.dailyRefreshItemMap_[collectionId] = dailyRefreshItem;
   this.updateDailyRefreshItemStates_(this.dailyRefreshInfo_);
@@ -1610,8 +1650,9 @@ WallpaperManager.prototype.decorateDailyRefreshItem = function(
     }, 360);
   });
   dailyRefreshItem.addEventListener('keypress', e => {
-    if (e.keyCode == 13)
+    if (e.keyCode == 13) {
       dailyRefreshItem.click();
+    }
   });
   dailyRefreshItem.addEventListener('mousedown', e => {
     e.preventDefault();
@@ -1625,8 +1666,9 @@ WallpaperManager.prototype.decorateDailyRefreshItem = function(
  * @private
  */
 WallpaperManager.prototype.setDailyRefreshWallpaper_ = function() {
-  if (!this.pendingDailyRefreshInfo_)
+  if (!this.pendingDailyRefreshInfo_) {
     return;
+  }
   // There should be immediate UI update even though the info hasn't been saved.
   this.updateDailyRefreshItemStates_(this.pendingDailyRefreshInfo_);
   this.updateSpinnerVisibility_(true);
@@ -1737,8 +1779,9 @@ WallpaperManager.prototype.addEventToButton_ = function(button, eventListener) {
   button = newButton;
   button.addEventListener('click', eventListener);
   button.addEventListener('keypress', e => {
-    if (e.keyCode == 13)
+    if (e.keyCode == 13) {
       button.click();
+    }
   });
   button.setAttribute('role', 'button');
   // The button should receive tab focus.
@@ -1757,8 +1800,9 @@ WallpaperManager.prototype.addEventToButton_ = function(button, eventListener) {
  * @private
  */
 WallpaperManager.prototype.disableDailyRefresh_ = function() {
-  if (!this.dailyRefreshInfo_ || !this.dailyRefreshInfo_.enabled)
+  if (!this.dailyRefreshInfo_ || !this.dailyRefreshInfo_.enabled) {
     return;
+  }
   this.dailyRefreshInfo_ = {
     enabled: false,
     collectionId: null,

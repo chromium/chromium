@@ -309,8 +309,9 @@ class GaiaDialog extends GaiaDialogBase {
       },
       'apiPasswordAdded': (e) => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.
-        if (this.authFlow !== cr.login.Authenticator.AuthFlow.DEFAULT)
+        if (this.authFlow !== cr.login.Authenticator.AuthFlow.DEFAULT) {
           return;
+        }
         chrome.send(
             'metricsHandler:recordBooleanHistogram',
             [CHROMEOS_GAIA_PASSWORD_METRIC, false]);
@@ -361,12 +362,14 @@ class GaiaDialog extends GaiaDialogBase {
   }
 
   maybeClickPrimaryActionButtonForTesting_() {
-    if (!this.clickPrimaryActionButtonForTesting_)
+    if (!this.clickPrimaryActionButtonForTesting_) {
       return;
+    }
 
     const button = this.$['primary-action-button'];
-    if (button.hidden || button.disabled)
+    if (button.hidden || button.disabled) {
       return;
+    }
 
     this.clickPrimaryActionButtonForTesting_ = false;
     button.click();

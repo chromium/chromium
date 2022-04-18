@@ -128,10 +128,11 @@ class EulaLoader {
       this.loadWithFallbackTimer();
     } else {
       // Same URL was requested again. Reload later if a request is under way.
-      if (this.isPerformingRequests_)
+      if (this.isPerformingRequests_) {
         this.reloadRequested_ = true;
-      else
+      } else {
         this.loadWithFallbackTimer();
+      }
     }
   }
 
@@ -140,20 +141,23 @@ class EulaLoader {
   // See: https://developer.chrome.com/extensions/webRequest
   onTimeoutError_() {
     // Return if we are no longer monitoring requests. Sanity check.
-    if (!this.isPerformingRequests_)
+    if (!this.isPerformingRequests_) {
       return;
+    }
 
-    if (this.reloadRequested_)
+    if (this.reloadRequested_) {
       this.loadWithFallbackTimer();
-    else
+    } else {
       this.tryLoadOffline();
+    }
   }
 
   // Loads the offline version of the EULA.
   tryLoadOffline() {
     this.clearInternalState();
-    if (this.loadOfflineCallback_)
+    if (this.loadOfflineCallback_) {
       this.loadOfflineCallback_();
+    }
   }
 
   /**
@@ -169,13 +173,15 @@ class EulaLoader {
    * @param {!Object} details
    */
   onErrorOccurred_(details) {
-    if (!this.shouldProcessEvent(details))
+    if (!this.shouldProcessEvent(details)) {
       return;
+    }
 
-    if (this.reloadRequested_)
+    if (this.reloadRequested_) {
       this.loadWithFallbackTimer();
-    else
+    } else {
       this.loadAfterBackoff();
+    }
   }
 
   /**
@@ -184,16 +190,18 @@ class EulaLoader {
    * @param {!Object} details
    */
   onCompleted_(details) {
-    if (!this.shouldProcessEvent(details))
+    if (!this.shouldProcessEvent(details)) {
       return;
+    }
 
     // Http errors such as 4xx, 5xx hit here instead of 'onErrorOccurred'.
     if (details.statusCode != 200) {
       // Not a successful request. Perform a reload if requested.
-      if (this.reloadRequested_)
+      if (this.reloadRequested_) {
         this.loadWithFallbackTimer();
-      else
+      } else {
         this.loadAfterBackoff();
+      }
     } else {
       // Success!
       this.clearInternalState();
@@ -219,10 +227,11 @@ class EulaLoader {
     this.reloadRequested_ = false;
     // A request is being made
     this.isPerformingRequests_ = true;
-    if (this.webview_.src === this.url_)
+    if (this.webview_.src === this.url_) {
       this.webview_.reload();
-    else
+    } else {
       this.webview_.src = this.url_;
+    }
   }
 }
 
@@ -339,10 +348,12 @@ class EulaScreen extends EulaScreenBase {
    * @param {Object} data
    */
   onBeforeShow(data) {
-    if (data && 'backButtonHidden' in data)
+    if (data && 'backButtonHidden' in data) {
       this.backButtonHidden_ = data['backButtonHidden'];
-    if (data && 'securitySettingsShown' in data)
+    }
+    if (data && 'securitySettingsShown' in data) {
       this.securitySettingsInfoHidden_ = data['securitySettingsShown'];
+    }
     window.setTimeout(this.initializeScreen_.bind(this), 0);
     this.loadEula();
   }
@@ -359,8 +370,9 @@ class EulaScreen extends EulaScreenBase {
    * @private
    */
   initializeScreen_() {
-    if (this.initialized_)
+    if (this.initialized_) {
       return;
+    }
     this.$.eulaDialog.scrollToBottom();
     this.applyOobeConfiguration_();
     this.initialized_ = true;
@@ -372,8 +384,9 @@ class EulaScreen extends EulaScreenBase {
    */
   applyOobeConfiguration_() {
     var configuration = Oobe.getInstance().getOobeConfiguration();
-    if (!configuration)
+    if (!configuration) {
       return;
+    }
     if (configuration.eulaSendStatistics) {
       this.usageStatsChecked = true;
     }
@@ -394,8 +407,9 @@ class EulaScreen extends EulaScreenBase {
 
     // When online EULA fails to load, wait until the offline EULA is loaded
     // before updating the UI step.
-    if (eulaLoader.isPerformingRequests_)
+    if (eulaLoader.isPerformingRequests_) {
       return;
+    }
 
     this.acceptButtonDisabled = false;
     this.setUIStep(EulaScreenState.EULA);

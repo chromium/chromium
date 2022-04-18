@@ -215,8 +215,9 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     // If the ToS section is hidden, apply the remove the top border of the
     // first opt-in.
-    if (this.isTosHidden_)
+    if (this.isTosHidden_) {
       this.$.usageStats.classList.add('first-optin-no-tos');
+    }
 
     this.googleEulaUrl_ = data['googleEulaUrl'];
     this.crosEulaUrl_ = data['crosEulaUrl'];
@@ -234,18 +235,22 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   applyOobeConfiguration_() {
-    if (this.configuration_applied_)
+    if (this.configuration_applied_) {
       return;
+    }
 
     var configuration = Oobe.getInstance().getOobeConfiguration();
-    if (!configuration)
+    if (!configuration) {
       return;
+    }
 
-    if (configuration.eulaSendStatistics)
+    if (configuration.eulaSendStatistics) {
       this.usageChecked = true;
+    }
 
-    if (configuration.eulaAutoAccept && configuration.arcTosAutoAccept)
+    if (configuration.eulaAutoAccept && configuration.arcTosAutoAccept) {
       this.onAcceptClick_();
+    }
   }
 
   // If ARC is disabled, don't show ARC ToS.
@@ -254,8 +259,9 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   initializeArcTos_(countryCode) {
-    if (this.isArcTosInitialized_)
+    if (this.isArcTosInitialized_) {
       return;
+    }
 
     this.isArcTosInitialized_ = true;
     const webview = this.$.arcTosWebview;
@@ -445,8 +451,9 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       // Process online ToS.
       var getToSContent = {code: 'getToSContent();'};
       webview.executeScript(getToSContent, (results) => {
-        if (!results || results.length != 1 || typeof results[0] !== 'string')
+        if (!results || results.length != 1 || typeof results[0] !== 'string') {
           return;
+        }
         this.arcTosContent_ = results[0];
       });
     }
@@ -523,30 +530,35 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   getTitle_(locale, isTosHidden, isChildAccount) {
-    if (isTosHidden)
+    if (isTosHidden) {
       return this.i18n('consolidatedConsentHeaderManaged');
+    }
 
-    if (isChildAccount)
+    if (isChildAccount) {
       return this.i18n('consolidatedConsentHeaderChild');
+    }
 
     return this.i18n('consolidatedConsentHeader');
   }
 
   getUsageText_(locale, isChildAccount, isArcEnabled, isDemo, isOwner) {
     if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
-      if (isOwner)
+      if (isOwner) {
         return this.i18n('consolidatedConsentUsageOptInArcDisabledOwner');
+      }
       return this.i18n('consolidatedConsentUsageOptInArcDisabled');
     }
 
     if (isChildAccount) {
-      if (isOwner)
+      if (isOwner) {
         return this.i18n('consolidatedConsentUsageOptInChildOwner');
+      }
       return this.i18n('consolidatedConsentUsageOptInChild');
     }
 
-    if (isOwner)
+    if (isOwner) {
       return this.i18n('consolidatedConsentUsageOptInOwner');
+    }
     return this.i18n('consolidatedConsentUsageOptIn');
   }
 
@@ -554,34 +566,39 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       locale, isChildAccount, isArcEnabled, isDemo, isOwner) {
     if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
       if (isChildAccount) {
-        if (isOwner)
+        if (isOwner) {
           return this.i18nAdvanced(
               'consolidatedConsentUsageOptInLearnMoreArcDisabledChildOwner');
+        }
         return this.i18nAdvanced(
             'consolidatedConsentUsageOptInLearnMoreArcDisabledChild');
       }
 
-      if (isOwner)
+      if (isOwner) {
         return this.i18nAdvanced(
             'consolidatedConsentUsageOptInLearnMoreArcDisabledOwner');
+      }
       return this.i18nAdvanced(
           'consolidatedConsentUsageOptInLearnMoreArcDisabled');
     }
     if (isChildAccount) {
-      if (isOwner)
+      if (isOwner) {
         return this.i18nAdvanced(
             'consolidatedConsentUsageOptInLearnMoreChildOwner');
+      }
       return this.i18nAdvanced('consolidatedConsentUsageOptInLearnMoreChild');
     }
 
-    if (isOwner)
+    if (isOwner) {
       return this.i18nAdvanced('consolidatedConsentUsageOptInLearnMoreOwner');
+    }
     return this.i18nAdvanced('consolidatedConsentUsageOptInLearnMore');
   }
 
   getBackupLearnMoreText_(locale, isChildAccount) {
-    if (isChildAccount)
+    if (isChildAccount) {
       return this.i18nAdvanced('consolidatedConsentBackupOptInLearnMoreChild');
+    }
     return this.i18nAdvanced('consolidatedConsentBackupOptInLearnMore');
   }
 

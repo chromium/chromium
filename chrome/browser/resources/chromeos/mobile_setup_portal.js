@@ -34,19 +34,22 @@ cr.define('mobile', function() {
     },
 
     updateNetworkState(networkState) {
-      if (this.networkState_ == networkState)
+      if (this.networkState_ == networkState) {
         return;
+      }
       this.networkState_ = networkState;
 
       // If the device info is not yet set, the state will be updated on the
       // device info update.
-      if (this.deviceInfo_)
+      if (this.deviceInfo_) {
         this.updateState_();
+      }
     },
 
     updateState_() {
-      if (!this.deviceInfo_ || this.networkState_ == NetworkState.UNKNOWN)
+      if (!this.deviceInfo_ || this.networkState_ == NetworkState.UNKNOWN) {
         return;
+      }
 
       if (!this.isDeviceInfoValid_() ||
           this.networkState_ != NetworkState.PORTAL_REACHABLE) {
@@ -74,8 +77,9 @@ cr.define('mobile', function() {
      */
     setStatusMessage_(type) {
       // The status is already set, nothing to do.
-      if (type == this.statusMessageType_)
+      if (type == this.statusMessageType_) {
         return;
+      }
 
       switch (type) {
         case StatusMessageType.PORTAL_OFFLINE:
@@ -107,8 +111,9 @@ cr.define('mobile', function() {
      */
     setPortalFrameIfNeeded_(deviceInfo) {
       // The portal should be set only once.
-      if (this.portalFrameSet_)
+      if (this.portalFrameSet_) {
         return;
+      }
 
       webviewPost.util.postDeviceDataToWebview(
           $('portalFrame'), deviceInfo.payment_url, deviceInfo.post_data);

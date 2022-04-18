@@ -251,8 +251,9 @@ TEST_F('PolymerSecurityTokenPinTest', 'MAYBE_All', function() {
 
     // The user clicks the buttons of the on-screen keypad. The input field is
     // updated accordingly.
-    for (const character of PIN)
+    for (const character of PIN) {
       pinKeyboard.shadowRoot.querySelector('#digitButton' + character).click();
+    }
     assertEquals(pinInput.value, PIN);
     assertEquals(inputField.value, PIN);
 

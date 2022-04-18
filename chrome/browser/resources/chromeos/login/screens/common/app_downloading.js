@@ -20,8 +20,9 @@ const AppDownloadingBase = Polymer.mixinBehaviors(
   Polymer.Element);
 
 class AppDownloading extends AppDownloadingBase {
-
-  static get is() { return 'app-downloading-element'; }
+  static get is() {
+    return 'app-downloading-element';
+  }
 
   /* #html_template_placeholder */
 

@@ -47,8 +47,9 @@ const EnableDebuggingState = {
  * @polymer
  */
 class EnableDebugging extends EnableDebuggingBase {
-
-  static get is() { return 'enable-debugging-element'; }
+  static get is() {
+    return 'enable-debugging-element';
+  }
 
   /* #html_template_placeholder */
 
@@ -97,16 +98,17 @@ class EnableDebugging extends EnableDebuggingBase {
    * Returns a control which should receive an initial focus.
    */
   get defaultControl() {
-    if (this.uiStep == EnableDebuggingState.REMOVE_PROTECTION)
+    if (this.uiStep == EnableDebuggingState.REMOVE_PROTECTION) {
       return this.$.removeProtectionProceedButton;
-    else if (this.uiStep == EnableDebuggingState.SETUP)
+    } else if (this.uiStep == EnableDebuggingState.SETUP) {
       return this.$.password;
-    else if (this.uiStep == EnableDebuggingState.DONE)
+    } else if (this.uiStep == EnableDebuggingState.DONE) {
       return this.$.okButton;
-    else if (this.uiStep == EnableDebuggingState.ERROR)
+    } else if (this.uiStep == EnableDebuggingState.ERROR) {
       return this.$.errorOkButton;
-    else
+    } else {
       return null;
+    }
   }
 
   /**
@@ -125,8 +127,9 @@ class EnableDebugging extends EnableDebuggingBase {
     // Use `state + 1` as index to locate the corresponding EnableDebuggingState
     this.setUIStep(Object.values(EnableDebuggingState)[state + 1]);
 
-    if (this.defaultControl)
+    if (this.defaultControl) {
       this.defaultControl.focus();
+    }
   }
 
   computePasswordsMatch_(password, password2) {

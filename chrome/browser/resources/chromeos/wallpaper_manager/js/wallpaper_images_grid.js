@@ -87,8 +87,9 @@ cr.define('wallpapers', function() {
       this.setAttribute('aria-label', this.dataItem.ariaLabel);
       this.tabIndex = 0;
       this.addEventListener('keypress', e => {
-        if (e.keyCode == 13)
+        if (e.keyCode == 13) {
           this.parentNode.selectedItem = this.dataItem;
+        }
       });
       this.addEventListener('mousedown', e => {
         e.preventDefault();
@@ -253,10 +254,11 @@ cr.define('wallpapers', function() {
 
     /** @override */
     handleKeyDown(e) {
-      if (e.key == 'Enter')
+      if (e.key == 'Enter') {
         cr.dispatchSimpleEvent(this.grid_, 'activate');
-      else
+      } else {
         GridSelectionController.prototype.handleKeyDown.call(this, e);
+      }
     },
   };
 
@@ -319,8 +321,9 @@ cr.define('wallpapers', function() {
      */
     get isShowingDailyRefresh() {
       for (var i = 0; i < this.dataModel.length; ++i) {
-        if (this.dataModel.item(i).isDailyRefreshItem)
+        if (this.dataModel.item(i).isDailyRefreshItem) {
           return true;
+        }
       }
       return false;
     },
@@ -331,8 +334,9 @@ cr.define('wallpapers', function() {
      */
     get dailyRefreshItem() {
       for (var i = 0; i < this.dataModel.length; ++i) {
-        if (this.dataModel.item(i).isDailyRefreshItem)
+        if (this.dataModel.item(i).isDailyRefreshItem) {
           return this.getListItemByIndex(i);
+        }
       }
       return null;
     },
@@ -376,8 +380,9 @@ cr.define('wallpapers', function() {
 
     /** @override */
     set dataModel(dataModel) {
-      if (this.dataModel_ == dataModel)
+      if (this.dataModel_ == dataModel) {
         return;
+      }
 
       if (dataModel && dataModel.length != 0) {
         this.dataModelId_++;
@@ -464,14 +469,17 @@ cr.define('wallpapers', function() {
      *     the opt_wallpaperId.
      */
     pendingItemComplete(dataModelId, opt_wallpaperId, opt_thumbnail) {
-      if (dataModelId != this.dataModelId_)
+      if (dataModelId != this.dataModelId_) {
         return;
+      }
       --this.pendingItems_;
-      if (opt_wallpaperId && opt_thumbnail)
+      if (opt_wallpaperId && opt_thumbnail) {
         this.thumbnailList_[opt_wallpaperId] = opt_thumbnail;
+      }
 
-      if (opt_thumbnail)
+      if (opt_thumbnail) {
         this.cropImageToFitGrid_(opt_thumbnail);
+      }
 
       if (this.isShowingDailyRefresh) {
         var dailyRefreshItemReady = this.dailyRefreshItem &&
@@ -481,8 +489,9 @@ cr.define('wallpapers', function() {
           // user starts with the bottom of the list and scrolls upward). This
           // list is used to store the wallpaper ids that will be added to the
           // daily refresh item later.
-          if (!this.pendingImageIds_)
+          if (!this.pendingImageIds_) {
             this.pendingImageIds_ = [];
+          }
 
           if (opt_wallpaperId && opt_thumbnail) {
             this.pendingImageIds_.push(opt_wallpaperId);
@@ -516,8 +525,9 @@ cr.define('wallpapers', function() {
           window.clearTimeout(this.dailyRefreshTimer_);
           this.showNextImage_(0);
         }
-        if (this.classList.contains('image-picker-offline'))
+        if (this.classList.contains('image-picker-offline')) {
           this.highlightOfflineWallpapers();
+        }
       }
     },
 
@@ -665,8 +675,9 @@ cr.define('wallpapers', function() {
      */
     showNextImage_(index) {
       var images = this.dailyRefreshImages;
-      if (images.length <= index)
+      if (images.length <= index) {
         return;
+      }
       for (var i = 0; i < images.length; ++i) {
         images[i].style.opacity = i === index ? this.slideShowImageOpacity : 0;
       }
@@ -680,8 +691,9 @@ cr.define('wallpapers', function() {
      * the other wallpapers.
      */
     highlightOfflineWallpapers() {
-      if (!this.classList.contains('image-picker-offline'))
+      if (!this.classList.contains('image-picker-offline')) {
         return;
+      }
 
       chrome.wallpaperPrivate.getOfflineWallpaperList(list => {
         var offlineWallpaperList = {};
@@ -691,8 +703,9 @@ cr.define('wallpapers', function() {
 
         for (var i = 0; i < this.dataModel.length; ++i) {
           var url = this.dataModel.item(i).baseURL;
-          if (!url)
+          if (!url) {
             continue;
+          }
           var fileName = url.substring(url.lastIndexOf('/') + 1) +
               loadTimeData.getString('highResolutionSuffix');
           if (this.getListItemByIndex(i) &&

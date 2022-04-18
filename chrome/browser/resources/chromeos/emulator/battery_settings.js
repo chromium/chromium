@@ -154,8 +154,9 @@ Polymer({
 
   onBatteryPercentChange(e) {
     this.percent = parseInt(e.target.value, 10);
-    if (!isNaN(this.percent))
+    if (!isNaN(this.percent)) {
       chrome.send('updateBatteryPercent', [this.percent]);
+    }
   },
 
   /**
@@ -169,8 +170,9 @@ Polymer({
   batteryStateChanged(batteryState) {
     // Find the index of the selected battery state.
     var index = this.batteryStateOptions.indexOf(batteryState);
-    if (index < 0)
+    if (index < 0) {
       return;
+    }
     chrome.send('updateBatteryState', [index]);
   },
 
@@ -184,14 +186,16 @@ Polymer({
 
   onTimeUntilEmptyChange(e) {
     this.timeUntilEmpty = parseInt(e.target.value, 10);
-    if (!isNaN(this.timeUntilEmpty))
+    if (!isNaN(this.timeUntilEmpty)) {
       chrome.send('updateTimeToEmpty', [this.timeUntilEmpty]);
+    }
   },
 
   onTimeUntilFullChange(e) {
     this.timeUntilFull = parseInt(e.target.value, 10);
-    if (!isNaN(this.timeUntilFull))
+    if (!isNaN(this.timeUntilFull)) {
       chrome.send('updateTimeToFull', [this.timeUntilFull]);
+    }
   },
 
   onPowerChanged(e) {
@@ -238,8 +242,9 @@ Polymer({
   },
 
   canBecomeSource(source, selectedId, powerSourceOptionsChange) {
-    if (!source.connected || !this.isDualRole(source))
+    if (!source.connected || !this.isDualRole(source)) {
       return false;
+    }
     return !this.powerSourceOptions.some(function(source) {
       return source.connected && source.type == 'DedicatedCharger';
     });

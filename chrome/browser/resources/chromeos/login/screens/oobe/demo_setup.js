@@ -168,8 +168,9 @@ class DemoSetupScreen extends DemoSetupScreenBase {
    */
   onCloseClicked_() {
     // TODO(wzang): Remove this after crbug.com/900640 is fixed.
-    if (this.isPowerwashRequired_)
+    if (this.isPowerwashRequired_) {
       return;
+    }
     this.userActed('close-setup');
   }
 

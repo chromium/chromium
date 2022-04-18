@@ -702,8 +702,9 @@ class ActiveDirectoryAuthPage {
       return;
     }
     // Retry triggers net::ERR_ABORTED, so ignore it.
-    if (details.error == 'net::ERR_ABORTED')
+    if (details.error == 'net::ERR_ABORTED') {
       return;
+    }
     // Stop processing further events on first error.
     this.process_events_ = false;
     sendNativeMessage(
@@ -760,8 +761,9 @@ function initialize(data, deviceId) {
 // With UI request to change inner window size to outer window size and reduce
 // top spacing, adjust top margin to negtive window top bar height.
 function adjustTopMargin() {
-  if (!appWindow)
+  if (!appWindow) {
     return;
+  }
 
   var decorationHeight =
       appWindow.outerBounds.height - appWindow.innerBounds.height;

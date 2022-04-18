@@ -85,8 +85,9 @@ class Autolaunch extends AutolaunchBase {
    */
   updateApp(app) {
     this.appName_ = app.appName;
-    if (app.appIconUrl && app.appIconUrl.length)
+    if (app.appIconUrl && app.appIconUrl.length) {
       this.appIconUrl_ = app.appIconUrl;
+    }
   }
 }
 

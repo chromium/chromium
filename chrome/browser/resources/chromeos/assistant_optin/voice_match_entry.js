@@ -16,8 +16,9 @@
  * @polymer
  */
 class VoiceMatchEntry extends VoiceMatchEntryBase {
-
-  static get is() { return 'voice-match-entry'; }
+  static get is() {
+    return 'voice-match-entry';
+  }
 
   /* #html_template_placeholder */
 

@@ -41,8 +41,9 @@ MarketingScreenElementBase.$;
  * @polymer
  */
 class MarketingOptIn extends MarketingScreenElementBase {
-
-  static get is() { return 'marketing-opt-in-element'; }
+  static get is() {
+    return 'marketing-opt-in-element';
+  }
 
   /* #html_template_placeholder */
 

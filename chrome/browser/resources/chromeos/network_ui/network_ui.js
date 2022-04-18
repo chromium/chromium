@@ -103,8 +103,9 @@ Polymer({
   /** @private */
   selectTabFromHash_() {
     const selectedTab = window.location.hash.substring(1);
-    if (!selectedTab)
+    if (!selectedTab) {
       return;
+    }
     const tabpanels = this.$$('iron-pages').querySelectorAll('.tabpanel');
     for (let idx = 0; idx < tabpanels.length; ++idx) {
       if (tabpanels[idx].id == selectedTab) {
@@ -149,8 +150,9 @@ Polymer({
   onImportOncChange_(event) {
     const file = event.target.files[0];
     event.stopPropagation();
-    if (!file)
+    if (!file) {
       return;
+    }
     const reader = new FileReader();
     reader.onloadend = (e) => {
       const content = reader.result;

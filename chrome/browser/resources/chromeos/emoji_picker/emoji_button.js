@@ -53,8 +53,9 @@ export class EmojiButton extends PolymerElement {
   }
 
   onClick(ev) {
-    if (this.disabled)
+    if (this.disabled) {
       return;
+    }
     this.dispatchEvent(createCustomEvent(EMOJI_BUTTON_CLICK, {
       text: this.emoji,
       isVariant: this.variant,
@@ -68,8 +69,9 @@ export class EmojiButton extends PolymerElement {
   onContextMenu(ev) {
     ev.preventDefault();
 
-    if (this.disabled)
+    if (this.disabled) {
       return;
+    }
 
     if (this.variants && this.variants.length) {
       this.variantsVisible = !this.variantsVisible;

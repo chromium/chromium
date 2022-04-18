@@ -47,8 +47,9 @@ const LONG_TOUCH_TIME_MS = 1000;
    * @private
    */
   killTimer_() {
-    if (this.timeoutId_ === null)
+    if (this.timeoutId_ === null) {
       return;
+    }
 
     window.clearTimeout(this.timeoutId_);
     this.timeoutId_ = null;
