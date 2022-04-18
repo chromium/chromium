@@ -284,6 +284,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // See https://crbug.com/1223005
   bool set_geometry_on_next_frame_ = false;
 
+  int32_t restore_session_id_ = 0;
+  int32_t restore_window_id_ = 0;
+
   // The desk index for the window.
   // If |workspace_| is -1, window is visible on all workspaces.
   absl::optional<int> workspace_ = absl::nullopt;

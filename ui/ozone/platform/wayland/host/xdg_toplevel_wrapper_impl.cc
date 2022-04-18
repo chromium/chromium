@@ -390,4 +390,13 @@ bool XDGToplevelWrapperImpl::ProtocolSupportsScreenCoordinates() {
              ZAURA_TOPLEVEL_SET_SUPPORTS_SCREEN_COORDINATES_SINCE_VERSION;
 }
 
+void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,
+                                            int32_t restore_window_id) {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_RESTORE_INFO_SINCE_VERSION) {
+    zaura_toplevel_set_restore_info(aura_toplevel_.get(), restore_session_id,
+                                    restore_window_id);
+  }
+}
+
 }  // namespace ui

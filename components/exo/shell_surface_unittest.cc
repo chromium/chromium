@@ -23,6 +23,7 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_util.h"
@@ -2261,6 +2262,27 @@ TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   expected.ClampToCenteredSize(size);
   EXPECT_EQ(expected, shell_surface->GetWidget()->GetWindowBoundsInScreen());
+}
+// Test that restore info is set correctly.
+TEST_F(ShellSurfaceTest, SetRestoreInfo) {
+  int32_t restore_session_id = 200;
+  int32_t restore_window_id = 100;
+
+  gfx::Size size(20, 30);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+  shell_surface->SetRestoreInfo(restore_session_id, restore_window_id);
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(restore_session_id,
+            shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                app_restore::kWindowIdKey));
+  EXPECT_EQ(restore_window_id,
+            shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                app_restore::kRestoreWindowIdKey));
 }
 
 // Surfaces without non-client view should not crash.

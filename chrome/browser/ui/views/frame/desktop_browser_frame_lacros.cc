@@ -20,6 +20,10 @@ views::Widget::InitParams DesktopBrowserFrameLacros::GetWidgetParams() {
   views::Widget::InitParams params;
   params.native_widget = this;
   params.remove_standard_frame = true;
+
+  Browser* browser = browser_view()->browser();
+  params.restore_session_id = browser->session_id().id();
+  params.restore_window_id = browser->create_params().restore_id;
   return params;
 }
 

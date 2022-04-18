@@ -45,6 +45,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void Lock(WaylandOrientationLockType lock_type) override;
   void Unlock() override;
   void RequestWindowBounds(const gfx::Rect& bounds) override;
+  void SetRestoreInfo(int32_t, int32_t) override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 

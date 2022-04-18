@@ -56,7 +56,10 @@
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
+#include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
+#include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/wm_helper_chromeos.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -937,6 +940,51 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   const gfx::Rect& browser_bounds =
       browser_list->get(0u)->window()->GetNativeWindow()->bounds();
   EXPECT_EQ(kCurrentBounds, browser_bounds);
+}
+
+// Test Lacros window properties and bounds are restored correctly.
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       RestoreLacrosWindowProperties) {
+  gfx::Size size(32, 32);
+  gfx::Point origin(100, 100);
+  gfx::Rect prerestore_bounds(origin, size);
+
+  // Create Full Restore launch data before launching any browser, simulating
+  // Full Restore data being saved prior to restart. `kWindowId1` is the restore
+  // window id.
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
+                                app_constants::kLacrosAppId, kWindowId1));
+  CreateAndSaveWindowInfo(
+      kDeskId, prerestore_bounds, chromeos::WindowStateType::kNormal,
+      ui::SHOW_STATE_DEFAULT, kWindowId1, /*snap_percentage=*/0);
+  WaitForAppLaunchInfoSaved();
+
+  // Create FullRestoreAppLaunchHandler, and set should restore to save the Full
+  // Restore data.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  SetShouldRestore(app_launch_handler.get());
+
+  // Create a WMHelper instance for Surface to set in the constructor.
+  std::unique_ptr<exo::WMHelper> wm_helper =
+      std::make_unique<exo::WMHelperChromeOS>();
+
+  // Create the Lacros window surface and restore it.
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+  shell_surface->SetRestoreInfo(/*restore_session_id=*/kWindowId2,
+                                /*restore_window_id=*/kWindowId1);
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_EQ(kWindowId2,
+            shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                ::app_restore::kWindowIdKey));
+  EXPECT_EQ(kWindowId1,
+            shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                ::app_restore::kRestoreWindowIdKey));
+  EXPECT_EQ(prerestore_bounds,
+            shell_surface->GetWidget()->GetNativeWindow()->GetBoundsInScreen());
 }
 
 class FullRestoreAppLaunchHandlerChromeAppBrowserTest

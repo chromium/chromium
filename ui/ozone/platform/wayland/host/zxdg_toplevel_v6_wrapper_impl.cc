@@ -197,4 +197,5 @@ void ZXDGToplevelV6WrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
   NOTREACHED();
 }
 
+void ZXDGToplevelV6WrapperImpl::SetRestoreInfo(int32_t, int32_t) {}
 }  // namespace ui

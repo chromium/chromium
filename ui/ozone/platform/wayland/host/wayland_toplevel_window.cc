@@ -474,6 +474,8 @@ bool WaylandToplevelWindow::OnInitialize(
   } else if (properties.visible_on_all_workspaces) {
     workspace_ = kVisibleOnAllWorkspaces;
   }
+  restore_session_id_ = properties.restore_session_id;
+  restore_window_id_ = properties.restore_window_id;
 
   SetPinnedModeExtension(this, static_cast<PinnedModeExtension*>(this));
   return true;
@@ -852,6 +854,8 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
     SetImmersiveFullscreenStatus(false);
     SetInitialWorkspace();
+    if (restore_session_id_)
+      shell_toplevel_->SetRestoreInfo(restore_session_id_, restore_window_id_);
   }
 
   if (connection()->gtk_shell1()) {

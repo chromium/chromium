@@ -644,6 +644,14 @@ void ShellSurfaceBase::SetWindowBounds(const gfx::Rect& bounds) {
   widget_->SetBounds(bounds);
 }
 
+void ShellSurfaceBase::SetRestoreInfo(int32_t restore_session_id,
+                                      int32_t restore_window_id) {
+  // Restore information must be set before widget is created.
+  DCHECK(!widget_);
+  restore_session_id_.emplace(restore_session_id);
+  restore_window_id_.emplace(restore_window_id);
+}
+
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetDisplay", "display_id", display_id);
 
@@ -1280,12 +1288,26 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   params.activatable = activatable
                            ? views::Widget::InitParams::Activatable::kYes
                            : views::Widget::InitParams::Activatable::kNo;
+  if (restore_session_id_) {
+    params.init_properties_container.SetProperty(app_restore::kWindowIdKey,
+                                                 *restore_session_id_);
+  }
+  if (restore_window_id_) {
+    params.init_properties_container.SetProperty(
+        app_restore::kRestoreWindowIdKey, *restore_window_id_);
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Restore `params` to those of the saved `restore_window_id_`.
   app_restore::ModifyWidgetParams(params.init_properties_container.GetProperty(
                                       app_restore::kRestoreWindowIdKey),
                                   &params);
 #endif
+
+  // If app restore specifies the initial bounds, set `initial_bounds_` to it so
+  // that shell surface knows the initial bounds is set.
+  if (!params.bounds.IsEmpty() && !initial_bounds_)
+    initial_bounds_.emplace(params.bounds);
 
   OverrideInitParams(&params);
 

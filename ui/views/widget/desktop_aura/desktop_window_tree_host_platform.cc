@@ -145,6 +145,11 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  properties.restore_session_id = params.restore_session_id;
+  properties.restore_window_id = params.restore_window_id;
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
   properties.enable_keyboard = true;
 #endif

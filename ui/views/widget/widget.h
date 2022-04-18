@@ -394,6 +394,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If set, the widget was created in headless mode.
     bool headless_mode = false;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    int32_t restore_session_id = 0;
+    int32_t restore_window_id = 0;
+#endif
+
     // Contains any properties with which the native widget should be
     // initialized prior to adding it to the window hierarchy. All the
     // properties in |init_properties_container| will be moved to the native
