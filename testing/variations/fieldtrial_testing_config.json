@@ -2551,6 +2551,24 @@
             ]
         }
     ],
+    "CrOSMglruARM": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "MglruBehavior_20220407",
+                    "params": {
+                        "KstaledRatio": "1"
+                    },
+                    "enable_features": [
+                        "KstaledSwap"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrashReportBreadcrumbs": [
         {
             "platforms": [
