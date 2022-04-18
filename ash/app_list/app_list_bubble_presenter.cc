@@ -39,8 +39,10 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
@@ -61,14 +63,16 @@ constexpr int kExtraTopOfScreenSpacing = 16;
 gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
-  gfx::Rect work_area = display.work_area();
+  gfx::RectF work_area(display.work_area());
 
   // Subtract the shelf's bounds from the work area, since the shelf should
   // always be shown with the app list bubble. This is done because the work
   // area includes the area under the shelf when the shelf is set to auto-hide.
-  work_area.Subtract(Shelf::ForWindow(root_window)->GetIdealBounds());
+  gfx::RectF shelf_bounds(Shelf::ForWindow(root_window)->GetIdealBounds());
+  wm::TranslateRectToScreen(root_window, &shelf_bounds);
+  work_area.Subtract(shelf_bounds);
 
-  return work_area;
+  return gfx::ToRoundedRect(work_area);
 }
 
 // Returns the preferred size of the bubble widget in DIPs.
