@@ -193,23 +193,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20000_2022-03-18",
-                    "params": {
-                        "autodismiss_duration_ms_SaveCard": "20000",
-                        "save_card_dialog_explanation": "true",
-                        "save_card_message_use_followup_button_text": "false",
-                        "save_card_message_use_gpay_icon": "true"
-                    },
-                    "enable_features": [
-                        "MessagesForAndroidInfrastructure",
-                        "MessagesForAndroidSaveCard"
-                    ]
-                },
-                {
-                    "name": "Enabled_30000_2022-03-18",
+                    "name": "Enabled_30000_dialogV2_2022-04-18",
                     "params": {
                         "autodismiss_duration_ms_SaveCard": "30000",
-                        "save_card_dialog_explanation": "true",
+                        "save_card_dialog_v2_enabled": "true",
                         "save_card_message_use_followup_button_text": "false",
                         "save_card_message_use_gpay_icon": "true"
                     },
@@ -219,10 +206,22 @@
                     ]
                 },
                 {
-                    "name": "Enabled_60000_2022-03-18",
+                    "name": "Enabled_60000_dialogV2_2022-04-18",
                     "params": {
                         "autodismiss_duration_ms_SaveCard": "60000",
-                        "save_card_dialog_explanation": "true",
+                        "save_card_dialog_v2_enabled": "true",
+                        "save_card_message_use_followup_button_text": "false",
+                        "save_card_message_use_gpay_icon": "true"
+                    },
+                    "enable_features": [
+                        "MessagesForAndroidInfrastructure",
+                        "MessagesForAndroidSaveCard"
+                    ]
+                },
+                {
+                    "name": "Enabled_60000_dialogV1_2022-04-18",
+                    "params": {
+                        "autodismiss_duration_ms_SaveCard": "60000",
                         "save_card_message_use_followup_button_text": "false",
                         "save_card_message_use_gpay_icon": "true"
                     },
