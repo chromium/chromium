@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "components/search_engines/search_engine_type.h"
+
 struct TemplateURLData;
 
 // The Starter Pack is a set of built-in search engines that allow the user to
@@ -24,6 +26,7 @@ struct StarterPackEngine {
   const char* const favicon_url;
   const char* const search_url;
   const int id;
+  const SearchEngineType type;
 };
 
 extern const int kMaxStarterPackEngineID;

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/search_engines/template_url_starter_pack_data.h"
+
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -17,30 +19,23 @@ const StarterPackEngine bookmarks = {
     IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME,
     IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_KEYWORD,
     nullptr,
-    "chrome://bookmarks/?q=%s",
+    "chrome://bookmarks/?q={searchTerms}",
     1,
+    SEARCH_ENGINE_STARTER_PACK_BOOKMARKS,
 };
 
 const StarterPackEngine history = {
     IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_NAME,
     IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_KEYWORD,
     nullptr,
-    "chrome://history/?q=%s",
+    "chrome://history/?q={searchTerms}",
     2,
-};
-
-const StarterPackEngine settings = {
-    IDS_SEARCH_ENGINES_STARTER_PACK_SETTINGS_NAME,
-    IDS_SEARCH_ENGINES_STARTER_PACK_SETTINGS_KEYWORD,
-    nullptr,
-    "chrome://settings/?q=%s",
-    3,
+    SEARCH_ENGINE_STARTER_PACK_HISTORY,
 };
 
 const StarterPackEngine* engines[] = {
     &bookmarks,
     &history,
-    &settings,
 };
 
 int GetDataVersion() {
