@@ -25,21 +25,10 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 
+#include "third_party/blink/renderer/modules/webaudio/audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
-#include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 
 namespace blink {
-
-AudioDestinationHandler::AudioDestinationHandler(AudioNode& node)
-    : AudioHandler(kNodeTypeDestination, node, 0) {
-  AddInput();
-}
-
-AudioDestinationHandler::~AudioDestinationHandler() {
-  DCHECK(!IsInitialized());
-}
-
-// ----------------------------------------------------------------
 
 AudioDestinationNode::AudioDestinationNode(BaseAudioContext& context)
     : AudioNode(context) {}
