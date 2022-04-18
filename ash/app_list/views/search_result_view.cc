@@ -122,9 +122,9 @@ views::Label* SetupChildLabelView(
     SearchResultView::SearchResultViewType view_type,
     SearchResultView::LabelType label_type,
     int flex_order,
-    bool elidable,
     bool has_keyboard_shortcut_contents,
-    bool is_multi_line) {
+    bool is_multi_line,
+    SearchResultTextItem::OverflowBehavior overflow_behavior) {
   // Create and setup label.
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
   // Ignore labels for accessibility - the result accessible name is defined on
@@ -133,15 +133,21 @@ views::Label* SetupChildLabelView(
   label->GetViewAccessibility().OverrideIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetVisible(false);
-  label->SetElideBehavior(elidable ? gfx::ELIDE_TAIL : gfx::NO_ELIDE);
+  label->SetElideBehavior(overflow_behavior ==
+                                  SearchResultTextItem::OverflowBehavior::kElide
+                              ? gfx::ELIDE_TAIL
+                              : gfx::NO_ELIDE);
   label->SetMultiLine(is_multi_line);
   if (is_multi_line)
     label->SetMaxLines(kMultiLineLimit);
 
   label->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred)
+      views::FlexSpecification(
+          overflow_behavior == SearchResultTextItem::OverflowBehavior::kHide
+              ? views::MinimumFlexSizeRule::kPreferredSnapToZero
+              : views::MinimumFlexSizeRule::kScaleToMinimum,
+          views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(flex_order));
 
   // Apply label text styling.
@@ -369,8 +375,9 @@ SearchResultView::SearchResultView(
 
   result_text_separator_label_ = SetupChildLabelView(
       title_and_details_container_, view_type_, LabelType::kDetails,
-      kSeparatorOrder, /*elidable=*/false, has_keyboard_shortcut_contents_,
-      /*is_multi_line=*/false);
+      kSeparatorOrder, has_keyboard_shortcut_contents_,
+      /*is_multi_line=*/false,
+      SearchResultTextItem::OverflowBehavior::kNoElide);
   result_text_separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
   result_text_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
@@ -389,16 +396,18 @@ SearchResultView::SearchResultView(
 
   rating_separator_label_ = SetupChildLabelView(
       title_and_details_container_, view_type_, LabelType::kDetails,
-      kSeparatorOrder, /*elidable=*/false, has_keyboard_shortcut_contents_,
-      /*is_multi_line=*/false);
+      kSeparatorOrder, has_keyboard_shortcut_contents_,
+      /*is_multi_line=*/false,
+      SearchResultTextItem::OverflowBehavior::kNoElide);
   rating_separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
   rating_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   rating_ = SetupChildLabelView(
       title_and_details_container_, view_type_, LabelType::kDetails,
-      kRatingOrder, /*elidable=*/false, has_keyboard_shortcut_contents_,
-      /*is_multi_line=*/false);
+      kRatingOrder, has_keyboard_shortcut_contents_,
+      /*is_multi_line=*/false,
+      SearchResultTextItem::OverflowBehavior::kNoElide);
 
   rating_star_ = SetupChildImageView(title_and_details_container_);
   rating_star_->SetImage(gfx::CreateVectorIcon(
@@ -646,17 +655,19 @@ SearchResultView::SetupContainerViewForTextVector(
   for (auto& span : text_vector) {
     switch (span.GetType()) {
       case SearchResultTextItemType::kString: {
-        const bool elidable = span.GetElidable();
+        bool elidable = span.GetOverflowBehavior() !=
+                        SearchResultTextItem::OverflowBehavior::kNoElide;
         views::Label* label = SetupChildLabelView(
             parent, view_type_, label_type,
-            elidable ? kElidableLabelOrderStart + label_count
-                     : kNonElideLabelOrder,
-            elidable, has_keyboard_shortcut_contents,
-            /*is_multi_line=*/is_multi_line);
+            !elidable ? kNonElideLabelOrder
+                      : kElidableLabelOrderStart + label_count,
+            has_keyboard_shortcut_contents,
+            /*is_multi_line=*/is_multi_line, span.GetOverflowBehavior());
         // Elidable label orders are monotonically increasing. Adjust the order
         // of the label by the number of labels in this container.
-        if (elidable)
+        if (elidable) {
           ++label_count;
+        }
         if (label_type == LabelType::kDetails) {
           // We should only show a separator label when the details container
           // has valid contents.

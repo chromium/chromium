@@ -322,14 +322,16 @@ SearchResultTextItem& SearchResultTextItem::SetImage(gfx::ImageSkia icon) {
   return *this;
 }
 
-bool SearchResultTextItem::GetElidable() const {
+SearchResultTextItem::OverflowBehavior
+SearchResultTextItem::GetOverflowBehavior() const {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
-  return elidable;
+  return overflow_behavior;
 }
 
-SearchResultTextItem& SearchResultTextItem::SetElidable(bool elidable) {
+SearchResultTextItem& SearchResultTextItem::SetOverflowBehavior(
+    SearchResultTextItem::OverflowBehavior overflow_behavior) {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
-  this->elidable = elidable;
+  this->overflow_behavior = overflow_behavior;
   return *this;
 }
 

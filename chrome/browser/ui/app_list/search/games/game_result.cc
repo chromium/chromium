@@ -123,7 +123,8 @@ void GameResult::UpdateText(const apps::Result& game,
   accessible_name.push_back(kA11yDelimiter);
 
   std::u16string source = DisplayStringForGameSource(extras->GetSource());
-  details.push_back(CreateStringTextItem(source).SetElidable(false));
+  details.push_back(CreateStringTextItem(source).SetOverflowBehavior(
+      ash::SearchResultTextItem::OverflowBehavior::kNoElide));
   accessible_name.push_back(source);
 
   const auto& platforms = extras->GetPlatforms();

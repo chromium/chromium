@@ -90,7 +90,9 @@ void OpenTabResult::UpdateText() {
   SetDetailsTextVector(
       {CreateStringTextItem(url).SetTextTags({Tag(Tag::URL, 0, url.length())}),
        CreateStringTextItem(kUrlDelimiter),
-       CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT).SetElidable(false)});
+       CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT)
+           .SetOverflowBehavior(
+               ash::SearchResultTextItem::OverflowBehavior::kNoElide)});
 
   SetAccessibleName(
       base::JoinString({match_.description, url,

@@ -516,6 +516,13 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutSnapshot,
   };
 
+  // Only used for SearchResultTextItemType kString
+  enum OverflowBehavior {
+    kNoElide,  // Prioritize this text item for space allocation: do not elide.
+    kElide,    // Elide this text item when there is not enough space.
+    kHide,     // Completely hide this text item when there is not enough space.
+  };
+
   SearchResultTextItem(SearchResultTextItemType type);
   SearchResultTextItem(const SearchResultTextItem&);
   SearchResultTextItem& operator=(const SearchResultTextItem&);
@@ -536,8 +543,8 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   gfx::ImageSkia GetImage() const;
   SearchResultTextItem& SetImage(gfx::ImageSkia icon);
 
-  bool GetElidable() const;
-  SearchResultTextItem& SetElidable(bool elidable);
+  OverflowBehavior GetOverflowBehavior() const;
+  SearchResultTextItem& SetOverflowBehavior(OverflowBehavior overflow_behavior);
 
  private:
   SearchResultTextItemType item_type;
@@ -548,9 +555,9 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   absl::optional<IconCode> icon_code;
   // used for type SearchResultTextItemType::kCustomIcon.
   absl::optional<gfx::ImageSkia> raw_image;
-  // Whether parts of this text item can be elided with "...". Only applicable
-  // to SearchResultTextItemType::kString.
-  bool elidable = true;
+  // Behavior of the text item when there is not enough space to show it in the
+  // UI. only applicable to SearchResultTextItemType::kString.
+  OverflowBehavior overflow_behavior = kElide;
 };
 
 // A structure holding the common information which is sent from chrome to ash,
