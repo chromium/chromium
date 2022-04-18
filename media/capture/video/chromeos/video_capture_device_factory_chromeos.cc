@@ -34,7 +34,6 @@ VideoCaptureDeviceFactoryChromeOS::~VideoCaptureDeviceFactoryChromeOS() {
 
   camera_hal_delegate_->Reset();
   camera_hal_ipc_thread_.Stop();
-  camera_hal_delegate_.reset();
 }
 
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryChromeOS::CreateDevice(
@@ -89,7 +88,7 @@ bool VideoCaptureDeviceFactoryChromeOS::Init() {
   }
 
   camera_hal_delegate_ =
-      std::make_unique<CameraHalDelegate>(camera_hal_ipc_thread_.task_runner());
+      new CameraHalDelegate(camera_hal_ipc_thread_.task_runner());
   if (!camera_hal_delegate_->RegisterCameraClient()) {
     LOG(ERROR) << "Failed to register camera client";
     return false;

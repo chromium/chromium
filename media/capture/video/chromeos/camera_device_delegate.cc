@@ -281,10 +281,10 @@ ResultMetadata::~ResultMetadata() = default;
 
 CameraDeviceDelegate::CameraDeviceDelegate(
     VideoCaptureDeviceDescriptor device_descriptor,
-    CameraHalDelegate* camera_hal_delegate,
+    scoped_refptr<CameraHalDelegate> camera_hal_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
     : device_descriptor_(device_descriptor),
-      camera_hal_delegate_(camera_hal_delegate),
+      camera_hal_delegate_(std::move(camera_hal_delegate)),
       ipc_task_runner_(std::move(ipc_task_runner)) {}
 
 CameraDeviceDelegate::~CameraDeviceDelegate() = default;

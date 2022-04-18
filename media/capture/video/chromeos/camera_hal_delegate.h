@@ -15,7 +15,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/vendor_tag_ops_delegate.h"
@@ -36,20 +35,17 @@ class VideoCaptureDeviceChromeOSDelegate;
 // process on Chrome OS to access the module-level camera functionalities such
 // as camera device info look-up and opening camera devices.
 //
-// CameraHalDelegate is owned by VideoCaptureDeviceFactoryChromeOS.
-// VideoCaptureDeviceChromeOSDelegate and CameraDeviceDelegate have
-// CameraHalDelegate's raw pointer.
-// When VideoCaptureDeviceFactoryChromeOS destroys,
-// CameraHalDelegate destroys VideoCaptureDeviceChromeOSDelegate and
-// VideoCaptureDeviceChromeOSDelegate destroys CameraDeviceDelegate.
+// CameraHalDelegate is refcounted because VideoCaptureDeviceFactoryChromeOS and
+// CameraDeviceDelegate both need to reference CameraHalDelegate, and
+// VideoCaptureDeviceFactoryChromeOS may be destroyed while CameraDeviceDelegate
+// is still alive.
 class CAPTURE_EXPORT CameraHalDelegate final
-    : public cros::mojom::CameraModuleCallbacks {
+    : public base::RefCountedThreadSafe<CameraHalDelegate>,
+      public cros::mojom::CameraModuleCallbacks {
  public:
   // All the Mojo IPC operations happen on |ipc_task_runner|.
   explicit CameraHalDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
-
-  ~CameraHalDelegate() final;
 
   CameraHalDelegate(const CameraHalDelegate&) = delete;
   CameraHalDelegate& operator=(const CameraHalDelegate&) = delete;
@@ -102,6 +98,10 @@ class CAPTURE_EXPORT CameraHalDelegate final
   void DisableAllVirtualDevices();
 
  private:
+  friend class base::RefCountedThreadSafe<CameraHalDelegate>;
+
+  ~CameraHalDelegate() final;
+
   void OnRegisteredCameraHalClient(int32_t result);
 
   void GetSupportedFormats(const cros::mojom::CameraInfoPtr& camera_info,
@@ -224,8 +224,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // A map from camera id to corresponding delegate instance.
   base::flat_map<int, std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>
       vcd_delegate_map_;
-
-  std::vector<std::unique_ptr<CameraClientObserver>> local_client_observers_;
 };
 
 }  // namespace media

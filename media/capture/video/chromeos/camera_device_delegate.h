@@ -119,7 +119,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   CameraDeviceDelegate(
       VideoCaptureDeviceDescriptor device_descriptor,
-      CameraHalDelegate* camera_hal_delegate,
+      scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
 
   CameraDeviceDelegate(const CameraDeviceDelegate&) = delete;
@@ -248,7 +248,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // Current configured resolution of BLOB stream.
   gfx::Size current_blob_resolution_;
 
-  CameraHalDelegate* camera_hal_delegate_;
+  const scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
 
   // Map client type to video capture parameter.
   base::flat_map<ClientType, VideoCaptureParams> chrome_capture_params_;

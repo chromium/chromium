@@ -48,7 +48,7 @@ class CameraHalDelegateTest : public ::testing::Test {
         &mock_gpu_memory_buffer_manager_);
     hal_delegate_thread_.Start();
     camera_hal_delegate_ =
-        std::make_unique<CameraHalDelegate>(hal_delegate_thread_.task_runner());
+        new CameraHalDelegate(hal_delegate_thread_.task_runner());
     camera_hal_delegate_->SetCameraModule(
         mock_camera_module_.GetPendingRemote());
   }
@@ -65,7 +65,7 @@ class CameraHalDelegateTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<CameraHalDelegate> camera_hal_delegate_;
+  scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
   testing::StrictMock<unittest_internal::MockCameraModule> mock_camera_module_;
   testing::StrictMock<unittest_internal::MockVendorTagOps> mock_vendor_tag_ops_;
   unittest_internal::MockGpuMemoryBufferManager mock_gpu_memory_buffer_manager_;
