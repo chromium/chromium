@@ -12,6 +12,7 @@ static_library("backend") {
     "feedback_service_provider.h",
     "help_content_provider.cc",
     "help_content_provider.h",
+    "os_feedback_delegate.h",
   ]
 
   deps = [

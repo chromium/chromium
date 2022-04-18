@@ -11,8 +11,8 @@
 #include "ash/webui/grit/ash_os_feedback_resources_map.h"
 #include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
 #include "ash/webui/os_feedback_ui/backend/help_content_provider.h"
+#include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
-#include "ash/webui/os_feedback_ui/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -43,8 +43,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 OSFeedbackUI::OSFeedbackUI(
     content::WebUI* web_ui,
     std::unique_ptr<OsFeedbackDelegate> feedback_delegate)
-    : MojoWebUIController(web_ui),
-      feedback_delegate_(std::move(feedback_delegate)) {
+    : MojoWebUIController(web_ui) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeUIOSFeedbackHost);
@@ -76,10 +75,11 @@ OSFeedbackUI::OSFeedbackUI(
   webui_allowlist->RegisterAutoGrantedPermission(
       untrusted_origin, ContentSettingsType::JAVASCRIPT);
 
-  helpContentProvider_ = std::make_unique<feedback::HelpContentProvider>(
-      feedback_delegate_->GetApplicationLocale(), browser_context);
-  feedbackServiceProvider_ =
-      std::make_unique<feedback::FeedbackServiceProvider>();
+  help_content_provider_ = std::make_unique<feedback::HelpContentProvider>(
+      feedback_delegate->GetApplicationLocale(), browser_context);
+  feedback_service_provider_ =
+      std::make_unique<feedback::FeedbackServiceProvider>(
+          std::move(feedback_delegate));
 }
 
 OSFeedbackUI::~OSFeedbackUI() = default;
@@ -87,12 +87,12 @@ OSFeedbackUI::~OSFeedbackUI() = default;
 void OSFeedbackUI::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {
-  feedbackServiceProvider_->BindInterface(std::move(receiver));
+  feedback_service_provider_->BindInterface(std::move(receiver));
 }
 void OSFeedbackUI::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::HelpContentProvider>
         receiver) {
-  helpContentProvider_->BindInterface(std::move(receiver));
+  help_content_provider_->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSFeedbackUI)

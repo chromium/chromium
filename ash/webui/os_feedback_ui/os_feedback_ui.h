@@ -36,9 +36,8 @@ class OSFeedbackUI : public ui::MojoWebUIController {
           receiver);
 
  private:
-  std::unique_ptr<OsFeedbackDelegate> feedback_delegate_;
-  std::unique_ptr<feedback::HelpContentProvider> helpContentProvider_;
-  std::unique_ptr<feedback::FeedbackServiceProvider> feedbackServiceProvider_;
+  std::unique_ptr<feedback::HelpContentProvider> help_content_provider_;
+  std::unique_ptr<feedback::FeedbackServiceProvider> feedback_service_provider_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -191,7 +191,7 @@
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/multidevice_debug/proximity_auth_ui.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
-#include "ash/webui/os_feedback_ui/os_feedback_delegate.h"
+#include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
@@ -561,8 +561,9 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
 
 template <>
 WebUIController* NewWebUI<ash::OSFeedbackUI>(WebUI* web_ui, const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   return new ash::OSFeedbackUI(
-      web_ui, std::make_unique<ash::ChromeOsFeedbackDelegate>());
+      web_ui, std::make_unique<ash::ChromeOsFeedbackDelegate>(profile));
 }
 
 void BindScanService(

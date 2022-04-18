@@ -4,6 +4,7 @@
 
 #include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
 
+#include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom-test-utils.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/run_loop.h"
@@ -16,13 +17,39 @@
 namespace ash {
 namespace feedback {
 
+namespace {
+
+constexpr char kPageUrl[] = "https://www.google.com/";
+constexpr char kSignedInUserEmail[] = "test_user_email@test.com";
+
+}  // namespace
+
 using ::ash::os_feedback_ui::mojom::FeedbackContext;
 using ::ash::os_feedback_ui::mojom::FeedbackContextPtr;
 using ::ash::os_feedback_ui::mojom::FeedbackServiceProviderAsyncWaiter;
 
+class TestOsFeedbackDelegate : public OsFeedbackDelegate {
+ public:
+  TestOsFeedbackDelegate() = default;
+  ~TestOsFeedbackDelegate() override = default;
+
+  std::string GetApplicationLocale() override { return "zh"; }
+
+  absl::optional<GURL> GetLastActivePageUrl() override {
+    return GURL(kPageUrl);
+  }
+
+  absl::optional<std::string> GetSignedInUserEmail() const override {
+    return kSignedInUserEmail;
+  }
+};
+
 class FeedbackServiceProviderTest : public testing::Test {
  public:
-  FeedbackServiceProviderTest() = default;
+  FeedbackServiceProviderTest()
+      : provider_(FeedbackServiceProvider(
+            std::make_unique<TestOsFeedbackDelegate>())) {}
+
   ~FeedbackServiceProviderTest() override = default;
 
   void SetUp() override {
@@ -49,8 +76,8 @@ class FeedbackServiceProviderTest : public testing::Test {
 TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
   auto feedback_context = GetFeedbackContextAndWait();
 
-  EXPECT_EQ("test@test.com", feedback_context->email.value());
-  EXPECT_EQ("chrome://flags/", feedback_context->page_url.value().spec());
+  EXPECT_EQ(kSignedInUserEmail, feedback_context->email.value());
+  EXPECT_EQ(kPageUrl, feedback_context->page_url.value().spec());
 }
 
 }  // namespace feedback

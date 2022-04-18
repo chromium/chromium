@@ -7,13 +7,18 @@
 
 #include <string>
 
-#include "ash/webui/os_feedback_ui/os_feedback_delegate.h"
+#include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
+class Profile;
 
 namespace ash {
 
 class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
  public:
-  ChromeOsFeedbackDelegate();
+  explicit ChromeOsFeedbackDelegate(Profile* profile);
   ~ChromeOsFeedbackDelegate() override;
 
   ChromeOsFeedbackDelegate(const ChromeOsFeedbackDelegate&) = delete;
@@ -21,6 +26,14 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
 
   // OsFeedbackDelegate:
   std::string GetApplicationLocale() override;
+  absl::optional<GURL> GetLastActivePageUrl() override;
+  absl::optional<std::string> GetSignedInUserEmail() const override;
+
+ private:
+  // TODO(xiangdongkong): make sure the profile_ cannot be destroyed while
+  // operations are pending.
+  raw_ptr<Profile> profile_;
+  absl::optional<GURL> page_url_;
 };
 
 }  // namespace ash
