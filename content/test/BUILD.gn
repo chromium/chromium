@@ -756,10 +756,15 @@ group("telemetry_gpu_integration_test_scripts_only") {
 group("telemetry_gpu_integration_test_support") {
   testonly = true
   data = [
-    # For the Maps performance test. Include the entire directory to
-    # avoid having to update this BUILD.gn file if more files are
-    # added in the future.
-    "//tools/perf/page_sets/maps_perf_test/",
+    # For the Maps performance test. Include individual files since including
+    # the full directory can include a .fetchts file, which affects swarming's
+    # ability to dedupe tasks.
+    "//tools/perf/page_sets/maps_perf_test/config.js",
+    "//tools/perf/page_sets/maps_perf_test/load_dataset",
+    "//tools/perf/page_sets/maps_perf_test/load_dataset.sha1",
+    "//tools/perf/page_sets/maps_perf_test/performance.html",
+    "//tools/perf/page_sets/maps_perf_test/tracked.js",
+    "//tools/perf/page_sets/maps_perf_test/worker.js",
 
     # For GpuProcess.video
     "//content/test/data/media/bear.ogv",
