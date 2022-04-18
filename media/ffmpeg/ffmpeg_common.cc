@@ -351,7 +351,6 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
                 codec_context->ch_layout.u.mask,
                 codec_context->ch_layout.nb_channels);
 
-  int sample_rate = codec_context->sample_rate;
   switch (codec) {
     // For AC3/EAC3 we enable only demuxing, but not decoding, so FFmpeg does
     // not fill |sample_fmt|.
@@ -398,7 +397,7 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
                       codec_context->extradata + codec_context->extradata_size);
   }
 
-  config->Initialize(codec, sample_format, channel_layout, sample_rate,
+  config->Initialize(codec, sample_format, channel_layout, codec_context->sample_rate,
                      extra_data, encryption_scheme, seek_preroll,
                      codec_context->delay);
   if (channel_layout == CHANNEL_LAYOUT_DISCRETE)
