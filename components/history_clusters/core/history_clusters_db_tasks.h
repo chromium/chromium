@@ -46,6 +46,10 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   void DoneRunOnMainThread() override;
 
  private:
+  // Helper for `RunOnDBThread()` that generates the `QueryOptions` for each
+  // history request.
+  history::QueryOptions GetHistoryQueryOptions();
+
   // Helper for `RunOnDBThread()` that adds complete but unclustered visits
   // from `backend` to `annotated_visits_`. Returns whether the visits were
   // limited by `options.max_count`.
@@ -54,11 +58,18 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
 
   // Helper for `RunOnDBThread()` that adds incomplete visits from
   // `incomplete_visit_map_` to `annotated_visits_`.
-  void AddIncompleteVisits(history::HistoryBackend* backend);
+  void AddIncompleteVisits(history::HistoryBackend* backend,
+                           base::Time begin_time,
+                           base::Time end_time);
 
   // Helper for `RunOnDBThread()` that removes synced visits from
   // `annotated_visits_`.
   void RemoveVisitsFromSync();
+
+  // Helper for `RunOnDBThread()` that updates `continuation_params_` after each
+  // history request preparing it for the next call.
+  void IncrementContinuationParams(history::QueryOptions options,
+                                   bool limited_by_max_count);
 
   // Incomplete visits that have history rows and are withing the time frame of
   // the completed visits fetched will be appended to the annotated visits
@@ -70,9 +81,6 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // though the visit count cap may be reached before we've queried all the way
   // to `begin_time_limit_`.
   base::Time begin_time_limit_;
-  // The end time used in the initial history request for completed visits.
-  // This is the upper bound time of all the visits fetched.
-  base::Time original_end_time_;
   // The end time used to continue the query onto the "next page".
   // This is the lower bound time of all the visits fetched.
   base::Time continuation_end_time_;
