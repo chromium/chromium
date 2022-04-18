@@ -15,7 +15,7 @@ const base::Feature kNearbySharing{"NearbySharing",
 // persistently scan and present a notification when a nearby device is
 // attempting to share.
 const base::Feature kNearbySharingBackgroundScanning{
-    "NearbySharingBackgroundScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NearbySharingBackgroundScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables support for Nearby Share on child accounts.
 const base::Feature kNearbySharingChildAccounts{
