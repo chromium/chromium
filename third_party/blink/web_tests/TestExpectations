@@ -7765,3 +7765,6 @@ crbug.com/1316559 [ Win7 ] inspector-protocol/page/set-font-families-generic-nam
 
 # Sheriff 2022-04-18
 crbug.com/1317007 [ Mac10.12 ] external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
+
+# Sheriff 2022-04-18
+crbug.com/1317029 [ Mac10.13 ] external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
