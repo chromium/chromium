@@ -36,6 +36,8 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/feature_discovery_duration_reporter.h"
+#include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -567,8 +569,12 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
   DCHECK(features::IsProductivityLauncherEnabled());
   DCHECK(features::IsLauncherAppSortEnabled());
 
-  if (new_order)
+  if (new_order) {
     RecordAppListSortAction(*new_order, IsInTabletMode());
+    FeatureDiscoveryDurationReporter::GetInstance()->MaybeFinishObservation(
+        feature_discovery::TrackableFeature::
+            kAppListReorderAfterEducationNudge);
+  }
 
   // Adapt the bubble app list to the new sorting order. NOTE: the bubble app
   // list is visible only in clamshell mode. Therefore do not animate in tablet

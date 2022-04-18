@@ -216,10 +216,7 @@ TEST_F(FeatureDiscoveryDurationReporterImplTest,
 // Verifies each feature that is supported by the feature discovery duration
 // reporter has the unique feature name.
 TEST_F(FeatureDiscoveryDurationReporterImplTest, VerifyFeatureNameIsUnique) {
-  auto cmp = [](const char* a, const char* b) {
-    const size_t length = base::CharTraits<char>::length(a);
-    return base::CharTraits<char>::compare(a, b, length) > 0;
-  };
+  auto cmp = [](const char* a, const char* b) { return std::strcmp(a, b) > 0; };
   std::set<const char*, decltype(cmp)> feature_names(cmp);
   for (const auto& feature_info : feature_discovery::kTrackableFeatureArray) {
     bool success = feature_names.emplace(feature_info.name).second;

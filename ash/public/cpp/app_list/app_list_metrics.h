@@ -23,6 +23,10 @@ ASH_PUBLIC_EXPORT extern const char
 ASH_PUBLIC_EXPORT extern const char
     kTabletAppListSortOrderOnSessionStartHistogram[];
 
+// The UMA histogram that records the time duration between the app list sort
+// education nudge show and the first sort usage.
+ASH_PUBLIC_EXPORT extern const char kAppListSortDiscoveryDurationAfterNudge[];
+
 // The type of the ChromeSearchResult. This is used for logging so do not
 // change the order of this enum. If you add to this enum update
 // AppListSearchResult in enums.xml.

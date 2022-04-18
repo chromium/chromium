@@ -20,8 +20,13 @@ enum class ASH_PUBLIC_EXPORT TrackableFeature {
   // A mock feature used for testing.
   kMockFeature = 0,
 
+  // App list reorder after the reorder education nudge shows.
+  // TODO(https://crbug.com/1316185): split this histogram into the one for
+  // clamshell and another one for tablet.
+  kAppListReorderAfterEducationNudge = 1,
+
   // Used to mark the end. It should always be the last one.
-  kMax = 1,
+  kMax = 2,
 };
 
 struct ASH_PUBLIC_EXPORT TrackableFeatureInfo {
@@ -37,7 +42,7 @@ struct ASH_PUBLIC_EXPORT TrackableFeatureInfo {
 
 // A hardcoded array of trackable features' info.
 // NOTE: update `kTrackableFeatureArray` if a new trackable feature is added.
-ASH_PUBLIC_EXPORT extern const std::array<TrackableFeatureInfo, 1>
+ASH_PUBLIC_EXPORT extern const std::array<TrackableFeatureInfo, 2>
     kTrackableFeatureArray;
 
 }  // namespace ash::feature_discovery
