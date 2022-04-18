@@ -2205,6 +2205,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1317065")
     public void test_svgStyleElement() {
         performHtmlTest("svg-style-element.html");
     }
