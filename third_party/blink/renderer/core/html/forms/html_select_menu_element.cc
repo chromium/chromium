@@ -329,8 +329,7 @@ bool HTMLSelectMenuElement::open() const {
     return false;
   if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
     return popup_element->open();
-  } else if (RuntimeEnabledFeatures::
-                 HTMLSelectMenuElementUsesPopupAttributeEnabled()) {
+  } else if (listbox_part_->HasValidPopupAttribute()) {
     return listbox_part_->popupOpen();
   }
   return false;
@@ -358,8 +357,7 @@ void HTMLSelectMenuElement::CloseListbox() {
     }
     if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
       popup_element->hide();
-    } else if (RuntimeEnabledFeatures::
-                   HTMLSelectMenuElementUsesPopupAttributeEnabled()) {
+    } else if (listbox_part_->HasValidPopupAttribute()) {
       listbox_part_->hidePopup();
     }
 
