@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1951012854035635156">Asistente</translation>
+<translation id="1977994649430373166">Foto de perfil de Google</translation>
 <translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
 <translation id="1999615961760456652">Portal cautivo</translation>
 <translation id="2006864819935886708">Conectividad</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">Debes seleccionar al menos un álbum de la galería de arte</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Interruptor de retroiluminación de teclado</translation>
 <translation id="2240366984605217732">Cambiar diseño</translation>
 <translation id="225692081236532131">Estado de la activación</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para añadir fotos, accede a <ph name="LINK" /></translation>
@@ -225,7 +227,7 @@
 <translation id="3632579075709132555">Activar o desactivar Pantalla de privacidad</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Cargando...</translation>
-<translation id="3708186454126126312">Conectados anteriormente</translation>
+<translation id="3708186454126126312">Conectado anteriormente</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reseñas)</translation>
 <translation id="3748026146096797577">No conectado</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
@@ -625,6 +627,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Habilitar modo de color automático</translation>
 <translation id="8041089156583427627">Enviar</translation>
+<translation id="8045012663542226664">Silenciar micrófono</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde aplicaciones Android</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>

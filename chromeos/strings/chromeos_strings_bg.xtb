@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">Неуспешни заявки през UDP</translation>
 <translation id="1947737735496445907">Отпечатано</translation>
 <translation id="1951012854035635156">Асистент</translation>
+<translation id="1977994649430373166">Снимка на потребителския профил в Google</translation>
 <translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
 <translation id="1999615961760456652">Портал за удостоверяване</translation>
 <translation id="2006864819935886708">Свързване към мрежата</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">Трябва да изберете поне един албум от художествената галерия</translation>
 <translation id="2230005943220647148">Целзий</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Превключвател за фоновото осветление на клавиатурата</translation>
 <translation id="2240366984605217732">Превключване на подредбата</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
 <translation id="2287186687001756809">Няма налично изображение. За да добавите снимки, отворете <ph name="LINK" /></translation>
@@ -626,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Активиране на режима за автоматични цветове</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
+<translation id="8045012663542226664">Заглушаване на микрофона</translation>
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>

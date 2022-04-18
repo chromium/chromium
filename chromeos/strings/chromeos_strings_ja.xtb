@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
 <translation id="1947737735496445907">印刷完了</translation>
 <translation id="1951012854035635156">アシスタント</translation>
+<translation id="1977994649430373166">Google のプロフィール写真</translation>
 <translation id="1979103255016296513">パスワードの変更期限を過ぎました</translation>
 <translation id="1999615961760456652">キャプティブ ポータル</translation>
 <translation id="2006864819935886708">接続</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">アート ギャラリーのアルバムを少なくとも 1 つ選択してください</translation>
 <translation id="2230005943220647148">摂氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">キーボード バックライトの切り替え</translation>
 <translation id="2240366984605217732">レイアウトの切り替え</translation>
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
@@ -626,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">自動カラー モードを有効にする</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
+<translation id="8045012663542226664">マイクのミュート</translation>
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
 <translation id="808894953321890993">パスワードの変更</translation>

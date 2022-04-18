@@ -740,7 +740,7 @@
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前揀咗<ph name="ROW_NAME" />。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌劇</translation>
-<translation id="2983666748527428214">開啟無痕分頁</translation>
+<translation id="2983666748527428214">開啟無痕式分頁</translation>
 <translation id="2985306909656435243">啟用後，Chromium 會在此裝置上儲存信用卡資料副本，以加快填表速度。</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
 <translation id="2986368408720340940">不支援此取貨方式，請選擇其他方式。</translation>
@@ -1501,7 +1501,7 @@
 <translation id="5097099694988056070">CPU/RAM 使用情況等裝置統計資料</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">這是不安全的網站</translation>
-<translation id="5109892411553231226">管理付款方式</translation>
+<translation id="5109892411553231226">管理付款方法</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">紙匣 18</translation>
 <translation id="5114987907971894280">虛擬實境﻿</translation>
@@ -1749,7 +1749,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">要填寫 <ph name="CARD_DETAIL" /> 的資料嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
-<translation id="5808435672482059465">查看 Chrome 歷史記錄</translation>
+<translation id="5808435672482059465">查看 Chrome 記錄</translation>
 <translation id="5808542072418270309">模擬遊戲</translation>
 <translation id="5810442152076338065">您與 <ph name="DOMAIN" /> 之間的連線透過過時的加密套件加密處理。</translation>
 <translation id="5812947184178430888">當 Chrome 標示安全性事件時，系統會向您的管理員發送該事件的相關資料。這些資料可包括您在 Chrome 瀏覽的網址、檔案名稱或元數據，以及用於登入網絡應用程式、裝置和 Chrome 的使用者名稱。</translation>

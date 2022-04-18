@@ -1774,7 +1774,7 @@
 <translation id="2687407218262674387">Google 服務條款</translation>
 <translation id="2687621393791886981">稍後再詢問我</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
-<translation id="2688734475209947648">你不必記住這組密碼，系統會將密碼儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具中。</translation>
+<translation id="2688734475209947648">您不需記住此密碼。系統會將密碼儲存至 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」。</translation>
 <translation id="2690024944919328218">顯示語言選項</translation>
 <translation id="2691385045260836588">型號</translation>
 <translation id="2691440343905273290">變更輸入法設定</translation>
@@ -2602,7 +2602,7 @@
 <translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3519564332031442870">列印後端服務</translation>
 <translation id="3519938335881974273">另存網頁…</translation>
-<translation id="3520824492621090923">確認要註冊資訊站和看板裝置嗎？</translation>
+<translation id="3520824492621090923">確認要註冊 Kiosk 和標牌裝置嗎？</translation>
 <translation id="3521606918211282604">改變磁碟大小</translation>
 <translation id="3522088408596898827">磁碟空間嚴重不足。請騰出磁碟空間，然後再試一次。</translation>
 <translation id="3524518036046613664">探索本機網絡中的裝置，例如打印機</translation>
@@ -3339,7 +3339,7 @@
 <translation id="424963718355121712">應用程式的安裝來源必須與受影響的主機相同</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4250680216510889253">否</translation>
-<translation id="4251377547188244181">註冊資訊站或看板裝置</translation>
+<translation id="4251377547188244181">註冊 Kiosk 或標牌裝置</translation>
 <translation id="4252035718262427477">單一檔案網頁 (網絡組合)</translation>
 <translation id="4252899949534773101">已停用藍牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享分頁內容</translation>
@@ -3656,7 +3656,7 @@
 <translation id="4564245002465020751">在手機上完成設定</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4565917129334815774">儲存系統記錄</translation>
-<translation id="4566170377336116390">如果要在完成註冊後切換裝置，必須將裝置恢復原廠設定 (Powerwash)。</translation>
+<translation id="4566170377336116390">如果要在完成註冊後切換裝置，您需要將裝置回復原廠設定 (Powerwash)。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="456717285308019641">要翻譯的網頁語言</translation>
 <translation id="4567512141633030272">登入選項有錯嗎？</translation>
@@ -6307,7 +6307,7 @@
 <translation id="7257666756905341374">讀取您複製並貼上的資料</translation>
 <translation id="7258192266780953209">變形</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
-<translation id="7260186537988033909">資訊站和看板裝置註冊完成</translation>
+<translation id="7260186537988033909">Kiosk 和標牌裝置註冊完成</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>
 <translation id="7264695323040866038">一律使用「<ph name="APP" />」開啟支援的網頁連結嗎？</translation>
 <translation id="7267044199012331848">無法安裝虛擬機器。請再試一次，或聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -6316,7 +6316,7 @@
 <translation id="7269736181983384521">「咫尺共享」數據用量</translation>
 <translation id="7272674038937250585">未提供說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
-<translation id="7273970016743909808">你將使用「資訊站或看板升級」授權，這項授權只允許裝置在資訊站或看板模式下運作。如果希望使用者登入裝置，請返回上一個畫面，然後使用「Chrome Enterprise 升級版」進行註冊。</translation>
+<translation id="7273970016743909808">您將使用「Kiosk 和標牌升級」授權，此授權只允許裝置在 Kiosk 或標牌模式下運作。如果您想使用者登入裝置，請返回並使用「Chrome Enterprise 升級」註冊。</translation>
 <translation id="727441411541283857">電池現有 <ph name="PERCENTAGE" />% - 還有 <ph name="TIME" />便完成充電</translation>
 <translation id="727952162645687754">下載錯誤</translation>
 <translation id="7280041992884344566">Chrome 搜尋有害軟件時發生錯誤</translation>
