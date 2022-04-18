@@ -345,7 +345,6 @@ class LocalCardMigrationOfferView : public views::View {
         base::BindRepeating(
             &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
             base::Unretained(controller_))));
-    legal_message_container->SetDrawOverflowIndicator(false);
     legal_message_container->ClipHeightTo(0, kLegalMessageScrollViewHeight);
     legal_message_container->SetBorder(
         views::CreateEmptyBorder(kMigrationDialogInsets));
