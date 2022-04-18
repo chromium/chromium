@@ -1729,6 +1729,22 @@
             ]
         }
     ],
+    "CacheFontFamilyMatching": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheFontFamilyMatching"
+                    ]
+                }
+            ]
+        }
+    ],
     "Canvas2dStaysGPUOnReadback": [
         {
             "platforms": [
