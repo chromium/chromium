@@ -128,7 +128,7 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
 
   const base::Value expected_output = ReadJsonFromFile(OutputPath(input_path));
 
-  std::stringstream error_stream;
+  std::ostringstream error_stream;
   EXPECT_THAT(RunAttributionSimulation(std::move(input), options, error_stream),
               base::test::IsJson(expected_output));
   EXPECT_EQ(error_stream.str(), "");

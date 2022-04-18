@@ -241,7 +241,7 @@ class AttributionEventHandler : public AttributionObserver {
     base::Value input_value = std::move(input_values_.front());
     input_values_.pop_front();
 
-    std::stringstream reason;
+    std::ostringstream reason;
     switch (result) {
       case StorableSource::Result::kSuccess:
         return;
@@ -267,7 +267,7 @@ class AttributionEventHandler : public AttributionObserver {
     base::Value input_value = std::move(input_values_.front());
     input_values_.pop_front();
 
-    std::stringstream event_level_reason;
+    std::ostringstream event_level_reason;
     switch (result.event_level_status()) {
       case AttributionTrigger::EventLevelResult::kSuccess:
       case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
@@ -289,7 +289,7 @@ class AttributionEventHandler : public AttributionObserver {
         break;
     }
 
-    std::stringstream aggregatable_reason;
+    std::ostringstream aggregatable_reason;
     switch (result.aggregatable_status()) {
       case AttributionTrigger::AggregatableResult::kSuccess:
       case AttributionTrigger::AggregatableResult::kNotRegistered:
