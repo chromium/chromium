@@ -59,6 +59,9 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/rect.h"
 
+template <typename T>
+class sk_sp;
+
 namespace cc {
 class AnimationHost;
 class Layer;

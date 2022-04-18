@@ -36,11 +36,6 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-struct SkISize;
-class SkRefCnt;
-template <typename T>
-class sk_sp;
-
 namespace gpu {
 struct SyncToken;
 }
@@ -82,14 +77,6 @@ struct CrossThreadCopier
 
 // CrossThreadCopier specializations follow.
 // See cross_thread_copier_*.h too.
-
-template <typename T>
-struct CrossThreadCopier<sk_sp<T>>
-    : public CrossThreadCopierPassThrough<sk_sp<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  static_assert(std::is_base_of<SkRefCnt, T>::value,
-                "sk_sp<T> can be passed across threads only if T is SkRefCnt.");
-};
 
 template <>
 struct CrossThreadCopier<gpu::SyncToken>
@@ -135,12 +122,6 @@ struct CrossThreadCopier<String> {
   STATIC_ONLY(CrossThreadCopier);
   typedef String Type;
   WTF_EXPORT static Type Copy(const String&);
-};
-
-template <>
-struct CrossThreadCopier<SkISize>
-    : public CrossThreadCopierPassThrough<SkISize> {
-  STATIC_ONLY(CrossThreadCopier);
 };
 
 }  // namespace WTF
