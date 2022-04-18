@@ -112,10 +112,15 @@ void CrosSpeechRecognitionRecognizerImpl::
 }
 
 void CrosSpeechRecognitionRecognizerImpl::MarkDone() {
-  if (cros_soda_client_ == nullptr || !cros_soda_client_->IsInitialized()) {
-    LOG(DFATAL)
-        << "No soda client or soda client is not initialized, stopping.";
+  if (cros_soda_client_ == nullptr) {
+    LOG(DFATAL) << "No soda client, stopping.";
     mojo::ReportBadMessage(kNoClientError);
+    return;
+  }
+
+  if (!cros_soda_client_->IsInitialized()) {
+    // Speech recognition was stopped before it could initialize. Return early
+    // in this case.
     return;
   }
 
