@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -16,6 +17,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace content {
 class BrowserContext;
@@ -33,6 +35,8 @@ class WebAuthenticationProxyService
       public KeyedService,
       public ExtensionRegistryObserver {
  public:
+  using RespondCallback = base::OnceCallback<void(absl::optional<std::string>)>;
+
   // Returns the extension registered as the request proxy, or `nullptr` if none
   // is active.
   const Extension* GetActiveRequestProxy();
@@ -48,20 +52,20 @@ class WebAuthenticationProxyService
   // Injects the result for the `onCreateRequest` extension API event
   // with `EventId` matching the one in `details`.
   //
-  // Returns whether completing the request succeeded. If it didn't, `error_out`
-  // contains an error message.
-  bool CompleteCreateRequest(
+  // On completion, `callback` is invoked with an error or `absl::nullopt` on
+  // success.
+  void CompleteCreateRequest(
       const api::web_authentication_proxy::CreateResponseDetails& details,
-      std::string* error_out);
+      RespondCallback callback);
 
   // Injects the result for the `onGetRequest` extension API event with
   // `EventId` matching the one in `details`.
   //
-  // Returns whether completing the request succeeded. If it didn't, `error_out`
-  // contains an error message.
-  bool CompleteGetRequest(
+  // On completion, `callback` is invoked with an error or `absl::nullopt` on
+  // success.
+  void CompleteGetRequest(
       const api::web_authentication_proxy::GetResponseDetails& details,
-      std::string* error_out);
+      RespondCallback callback);
 
   // Injects the result for the
   // `events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST` event with
@@ -81,6 +85,14 @@ class WebAuthenticationProxyService
 
   void CancelPendingCallbacks();
   RequestId NewRequestId();
+  void OnParseCreateResponse(
+      RespondCallback respondCallback,
+      RequestId request_id,
+      data_decoder::DataDecoder::ValueOrError value_or_error);
+  void OnParseGetResponse(
+      RespondCallback respondCallback,
+      RequestId request_id,
+      data_decoder::DataDecoder::ValueOrError value_or_error);
 
   // content::WebAuthenticationRequestProxy:
   bool IsActive() override;
@@ -114,6 +126,8 @@ class WebAuthenticationProxyService
   std::map<RequestId, GetCallback> pending_get_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<WebAuthenticationProxyService> weak_ptr_factory_{this};
 };
 
 // WebAuthenticationProxyServiceFactory creates instances of

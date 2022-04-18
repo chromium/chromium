@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_api.h"
 
+#include "base/bind.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
 
@@ -104,6 +105,11 @@ WebAuthenticationProxyCompleteCreateRequestFunction::
 WebAuthenticationProxyCompleteCreateRequestFunction::
     ~WebAuthenticationProxyCompleteCreateRequestFunction() = default;
 
+void WebAuthenticationProxyCompleteCreateRequestFunction::DoRespond(
+    absl::optional<std::string> error) {
+  Respond(error ? Error(std::move(*error)) : NoArguments());
+}
+
 ExtensionFunction::ResponseAction
 WebAuthenticationProxyCompleteCreateRequestFunction::Run() {
   DCHECK(extension());
@@ -117,17 +123,23 @@ WebAuthenticationProxyCompleteCreateRequestFunction::Run() {
   if (proxy_service->GetActiveRequestProxy() != extension()) {
     return RespondNow(Error("Invalid sender"));
   }
-  std::string error;
-  if (!proxy_service->CompleteCreateRequest(params->details, &error)) {
-    return RespondNow(Error(error));
-  }
-  return RespondNow(NoArguments());
+  proxy_service->CompleteCreateRequest(
+      params->details,
+      base::BindOnce(
+          &WebAuthenticationProxyCompleteCreateRequestFunction::DoRespond,
+          this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 WebAuthenticationProxyCompleteGetRequestFunction::
     WebAuthenticationProxyCompleteGetRequestFunction() = default;
 WebAuthenticationProxyCompleteGetRequestFunction::
     ~WebAuthenticationProxyCompleteGetRequestFunction() = default;
+
+void WebAuthenticationProxyCompleteGetRequestFunction::DoRespond(
+    absl::optional<std::string> error) {
+  Respond(error ? Error(std::move(*error)) : NoArguments());
+}
 
 ExtensionFunction::ResponseAction
 WebAuthenticationProxyCompleteGetRequestFunction::Run() {
@@ -141,11 +153,11 @@ WebAuthenticationProxyCompleteGetRequestFunction::Run() {
   if (proxy_service->GetActiveRequestProxy() != extension()) {
     return RespondNow(Error("Invalid sender"));
   }
-  std::string error;
-  if (!proxy_service->CompleteGetRequest(params->details, &error)) {
-    return RespondNow(Error(error));
-  }
-  return RespondNow(NoArguments());
+  proxy_service->CompleteGetRequest(
+      params->details,
+      base::BindOnce(
+          &WebAuthenticationProxyCompleteGetRequestFunction::DoRespond, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 WebAuthenticationProxyCompleteIsUvpaaRequestFunction::

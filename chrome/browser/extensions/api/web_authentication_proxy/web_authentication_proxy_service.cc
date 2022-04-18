@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
@@ -74,92 +75,68 @@ void WebAuthenticationProxyService::SetActiveRequestProxy(
   active_request_proxy_extension_id_ = extension->id();
 }
 
-bool WebAuthenticationProxyService::CompleteCreateRequest(
+void WebAuthenticationProxyService::CompleteCreateRequest(
     const api::web_authentication_proxy::CreateResponseDetails& details,
-    std::string* error_out) {
+    RespondCallback respond_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(error_out);
   auto callback_it = pending_create_callbacks_.find(details.request_id);
   if (callback_it == pending_create_callbacks_.end()) {
-    *error_out = "Invalid requestId";
-    return false;
+    std::move(respond_callback).Run("Invalid requestId");
+    return;
   }
-  CreateCallback callback = std::move(callback_it->second);
-  pending_create_callbacks_.erase(callback_it);
-
   if (details.error) {
-    std::move(callback).Run(details.request_id,
-                            blink::mojom::WebAuthnDOMExceptionDetails::New(
-                                details.error->name, details.error->message),
-                            nullptr);
-    return true;
+    // The proxied request yielded a DOMException.
+    CreateCallback create_callback = std::move(callback_it->second);
+    pending_create_callbacks_.erase(callback_it);
+    std::move(create_callback)
+        .Run(details.request_id,
+             blink::mojom::WebAuthnDOMExceptionDetails::New(
+                 details.error->name, details.error->message),
+             nullptr);
+    std::move(respond_callback).Run(absl::nullopt);
+    return;
   }
   if (!details.response_json) {
-    *error_out = "Missing CreateResponseDetails.responseJson";
-    return false;
+    std::move(respond_callback)
+        .Run("Missing CreateResponseDetails.responseJson");
+    return;
   }
-
-  JSONStringValueDeserializer deserializer(*details.response_json);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> response_value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  if (!response_value) {
-    *error_out = "Parsing responseJson failed: " + deserialize_error;
-    return false;
-  }
-  blink::mojom::MakeCredentialAuthenticatorResponsePtr response =
-      MakeCredentialResponseFromValue(*response_value);
-  if (!response) {
-    *error_out = "Invalid responseJson";
-    return false;
-  }
-
-  std::move(callback).Run(details.request_id, nullptr, std::move(response));
-  return true;
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *details.response_json,
+      base::BindOnce(&WebAuthenticationProxyService::OnParseCreateResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(respond_callback), details.request_id));
 }
 
-bool WebAuthenticationProxyService::CompleteGetRequest(
+void WebAuthenticationProxyService::CompleteGetRequest(
     const api::web_authentication_proxy::GetResponseDetails& details,
-    std::string* error_out) {
+    RespondCallback respond_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(error_out);
   auto callback_it = pending_get_callbacks_.find(details.request_id);
   if (callback_it == pending_get_callbacks_.end()) {
-    *error_out = "Invalid requestId";
-    return false;
+    std::move(respond_callback).Run("Invalid requestId");
+    return;
   }
-  GetCallback callback = std::move(callback_it->second);
-  pending_get_callbacks_.erase(callback_it);
-
   if (details.error) {
+    // The proxied request yielded a DOMException.
+    GetCallback callback = std::move(callback_it->second);
+    pending_get_callbacks_.erase(callback_it);
     std::move(callback).Run(details.request_id,
                             blink::mojom::WebAuthnDOMExceptionDetails::New(
                                 details.error->name, details.error->message),
                             nullptr);
-    return true;
+    std::move(respond_callback).Run(absl::nullopt);
+    return;
   }
   if (!details.response_json) {
-    *error_out = "Missing GetResponseDetails.responseJson";
-    return false;
+    std::move(respond_callback).Run("Missing GetResponseDetails.responseJson");
+    return;
   }
-
-  JSONStringValueDeserializer deserializer(*details.response_json);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> response_value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  if (!response_value) {
-    *error_out = "Parsing responseJson failed: " + deserialize_error;
-    return false;
-  }
-  blink::mojom::GetAssertionAuthenticatorResponsePtr response =
-      GetAssertionResponseFromValue(*response_value);
-  if (!response) {
-    *error_out = "Invalid responseJson";
-    return false;
-  }
-
-  std::move(callback).Run(details.request_id, nullptr, std::move(response));
-  return true;
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *details.response_json,
+      base::BindOnce(&WebAuthenticationProxyService::OnParseGetResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(respond_callback), details.request_id));
 }
 
 bool WebAuthenticationProxyService::CompleteIsUvpaaRequest(
@@ -230,6 +207,68 @@ WebAuthenticationProxyService::NewRequestId() {
     request_id = base::RandGenerator(std::numeric_limits<uint32_t>::max()) + 1;
   }
   return request_id;
+}
+
+void WebAuthenticationProxyService::OnParseCreateResponse(
+    RespondCallback respond_callback,
+    RequestId request_id,
+    data_decoder::DataDecoder::ValueOrError value_or_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (value_or_error.error) {
+    std::move(respond_callback)
+        .Run("Parsing responseJson failed: " + *value_or_error.error);
+    return;
+  }
+  blink::mojom::MakeCredentialAuthenticatorResponsePtr response =
+      MakeCredentialResponseFromValue(*value_or_error.value);
+  if (!response) {
+    std::move(respond_callback).Run("Invalid responseJson");
+    return;
+  }
+
+  auto callback_it = pending_create_callbacks_.find(request_id);
+  if (callback_it == pending_create_callbacks_.end()) {
+    // The request was canceled while waiting for JSON decoding.
+    std::move(respond_callback).Run("Invalid requestId");
+    return;
+  }
+
+  // Success.
+  CreateCallback create_callback = std::move(callback_it->second);
+  pending_create_callbacks_.erase(callback_it);
+  std::move(create_callback).Run(request_id, nullptr, std::move(response));
+  std::move(respond_callback).Run(absl::nullopt);
+}
+
+void WebAuthenticationProxyService::OnParseGetResponse(
+    RespondCallback respond_callback,
+    RequestId request_id,
+    data_decoder::DataDecoder::ValueOrError value_or_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (value_or_error.error) {
+    std::move(respond_callback)
+        .Run("Parsing responseJson failed: " + *value_or_error.error);
+    return;
+  }
+  blink::mojom::GetAssertionAuthenticatorResponsePtr response =
+      GetAssertionResponseFromValue(*value_or_error.value);
+  if (!response) {
+    std::move(respond_callback).Run("Invalid responseJson");
+    return;
+  }
+
+  auto callback_it = pending_get_callbacks_.find(request_id);
+  if (callback_it == pending_get_callbacks_.end()) {
+    // The request was canceled while waiting for JSON decoding.
+    std::move(respond_callback).Run("Invalid requestId");
+    return;
+  }
+
+  // Success.
+  GetCallback get_callback = std::move(callback_it->second);
+  pending_get_callbacks_.erase(callback_it);
+  std::move(get_callback).Run(request_id, nullptr, std::move(response));
+  std::move(respond_callback).Run(absl::nullopt);
 }
 
 bool WebAuthenticationProxyService::IsActive() {
