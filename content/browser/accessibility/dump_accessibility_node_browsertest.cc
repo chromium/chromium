@@ -158,19 +158,19 @@ struct TestPassToString {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityNodeTest,
-    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     TestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityAccNameTest,
-    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     TestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityNodeWithoutMathMLTest,
-    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     TestPassToString());
 
 // ARIA tests.

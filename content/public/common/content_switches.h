@@ -147,7 +147,6 @@ CONTENT_EXPORT extern const char kForceOverlayFullscreenVideo[];
 CONTENT_EXPORT extern const char kForcePresentationReceiverForTesting[];
 CONTENT_EXPORT extern const char kForceRendererAccessibility[];
 CONTENT_EXPORT extern const char kForceWebRtcIPHandlingPolicy[];
-CONTENT_EXPORT extern const char kGenerateAccessibilityTestExpectations[];
 extern const char kGpuLauncher[];
 CONTENT_EXPORT extern const char kGpuProcess[];
 CONTENT_EXPORT extern const char kGpuSandboxStartEarly[];

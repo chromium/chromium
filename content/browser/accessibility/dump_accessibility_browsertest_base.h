@@ -17,16 +17,15 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/dump_accessibility_test_helper.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_test_helper.h"
 
 namespace content {
 
 class BrowserAccessibility;
 class BrowserAccessibilityManager;
-class DumpAccessibilityTestHelper;
 
 // Base class for an accessibility browsertest that takes an HTML file as
 // input, loads it into a tab, dumps some accessibility data in text format,
@@ -142,7 +141,7 @@ class DumpAccessibilityTestBase
                                                 const std::string& value) const;
 
  protected:
-  DumpAccessibilityTestHelper test_helper_;
+  ui::AXInspectTestHelper test_helper_;
 
   WebContentsImpl* GetWebContents() const;
 

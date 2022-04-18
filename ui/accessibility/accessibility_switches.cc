@@ -75,4 +75,7 @@ bool IsExperimentalAccessibilityPlatformUIAEnabled() {
 // UI for a select element directly accessible.
 const char kDisableAXMenuList[] = "disable-ax-menu-list";
 
+const char kGenerateAccessibilityTestExpectations[] =
+    "generate-accessibility-test-expectations";
+
 }  // namespace switches

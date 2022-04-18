@@ -2,33 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_TEST_DUMP_ACCESSIBILITY_TEST_HELPER_H_
-#define CONTENT_PUBLIC_TEST_DUMP_ACCESSIBILITY_TEST_HELPER_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_TEST_HELPER_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_TEST_HELPER_H_
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "content/public/browser/ax_inspect_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace base {
 class CommandLine;
 class FilePath;
-}
+}  // namespace base
 
 namespace ui {
-class AXInspectScenario;
-struct AXPropertyFilter;
-}  // namespace ui
 
-namespace content {
+class AXInspectScenario;
 
 // A helper class for writing accessibility tree dump tests.
-class DumpAccessibilityTestHelper {
+class AX_EXPORT AXInspectTestHelper {
  public:
-  explicit DumpAccessibilityTestHelper(ui::AXApiType::Type type);
-  explicit DumpAccessibilityTestHelper(const char* expectation_type);
-  ~DumpAccessibilityTestHelper() = default;
+  explicit AXInspectTestHelper(AXApiType::Type type);
+  explicit AXInspectTestHelper(const char* expectation_type);
+  ~AXInspectTestHelper() = default;
 
   // Overrides the expectation type. Useful to tune up the expectations format
   // after the helper object was instantiated.
@@ -50,24 +48,24 @@ class DumpAccessibilityTestHelper {
   // Parses a given testing scenario. Prepends default property filters if any
   // so the test file filters will take precedence over default filters in case
   // of conflict.
-  ui::AXInspectScenario ParseScenario(
+  AXInspectScenario ParseScenario(
       const std::vector<std::string>& lines,
-      const std::vector<ui::AXPropertyFilter>& default_filters = {});
+      const std::vector<AXPropertyFilter>& default_filters = {});
 
   // Parses a given testing scenario from a file. Prepends default property
   // filters if any so the test file filters will take precedence over default
   // filters in case of conflict.
-  absl::optional<ui::AXInspectScenario> ParseScenario(
+  absl::optional<AXInspectScenario> ParseScenario(
       const base::FilePath& scenario_path,
-      const std::vector<ui::AXPropertyFilter>& default_filters = {});
+      const std::vector<AXPropertyFilter>& default_filters = {});
 
   // Returns a platform-dependent list of inspect types used in dump tree
   // testing.
-  static std::vector<ui::AXApiType::Type> TreeTestPasses();
+  static std::vector<AXApiType::Type> TreeTestPasses();
 
   // Returns a platform-dependent list of inspect types used in dump events
   // testing.
-  static std::vector<ui::AXApiType::Type> EventTestPasses();
+  static std::vector<AXApiType::Type> EventTestPasses();
 
   // Loads the given expectation file and returns the contents. An expectation
   // file may be empty, in which case an empty vector is returned.
@@ -108,7 +106,7 @@ class DumpAccessibilityTestHelper {
       const base::FilePath::StringType& expectations_qualifier =
           FILE_PATH_LITERAL("")) const;
 
-  FRIEND_TEST_ALL_PREFIXES(DumpAccessibilityTestHelperTest, TestDiffLines);
+  FRIEND_TEST_ALL_PREFIXES(AXInspectTestHelperTest, TestDiffLines);
 
   // Utility helper that does a comment-aware equality check.
   // Returns array of lines from expected file which are different.
@@ -119,6 +117,6 @@ class DumpAccessibilityTestHelper {
   std::string expectation_type_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_PUBLIC_TEST_DUMP_ACCESSIBILITY_TEST_HELPER_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_TEST_HELPER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/dump_accessibility_test_helper.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_test_helper.h"
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -12,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
@@ -27,30 +26,28 @@ extern "C" {
 }
 #endif
 
-namespace content {
+namespace ui {
 
 using base::FilePath;
-using ui::AXNodeFilter;
-using ui::AXPropertyFilter;
 
 namespace {
-const char kCommentToken = '#';
-const char kMarkSkipFile[] = "#<skip";
-const char kSignalDiff[] = "*";
-const char kMarkEndOfFile[] = "<-- End-of-file -->";
+constexpr char kCommentToken = '#';
+constexpr char kMarkSkipFile[] = "#<skip";
+constexpr char kSignalDiff[] = "*";
+constexpr char kMarkEndOfFile[] = "<-- End-of-file -->";
 
 using SetUpCommandLine = void (*)(base::CommandLine*);
 
 struct TypeInfo {
-  std::string type;
+  const char* type;
   struct Mapping {
-    std::string directive_prefix;
-    base::FilePath::StringType expectations_file_postfix;
+    const char* directive_prefix;
+    const FilePath::CharType* expectations_file_postfix;
     SetUpCommandLine setup_command_line;
   } mapping;
 };
 
-const TypeInfo kTypeInfos[] = {
+constexpr TypeInfo kTypeInfos[] = {
     {
         "android",
         {
@@ -148,15 +145,13 @@ bool is_atk_version_supported() {
 
 }  // namespace
 
-DumpAccessibilityTestHelper::DumpAccessibilityTestHelper(
-    ui::AXApiType::Type type)
+AXInspectTestHelper::AXInspectTestHelper(AXApiType::Type type)
     : expectation_type_(type) {}
 
-DumpAccessibilityTestHelper::DumpAccessibilityTestHelper(
-    const char* expectation_type)
+AXInspectTestHelper::AXInspectTestHelper(const char* expectation_type)
     : expectation_type_(expectation_type) {}
 
-base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
+base::FilePath AXInspectTestHelper::GetExpectationFilePath(
     const base::FilePath& test_file_path,
     const base::FilePath::StringType& expectations_qualifier) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -189,7 +184,7 @@ base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
   return base::FilePath();
 }
 
-void DumpAccessibilityTestHelper::SetUpCommandLine(
+void AXInspectTestHelper::SetUpCommandLine(
     base::CommandLine* command_line) const {
   const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
   if (mapping) {
@@ -197,60 +192,57 @@ void DumpAccessibilityTestHelper::SetUpCommandLine(
   }
 }
 
-ui::AXInspectScenario DumpAccessibilityTestHelper::ParseScenario(
+AXInspectScenario AXInspectTestHelper::ParseScenario(
     const std::vector<std::string>& lines,
-    const std::vector<ui::AXPropertyFilter>& default_filters) {
+    const std::vector<AXPropertyFilter>& default_filters) {
   const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
   if (!mapping)
-    return ui::AXInspectScenario();
-  return ui::AXInspectScenario::From(mapping->directive_prefix, lines,
-                                     default_filters);
+    return AXInspectScenario();
+  return AXInspectScenario::From(mapping->directive_prefix, lines,
+                                 default_filters);
 }
 
-absl::optional<ui::AXInspectScenario>
-DumpAccessibilityTestHelper::ParseScenario(
+absl::optional<AXInspectScenario> AXInspectTestHelper::ParseScenario(
     const base::FilePath& scenario_path,
-    const std::vector<ui::AXPropertyFilter>& default_filters) {
+    const std::vector<AXPropertyFilter>& default_filters) {
   const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
   if (!mapping)
-    return ui::AXInspectScenario();
-  return ui::AXInspectScenario::From(mapping->directive_prefix, scenario_path,
-                                     default_filters);
+    return AXInspectScenario();
+  return AXInspectScenario::From(mapping->directive_prefix, scenario_path,
+                                 default_filters);
 }
 
 // static
-std::vector<ui::AXApiType::Type> DumpAccessibilityTestHelper::TreeTestPasses() {
+std::vector<AXApiType::Type> AXInspectTestHelper::TreeTestPasses() {
 #if BUILDFLAG(USE_ATK)
   if (is_atk_version_supported())
-    return {ui::AXApiType::kBlink, ui::AXApiType::kLinux};
-  return {ui::AXApiType::kBlink};
+    return {AXApiType::kBlink, AXApiType::kLinux};
+  return {AXApiType::kBlink};
 #elif !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
-  return {ui::AXApiType::kBlink};
+  return {AXApiType::kBlink};
 #elif BUILDFLAG(IS_WIN)
-  return {ui::AXApiType::kBlink, ui::AXApiType::kWinIA2,
-          ui::AXApiType::kWinUIA};
+  return {AXApiType::kBlink, AXApiType::kWinIA2, AXApiType::kWinUIA};
 #elif BUILDFLAG(IS_MAC)
-  return {ui::AXApiType::kBlink, ui::AXApiType::kMac};
+  return {AXApiType::kBlink, AXApiType::kMac};
 #elif BUILDFLAG(IS_ANDROID)
-  return {ui::AXApiType::kAndroid};
+  return {AXApiType::kAndroid};
 #elif BUILDFLAG(IS_FUCHSIA)
-  return {ui::AXApiType::kFuchsia};
+  return {AXApiType::kFuchsia};
 #else  // fallback
-  return {ui::AXApiType::kBlink};
+  return {AXApiType::kBlink};
 #endif
 }
 
 // static
-std::vector<ui::AXApiType::Type>
-DumpAccessibilityTestHelper::EventTestPasses() {
+std::vector<AXApiType::Type> AXInspectTestHelper::EventTestPasses() {
 #if BUILDFLAG(USE_ATK)
   if (is_atk_version_supported())
-    return {ui::AXApiType::kLinux};
+    return {AXApiType::kLinux};
   return {};
 #elif BUILDFLAG(IS_WIN)
-  return {ui::AXApiType::kWinIA2, ui::AXApiType::kWinUIA};
+  return {AXApiType::kWinIA2, AXApiType::kWinUIA};
 #elif BUILDFLAG(IS_MAC)
-  return {ui::AXApiType::kMac};
+  return {AXApiType::kMac};
 #else
   return {};
 #endif
@@ -258,8 +250,7 @@ DumpAccessibilityTestHelper::EventTestPasses() {
 
 // static
 absl::optional<std::vector<std::string>>
-DumpAccessibilityTestHelper::LoadExpectationFile(
-    const base::FilePath& expected_file) {
+AXInspectTestHelper::LoadExpectationFile(const base::FilePath& expected_file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   std::string expected_contents_raw;
@@ -282,7 +273,7 @@ DumpAccessibilityTestHelper::LoadExpectationFile(
 }
 
 // static
-bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
+bool AXInspectTestHelper::ValidateAgainstExpectation(
     const base::FilePath& test_file_path,
     const base::FilePath& expected_file,
     const std::vector<std::string>& actual_lines,
@@ -344,7 +335,7 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
   return !is_different;
 }
 
-FilePath::StringType DumpAccessibilityTestHelper::GetExpectedFileSuffix(
+FilePath::StringType AXInspectTestHelper::GetExpectedFileSuffix(
     const base::FilePath::StringType& expectations_qualifier) const {
   const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
   if (!mapping) {
@@ -359,8 +350,7 @@ FilePath::StringType DumpAccessibilityTestHelper::GetExpectedFileSuffix(
          mapping->expectations_file_postfix + FILE_PATH_LITERAL(".txt");
 }
 
-FilePath::StringType
-DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
+FilePath::StringType AXInspectTestHelper::GetVersionSpecificExpectedFileSuffix(
     const base::FilePath::StringType& expectations_qualifier) const {
 #if BUILDFLAG(IS_WIN)
   if (expectation_type_ == "uia" &&
@@ -398,7 +388,7 @@ DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
   return FILE_PATH_LITERAL("");
 }
 
-std::vector<int> DumpAccessibilityTestHelper::DiffLines(
+std::vector<int> AXInspectTestHelper::DiffLines(
     const std::vector<std::string>& expected_lines,
     const std::vector<std::string>& actual_lines) {
   int actual_lines_count = actual_lines.size();
@@ -437,4 +427,4 @@ std::vector<int> DumpAccessibilityTestHelper::DiffLines(
   return diff_lines;
 }
 
-}  // namespace content
+}  // namespace ui

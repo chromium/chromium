@@ -170,7 +170,7 @@ struct DumpAccessibilityEventsTestPassToString {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
-    ::testing::ValuesIn(DumpAccessibilityTestHelper::EventTestPasses()),
+    ::testing::ValuesIn(ui::AXInspectTestHelper::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
 // This test suite is empty on some OSes.
@@ -875,7 +875,7 @@ class NavigationApiDumpAccessibilityEventsTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationApiDumpAccessibilityEventsTest,
-    ::testing::ValuesIn(DumpAccessibilityTestHelper::EventTestPasses()),
+    ::testing::ValuesIn(ui::AXInspectTestHelper::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
 // This test suite is empty on some OSes.

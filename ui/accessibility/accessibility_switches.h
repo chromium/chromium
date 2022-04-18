@@ -46,6 +46,13 @@ AX_BASE_EXPORT bool IsMagnifierDebugDrawRectEnabled();
 // UI for a select element directly accessible.
 AX_BASE_EXPORT extern const char kDisableAXMenuList[];
 
+// For development / testing only.
+// When enabled the switch generates expectations files upon running an
+// ax_inspect test. For example, when running content_browsertests, it saves
+// output of failing accessibility tests to their expectations files in
+// content/test/data/accessibility/, overwriting existing file content.
+AX_BASE_EXPORT extern const char kGenerateAccessibilityTestExpectations[];
+
 }  // namespace switches
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_SWITCHES_H_

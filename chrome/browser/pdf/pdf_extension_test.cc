@@ -98,7 +98,6 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/dump_accessibility_test_helper.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_time_zone.h"
@@ -137,6 +136,7 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_test_helper.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -3939,7 +3939,7 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
  private:
   void RunTest(const base::FilePath& test_file_path, const char* file_dir) {
     // Load the expectation file.
-    content::DumpAccessibilityTestHelper test_helper("content");
+    ui::AXInspectTestHelper test_helper("content");
     absl::optional<base::FilePath> expected_file_path =
         test_helper.GetExpectationFilePath(test_file_path);
     ASSERT_TRUE(expected_file_path) << "No expectation file present.";
@@ -4273,14 +4273,14 @@ class PDFExtensionAccessibilityTreeDumpTest
     return property_filters;
   }
 
-  content::DumpAccessibilityTestHelper test_helper_;
+  ui::AXInspectTestHelper test_helper_;
 };
 
 // Constructs a list of accessibility tests, one for each accessibility tree
 // formatter testpasses.
 const std::vector<ui::AXApiType::Type> GetAXTestValues() {
   std::vector<ui::AXApiType::Type> passes =
-      content::DumpAccessibilityTestHelper::TreeTestPasses();
+      ui::AXInspectTestHelper::TreeTestPasses();
   return passes;
 }
 

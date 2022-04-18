@@ -69,6 +69,8 @@ source_set("platform") {
     "inspect/ax_inspect.h",
     "inspect/ax_inspect_scenario.cc",
     "inspect/ax_inspect_scenario.h",
+    "inspect/ax_inspect_test_helper.cc",
+    "inspect/ax_inspect_test_helper.h",
     "inspect/ax_inspect_utils.cc",
     "inspect/ax_inspect_utils.h",
     "inspect/ax_optional.h",
