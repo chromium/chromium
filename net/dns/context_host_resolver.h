@@ -81,6 +81,9 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
 
   void SetProcParamsForTesting(const ProcTaskParams& proc_params);
   void SetTickClockForTesting(const base::TickClock* tick_clock);
+  ResolveContext* resolve_context_for_testing() {
+    return resolve_context_.get();
+  }
 
  private:
   const raw_ptr<HostResolverManager> manager_;

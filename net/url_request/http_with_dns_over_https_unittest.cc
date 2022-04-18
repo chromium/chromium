@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/dns/context_host_resolver.h"
@@ -83,6 +84,42 @@ class TestHostResolverProc : public HostResolverProc {
   uint32_t insecure_queries_served_;
 };
 
+// Runs and waits for the DoH probe to complete in automatic mode. The resolver
+// must have a single DoH server, and the DoH server must serve addresses for
+// `kDohProbeHostname`.
+class DohProber : public NetworkChangeNotifier::DNSObserver {
+ public:
+  explicit DohProber(ContextHostResolver* resolver) : resolver_(resolver) {}
+
+  void ProbeAndWaitForCompletion() {
+    std::unique_ptr<HostResolver::ProbeRequest> probe_request =
+        resolver_->CreateDohProbeRequest();
+    EXPECT_THAT(probe_request->Start(), IsError(ERR_IO_PENDING));
+    if (NumAvailableDohServers() == 0) {
+      NetworkChangeNotifier::AddDNSObserver(this);
+      loop_.Run();
+      NetworkChangeNotifier::RemoveDNSObserver(this);
+    }
+    EXPECT_GT(NumAvailableDohServers(), 0u);
+  }
+
+  void OnDNSChanged() override {
+    if (NumAvailableDohServers() > 0) {
+      loop_.Quit();
+    }
+  }
+
+ private:
+  size_t NumAvailableDohServers() {
+    ResolveContext* context = resolver_->resolve_context_for_testing();
+    return context->NumAvailableDohServers(
+        context->current_session_for_testing());
+  }
+
+  raw_ptr<ContextHostResolver> resolver_;
+  base::RunLoop loop_;
+};
+
 // A test fixture that creates a DoH server with a `URLRequestContext`
 // configured to use it.
 class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
@@ -91,12 +128,17 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
       : host_resolver_proc_(base::MakeRefCounted<TestHostResolverProc>()) {
     doh_server_.SetHostname(kDohHostname);
     EXPECT_TRUE(doh_server_.Start());
+
+    // In `kAutomatic` mode, DoH support depends on a probe for
+    // `kDohProbeHostname`.
+    doh_server_.AddAddressRecord(kDohProbeHostname, IPAddress::IPv4Localhost());
+
     ResetContext();
   }
 
   URLRequestContext* context() { return request_context_.get(); }
 
-  void ResetContext() {
+  void ResetContext(SecureDnsMode mode = SecureDnsMode::kSecure) {
     // TODO(crbug.com/1252155): Simplify this.
     HostResolver::ManagerOptions manager_options;
     // Without a DnsConfig, HostResolverManager will not use DoH, even in
@@ -106,8 +148,7 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
     // system DnsConfig via the usual pathway.
     manager_options.dns_config_overrides =
         DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
-    manager_options.dns_config_overrides.secure_dns_mode =
-        SecureDnsMode::kSecure;
+    manager_options.dns_config_overrides.secure_dns_mode = mode;
     manager_options.dns_config_overrides.dns_over_https_config =
         *DnsOverHttpsConfig::FromString(doh_server_.GetPostOnlyTemplate());
     manager_options.dns_config_overrides.use_local_ipv6 = true;
@@ -118,12 +159,18 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
     // `doh_server_` itself. Additionally, without an explicit HostResolverProc,
     // HostResolverManager::HaveTestProcOverride disables the built-in DNS
     // client.
+    auto* resolver_raw = resolver.get();
     resolver->SetProcParamsForTesting(
         ProcTaskParams(host_resolver_proc_.get(), 1));
 
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_host_resolver(std::move(resolver));
     request_context_ = context_builder->Build();
+
+    if (mode == SecureDnsMode::kAutomatic) {
+      DohProber prober(resolver_raw);
+      prober.ProbeAndWaitForCompletion();
+    }
   }
 
   void AddHostWithEch(const url::SchemeHostPort host,
@@ -333,21 +380,26 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsUpgrade) {
       dns_util::GetNameForHttpsQuery(url::SchemeHostPort(https_url)),
       /*priority=*/1, /*service_name=*/kHostname, /*params=*/{}));
 
-  // Fetch the http URL.
-  TestDelegate d;
-  std::unique_ptr<URLRequest> req(context()->CreateRequest(
-      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->Start();
-  base::RunLoop().Run();
-  ASSERT_THAT(d.request_status(), IsOk());
+  for (auto mode : {SecureDnsMode::kSecure, SecureDnsMode::kAutomatic}) {
+    SCOPED_TRACE(kSecureDnsModes.at(mode));
+    ResetContext(mode);
 
-  // The request should have been redirected to https.
-  EXPECT_EQ(d.received_redirect_count(), 1);
-  EXPECT_EQ(req->url(), https_url);
+    // Fetch the http URL.
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(context()->CreateRequest(
+        http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->Start();
+    base::RunLoop().Run();
+    ASSERT_THAT(d.request_status(), IsOk());
 
-  EXPECT_TRUE(d.response_completed());
-  EXPECT_EQ(d.request_status(), 0);
-  EXPECT_EQ(d.data_received(), kTestBody);
+    // The request should have been redirected to https.
+    EXPECT_EQ(d.received_redirect_count(), 1);
+    EXPECT_EQ(req->url(), https_url);
+
+    EXPECT_TRUE(d.response_completed());
+    EXPECT_EQ(d.request_status(), 0);
+    EXPECT_EQ(d.data_received(), kTestBody);
+  }
 }
 
 // An end-to-end test for requesting a domain with a basic HTTPS record. Expect

@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -25,6 +26,9 @@ class DnsResponse;
 class DnsSession;
 class NetLogWithSource;
 class ResolveContext;
+
+// The hostname probed by CreateDohProbeRunner().
+inline constexpr base::StringPiece kDohProbeHostname = "www.gstatic.com";
 
 // DnsTransaction implements a stub DNS resolver as defined in RFC 1034.
 // The DnsTransaction takes care of retransmissions, name server fallback (or

@@ -897,8 +897,6 @@ class DnsTCPAttempt : public DnsAttempt {
 
 // ----------------------------------------------------------------------------
 
-const char kDoHProbeHostname[] = "www.gstatic.com";
-
 const net::BackoffEntry::Policy kProbeBackoffPolicy = {
     // Apply exponential backoff rules after the first error.
     0,
@@ -933,7 +931,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     DCHECK(!session_->config().doh_config.servers().empty());
     DCHECK(context_);
 
-    DNSDomainFromDot(kDoHProbeHostname, &formatted_probe_hostname_);
+    DNSDomainFromDot(kDohProbeHostname, &formatted_probe_hostname_);
 
     for (size_t i = 0; i < session_->config().doh_config.servers().size();
          i++) {
@@ -1053,7 +1051,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
         DnsResponseResultExtractor::ExtractionError extraction_error =
             extractor.ExtractDnsResults(
                 DnsQueryType::A,
-                /*original_domain_name=*/kDoHProbeHostname,
+                /*original_domain_name=*/kDohProbeHostname,
                 /*request_port=*/0, &results);
 
         if (extraction_error ==
