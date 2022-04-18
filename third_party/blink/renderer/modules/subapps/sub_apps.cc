@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -34,18 +33,12 @@ namespace {
 // We get called back from the SubAppsService mojo service (inside the browser
 // process), pass on the result to the calling context.
 void OnAddSubApp(ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
-  DCHECK(resolver);
-  ScriptState* resolver_script_state = resolver->GetScriptState();
-  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                     resolver_script_state)) {
-    return;
-  }
-  ScriptState::Scope script_state_scope(resolver_script_state);
   if (result == SubAppsServiceResult::kSuccess) {
     resolver->Resolve();
   } else {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kOperationError,
         "Unable to add given sub-app. Check whether the calling app is "
         "installed."));
   }
@@ -53,18 +46,12 @@ void OnAddSubApp(ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
 
 void OnListSubApp(ScriptPromiseResolver* resolver,
                   SubAppsServiceListResultPtr result) {
-  DCHECK(resolver);
-  ScriptState* resolver_script_state = resolver->GetScriptState();
-  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                     resolver_script_state)) {
-    return;
-  }
-  ScriptState::Scope script_state_scope(resolver_script_state);
   if (result->code == SubAppsServiceResult::kSuccess) {
     resolver->Resolve(result->sub_app_ids);
   } else {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kOperationError,
         "Unable to list sub-apps. Check whether the calling app is "
         "installed."));
   }
@@ -72,18 +59,12 @@ void OnListSubApp(ScriptPromiseResolver* resolver,
 
 void OnRemoveSubApp(ScriptPromiseResolver* resolver,
                     SubAppsServiceResult result) {
-  DCHECK(resolver);
-  ScriptState* resolver_script_state = resolver->GetScriptState();
-  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                     resolver_script_state)) {
-    return;
-  }
-  ScriptState::Scope script_state_scope(resolver_script_state);
   if (result == SubAppsServiceResult::kSuccess) {
     resolver->Resolve();
   } else {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kOperationError,
         "Unable to remove given sub-app. Check whether the calling app is "
         "installed."));
   }
@@ -160,8 +141,9 @@ ScriptPromise SubApps::add(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetService()->Add(completed_url.GetPath(),
-                    WTF::Bind(&OnAddSubApp, WrapPersistent(resolver)));
+  GetService()->Add(
+      completed_url.GetPath(),
+      resolver->WrapCallbackInScriptScope(WTF::Bind(&OnAddSubApp)));
 
   return resolver->Promise();
 }
@@ -173,7 +155,8 @@ ScriptPromise SubApps::list(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetService()->List(WTF::Bind(&OnListSubApp, WrapPersistent(resolver)));
+  GetService()->List(
+      resolver->WrapCallbackInScriptScope(WTF::Bind(&OnListSubApp)));
 
   return resolver->Promise();
 }
@@ -186,8 +169,8 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetService()->Remove(unhashed_app_id,
-                       WTF::Bind(&OnRemoveSubApp, WrapPersistent(resolver)));
+  GetService()->Remove(unhashed_app_id, resolver->WrapCallbackInScriptScope(
+                                            WTF::Bind(&OnRemoveSubApp)));
 
   return resolver->Promise();
 }
