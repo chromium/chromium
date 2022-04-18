@@ -78,7 +78,7 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
   DCHECK(margin.IsEmpty() || margin.size() == 4);
   PhysicalRect result;
   auto* layout_view = DynamicTo<LayoutView>(root);
-  if (layout_view && root->GetDocument().IsInMainFrame()) {
+  if (layout_view && root->GetDocument().GetFrame()->IsOutermostMainFrame()) {
     // The main frame is a bit special as the scrolling viewport can differ in
     // size from the LayoutView itself. There's two situations this occurs in:
     // 1) The ForceZeroLayoutHeight quirk setting is used in Android WebView for
