@@ -453,6 +453,31 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                             stringWithFormat:@"%@", @(numberOfTabs + 1)])];
 }
 
+// Tests that rotating to landscape and scrolling into the feed, opening another
+// NTP, and then swtiching back retains the scroll position.
+- (void)testOpenMultipleTabsandChangeOrientation {
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  [self testNTPInitialPositionAndContent:collectionView];
+
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
+                                error:nil];
+  [self testNTPInitialPositionAndContent:collectionView];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  CGFloat yOffsetBeforeSwitch = collectionView.contentOffset.y;
+
+  [ChromeEarlGreyUI openNewTab];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  GREYAssertTrue(yOffsetBeforeSwitch ==
+                     [NewTabPageAppInterface collectionView].contentOffset.y,
+                 @"NTP scroll position not saved properly.");
+}
+
 // Tests that the promo is correctly displayed and removed once tapped.
 - (void)testPromoTap {
   [NewTabPageAppInterface setWhatsNewPromoToMoveToDock];

@@ -576,8 +576,6 @@ namespace {
             (FollowingFeedSortType)self.prefService->GetInteger(
                 prefs::kNTPFollowingFeedSortType);
       }
-    } else if (IsSingleNtpEnabled()) {
-      [self.ntpMediator saveContentOffsetForWebState:self.webState];
     }
   }
   self.viewPresented = visible;

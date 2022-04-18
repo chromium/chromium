@@ -274,6 +274,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)setWebState:(web::WebState*)webState {
   if (_webState && _webStateObserver) {
     _webState->RemoveObserver(_webStateObserver.get());
+    if (IsSingleNtpEnabled()) {
+      [self saveContentOffsetForWebState:_webState];
+    }
   }
   _webState = webState;
   if (IsSingleNtpEnabled()) {
