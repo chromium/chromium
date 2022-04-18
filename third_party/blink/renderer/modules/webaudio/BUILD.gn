@@ -44,6 +44,8 @@ blink_modules_sources("webaudio") {
     "audio_node_wiring.h",
     "audio_param.cc",
     "audio_param.h",
+    "audio_param_handler.cc",
+    "audio_param_handler.h",
     "audio_param_map.cc",
     "audio_param_map.h",
     "audio_param_timeline.cc",
