@@ -209,6 +209,16 @@ base::Value ToValue(const device::AttestationConveyancePreference&
   }
 }
 
+base::Value ToValue(const blink::mojom::RemoteDesktopClientOverride&
+                        remote_desktop_client_override) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetStringKey("origin",
+                     remote_desktop_client_override.origin.Serialize());
+  value.SetBoolKey("sameOriginWithAncestors",
+                   remote_desktop_client_override.same_origin_with_ancestors);
+  return value;
+}
+
 absl::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
     const base::Value& value) {
   if (!value.is_string()) {
@@ -264,7 +274,12 @@ base::Value ToValue(
   }
   value.SetKey("attestation", ToValue(options->attestation));
 
-  // TODO(https://crbug.com/1231802): Serialize extensions.
+  if (options->remote_desktop_client_override) {
+    value.SetPath({"extensions", "remoteDesktopClientOverride"},
+                  ToValue(*options->remote_desktop_client_override));
+  }
+
+  // TODO(https://crbug.com/1231802): Serialize remaining extensions.
 
   return value;
 }
@@ -284,7 +299,12 @@ base::Value ToValue(
 
   value.SetKey("userVerification", ToValue(options->user_verification));
 
-  // TODO(https://crbug.com/1231802): Serialize extensions.
+  if (options->remote_desktop_client_override) {
+    value.SetPath({"extensions", "remoteDesktopClientOverride"},
+                  ToValue(*options->remote_desktop_client_override));
+  }
+
+  // TODO(https://crbug.com/1231802): Serialize remaining extensions.
 
   return value;
 }

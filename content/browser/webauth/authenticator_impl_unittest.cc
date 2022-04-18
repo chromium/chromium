@@ -84,14 +84,13 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -1716,11 +1715,11 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
         nullptr;
   };
 
-  struct CallCounts {
-    size_t signal_create_request;
-    size_t signal_get_request;
-    size_t signal_is_uvpaa_request;
-    size_t cancel_request;
+  struct Observations {
+    std::vector<PublicKeyCredentialCreationOptionsPtr> create_requests;
+    std::vector<PublicKeyCredentialRequestOptionsPtr> get_requests;
+    size_t num_isuvpaa;
+    size_t num_cancel;
   };
 
   ~TestWebAuthenticationRequestProxy() override {
@@ -1729,7 +1728,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
   Config& config() { return config_; }
 
-  const CallCounts& call_counts() { return call_counts_; }
+  const Observations& observations() { return observations_; }
 
   bool IsActive() override { return config_.is_active; }
 
@@ -1739,7 +1738,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     DCHECK(!HasPendingRequest());
 
     current_request_id_++;
-    call_counts_.signal_create_request++;
+    observations_.create_requests.push_back(options->Clone());
     pending_create_callback_ = std::move(callback);
     if (config_.resolve_callbacks) {
       RunPendingCreateCallback();
@@ -1752,7 +1751,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
       const PublicKeyCredentialRequestOptionsPtr& options,
       GetCallback callback) override {
     current_request_id_++;
-    call_counts_.signal_get_request++;
+    observations_.get_requests.push_back(options->Clone());
     pending_get_callback_ = std::move(callback);
     if (config_.resolve_callbacks) {
       RunPendingGetCallback();
@@ -1765,7 +1764,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     DCHECK(!HasPendingRequest());
 
     current_request_id_++;
-    call_counts_.signal_is_uvpaa_request++;
+    observations_.num_isuvpaa++;
     if (config_.resolve_callbacks) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), config_.is_uvpaa));
@@ -1778,7 +1777,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
   void CancelRequest(RequestId request_id) override {
     DCHECK_EQ(request_id, current_request_id_);
-    call_counts_.cancel_request++;
+    observations_.num_cancel++;
     if (pending_create_callback_) {
       pending_create_callback_.Reset();
     }
@@ -1831,7 +1830,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
  private:
   Config config_;
-  CallCounts call_counts_;
+  Observations observations_;
 
   RequestId current_request_id_ = 0;
   CreateCallback pending_create_callback_;
@@ -8673,7 +8672,7 @@ TEST_F(AuthenticatorCableV2AuthenticatorTest, EmptyAllowList) {
 // AuthenticatorImplWithRequestProxyTest tests behavior with an installed
 // TestWebAuthenticationRequestProxy that takes over WebAuthn request handling.
 class AuthenticatorImplWithRequestProxyTest : public AuthenticatorImplTest {
- public:
+ protected:
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
     old_client_ = SetBrowserClientForTesting(&test_client_);
@@ -8703,7 +8702,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, Inactive) {
   TestIsUvpaaCallback cb;
   authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
   cb.WaitForCallback();
-  EXPECT_EQ(request_proxy().call_counts().signal_is_uvpaa_request, 0u);
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
@@ -8718,7 +8717,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
     authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
     cb.WaitForCallback();
     EXPECT_EQ(cb.value(), is_uvpaa);
-    EXPECT_EQ(request_proxy().call_counts().signal_is_uvpaa_request, ++i);
+    EXPECT_EQ(request_proxy().observations().num_isuvpaa, ++i);
   }
 }
 
@@ -8730,12 +8729,19 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
       CommonCredentialInfo::New();
 
   NavigateAndCommit(GURL(kTestOrigin1));
-  MakeCredentialResult result =
-      AuthenticatorMakeCredential(GetTestPublicKeyCredentialCreationOptions());
+  auto request = GetTestPublicKeyCredentialCreationOptions();
+  MakeCredentialResult result = AuthenticatorMakeCredential(request->Clone());
 
   EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
-  EXPECT_EQ(request_proxy().call_counts().signal_create_request, 1u);
-  EXPECT_EQ(request_proxy().call_counts().cancel_request, 0u);
+  EXPECT_EQ(request_proxy().observations().num_cancel, 0u);
+  EXPECT_EQ(request_proxy().observations().create_requests.size(), 1u);
+
+  auto expected = request->Clone();
+  expected->remote_desktop_client_override = RemoteDesktopClientOverride::New();
+  expected->remote_desktop_client_override->origin =
+      url::Origin::Create(GURL(kTestOrigin1));
+  expected->remote_desktop_client_override->same_origin_with_ancestors = true;
+  EXPECT_EQ(request_proxy().observations().create_requests.at(0), expected);
 }
 
 // Verify requests with an attached proxy run RP ID checks.
@@ -8762,7 +8768,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
 
     EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
               test_case.expected_status);
-    EXPECT_EQ(request_proxy().call_counts().signal_create_request, 0u);
+    EXPECT_EQ(request_proxy().observations().create_requests.size(), 0u);
   }
 }
 
@@ -8779,8 +8785,8 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
       GetTestPublicKeyCredentialCreationOptions());
 
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  EXPECT_EQ(request_proxy().call_counts().signal_create_request, 1u);
-  EXPECT_EQ(request_proxy().call_counts().cancel_request, 1u);
+  EXPECT_EQ(request_proxy().observations().create_requests.size(), 1u);
+  EXPECT_EQ(request_proxy().observations().num_cancel, 1u);
 
   // Proxy should not hold a pending request after cancellation.
   EXPECT_FALSE(request_proxy().HasPendingRequest());
@@ -8794,12 +8800,19 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertion) {
       CommonCredentialInfo::New();
 
   NavigateAndCommit(GURL(kTestOrigin1));
-  GetAssertionResult result =
-      AuthenticatorGetAssertion(GetTestPublicKeyCredentialRequestOptions());
+  auto request = GetTestPublicKeyCredentialRequestOptions();
+  GetAssertionResult result = AuthenticatorGetAssertion(request->Clone());
 
   EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
-  EXPECT_EQ(request_proxy().call_counts().signal_get_request, 1u);
-  EXPECT_EQ(request_proxy().call_counts().cancel_request, 0u);
+  EXPECT_EQ(request_proxy().observations().num_cancel, 0u);
+  EXPECT_EQ(request_proxy().observations().get_requests.size(), 1u);
+
+  auto expected = request->Clone();
+  expected->remote_desktop_client_override = RemoteDesktopClientOverride::New();
+  expected->remote_desktop_client_override->origin =
+      url::Origin::Create(GURL(kTestOrigin1));
+  expected->remote_desktop_client_override->same_origin_with_ancestors = true;
+  EXPECT_EQ(request_proxy().observations().get_requests.at(0), expected);
 }
 
 // Verify requests with an attached proxy run RP ID checks.
@@ -8826,7 +8839,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionOriginAndRpIds) {
 
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
               test_case.expected_status);
-    EXPECT_EQ(request_proxy().call_counts().signal_get_request, 0u);
+    EXPECT_EQ(request_proxy().observations().get_requests.size(), 0u);
   }
 }
 
@@ -8843,8 +8856,8 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertion_Timeout) {
       GetTestPublicKeyCredentialRequestOptions());
 
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  EXPECT_EQ(request_proxy().call_counts().signal_get_request, 1u);
-  EXPECT_EQ(request_proxy().call_counts().cancel_request, 1u);
+  EXPECT_EQ(request_proxy().observations().get_requests.size(), 1u);
+  EXPECT_EQ(request_proxy().observations().num_cancel, 1u);
 
   // Proxy should not hold a pending request after cancellation.
   EXPECT_FALSE(request_proxy().HasPendingRequest());

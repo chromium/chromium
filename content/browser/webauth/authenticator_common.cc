@@ -647,7 +647,7 @@ void AuthenticatorCommon::MakeCredential(
       options->is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
           : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
-  bool is_cross_origin_iframe;
+  bool is_cross_origin_iframe = false;
   blink::mojom::AuthenticatorStatus status =
       security_checker_->ValidateAncestorOrigins(caller_origin, request_type,
                                                  &is_cross_origin_iframe);
@@ -686,6 +686,16 @@ void AuthenticatorCommon::MakeCredential(
   // request.
   WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
+    if (options->remote_desktop_client_override) {
+      // Don't allow proxying of an already proxied request.
+      CompleteMakeCredentialRequest(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    }
+    options->remote_desktop_client_override =
+        blink::mojom::RemoteDesktopClientOverride::New(
+            /*origin=*/caller_origin_,
+            /*same_origin_with_ancestors=*/!is_cross_origin_iframe);
     pending_proxied_request_id_ = proxy->SignalCreateRequest(
         options,
         base::BindOnce(&AuthenticatorCommon::OnMakeCredentialProxyResponse,
@@ -961,7 +971,7 @@ void AuthenticatorCommon::GetAssertion(
     NOTREACHED();
     return;
   }
-  bool is_cross_origin_iframe;
+  bool is_cross_origin_iframe = false;
   blink::mojom::AuthenticatorStatus status =
       security_checker_->ValidateAncestorOrigins(caller_origin, request_type,
                                                  &is_cross_origin_iframe);
@@ -997,6 +1007,16 @@ void AuthenticatorCommon::GetAssertion(
   relying_party_id_ = options->relying_party_id;
   WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
+    if (options->remote_desktop_client_override) {
+      // Don't allow proxying of an already proxied request.
+      CompleteMakeCredentialRequest(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    }
+    options->remote_desktop_client_override =
+        blink::mojom::RemoteDesktopClientOverride::New(
+            /*origin=*/caller_origin_,
+            /*same_origin_with_ancestors=*/!is_cross_origin_iframe);
     pending_proxied_request_id_ = proxy->SignalGetRequest(
         options,
         base::BindOnce(&AuthenticatorCommon::OnGetAssertionProxyResponse,
