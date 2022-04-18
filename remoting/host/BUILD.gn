@@ -496,6 +496,8 @@ static_library("common") {
       "linux/remote_desktop_portal.h",
       "linux/remote_desktop_portal_injector.cc",
       "linux/remote_desktop_portal_injector.h",
+      "linux/wayland_desktop_capturer.cc",
+      "linux/wayland_desktop_capturer.h",
     ]
   }
 
