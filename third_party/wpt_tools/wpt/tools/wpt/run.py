@@ -404,6 +404,8 @@ class ChromeAndroidBase(BrowserSetup):
     def setup_kwargs(self, kwargs):
         if kwargs.get("device_serial"):
             self.browser.device_serial = kwargs["device_serial"]
+        if kwargs.get("adb_binary"):
+            self.browser.adb_binary = kwargs["adb_binary"]
         browser_channel = kwargs["browser_channel"]
         if kwargs["package_name"] is None:
             kwargs["package_name"] = self.browser.find_binary(

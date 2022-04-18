@@ -40,17 +40,19 @@ def update_expectations(_, **kwargs):
     if "product" not in kwargs["extra_property"]:
         kwargs["extra_property"].append("product")
 
+    use_wptrunner_update_props = kwargs.get("product") is not None
+
+    kwargs = wptcommandline.check_args_metadata_update(kwargs)
+
     # By default update according to product.
     # If we passed in the name of a product, then use the configured update properties
     # for that product.
-    if kwargs["product"]:
+    if use_wptrunner_update_props:
         update_properties = products.load_product_update(kwargs["config"], kwargs["product"])
         if kwargs["extra_property"]:
             update_properties[0].extend(kwargs["extra_property"])
     else:
         update_properties = (kwargs["extra_property"], {})
-
-    kwargs = wptcommandline.check_args_metadata_update(kwargs)
 
     manifest_update(kwargs["test_paths"])
     metadata.update_expected(kwargs["test_paths"],
