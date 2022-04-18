@@ -1364,7 +1364,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   CheckBrowserLayout(browser_view(), TopChromeShownState::kFullyShown);
 }
 
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
+// Sheriff 2022/04/18; flaky test crbug/1317068
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       DISABLED_TestPermissionBubble) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
