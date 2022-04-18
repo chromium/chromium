@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#include "chromeos/dbus/patchpanel/patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 
 #include <utility>
 
@@ -11,13 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/patchpanel/fake_patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/patchpanel/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 PatchPanelClient* g_instance = nullptr;
@@ -110,4 +110,4 @@ PatchPanelClient* PatchPanelClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

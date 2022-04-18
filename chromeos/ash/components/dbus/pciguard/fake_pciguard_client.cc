@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/pciguard/fake_pciguard_client.h"
+#include "chromeos/ash/components/dbus/pciguard/fake_pciguard_client.h"
 
 #include "third_party/cros_system_api/dbus/pciguard/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 FakePciguardClient::FakePciguardClient() = default;
 FakePciguardClient::~FakePciguardClient() = default;
@@ -23,4 +23,4 @@ void FakePciguardClient::EmitDeviceBlockedSignal(
   NotifyOnBlockedThunderboltDeviceConnected(device_name);
 }
 
-}  // namespace chromeos
+}  // namespace ash

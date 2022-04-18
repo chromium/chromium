@@ -20,8 +20,8 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/dbus/patchpanel/patchpanel_client.h"
-#include "chromeos/dbus/patchpanel/patchpanel_service.pb.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/client_cert_util.h"
@@ -586,7 +586,7 @@ void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
                                  GetNetworksCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (type == mojom::GetNetworksRequestType::ACTIVE_ONLY) {
-    chromeos::PatchPanelClient::Get()->GetDevices(
+    ash::PatchPanelClient::Get()->GetDevices(
         base::BindOnce(&ArcNetHostImpl::GetActiveNetworks,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -1272,7 +1272,7 @@ void ArcNetHostImpl::ReceiveShillProperties(
   shill_network_properties_[service_path] = std::move(*shill_properties);
 
   // Get patchpanel devices and update active networks.
-  chromeos::PatchPanelClient::Get()->GetDevices(base::BindOnce(
+  ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(
       &ArcNetHostImpl::UpdateActiveNetworks, weak_factory_.GetWeakPtr()));
 }
 

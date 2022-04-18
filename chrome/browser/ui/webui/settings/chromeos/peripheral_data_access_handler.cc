@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
-#include "chromeos/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 

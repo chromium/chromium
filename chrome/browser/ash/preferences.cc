@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/system/devicemode.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/drive/drive_pref_names.h"

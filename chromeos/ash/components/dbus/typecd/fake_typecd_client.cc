@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/typecd/fake_typecd_client.h"
+#include "chromeos/ash/components/dbus/typecd/fake_typecd_client.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeTypecdClient::FakeTypecdClient() = default;
 FakeTypecdClient::~FakeTypecdClient() = default;
@@ -19,4 +19,4 @@ void FakeTypecdClient::EmitCableWarningSignal(typecd::CableWarningType type) {
   NotifyOnCableWarning(type);
 }
 
-}  // namespace chromeos
+}  // namespace ash

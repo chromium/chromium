@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/patchpanel/fake_patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -35,4 +35,4 @@ FakePatchPanelClient::~FakePatchPanelClient() {
 
 void FakePatchPanelClient::GetDevices(GetDevicesCallback callback) {}
 
-}  // namespace chromeos
+}  // namespace ash

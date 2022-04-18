@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_
-#define CHROMEOS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
@@ -13,7 +13,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // PciguardClient is responsible for sending DBus signals to PciGuard daemon.
 class COMPONENT_EXPORT(PCIGUARD) PciguardClient {
@@ -60,11 +60,11 @@ class COMPONENT_EXPORT(PCIGUARD) PciguardClient {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::PciguardClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::PciguardClient;
 }
 
-#endif  // CHROMEOS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_

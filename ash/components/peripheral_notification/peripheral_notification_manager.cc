@@ -38,15 +38,15 @@ PeripheralNotificationManager::PeripheralNotificationManager(
     bool is_pcie_tunneling_allowed)
     : is_guest_profile_(is_guest_profile),
       is_pcie_tunneling_allowed_(is_pcie_tunneling_allowed) {
-  DCHECK(chromeos::TypecdClient::Get());
-  DCHECK(chromeos::PciguardClient::Get());
-  chromeos::TypecdClient::Get()->AddObserver(this);
-  chromeos::PciguardClient::Get()->AddObserver(this);
+  DCHECK(TypecdClient::Get());
+  DCHECK(PciguardClient::Get());
+  TypecdClient::Get()->AddObserver(this);
+  PciguardClient::Get()->AddObserver(this);
 }
 
 PeripheralNotificationManager::~PeripheralNotificationManager() {
-  chromeos::TypecdClient::Get()->RemoveObserver(this);
-  chromeos::PciguardClient::Get()->RemoveObserver(this);
+  TypecdClient::Get()->RemoveObserver(this);
+  PciguardClient::Get()->RemoveObserver(this);
 
   CHECK_EQ(this, g_instance);
   g_instance = nullptr;

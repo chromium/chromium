@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_TYPECD_TYPECD_CLIENT_H_
-#define CHROMEOS_DBUS_TYPECD_TYPECD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_TYPECD_TYPECD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_TYPECD_TYPECD_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
@@ -14,7 +14,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // TypecdClient is responsible receiving D-bus signals from the TypeCDaemon
 // service. The TypeCDaemon is the underlying service that informs us whenever
@@ -59,11 +59,6 @@ class COMPONENT_EXPORT(TYPECD) TypecdClient {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::TypecdClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_TYPECD_TYPECD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_TYPECD_TYPECD_CLIENT_H_

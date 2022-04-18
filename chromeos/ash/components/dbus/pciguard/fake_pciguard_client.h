@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_PCIGUARD_FAKE_PCIGUARD_CLIENT_H_
-#define CHROMEOS_DBUS_PCIGUARD_FAKE_PCIGUARD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_PCIGUARD_FAKE_PCIGUARD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_PCIGUARD_FAKE_PCIGUARD_CLIENT_H_
 
 #include <map>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(PCIGUARD) FakePciguardClient : public PciguardClient {
  public:
@@ -28,6 +28,6 @@ class COMPONENT_EXPORT(PCIGUARD) FakePciguardClient : public PciguardClient {
   void SendExternalPciDevicesPermissionState(bool permitted) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_PCIGUARD_FAKE_PCIGUARD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_PCIGUARD_FAKE_PCIGUARD_CLIENT_H_

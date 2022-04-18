@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/pciguard/fake_pciguard_client.h"
+#include "chromeos/ash/components/dbus/pciguard/fake_pciguard_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/pciguard/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 PciguardClient* g_instance = nullptr;
@@ -151,4 +151,4 @@ PciguardClient* PciguardClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

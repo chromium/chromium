@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_PATCHPANEL_PATCHPANEL_CLIENT_H_
-#define CHROMEOS_DBUS_PATCHPANEL_PATCHPANEL_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_PATCHPANEL_PATCHPANEL_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_PATCHPANEL_PATCHPANEL_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/patchpanel/patchpanel_service.pb.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 // Simple wrapper around patchpanel DBus API. The method names and protobuf
 // schema used by patchpanel DBus API are defined in
@@ -46,6 +46,6 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient : public DBusClient {
   ~PatchPanelClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_PATCHPANEL_PATCHPANEL_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_PATCHPANEL_PATCHPANEL_CLIENT_H_

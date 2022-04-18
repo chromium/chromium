@@ -2,7 +2,7 @@ noparent = True
 
 include_rules = [
   "+base",
-  "+chromeos/dbus",
+  "+chromeos/ash/components/dbus",
   "+testing",
   "+services/device/public",
   "+ash/test",

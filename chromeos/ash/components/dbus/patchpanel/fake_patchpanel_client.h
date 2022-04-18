@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_PATCHPANEL_FAKE_PATCHPANEL_CLIENT_H_
-#define CHROMEOS_DBUS_PATCHPANEL_FAKE_PATCHPANEL_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_PATCHPANEL_FAKE_PATCHPANEL_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_PATCHPANEL_FAKE_PATCHPANEL_CLIENT_H_
 
-#include "chromeos/dbus/patchpanel/patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // FakePatchPanelClient is a stub implementation of PatchPanelClient used for
 // testing.
@@ -32,6 +32,6 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
   void Init(dbus::Bus* bus) override {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_PATCHPANEL_FAKE_PATCHPANEL_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_PATCHPANEL_FAKE_PATCHPANEL_CLIENT_H_

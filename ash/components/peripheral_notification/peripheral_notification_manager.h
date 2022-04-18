@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/dbus/pciguard/pciguard_client.h"
-#include "chromeos/dbus/typecd/typecd_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
 namespace device {
@@ -28,8 +28,8 @@ namespace ash {
 // additional logic such determining if notifications are required or whether a
 // guest-session notification is needed.
 class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
-    PeripheralNotificationManager : public chromeos::TypecdClient::Observer,
-                                    public chromeos::PciguardClient::Observer {
+    PeripheralNotificationManager : public TypecdClient::Observer,
+                                    public PciguardClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:

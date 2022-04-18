@@ -11,8 +11,8 @@
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/dbus/pciguard/pciguard_client.h"
-#include "chromeos/dbus/typecd/typecd_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,8 +43,8 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
     AshUsbDetector::Get()->SetDeviceManagerForTesting(
         std::move(device_manager));
 
-    chromeos::TypecdClient::InitializeFake();
-    chromeos::PciguardClient::InitializeFake();
+    TypecdClient::InitializeFake();
+    PciguardClient::InitializeFake();
     PeripheralNotificationManager::Initialize(
         /*is_guest_session=*/false,
         /*is_pcie_tunneling_allowed=*/false);
@@ -54,8 +54,8 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     ash_usb_detector_.reset();
     PeripheralNotificationManager::Shutdown();
-    chromeos::PciguardClient::Shutdown();
-    chromeos::TypecdClient::Shutdown();
+    PciguardClient::Shutdown();
+    TypecdClient::Shutdown();
   }
 
   void ConnectToDeviceManager() {

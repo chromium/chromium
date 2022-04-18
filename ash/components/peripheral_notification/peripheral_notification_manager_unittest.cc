@@ -12,10 +12,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/pciguard/fake_pciguard_client.h"
-#include "chromeos/dbus/pciguard/pciguard_client.h"
-#include "chromeos/dbus/typecd/fake_typecd_client.h"
-#include "chromeos/dbus/typecd/typecd_client.h"
+#include "chromeos/ash/components/dbus/pciguard/fake_pciguard_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/typecd/fake_typecd_client.h"
+#include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
@@ -140,13 +140,12 @@ class PeripheralNotificationManagerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    chromeos::TypecdClient::InitializeFake();
-    fake_typecd_client_ =
-        static_cast<chromeos::FakeTypecdClient*>(chromeos::TypecdClient::Get());
+    TypecdClient::InitializeFake();
+    fake_typecd_client_ = static_cast<FakeTypecdClient*>(TypecdClient::Get());
 
-    chromeos::PciguardClient::InitializeFake();
-    fake_pciguard_client_ = static_cast<chromeos::FakePciguardClient*>(
-        chromeos::PciguardClient::Get());
+    PciguardClient::InitializeFake();
+    fake_pciguard_client_ =
+        static_cast<FakePciguardClient*>(PciguardClient::Get());
 
     base::DeletePathRecursively(base::FilePath(thunderbolt_path_for_testing));
   }
@@ -166,18 +165,14 @@ class PeripheralNotificationManagerTest : public AshTestBase {
 
     manager_->RemoveObserver(&fake_observer_);
     PeripheralNotificationManager::Shutdown();
-    chromeos::TypecdClient::Shutdown();
-    chromeos::PciguardClient::Shutdown();
+    TypecdClient::Shutdown();
+    PciguardClient::Shutdown();
     base::DeletePathRecursively(base::FilePath(thunderbolt_path_for_testing));
   }
 
-  chromeos::FakeTypecdClient* fake_typecd_client() {
-    return fake_typecd_client_;
-  }
+  FakeTypecdClient* fake_typecd_client() { return fake_typecd_client_; }
 
-  chromeos::FakePciguardClient* fake_pciguard_client() {
-    return fake_pciguard_client_;
-  }
+  FakePciguardClient* fake_pciguard_client() { return fake_pciguard_client_; }
 
   size_t GetNumLimitedPerformanceObserverCalls() {
     return fake_observer_.num_limited_performance_notification_calls();
@@ -222,8 +217,8 @@ class PeripheralNotificationManagerTest : public AshTestBase {
   base::HistogramTester histogram_tester_;
 
  private:
-  chromeos::FakeTypecdClient* fake_typecd_client_;
-  chromeos::FakePciguardClient* fake_pciguard_client_;
+  FakeTypecdClient* fake_typecd_client_;
+  FakePciguardClient* fake_pciguard_client_;
   PeripheralNotificationManager* manager_ = nullptr;
   FakeObserver fake_observer_;
 };

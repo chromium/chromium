@@ -21,7 +21,10 @@
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
+#include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
@@ -44,8 +47,6 @@
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
-#include "chromeos/dbus/patchpanel/patchpanel_client.h"
-#include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
@@ -55,7 +56,6 @@
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/typecd/typecd_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/userdataauth/arc_quota_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
@@ -137,8 +137,8 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::MediaAnalyticsClient>(bus);
   InitializeDBusClient<chromeos::MissiveClient>(bus);
   InitializeDBusClient<OsInstallClient>(bus);
-  InitializeDBusClient<chromeos::PatchPanelClient>(bus);
-  InitializeDBusClient<chromeos::PciguardClient>(bus);
+  InitializeDBusClient<PatchPanelClient>(bus);
+  InitializeDBusClient<PciguardClient>(bus);
   InitializeDBusClient<chromeos::PermissionBrokerClient>(bus);
   InitializeDBusClient<chromeos::PowerManagerClient>(bus);
   InitializeDBusClient<chromeos::ResourcedClient>(bus);
@@ -148,7 +148,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::SystemClockClient>(bus);
   InitializeDBusClient<chromeos::SystemProxyClient>(bus);
   InitializeDBusClient<chromeos::TpmManagerClient>(bus);
-  InitializeDBusClient<chromeos::TypecdClient>(bus);
+  InitializeDBusClient<TypecdClient>(bus);
   InitializeDBusClient<chromeos::U2FClient>(bus);
   InitializeDBusClient<chromeos::UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
@@ -207,7 +207,7 @@ void ShutdownDBus() {
   UpstartClient::Shutdown();
   chromeos::UserDataAuthClient::Shutdown();
   chromeos::U2FClient::Shutdown();
-  chromeos::TypecdClient::Shutdown();
+  TypecdClient::Shutdown();
   chromeos::TpmManagerClient::Shutdown();
   chromeos::SystemProxyClient::Shutdown();
   chromeos::SystemClockClient::Shutdown();
@@ -220,8 +220,8 @@ void ShutdownDBus() {
   }
   chromeos::PowerManagerClient::Shutdown();
   chromeos::PermissionBrokerClient::Shutdown();
-  chromeos::PciguardClient::Shutdown();
-  chromeos::PatchPanelClient::Shutdown();
+  PciguardClient::Shutdown();
+  PatchPanelClient::Shutdown();
   OsInstallClient::Shutdown();
   chromeos::MissiveClient::Shutdown();
   chromeos::MediaAnalyticsClient::Shutdown();
