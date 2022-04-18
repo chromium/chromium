@@ -89,9 +89,6 @@ public class ToggleTabStackButton
     @Override
     public void onTabCountChanged(int numberOfTabs, boolean isIncognito) {
         setEnabled(numberOfTabs >= 1);
-        setContentDescription(getResources().getQuantityString(
-                R.plurals.accessibility_toolbar_btn_tabswitcher_toggle, numberOfTabs,
-                numberOfTabs));
         mTabSwitcherButtonDrawable.updateForTabCount(numberOfTabs, isIncognito);
     }
 

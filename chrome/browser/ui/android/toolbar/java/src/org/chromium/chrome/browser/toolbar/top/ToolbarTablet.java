@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -68,8 +67,8 @@ import java.util.Collection;
  * The Toolbar object for Tablet screens.
  */
 @SuppressLint("Instantiatable")
-public class ToolbarTablet extends ToolbarLayout
-        implements OnClickListener, View.OnLongClickListener, TabCountObserver {
+public class ToolbarTablet
+        extends ToolbarLayout implements OnClickListener, View.OnLongClickListener {
     private ObjectAnimator mTabSwitcherModeAnimation;
 
     /** Downloads page for offline access. */
@@ -594,15 +593,7 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    public void onTabCountChanged(int numberOfTabs, boolean isIncognito) {
-        mAccessibilitySwitcherButton.setContentDescription(getResources().getQuantityString(
-                R.plurals.accessibility_toolbar_btn_tabswitcher_toggle, numberOfTabs,
-                numberOfTabs));
-    }
-
-    @Override
     void setTabCountProvider(TabCountProvider tabCountProvider) {
-        tabCountProvider.addObserver(this);
         mAccessibilitySwitcherButton.setTabCountProvider(tabCountProvider);
     }
 

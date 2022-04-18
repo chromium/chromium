@@ -38,9 +38,6 @@ public class TabSwitcherButtonView extends ListMenuButton {
      * @param numberOfTabs The number of open tabs.
      */
     public void updateTabCountVisuals(int numberOfTabs) {
-        setContentDescription(getResources().getQuantityString(
-                R.plurals.accessibility_toolbar_btn_tabswitcher_toggle, numberOfTabs,
-                numberOfTabs));
         mTabSwitcherButtonDrawable.updateForTabCount(numberOfTabs, false);
     }
 

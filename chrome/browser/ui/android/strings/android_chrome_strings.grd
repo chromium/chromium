@@ -3743,13 +3743,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Incognito mode
       </message>
 
-      <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_TABSWITCHER_TOGGLE" desc="Content description for the button that enters or leaves the tab switcher. [ICU Syntax]">
-        {OPEN_TABS, plural,
-          =1 {<ph name="OPEN_TABS_ONE">%1$d<ex>1</ex></ph> open tab, tap to switch tabs}
-          other {<ph name="OPEN_TABS_MANY">%1$d<ex>8</ex></ph> open tabs, tap to switch tabs}}
-      </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_TABSWITCHER_TOGGLE_DEFAULT" desc="Placeholder content description for the button that enters or leaves the tab switcher.">
-        open tabs
+        Switch or close tabs
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_IDENTITY_DISC" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button navigates to 'Sync and Google services' page in settings">
         Manage account
