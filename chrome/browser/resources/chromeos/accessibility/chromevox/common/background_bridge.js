@@ -24,6 +24,37 @@ BackgroundBridge.BrailleBackground = {
   },
 };
 
+BackgroundBridge.ChromeVoxPrefs = {
+  /**
+   * Get the prefs (not including keys).
+   * @return {Promise<Object>} A map of all prefs except the key map from
+   *     localStorage.
+   */
+  async getPrefs() {
+    return BackgroundBridge.sendMessage_('ChromeVoxPrefs', 'getPrefs');
+  },
+
+  /**
+   * Set the value of a pref of logging options.
+   * @param {string} key The pref key.
+   * @param {boolean} value The new value of the pref.
+   */
+  async setLoggingPrefs(key, value) {
+    return BackgroundBridge.sendMessage_(
+        'ChromeVoxPrefs', 'setLoggingPrefs', {key, value});
+  },
+
+  /**
+   * Set the value of a pref.
+   * @param {string} key The pref key.
+   * @param {Object|string|boolean} value The new value of the pref.
+   */
+  async setPref(key, value) {
+    return BackgroundBridge.sendMessage_(
+        'ChromeVoxPrefs', 'setPref', {key, value});
+  },
+};
+
 // Helper functions:
 
 /** @private {!Object<string, Object<string, Function>>} */
