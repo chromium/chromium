@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
@@ -107,26 +107,23 @@ source_set("test_constants") {
   ]
 }
 
-js_compile_bundle("all_frames_web_test_bundle") {
+optimize_js("all_frames_web_test_bundle") {
   testonly = true
-  closure_entry_point = "__crWeb.allFramesWebTestBundle"
 
-  sources = [
-    "resources/all_frames_web_test_bundle.js",
-    "resources/cookie_test.js",
-  ]
+  primary_script = "resources/cookie_test.js"
+  sources = [ "resources/cookie_test.js" ]
 }
 
-js_compile_bundle("java_script_feature_test_inject_once_js") {
+optimize_js("java_script_feature_test_inject_once_js") {
   testonly = true
-  closure_entry_point = "__crWeb.javaScriptFeatureTestInjectOnce"
 
+  primary_script = "resources/java_script_feature_test_inject_once.js"
   sources = [ "resources/java_script_feature_test_inject_once.js" ]
 }
 
-js_compile_bundle("java_script_feature_test_reinject_js") {
+optimize_js("java_script_feature_test_reinject_js") {
   testonly = true
-  closure_entry_point = "__crWeb.javaScriptFeatureTestReinject"
 
+  primary_script = "resources/java_script_feature_test_reinject.js"
   sources = [ "resources/java_script_feature_test_reinject.js" ]
 }

@@ -6,7 +6,6 @@
  * @fileoverview Setup functions used in JavaScriptFeature inttests. This file
  * will be executed once for a given |window| JS object.
  */
-goog.provide('__crWeb.javaScriptFeatureTestInjectOnce');
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
