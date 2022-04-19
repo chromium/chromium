@@ -2874,7 +2874,7 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Restock mainboard page -->
       <message name="IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE" translateable="false" desc="The title for the page notifying user device is in a good state for restocking the mainboard.">
-        [Shimless RMA]
+        <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
       </message>
       <message name="IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS" translateable="false" desc="Instructions for what to do in the restock state. As the device will return to this state when rebooted after restocking the user can shutdown or continue RMA">
         Continue where you left off, or shut down to restock the board.

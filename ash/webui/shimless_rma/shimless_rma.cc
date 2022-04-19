@@ -250,7 +250,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"manuallyDisableWpInstructionsText",
        IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS},
       // Restock mainboard page
-      {"restockTitleText", IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE},
       {"restockInstructionsText", IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS},
       {"restockShutdownButtonText", IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON},
       {"restockContinueButtonText", IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON},
@@ -344,6 +343,9 @@ void AddDevicePlaceholderStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "criticalErrorTitleText",
       ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE));
+  html_source->AddString(
+      "restockTitleText",
+      ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE));
 }
 
 }  // namespace
