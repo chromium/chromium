@@ -80,6 +80,7 @@ mojom_parser_sources = [
   "$_mojom_library_root/__init__.py",
   "$_mojom_library_root/error.py",
   "$_mojom_library_root/generate/__init__.py",
+  "$_mojom_library_root/generate/check.py",
   "$_mojom_library_root/generate/generator.py",
   "$_mojom_library_root/generate/module.py",
   "$_mojom_library_root/generate/pack.py",

@@ -57,10 +57,12 @@ _BUILTIN_GENERATORS = {
     "typescript": "mojom_ts_generator",
 }
 
+_BUILTIN_CHECKS = {}
+
 
 def LoadGenerators(generators_string):
   if not generators_string:
-    return []  # No generators.
+    return {}  # No generators.
 
   generators = {}
   for generator_name in [s.strip() for s in generators_string.split(",")]:
@@ -72,6 +74,21 @@ def LoadGenerators(generators_string):
         "generators.%s" % _BUILTIN_GENERATORS[language])
     generators[language] = generator_module
   return generators
+
+
+def LoadChecks(checks_string):
+  if not checks_string:
+    return {}  # No checks.
+
+  checks = {}
+  for check_name in [s.strip() for s in checks_string.split(",")]:
+    check = check_name.lower()
+    if check not in _BUILTIN_CHECKS:
+      print("Unknown check name %s" % check_name)
+      sys.exit(1)
+    check_module = importlib.import_module("checks.%s" % _BUILTIN_CHECKS[check])
+    checks[check] = check_module
+  return checks
 
 
 def MakeImportStackMessage(imported_filename_stack):
@@ -169,8 +186,8 @@ class MojomProcessor(object):
     if 'c++' in self._typemap:
       self._typemap['mojolpm'] = self._typemap['c++']
 
-  def _GenerateModule(self, args, remaining_args, generator_modules,
-                      rel_filename, imported_filename_stack):
+  def _GenerateModule(self, args, remaining_args, check_modules,
+                      generator_modules, rel_filename, imported_filename_stack):
     # Return the already-generated module.
     if rel_filename.path in self._processed_files:
       return self._processed_files[rel_filename.path]
@@ -190,6 +207,11 @@ class MojomProcessor(object):
       ScrambleMethodOrdinals(module.interfaces, salt)
 
     if self._should_generate(rel_filename.path):
+      # Run checks on module first.
+      for check_module in check_modules.values():
+        checker = check_module.Check(module)
+        checker.CheckModule()
+      # Then run generation.
       for language, generator_module in generator_modules.items():
         generator = generator_module.Generator(
             module, args.output_dir, typemap=self._typemap.get(language, {}),
@@ -234,6 +256,7 @@ def _Generate(args, remaining_args):
       args.import_directories[idx] = RelativePath(tokens[0], args.depth,
                                                   args.output_dir)
   generator_modules = LoadGenerators(args.generators_string)
+  check_modules = LoadChecks(args.checks_string)
 
   fileutil.EnsureDirectoryExists(args.output_dir)
 
@@ -246,7 +269,7 @@ def _Generate(args, remaining_args):
 
   for filename in args.filename:
     processor._GenerateModule(
-        args, remaining_args, generator_modules,
+        args, remaining_args, check_modules, generator_modules,
         RelativePath(filename, args.depth, args.output_dir), [])
 
   return 0
@@ -286,6 +309,12 @@ def main():
                                metavar="GENERATORS",
                                default="c++,javascript,java,mojolpm",
                                help="comma-separated list of generators")
+  generate_parser.add_argument("-c",
+                               "--checks",
+                               dest="checks_string",
+                               metavar="CHECKS",
+                               default="",
+                               help="comma-separated list of checks")
   generate_parser.add_argument(
       "--gen_dir", dest="gen_directories", action="append", metavar="directory",
       default=[], help="add a directory to be searched for the syntax trees.")
