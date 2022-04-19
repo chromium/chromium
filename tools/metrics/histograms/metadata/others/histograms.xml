@@ -6136,6 +6136,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Hwsec.Attestation.PrepareDuration" units="ms"
+    expires_after="2022-10-18">
+  <owner>chingkang@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>The duration of preparation for enrollment in attestation.</summary>
+</histogram>
+
 <histogram base="true" name="Hwsec.Attestation.Status"
     enum="HwsecAttestationOpsStatus" expires_after="2022-09-11">
 <!-- Name completed by histogram_suffixes name="AttestationOps" -->
