@@ -100,7 +100,14 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 #endif
 
 // Tests that browser tests print the callstack when a child process crashes.
-IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RendererCrashCallStack) {
+// TODO(https://crbug.com/1317397): Enable this test on Fuchsia once the test
+// expectations have been updated.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RendererCrashCallStack DISABLED_RendererCrashCallStack
+#else
+#define MAYBE_RendererCrashCallStack RendererCrashCallStack
+#endif
+IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::CommandLine new_test = CreateCommandLine();
@@ -147,7 +154,9 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
 
 // Tests that browser tests print the callstack on asserts.
 // Disabled on Windows crbug.com/1034784
-#if BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/1317397): Enable this test on Fuchsia once the test
+// expectations have been updated.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_BrowserCrashCallStack DISABLED_BrowserCrashCallStack
 #else
 #define MAYBE_BrowserCrashCallStack BrowserCrashCallStack
