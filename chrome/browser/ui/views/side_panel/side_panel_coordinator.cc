@@ -128,6 +128,12 @@ void SidePanelCoordinator::Close() {
   if (!content_view)
     return;
 
+  if (GetLastActiveEntryId().has_value()) {
+    SidePanelEntry* current_entry =
+        GetEntryForId(GetLastActiveEntryId().value());
+    current_entry->OnEntryHidden();
+  }
+
   if (global_registry_->active_entry().has_value()) {
     last_active_global_entry_id_ =
         global_registry_->active_entry().value()->id();
@@ -220,6 +226,7 @@ void SidePanelCoordinator::PopulateSidePanel(SidePanelEntry* entry) {
     auto current_entry_view =
         content_wrapper->RemoveChildViewT(content_wrapper->children().front());
     current_entry->CacheView(std::move(current_entry_view));
+    current_entry->OnEntryHidden();
   }
   content_wrapper->AddChildView(entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry())

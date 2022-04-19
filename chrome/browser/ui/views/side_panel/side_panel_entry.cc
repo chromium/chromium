@@ -41,6 +41,11 @@ void SidePanelEntry::OnEntryShown() {
     observer.OnEntryShown(this);
 }
 
+void SidePanelEntry::OnEntryHidden() {
+  for (SidePanelEntryObserver& observer : observers_)
+    observer.OnEntryHidden(this);
+}
+
 void SidePanelEntry::AddObserver(SidePanelEntryObserver* observer) {
   observers_.AddObserver(observer);
 }

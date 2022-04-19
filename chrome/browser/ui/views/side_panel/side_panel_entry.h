@@ -47,8 +47,9 @@ class SidePanelEntry final {
   void CacheView(std::unique_ptr<views::View> view);
   void ClearCachedView();
 
-  // Called when the entry has been shown in the side panel.
+  // Called when the entry has been shown/hidden in the side panel.
   void OnEntryShown();
+  void OnEntryHidden();
 
   Id id() const { return id_; }
   const std::u16string& name() const { return name_; }
