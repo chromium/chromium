@@ -1861,13 +1861,17 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
   return CanNavigateHelper(*this, *this, target_frame, destination_url);
 }
 
-ContentCaptureManager* LocalFrame::GetContentCaptureManager() {
+ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {
   DCHECK(Client());
   if (!IsLocalRoot())
     return nullptr;
 
-  // TODO(dcheng): Why does this function also Shutdown()? It seems rather
-  // surprising...
+  // WebContentCaptureClient is set on each navigation and it could become null
+  // because the url is in disallowed list, so ContentCaptureManager
+  // is created or released as needed to save the resources.
+  // It is a little bit odd that ContentCaptureManager is created or released on
+  // demand, and that this is something that could be improved with an explicit
+  // signal for creating / destroying content capture managers.
   if (auto* content_capture_client = Client()->GetWebContentCaptureClient()) {
     if (!content_capture_manager_) {
       content_capture_manager_ =
@@ -2003,8 +2007,8 @@ void LocalFrame::WasHidden() {
     return;
   hidden_ = true;
 
-  if (content_capture_manager_) {
-    content_capture_manager_->OnFrameWasHidden();
+  if (auto* content_capture_manager = GetOrResetContentCaptureManager()) {
+    content_capture_manager->OnFrameWasHidden();
   }
 
   // An iframe may get a "was hidden" notification before it has been attached
@@ -2045,8 +2049,8 @@ void LocalFrame::WasShown() {
   if (LocalFrameView* frame_view = View())
     frame_view->ScheduleAnimation();
 
-  if (content_capture_manager_) {
-    content_capture_manager_->OnFrameWasShown();
+  if (auto* content_capture_manager = GetOrResetContentCaptureManager()) {
+    content_capture_manager->OnFrameWasShown();
   }
 }
 

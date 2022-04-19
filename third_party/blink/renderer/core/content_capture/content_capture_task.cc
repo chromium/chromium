@@ -50,6 +50,7 @@ ContentCaptureTask::ContentCaptureTask(LocalFrame& local_frame_root,
           local_frame_root_->GetTaskRunner(TaskType::kInternalContentCapture),
           this,
           &ContentCaptureTask::Run) {
+  DCHECK(local_frame_root.Client()->GetWebContentCaptureClient());
   task_delay_ = std::make_unique<TaskDelay>(local_frame_root.Client()
                                                 ->GetWebContentCaptureClient()
                                                 ->GetTaskInitialDelay());

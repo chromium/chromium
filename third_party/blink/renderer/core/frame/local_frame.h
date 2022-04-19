@@ -276,8 +276,9 @@ class CORE_EXPORT LocalFrame final
   CoreProbeSink* GetProbeSink() { return probe_sink_.Get(); }
   scoped_refptr<InspectorTaskRunner> GetInspectorTaskRunner();
 
-  // Returns ContentCaptureManager in LocalFrameRoot.
-  ContentCaptureManager* GetContentCaptureManager();
+  // Returns ContentCaptureManager in LocalFrameRoot, create or destroy it as
+  // needed.
+  ContentCaptureManager* GetOrResetContentCaptureManager();
 
   // Returns the current state of caret browsing mode.
   bool IsCaretBrowsingEnabled() const;
@@ -878,6 +879,8 @@ class CORE_EXPORT LocalFrame final
   // SmoothScrollSequencer is only populated for local roots; all local frames
   // use the instance owned by their local root.
   Member<SmoothScrollSequencer> smooth_scroll_sequencer_;
+  // Access content_capture_manager_ through GetOrResetContentCaptureManager()
+  // because WebContentCaptureClient might already stop the capture.
   Member<ContentCaptureManager> content_capture_manager_;
 
   InterfaceRegistry* const interface_registry_;

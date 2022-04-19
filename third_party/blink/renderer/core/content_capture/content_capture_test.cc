@@ -185,7 +185,7 @@ class ContentCaptureTest
     InitNodeHolders();
     // Setup captured content to ContentCaptureTask, it isn't necessary once
     // ContentCaptureManager is created by LocalFrame.
-    GetContentCaptureManager()
+    GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->SetCapturedContentForTesting(node_ids_);
     InitScrollingTestData();
@@ -193,10 +193,10 @@ class ContentCaptureTest
 
   void SimulateScrolling(wtf_size_t step) {
     CHECK_LT(step, 4u);
-    GetContentCaptureManager()
+    GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->SetCapturedContentForTesting(scrolling_node_ids_[step]);
-    GetContentCaptureManager()->OnScrollPositionChanged();
+    GetOrResetContentCaptureManager()->OnScrollPositionChanged();
   }
 
   void CreateTextNodeAndNotifyManager() {
@@ -207,18 +207,18 @@ class ContentCaptureTest
     Element* div_element = GetElementById("d1");
     div_element->appendChild(element);
     UpdateAllLifecyclePhasesForTest();
-    GetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
+    GetOrResetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
     created_node_id_ = DOMNodeIds::IdForNode(node);
     Vector<cc::NodeInfo> captured_content{
         cc::NodeInfo(created_node_id_, GetRect(node->GetLayoutObject()))};
-    GetContentCaptureManager()
+    GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->SetCapturedContentForTesting(captured_content);
   }
 
-  ContentCaptureManager* GetContentCaptureManager() {
+  ContentCaptureManager* GetOrResetContentCaptureManager() {
     if (content_capture_manager_ == nullptr)
-      content_capture_manager_ = GetFrame().GetContentCaptureManager();
+      content_capture_manager_ = GetFrame().GetOrResetContentCaptureManager();
     return content_capture_manager_;
   }
 
@@ -227,7 +227,7 @@ class ContentCaptureTest
   }
 
   ContentCaptureTask* GetContentCaptureTask() {
-    return GetContentCaptureManager()->GetContentCaptureTaskForTesting();
+    return GetOrResetContentCaptureManager()->GetContentCaptureTaskForTesting();
   }
 
   void RunContentCaptureTask() {
@@ -245,7 +245,7 @@ class ContentCaptureTest
   void RemoveNode(Node* node) {
     // Remove the node.
     node->remove();
-    GetContentCaptureManager()->OnLayoutTextWillBeDestroyed(*node);
+    GetOrResetContentCaptureManager()->OnLayoutTextWillBeDestroyed(*node);
   }
 
   void RemoveUnsentNode(const WebVector<WebContentHolder>& sent_nodes) {
@@ -300,7 +300,7 @@ class ContentCaptureTest
       CHECK(layout_object);
       CHECK(layout_object->IsText());
       nodes.push_back(node);
-      GetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
+      GetOrResetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
       node_ids.push_back(
           cc::NodeInfo(DOMNodeIds::IdForNode(node), GetRect(layout_object)));
     }
@@ -444,7 +444,7 @@ TEST_P(ContentCaptureTest, NodeOnlySendOnce) {
   EXPECT_EQ(GetExpectedSecondResultSize(),
             GetWebContentCaptureClient()->Data().size());
 
-  GetContentCaptureManager()->OnScrollPositionChanged();
+  GetOrResetContentCaptureManager()->OnScrollPositionChanged();
   RunContentCaptureTask();
   EXPECT_TRUE(GetWebContentCaptureClient()->Data().empty());
   EXPECT_TRUE(GetWebContentCaptureClient()->RemovedData().empty());
@@ -459,7 +459,7 @@ TEST_P(ContentCaptureTest, UnsentNode) {
 
   // Simulates the |invisible_node_| being changed, and verifies no content
   // change because |invisible_node_| wasn't captured.
-  GetContentCaptureManager()->OnNodeTextChanged(invisible_node());
+  GetOrResetContentCaptureManager()->OnNodeTextChanged(invisible_node());
   RunContentCaptureTask();
   EXPECT_TRUE(GetWebContentCaptureClient()->Data().empty());
   EXPECT_TRUE(GetWebContentCaptureClient()->UpdatedData().empty());
@@ -467,7 +467,8 @@ TEST_P(ContentCaptureTest, UnsentNode) {
 
   // Simulates the |invisible_node_| being removed, and verifies no content
   // change because |invisible_node_| wasn't captured.
-  GetContentCaptureManager()->OnLayoutTextWillBeDestroyed(invisible_node());
+  GetOrResetContentCaptureManager()->OnLayoutTextWillBeDestroyed(
+      invisible_node());
   RunContentCaptureTask();
   EXPECT_TRUE(GetWebContentCaptureClient()->Data().empty());
   EXPECT_TRUE(GetWebContentCaptureClient()->UpdatedData().empty());
@@ -729,12 +730,12 @@ class ContentCaptureSimTest : public SimTest {
     GetDocument()
         .GetFrame()
         ->LocalFrameRoot()
-        .GetContentCaptureManager()
+        .GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->RunTaskForTestingUntil(state);
     // Cancels the scheduled task to simulate that the task is running by
     // scheduler.
-    GetContentCaptureManager()
+    GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->CancelTaskForTesting();
   }
@@ -788,31 +789,31 @@ class ContentCaptureSimTest : public SimTest {
                  main_frame_expected_text_.end(), old_text, new_text);
   }
 
-  ContentCaptureManager* GetContentCaptureManager() {
+  ContentCaptureManager* GetOrResetContentCaptureManager() {
     return DynamicTo<LocalFrame>(LocalFrameRoot().GetFrame())
-        ->GetContentCaptureManager();
+        ->GetOrResetContentCaptureManager();
   }
 
   void SimulateUserInputOnMainFrame() {
-    GetContentCaptureManager()->NotifyInputEvent(
+    GetOrResetContentCaptureManager()->NotifyInputEvent(
         WebInputEvent::Type::kMouseDown,
         *DynamicTo<LocalFrame>(MainFrame().GetFrame()));
   }
 
   void SimulateUserInputOnChildFrame() {
-    GetContentCaptureManager()->NotifyInputEvent(
+    GetOrResetContentCaptureManager()->NotifyInputEvent(
         WebInputEvent::Type::kMouseDown, *child_document_->GetFrame());
   }
 
   base::TimeDelta GetNextTaskDelay() {
-    return GetContentCaptureManager()
+    return GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->GetTaskDelayForTesting()
         .GetNextTaskDelay();
   }
 
   base::TimeDelta GetTaskNextFireInterval() {
-    return GetContentCaptureManager()
+    return GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->GetTaskNextFireIntervalForTesting();
   }
@@ -926,7 +927,7 @@ class ContentCaptureSimTest : public SimTest {
     GetDocument()
         .GetFrame()
         ->LocalFrameRoot()
-        .GetContentCaptureManager()
+        .GetOrResetContentCaptureManager()
         ->GetContentCaptureTaskForTesting()
         ->SetCapturedContentForTesting(captured_content);
   }
