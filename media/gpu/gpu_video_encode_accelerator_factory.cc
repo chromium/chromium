@@ -8,6 +8,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
@@ -23,6 +24,7 @@
 #endif
 #if BUILDFLAG(IS_ANDROID)
 #include "media/gpu/android/android_video_encode_accelerator.h"
+#include "media/gpu/android/ndk_video_encode_accelerator.h"
 #endif
 #if BUILDFLAG(IS_MAC)
 #include "media/gpu/mac/vt_video_encode_accelerator_mac.h"
@@ -56,8 +58,13 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA() {
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA() {
-  return base::WrapUnique<VideoEncodeAccelerator>(
-      new AndroidVideoEncodeAccelerator());
+  if (NdkVideoEncodeAccelerator::IsSupported()) {
+    return base::WrapUnique<VideoEncodeAccelerator>(
+        new NdkVideoEncodeAccelerator(base::ThreadTaskRunnerHandle::Get()));
+  } else {
+    return base::WrapUnique<VideoEncodeAccelerator>(
+        new AndroidVideoEncodeAccelerator());
+  }
 }
 #endif
 
