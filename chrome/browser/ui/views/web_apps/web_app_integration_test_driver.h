@@ -79,7 +79,8 @@ struct AppState {
            blink::mojom::DisplayMode user_display_mode,
            std::string manifest_launcher_icon_filename,
            bool is_installed_locally,
-           bool is_shortcut_created);
+           bool is_shortcut_created,
+           bool is_isolated);
   ~AppState();
   AppState(const AppState&);
   bool operator==(const AppState& other) const;
@@ -94,6 +95,7 @@ struct AppState {
   std::string manifest_launcher_icon_filename;
   bool is_installed_locally;
   bool is_shortcut_created;
+  bool is_isolated;
 };
 
 struct ProfileState {
@@ -123,7 +125,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
     // Exposing normal functionality of testing::InProcBrowserTest:
     virtual Browser* CreateBrowser(Profile* profile) = 0;
     virtual void AddBlankTabAndShow(Browser* browser) = 0;
-    virtual net::EmbeddedTestServer* EmbeddedTestServer() = 0;
+    virtual const net::EmbeddedTestServer* EmbeddedTestServer() const = 0;
     virtual std::vector<Profile*> GetAllProfiles() = 0;
 
     // Functionality specific to web app integration test type (e.g. sync or
@@ -212,6 +214,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppTitleSiteA(const std::string& title);
   void CheckAppWindowMode(const std::string& site_mode,
                           apps::WindowMode window_mode);
+  void CheckWindowModeIsNotVisibleInAppSettings(const std::string& site_mode);
   void CheckInstallable();
   void CheckInstallIconShown();
   void CheckInstallIconNotShown();
@@ -302,7 +305,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppSettingsAppState(Profile* profile, const AppState& app_state);
 
   Browser* browser();
-  const net::EmbeddedTestServer* embedded_test_server();
   Profile* profile() {
     if (!active_profile_) {
       active_profile_ = delegate_->GetAllProfiles()[0];
@@ -313,6 +315,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   PageActionIconView* pwa_install_view();
   PageActionIconView* intent_picker_view();
+
+  const net::EmbeddedTestServer& GetTestServerForSiteMode(
+      const std::string& site_mode) const;
 
   base::flat_set<AppId> previous_manifest_updates_;
 
@@ -349,6 +354,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
   std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
+
+  std::unique_ptr<net::EmbeddedTestServer> isolated_app_test_server_ = nullptr;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration
@@ -372,7 +379,7 @@ class WebAppIntegrationBrowserTest
   // WebAppIntegrationBrowserTestBase::TestDelegate:
   Browser* CreateBrowser(Profile* profile) override;
   void AddBlankTabAndShow(Browser* browser) override;
-  net::EmbeddedTestServer* EmbeddedTestServer() override;
+  const net::EmbeddedTestServer* EmbeddedTestServer() const override;
 
   std::vector<Profile*> GetAllProfiles() override;
 

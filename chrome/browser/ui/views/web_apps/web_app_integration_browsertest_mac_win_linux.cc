@@ -13,6 +13,15 @@ using WebAppIntegrationBrowserTestMacWinLinux = WebAppIntegrationBrowserTest;
 
 // Manual tests:
 
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WindowModeSettingsIsNotAvailableForIsolatedAppsOnAppSettingsPage) {
+  helper_.InstallCreateShortcutWindowed("IsolatedApp");
+  helper_.OpenAppSettingsFromChromeApps("IsolatedApp");
+  helper_.CheckBrowserNavigationIsAppSettings("IsolatedApp");
+  helper_.CheckWindowModeIsNotVisibleInAppSettings("IsolatedApp");
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
                        LaunchFromPlatformShortcut) {
   helper_.InstallCreateShortcutWindowed("SiteA");

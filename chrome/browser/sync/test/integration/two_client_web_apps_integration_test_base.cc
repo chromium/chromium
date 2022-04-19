@@ -24,8 +24,8 @@ void TwoClientWebAppsIntegrationTestBase::AddBlankTabAndShow(Browser* browser) {
   InProcessBrowserTest::AddBlankTabAndShow(browser);
 }
 
-net::EmbeddedTestServer*
-TwoClientWebAppsIntegrationTestBase::EmbeddedTestServer() {
+const net::EmbeddedTestServer*
+TwoClientWebAppsIntegrationTestBase::EmbeddedTestServer() const {
   return embedded_test_server();
 }
 

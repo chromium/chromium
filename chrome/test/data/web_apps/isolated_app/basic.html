@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Site A</title>
+    <script src="/test_utils.js"></script>
+    <script>
+      // If a "manifest=/path/to/manifest.json" query argument is provided to
+      // the URL accessing this page, that path is injected as the manifest tag.
+      // Otherwise, "manifest.json" is used as the manifest tag.
+      addManifestLinkTag();
+    </script>
+</head>
+<body onload="startWorker('/service_worker.js', { scope: '/' })">
+  <h1>Site A</h1>
+  Service worker returns a response object if it's offline, so the page
+  supports the offline environment.
+
+  This site is intended to be served at the root of a server to allow
+  isolation. Thus the scope of the serviceworker and resources is at the root,
+  and not in the sub directory here.
+</body>
+</html>
