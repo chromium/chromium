@@ -1,4 +1,6 @@
 ---
+  # TODO(crbug.com/1282228): reenable google-readability-casting once it no
+  # longer has as many false-positives.
   Checks:          '-*,
                     bugprone-argument-comment,
                     bugprone-assert-side-effect,
@@ -10,7 +12,6 @@
                     bugprone-use-after-move,
                     google-build-explicit-make-pair,
                     google-explicit-constructor,
-                    google-readability-casting,
                     modernize-avoid-bind,
                     modernize-concat-nested-namespaces,
                     modernize-loop-convert,
