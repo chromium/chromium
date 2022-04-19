@@ -30,7 +30,7 @@ void SmartLockFeatureUsageMetrics::RecordUsage(bool success) {
 
 bool SmartLockFeatureUsageMetrics::IsEligible() const {
   switch (multidevice_setup_client_->GetFeatureState(Feature::kSmartLock)) {
-    case FeatureState::kUnavailableNoVerifiedHost:
+    case FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts:
       [[fallthrough]];
     case FeatureState::kUnavailableNoVerifiedHost_ClientNotReady:
       [[fallthrough]];
@@ -39,6 +39,9 @@ bool SmartLockFeatureUsageMetrics::IsEligible() const {
     case FeatureState::kNotSupportedByPhone:
       return false;
 
+    case FeatureState::
+        kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified:
+      [[fallthrough]];
     case FeatureState::kProhibitedByPolicy:
       [[fallthrough]];
     case FeatureState::kDisabledByUser:

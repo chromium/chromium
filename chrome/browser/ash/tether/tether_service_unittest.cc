@@ -663,8 +663,8 @@ TEST_F(TetherServiceTest, TestDeviceSyncClientNotReady) {
 TEST_F(TetherServiceTest,
        TestMultiDeviceSetupClientInitiallyHasNoVerifiedHost) {
   fake_tether_host_fetcher_factory_->SetNoInitialDevices();
-  initial_feature_state_ =
-      multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost;
+  initial_feature_state_ = multidevice_setup::mojom::FeatureState::
+      kUnavailableNoVerifiedHost_NoEligibleHosts;
 
   CreateTetherService();
 
@@ -700,7 +700,8 @@ TEST_F(TetherServiceTest, TestMultiDeviceSetupClientLosesVerifiedHost) {
   fake_tether_host_fetcher_factory_->last_created()->set_tether_hosts({});
   fake_multidevice_setup_client_->SetFeatureState(
       multidevice_setup::mojom::Feature::kInstantTethering,
-      multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost);
+      multidevice_setup::mojom::FeatureState::
+          kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified);
 
   EXPECT_EQ(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,

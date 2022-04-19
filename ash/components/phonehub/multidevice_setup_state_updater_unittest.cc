@@ -35,7 +35,7 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
     // Set the host status and feature state to realistic default values used
     // during start-up.
     SetFeatureState(Feature::kPhoneHub,
-                    FeatureState::kUnavailableNoVerifiedHost);
+                    FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts);
     SetHostStatus(HostStatus::kNoEligibleHosts);
   }
 
@@ -185,7 +185,8 @@ TEST_F(MultideviceSetupStateUpdaterTest, EnablePhoneHub_PersistIntentToEnable) {
   // some transient default values are set for the host status and feature
   // state, we should preserve the intent to enable Phone Hub.
   DestroyUpdater();
-  SetFeatureState(Feature::kPhoneHub, FeatureState::kUnavailableNoVerifiedHost);
+  SetFeatureState(Feature::kPhoneHub,
+                  FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts);
   SetHostStatus(HostStatus::kNoEligibleHosts);
   CreateUpdater();
 
@@ -214,7 +215,8 @@ TEST_F(
 
   // Make sure to ignore transient updates after start-up. In other words,
   // maintain our intent to enable Phone Hub after verification.
-  SetFeatureState(Feature::kPhoneHub, FeatureState::kUnavailableNoVerifiedHost);
+  SetFeatureState(Feature::kPhoneHub,
+                  FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts);
   SetHostStatus(HostStatus::kNoEligibleHosts);
 
   // The host status and feature state update to expected values.

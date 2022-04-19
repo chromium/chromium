@@ -1101,7 +1101,7 @@ TEST_P(MultiDeviceSetupImplTest, FeatureStateChanges_NoAuthTokenRequired) {
   auto observer = std::make_unique<FakeFeatureStateObserver>();
   multidevice_setup()->AddFeatureStateObserver(observer->GenerateRemote());
 
-  EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost,
+  EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
             CallGetFeatureStates()[mojom::Feature::kInstantTethering]);
 
   fake_feature_state_manager()->SetFeatureState(
@@ -1134,7 +1134,7 @@ TEST_P(MultiDeviceSetupImplTest,
   auto observer = std::make_unique<FakeFeatureStateObserver>();
   multidevice_setup()->AddFeatureStateObserver(observer->GenerateRemote());
 
-  EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost,
+  EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
             CallGetFeatureStates()[mojom::Feature::kSmartLock]);
 
   fake_feature_state_manager()->SetFeatureState(
@@ -1177,7 +1177,7 @@ TEST_P(MultiDeviceSetupImplTest,
   auto observer = std::make_unique<FakeFeatureStateObserver>();
   multidevice_setup()->AddFeatureStateObserver(observer->GenerateRemote());
 
-  EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost,
+  EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
             CallGetFeatureStates()[mojom::Feature::kBetterTogetherSuite]);
 
   fake_feature_state_manager()->SetFeatureState(

@@ -13,7 +13,7 @@ namespace ash {
 namespace multidevice_setup {
 
 // Test FeatureStateManager implementation. This class initializes all features
-// to be state mojom::FeatureState::kUnavailableNoVerifiedHost.
+// to be state mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts.
 class FakeFeatureStateManager : public FeatureStateManager {
  public:
   FakeFeatureStateManager();

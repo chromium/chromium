@@ -94,10 +94,10 @@ enum FeatureState {
   // Feature is not supported by the current host phone device.
   kNotSupportedByPhone = 4,
 
+  // This value has been deprecated in favor of more granular
+  // kUnavailableNoVerifiedHost_* values.
   // The feature is unavailable because there is no verified multi-device host.
-  // To set a host, use SetHostDevice(); to verify a host, use
-  // RetrySetHostNow().
-  kUnavailableNoVerifiedHost = 5,
+  // kUnavailableNoVerifiedHost = 5,
 
   // The feature is unavailable because there are insufficient security
   // mechanisms in place (e.g., Smart Lock returns this value when the host
@@ -119,11 +119,19 @@ enum FeatureState {
   kUnavailableTopLevelFeatureDisabled = 9,
 
   // The feature is unavailable because there is no verified multi-device host.
-  // This is essentially the same as kUnavailableNoVerifiedHost, but we are
-  // filtering out the uses when the state is kUnavailableNoVerifiedHost and
-  // the device sync client is not ready yet to better understand the flow
-  // in the feature states with metrics.
+  // The device sync client is not ready yet to better understand the flow in
+  // the feature states with metrics.
   kUnavailableNoVerifiedHost_ClientNotReady = 10,
+
+  // The feature is unavailable because no eligible multi-device host exists.
+  // This should be the starting default value in most cases until proven
+  // otherwise.
+  kUnavailableNoVerifiedHost_NoEligibleHosts = 11,
+
+  // The feature is unavailable because an eligible multi-device host exists but
+  // is not set or is unverified. To set a host, use SetHostDevice(); to verify
+  // a host, use RetrySetHostNow().
+  kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified = 12,
 };
 
 // Metadata describing a device that can used as the host for multidevice

@@ -58,9 +58,10 @@ TEST_F(SmartLockFeatureUsageMetricsTest, EnabledAndEligibleFeatureStates) {
   TestFeatureState(FeatureState::kNotSupportedByPhone,
                    /*expected_eligible_value=*/false,
                    /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kUnavailableNoVerifiedHost,
-                   /*expected_eligible_value=*/false,
-                   /*expected_enabled_value=*/false);
+  TestFeatureState(
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*expected_eligible_value=*/true,
+      /*expected_enabled_value=*/false);
   TestFeatureState(FeatureState::kUnavailableInsufficientSecurity,
                    /*expected_eligible_value=*/true,
                    /*expected_enabled_value=*/false);
@@ -72,6 +73,9 @@ TEST_F(SmartLockFeatureUsageMetricsTest, EnabledAndEligibleFeatureStates) {
                    /*expected_enabled_value=*/false);
   TestFeatureState(FeatureState::kUnavailableTopLevelFeatureDisabled,
                    /*expected_eligible_value=*/true,
+                   /*expected_enabled_value=*/false);
+  TestFeatureState(FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
+                   /*expected_eligible_value=*/false,
                    /*expected_enabled_value=*/false);
 }
 

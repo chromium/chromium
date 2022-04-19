@@ -152,7 +152,8 @@ class TetherHostFetcherImplTest : public testing::Test {
                          absl::nullopt /* host_device */));
       fake_multidevice_setup_client_->SetFeatureState(
           multidevice_setup::mojom::Feature::kInstantTethering,
-          multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost);
+          multidevice_setup::mojom::FeatureState::
+              kUnavailableNoVerifiedHost_NoEligibleHosts);
       return;
     }
 

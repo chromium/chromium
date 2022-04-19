@@ -72,25 +72,35 @@ multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
 GenerateDefaultFeatureStatesMap() {
   return multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap{
       {multidevice_setup::mojom::Feature::kBetterTogetherSuite,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kInstantTethering,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kMessages,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kSmartLock,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kPhoneHub,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kPhoneHubNotifications,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kWifiSync,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kEche,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost}};
+       multidevice_setup::mojom::FeatureState::
+           kUnavailableNoVerifiedHost_NoEligibleHosts}};
 }
 
 void VerifyPageContentDict(

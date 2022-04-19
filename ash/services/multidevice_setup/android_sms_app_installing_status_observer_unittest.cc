@@ -255,7 +255,8 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
                     absl::nullopt /* host_device */);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
-  SetMessagesFeatureState(mojom::FeatureState::kUnavailableNoVerifiedHost);
+  SetMessagesFeatureState(
+      mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 }
 

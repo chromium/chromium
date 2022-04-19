@@ -62537,13 +62537,21 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Enabled by user"/>
   <int value="3" label="Not support by Chromebook"/>
   <int value="4" label="Not supported by phone"/>
-  <int value="5" label="Unable, no verified host"/>
+  <int value="5" label="(Obsolete) Unable, no verified host">
+    <obsolete>
+      Deprecated 2022-04. Use the more granular values.
+    </obsolete>
+  </int>
   <int value="6" label="Unavailable, insufficient security"/>
   <int value="7" label="Unavailable, suite disabled"/>
   <int value="8" label="Further setup required"/>
   <int value="9" label="Unavailable, top-level feature disabled"/>
   <int value="10"
       label="Unable, no verified host and device sync client not ready"/>
+  <int value="11" label="Unable, no eligible host exists"/>
+  <int value="12"
+      label="Unable, eligible host exists but no host set or set host is
+             unverified"/>
 </enum>
 
 <enum name="MultiDevice_PostOOBESetupFlow_Page">

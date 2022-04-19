@@ -10,18 +10,18 @@ namespace multidevice_setup {
 
 namespace {
 
-// Each feature's default value is kUnavailableNoVerifiedHost until proven
-// otherwise.
+// Each feature's default value is kUnavailableNoVerifiedHost_NoEligibleHosts
+// until proven otherwise.
 FeatureStateManager::FeatureStatesMap GenerateInitialDefaultCachedStateMap() {
   return FeatureStateManager::FeatureStatesMap{
       {mojom::Feature::kBetterTogetherSuite,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kInstantTethering,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kMessages,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kSmartLock,
-       mojom::FeatureState::kUnavailableNoVerifiedHost}};
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts}};
 }
 
 }  // namespace

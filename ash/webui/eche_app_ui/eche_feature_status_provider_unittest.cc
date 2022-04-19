@@ -208,7 +208,7 @@ TEST_F(EcheFeatureStatusProviderTest, IneligibleForFeature) {
 TEST_F(EcheFeatureStatusProviderTest, NoEligiblePhones) {
   SetDeviceSyncClientReady();
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
-                      FeatureState::kUnavailableNoVerifiedHost,
+                      FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
                       /*eche_host_supported=*/true,
                       /*eche_host_enabled=*/false);
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
@@ -241,16 +241,17 @@ TEST_F(EcheFeatureStatusProviderTest, TransitionBetweenAllStatuses) {
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
-                      FeatureState::kUnavailableNoVerifiedHost,
+                      FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
                       /*eche_host_supported=*/true,
                       /*eche_host_enabled=*/true);
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
   EXPECT_EQ(0u, GetNumObserverCalls());
 
-  SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost,
-                      /*eche_host_supported=*/true,
-                      /*eche_host_enabled=*/true);
+  SetMultiDeviceState(
+      HostStatus::kEligibleHostExistsButNoHostSet,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*eche_host_supported=*/true,
+      /*eche_host_enabled=*/true);
   SetEligibleSyncedDevices();
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
   EXPECT_EQ(0u, GetNumObserverCalls());

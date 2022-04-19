@@ -537,13 +537,14 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
       return ENABLED;
     case multidevice_setup::mojom::FeatureState::kUnavailableSuiteDisabled:
       return BETTER_TOGETHER_SUITE_DISABLED;
-    case multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost:
-      // Note that because of the early return above after
-      // !HasSyncedTetherHosts, if this point is hit, there are synced tether
-      // hosts available, but the multidevice state is unverified.
+    case multidevice_setup::mojom::FeatureState::
+        kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified:
       [[fallthrough]];
     case multidevice_setup::mojom::FeatureState::
         kUnavailableNoVerifiedHost_ClientNotReady:
+      [[fallthrough]];
+    case multidevice_setup::mojom::FeatureState::
+        kUnavailableNoVerifiedHost_NoEligibleHosts:
       [[fallthrough]];
     case multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook:
       // CryptAuth may not yet know that this device supports

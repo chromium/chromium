@@ -67,30 +67,31 @@ GenerateFeatureToAllowedPrefNameMap() {
       {mojom::Feature::kEche, kEcheAllowedPrefName}};
 }
 
-// Each feature's default value is kUnavailableNoVerifiedHost until proven
-// otherwise.
+// Each feature's default value is kUnavailableNoVerifiedHost_NoEligibleHosts
+// until proven otherwise.
 base::flat_map<mojom::Feature, mojom::FeatureState>
 GenerateInitialDefaultCachedStateMap() {
   return base::flat_map<mojom::Feature, mojom::FeatureState>{
       {mojom::Feature::kBetterTogetherSuite,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kInstantTethering,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kMessages,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kSmartLock,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kPhoneHub,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kPhoneHubCameraRoll,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kPhoneHubNotifications,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kPhoneHubTaskContinuation,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kWifiSync,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
-      {mojom::Feature::kEche, mojom::FeatureState::kUnavailableNoVerifiedHost},
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
+      {mojom::Feature::kEche,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
   };
 }
 
@@ -356,8 +357,12 @@ mojom::FeatureState FeatureStateManagerImpl::ComputeFeatureState(
   HostStatusProvider::HostStatusWithDevice status_with_device =
       host_status_provider_->GetHostWithStatus();
 
+  if (status_with_device.host_status() == mojom::HostStatus::kNoEligibleHosts)
+    return mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts;
+
   if (status_with_device.host_status() != mojom::HostStatus::kHostVerified)
-    return mojom::FeatureState::kUnavailableNoVerifiedHost;
+    return mojom::FeatureState::
+        kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified;
 
   if (!IsSupportedByChromebook(feature))
     return mojom::FeatureState::kNotSupportedByChromebook;
