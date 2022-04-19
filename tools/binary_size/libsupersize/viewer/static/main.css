@@ -241,6 +241,7 @@ ul {
 }
 
 .modal-content {
+  align-items: center;
   background-color: #fefefe;
   border-radius: 5px;
   box-sizing: border-box;
