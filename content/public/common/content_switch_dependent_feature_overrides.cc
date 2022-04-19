@@ -109,6 +109,9 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
     {switches::kEnableExperimentalCookieFeatures,
      std::cref(net::features::kSchemefulSameSite),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+    {switches::kEnableExperimentalCookieFeatures,
+     std::cref(net::features::kPartitionedCookies),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
     // Overrides for --isolation-by-default.
     {switches::kIsolationByDefault,
