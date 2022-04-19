@@ -23,6 +23,8 @@ def GzipStringRsyncable(data):
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
+  if isinstance(data, str):
+    data = data.encode('utf8')
   data, stderr = gzip_proc.communicate(data)
   if gzip_proc.returncode != 0:
     raise subprocess.CalledProcessError(gzip_proc.returncode, 'gzip',
