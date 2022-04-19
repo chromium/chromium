@@ -6080,7 +6080,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "FetchBehavior": "background-and-on-demand"
+                        "FetchBehavior": "background-and-on-demand",
+                        "RandomQueryProbability": "0.0197"
                     },
                     "enable_features": [
                         "NetworkTimeServiceQuerying"
