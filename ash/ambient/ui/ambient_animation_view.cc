@@ -12,6 +12,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
+#include "ash/ambient/ui/ambient_animation_attribution_transformer.h"
 #include "ash/ambient/ui/ambient_animation_player.h"
 #include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_animation_shield_controller.h"
@@ -284,6 +285,8 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
   gfx::Rect previous_animation_bounds = animated_image_view_->GetImageBounds();
   AmbientAnimationResizer::Resize(*animated_image_view_,
                                   GetPaddingForAnimationJitter());
+  AmbientAnimationAttributionTransformer::TransformTextBox(
+      *animated_image_view_);
   DVLOG(4)
       << "View bounds available. Resized animation with native size "
       << animated_image_view_->animated_image()->GetOriginalSize().ToString()
