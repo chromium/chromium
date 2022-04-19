@@ -16,7 +16,8 @@ class BrowserContext;
 
 namespace sharing_hub {
 
-// Returns true if the omnibox sharing hub is enabled for |context|.
+// Returns true if the omnibox sharing hub is enabled for |context|. Only for
+// Windows/Mac/Linux. ChromeOS opens the native sharesheet.
 bool SharingHubOmniboxEnabled(content::BrowserContext* context);
 
 // Returns true if the desktop screenshots feature is enabled.
