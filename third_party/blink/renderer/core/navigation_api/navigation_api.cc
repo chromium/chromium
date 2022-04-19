@@ -751,6 +751,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   auto* script_state =
       ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  if (!script_state)
+    return DispatchResult::kContinue;
   ScriptState::Scope scope(script_state);
 
   if (params.frame_load_type == WebFrameLoadType::kBackForward &&
