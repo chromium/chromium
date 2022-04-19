@@ -794,11 +794,21 @@ class UseMultipleOverlaysTest : public OverlayTest<OverlayProcessorType> {
         featureAndParamsList = {{features::kEnableOverlayPrioritization, {}},
                                 {features::kUseMultipleOverlays,
                                  {{features::kMaxOverlaysParam, "4"}}}};
-    features.InitWithFeaturesAndParameters(featureAndParamsList, {});
+    scoped_features.InitWithFeaturesAndParameters(featureAndParamsList, {});
+  }
+
+ protected:
+  void SetUp() override {
+    OverlayTest<OverlayProcessorType>::SetUp();
+    // When overlay prioritization is explicitly disabled (Lacros) we should
+    // skip multiple overlays tests.
+    if (!features::IsOverlayPrioritizationEnabled()) {
+      GTEST_SKIP();
+    }
   }
 
  private:
-  base::test::ScopedFeatureList features;
+  base::test::ScopedFeatureList scoped_features;
 };
 
 using FullscreenOverlayTest = OverlayTest<FullscreenOverlayProcessor>;

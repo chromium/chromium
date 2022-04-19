@@ -42,7 +42,7 @@ const base::FeatureParam<int> kAdpfTargetDurationMs{&kAdpf,
 
 const base::Feature kEnableOverlayPrioritization {
   "EnableOverlayPrioritization",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -198,7 +198,12 @@ bool IsClipPrewalkDamageEnabled() {
 }
 
 bool IsOverlayPrioritizationEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // DelegatedCompositing in Lacros makes this feature a no-op.
+  return false;
+#else
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
+#endif
 }
 
 bool IsDelegatedCompositingEnabled() {
