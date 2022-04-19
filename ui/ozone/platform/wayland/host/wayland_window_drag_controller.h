@@ -90,6 +90,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   WaylandWindow* origin_window_for_testing() { return origin_window_; }
 
+  absl::optional<DragSource> drag_source() { return drag_source_; }
+
  private:
   class ExtendedDragSource;
 

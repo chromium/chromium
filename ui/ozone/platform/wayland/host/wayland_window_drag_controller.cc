@@ -122,9 +122,7 @@ bool WaylandWindowDragController::StartDragSession() {
                      ? DragSource::kTouch
                      : DragSource::kMouse;
 
-  origin_window_ = *drag_source_ == DragSource::kMouse
-                       ? window_manager_->GetCurrentPointerFocusedWindow()
-                       : window_manager_->GetCurrentTouchFocusedWindow();
+  origin_window_ = window_manager_->GetCurrentPointerOrTouchFocusedWindow();
   if (!origin_window_) {
     LOG(ERROR) << "Failed to get origin window.";
     return false;

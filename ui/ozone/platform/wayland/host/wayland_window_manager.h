@@ -17,12 +17,13 @@ namespace ui {
 
 class WaylandWindow;
 class WaylandSubsurface;
+class WaylandConnection;
 
 // Stores and returns WaylandWindows. Clients that are interested in knowing
 // when a new window is added or removed, but set self as an observer.
 class WaylandWindowManager {
  public:
-  WaylandWindowManager();
+  explicit WaylandWindowManager(WaylandConnection* connection);
   WaylandWindowManager(const WaylandWindowManager&) = delete;
   WaylandWindowManager& operator=(const WaylandWindowManager&) = delete;
   ~WaylandWindowManager();
@@ -108,6 +109,8 @@ class WaylandWindowManager {
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
 
  private:
+  WaylandConnection* const connection_;
+
   base::ObserverList<WaylandWindowObserver> observers_;
 
   base::flat_map<gfx::AcceleratedWidget, WaylandWindow*> window_map_;

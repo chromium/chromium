@@ -370,6 +370,8 @@ TEST_P(WaylandWindowDragControllerTest,
 
   Sync();
   // Verify that the proper window is being dragged.
+  EXPECT_EQ(window_2.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(window_2.get(), drag_controller()->origin_window_for_testing());
   Mock::VerifyAndClearExpectations(&delegate_);
 

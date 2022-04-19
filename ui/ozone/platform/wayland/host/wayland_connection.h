@@ -368,7 +368,7 @@ class WaylandConnection {
   wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
 
   // Manages Wayland windows.
-  WaylandWindowManager wayland_window_manager_;
+  WaylandWindowManager wayland_window_manager_{this};
 
   // Event source instance. Must be declared before input objects so it
   // outlives them so thus being able to properly handle their destruction.
