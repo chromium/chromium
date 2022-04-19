@@ -7755,3 +7755,7 @@ crbug.com/1317029 [ Mac10.13 ] external/wpt/fetch/content-type/script.window.htm
 crbug.com/1316144 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Skip ]
 
 crbug.com/1296449 [ Linux Release ] external/wpt/workers/SharedWorker-MessageEvent-source.any.sharedworker.html [ Skip ]
+
+# Temporarily disabling to land fixes in DevTools.
+crbug.com/1316147 http/tests/devtools/unit/datagrid-editable-longtext.js [ Skip ]
+
