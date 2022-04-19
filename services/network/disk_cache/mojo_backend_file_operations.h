@@ -30,7 +30,7 @@ class MojoBackendFileOperations final
   bool PathExists(const base::FilePath& path) override;
   bool DirectoryExists(const base::FilePath& path) override;
   base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
-  bool DeleteFile(const base::FilePath& path) override;
+  bool DeleteFile(const base::FilePath& path, DeleteFileMode mode) override;
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,
                    base::File::Error* error) override;

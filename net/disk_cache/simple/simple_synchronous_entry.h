@@ -241,22 +241,28 @@ class SimpleSynchronousEntry {
   // Deletes an entry from the file system.  This variant should only be used
   // if there is no actual open instance around, as it doesn't account for
   // possibility of it having been renamed to a non-standard name.
-  static int DeleteEntryFiles(const base::FilePath& path,
-                              net::CacheType cache_type,
-                              uint64_t entry_hash);
+  static int DeleteEntryFiles(
+      const base::FilePath& path,
+      net::CacheType cache_type,
+      uint64_t entry_hash,
+      std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations);
 
   // Like |DeleteEntryFiles()| above, except that it truncates the entry files
   // rather than deleting them. Used when dooming entries after the backend has
   // shutdown. See implementation of |SimpleEntryImpl::DoomEntryInternal()| for
   // more.
-  static int TruncateEntryFiles(const base::FilePath& path,
-                                uint64_t entry_hash);
+  static int TruncateEntryFiles(
+      const base::FilePath& path,
+      uint64_t entry_hash,
+      std::unique_ptr<UnboundBackendFileOperations> file_operations);
 
   // Like |DeleteEntryFiles()| above. Deletes all entries corresponding to the
   // |key_hashes|. Succeeds only when all entries are deleted. Returns a net
   // error code.
-  static int DeleteEntrySetFiles(const std::vector<uint64_t>* key_hashes,
-                                 const base::FilePath& path);
+  static int DeleteEntrySetFiles(
+      const std::vector<uint64_t>* key_hashes,
+      const base::FilePath& path,
+      std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations);
 
   // N.B. ReadData(), WriteData(), CheckEOFRecord(), ReadSparseData(),
   // WriteSparseData() and Close() may block on IO.
@@ -463,13 +469,21 @@ class SimpleSynchronousEntry {
                          int len,
                          const char* buf);
 
+  static int DeleteEntryFilesInternal(const base::FilePath& path,
+                                      net::CacheType cache_type,
+                                      uint64_t entry_hash,
+                                      BackendFileOperations* file_operations);
+
   static bool DeleteFileForEntryHash(const base::FilePath& path,
                                      uint64_t entry_hash,
-                                     int file_index);
+                                     int file_index,
+                                     BackendFileOperations* file_operations);
   static bool DeleteFilesForEntryHash(const base::FilePath& path,
-                                      uint64_t entry_hash);
+                                      uint64_t entry_hash,
+                                      BackendFileOperations* file_operations);
   static bool TruncateFilesForEntryHash(const base::FilePath& path,
-                                        uint64_t entry_hash);
+                                        uint64_t entry_hash,
+                                        BackendFileOperations* file_operations);
 
   base::FilePath GetFilenameFromFileIndex(int file_index) const;
 

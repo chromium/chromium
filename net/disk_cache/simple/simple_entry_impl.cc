@@ -1334,7 +1334,7 @@ void SimpleEntryImpl::DoomEntryInternal(net::CompletionOnceCallback callback) {
     prioritized_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&SimpleSynchronousEntry::TruncateEntryFiles, path_,
-                       entry_hash_),
+                       entry_hash_, file_operations_factory_->CreateUnbound()),
         base::BindOnce(&SimpleEntryImpl::DoomOperationComplete, this,
                        std::move(callback),
                        // Return to STATE_FAILURE after dooming, since no
@@ -1363,7 +1363,8 @@ void SimpleEntryImpl::DoomEntryInternal(net::CompletionOnceCallback callback) {
     prioritized_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&SimpleSynchronousEntry::DeleteEntryFiles, path_,
-                       cache_type_, entry_hash_),
+                       cache_type_, entry_hash_,
+                       file_operations_factory_->CreateUnbound()),
         base::BindOnce(&SimpleEntryImpl::DoomOperationComplete, this,
                        std::move(callback), state_),
         entry_priority_);

@@ -23,6 +23,7 @@
 #include "net/disk_cache/memory/mem_backend_impl.h"
 #include "net/disk_cache/simple/simple_backend_impl.h"
 #include "net/disk_cache/simple/simple_file_enumerator.h"
+#include "net/disk_cache/simple/simple_util.h"
 
 namespace {
 
@@ -504,14 +505,24 @@ base::File TrivialFileOperations::OpenFile(const base::FilePath& path,
   return file;
 }
 
-bool TrivialFileOperations::DeleteFile(const base::FilePath& path) {
+bool TrivialFileOperations::DeleteFile(const base::FilePath& path,
+                                       DeleteFileMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
 #if DCHECK_IS_ON()
   DCHECK(bound_);
 #endif
 
-  return base::DeleteFile(path);
+  bool result = false;
+  switch (mode) {
+    case DeleteFileMode::kDefault:
+      result = base::DeleteFile(path);
+      break;
+    case DeleteFileMode::kEnsureImmediateAvailability:
+      result = disk_cache::simple_util::SimpleCacheDeleteFile(path);
+      break;
+  }
+  return result;
 }
 
 bool TrivialFileOperations::ReplaceFile(const base::FilePath& from_path,

@@ -71,6 +71,9 @@ interface SimpleCache {
   // Opens an entry.
   OpenEntry(string key) =>
     (pending_remote<SimpleCacheEntry>? entry, int32 error);
+
+  // Marks the entry for deletion.
+  DoomEntry(string key) => (int32 result);
 };
 
 // Testing interface to the network service.

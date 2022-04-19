@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/disk_cache/simple/simple_file_enumerator.h"
+#include "net/disk_cache/simple/simple_util.h"
 
 namespace content {
 
@@ -126,13 +127,23 @@ class HttpCacheBackendFileOperations final
   }
 
   void DeleteFile(const base::FilePath& path,
+                  network::mojom::HttpCacheBackendDeleteFileMode mode,
                   DeleteFileCallback callback) override {
+    using network::mojom::HttpCacheBackendDeleteFileMode;
     if (!IsValid(path, "DeleteFile")) {
       std::move(callback).Run(false);
       return;
     }
 
-    bool result = base::DeleteFile(path);
+    bool result = false;
+    switch (mode) {
+      case HttpCacheBackendDeleteFileMode::kDefault:
+        result = base::DeleteFile(path);
+        break;
+      case HttpCacheBackendDeleteFileMode::kEnsureImmediateAvailability:
+        result = disk_cache::simple_util::SimpleCacheDeleteFile(path);
+        break;
+    }
     DVLOG(1) << "DeleteFile: path = " << path << " => " << result;
     std::move(callback).Run(result);
   }

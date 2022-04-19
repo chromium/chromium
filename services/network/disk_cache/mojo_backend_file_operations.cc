@@ -93,9 +93,20 @@ base::File MojoBackendFileOperations::OpenFile(const base::FilePath& path,
   return file;
 }
 
-bool MojoBackendFileOperations::DeleteFile(const base::FilePath& path) {
+bool MojoBackendFileOperations::DeleteFile(const base::FilePath& path,
+                                           DeleteFileMode mode) {
+  mojom::HttpCacheBackendDeleteFileMode mode_to_pass;
+  switch (mode) {
+    case DeleteFileMode::kDefault:
+      mode_to_pass = mojom::HttpCacheBackendDeleteFileMode::kDefault;
+      break;
+    case DeleteFileMode::kEnsureImmediateAvailability:
+      mode_to_pass =
+          mojom::HttpCacheBackendDeleteFileMode::kEnsureImmediateAvailability;
+      break;
+  }
   bool result = false;
-  remote_->DeleteFile(path, &result);
+  remote_->DeleteFile(path, mode_to_pass, &result);
   return result;
 }
 

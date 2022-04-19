@@ -362,7 +362,8 @@ void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&SimpleSynchronousEntry::DeleteEntrySetFiles,
-                     mass_doom_entry_hashes_ptr, path_),
+                     mass_doom_entry_hashes_ptr, path_,
+                     file_operations_factory_->CreateUnbound()),
       base::BindOnce(&SimpleBackendImpl::DoomEntriesComplete, AsWeakPtr(),
                      std::move(mass_doom_entry_hashes), barrier_callback));
 }

@@ -583,6 +583,17 @@ class BackendFileOperations {
     base::Time last_modified;
   };
 
+  // An enum representing the mode for DeleteFile function.
+  enum class DeleteFileMode {
+    // The default mode, meaning base::DeleteFile.
+    kDefault,
+    // Ensure that new files for the same name can be created immediately after
+    // deletion. Note that this is the default behavior on POSIX. On Windows
+    // this assumes that all the file handles for the file to be deleted are
+    // opened with FLAG_WIN_SHARE_DELETE.
+    kEnsureImmediateAvailability,
+  };
+
   // An interface to enumerate files in a directory.
   // Indirect descendants are not listed, and directories are not listed.
   class FileEnumerator {
@@ -614,7 +625,8 @@ class BackendFileOperations {
   virtual base::File OpenFile(const base::FilePath& path, uint32_t flags) = 0;
 
   // Deletes a file with the given path and returns whether that succeeded.
-  virtual bool DeleteFile(const base::FilePath& path) = 0;
+  virtual bool DeleteFile(const base::FilePath& path,
+                          DeleteFileMode mode = DeleteFileMode::kDefault) = 0;
 
   // Renames a file `from_path` to `to_path`. Returns the error information.
   virtual bool ReplaceFile(const base::FilePath& from_path,
@@ -675,7 +687,7 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
   bool PathExists(const base::FilePath& path) override;
   bool DirectoryExists(const base::FilePath& path) override;
   base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
-  bool DeleteFile(const base::FilePath& path) override;
+  bool DeleteFile(const base::FilePath& path, DeleteFileMode mode) override;
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,
                    base::File::Error* error) override;

@@ -552,5 +552,84 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, WriteAndReadSparseData) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomEntry) {
+  const std::vector<uint8_t> kData = {'A', 'B', 'C'};
+  const std::vector<uint8_t> kSparseData(1024, 'A');
+  mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
+
+  ASSERT_TRUE(simple_cache.is_bound());
+  mojo::Remote<SimpleCacheEntry> entry = CreateEntry(simple_cache.get(), "abc");
+
+  ASSERT_TRUE(entry.is_bound());
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  {
+    // Write something, to open files.
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    entry->WriteData(/*index=*/0, /*offset=*/0, kData, /*truncate=*/false,
+                     base::BindLambdaForTesting([&](int result) {
+                       EXPECT_EQ(result, static_cast<int>(kData.size()));
+                       run_loop.Quit();
+                     }));
+    run_loop.Run();
+  }
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  {
+    // Write something, to open files.
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    entry->WriteSparseData(
+        /*offset=*/0, kSparseData, base::BindLambdaForTesting([&](int result) {
+          EXPECT_EQ(result, static_cast<int>(kSparseData.size()));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  {
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    simple_cache->DoomEntry("abc",
+                            base::BindLambdaForTesting([&](int32_t result) {
+                              EXPECT_EQ(result, net::OK);
+                              run_loop.Quit();
+                            }));
+    run_loop.Run();
+  }
+  simple_cache.reset();
+  entry.reset();
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  simple_cache = CreateSimpleCache();
+  ASSERT_TRUE(simple_cache.is_bound());
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  ASSERT_TRUE(simple_cache.is_bound());
+  entry = OpenEntry(simple_cache.get(), "abc");
+
+  ASSERT_FALSE(entry.is_bound());
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomEntryWithoutOpening) {
+  mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
+
+  ASSERT_TRUE(simple_cache.is_bound());
+  {
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    simple_cache->DoomEntry("abc",
+                            base::BindLambdaForTesting([&](int32_t result) {
+                              EXPECT_EQ(result, net::OK);
+                              run_loop.Quit();
+                            }));
+    run_loop.Run();
+  }
+  simple_cache.reset();
+  ASSERT_TRUE(network_service_test().is_connected());
+}
+
 }  // namespace
 }  // namespace content
