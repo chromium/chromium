@@ -150,6 +150,8 @@ blink_modules_sources("webaudio") {
     "offline_audio_completion_event.h",
     "offline_audio_context.cc",
     "offline_audio_context.h",
+    "offline_audio_destination_handler.cc",
+    "offline_audio_destination_handler.h",
     "offline_audio_destination_node.cc",
     "offline_audio_destination_node.h",
     "offline_audio_worklet_thread.cc",
