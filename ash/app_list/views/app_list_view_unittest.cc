@@ -3256,7 +3256,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
     VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        window_size, 4 /*row_count*/, expected_horizontal_margin,
         expected_item_size, /*has_recent_apps=*/true);
   }
 }
@@ -3292,7 +3292,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
     VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        window_size, 4 /*row_count*/, expected_horizontal_margin,
         expected_item_size, /*has_recent_apps=*/true);
   }
 }

@@ -223,6 +223,13 @@ TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
   EXPECT_EQ(3, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 
+  // Test with a display in landscape mode a with a little more height. This
+  // should have equal rows on the first and second pages.
+  UpdateDisplay("1600x900");
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+  EXPECT_EQ(4, GetPagedAppsGridView()->GetRowsForTesting());
+  EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+
   // Test with a display in landscape mode with more height. This should have
   // more rows.
   UpdateDisplay("1400x1100");

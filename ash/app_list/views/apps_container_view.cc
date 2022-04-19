@@ -67,8 +67,7 @@ namespace {
 // enabled.
 constexpr int kPreferredGridRowsInPortraitProductivityLauncher = 5;
 
-// The number of columns for portrait mode with mode productivity launcher
-// enabled.
+// The number of columns for portrait mode with productivity launcher enabled.
 constexpr int kPreferredGridColumnsInPortraitProductivityLauncher = 5;
 
 // The long apps grid dimension when productivity launcher is not enabled:
@@ -1514,17 +1513,26 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
 
   int preferred_columns = 0;
   int preferred_rows = 0;
+  int preferred_rows_first_page = 0;
 
   if (is_portrait_mode) {
     preferred_rows = features::IsProductivityLauncherEnabled()
                          ? kPreferredGridRowsInPortraitProductivityLauncher
                          : kPreferredGridColumns;
+    preferred_rows_first_page = preferred_rows;
     preferred_columns =
         features::IsProductivityLauncherEnabled()
             ? kPreferredGridColumnsInPortraitProductivityLauncher
             : kPreferredGridRows;
   } else {
     preferred_rows = kPreferredGridRows;
+    preferred_rows_first_page = preferred_rows;
+
+    // In landscape mode, the first page should show the preferred number of
+    // rows as well as an additional row for recent apps when possible.
+    if (continue_container_ && continue_container_->HasRecentApps())
+      preferred_rows_first_page++;
+
     preferred_columns = kPreferredGridColumns;
   }
 
@@ -1533,7 +1541,7 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
   result.rows =
       apps_grid_view_->CalculateMaxRows(available_height, preferred_rows);
   result.first_page_rows = apps_grid_view_->CalculateFirstPageMaxRows(
-      available_height, preferred_rows);
+      available_height, preferred_rows_first_page);
   return result;
 }
 
