@@ -1,4 +1,0 @@
-include_rules = [
-  "+mojo/core/embedder",
-  "+third_party/libdrm",
-]

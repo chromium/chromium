@@ -990,7 +990,6 @@ if (is_chromeos_ash) {
       #"//third_party/catapult/telemetry:bitmaptools",
       "//tools/perf/clear_system_cache",
       "//ui/ozone/gl:ozone_gl_unittests",
-      "//ui/ozone/platform/drm:ozone_drm_integration_tests",
     ]
 
     if (use_v4l2_codec || use_vaapi) {
