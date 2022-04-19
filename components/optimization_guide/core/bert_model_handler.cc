@@ -18,6 +18,7 @@ BertModelHandler::BertModelHandler(
           model_provider,
           background_task_runner,
           std::make_unique<BertModelExecutor>(optimization_target),
+          /*model_inference_timeout=*/absl::nullopt,
           optimization_target,
           model_metadata) {}
 

@@ -5,7 +5,9 @@
 #include "components/optimization_guide/core/bert_model_handler.h"
 
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +16,11 @@ namespace optimization_guide {
 
 class BertModelExecutorTest : public testing::Test {
  public:
+  BertModelExecutorTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kPreventLongRunningPredictionModels);
+  }
+
   void SetUp() override {
     optimization_guide_model_provider_ =
         std::make_unique<TestOptimizationGuideModelProvider>();
@@ -54,6 +61,7 @@ class BertModelExecutorTest : public testing::Test {
   BertModelHandler* model_handler() { return model_handler_.get(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<TestOptimizationGuideModelProvider>

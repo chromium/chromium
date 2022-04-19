@@ -63,7 +63,9 @@ class ModelExecutionTimeoutWatchdog : private base::Watchdog {
             /*thread_watched_name=*/"OptGuideModelExecution_" +
                 GetStringNameForOptimizationTarget(optimization_target),
             /*enabled=*/true),
-        optimization_target_(optimization_target) {}
+        optimization_target_(optimization_target) {
+    DCHECK_GE(duration, base::TimeDelta());
+  }
 
   void ArmWithTask(
       tflite::task::core::BaseTaskApi<OutputType, InputTypes...>* task) {
