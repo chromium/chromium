@@ -71,5 +71,5 @@ bool PersonalizationSystemAppDelegate::ShouldShowInSearch() const {
 }
 
 bool PersonalizationSystemAppDelegate::ShouldAnimateThemeChanges() const {
-  return true;
+  return false;
 }
