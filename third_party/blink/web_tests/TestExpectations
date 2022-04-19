@@ -7575,6 +7575,9 @@ crbug.com/1285275 virtual/partitioned-cookies/external/wpt/html/anonymous-iframe
 # Sheriff 2022-03-10
 crbug.com/1304956 storage/indexeddb/dont-wedge.html [ Failure Pass ]
 
+# Temporarily disable to land DevTools changes
+crbug.com/1308257 http/tests/devtools/overrides/files-save-without-hash.js [ Failure Pass Timeout ]
+
 # Sheriff 2022-03-15
 crbug.com/626703 external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Pass Timeout ]
 crbug.com/1269534 fast/spatial-navigation/snav-zero-margin-content.html [ Failure Pass ]
