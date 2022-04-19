@@ -1346,6 +1346,10 @@ void BrowserManager::StopKeepAlive(Feature feature) {
     UpdateKeepAliveInBrowserIfNecessary(false);
 }
 
+bool BrowserManager::IsKeepAliveEnabled() const {
+  return !keep_alive_features_.empty();
+}
+
 void BrowserManager::LaunchForKeepAliveIfNecessary() {
   // KeepAlive should not start lacros in a windowless state if a relaunch has
   // been requested. Lacros restart will instead be handled in

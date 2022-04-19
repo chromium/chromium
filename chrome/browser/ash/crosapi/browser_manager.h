@@ -201,6 +201,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // enters the session. This method should be called at the appropriate time.
   void InitializeAndStart();
 
+  // Returns true if keep-alive is enabled.
+  bool IsKeepAliveEnabled() const;
+
   // Returns true if crosapi interface supports GetFeedbackData API.
   bool GetFeedbackDataSupported() const;
 

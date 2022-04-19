@@ -262,6 +262,8 @@ namespace autotestPrivate {
   dictionary LacrosInfo {
     // True iff lacros is running currently.
     boolean isRunning;
+    // True iff keepalive is enabled for lacros.
+    boolean isKeepAlive;
     // Path to lacros-chrome directory. Note that this may change over time if
     // omaha is used. This also may be empty if lacros is not running.
     DOMString lacrosPath;

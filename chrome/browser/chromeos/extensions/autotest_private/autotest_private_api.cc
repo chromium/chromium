@@ -1919,6 +1919,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
   auto* browser_manager = crosapi::BrowserManager::Get();
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetBoolKey("isRunning", browser_manager->IsRunning());
+  result->SetBoolKey("isKeepAlive", browser_manager->IsKeepAliveEnabled());
   result->SetStringKey("lacrosPath",
                        browser_manager->lacros_path().MaybeAsASCII());
   return RespondNow(
