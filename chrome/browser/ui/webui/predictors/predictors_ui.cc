@@ -24,6 +24,9 @@ content::WebUIDataSource* CreatePredictorsUIHTMLSource() {
   source->AddResourcePath("predictors.js", IDR_PREDICTORS_JS);
   source->AddResourcePath("resource_prefetch_predictor.js",
                           IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS);
+  // TODO (https://crbug.com/1317384): This is needed because custom_element.ts,
+  // which is imported by cr_tab_box.ts, directly assigns innerHTML.
+  source->DisableTrustedTypesCSP();
   source->SetDefaultResource(IDR_PREDICTORS_HTML);
   return source;
 }

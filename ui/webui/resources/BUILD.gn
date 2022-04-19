@@ -7,9 +7,8 @@ import("//crypto/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-include_polymer = !is_android && !is_ios
 
 generate_grd("build_grd") {
   grd_prefix = "webui_generated"
@@ -115,13 +114,13 @@ if (is_chromeos_ash) {
 }
 
 group("preprocess") {
-  public_deps = [ "js:preprocess" ]
+  public_deps = [
+    "cr_elements:preprocess",
+    "js:preprocess",
+  ]
 
   if (include_polymer) {
-    public_deps += [
-      "cr_components:preprocess",
-      "cr_elements:preprocess",
-    ]
+    public_deps += [ "cr_components:preprocess" ]
   }
 }
 
@@ -141,16 +140,14 @@ group("closure_compile") {
 
 group("modulize") {
   public_deps = [
+    "cr_elements:custom_elements",
     "js:modulize",
     "js/cr:modulize",
     "js/cr/ui:modulize",
   ]
 
   if (include_polymer) {
-    public_deps += [
-      "cr_components:polymer3_elements",
-      "cr_elements:polymer3_elements",
-    ]
+    public_deps += [ "cr_components:polymer3_elements" ]
   }
 }
 
@@ -283,6 +280,7 @@ ts_library("library") {
   tsconfig_base = "tsconfig_base.json"
 
   in_files = [
+    "cr_elements/cr_tab_box/cr_tab_box.ts",
     "js/assert_ts.ts",
     "js/custom_element.ts",
   ]

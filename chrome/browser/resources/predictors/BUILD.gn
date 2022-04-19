@@ -20,11 +20,7 @@ js_library("autocomplete_action_predictor") {
 }
 
 js_library("predictors") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
-  ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("resource_prefetch_predictor") {

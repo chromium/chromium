@@ -13,20 +13,16 @@
 </head>
 
 <body>
-  <tabbox id="predictor-page">
-    <tabs>
-      <tab>Autocomplete Action Predictor</tab>
-      <tab>Resource Prefetch Predictor</tab>
-    </tabs>
-    <tabpanels>
-      <tabpanel>
-        <include src="autocomplete_action_predictor.html">
-      </tabpanel>
-      <tabpanel>  
-        <include src="resource_prefetch_predictor.html">
-      </tabpanel>
-    </tabpanels>
-  </tabbox>
+  <cr-tab-box id="predictor-page">
+    <div slot="tabs">Autocomplete Action Predictor</div>
+    <div slot="tabs">Resource Prefetch Predictor</div>
+    <div slot="panels">
+      <include src="autocomplete_action_predictor.html">
+    </div>
+    <div slot="panels">
+      <include src="resource_prefetch_predictor.html">
+    </div>
+  </cr-tab-box>
   <script type="module" src="predictors.js"></script>
 </body>
 </html>
