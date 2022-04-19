@@ -22,7 +22,6 @@
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -55,19 +54,6 @@ attribution_internals::mojom::DebugKeyPtr WebUIDebugKey(
                    : nullptr;
 }
 
-base::flat_map<std::string, std::string> Convert(
-    const AttributionAggregatableSource& aggregatable_source) {
-  const proto::AttributionAggregatableSource& proto =
-      aggregatable_source.proto();
-
-  base::flat_map<std::string, std::string> map;
-  for (const auto& [key_id, key] : proto.keys()) {
-    map.emplace(key_id, HexEncodeAggregatableKey(absl::MakeUint128(
-                            key.high_bits(), key.low_bits())));
-  }
-  return map;
-}
-
 attribution_internals::mojom::WebUISourcePtr WebUISource(
     const CommonSourceInfo& source,
     Attributability attributability,
@@ -79,7 +65,13 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.source_type(), source.priority(),
       WebUIDebugKey(source.debug_key()), dedup_keys,
       source.filter_data().filter_values(),
-      Convert(source.aggregatable_source()), attributability);
+      base::MakeFlatMap<std::string, std::string>(
+          source.aggregatable_source().keys(), {},
+          [](const auto& key) {
+            return std::make_pair(key.first,
+                                  HexEncodeAggregatableKey(key.second));
+          }),
+      attributability);
 }
 
 void ForwardSourcesToWebUI(

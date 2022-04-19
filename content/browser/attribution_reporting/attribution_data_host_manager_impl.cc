@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_tree.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -17,13 +18,13 @@
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/common/features.h"
@@ -89,20 +90,19 @@ const base::FeatureParam<base::TimeDelta> kTriggerDelay{
 
 constexpr size_t kMaxDelayedTriggers = 30;
 
-proto::AttributionAggregatableSource ConvertToProto(
-    const blink::mojom::AttributionAggregatableSource& aggregatable_source) {
-  proto::AttributionAggregatableSource result;
-
-  for (const auto& [key_id, key_ptr] : aggregatable_source.keys) {
-    DCHECK(key_ptr);
-    proto::AttributionAggregatableKey key;
-    key.set_high_bits(key_ptr->high_bits);
-    key.set_low_bits(key_ptr->low_bits);
-
-    (*result.mutable_keys())[key_id] = std::move(key);
+absl::optional<AttributionAggregatableSource> Convert(
+    blink::mojom::AttributionAggregatableSourcePtr aggregatable_source) {
+  AttributionAggregatableSource::Keys::container_type keys;
+  keys.reserve(aggregatable_source->keys.size());
+  for (auto& [key_id, key_ptr] : aggregatable_source->keys) {
+    keys.emplace_back(std::move(key_id),
+                      absl::MakeUint128(/*high=*/key_ptr->high_bits,
+                                        /*low=*/key_ptr->low_bits));
   }
 
-  return result;
+  return AttributionAggregatableSource::FromKeys(
+      AttributionAggregatableSource::Keys(base::sorted_unique,
+                                          std::move(keys)));
 }
 
 }  // namespace
@@ -277,8 +277,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   absl::optional<AttributionAggregatableSource> aggregatable_source =
-      AttributionAggregatableSource::Create(
-          ConvertToProto(*data->aggregatable_source));
+      Convert(std::move(data->aggregatable_source));
   if (!aggregatable_source.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
     return;

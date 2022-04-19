@@ -116,19 +116,15 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
-  EXPECT_CALL(mock_manager_,
-              HandleSource(AllOf(
-                  SourceTypeIs(AttributionSourceType::kEvent),
-                  SourceEventIdIs(10), ConversionOriginIs(destination_origin),
-                  ImpressionOriginIs(page_origin), SourcePriorityIs(20),
-                  SourceDebugKeyIs(789),
-                  AggregatableSourceAre(AttributionAggregatableSource::Create(
-                      AggregatableSourceProtoBuilder()
-                          .AddKey("key", AggregatableKeyProtoBuilder()
-                                             .SetHighBits(5)
-                                             .SetLowBits(345)
-                                             .Build())
-                          .Build())))));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(
+          AllOf(SourceTypeIs(AttributionSourceType::kEvent),
+                SourceEventIdIs(10), ConversionOriginIs(destination_origin),
+                ImpressionOriginIs(page_origin), SourcePriorityIs(20),
+                SourceDebugKeyIs(789),
+                AggregatableSourceAre(*AttributionAggregatableSource::FromKeys(
+                    {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})))));
   {
     RemoteDataHost data_host_remote{.task_environment = task_environment_};
     data_host_manager_.RegisterDataHost(
@@ -883,19 +879,15 @@ TEST_F(AttributionDataHostManagerImplTest,
       url::Origin::Create(GURL("https://trigger.example"));
   const auto reporting_origin =
       url::Origin::Create(GURL("https://reporter.example"));
-  EXPECT_CALL(mock_manager_,
-              HandleSource(AllOf(
-                  SourceTypeIs(AttributionSourceType::kNavigation),
-                  SourceEventIdIs(10), ConversionOriginIs(destination_origin),
-                  ImpressionOriginIs(page_origin), SourcePriorityIs(20),
-                  SourceDebugKeyIs(789),
-                  AggregatableSourceAre(AttributionAggregatableSource::Create(
-                      AggregatableSourceProtoBuilder()
-                          .AddKey("key", AggregatableKeyProtoBuilder()
-                                             .SetHighBits(5)
-                                             .SetLowBits(345)
-                                             .Build())
-                          .Build())))));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(
+          AllOf(SourceTypeIs(AttributionSourceType::kNavigation),
+                SourceEventIdIs(10), ConversionOriginIs(destination_origin),
+                ImpressionOriginIs(page_origin), SourcePriorityIs(20),
+                SourceDebugKeyIs(789),
+                AggregatableSourceAre(*AttributionAggregatableSource::FromKeys(
+                    {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})))));
 
   const blink::AttributionSrcToken attribution_src_token;
 

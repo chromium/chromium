@@ -189,13 +189,8 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
-                  .SetAggregatableSource(*AttributionAggregatableSource::Create(
-                      AggregatableSourceProtoBuilder()
-                          .AddKey("a", AggregatableKeyProtoBuilder()
-                                           .SetHighBits(0)
-                                           .SetLowBits(1)
-                                           .Build())
-                          .Build()))
+                  .SetAggregatableSource(
+                      *AttributionAggregatableSource::FromKeys({{"a", 1}}))
                   .Build(),
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());

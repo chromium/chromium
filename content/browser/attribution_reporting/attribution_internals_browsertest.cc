@@ -254,13 +254,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetDedupKeys({13, 17})
                .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
                    {{"a", {"b", "c"}}}))
-               .SetAggregatableSource(*AttributionAggregatableSource::Create(
-                   AggregatableSourceProtoBuilder()
-                       .AddKey("a", AggregatableKeyProtoBuilder()
-                                        .SetHighBits(0)
-                                        .SetLowBits(1)
-                                        .Build())
-                       .Build()))
+               .SetAggregatableSource(
+                   *AttributionAggregatableSource::FromKeys({{"a", 1}}))
                .BuildStored(),
            SourceBuilder(now + base::Hours(2))
                .SetActiveState(StoredSource::ActiveState::

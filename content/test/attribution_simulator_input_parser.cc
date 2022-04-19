@@ -23,7 +23,6 @@
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -524,7 +523,7 @@ class AttributionSimulatorInputParser {
     if (!values)
       return AttributionAggregatableSource();
 
-    proto::AttributionAggregatableSource proto;
+    AttributionAggregatableSource::Keys::container_type keys;
 
     auto context = PushContext(kKey);
 
@@ -539,15 +538,11 @@ class AttributionSimulatorInputParser {
           if (has_error_)
             return;
 
-          proto::AttributionAggregatableKey proto_key;
-          proto_key.set_high_bits(absl::Uint128High64(key));
-          proto_key.set_low_bits(absl::Uint128Low64(key));
-
-          (*proto.mutable_keys())[std::move(id)] = std::move(proto_key);
+          keys.emplace_back(std::move(id), key);
         }));
 
     absl::optional<AttributionAggregatableSource> aggregatable_source =
-        AttributionAggregatableSource::Create(proto);
+        AttributionAggregatableSource::FromKeys(std::move(keys));
     if (!aggregatable_source)
       *Error() << "invalid";
 

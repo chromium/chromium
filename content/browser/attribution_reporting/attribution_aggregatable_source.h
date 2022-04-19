@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_AGGREGATABLE_SOURCE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_AGGREGATABLE_SOURCE_H_
 
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -14,9 +17,14 @@ namespace content {
 // This is a wrapper of `proto::AttributionAggregatableSource`.
 class CONTENT_EXPORT AttributionAggregatableSource {
  public:
-  // Returns `absl::nullopt` if `proto` is invalid.
-  static absl::optional<AttributionAggregatableSource> Create(
-      proto::AttributionAggregatableSource proto);
+  using Keys = base::flat_map<std::string, absl::uint128>;
+
+  // Returns `absl::nullopt` if `keys` is invalid.
+  static absl::optional<AttributionAggregatableSource> FromKeys(Keys keys);
+
+  // Deserializes `str`, if valid. Returns `absl::nullopt` if not.
+  static absl::optional<AttributionAggregatableSource> Deserialize(
+      const std::string& str);
 
   AttributionAggregatableSource();
   ~AttributionAggregatableSource();
@@ -28,13 +36,14 @@ class CONTENT_EXPORT AttributionAggregatableSource {
       const AttributionAggregatableSource&);
   AttributionAggregatableSource& operator=(AttributionAggregatableSource&&);
 
-  const proto::AttributionAggregatableSource& proto() const { return proto_; }
+  const Keys& keys() const { return keys_; }
+
+  std::string Serialize() const;
 
  private:
-  explicit AttributionAggregatableSource(
-      proto::AttributionAggregatableSource proto);
+  explicit AttributionAggregatableSource(Keys keys);
 
-  proto::AttributionAggregatableSource proto_;
+  Keys keys_;
 };
 
 }  // namespace content

@@ -15,7 +15,6 @@
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -33,21 +32,9 @@ using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 }  // namespace
 
 TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
-  proto::AttributionAggregatableSource source_proto =
-      AggregatableSourceProtoBuilder()
-          .AddKey("key1", AggregatableKeyProtoBuilder()
-                              .SetHighBits(0)
-                              .SetLowBits(345)
-                              .Build())
-          .AddKey("key2", AggregatableKeyProtoBuilder()
-                              .SetHighBits(0)
-                              .SetLowBits(5)
-                              .Build())
-          .AddKey("key3", AggregatableKeyProtoBuilder()
-                              .SetHighBits(0)
-                              .SetLowBits(123)
-                              .Build())
-          .Build();
+  auto source = AttributionAggregatableSource::FromKeys(
+      {{"key1", 345}, {"key2", 5}, {"key3", 123}});
+  ASSERT_TRUE(source.has_value());
 
   auto trigger_mojo = blink::mojom::AttributionAggregatableTrigger::New();
 
@@ -100,10 +87,6 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   absl::optional<AttributionFilterData> source_filter_data =
       AttributionFilterData::FromSourceFilterValues({{"filter", {"value"}}});
   ASSERT_TRUE(source_filter_data.has_value());
-
-  absl::optional<AttributionAggregatableSource> source =
-      AttributionAggregatableSource::Create(std::move(source_proto));
-  ASSERT_TRUE(source.has_value());
 
   absl::optional<AttributionAggregatableTrigger> trigger =
       AttributionAggregatableTrigger::FromMojo(std::move(trigger_mojo));

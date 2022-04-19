@@ -5,19 +5,13 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
 #include <sstream>
-#include <string>
-#include <utility>
 #include <vector>
 
-#include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 
 namespace content {
 
@@ -27,15 +21,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const AttributionAggregatableTrigger& trigger) {
   // TODO(linnan): Log metrics for early returns.
 
-  // Pairs of key id and bucket key.
-  std::vector<std::pair<std::string, absl::uint128>> buckets;
-  buckets.reserve(source.proto().keys().size());
-  for (const auto& [key_id, key] : source.proto().keys()) {
-    buckets.emplace_back(key_id,
-                         absl::MakeUint128(key.high_bits(), key.low_bits()));
-  }
-
-  base::flat_map<std::string, absl::uint128> buckets_map(std::move(buckets));
+  AttributionAggregatableSource::Keys buckets = source.keys();
 
   // For each piece of trigger data specified, check if its filters/not_filters
   // match for the given source, and if applicable modify the bucket based on
@@ -47,8 +33,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     }
 
     for (const auto& source_key : data.source_keys()) {
-      auto bucket = buckets_map.find(source_key);
-      if (bucket == buckets_map.end())
+      auto bucket = buckets.find(source_key);
+      if (bucket == buckets.end())
         continue;
 
       bucket->second |= data.key();
@@ -56,7 +42,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   }
 
   std::vector<AggregatableHistogramContribution> contributions;
-  for (const auto& [key_id, key] : buckets_map) {
+  for (const auto& [key_id, key] : buckets) {
     auto value = trigger.values().find(key_id);
     if (value == trigger.values().end())
       continue;

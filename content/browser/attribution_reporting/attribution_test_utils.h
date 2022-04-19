@@ -34,7 +34,6 @@
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
@@ -608,38 +607,6 @@ class ReportBuilder {
   absl::optional<AttributionReport::AggregatableAttributionData::Id>
       aggregatable_attribution_report_id_;
   std::vector<AggregatableHistogramContribution> contributions_;
-};
-
-// Helper class to construct a `proto::AttributionAggregatableKey` for testing.
-class AggregatableKeyProtoBuilder {
- public:
-  AggregatableKeyProtoBuilder();
-  ~AggregatableKeyProtoBuilder();
-
-  AggregatableKeyProtoBuilder& SetHighBits(uint64_t high_bits);
-
-  AggregatableKeyProtoBuilder& SetLowBits(uint64_t low_bits);
-
-  proto::AttributionAggregatableKey Build() const;
-
- private:
-  proto::AttributionAggregatableKey key_;
-};
-
-// Helper class to construct a `proto::AttributionAggregatableSource` for
-// testing.
-class AggregatableSourceProtoBuilder {
- public:
-  AggregatableSourceProtoBuilder();
-  ~AggregatableSourceProtoBuilder();
-
-  AggregatableSourceProtoBuilder& AddKey(std::string key_id,
-                                         proto::AttributionAggregatableKey key);
-
-  proto::AttributionAggregatableSource Build() const;
-
- private:
-  proto::AttributionAggregatableSource aggregatable_source_;
 };
 
 // Helper class to construct a `blink::mojom::AttributionAggregatableSource`

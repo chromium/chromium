@@ -29,7 +29,6 @@
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -1929,16 +1928,9 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
 }
 
 TEST_F(AttributionStorageTest, AttributionAggregatableSource_RoundTrips) {
-  proto::AttributionAggregatableSource proto =
-      AggregatableSourceProtoBuilder()
-          .AddKey("key", AggregatableKeyProtoBuilder()
-                             .SetHighBits(5)
-                             .SetLowBits(345)
-                             .Build())
-          .Build();
-  absl::optional<AttributionAggregatableSource> aggregatable_source =
-      AttributionAggregatableSource::Create(std::move(proto));
-  EXPECT_TRUE(aggregatable_source.has_value());
+  auto aggregatable_source =
+      AttributionAggregatableSource::FromKeys({{"key", 345}});
+  ASSERT_TRUE(aggregatable_source.has_value());
   storage()->StoreSource(
       SourceBuilder().SetAggregatableSource(*aggregatable_source).Build());
   EXPECT_THAT(storage()->GetActiveSources(),
@@ -2351,13 +2343,6 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   const auto origin = url::Origin::Create(GURL("https://r.test"));
 
-  auto aggregatable_source = AggregatableSourceProtoBuilder()
-                                 .AddKey("0", AggregatableKeyProtoBuilder()
-                                                  .SetHighBits(0)
-                                                  .SetLowBits(1)
-                                                  .Build())
-                                 .Build();
-
   auto aggregatable_trigger =
       blink::mojom::AttributionAggregatableTrigger::New();
   aggregatable_trigger->trigger_data.push_back(
@@ -2376,7 +2361,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
               {{"abc", {"123"}}}))
           .SetAggregatableSource(
-              *AttributionAggregatableSource::Create(aggregatable_source))
+              *AttributionAggregatableSource::FromKeys({{"0", 1}}))
           .Build());
 
   AttributionTrigger trigger1(
@@ -2516,13 +2501,6 @@ TEST_F(
 }
 
 TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
-  auto aggregatable_source = AggregatableSourceProtoBuilder()
-                                 .AddKey("0", AggregatableKeyProtoBuilder()
-                                                  .SetHighBits(0)
-                                                  .SetLowBits(1)
-                                                  .Build())
-                                 .Build();
-
   auto aggregatable_trigger =
       blink::mojom::AttributionAggregatableTrigger::New();
   aggregatable_trigger->trigger_data.push_back(
@@ -2538,8 +2516,8 @@ TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
       SourceBuilder()
           .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
               {{"abc", {"123"}}}))
-          .SetAggregatableSource(*AttributionAggregatableSource::Create(
-              std::move(aggregatable_source)))
+          .SetAggregatableSource(
+              *AttributionAggregatableSource::FromKeys({{"0", 1}}))
           .Build());
 
   EXPECT_EQ(

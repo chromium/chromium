@@ -32,7 +32,6 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
@@ -243,15 +242,6 @@ absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-absl::optional<AttributionAggregatableSource> ParseAggregatableSource(
-    const std::string& str) {
-  proto::AttributionAggregatableSource aggregatable_source;
-  if (!aggregatable_source.ParseFromString(str))
-    return absl::nullopt;
-
-  return AttributionAggregatableSource::Create(std::move(aggregatable_source));
-}
-
 struct StoredSourceData {
   StoredSource source;
   int num_conversions;
@@ -287,7 +277,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   int num_conversions = statement.ColumnInt(col++);
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(col++);
   absl::optional<AttributionAggregatableSource> aggregatable_source =
-      ParseAggregatableSource(statement.ColumnString(col++));
+      AttributionAggregatableSource::Deserialize(statement.ColumnString(col++));
 
   if (impression_origin.opaque() || conversion_origin.opaque() ||
       reporting_origin.opaque() || !source_type.has_value() ||
@@ -565,8 +555,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       GetSourceActiveState(event_level_active, aggregatable_active);
   DCHECK(active_state.has_value());
 
-  statement.BindBlob(
-      15, common_info.aggregatable_source().proto().SerializeAsString());
+  statement.BindBlob(15, common_info.aggregatable_source().Serialize());
   statement.BindBlob(16, common_info.filter_data().Serialize());
 
   if (!statement.Run())
@@ -806,7 +795,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   if (source_to_attribute->source.common_info()
           .aggregatable_source()
-          .proto()
           .keys()
           .empty()) {
     aggregatable_status = AggregatableResult::kNotRegistered;
