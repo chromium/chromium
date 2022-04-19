@@ -2,33 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
 
-/**
- * @typedef {{
- *   enabled: boolean,
- *   origin_db: !Array<!OriginData>
- * }}
- */
-let ResourcePrefetchPredictorDb;
+type ResourcePrefetchPredictorDb = {
+  enabled: boolean,
+  origin_db: OriginData[],
+};
 
-/**
- * @typedef {{
- *   main_frame_host: string,
- *   origins: !Array<!{
- *     origin: string,
- *     number_of_hits: number,
- *     number_of_misses: number,
- *     consecutive_misses: number,
- *     position: number,
- *     always_access_network: boolean,
- *     accessed_network: boolean,
- *     score: number
- *   }>
- * }}
- */
-let OriginData;
+type OriginData = {
+  main_frame_host: string,
+  origins: Array<{
+    origin: string,
+    number_of_hits: number,
+    number_of_misses: number,
+    consecutive_misses: number,
+    position: number,
+    always_access_network: boolean,
+    accessed_network: boolean,
+    score: number,
+  }>,
+};
 
 /**
  * Requests the database from the backend.
@@ -41,56 +35,66 @@ function requestResourcePrefetchPredictorDb() {
 /**
  * Callback from backend with the database contents. Sets up some globals and
  * calls to create the UI.
- * @param {!ResourcePrefetchPredictorDb} database Information about
+ * @param database Information about
  *     ResourcePrefetchPredictor including the database as a flattened list, a
  *     boolean indicating if the system is enabled.
  */
-function updateResourcePrefetchPredictorDb(database) {
+function updateResourcePrefetchPredictorDb(
+    database: ResourcePrefetchPredictorDb) {
   updateResourcePrefetchPredictorDbView(database);
 }
 
 /**
  * Truncates the string to keep the database readable.
- * @param {string} str The string to truncate.
- * @return {string} The truncated string.
+ * @param str The string to truncate.
+ * @return The truncated string.
  */
-function truncateString(str) {
+function truncateString(str: string): string {
   return str.length < 100 ? str : str.substring(0, 99);
 }
 
 /**
  * Updates the table from the database.
- * @param {!ResourcePrefetchPredictorDb} database Information about
+ * @param database Information about
  *     ResourcePrefetchPredictor including the database as a flattened list, a
  *     boolean indicating if the system is enabled and the current hit weight.
  */
-function updateResourcePrefetchPredictorDbView(database) {
+function updateResourcePrefetchPredictorDbView(
+    database: ResourcePrefetchPredictorDb) {
+  const rppEnabled = document.body.querySelector<HTMLElement>('#rpp_enabled');
+  const rppDisabled = document.body.querySelector<HTMLElement>('#rpp_disabled');
+  assert(rppEnabled);
+  assert(rppDisabled);
+
   if (!database.enabled) {
-    $('rpp_enabled').style.display = 'none';
-    $('rpp_disabled').style.display = 'block';
+    rppEnabled.style.display = 'none';
+    rppDisabled.style.display = 'block';
     return;
   }
 
-  $('rpp_enabled').style.display = 'block';
-  $('rpp_disabled').style.display = 'none';
+  rppEnabled.style.display = 'block';
+  rppDisabled.style.display = 'none';
 
   const hasOriginData = database.origin_db && database.origin_db.length > 0;
 
   if (hasOriginData) {
-    renderOriginData($('rpp_origin_body'), database.origin_db);
+    const originBody =
+        document.body.querySelector<HTMLElement>('#rpp_origin_body');
+    assert(originBody);
+    renderOriginData(originBody, database.origin_db);
   }
 }
 
 /**
  * Renders the content of the predictor origin table.
- * @param {HTMLElement} body element of table to render into.
- * @param {!Array<!OriginData>} database to render.
+ * @param body element of table to render into.
+ * @param database to render.
  */
-function renderOriginData(body, database) {
+function renderOriginData(body: HTMLElement, database: OriginData[]) {
   body.textContent = '';
   for (const main of database) {
     for (let j = 0; j < main.origins.length; ++j) {
-      const origin = main.origins[j];
+      const origin = main.origins[j]!;
       const row = document.createElement('tr');
 
       if (j === 0) {
@@ -104,19 +108,19 @@ function renderOriginData(body, database) {
       row.appendChild(document.createElement('td')).textContent =
           truncateString(origin.origin);
       row.appendChild(document.createElement('td')).textContent =
-          origin.number_of_hits;
+          origin.number_of_hits.toString();
       row.appendChild(document.createElement('td')).textContent =
-          origin.number_of_misses;
+          origin.number_of_misses.toString();
       row.appendChild(document.createElement('td')).textContent =
-          origin.consecutive_misses;
+          origin.consecutive_misses.toString();
       row.appendChild(document.createElement('td')).textContent =
-          origin.position;
+          origin.position.toString();
       row.appendChild(document.createElement('td')).textContent =
-          origin.always_access_network;
+          origin.always_access_network.toString();
       row.appendChild(document.createElement('td')).textContent =
-          origin.accessed_network;
+          origin.accessed_network.toString();
       row.appendChild(document.createElement('td')).textContent =
-          origin.score;
+          origin.score.toString();
       body.appendChild(row);
     }
   }

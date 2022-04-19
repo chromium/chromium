@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
 
-/**
- * @typedef {{
- *   enabled: boolean,
- *   db: !Array<!{
- *     user_text: string,
- *     url: string,
- *     hit_count: number,
- *     miss_count: number,
- *     confidence: number,
- *   }>
- * }}
- */
-let AutocompleteActionPredictorDb;
+type AutocompleteActionPredictorDb = {
+  enabled: boolean,
+  db: Array<{
+    user_text: string,
+    url: string,
+    hit_count: number,
+    miss_count: number,
+    confidence: number,
+  }>,
+};
 
 /**
  * Requests the database from the backend.
@@ -30,12 +27,14 @@ function requestAutocompleteActionPredictorDb() {
 /**
  * Callback from backend with the database contents. Sets up some globals and
  * calls to create the UI.
- * @param {!AutocompleteActionPredictorDb} database Information about
+ * @param database Information about
  *     AutocompleteActionPredictor including the database as a flattened list,
  *     a boolean indicating if the system is enabled and the current hit weight.
  */
-function updateAutocompleteActionPredictorDb(database) {
-  const filter = $('filter');
+function updateAutocompleteActionPredictorDb(
+    database: AutocompleteActionPredictorDb) {
+  const filter = document.body.querySelector<HTMLInputElement>('#filter');
+  assert(filter);
   filter.disabled = false;
   filter.onchange = function() {
     updateAutocompleteActionPredictorDbView(database);
@@ -46,28 +45,38 @@ function updateAutocompleteActionPredictorDb(database) {
 
 /**
  * Updates the table from the database.
- * @param {!AutocompleteActionPredictorDb} database Information about
+ * @param database Information about
  *     AutocompleteActionPredictor including the database as a flattened list,
  *     a boolean indicating if the system is enabled and the current hit weight.
  */
-function updateAutocompleteActionPredictorDbView(database) {
-  const databaseSection = $('databaseTableBody');
+function updateAutocompleteActionPredictorDbView(
+    database: AutocompleteActionPredictorDb) {
+  const databaseSection =
+      document.body.querySelector<HTMLElement>('#databaseTableBody');
+  assert(databaseSection);
   const showEnabled = database.enabled && !!database.db;
 
-  $('autocompleteActionPredictorEnabledMode').hidden = !showEnabled;
-  $('autocompleteActionPredictorDisabledMode').hidden = showEnabled;
+  const enabledMode = document.body.querySelector<HTMLElement>(
+      '#autocompleteActionPredictorEnabledMode');
+  const disabledMode = document.body.querySelector<HTMLElement>(
+      '#autocompleteActionPredictorDisabledMode');
+  assert(enabledMode);
+  assert(disabledMode);
+  enabledMode.hidden = !showEnabled;
+  disabledMode.hidden = showEnabled;
 
   if (!showEnabled) {
     return;
   }
 
-  const filter = $('filter');
+  const filter = document.body.querySelector<HTMLInputElement>('#filter');
+  assert(filter);
 
   // Clear any previous list.
   databaseSection.textContent = '';
 
   for (let i = 0; i < database.db.length; ++i) {
-    const entry = database.db[i];
+    const entry = database.db[i]!;
 
     if (!filter.checked || entry.confidence > 0) {
       const row = document.createElement('tr');
@@ -80,16 +89,18 @@ function updateAutocompleteActionPredictorDbView(database) {
           entry.user_text;
       row.appendChild(document.createElement('td')).textContent = entry.url;
       row.appendChild(document.createElement('td')).textContent =
-          entry.hit_count;
+          entry.hit_count.toString();
       row.appendChild(document.createElement('td')).textContent =
-          entry.miss_count;
+          entry.miss_count.toString();
       row.appendChild(document.createElement('td')).textContent =
-          entry.confidence;
+          entry.confidence.toString();
 
       databaseSection.appendChild(row);
     }
   }
-  $('countBanner').textContent = 'Entries: ' + databaseSection.children.length;
+  const banner = document.body.querySelector<HTMLElement>('#countBanner');
+  assert(banner);
+  banner.textContent = 'Entries: ' + databaseSection.children.length;
 }
 
 document.addEventListener(

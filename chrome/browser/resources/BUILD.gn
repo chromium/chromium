@@ -123,7 +123,6 @@ if (enable_js_type_check) {
       "engagement:closure_compile",
       "media:closure_compile",
       "memory_internals:closure_compile",
-      "predictors:closure_compile",
       "reset_password:closure_compile",
     ]
     if (is_linux || is_chromeos || is_win || is_mac) {
