@@ -770,8 +770,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     [window_ makeKeyAndOrderFront:nil];
     [NSApp activateIgnoringOtherApps:YES];
   } else if (!parent_ && ![window_ isMiniaturized]) {
-    if (GetDisplayForWindow(NSApp.mainWindow).id() ==
-        GetDisplayForWindow(window_.get()).id()) {
+    if ([[NSApp mainWindow] screen] == [window_ screen]) {
       // When the new window is on the same display as the main window, order
       // the window relative to the main window. Avoid making it the front
       // window (with e.g. orderFront:), which can cause a space switch.
