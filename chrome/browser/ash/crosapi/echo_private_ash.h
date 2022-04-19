@@ -49,6 +49,8 @@ class EchoPrivateAsh : public ash::EchoDialogListener, mojom::EchoPrivate {
                                 const std::string& origin,
                                 BoolCallback callback) override;
   void GetOobeTimestamp(GetOobeTimestampCallback callback) override;
+  void GetRegistrationCode(mojom::RegistrationCodeType type,
+                           GetRegistrationCodeCallback callback) override;
 
  private:
   // Continues with the CheckRedeemOffersAllowed process.

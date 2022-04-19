@@ -32,7 +32,7 @@ class EchoPrivateGetRegistrationCodeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  ResponseValue GetRegistrationCode(const std::string& type);
+  void RespondWithResult(const std::string& result);
   DECLARE_EXTENSION_FUNCTION("echoPrivate.getRegistrationCode",
                              ECHOPRIVATE_GETREGISTRATIONCODE)
 };

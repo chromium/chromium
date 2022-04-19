@@ -64,33 +64,52 @@ EchoPrivateGetRegistrationCodeFunction::
 EchoPrivateGetRegistrationCodeFunction::
     ~EchoPrivateGetRegistrationCodeFunction() {}
 
-ExtensionFunction::ResponseValue
-EchoPrivateGetRegistrationCodeFunction::GetRegistrationCode(
-    const std::string& type) {
-  // Possible ECHO code type and corresponding key name in StatisticsProvider.
-  const std::string kCouponType = "COUPON_CODE";
-  const std::string kGroupType = "GROUP_CODE";
-
-  chromeos::system::StatisticsProvider* provider =
-      chromeos::system::StatisticsProvider::GetInstance();
-  std::string result;
-  if (type == kCouponType) {
-    provider->GetMachineStatistic(chromeos::system::kOffersCouponCodeKey,
-                                  &result);
-  } else if (type == kGroupType) {
-    provider->GetMachineStatistic(chromeos::system::kOffersGroupCodeKey,
-                                  &result);
-  }
-
-  return ArgumentList(echo_api::GetRegistrationCode::Results::Create(result));
-}
-
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
   std::unique_ptr<echo_api::GetRegistrationCode::Params> params =
       echo_api::GetRegistrationCode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(GetRegistrationCode(params->type));
+
+  // Possible ECHO code type and corresponding key name in StatisticsProvider.
+  const std::string kCouponType = "COUPON_CODE";
+  const std::string kGroupType = "GROUP_CODE";
+  absl::optional<crosapi::mojom::RegistrationCodeType> type;
+  if (params->type == kCouponType) {
+    type = crosapi::mojom::RegistrationCodeType::kCoupon;
+  } else if (params->type == kGroupType) {
+    type = crosapi::mojom::RegistrationCodeType::kGroup;
+  }
+
+  if (!type) {
+    return RespondNow(ArgumentList(
+        echo_api::GetRegistrationCode::Results::Create(std::string())));
+  }
+
+  auto callback = base::BindOnce(
+      &EchoPrivateGetRegistrationCodeFunction::RespondWithResult, this);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->echo_private_ash()
+      ->GetRegistrationCode(type.value(), std::move(callback));
+#else
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
+      static_cast<uint32_t>(lacros_service->GetInterfaceVersion(
+          crosapi::mojom::EchoPrivate::Uuid_)) >=
+          crosapi::mojom::EchoPrivate::kRegistrationCodeMinVersion) {
+    lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()
+        ->GetRegistrationCode(type.value(), std::move(callback));
+  } else {
+    return RespondNow(Error("EchoPrivate unavailable."));
+  }
+#endif
+  return RespondLater();
+}
+
+void EchoPrivateGetRegistrationCodeFunction::RespondWithResult(
+    const std::string& result) {
+  Respond(OneArgument(base::Value(result)));
 }
 
 EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() {}

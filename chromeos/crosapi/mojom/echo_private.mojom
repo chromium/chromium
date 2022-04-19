@@ -4,6 +4,12 @@
 
 module crosapi.mojom;
 
+[Stable, Extensible]
+enum RegistrationCodeType {
+  kCoupon,
+  kGroup,
+};
+
 // EchoPrivate is a service used to provide trusted websites a mechanism to
 // confirm the device is a ChromeOS device. Allowed users may then receive
 // offers. Implemented in Ash.
@@ -20,4 +26,8 @@ interface EchoPrivate {
   // extension. Failure is reported as empty string.
   [MinVersion=1]
   GetOobeTimestamp@1() => (string timestamp);
+
+  // Returns an opaque string associated with the coupon or group type.
+  [MinVersion=2]
+  GetRegistrationCode@2(RegistrationCodeType type) => (string result);
 };
