@@ -70,6 +70,7 @@ non_preprocessed_files = [
   "multi_store_exception_entry_test.ts",
   "multi_store_password_ui_entry_test.ts",
   "on_startup_page_tests.ts",
+  "password_view_test.ts",
   "passwords_and_autofill_fake_data.ts",
   "passwords_device_section_test.ts",
   "passwords_export_test.ts",

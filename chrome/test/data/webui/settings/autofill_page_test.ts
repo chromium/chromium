@@ -369,13 +369,15 @@ suite('PasswordsUITest', function() {
     routes.PASSWORD_VIEW =
         (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
     const autofillSection = createAutofillPageSection();
-    autofillSection.credential =
-        createMultiStorePasswordEntry({url: SHOWN_URL, deviceId: 1});
 
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW);
     await flushTasks();
     const subpage =
         autofillSection.shadowRoot!.querySelector('settings-subpage');
+
+    autofillSection.credential =
+        createMultiStorePasswordEntry({url: SHOWN_URL, deviceId: 1});
+    flush();
 
     assertTrue(!!subpage);
     assertEquals(`http://${SHOWN_URL}/login`, subpage.faviconSiteUrl);
