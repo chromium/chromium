@@ -13,9 +13,13 @@ extern NSString* const kContentSuggestionsCollectionIdentifier;
 // Represents the Learn More button in the content suggestions.
 extern NSString* const kContentSuggestionsLearnMoreIdentifier;
 
-// Represents the most visited tile of the content suggestions.
+// Represents the most visited tiles of the content suggestions.
 extern NSString* const
     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix;
+
+// Represents the shortcuts of the content suggestions.
+extern NSString* const
+    kContentSuggestionsShortcutsAccessibilityIdentifierPrefix;
 
 // The bottom margin below the Most Visited section.
 extern const CGFloat kMostVisitedBottomMargin;

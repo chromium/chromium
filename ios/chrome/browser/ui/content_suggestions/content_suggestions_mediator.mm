@@ -241,7 +241,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       [self.consumer
           showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
     }
-    [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
+    if ([self.mostVisitedItems count]) {
+      [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
+    }
     if (!ShouldHideShortcutsForStartSurface()) {
       [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
     }

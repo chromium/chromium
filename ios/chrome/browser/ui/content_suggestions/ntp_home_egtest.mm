@@ -707,13 +707,22 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 - (void)testFavicons {
-  for (NSInteger index = 0; index < 8; index++) {
+  for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID([NSString
                 stringWithFormat:
                     @"%@%li",
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                    index])] assertWithMatcher:grey_sufficientlyVisible()];
+  }
+  for (NSInteger index = 0; index < 4; index++) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID([NSString
+                stringWithFormat:
+                    @"%@%li",
+                    kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
 
@@ -730,13 +739,22 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       performAction:grey_tap()];
 
   // Check again the favicons.
-  for (NSInteger index = 0; index < 8; index++) {
+  for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID([NSString
                 stringWithFormat:
                     @"%@%li",
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                    index])] assertWithMatcher:grey_sufficientlyVisible()];
+  }
+  for (NSInteger index = 0; index < 4; index++) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID([NSString
+                stringWithFormat:
+                    @"%@%li",
+                    kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
 
@@ -767,13 +785,22 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Ensures that tiles are still all visible with feed turned off after
   // scrolling.
-  for (NSInteger index = 0; index < 8; index++) {
+  for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID([NSString
                 stringWithFormat:
                     @"%@%li",
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                    index])] assertWithMatcher:grey_sufficientlyVisible()];
+  }
+  for (NSInteger index = 0; index < 4; index++) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID([NSString
+                stringWithFormat:
+                    @"%@%li",
+                    kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
   // Ensures that fake omnibox visibility is correct.
