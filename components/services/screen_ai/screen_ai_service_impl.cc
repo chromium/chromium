@@ -32,6 +32,9 @@ ScreenAIService::ScreenAIService(
     VLOG(1) << "Screen AI library initialization failed.";
     annotator_function_ = nullptr;
   }
+
+  // TODO(https://crbug.com/1278249): Try to refrain from creating the service
+  // if library functions are not available.
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -43,10 +46,11 @@ void ScreenAIService::BindAnnotator(
 
 void ScreenAIService::Annotate(const SkBitmap& image,
                                AnnotationCallback callback) {
-  std::vector<mojom::Node> annotations;
-  mojom::ErrorType error = mojom::ErrorType::kOK;
+  ui::AXTreeUpdate updates;
 
-  if (annotator_function_) {
+  if (annotator_function_ == nullptr) {
+    VLOG(1) << "Screen AI library binary was not found.";
+  } else {
     VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
             << image.height() << " snapshot.";
 
@@ -58,55 +62,55 @@ void ScreenAIService::Annotate(const SkBitmap& image,
     if (annotator_function_(
             static_cast<const unsigned char*>(image.getPixels()), image.width(),
             image.height(), annotation_text)) {
-      annotations = DecodeProto(annotation_text);
+      updates = DecodeProto(annotation_text);
     } else {
       VLOG(1) << "Screen AI library could not process snapshot.";
-      error = mojom::ErrorType::kFailedProcessingImage;
     }
-  } else {
-    error = mojom::ErrorType::kFailedLibraryNotFound;
   }
 
-  // TODO(https://crbug.com/1278249): Convert |annotations| array to an
-  // AxTreeSource and return it.
-  VLOG(2) << "Screen AI library has " << annotations.size() << " annotations.";
-
-  std::move(callback).Run(error, std::vector<mojom::NodePtr>());
+  std::move(callback).Run(updates);
 }
 
-std::vector<mojom::Node> ScreenAIService::DecodeProto(
+ui::AXTreeUpdate ScreenAIService::DecodeProto(
     const std::string& serialized_proto) {
-  // TODO(https://crbug.com/1278249): Consider using AxNodeData here.
-  std::vector<mojom::Node> annotations;
+  ui::AXTreeUpdate updates;
 
   // TODO(https://crbug.com/1278249): Consider adding version checking.
   chrome_screen_ai::VisualAnnotation results;
   if (!results.ParseFromString(serialized_proto)) {
     VLOG(1) << "Could not parse Screen AI library output.";
-    return annotations;
+    return updates;
   }
 
+  // TODO(https://crbug.com/1278249): Create an AXTreeSource and create the
+  // update using AXTreeSerializer.
+
   for (const auto& uic : results.ui_component()) {
-    float score = uic.predicted_type().score();
-    if (score < kScreenAIMinConfidenceThreshold)
+    // Score is only used to prune very low confidence detections and we don't
+    // use it downstream.
+    if (uic.predicted_type().score() < kScreenAIMinConfidenceThreshold)
       continue;
+
+    ui::AXNodeData node;
 
     chrome_screen_ai::UIComponent::Type original_type =
         uic.predicted_type().type();
-    ::gfx::Rect rect(uic.bounding_box().x(), uic.bounding_box().y(),
-                     uic.bounding_box().width(), uic.bounding_box().height());
+    node.relative_bounds.bounds.set_x(uic.bounding_box().x());
+    node.relative_bounds.bounds.set_y(uic.bounding_box().y());
+    node.relative_bounds.bounds.set_width(uic.bounding_box().width());
+    node.relative_bounds.bounds.set_height(uic.bounding_box().height());
 
     // TODO(https://crbug.com/1278249): Add tests to ensure these two types
-    // match.
-    ax::mojom::Role role = static_cast<ax::mojom::Role>(original_type);
+    // match. Add a PRESUBMIT test that compares the proto and enum.
+    node.role = static_cast<ax::mojom::Role>(original_type);
 
-    annotations.emplace_back(screen_ai::mojom::Node(rect, role, score));
+    updates.nodes.push_back(node);
   }
 
   // TODO(https://crbug.com/1278249): Add UMA metrics to record the number of
   // annotations, item types, confidence levels, etc.
 
-  return annotations;
+  return updates;
 }
 
 }  // namespace screen_ai

@@ -42,8 +42,7 @@ class AXScreenAIAnnotator {
 
   // Receives the annotation from ScreenAI service, sends it to
   // |render_frame_host_| as an accessibility action.
-  void OnAnnotationReceived(screen_ai::mojom::ErrorType error_type,
-                            std::vector<screen_ai::mojom::NodePtr> annotation);
+  void OnAnnotationReceived(const ui::AXTreeUpdate& updates);
 
   // Owns us.
   raw_ptr<RenderFrameHost> const render_frame_host_;

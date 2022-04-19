@@ -14,8 +14,7 @@
 
 namespace screen_ai {
 
-using AnnotationCallback =
-    base::OnceCallback<void(mojom::ErrorType, std::vector<mojom::NodePtr>)>;
+using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeUpdate&)>;
 
 // Sends the snapshot to a local machine learning library to get annotations
 // that can help in updating the accessibility tree. See more in:
@@ -42,7 +41,7 @@ class ScreenAIService : public mojom::ScreenAIService,
 
   // Converts the serialized proto from Screen AI library to a vector of
   // screen_ai::mojom::Node.
-  std::vector<mojom::Node> DecodeProto(const std::string& serialized_proto);
+  ui::AXTreeUpdate DecodeProto(const std::string& serialized_proto);
 
   typedef bool (*ScreenAIInitFunction)();
   ScreenAIInitFunction init_function_;

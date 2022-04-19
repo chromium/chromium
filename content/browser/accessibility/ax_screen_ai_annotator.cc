@@ -93,13 +93,11 @@ void AXScreenAIAnnotator::OnScreenshotReceived(gfx::Image snapshot) {
 }
 
 void AXScreenAIAnnotator::OnAnnotationReceived(
-    screen_ai::mojom::ErrorType error_type,
-    std::vector<screen_ai::mojom::NodePtr> annotation) {
-  if (error_type != screen_ai::mojom::ErrorType::kOK)
-    return;
+    const ui::AXTreeUpdate& updates) {
+  VLOG(2) << "AxScreenAIAnnotator received " << updates.nodes.size()
+          << " updates";
 
-  // TODO(https://crbug.com/1278249): Convert and send annotation through
-  // |render_frame_host_->AccessibilityPerformAction|.
+  // TODO(https://crbug.com/1278249): Send to |render_frame_host_|.
 }
 
 }  // namespace content
