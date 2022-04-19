@@ -3527,22 +3527,18 @@ void RenderFrameHostManager::CommitPending(
       // tell the new renderer what the focused frame is if that frame is not
       // in its process, so that Blink's page-level focus logic won't try to
       // reset frame focus to the main frame.  See https://crbug.com/802156.
-      // TODO(https://crbug.com/1261963, yangsharon): Cover the case where
-      // different SiteInstances are in the same SiteInstanceGroup, and thus
-      // don't have a proxy. GetRenderFrameProxyHost below should not be called
-      // in that case.
       FrameTreeNode* focused_frame =
           frame_tree_node_->frame_tree()->GetFocusedFrame();
+      SiteInstanceGroup* site_instance_group =
+          render_frame_host_->GetSiteInstance()->group();
       if (focused_frame && !focused_frame->IsMainFrame() &&
-          focused_frame->current_frame_host()->GetSiteInstance() !=
-              render_frame_host_->GetSiteInstance()) {
+          focused_frame->current_frame_host()->GetSiteInstance()->group() !=
+              site_instance_group) {
         focused_frame->GetBrowsingContextStateForSubframe()
-            ->GetRenderFrameProxyHost(
-                render_frame_host_->GetSiteInstance()->group())
+            ->GetRenderFrameProxyHost(site_instance_group)
             ->SetFocusedFrame();
       }
-      frame_tree_node_->frame_tree()->SetPageFocus(
-          render_frame_host_->GetSiteInstance()->group(), true);
+      frame_tree_node_->frame_tree()->SetPageFocus(site_instance_group, true);
     }
   }
 
