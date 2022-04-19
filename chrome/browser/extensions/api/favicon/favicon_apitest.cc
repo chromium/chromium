@@ -29,4 +29,11 @@ IN_PROC_BROWSER_TEST_F(FaviconApiTest, Extension) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FaviconApiTest, PermissionMissing) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("favicon/permission_missing",
+                               {.extension_url = "test.html"}))
+      << message_;
+}
+
 }  // namespace extensions

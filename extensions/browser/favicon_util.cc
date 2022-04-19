@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/favicon_util.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace extensions::favicon_util {
 
@@ -10,11 +12,16 @@ void GetFaviconForExtensionRequest(const Extension* extension,
                                    std::string* mime_type,
                                    std::string* charset,
                                    std::string* data) {
-  // TODO(solomonkinard): Check extension permission.
+  if (!extension->permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kFavicon) ||
+      extension->manifest_version() < 3) {
+    return;
+  }
+
   *mime_type = "text/plain";
   *charset = "utf-8";
   *data = "Favicon";
-  // TODO(solomonkinard): Return actual favicon.
+  // TODO(solomonkinard): Return favicon image.
 }
 
 }  // namespace extensions::favicon_util
