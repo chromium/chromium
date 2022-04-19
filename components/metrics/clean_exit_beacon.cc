@@ -140,10 +140,10 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
   // startup.
   if (!did_previous_session_exit_cleanly) {
     ++num_crashes;
-    // Schedule only a Local State write. If the client happens to be in an
-    // Extended Variations Safe Mode experiment group that introduces new
-    // behavior, the crash streak will be written synchronously to disk later on
-    // in startup. See MaybeExtendVariationsSafeMode().
+    // Schedule only a Local State write. If the client is in the Extended
+    // Variations Safe Mode experiment's enabled group, the crash streak is
+    // written synchronously to disk later on in startup. See
+    // MaybeExtendVariationsSafeMode().
     local_state->SetInteger(kVariationsCrashStreak, num_crashes);
     local_state->CommitPendingWrite();
   }
@@ -166,15 +166,16 @@ void RecordBeaconFileState(BeaconFileState file_state) {
 // 4. The file contents are in the expected format with the expected info.
 //
 // The file is not expected to exist for clients that have never been in the
-// Extended Variations Safe Mode experiment group, kEnabledGroup. The file may
-// not exist for all experiment group clients because there are some are some
-// edge cases. First, MaybeGetFileContents() is called before clients are
-// assigned to an Extended Variations Safe Mode group, so a client that is later
-// assigned to the experiment group will not have the file in the first session
+// Extended Variations Safe Mode experiment's enabled group. Also, the file may
+// not exist for all enabled-group clients because there are some edge cases.
+// First, MaybeGetFileContents() is called before clients are assigned to an
+// Extended Variations Safe Mode experiment group, so a client that is later
+// assigned to the enabled group will not have the file in the first session
 // after updating to or installing a Chrome version with the experiment. Second,
-// Android Chrome experiment group clients with repeated background sessions may
-// never write a beacon file. Finally, it is possible for a user to delete the
-// file or to reset their variations state with kResetVariationState.
+// Android Chrome enabled-group clients with repeated background sessions may
+// never write a beacon file. Third, it is possible for a user to delete the
+// file or to switch groups by resetting their variations state. Finally,
+// clients also switch groups when the FieldTrial name is updated.
 //
 // Note that not all beacon files are expected to have a monitoring stage as
 // this info was added in M100.
@@ -245,8 +246,10 @@ version_info::Channel GetChannel(version_info::Channel channel) {
 }
 
 // Sets up the Extended Variations Safe Mode experiment, whose groups have
-// channel-specific weights. Returns the name of the client's experiment group
-// name, e.g. "Control".
+// platform- and channel-specific weights. Returns the name of the client's
+// experiment group name, e.g. "Control".
+// TODO(crbug/1241702): Remove this once the experiment launches on Android
+// Chrome.
 std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
   int default_group;
   scoped_refptr<base::FieldTrial> trial(
@@ -452,7 +455,7 @@ void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kStabilityBrowserLastLiveTimeStamp,
                              base::Time(), PrefRegistry::LOSSY_PREF);
 
-  // This variations-safe-mode-related pref is registered here rather than in
+  // This Variations-Safe-Mode-related pref is registered here rather than in
   // SafeSeedManager::RegisterPrefs() because the CleanExitBeacon is
   // responsible for incrementing this value. (See the comments in
   // MaybeIncrementCrashStreak() for more details.)

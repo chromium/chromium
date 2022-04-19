@@ -1685,24 +1685,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   HandleTestParameters(parsed_command_line());
 
-// On mobile, the need for a clean shutdown arises only when the application
-// comes to the foreground (i.e. when MetricsService::OnAppEnterForeground() is
-// called). See crbug.com/179143 for more details.
-#if !BUILDFLAG(IS_ANDROID)
-  // Start watching for a hang.
-  //
-  // Depending on the client's ExtendedVariationsSafeMode experiment group (see
-  // MaybeExtendVariationsSafeMode() in variations_field_trial_creator.cc for
-  // more info), signaling that a clean shutdown is needed may occur earlier on
-  // desktop.
-  //
-  // TODO(b/184937096): Remove the below call and remove the function
-  // MetricsService::LogNeedForCleanShutdown() if this is moved earlier. It is
-  // is being kept here for the time being for the control group of the
-  // extended Variations Safe Mode experiment.
-  browser_process_->metrics_service()->LogNeedForCleanShutdown();
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // This has to come before the first GetInstance() call. PreBrowserStart()
   // seems like a reasonable place to put this, except on Android,
   // OfflinePageInfoHandler::Register() below calls GetInstance().

@@ -463,11 +463,6 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
     OpenNewLog();
   }
 }
-
-#else
-void MetricsService::LogNeedForCleanShutdown() {
-  state_manager_->LogHasSessionShutdownCleanly(false);
-}
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void MetricsService::ClearSavedStabilityMetrics() {

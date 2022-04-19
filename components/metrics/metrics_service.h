@@ -138,10 +138,6 @@ class MetricsService : public base::HistogramFlattener {
 
   // Called when the application is coming out of background mode.
   void OnAppEnterForeground(bool force_open_new_log = false);
-#else
-  // Signals that the session has not yet exited cleanly. Calling this later
-  // requires a call to LogCleanShutdown().
-  void LogNeedForCleanShutdown();
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   bool recording_active() const;
