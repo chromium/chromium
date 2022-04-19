@@ -166,6 +166,8 @@ blink_modules_sources("webaudio") {
     "periodic_wave.h",
     "realtime_analyser.cc",
     "realtime_analyser.h",
+    "realtime_audio_destination_handler.cc",
+    "realtime_audio_destination_handler.h",
     "realtime_audio_destination_node.cc",
     "realtime_audio_destination_node.h",
     "realtime_audio_worklet_thread.cc",
