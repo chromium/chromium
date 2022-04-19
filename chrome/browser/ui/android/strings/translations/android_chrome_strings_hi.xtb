@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1181037720776840403">हटाएं</translation>
+<translation id="1193729455103054076">क्या आपको मज़बूत पासवर्ड बनाना है?</translation>
 <translation id="1197267115302279827">बुकमार्क ले जाएं</translation>
 <translation id="1201402288615127009">अगला</translation>
 <translation id="1202892408424955784">ट्रैक किए गए प्रॉडक्ट</translation>
@@ -147,7 +148,6 @@
 <translation id="1779766957982586368">विंडो बंद करें</translation>
 <translation id="1791662854739702043">इंस्‍टॉल किया गया</translation>
 <translation id="1792959175193046959">डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
-<translation id="1795251344124198516">Chrome और Chrome OS की सेवा की अतिरिक्त शर्तें</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
@@ -184,7 +184,6 @@
 <translation id="2000419248597011803">'पता बार' और 'खोज बॉक्स' की कुछ कुकी और खोजों को आपके डिफ़ॉल्ट खोज इंजन पर भेजा जाता है</translation>
 <translation id="200114059308480249">क्या आप Google पर कुछ खोजते समय, खोज से जुड़े मिलते-जुलते शब्द भी शामिल करना चाहते हैं?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फ़ाइल}one{# फ़ाइलें}other{# फ़ाइलें}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अन्य शर्तों<ph name="END_LINK2" /> से सहमत हैं. <ph name="BEGIN_LINK3" />निजता नीति<ph name="END_LINK3" /> भी लागू होगी.</translation>
 <translation id="2020309681647789787">सिंक किए हुए सभी डिवाइसों पर आपका इतिहास सेव होगा, ताकि आप अपने पिछले काम को जारी रख सकें</translation>
 <translation id="2021896219286479412">पूरी स्क्रीन के साइट नियंत्रण</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटॉप साइट चालू करें</translation>
@@ -461,7 +460,6 @@
 <translation id="3493531032208478708">सुझाई गई सामग्री के बारे में <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">साइन इन करने के लिए, खातों की सूची आधी स्क्रीन पर खुली है.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />Google की सेवा की शर्तों<ph name="END_TOS_LINK" /> के साथ-साथ <ph name="BEGIN_ATOS_LINK" />Google Chrome और Chrome OS की सेवा की अन्य शर्तों<ph name="END_ATOS_LINK" /> से सहमत हैं.</translation>
 <translation id="3507132249039706973">मानक सुरक्षा की सुविधा चालू है</translation>
 <translation id="3509330069915219067">ऑफ़लाइन. Chrome, अपडेट की जांच नहीं कर सकता.</translation>
 <translation id="3513704683820682405">ऑगमेंटेड रिएलिटी (AR)</translation>
@@ -588,6 +586,7 @@
 <translation id="4296252229500326964">नया गुप्त टैब</translation>
 <translation id="4298388696830689168">लिंक की हुई साइटें</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Password Manager</translation>
 <translation id="4307992518367153382">बुनियादी चीज़ें</translation>
 <translation id="4320177379694898372">कोई इंटरनेट कनेक्‍शन नहीं</translation>
 <translation id="4321739720395210191">कैमरा खाेला नहीं जा सकता. अपने डिवाइस को रीस्टार्ट करके, फिर से कोशिश करें.</translation>
@@ -956,7 +955,6 @@
 <translation id="6345878117466430440">'पढ़ा गया' के तौर पर मार्क करें</translation>
 <translation id="6363990818884053551">इसे चालू करने के लिए अपनी पहचान की पुष्टि करें</translation>
 <translation id="6364438453358674297">सुझाव को इतिहास से निकालें?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं.</translation>
 <translation id="6380100320871303656">इस सेटिंग से, ऐसे पेज ज़्यादा बार पहले से लोड किए जाते हैं जिनके बारे में Chrome को लगता है कि वे अक्सर विज़िट किए जाने वाले पेज हैं. इस सेटिंग के चालू रहने पर डेटा का इस्तेमाल बढ़ सकता है.</translation>
 <translation id="6385407407546870227">ट्रायल के दौरान, स्पैम और धोखाधड़ी में कमी ट्रस्ट टोकन पर निर्भर करती है. इससे, लोगों और बॉट में अंतर करने के साथ-साथ, धोखाधड़ी से निपटने में साइटों को मदद मिलती है.
 
@@ -1126,7 +1124,6 @@
 <translation id="7208109991155904980">प्रतिक्रिया दूसरी जगह ले जाई गई</translation>
 <translation id="7222235798733126207">साइटों के बीच जानकारी शेयर करने की एक तय सीमा</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 डाउनलोड बाकी है}one{# डाउनलोड बाकी हैं}other{# डाउनलोड बाकी हैं}}</translation>
-<translation id="7237045078887540010">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />Google की सेवा की शर्तों<ph name="END_TOS_LINK" /> के साथ-साथ <ph name="BEGIN_ATOS_LINK" />Google Chrome और Chrome OS की सेवा की अन्य शर्तों<ph name="END_ATOS_LINK" /> से सहमत हैं. <ph name="BEGIN_PRIVACY_LINK" />निजता नीति<ph name="END_PRIVACY_LINK" /> भी लागू होगी.</translation>
 <translation id="7242755609445462077">बेहतर बनाई गई हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> पर Chrome में सिंक करने की सुविधा चालू है</translation>
 <translation id="7252076891734325316">अपने फ़ोन को कंप्यूटर के पास रखें</translation>

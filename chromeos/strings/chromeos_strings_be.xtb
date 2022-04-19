@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Версія апаратнага забеспячэння</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
 <translation id="1908234395526491708">Збоі запытаў UDP</translation>
-<translation id="1930797645656624981">Сэрвіс метадаў уводу Chrome OS</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
 <translation id="1951012854035635156">Памочнік</translation>
+<translation id="1977994649430373166">Відарыс профілю Google</translation>
 <translation id="1979103255016296513">Пратэрмінавана змена пароля</translation>
 <translation id="1999615961760456652">Партал узаемадзеяння</translation>
 <translation id="2006864819935886708">Магчымасць падключэння</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Неабходна выбраць у мастацкай галерэі як мінімум адзін альбом</translation>
 <translation id="2230005943220647148">Шкала Цэльсія</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Уключэнне і выключэнне падсветкі клавіятуры</translation>
 <translation id="2240366984605217732">Пераключэнне раскладкі</translation>
 <translation id="225692081236532131">Стан актывацыі</translation>
 <translation id="2287186687001756809">Відарыс недаступны. Дадаць фота можна з сайта <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Не ўдаецца падключыцца да інтэрнэту.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2584559707064218956">Каб задаць канфігурацыю, перайдзіце ў Налады</translation>
-<translation id="2585245331261708204">Што новага ў Chrome OS</translation>
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2640549051766135490">Выбраны альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
-<translation id="475869545581454722">Пароль Chrome OS зменены</translation>
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4782311465517282004">Атрымлівайце азначэнні, пераклады або пераводзьце адзінкі вымярэння: для гэтага вам трэба дакрануцца да тэксту і ўтрымліваць палец або націснуць на тэкст правай кнопкай мышы.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фота</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
+<translation id="8045012663542226664">Выключэнне гуку мікрафона</translation>
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">Праверыць</translation>
 <translation id="9204237731135241582">Не ўдалося звязацца са шлюзам з праграм для Android</translation>
 <translation id="9211490828691860325">Усе працоўныя сталы</translation>
+<translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Неактыўнае</translation>
 <translation id="960719561871045870">Код аператара</translation>

@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Повеќе јазици</translation>
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Болд</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да ги персонализирате алатките за пристапност во поставките за Chrome OS</translation>
 <translation id="1250759482327835220">За да платите побрзо следниот пат, зачувајте ја картичката, името и адресата за наплата на вашата сметка на Google.</translation>
 <translation id="1252799212227771492">Копче за создавање табела, притиснете го копчето Enter за да набрзина создадете нова табела на Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> и <ph name="TYPE_2" /> (синхронизирани)</translation>
@@ -384,7 +383,6 @@
 <translation id="1919345977826869612">Реклами</translation>
 <translation id="1919367280705858090">Добивање помош околу конкретна порака за грешка</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ниту еден}=1{1 сајт}one{# сајт}other{# сајтови}}</translation>
-<translation id="1923390796829649802">Копче „Управувајте со поставките за пристапност“, притиснете Enter за да ги персонализирате алатките за пристапност во поставките за Chrome OS</translation>
 <translation id="1924727005275031552">Ново</translation>
 <translation id="1927439593081478069">Копче „Изврши безбедносна проверка во Chrome“, притиснете Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="1939175642807587452">Може да прашува за да испраќа известувања</translation>
@@ -643,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги избришете историјата на прелистувањето, колачињата, кешот и други работи во поставките за Chrome</translation>
 <translation id="2650446666397867134">Пристапот до датотеката беше одбиен</translation>
 <translation id="2653659639078652383">Испрати</translation>
-<translation id="2659491813326907275">Персонализирајте ги алатките за пристапност во поставките за Chrome OS</translation>
 <translation id="2660779039299703961">Настан</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ниедна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />)}=2{2 лозинки (за <ph name="DOMAIN_LIST" />)}one{# лозинка (за <ph name="DOMAIN_LIST" />)}other{# лозинки (за <ph name="DOMAIN_LIST" />-}}</translation>
 <translation id="2666092431469916601">Горе</translation>
@@ -861,6 +858,7 @@
 <translation id="3295444047715739395">Прегледајте ги и управувајте со лозинките во поставките за Chrome</translation>
 <translation id="3303855915957856445">Не се пронајдени резултати од пребарувањето</translation>
 <translation id="3304073249511302126">скенирање за Bluetooth</translation>
+<translation id="33073482541490531">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. Password Manager препорачува веднаш да ја промените лозинкава.</translation>
 <translation id="3308006649705061278">Организациска единица (ОУ)</translation>
 <translation id="3308738399950580893">реклами</translation>
 <translation id="3320021301628644560">Додајте адреса за наплата</translation>
@@ -995,6 +993,7 @@
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3664782872746246217">Клучни зборови:</translation>
 <translation id="3667704023705708645">Вложувачки капитал</translation>
+<translation id="367108335512738711">Обележувачи на Chrome</translation>
 <translation id="3671540257457995106">Да се дозволи промена на големината?</translation>
 <translation id="3675563144891642599">Трета ролна</translation>
 <translation id="3676592649209844519">ID на уред:</translation>
@@ -1491,6 +1490,7 @@
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040262127954254034">Приватност</translation>
 <translation id="5043480802608081735">Линкот што го копиравте</translation>
+<translation id="5044545992476246592">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. Вашиот „Помошник на Google“ може да ја промени лозинката автоматски.</translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
 <translation id="5051305769747448211">Комедија во живо</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да ја испратите датотекава преку „Споделување во близина“, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на уредот}one{За да ги испратите датотекиве преку „Споделување во близина“, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на уредот}other{За да ги испратите датотекиве преку „Споделување во близина“, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на уредот}}</translation>
@@ -1503,6 +1503,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Да ја проверите адресата на проксито<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Десетта ролна</translation>
 <translation id="507130231501693183">Поштенско сандаче 4</translation>
+<translation id="5078060223219502807">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, Password Manager препорачува веднаш да ја промените, а потоа да ги проверите зачуваните лозинки.</translation>
 <translation id="5086225927071063542">Дистрибуирани и компјутерски услуги во облак</translation>
 <translation id="5087286274860437796">Сертификатот на серверот не е важечки во моментов.</translation>
 <translation id="5087580092889165836">Додај картичка</translation>
@@ -2019,6 +2020,7 @@
 <translation id="6579630537141957243">Да се поврзе MIDI-уред?</translation>
 <translation id="6579990219486187401">Светлорозова</translation>
 <translation id="6583674473685352014">B6 (плик)</translation>
+<translation id="6585526963651937128">Историја на Chrome</translation>
 <translation id="6587182488465657433">Chrome ја најде лозинката која штотуку ја употребивте меѓу лозинките откриени при упад во податоците. За да ги заштитите сметките, препорачуваме да ја промените веднаш, а потоа да ги проверите зачуваните лозинки.</translation>
 <translation id="6587923378399804057">Линкот што го копиравте</translation>
 <translation id="6591833882275308647">Вашиот <ph name="DEVICE_TYPE" /> не е управуван</translation>
@@ -2127,6 +2129,7 @@
 <translation id="691024665142758461">преземе повеќе датотеки</translation>
 <translation id="6915804003454593391">Корисник:</translation>
 <translation id="6916954549222464607">Финансиско планирање и управување</translation>
+<translation id="6917795328362592458">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, Password Manager препорачува да ги проверите зачуваните лозинки.</translation>
 <translation id="6934672428414710184">Ова име е од вашата сметка на Google</translation>
 <translation id="6939469646605424232">ТВ-драми</translation>
 <translation id="6944692733090228304">Ја внесовте лозинката на сајт што не е управуван од <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. За да ја заштитите сметката, не користете ја лозинката повторно на други апликации и сајтови.</translation>
@@ -2803,6 +2806,7 @@
 <translation id="8805819170075074995">Запис во список „<ph name="LANGUAGE_ID" />“: записот е игнориран бидејќи е вклучен и во правилото SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Производи за бања и тело</translation>
 <translation id="8807160976559152894">Кратење по секоја страница</translation>
+<translation id="8808828119384186784">Поставки за Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го ажурирате Chrome од поставките за Chrome</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="882338992931677877">Отвор за рачно полнење</translation>

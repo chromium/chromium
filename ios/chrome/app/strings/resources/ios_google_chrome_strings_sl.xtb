@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Ta račun in vsi neshranjeni podatki bodo odstranjeni iz Chroma in drugih Googlovih aplikacij v tej napravi.</translation>
 <translation id="1968388653333775699">Opravite več s Chromom</translation>
 <translation id="2009224836393115614">Chromu ni uspelo preveriti vaših gesel. Poskusite preveriti internetno povezavo.</translation>
+<translation id="2056123005618757196">Opravite več s preprostim in varnim Chromom, ki je hitrejši kot kdaj prej.</translation>
 <translation id="2147651015520127414">Chrome je preveril, da je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="2199719347983604670">Podatki iz Sinhronizacije za Chrome</translation>
 <translation id="2313070403598893276">Google Chrome je preprost, varen in hitrejši kot kdaj prej.</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Nekateri dodatki povzročajo zrušitve Chroma. Odstranite jih:</translation>
 <translation id="4633328489441962921">Chrome ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="4698415050768537821">Chromu ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">Zaradi izboljšanja aplikacije Chrome Googlu pošlje podatke o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ni podprto v Chromu Beta</translation>
 <translation id="5030102366287574140">Chrome vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
 <translation id="5108659628347594808">Izboljšajte Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Preklop na Chrome</translation>
 <translation id="6238746320622508509">Naj Chrome zaklene vaše anonimne zavihke.</translation>
 <translation id="6387994324662817823">Gesla so shranjena v Google Upravitelju gesel samo v tej napravi.</translation>
+<translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6427126399757991875">Vaša organizacija nastavlja Chrome …</translation>
 <translation id="6600954340915313787">Kopirano v Chrome</translation>
 <translation id="6634107063912726160">Če se odjavite, Chrome ne bo več sinhroniziral novih podatkov v račun Google. Predhodno sinhronizirani podatki ostanejo v računu.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Ostanite varni z Google Chromom</translation>
 <translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="8788269841521769222">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
+<translation id="8969290730818637510">Če je omogočeno:
+<ph name="BEGIN_INDENT" />  • Pomagate izboljšati Chrome za ljudi, ki ga uporabljajo kot vi.<ph name="END_INDENT" />
+
+Kaj je treba upoštevati:
+<ph name="BEGIN_INDENT" />  • Googlu se pošiljajo podatki o vaši uporabi Chroma, vendar niso povezani z vami.
+
+  • Če se Chrome zruši, bodo med podatki o zrušitvi morda nekateri osebni podatki.
+
+  • Če vklopite sinhronizacijo, bodo meritve vključevale tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 <translation id="9122931302567044771">To pomeni, da bo Chrome vsakič zahteval spletno mesto za namizne naprave.</translation>
 </translationbundle>

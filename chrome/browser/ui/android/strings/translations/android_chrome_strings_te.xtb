@@ -148,7 +148,6 @@
 <translation id="1779766957982586368">విండోను మూసివేస్తుంది</translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
 <translation id="1792959175193046959">డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని ఎప్పుడైనా మార్చుకోండి</translation>
-<translation id="1795251344124198516">Chrome, Chrome OS అదనపు సర్వీస్ నియమాలు</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1810845389119482123">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="1829244130665387512">పేజీలో కనుగొను</translation>
@@ -185,7 +184,6 @@
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
 <translation id="200114059308480249">Googleలో ఏదైనా సెర్చ్ చేసినప్పుడు, ఆ సెర్చ్ తాలూకు సందర్భోచిత టెక్స్ట్‌ను కూడా చేర్చాలనుకుంటున్నారా?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైళ్లు}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />గోప్యతా పాలసీ<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="2020309681647789787">సింక్ చేసిన మీ పరికరాలన్నింటిలో మీ హిస్టరీ ఉంటుంది, కాబట్టి మీరు ఏదైతే చేస్తున్నారో, దానిని కొనసాగించవచ్చు</translation>
 <translation id="2021896219286479412">ఫుల్-స్క్రీన్‌ సైట్ నియంత్రణలు</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ రిక్వెస్ట్‌ను ఆన్ చేయండి</translation>
@@ -462,7 +460,6 @@
 <translation id="3493531032208478708">సూచించిన కంటెంట్ గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్ సగం మేరకు తెరవబడింది.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />Google సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_ATOS_LINK" />Google Chrome, Chrome OS అదనపు సర్వీస్ నియమాల<ph name="END_ATOS_LINK" />కు అంగీకరిస్తున్నారు.</translation>
 <translation id="3507132249039706973">ప్రామాణిక రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="3509330069915219067">ఆఫ్‌లైన్‌లో ఉన్నారు. అప్‌డేట్‌లను Chrome చెక్ చేయలేదు.</translation>
 <translation id="3513704683820682405">అగ్‌మెంటెడ్ రియాలిటీ</translation>
@@ -589,6 +586,7 @@
 <translation id="4296252229500326964">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
 <translation id="4320177379694898372">ఇంటర్నెట్ కనెక్షన్ లేదు</translation>
 <translation id="4321739720395210191">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. మీ పరికరాన్ని పునఃప్రారంభించి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
@@ -957,7 +955,6 @@
 <translation id="6345878117466430440">చదివినట్లుగా గుర్తించు</translation>
 <translation id="6363990818884053551">సింక్‌ను ప్రారంభించడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6364438453358674297">చరిత్ర నుండి సూచనను తీసివేయాలా?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు.</translation>
 <translation id="6380100320871303656">మీరు సందర్శించే అవకాశం ఉందని Chrome భావించే పేజీలను మరింత తరచుగా ప్రీ - లోడ్ చేస్తుంది. ఈ సెట్టింగ్ వల్ల డేటా వినియోగం పెరిగే అవకాశం ఉంది.</translation>
 <translation id="6385407407546870227">ట్రయల్స్ ఆన్‌లో ఉన్నప్పుడు, మోసాన్ని ఎదుర్కోవడంలో, అలాగే వ్యక్తులకు, బాట్‌లకు మధ్య ఉన్న తేడాను గుర్తించడంలో సైట్‌లకు సహాయపడటానికి స్పామ్ &amp; మోసం తగ్గింపు విశ్వసనీయ టోకెన్‌లపై ఆధారపడుతుంది.
 
@@ -1127,7 +1124,6 @@
 <translation id="7208109991155904980">ప్రతిస్పందన తరలించబడింది</translation>
 <translation id="7222235798733126207">సైట్‌ల మధ్య పరిమిత షేరింగ్</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ పెండింగ్‌లో ఉంది}other{# డౌన్‌లోడ్‌లు పెండింగ్‌లో ఉన్నాయి}}</translation>
-<translation id="7237045078887540010">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />Google సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_ATOS_LINK" />Google Chrome, Chrome OS అదనపు సర్వీస్ నియమాల<ph name="END_ATOS_LINK" />ను అంగీకరిస్తున్నారు. <ph name="BEGIN_PRIVACY_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_LINK" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="7242755609445462077">శైలీకరించిన హైలైట్ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7252076891734325316">మీ ఫోన్‌ను కంప్యూటర్‌కు దగ్గరగా ఉంచండి</translation>

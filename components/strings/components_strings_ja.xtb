@@ -100,7 +100,6 @@
 <translation id="124116460088058876">その他の言語</translation>
 <translation id="1243027604378859286">作成者:</translation>
 <translation id="1246424317317450637">太字</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome OS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="1250759482327835220">カード、お名前、請求先住所を Google アカウントに保存すると、次回のお支払いが簡単になります。</translation>
 <translation id="1252799212227771492">[スプレッドシートを作成] ボタンです。Enter キーを押すと、新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（同期済み）</translation>
@@ -303,7 +302,7 @@
 <translation id="1711528724596764268">機械学習、人工知能</translation>
 <translation id="1712552549805331520"><ph name="URL" /> から、ローカルのパソコンにデータを永続的に保存する許可を求められています</translation>
 <translation id="1713628304598226412">トレイ 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">金</translation>
 <translation id="1717218214683051432">モーション センサー</translation>
 <translation id="1717494416764505390">用紙受け 3</translation>
 <translation id="1718029547804390981">ドキュメントのサイズが大きすぎるため注釈を追加できません</translation>
@@ -380,7 +379,6 @@
 <translation id="1919345977826869612">広告</translation>
 <translation id="1919367280705858090">特定のエラー メッセージに関する情報</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
-<translation id="1923390796829649802">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと Chrome OS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="1924727005275031552">新</translation>
 <translation id="1927439593081478069">[Chrome の安全確認を実行] ボタンです。Enter キーを押すと Chrome の設定で安全確認を実行できます</translation>
 <translation id="1939175642807587452">通知の送信を要求できる</translation>
@@ -639,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2650446666397867134">ファイルへのアクセスが拒否されました</translation>
 <translation id="2653659639078652383">送信</translation>
-<translation id="2659491813326907275">Chrome OS の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件}other{<ph name="DOMAIN_LIST" /> のパスワード # 件}}</translation>
 <translation id="2666092431469916601">一番上</translation>
@@ -857,6 +854,7 @@
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理する</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
 <translation id="3304073249511302126">Bluetooth のスキャン</translation>
+<translation id="33073482541490531">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
 <translation id="3308738399950580893">広告</translation>
 <translation id="3320021301628644560">請求先住所を追加</translation>
@@ -991,6 +989,7 @@
 <translation id="3658742229777143148">変更履歴</translation>
 <translation id="3664782872746246217">キーワード:</translation>
 <translation id="3667704023705708645">ベンチャー キャピタル</translation>
+<translation id="367108335512738711">Chrome のブックマーク</translation>
 <translation id="3671540257457995106">サイズ変更を許可しますか？</translation>
 <translation id="3675563144891642599">ロール 3</translation>
 <translation id="3676592649209844519">デバイス ID:</translation>
@@ -1482,6 +1481,7 @@
 <translation id="5039804452771397117">許可</translation>
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="5043480802608081735">コピーしたリンク</translation>
+<translation id="5044545992476246592">たった今使用したパスワードがデータ侵害で検出されました。Google アシスタントを使用して、パスワードを自動で変更できます。</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5051305769747448211">お笑いライブ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
@@ -1494,6 +1494,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />プロキシ アドレスを確認する<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">ロール 10</translation>
 <translation id="507130231501693183">用紙受け 4</translation>
+<translation id="5078060223219502807">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="5086225927071063542">分散コンピューティング、クラウド コンピューティング</translation>
 <translation id="5087286274860437796">サーバーの証明書が現在有効ではありません。</translation>
 <translation id="5087580092889165836">カードを追加</translation>
@@ -2010,6 +2011,7 @@
 <translation id="6579630537141957243">MIDI デバイスを使用しますか？</translation>
 <translation id="6579990219486187401">ライトピンク</translation>
 <translation id="6583674473685352014">B6（封筒）</translation>
+<translation id="6585526963651937128">Chrome 履歴</translation>
 <translation id="6587182488465657433">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、このパスワードを今すぐ変更し、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
@@ -2118,6 +2120,7 @@
 <translation id="691024665142758461">複数ファイルのダウンロード</translation>
 <translation id="6915804003454593391">ユーザー:</translation>
 <translation id="6916954549222464607">財務プランニング、マネジメント</translation>
+<translation id="6917795328362592458">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
 <translation id="6939469646605424232">テレビドラマ</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
@@ -2795,6 +2798,7 @@
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
 <translation id="8806285662264631610">バス、ボディ商品</translation>
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
+<translation id="8808828119384186784">Chrome の設定</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="882338992931677877">手動スロット</translation>

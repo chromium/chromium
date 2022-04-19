@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">హార్డ్‌వేర్ పునర్విమర్శ</translation>
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
 <translation id="1908234395526491708">UDP రిక్వెస్ట్ వైఫల్యాలు</translation>
-<translation id="1930797645656624981">Chrome OS ఇన్‌పుట్ విధానం సేవ</translation>
 <translation id="1947737735496445907">ప్రింట్ అయింది</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google ప్రొఫైల్ ఫోటో</translation>
 <translation id="1979103255016296513">పాస్‌వర్డ్‌ మార్చాల్సిన గడువు ముగిసింది</translation>
 <translation id="1999615961760456652">క్యాప్టివ్ పోర్టల్</translation>
 <translation id="2006864819935886708">కనెక్టివిటీ</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">కనీసం ఒక ఆర్ట్ గ్యాలరీ ఆల్బమ్‌ను ఎంచుకోవాలి</translation>
 <translation id="2230005943220647148">సెల్సియస్</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">కీబోర్డ్ బ్యాక్‌లైట్‌ను టోగుల్ చేయండి</translation>
 <translation id="2240366984605217732">లేఅవుట్ స్విచ్</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
 <translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
 <translation id="2584559707064218956">సెటప్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
-<translation id="2585245331261708204">Chrome OSలో కొత్తవి ఏంటి</translation>
 <translation id="2619761439309613843">రోజూ రిఫ్రెష్ అవుతుంది</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్ ఎంచుకోబడింది</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4744944742468440486">మీ ఎంపికకు సంబంధించిన సమాచారం</translation>
-<translation id="475869545581454722">Chrome OS పాస్‌వర్డ్ అప్‌డేట్ చేయబడింది</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
 <translation id="4782311465517282004">మీరు టెక్స్ట్‌ను కుడి క్లిక్ చేసినప్పుడు లేదా తాకి, నొక్కి ఉంచినప్పుడు నిర్వచనాలు, అనువాదాలు, లేదా యూనిట్ మార్పిడులను పొందండి</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ఫోటో</translation>
@@ -628,6 +627,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ఆటోమేటిక్ రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
+<translation id="8045012663542226664">మైక్రోఫోన్ మ్యూట్</translation>
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="8082366717211101304">Android యాప్‌ల నుండి DNSను పరిష్కరించడం సాధ్యపడదు</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
@@ -738,6 +738,7 @@
 <translation id="917720651393141712">టెస్ట్ చేయండి</translation>
 <translation id="9204237731135241582">Android యాప్‌ల నుండి గేట్‌వేను సంప్రదించడం సాధ్యపడదు</translation>
 <translation id="9211490828691860325">అన్ని డెస్క్‌లు</translation>
+<translation id="932327136139879170">హోమ్</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">సక్రియం చెయ్యబడలేదు</translation>
 <translation id="960719561871045870">ఆపరేటర్ కోడ్</translation>

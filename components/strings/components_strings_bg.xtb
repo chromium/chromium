@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Още езици</translation>
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Удебелен текст</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="1250759482327835220">За да платите по-бързо следващия път, запазете картата, името и адреса си за фактуриране в профила си в Google.</translation>
 <translation id="1252799212227771492">Бутон за създаване на таблица. Натиснете Enter, за да създадете бързо таблица в Google Таблици</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронизирани)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">Показване на още</translation>
 <translation id="132390688737681464">Запазване и попълване на адреси</translation>
 <translation id="1330449323196174374">Сгъване на левия край навътре</translation>
+<translation id="1333745675627230582">Стартиране на играта с динозавъра в Chrome</translation>
 <translation id="1333989956347591814">Активността ви <ph name="BEGIN_EMPHASIS" />може да остане видима<ph name="END_EMPHASIS" /> за:
 <ph name="BEGIN_LIST" />
 <ph name="LIST_ITEM" />уебсайтовете, които посещавате;
@@ -302,7 +302,7 @@
 <translation id="1711528724596764268">Машинно обучение и изкуствен интелект</translation>
 <translation id="1712552549805331520"><ph name="URL" /> иска да съхранява за постоянно данни на локалния ви компютър</translation>
 <translation id="1713628304598226412">Тава 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">пт</translation>
 <translation id="1717218214683051432">Сензори за движение</translation>
 <translation id="1717494416764505390">Пощенска кутия 3</translation>
 <translation id="1718029547804390981">Документът е твърде голям за добавяне на пояснения</translation>
@@ -381,7 +381,6 @@
 <translation id="1919345977826869612">Реклами</translation>
 <translation id="1919367280705858090">Получаване на помощ за конкретно съобщение за грешка</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}other{# сайта}}</translation>
-<translation id="1923390796829649802">Бутон „Управление на настройките за достъпност“. Натиснете Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS.</translation>
 <translation id="1924727005275031552">Нов</translation>
 <translation id="1927439593081478069">Бутон за стартиране на проверка на безопасността в Chrome. Натиснете Enter, за да стартирате такава проверка от настройките на браузъра</translation>
 <translation id="1939175642807587452">Може да поиска разрешение да изпраща известия</translation>
@@ -640,7 +639,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да изчистите историята на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
 <translation id="2650446666397867134">Достъпът до файла бе отказан</translation>
 <translation id="2653659639078652383">Изпращане</translation>
-<translation id="2659491813326907275">Персонализиране на инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="2660779039299703961">Събитие</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Няма}=1{1 парола (за <ph name="DOMAIN_LIST" />)}=2{2 пароли (за <ph name="DOMAIN_LIST" />)}other{# пароли (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Най-горе</translation>
@@ -744,6 +742,7 @@
 <translation id="2972581237482394796">&amp;Възстановяване</translation>
 <translation id="2977665033722899841">Понастоящем сте избрали реда „<ph name="ROW_NAME" />“. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
+<translation id="2983666748527428214">Отваряне на раздел в режим „инкогнито“</translation>
 <translation id="2985306909656435243">Ако настройката е активирана, Chromium ще съхранява на това устройство копие на картата ви с цел по-бързо попълване на формуляри.</translation>
 <translation id="2985398929374701810">Въведете валиден адрес</translation>
 <translation id="2986368408720340940">Този начин на вземане не се поддържа. Опитайте с друг.</translation>
@@ -857,6 +856,7 @@
 <translation id="3295444047715739395">Преглеждайте и управлявайте паролите си в настройките на Chrome</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
 <translation id="3304073249511302126">сканиране за устройства с Bluetooth</translation>
+<translation id="33073482541490531">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. Мениджърът на паролите ви препоръчва да я промените сега.</translation>
 <translation id="3308006649705061278">Организационна единица (OU)</translation>
 <translation id="3308738399950580893">реклами</translation>
 <translation id="3320021301628644560">Добавяне на адреса за фактуриране</translation>
@@ -991,6 +991,7 @@
 <translation id="3658742229777143148">Ревизия</translation>
 <translation id="3664782872746246217">Ключови думи:</translation>
 <translation id="3667704023705708645">Рисков капитал</translation>
+<translation id="367108335512738711">Отметки в Chrome</translation>
 <translation id="3671540257457995106">Да се разреши ли преоразмеряване?</translation>
 <translation id="3675563144891642599">Трета ролка</translation>
 <translation id="3676592649209844519">Идент. № на устройството:</translation>
@@ -1487,6 +1488,7 @@
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5040262127954254034">Поверителност</translation>
 <translation id="5043480802608081735">Копирана от вас връзка</translation>
+<translation id="5044545992476246592">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. Google Асистент може да я промени автоматично.</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="5051305769747448211">Комедия на живо</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
@@ -1499,6 +1501,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Проверете адреса на прокси сървъра<ph name="END_LINK" />.</translation>
 <translation id="5070838744279127212">Десета ролка</translation>
 <translation id="507130231501693183">Пощенска кутия 4</translation>
+<translation id="5078060223219502807">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите ви препоръчва да я промените сега и след това да проверите запазените си пароли.</translation>
 <translation id="5086225927071063542">Разпределени изчисления и изчисления в облака</translation>
 <translation id="5087286274860437796">Понастоящем сертификатът на сървъра не е валиден.</translation>
 <translation id="5087580092889165836">Добавяне на карта</translation>
@@ -1510,6 +1513,7 @@
 <translation id="5097099694988056070">Статистически данни за устройството, например за използването на процесора/RAM паметта</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Сайтът не е защитен</translation>
+<translation id="5109892411553231226">Управление на начините на плащане</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Тава 18</translation>
 <translation id="5114987907971894280">виртуална реалност</translation>
@@ -1757,6 +1761,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Искате ли да се попълнят данните за <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
+<translation id="5808435672482059465">Преглед на историята ви в Chrome</translation>
 <translation id="5808542072418270309">Симулационни игри</translation>
 <translation id="5810442152076338065">Връзката ви с/ъс <ph name="DOMAIN" /> е шифрована с остарял криптографски пакет.</translation>
 <translation id="5812947184178430888">При откриване на събития, свързани със сигурността, от Chrome данните за тях се изпращат до администратора ви. Те могат да включват URL адресите на посещаваните от вас страници в Chrome, имената на файловете или метаданните, както и потребителското име, с което влизате в уеб базирани приложения, в профила си на устройството си и в браузъра.</translation>
@@ -2013,6 +2018,7 @@
 <translation id="6579630537141957243">Да се свърже ли MIDI устройство?</translation>
 <translation id="6579990219486187401">светлорозово</translation>
 <translation id="6583674473685352014">B6 (плик)</translation>
+<translation id="6585526963651937128">История в Chrome</translation>
 <translation id="6587182488465657433">Chrome разкри паролата, която току-що използвахте, при нарушение на сигурността на данните. За да защитите профилите си, ви препоръчваме да я промените сега и след това да проверите запазените си пароли.</translation>
 <translation id="6587923378399804057">Копирана от вас връзка</translation>
 <translation id="6591833882275308647">Устройството ви <ph name="DEVICE_TYPE" /> не е управлявано</translation>
@@ -2121,6 +2127,7 @@
 <translation id="691024665142758461">Изтегляне на няколко файла</translation>
 <translation id="6915804003454593391">Потребител:</translation>
 <translation id="6916954549222464607">Финансово планиране и управление</translation>
+<translation id="6917795328362592458">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите ви препоръчва да проверите запазените си пароли.</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
 <translation id="6939469646605424232">Телевизионни драми</translation>
 <translation id="6944692733090228304">Въведохте паролата си на сайт, който не се управлява от <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
@@ -2797,6 +2804,7 @@
 <translation id="8805819170075074995">Списъчен запис „<ph name="LANGUAGE_ID" />“: Записът е пренебрегнат, защото е включен и в правилото SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Продукти за баня и за тялото</translation>
 <translation id="8807160976559152894">Отрязване след всяка страница</translation>
+<translation id="8808828119384186784">Настройки на Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да актуализирате Chrome от настройките</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="882338992931677877">Слот за ръчно подаване</translation>

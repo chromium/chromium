@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">የሃርድዌር ክለሳ</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
 <translation id="1908234395526491708">የ UDP ጥያቄ አለመሳካቶች</translation>
-<translation id="1930797645656624981">የ Chrome OS ግቤት ዘዴ አገልግሎት</translation>
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1951012854035635156">ረዳት</translation>
+<translation id="1977994649430373166">የGoogle መገለጫ ፎቶ</translation>
 <translation id="1979103255016296513">የይለፍ ቃል ለውጥ ማድረጊያ ጊዜው አልፏል</translation>
 <translation id="1999615961760456652">ተያዥ መግቢያ</translation>
 <translation id="2006864819935886708">ግንኙነት</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">ቢያንስ አንድ የስነ-ጥበብ ማዕከለ ሥዕላት አልበም መመረጥ አለበት</translation>
 <translation id="2230005943220647148">ሴሊሺየስ</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">የቁልፍ ሰሌዳ የጀርባ ብርሃን ቀያሪ</translation>
 <translation id="2240366984605217732">የአቀማመጥ መቀየሪያ</translation>
 <translation id="225692081236532131">የገባሪነት ሁኔታ</translation>
 <translation id="2287186687001756809">ምንም ምስል አልተገኘም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ከበይነመረቡ ጋር መገናኘት አልተቻለም።</translation>
 <translation id="2570743873672969996">የ<ph name="TEST_NAME" /> ሙከራን በማሄድ ላይ...</translation>
 <translation id="2584559707064218956">ለማዋቀር ወደ ቅንብሮች ይሂዱ</translation>
-<translation id="2585245331261708204">በChrome OS ምን አዲስ ነገር አለ</translation>
 <translation id="2619761439309613843">ዕለታዊ ዕድሳት</translation>
 <translation id="2620436844016719705">ስርዓት</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> አልበም ተመርጧል</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
-<translation id="475869545581454722">የChrome OS የይለፍ ቃል ተዘምኗል</translation>
 <translation id="4773299976671772492">ቆሟል</translation>
 <translation id="4782311465517282004">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ፎቶ</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ራስ-ሰር ቀለም ሁነታን አንቃ</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
+<translation id="8045012663542226664">የማይክሮፎን ድምጸ-ከል ማድረጊያ</translation>
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">ሙከራ</translation>
 <translation id="9204237731135241582">ከAndroid መተግበሪያዎች አግባቢ ፍኖትን ማነጋገር አልተቻለም</translation>
 <translation id="9211490828691860325">ሁሉም ዴስኮች</translation>
+<translation id="932327136139879170">መነሻ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">አልገበረም</translation>
 <translation id="960719561871045870">የከዋኝ ኮድ</translation>

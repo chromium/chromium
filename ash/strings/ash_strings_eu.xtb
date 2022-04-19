@@ -524,6 +524,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4095366824370681039">Bolaluma</translation>
 <translation id="4112140312785995938">Atzeratu</translation>
 <translation id="4114315158543974537">Aktibatu Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">leiho bat</translation>
 <translation id="4123259114412175274">Chromebook-a desblokeatzeko, ziurtatu telefonoaren Bluetooth-a aktibatuta dagoela</translation>
 <translation id="4129129681837227511">Pantaila blokeatuan jakinarazpenak ikusteko, desblokeatu gailua eta aldatu ezarpena</translation>
@@ -563,7 +564,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4321179778687042513">ktrl</translation>
 <translation id="4321776623976362024">Kontraste handiaren lasterbidea sakatu duzu. Aktibatu egin nahi duzu?</translation>
 <translation id="4322742403972824594">Ktrl + Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Hasiera tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + ezkerrera egiteko gezi-tekla.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Ezin da abiarazi Lacros saio bat baino gehiago baldin badaude hasita.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Laguntzailea kargatzen ari da…</translation>
@@ -796,7 +796,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5788127256798019331">Play fitxategiak</translation>
 <translation id="5790085346892983794">Behar bezala egin da</translation>
 <translation id="5805809050170488595">Sakatu hau <ph name="NETWORK_NAME" /> aktibatzeko</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Konektatutako gailuen ezarpenak</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5837036133683224804">Utzi <ph name="ROUTE_TITLE" /> (<ph name="RECEIVER_NAME" />) hargailura igortzeari</translation>
@@ -1148,7 +1147,6 @@ Berriki instalatu da</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> eta <ph name="SECOND_PARENT_EMAIL" /> kontuen bidez kudeatzen da kontu hau</translation>
 <translation id="793716872548410480">Sakatu <ph name="SHORTCUT_KEY_NAME" /> + V arbela ikusteko. Kopiatutako azken bost elementuak arbelean gordeta geratzen dira.</translation>
 <translation id="7942349550061667556">Gorria</translation>
-<translation id="7952747673138230804">Chrome OS-k araka dezakezun eduki berriari buruzko iradokizunak erakusten ditu. Kalitatea hobetzeko balio duten estatistikak bidaltzen ditu, erabilera-datuak partekatzea aukeratu baduzu. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Kontraste handiko modua</translation>
 <translation id="7968693143708939792">Hautatu karpeta bat…</translation>
 <translation id="7977927628060636163">Sare mugikorren bila…</translation>

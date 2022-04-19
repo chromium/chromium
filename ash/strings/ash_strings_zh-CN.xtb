@@ -520,6 +520,7 @@
 <translation id="4095366824370681039">墨水笔</translation>
 <translation id="4112140312785995938">快退</translation>
 <translation id="4114315158543974537">开启手机中心</translation>
+<translation id="4115378294792113321">洋红色</translation>
 <translation id="412298498316631026">窗口</translation>
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
 <translation id="4129129681837227511">要想在锁定屏幕上看到通知，请解锁设备以更改设置</translation>
@@ -559,7 +560,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您按下了高对比度的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="4322742403972824594">键盘快捷键“Ctrl + Alt + 向上键”已更改。若要使用 Home 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向左键。</translation>
-<translation id="4331809312908958774">Chrome 操作系统</translation>
 <translation id="4333628967105022692">当有多个用户登录时，Lacros 不受支持。</translation>
 <translation id="4338109981321384717">放大镜</translation>
 <translation id="4351433414020964307">智能助理正在加载中…</translation>
@@ -792,7 +792,6 @@
 <translation id="5788127256798019331">Play 文件</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5805809050170488595">点击即可激活“<ph name="NETWORK_NAME" />”</translation>
-<translation id="5820394555380036790">Chromium 操作系统</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
@@ -1143,7 +1142,6 @@
 <translation id="79341161159229895">该帐号由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="793716872548410480">按<ph name="SHORTCUT_KEY_NAME" /> + V 可查看您的剪贴板。您复制的最后 5 项内容会保存到您的剪贴板中。</translation>
 <translation id="7942349550061667556">红色</translation>
-<translation id="7952747673138230804">Chrome 操作系统会显示有关新内容的建议以供探索。仅当您已选择分享使用情况数据时，系统才会向 Google 发送统计信息用于提升建议的质量。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">高对比度模式</translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
 <translation id="7977927628060636163">正在搜索移动网络…</translation>

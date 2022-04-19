@@ -277,7 +277,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3290875554372353449">Choose an Account</translation>
 <translation id="3311748811247479259">Off</translation>
 <translation id="3324193307694657476">Address 2</translation>
-<translation id="3324298231050545260">Calendar file available</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="3329904751041170572">Could not connect to the server.</translation>
 <translation id="3335947283844343239">Re-open Closed Tab</translation>
@@ -360,6 +359,7 @@ Follow the steps below:</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4063300985191096908">Go to feed</translation>
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
+<translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="411254640334432676">Download failed.</translation>
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">Managed by your administrator</translation>
@@ -610,6 +610,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6232736989810857397">This allows you to easily create calendar events using Google Lens.</translation>
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
 <translation id="6255097610484507482">Edit credit card</translation>
+<translation id="6277426346321820595">No protection</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Unfollowed <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
@@ -787,6 +788,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7671141431838911305">INSTALL</translation>
+<translation id="7687508192620387263">Calendar file available</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
 <translation id="7726702057919861819">Menu → History → Clear browsing data</translation>
@@ -808,6 +810,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7884694604461143138">Search history (<ph name="COUNT" /> found)</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
 <translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>
+<translation id="7920949005883349320">Privacy and security</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export Passwords…</translation>
@@ -890,6 +893,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8588404856427128947">Off</translation>
 <translation id="8590913940444621808">Never Ask</translation>
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
+<translation id="8592752150819985187">Auto-fill passwords</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8626393685701737946">You can change the default site view to desktop in Settings &gt; Content Settings</translation>
@@ -908,6 +912,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">You'll find your tabs here</translation>
 <translation id="8756969031206844760">Update password?</translation>
+<translation id="8764015330924122850">Unfollow <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Invalid URL</translation>
 <translation id="8787968206789828143">Search on web</translation>
 <translation id="8803639129939845298">Secure</translation>

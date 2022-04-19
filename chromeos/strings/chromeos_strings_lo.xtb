@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
-<translation id="1930797645656624981">ການບໍລິການວິທີການປ້ອນຂໍ້ມູນຂອງ Chrome OS</translation>
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
+<translation id="1977994649430373166">ຮູບໂປຣໄຟລ໌ Google</translation>
 <translation id="1979103255016296513">ກາຍກຳນົດປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="1999615961760456652">ຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="2006864819935886708">ການເຊື່ອມຕໍ່</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">ຈຳເປັນຕ້ອງເລືອກອະລະບໍ້າຄັງຮູບສິນລະປະຢ່າງໜ້ອຍໜຶ່ງອະລະບໍ້າ</translation>
 <translation id="2230005943220647148">ເຊວຊຽສ</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">ປຸ່ມສະຫຼັບໄຟແປ້ນພິມ</translation>
 <translation id="2240366984605217732">ສະວິດໂຄງຮ່າງ</translation>
 <translation id="225692081236532131">ສະຖານະການເປີດນຳໃຊ້</translation>
 <translation id="2287186687001756809">ບໍ່ມີຮູບທີ່ສາມາດໃຊ້ໄດ້. ເພື່ອເພີ່ມຮູບ, ກະລຸນາເຂົ້າໄປ <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້.</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ເພື່ອຕັ້ງຄ່າ, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
-<translation id="2585245331261708204">ມີຫຍັງໃໝ່ກັບ Chrome OS</translation>
 <translation id="2619761439309613843">ການໂຫຼດຂໍ້ມູນໃໝ່ປະຈຳວັນ</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
 <translation id="2640549051766135490">ເລືອກອະລະບໍ້າ <ph name="TITLE" /> <ph name="DESC" /> ແລ້ວ</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4744944742468440486">ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
-<translation id="475869545581454722">ອັບເດດລະຫັດຜ່ານ Chrome OS ແລ້ວ</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
 <translation id="4782311465517282004">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ຮູບ</translation>
@@ -630,6 +629,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ເປີດການນຳໃຊ້ໂໝດປັບສີອັດຕະໂນມັດ</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
+<translation id="8045012663542226664">ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
@@ -740,6 +740,7 @@
 <translation id="917720651393141712">ທົດສອບ</translation>
 <translation id="9204237731135241582">ບໍ່ສາມາດຕິດຕໍ່ຫາເກດເວຈາກແອັບ Android ໄດ້</translation>
 <translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>
+<translation id="932327136139879170">ບ້ານ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ບໍ່ໄດ້ເປີດໃຊ້ງານ</translation>
 <translation id="960719561871045870">ລະຫັດຜູ້ໃຫ້ບໍລິການ</translation>

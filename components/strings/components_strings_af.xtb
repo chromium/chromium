@@ -100,7 +100,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="124116460088058876">Meer tale</translation>
 <translation id="1243027604378859286">Outeur:</translation>
 <translation id="1246424317317450637">Vetdruk</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings te personaliseer</translation>
 <translation id="1250759482327835220">Stoor jou kaart, naam en faktureringadres in jou Google-rekening om volgende keer vinniger te betaal.</translation>
 <translation id="1252799212227771492">Skep Blad-knoppie; druk Enter om vinnig 'n nuwe Google Blad te skep</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (gesinkroniseer)</translation>
@@ -303,7 +302,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1711528724596764268">Masjienleer en kunsmatige intelligensie</translation>
 <translation id="1712552549805331520"><ph name="URL" /> wil data permanent op jou plaaslike rekenaar berg</translation>
 <translation id="1713628304598226412">Laai 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">V</translation>
 <translation id="1717218214683051432">Bewegingsensors</translation>
 <translation id="1717494416764505390">Posbus 3</translation>
 <translation id="1718029547804390981">Dokument is te groot om aantekeninge by te maak</translation>
@@ -384,7 +383,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1919345977826869612">Advertensies</translation>
 <translation id="1919367280705858090">Kry hulp met 'n spesifieke foutboodskap</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 werf}other{# werwe}}</translation>
-<translation id="1923390796829649802">Knoppie om toeganklikheidsinstellings te bestuur. Druk Enter om jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings te personaliseer</translation>
 <translation id="1924727005275031552">Nuut</translation>
 <translation id="1927439593081478069">Knoppie om Chrome-veiligheidskontrole te doen; druk Enter om veiligheidskontrole in Chrome-instellings te doen</translation>
 <translation id="1939175642807587452">Kan vra om kennisgewings te stuur</translation>
@@ -643,7 +641,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou blaaigeskiedenis, webkoekies, kas en meer in Chrome-instellings uit te vee</translation>
 <translation id="2650446666397867134">Toegang tot die leêr is geweier</translation>
 <translation id="2653659639078652383">Dien in</translation>
-<translation id="2659491813326907275">Personaliseer jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings</translation>
 <translation id="2660779039299703961">Geleentheid</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Geen}=1{1 wagwoord (vir <ph name="DOMAIN_LIST" />)}=2{2 wagwoorde (vir <ph name="DOMAIN_LIST" />)}other{# wagwoorde (vir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Top</translation>
@@ -861,6 +858,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3295444047715739395">Bekyk en bestuur jou wagwoorde in Chrome-instellings</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
 <translation id="3304073249511302126">bluetooth-opsporing</translation>
+<translation id="33073482541490531">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy hierdie wagwoord nou verander.</translation>
 <translation id="3308006649705061278">Organisatoriese eenheid (OU)</translation>
 <translation id="3308738399950580893">advertensies</translation>
 <translation id="3320021301628644560">Voeg faktureringadres by</translation>
@@ -995,6 +993,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3658742229777143148">Hersiening</translation>
 <translation id="3664782872746246217">Sleutelwoorde:</translation>
 <translation id="3667704023705708645">Ondernemingkapitaal</translation>
+<translation id="367108335512738711">Chrome-boekmerke</translation>
 <translation id="3671540257457995106">Laat grootteverandering toe?</translation>
 <translation id="3675563144891642599">Derde rol</translation>
 <translation id="3676592649209844519">Toestel-ID:</translation>
@@ -1491,6 +1490,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5040262127954254034">Privaatheid</translation>
 <translation id="5043480802608081735">Skakel wat jy gekopieer het</translation>
+<translation id="5044545992476246592">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Jou Google Assistent kan jou wagwoord outomaties verander.</translation>
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
 <translation id="5051305769747448211">Regstreekse komedie</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêer met Nabydeling wil stuur}other{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêers met Nabydeling wil stuur}}</translation>
@@ -1503,6 +1503,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Die instaanbedieneradres nagaan<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Tiende rol</translation>
 <translation id="507130231501693183">Posbus 4</translation>
+<translation id="5078060223219502807">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy dit nou verander en jou gestoorde wagwoorde dan nagaan om jou rekeninge te beveilig.</translation>
 <translation id="5086225927071063542">Verspreide en wolkverwerking</translation>
 <translation id="5087286274860437796">Bediener se sertifikaat is nie op die oomblik geldig nie.</translation>
 <translation id="5087580092889165836">Voeg kaart by</translation>
@@ -2019,6 +2020,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6579630537141957243">Koppel MIDI-toestel?</translation>
 <translation id="6579990219486187401">Ligpienk</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6585526963651937128">Chrome-geskiedenis</translation>
 <translation id="6587182488465657433">Chrome het die wagwoord wat jy sopas gebruik het, in 'n dataskending gekry. Ons beveel aan dat jy dit nou verander en jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
 <translation id="6587923378399804057">Skakel wat jy gekopieer het</translation>
 <translation id="6591833882275308647">Jou <ph name="DEVICE_TYPE" /> word nie bestuur nie</translation>
@@ -2127,6 +2129,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="691024665142758461">Veelvuldige lêers aflaai</translation>
 <translation id="6915804003454593391">Gebruiker:</translation>
 <translation id="6916954549222464607">Finansiële beplanning en bestuur</translation>
+<translation id="6917795328362592458">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
 <translation id="6934672428414710184">Hierdie naam is van jou Google-rekening af</translation>
 <translation id="6939469646605424232">TV-dramas</translation>
 <translation id="6944692733090228304">Jy het jou wagwoord ingevoer op 'n werf wat nie deur <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> bestuur word nie. Om jou rekening te beskerm, moet jy nie jou wagwoord op ander programme en werwe hergebruik nie.</translation>
@@ -2803,6 +2806,7 @@ Bykomende besonderhede:
 <translation id="8805819170075074995">Lysinskrywing "<ph name="LANGUAGE_ID" />": Inskrywing word geïgnoreer omdat dit ook by die SpellcheckLanguage-beleid ingesluit word.</translation>
 <translation id="8806285662264631610">Bad- en lyfprodukte</translation>
 <translation id="8807160976559152894">Knip ná elke bladsy</translation>
+<translation id="8808828119384186784">Chrome-instellings</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om Chrome vanuit jou Chrome-instellings op te dateer</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="882338992931677877">Handgleuf</translation>

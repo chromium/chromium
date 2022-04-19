@@ -523,6 +523,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4095366824370681039">Blekkpenn</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
 <translation id="4114315158543974537">Slå på Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">vindu</translation>
 <translation id="4123259114412175274">For å låse opp Chromebooken, sørg for at Bluetooth er påslått på telefonen</translation>
 <translation id="4129129681837227511">For å se varsler på låseskjermen, lås opp for å endre innstillingen</translation>
@@ -562,7 +563,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykket på hurtigtasten for høy kontrast. Vil du slå det på?</translation>
 <translation id="4322742403972824594">Hurtigtasten Ctrl + Alt + oppoverpil er endret. For å bruke Home-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + venstrepilen.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros støttes ikke når flere brukere er logget på.</translation>
 <translation id="4338109981321384717">Forstørrelsesglass</translation>
 <translation id="4351433414020964307">Assistenten lastes inn …</translation>
@@ -795,7 +795,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5790085346892983794">Fullført</translation>
 <translation id="5805809050170488595">Klikk for å aktivere <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@ Nylig installert</translation>
 <translation id="79341161159229895">Kontoen er administrert av <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Trykk på <ph name="SHORTCUT_KEY_NAME" /> + V for å se utklippstavlen. De siste fem elementene du har kopiert, er lagret på utklippstavlen.</translation>
 <translation id="7942349550061667556">Rød</translation>
-<translation id="7952747673138230804">Chrome OS viser forslag til nytt innhold du kan utforske. Sender statistikk for å gjøre kvaliteten bedre kun hvis du har valgt å dele bruksdata. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Høykontrastmodus</translation>
 <translation id="7968693143708939792">Velg mappe…</translation>
 <translation id="7977927628060636163">Søker etter mobilnettverk …</translation>

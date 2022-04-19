@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">Чорнильне перо</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
 <translation id="4114315158543974537">Увімкнути Phone Hub</translation>
+<translation id="4115378294792113321">Пурпурний</translation>
 <translation id="412298498316631026">вікна</translation>
 <translation id="4123259114412175274">Щоб розблокувати Chromebook, переконайтеся, що на телефоні ввімкнено Bluetooth</translation>
 <translation id="4129129681837227511">Щоб переглядати сповіщення на заблокованому екрані, розблокуйте його й змініть налаштування</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ви натиснули комбінацію клавіш для високого контрасту. Увімкнути?</translation>
 <translation id="4322742403972824594">Комбінацію клавіш Ctrl + Alt + стрілка вгору змінено. Щоб скористатися клавішею Home, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вліво.</translation>
-<translation id="4331809312908958774">ОС Chrome</translation>
 <translation id="4333628967105022692">Lacros не підтримується, коли вхід здійснено в декілька облікових записів.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Завантаження Асистента…</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">Файли Play</translation>
 <translation id="5790085346892983794">Готово</translation>
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">ОС Chromium</translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">Обліковим записом керують <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Щоб переглянути буфер обміну, натисніть комбінацію клавіш <ph name="SHORTCUT_KEY_NAME" /> + V. У ньому зберігаються 5 останніх елементів, які ви скопіювали.</translation>
 <translation id="7942349550061667556">Червоний</translation>
-<translation id="7952747673138230804">ОС Chrome показує пропозиції нового контенту. Система надсилає статистику для покращення цієї функції, лише якщо ви погодилися ділитися даними про використання. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Режим високого контрасту</translation>
 <translation id="7968693143708939792">Вибрати папку…</translation>
 <translation id="7977927628060636163">Пошук мобільних мереж…</translation>

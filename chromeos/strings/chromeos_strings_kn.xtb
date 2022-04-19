@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">ಹಾರ್ಡ್‌ವೇರ್ ಪರಿಷ್ಕರಣೆ</translation>
 <translation id="1905710495812624430">ಅನುಮತಿಸಲಾದ ಗರಿಷ್ಟ ಪ್ರಯತ್ನಗಳು ಮೀರಿವೆ.</translation>
 <translation id="1908234395526491708">UDP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
-<translation id="1930797645656624981">Chrome OS ಇನ್‌ಪುಟ್ ವಿಧಾನ ಸೇವೆ</translation>
 <translation id="1947737735496445907">ಮುದ್ರಿಸಲಾಗಿದೆ</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google ಪ್ರೊಫೈಲ್ ಫೋಟೋ</translation>
 <translation id="1979103255016296513">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆ ಮಾಡಲು ತೀರಾ ತಡವಾಗಿದೆ</translation>
 <translation id="1999615961760456652">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್</translation>
 <translation id="2006864819935886708">ಸಂಪರ್ಕತೆ</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">ಕನಿಷ್ಠ ಒಂದು ಆರ್ಟ್ ಗ್ಯಾಲರಿ ಆಲ್ಬಮ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="2230005943220647148">ಸೆಲ್ಸಿಯಸ್</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್ ಟಾಗಲ್</translation>
 <translation id="2240366984605217732">ಲೇಔಟ್ ಸ್ವಿಚ್</translation>
 <translation id="225692081236532131">ಸಕ್ರಿಯ ಸ್ಥಿತಿ</translation>
 <translation id="2287186687001756809">ಯಾವುದೇ ಚಿತ್ರ ಲಭ್ಯವಿಲ್ಲ. ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು, <ph name="LINK" /> ಗೆ ಹೋಗಿ</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ...</translation>
 <translation id="2584559707064218956">ಸೆಟಪ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
-<translation id="2585245331261708204">Chrome OS ನಲ್ಲಿ ಹೊಸದೇನಿದೆ</translation>
 <translation id="2619761439309613843">ಪ್ರತಿದಿನವು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="2620436844016719705">ಸಿಸ್ಟಂ</translation>
 <translation id="2640549051766135490">ಆಲ್ಬಮ್ <ph name="TITLE" /> <ph name="DESC" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">ಪೋಷಕ ಪ್ರವೇಶ ಬಟನ್‌</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="4744944742468440486">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ</translation>
-<translation id="475869545581454722">Chrome OS ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4773299976671772492">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="4782311465517282004">ನೀವು ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಅಥವಾ ಪಠ್ಯವನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿದಾಗ ವಿವರಣೆಗಳು, ಅನುವಾದಗಳು ಅಥವಾ ಯೂನಿಟ್ ಪರಿವರ್ತನೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ಫೋಟೋ</translation>
@@ -628,6 +627,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ಸ್ವಯಂಚಾಲಿತ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
+<translation id="8045012663542226664">ಮೈಕ್ರೊಫೋನ್‌ ಮ್ಯೂಟ್ ಕೀ</translation>
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="8082366717211101304">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
@@ -738,6 +738,7 @@
 <translation id="917720651393141712">ಪರೀಕ್ಷೆ</translation>
 <translation id="9204237731135241582">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ಗೇಟ್‌ವೇ ಅನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="9211490828691860325">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳು</translation>
+<translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="960719561871045870">ಆಪರೇಟರ್ ಕೋಡ್</translation>

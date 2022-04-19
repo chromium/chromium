@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chrome ແລະ ແອັບອື່ນຂອງ Google ໃນອຸປະກອນນີ້.</translation>
 <translation id="1968388653333775699">ເຮັດໃຫ້ແລ້ວໄດ້ຫຼາຍຂຶ້ນກັບ Chrome</translation>
 <translation id="2009224836393115614">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
+<translation id="2056123005618757196">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Google Chrome ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
 <translation id="2147651015520127414">Chrome ກວດ​ສອບ​ວ່າ <ph name="ISSUER" /> ​ໄດ້​ອອກ​ໃບ​ຢັ້ງຢືນ​ຂອງ​ເວັບ​ໄຊ​ນີ້.</translation>
 <translation id="2199719347983604670">ຂໍ້ມູນຈາກ Chrome sync</translation>
 <translation id="2313070403598893276">Google Chrome ແມ່ນໃຊ້ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ຖອນ​ຕິດ​ຕັ້ງ​.</translation>
 <translation id="4633328489441962921">Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="4698415050768537821">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chrome ຈະສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">ບໍ່ຮອງຮັບໃນ Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="5108659628347594808">ເຮັດໃຫ້ Chrome ດີຂຶ້ນ</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">ປ່ຽນເປັນ Chrome</translation>
 <translation id="6238746320622508509">ອະນຸຍາດໃຫ້ Chrome ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="6387994324662817823">ລະຫັດຜ່ານແມ່ນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
+<translation id="6412673304250309937">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ເກັບໄວ້ໃນ Chrome. ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="6427126399757991875">ອົງການຂອງທ່ານກຳລັງຕັ້ງຄ່າ Chrome...</translation>
 <translation id="6600954340915313787">ອັດ​ສຳ​ເນົາ​ໃສ່ Chrome ແລ້ວ</translation>
 <translation id="6634107063912726160">ເມື່ອທ່ານອອກຈາກລະບົບ, Chrome ຈະບໍ່ຊິ້ງຂໍ້ມູນໃໝ່ໃດໆກັບບັນຊີ Google ຂອງທ່ານ. ຂໍ້ມູນທີ່ຊິ້ງໄວ້ກ່ອນໜ້າຈະຍັງຢູ່ໃນບັນຊີ.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Google Chrome</translation>
 <translation id="8772179140489533211">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chrome.</translation>
 <translation id="8788269841521769222">ທ່ານບໍ່ຈຳເປັນຕ້ອງຈື່ລະຫັດຜ່ານນີ້. ມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">ເມື່ອເປີດ:
+<ph name="BEGIN_INDENT" />  • ຊ່ວຍເຮັດໃຫ້ Chrome ດີຂຶ້ນສຳລັບຄົນທີ່ໃຊ້ມັນໃນແບບທີ່ທ່ານໃຊ້.<ph name="END_INDENT" />
+
+ສິ່ງທີ່ຕ້ອງພິຈາລະນາ:
+<ph name="BEGIN_INDENT" />  • ຂໍ້ມູນແມ່ນສົ່ງໄປໃຫ້ Google ກ່ຽວກັບການໃຊ້ Chrome ຂອງທ່ານ, ແຕ່ມັນບໍ່ຖືກຜູກມັດຫາທ່ານ.
+
+  • ຫາກ Chrome ຫຼົ້ມ, ລາຍລະອຽດກ່ຽວກັບການຫຼົ້ມອາດຮວມມີຂໍ້ມູນສ່ວນຕົວບາງຢ່າງ.
+
+  • ຫາກທ່ານເປີດໃຊ້ການຊິ້ງຂໍ້ມູນ, ການວັດແທກອາດຮວມມີຂໍ້ມູນກ່ຽວກັບ URL ທີ່ທ່ານເຂົ້າເບິ່ງນຳ.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="9122931302567044771">ນີ້ໝາຍຄວາມວ່າ Chrome ຈະຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ.</translation>
 </translationbundle>

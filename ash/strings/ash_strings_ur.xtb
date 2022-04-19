@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">‏آپ کی USB-C کیبل Thunderbolt کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
 <translation id="211328683600082144">مائیکروفون آن کریں</translation>
+<translation id="2123115117533398272">‏ChromeOS نیا مواد دریافت کرنے کیلئے تجاویز دکھاتا ہے۔ یہ کوالٹی کو بہتر بنانے کے لیے اعداد و شمار صرف تب بھیجتا ہے جب آپ نے استعمال کے ڈیٹا کا اشتراک کرنے کو منتخب کیا ہو۔ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
 <translation id="2127372758936585790">کم پاور والا چارجر</translation>
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
 <translation id="263399434338050016">"تمام منتخب کریں"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ونڈو کیپچر</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2658778018866295321">کلک کریں اور گھسیٹیں</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">منسلک ہے</translation>
 <translation id="3378442621503952303">پروفائل سے منسلک ہو رہا ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="3386978599540877378">پوری اسکرین کا مکبّر</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">اضافی ترتیبات</translation>
 <translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
@@ -523,6 +526,7 @@
 <translation id="4095366824370681039">انک قلم</translation>
 <translation id="4112140312785995938">پیچھے کریں</translation>
 <translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
+<translation id="4115378294792113321">میجنٹا</translation>
 <translation id="412298498316631026">ونڈو</translation>
 <translation id="4123259114412175274">‏اپنے Chromebook کو غیر مقفل کرنے کے لے یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے</translation>
 <translation id="4129129681837227511">اپنی مقفل اسکرین پر اطلاعات دیکھنے کیلئے، ترتیب تبدیل کرنے کیلئے غیر مقفل کریں</translation>
@@ -562,7 +566,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">آپ نے اعلی تناسب امتزاج کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="4322742403972824594">‏Ctrl + Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Home کلید کا استعمال کرنے کیلئے، <ph name="LAUNCHER_KEY_NAME" /> کلید + 'بائیں تیر کا نشان' کو دبائیں۔</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">‏متعدد صارفین کے سائن ان کرنے پر Lacros تعاون یافتہ نہیں ہے۔</translation>
 <translation id="4338109981321384717">میگنفائنگ گلاس</translation>
 <translation id="4351433414020964307">اسسٹنٹ لوڈ ہو رہا ہے...</translation>
@@ -795,7 +798,6 @@
 <translation id="5788127256798019331">‏Play فائلز</translation>
 <translation id="5790085346892983794">کامیاب</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> کو فعال کرنے کیلئے کلک کریں</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
@@ -1146,7 +1148,6 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> اور <ph name="SECOND_PARENT_EMAIL" /> کے زیر نظم اکاؤنٹ</translation>
 <translation id="793716872548410480">‏اپنا کلپ بورڈ دیکھنے کے لئے ‎<ph name="SHORTCUT_KEY_NAME" /> +‎ ‎V کو دبائیں۔ آپ کے کاپی کردہ آخری 5 آئٹمز کو آپ کے کلپ بورڈ میں محفوظ کیا گیا ہے۔</translation>
 <translation id="7942349550061667556">سرخ</translation>
-<translation id="7952747673138230804">‏Chrome OS نیا مواد دریافت کرنے کیلئے تجاویز دکھاتا ہے۔ یہ کوالٹی کو بہتر بنانے کے لیے اعداد و شمار صرف تب بھیجتا ہے جب آپ نے استعمال کے ڈیٹا کا اشتراک کرنے کو منتخب کیا ہو۔ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">اعلی تناسب امتزاج وضع</translation>
 <translation id="7968693143708939792">فولڈر منتخب کریں...</translation>
 <translation id="7977927628060636163">موبائل نیٹ ورکس کو تلاش کیا جا رہا ہے…</translation>

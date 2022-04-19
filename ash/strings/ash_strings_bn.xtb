@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">যে সমস্ত পেনে কালি ভরে ব্যবহার করা হয়</translation>
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
 <translation id="4114315158543974537">'ফোন হাব' ফিচার চালু করুন</translation>
+<translation id="4115378294792113321">ম্যাজেন্টা</translation>
 <translation id="412298498316631026">উইন্ডো</translation>
 <translation id="4123259114412175274">আপনার Chromebook আনলক করতে, ফোনের ব্লুটুথ চালু আছে কিনা তা দেখে নিন</translation>
 <translation id="4129129681837227511">আপনার লক স্ক্রিনে বিজ্ঞপ্তি দেখার জন্য সেটিংস পরিবর্তন করতে আনলক করুন</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">উচ্চ কনট্রাস্টের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Home কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Left Arrow কী প্রেস করুন।</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">একাধিক ব্যবহারকারী সাইন-ইন করে থাকাকালীন, Lacros কাজ করে না।</translation>
 <translation id="4338109981321384717">আতস কাচ</translation>
 <translation id="4351433414020964307">সহায়ক লোড হচ্ছে...</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">Play ফাইল</translation>
 <translation id="5790085346892983794">সফল</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> চালু করতে ক্লিক করুন</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">কানেক্ট করা ডিভাইসের সেটিংস</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /> বন্ধ করুন</translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>
 <translation id="7942349550061667556">লাল</translation>
-<translation id="7952747673138230804">Chrome OS নতুন কন্টেন্ট দেখার সাজেশন দেয়। আপনি ব্যবহারের ডেটা শেয়ার করার বিকল্প বেছে নিলে তবেই এটি সাজেশন আরও উন্নত করার উদ্দেশ্যে পরিসংখ্যান পাঠায়। <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">হাই-কনট্রাস্ট মোড</translation>
 <translation id="7968693143708939792">ফোল্ডার বেছে নিন...</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>

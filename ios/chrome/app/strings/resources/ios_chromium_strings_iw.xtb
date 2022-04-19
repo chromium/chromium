@@ -27,6 +27,7 @@
 <translation id="2195025571279539885">‏רוצה ש-Chromium יציע בפעם הבאה לתרגם דפים ב<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
 <translation id="2218146227246548550">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chromium. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">‏כלומר, Chromium תמיד יבקש את האתר למחשב.</translation>
+<translation id="2313870531055795960">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium. אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים.</translation>
 <translation id="2426113998523353159">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chromium.</translation>
 <translation id="2450140762465183767">‏עכשיו משתמשים ב-Chromium בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="2478931088402984578">‏בוחרים באפשרות<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
@@ -49,11 +50,13 @@
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">‏אפשר עכשיו להשתמש ב-Chromium בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
+<translation id="4654936625574199632">‏כדי לעזור בשיפור האפליקציה, Chromium ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏הפעלת הסורק של Chromium</translation>
 <translation id="4736424910885271643">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים שלך מ-Chromium יימחקו מהמכשיר הזה</translation>
 <translation id="4806326830773390517">‏רוצה לעזור לנו לשפר את Chromium? צריך פשוט לשלוח אל Google סטטיסטיקות שימוש ודוחות קריסה</translation>
 <translation id="4828317641996116749">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
+<translation id="4996471330284142407">‏Chromium מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
 <translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="5171868502429358653">‏כניסה אל Chromium</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
@@ -111,6 +114,15 @@
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="865600487977764604">‏מגן עליך ב‑Chromium ועשוי לשפר את רמת האבטחה באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="8663480472502753423">‏Chromium יתעדכן באופן קבוע</translation>
+<translation id="8747378496147986285">‏כשהאפשרות פועלת:
+<ph name="BEGIN_INDENT" />  • עוזרים לשפר את Chromium אצל אנשים שמשתמשים בדפדפן בצורה דומה.<ph name="END_INDENT" />
+
+דברים שחשוב להביא בחשבון:
+<ph name="BEGIN_INDENT" />  • מידע לגבי השימוש שלך ב‑Chromium יישלח אל Google, אבל לא יקושר אליך.
+
+  • אם Chromium קורס, הפרטים על הקריסה עשויים לכלול גם פרטים אישיים מסוימים.
+
+  • אם הסנכרון מופעל, המדדים עשויים לכלול גם פרטים לגבי כתובות URL שביקרת בהן.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chromium.</translation>
 <translation id="894437814105052438">‏לאחר היציאה מהחשבון, לא יתבצע סנכרון של נתונים חדשים מ-Chromium בחשבון Google שלך. נתונים שסונכרנו בעבר יישארו בחשבון.</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>

@@ -359,6 +359,7 @@ Volg die stappe hieronder:</translation>
 <translation id="4049507953662678203">Maak seker jy het 'n netwerkverbinding en probeer weer.</translation>
 <translation id="4063300985191096908">Gaan na Stroom toe</translation>
 <translation id="408404951701638773">Soekbalk kan nou makliker bereik word</translation>
+<translation id="4108998448622696017">Bespeur en waarsku jou oor gevaarlike gevalle wanneer hulle plaasvind.</translation>
 <translation id="411254640334432676">Kon nie aflaai nie.</translation>
 <translation id="4112644173421521737">Soek</translation>
 <translation id="4113030288477039509">Deur jou administrateur bestuur</translation>
@@ -609,6 +610,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6232736989810857397">Dit maak dit vir jou moontlik om Google Lens te gebruik om kalendergeleenthede maklik te skep.</translation>
 <translation id="6254066287920239840">Maak skakels in die program oop, in plaas van die blaaier.</translation>
 <translation id="6255097610484507482">Wysig kredietkaart</translation>
+<translation id="6277426346321820595">Geen beskerming nie</translation>
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
 <translation id="6289501276895392862">Het <ph name="CHANNEL_NAME" /> ontvolg</translation>
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
@@ -786,6 +788,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7671141431838911305">INSTALLEER</translation>
+<translation id="7687508192620387263">Kalenderlêer is beskikbaar</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7720410380936703141">PROBEER WEER</translation>
 <translation id="7726702057919861819">Kieslys → Geskiedenis → Vee blaaierdata uit</translation>
@@ -807,6 +810,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7884694604461143138">Soekgeskiedenis (<ph name="COUNT" /> gevind)</translation>
 <translation id="7887198238286927132">Om jou privaatheid te beskerm, sal Chrome nie hierdie veld outomaties invul nie.</translation>
 <translation id="7911190106180361398">Jou organisasie laat jou nie toe om alles te sinkroniseer nie.</translation>
+<translation id="7920949005883349320">Privaatheid en sekuriteit</translation>
 <translation id="7930998711684428189">Waarsku jou as wagwoorde in 'n dataskending blootgestel is.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Voer wagwoorde uit …</translation>
@@ -964,4 +968,5 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="988141524645182168">Ander toestelle</translation>
 <translation id="989988560359834682">Wysig adres</translation>
 <translation id="994757059139821576">Artikelvoorstelle</translation>
+<translation id="997742718232442409">Hierdie webwerf probeer tans om ’n kalenderlêer af te laai.</translation>
 </translationbundle>

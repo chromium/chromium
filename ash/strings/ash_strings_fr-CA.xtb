@@ -87,6 +87,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1351937230027495976">Réduire le menu</translation>
 <translation id="1364382257761975320">Utilisez votre empreinte digitale pour déverrouiller votre Chromebook</translation>
 <translation id="1364618750746929654">Impossible de générer une transcription</translation>
+<translation id="1372545819342940910">Enregistrer le bureau pour plus tard</translation>
 <translation id="1383597849754832576">Impossible de télécharger les fichiers de synthèse textuelle. Réessayez plus tard.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1391102559483454063">Activé</translation>
@@ -522,6 +523,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4095366824370681039">Stylo</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">Fenêtre</translation>
 <translation id="4123259114412175274">Pour déverrouiller votre Chromebook, assurez-vous que le Bluetooth de votre téléphone est activé</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
@@ -561,7 +563,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Vous avez appuyé sur le raccourci-clavier de contraste élevé. Voulez-vous l'activer?</translation>
 <translation id="4322742403972824594">Le raccourci-clavier Ctrl+Alt+flèche vers le haut a changé. Pour utiliser la touche Début, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la gauche.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
 <translation id="4351433414020964307">L'Assistant Google est en cours de chargement…</translation>
@@ -794,7 +795,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5788127256798019331">Fichiers Google Play</translation>
 <translation id="5790085346892983794">Opération réussie</translation>
 <translation id="5805809050170488595">Cliquez pour activer <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1146,6 @@ Nouvelle installation</translation>
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le contenu du presse-papiers. Les cinq derniers éléments que vous avez copiés sont enregistrés dans le presse-papiers.</translation>
 <translation id="7942349550061667556">Rouge</translation>
-<translation id="7952747673138230804">Chrome OS affiche des suggestions de nouveau contenu à explorer. Envoie des statistiques afin d'améliorer la qualité seulement si vous avez choisi de partager les données d'utilisation. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Mode de contraste élevé</translation>
 <translation id="7968693143708939792">Sélectionner le dossier…</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles en cours...</translation>

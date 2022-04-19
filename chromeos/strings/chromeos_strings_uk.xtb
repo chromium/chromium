@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
 <translation id="1908234395526491708">Не виконано запити за протоколом UDP</translation>
-<translation id="1930797645656624981">Сервіс методів введення в ОС Chrome</translation>
 <translation id="1947737735496445907">Надруковано</translation>
 <translation id="1951012854035635156">Асистент</translation>
+<translation id="1977994649430373166">Фотографія профілю Google</translation>
 <translation id="1979103255016296513">Час для зміни пароля минув</translation>
 <translation id="1999615961760456652">Адаптивний портал</translation>
 <translation id="2006864819935886708">Підключення</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Потрібно вибрати принаймні один альбом із мистецької галереї</translation>
 <translation id="2230005943220647148">Градуси Цельсія</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Перемикач підсвічування клавіатури</translation>
 <translation id="2240366984605217732">Перемикач розкладки клавіатури</translation>
 <translation id="225692081236532131">Статус активації</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Не вдається підключитися до мережі.</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
 <translation id="2584559707064218956">Щоб вибрати параметри, перейдіть у налаштування</translation>
-<translation id="2585245331261708204">Нові функції ОС Chrome</translation>
 <translation id="2619761439309613843">Щоденне оновлення</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2640549051766135490">Вибрано альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="473775607612524610">Оновити</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
-<translation id="475869545581454722">Пароль ОС Chrome оновлено</translation>
 <translation id="4773299976671772492">Зупинено</translation>
 <translation id="4782311465517282004">Щоб дізнатися визначення слова, перекласти його або конвертувати одиницю, натисніть правою кнопкою миші або натисніть і втримуйте потрібний текст</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Увімкнути режим автоматичного вибору кольору</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
+<translation id="8045012663542226664">Вимкнення звуку мікрофона</translation>
 <translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">Перевірити</translation>
 <translation id="9204237731135241582">Не вдається зв’язатися зі шлюзом із додатків для Android</translation>
 <translation id="9211490828691860325">Усі робочі столи</translation>
+<translation id="932327136139879170">Домашня сторінка</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не активовано</translation>
 <translation id="960719561871045870">Код оператора</translation>

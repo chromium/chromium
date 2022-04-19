@@ -87,6 +87,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1351937230027495976">Skjul menu</translation>
 <translation id="1364382257761975320">Hvis du vil låse din Chromebook op, skal du bruge dit fingeraftryk</translation>
 <translation id="1364618750746929654">Transskriptionen kunne ikke genereres</translation>
+<translation id="1372545819342940910">Gem skrivebord til senere</translation>
 <translation id="1383597849754832576">Talefilerne kan ikke downloades. Prøv igen senere.</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1391102559483454063">Til</translation>
@@ -522,6 +523,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4095366824370681039">Tuschpen</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
 <translation id="4114315158543974537">Aktivér Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">vindue</translation>
 <translation id="4123259114412175274">Bluetooth skal aktiveres, før du kan låse din Chromebook op</translation>
 <translation id="4129129681837227511">Du kan se notifikationer på din låseskærm ved at låse skærmen op og ændre indstillingen</translation>
@@ -561,7 +563,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykkede på tastaturgenvejen for høj kontrast. Vil du aktivere indstillingen?</translation>
 <translation id="4322742403972824594">Tastaturgenvejen Ctrl+Alt+pil op er blevet ændret. Hvis du vil bruge Home-tasten, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+venstrepil.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros understøttes ikke, når flere brugere er logget ind.</translation>
 <translation id="4338109981321384717">Lup</translation>
 <translation id="4351433414020964307">Assistenten indlæses...</translation>
@@ -794,7 +795,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5790085346892983794">Fuldført</translation>
 <translation id="5805809050170488595">Klik for at aktivere <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Indstillinger for tilsluttede enheder</translation>
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1146,6 @@ Installeret for nylig</translation>
 <translation id="79341161159229895">Kontoen administreres af <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tryk på <ph name="SHORTCUT_KEY_NAME" />+V for at se din udklipsholder. De seneste fem elementer, du har kopieret, gemmes i din udklipsholder.</translation>
 <translation id="7942349550061667556">Rød</translation>
-<translation id="7952747673138230804">Chrome OS viser forslag til nyt indhold, du kan tjekke ud. Der sendes kun statistik til forbedring af forslag, hvis du har valgt at dele dine brugsdata. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Tilstanden Høj kontrast</translation>
 <translation id="7968693143708939792">Vælg mappe...</translation>
 <translation id="7977927628060636163">Søger efter mobilnetværk...</translation>

@@ -27,6 +27,7 @@
 <translation id="2195025571279539885">Ydych chi am i Chromium gynnig cyfieithu tudalennau <ph name="LANGUAGE_NAME" /> o'r wefan hon y tro nesaf?</translation>
 <translation id="2218146227246548550">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chromium. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">Mae hyn yn golygu y bydd Chromium yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
+<translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="2426113998523353159">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chromium.</translation>
 <translation id="2450140762465183767">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="2478931088402984578">Dewiswch <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -49,11 +50,13 @@
 <translation id="4099085513035183040">Ni chefnogir ar Feta Chromium</translation>
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
+<translation id="4654936625574199632">Er mwyn helpu i wella'r ap, mae Chrome yn anfon adroddiadau defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Troi sganydd Chromium ymlaen</translation>
 <translation id="4736424910885271643">Mae'ch cyfrif yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, felly bydd eich data Chromium yn cael eu clirio o'r ddyfais hon</translation>
 <translation id="4806326830773390517">Helpu i wella Chromium drwy anfon ystadegau defnydd ac adroddiadau toriadau at Google</translation>
 <translation id="4828317641996116749">Nid oedd modd i Chromium wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="4985291216379576555">All-lein, ni all Chromuim wirio am ddiweddariadau</translation>
+<translation id="4996471330284142407">Gwneud rhagor â Chromium syml, diogel a chyflymach nag erioed.</translation>
 <translation id="4999538639245140991">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chromium yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
 <translation id="5171868502429358653">Mewngofnodi i Chromium</translation>
 <translation id="5224391634244552924">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
@@ -111,6 +114,15 @@
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
 <translation id="865600487977764604">Yn eich cadw'n ddiogel ar Chromium a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>
 <translation id="8663480472502753423">Cadwch Chromium yn gyfredol</translation>
+<translation id="8747378496147986285">Pan fydd ymlaen:
+<ph name="BEGIN_INDENT" />  • Helpwch i wneud Chromium yn well i bobl sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
+
+Pethau i'w hystyried:
+<ph name="BEGIN_INDENT" />  • Anfonir gwybodaeth at Google am eich defnydd Chromium, ond nid yw'n gysylltiedig â chi.
+
+  • Os bydd Chromium yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol.
+
+  • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chromium.</translation>
 <translation id="894437814105052438">Pan fyddwch yn allgofnodi, ni fydd Chromium yn cysoni unrhyw ddata newydd i'ch Cyfrif Google. Mae data sydd wedi'u cysoni yn flaenorol yn aros yn y cyfrif.</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>

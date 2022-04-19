@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="1968388653333775699">Gagnez en efficacité avec Chrome</translation>
 <translation id="2009224836393115614">Chrome n'est pas parvenu à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
+<translation id="2056123005618757196">Soyez plus efficace grâce à Google Chrome, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="2147651015520127414">Chrome a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Données de la synchronisation Chrome</translation>
 <translation id="2313070403598893276">Google Chrome est simple, sécurisé et ultra rapide</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez les désinstaller.</translation>
 <translation id="4633328489441962921">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="4698415050768537821">Chrome n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Pour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Non disponible dans la version bêta de Chrome</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="5108659628347594808">Améliorer Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe Google uniquement sur cet appareil.</translation>
+<translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="6427126399757991875">Votre organisation configure Chrome…</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="6634107063912726160">Lorsque vous vous déconnectez, Chrome cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Restez protégé avec Google Chrome</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Si l'option est activée :
+<ph name="BEGIN_INDENT" />  • Vous contribuez à améliorer Chrome pour les personnes qui l'utilisent comme vous.<ph name="END_INDENT" />
+
+Éléments à prendre en compte :
+<ph name="BEGIN_INDENT" />  • Des infos sur l'utilisation de Chrome, mais qui ne sont pas rattachées à vous, sont transmises à Google.
+
+  • Si Chrome plante, les détails sur ce plantage peuvent contenir des infos personnelles.
+
+  • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Utiliser Chrome par défaut ?</translation>
 <translation id="9122931302567044771">Cela signifie que Chrome demandera la version pour ordinateur à chaque fois.</translation>
 </translationbundle>

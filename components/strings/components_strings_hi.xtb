@@ -100,7 +100,6 @@
 <translation id="124116460088058876">ज़्यादा भाषाएं</translation>
 <translation id="1243027604378859286">लेखक:</translation>
 <translation id="1246424317317450637">बोल्ड टेक्स्ट</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1250759482327835220">अगली बार तेज़ी से भुगतान करने के लिए, अपने कार्ड, नाम और बिलिंग पते को अपने 'Google खाते' में सेव करें.</translation>
 <translation id="1252799212227771492">शीट बनाने के लिए बटन, जल्दी से नई Google शीट बनाने के लिए Enter दबाएं</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक किए गए)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">और दिखाएं</translation>
 <translation id="132390688737681464">पतों की जानकारी सेव करें और फ़ॉर्म में भरें</translation>
 <translation id="1330449323196174374">बांया गेट फ़ोल्ड</translation>
+<translation id="1333745675627230582">Chrome Dino गेम खेलें</translation>
 <translation id="1333989956347591814">आपकी गतिविधि इन्हें <ph name="BEGIN_EMPHASIS" />अब भी दिखाई दे सकती है<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />जिन वेबसाइट पर आप जाते हैं
@@ -303,7 +303,7 @@
 <translation id="1711528724596764268">मशीन लर्निंग और आर्टिफ़िशियल इंटेलिजेंस</translation>
 <translation id="1712552549805331520"><ph name="URL" /> आपके स्थानीय कंप्यूटर पर हमेशा के लिए डेटा संग्रहित करना चाहता है</translation>
 <translation id="1713628304598226412">ट्रे 2</translation>
-<translation id="1715874602234207">एफ़</translation>
+<translation id="1715874602234207">शुक्र</translation>
 <translation id="1717218214683051432">मोशन सेंसर</translation>
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
 <translation id="1718029547804390981">एनोटेट करने के लिए दस्तावेज़ बहुत बड़ा है</translation>
@@ -384,7 +384,6 @@
 <translation id="1919345977826869612">विज्ञापन</translation>
 <translation id="1919367280705858090">गड़बड़ी के किसी खास मैसेज से मदद पाना</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{कुछ नहीं}=1{1 साइट}one{# साइट}other{# साइट}}</translation>
-<translation id="1923390796829649802">सुलभता सेटिंग के बटन को मैनेज करें, Chrome OS की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, Enter दबाएं</translation>
 <translation id="1924727005275031552">नया</translation>
 <translation id="1927439593081478069">'Chrome की सुरक्षा जांच करें' बटन. Chrome की सेटिंग में, सुरक्षा जांच करने के लिए Enter दबाएं</translation>
 <translation id="1939175642807587452">साइट, सूचनाएं भेजने की अनुमति मांग सकती है</translation>
@@ -643,7 +642,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2650446666397867134">फ़ाइल को एक्सेस नहीं दिया गया था</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
-<translation id="2659491813326907275">Chrome OS की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
 <translation id="2660779039299703961">इवेंट</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -747,6 +745,7 @@
 <translation id="2972581237482394796">&amp;फिर से करें</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, इस समय चुना गया है. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ऑपरा</translation>
+<translation id="2983666748527428214">गुप्त टैब खोलें</translation>
 <translation id="2985306909656435243">अगर सक्षम किया गया हो, तो ज़्यादा तेज़ी से फ़ॉर्म भरने के लिए क्रोमियम इस डिवाइस पर आपके कार्ड की एक कॉपी संग्रहित करेगा.</translation>
 <translation id="2985398929374701810">मान्य पता डालें</translation>
 <translation id="2986368408720340940">पिकअप का यह तरीका उपलब्ध नहीं है. कोई दूसरा तरीका आज़माएं.</translation>
@@ -859,6 +858,7 @@
 <translation id="3295444047715739395">Chrome की सेटिंग में अपने पासवर्ड देखें और प्रबंधित करें</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
 <translation id="3304073249511302126">ब्लूटूथ स्कैन किया जा रहा है</translation>
+<translation id="33073482541490531">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप तुरंत इस पासवर्ड को बदलें.</translation>
 <translation id="3308006649705061278">संगठनात्मक इकाई (OU)</translation>
 <translation id="3308738399950580893">विज्ञापन</translation>
 <translation id="3320021301628644560">बिलिंग पता जोड़ें</translation>
@@ -993,6 +993,7 @@
 <translation id="3658742229777143148">पुनरीक्षण</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3667704023705708645">वेंचर कैपिटल</translation>
+<translation id="367108335512738711">Chrome के बुकमार्क</translation>
 <translation id="3671540257457995106">डिसप्ले का साइज़ बदलना चाहते हैं?</translation>
 <translation id="3675563144891642599">तीसरा रोल</translation>
 <translation id="3676592649209844519">डिवाइस आईडी:</translation>
@@ -1489,6 +1490,7 @@
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
 <translation id="5043480802608081735">आपका कॉपी किया हुआ लिंक</translation>
+<translation id="5044545992476246592">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google Assistant, आपका पासवर्ड अपने-आप बदल सकती है.</translation>
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
 <translation id="5051305769747448211">लाइव कॉमेडी</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}one{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}other{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इन फ़ाइलों को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}}</translation>
@@ -1501,6 +1503,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />प्रॉक्सी पते की जाँच करें<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">दसवां रोल</translation>
 <translation id="507130231501693183">मेलबॉक्स 4</translation>
+<translation id="5078060223219502807">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप तुरंत इस पासवर्ड को बदलें. इसके बाद, सेव किए गए पासवर्ड की जांच करें. इस तरह, आपके खाते सुरक्षित रहेंगे.</translation>
 <translation id="5086225927071063542">डिस्ट्रिब्यूटेड और क्लाउड कंप्यूटिंग</translation>
 <translation id="5087286274860437796">सर्वर का प्रमाण पत्र इस समय मान्य नहीं है.</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
@@ -1512,6 +1515,7 @@
 <translation id="5097099694988056070">डिवाइस के आंकड़े जैसे कि सीपीयू (CPU)/RAM का इस्तेमाल</translation>
 <translation id="5097501891273180634">ए2</translation>
 <translation id="5108881358339761672">साइट सुरक्षित नहीं है</translation>
+<translation id="5109892411553231226">पैसे चुकाने के तरीके मैनेज करें</translation>
 <translation id="5112422516732747637">ए5</translation>
 <translation id="5114288597538800140">ट्रे 18</translation>
 <translation id="5114987907971894280">वर्चुअल रियलिटी</translation>
@@ -1759,6 +1763,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">क्या आप अपनी <ph name="CARD_DETAIL" /> भरना चाहते हैं?</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
+<translation id="5808435672482059465">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="5808542072418270309">सिम्युलेशन वाले गेम</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी पुराने सिफ़र सुइट का उपयोग करके सुरक्षित किया गया है.</translation>
 <translation id="5812947184178430888">जब Chrome, सुरक्षा से जुड़ी गतिविधियों के बारे में फ़्लैग करता है, तो इवेंट से जुड़ा काम का डेटा आपके एडमिन को भेजा जाता है. इसमें उन पेजों के यूआरएल, फ़ाइल के नाम या मेटाडेटा शामिल हो सकते हैं जिन पर आप Chrome का इस्तेमाल करते हुए जाते हैं. साथ ही, वह उपयोगकर्ता नाम शामिल हो सकता है जिसका इस्तेमाल आप वेब पर आधारित ऐप्लिकेशन, अपने डिवाइस, और Chrome में साइन इन करने के लिए करते हैं.</translation>
@@ -2015,6 +2020,7 @@
 <translation id="6579630537141957243">क्या आप एमआईडीआई डिवाइस को कनेक्ट करना चाहते हैं?</translation>
 <translation id="6579990219486187401">हल्का गुलाबी रंग</translation>
 <translation id="6583674473685352014">बी6 (एन्वेलप)</translation>
+<translation id="6585526963651937128">Chrome इतिहास</translation>
 <translation id="6587182488465657433">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. आपके खातों को सुरक्षित रखने के लिए, हमारा सुझाव है कि आप इस पासवर्ड को अभी बदल दें. साथ ही, अपने सेव किए गए अन्य पासवर्ड की जांच करें.</translation>
 <translation id="6587923378399804057">आपका कॉपी किया हुआ लिंक</translation>
 <translation id="6591833882275308647">आपका <ph name="DEVICE_TYPE" /> प्रबंधित नहीं किया जाता</translation>
@@ -2123,6 +2129,7 @@
 <translation id="691024665142758461">एकाधिक फ़ाइलें डाउनलोड करें</translation>
 <translation id="6915804003454593391">उपयोगकर्ता:</translation>
 <translation id="6916954549222464607">फ़ाइनेंशियल प्लानिंग और मैनेजमेंट</translation>
+<translation id="6917795328362592458">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें. इस तरह, आपके खाते सुरक्षित रहेंगे.</translation>
 <translation id="6934672428414710184">यह नाम आपके Google खाते से है</translation>
 <translation id="6939469646605424232">टीवी ड्रामा</translation>
 <translation id="6944692733090228304">आपने एक ऐसी साइट पर अपना पासवर्ड डाला है जिसे <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> प्रबंधित नहीं करता है. अपने खाते को सुरक्षित रखने के लिए, दूसरे ऐप्लिकेशन और साइटों पर अपने पासवर्ड का दोबारा इस्तेमाल न करें.</translation>
@@ -2800,6 +2807,7 @@
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री को अनदेखा किया गया क्योंकि इसे SpellcheckLanguage नीति में भी शामिल किया गया है.</translation>
 <translation id="8806285662264631610">नहाने और शरीर की देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="8807160976559152894">हर एक पेज के बाद ट्रिम करें</translation>
+<translation id="8808828119384186784">Chrome की सेटिंग</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="882338992931677877">मैन्युअल स्लॉट</translation>

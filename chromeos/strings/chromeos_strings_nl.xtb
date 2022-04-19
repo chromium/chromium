@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
-<translation id="1930797645656624981">Invoermethodeservice voor Chrome OS</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1977994649430373166">Google-profielfoto</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectiviteit</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Er moet minimaal één album uit de kunstgalerie worden geselecteerd</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Schakelaar voor achtergrondverlichting toetsenbord</translation>
 <translation id="2240366984605217732">Indelingsschakelaar</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Kan geen verbinding met internet maken.</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
-<translation id="2585245331261708204">Nieuw bij Chrome OS</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2640549051766135490">Album geselecteerd: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
-<translation id="475869545581454722">Wachtwoord voor Chrome OS geüpdatet</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto('s)</translation>
@@ -629,6 +628,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Modus voor automatische kleuren aanzetten</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
+<translation id="8045012663542226664">Microfoon dempen</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
@@ -739,6 +739,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Kan geen verbinding maken met de gateway vanuit Android-apps</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>
+<translation id="932327136139879170">Homepage</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>
 <translation id="960719561871045870">Operatorcode</translation>

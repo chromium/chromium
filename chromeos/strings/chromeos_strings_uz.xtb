@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Qurilma versiyasi</translation>
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
 <translation id="1908234395526491708">Bajarilmagan UDP soʻrovlari</translation>
-<translation id="1930797645656624981">Chrome OS matn kiritish xizmati</translation>
 <translation id="1947737735496445907">Chop etildi</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1977994649430373166">Google profil surati</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
 <translation id="1999615961760456652">Kirish portali</translation>
 <translation id="2006864819935886708">Ulanish</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Kamida bitta fotoalbom tanlanishi kerak</translation>
 <translation id="2230005943220647148">Selsiy</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Klaviatura orqa chirogʻini yoqish/oʻchirish</translation>
 <translation id="2240366984605217732">Sxemani almashtirish</translation>
 <translation id="225692081236532131">Aktivatsiya holati</translation>
 <translation id="2287186687001756809">Hech qanday rasm topilmadi. Suratlar kiritish uchun <ph name="LINK" /> sahifasini oching.</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Internetga ulana olmadi.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi bajarilmoqda...</translation>
 <translation id="2584559707064218956">Sozlash uchun Sozlamalarni oching</translation>
-<translation id="2585245331261708204">Yangilangan Chrome OS</translation>
 <translation id="2619761439309613843">Kundalik yangilash</translation>
 <translation id="2620436844016719705">Tizim</translation>
 <translation id="2640549051766135490">Albom: <ph name="TITLE" /> <ph name="DESC" /> tanlandi</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4744944742468440486">Tanlovga aloqador axborot</translation>
-<translation id="475869545581454722">Chrome OS paroli yangilandi</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
 <translation id="4782311465517282004">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ta rasm</translation>
@@ -629,6 +628,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Avtomatik rangli rejimni yoqish</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
+<translation id="8045012663542226664">Mikrofon oʻchiq</translation>
 <translation id="8075838845814659848">Batareya quvvati</translation>
 <translation id="8082366717211101304">Android ilovalardan DNS manzil olish imkonsiz</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
@@ -739,6 +739,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Android ilovalardan shlyuzga ulanish imkonsiz</translation>
 <translation id="9211490828691860325">Barcha ish stollari</translation>
+<translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="939519157834106403">Tarmoq nomi (SSID)</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>
 <translation id="960719561871045870">Operator kodi</translation>

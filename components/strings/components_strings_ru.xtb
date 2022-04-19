@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Полужирный</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome OS.</translation>
 <translation id="1250759482327835220">Чтобы ускорить процесс оплаты в будущем, сохраните карту, свое имя и платежный адрес в аккаунте Google.</translation>
 <translation id="1252799212227771492">Кнопка "Создать таблицу". Чтобы быстро создать таблицу Google, нажмите Ввод.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (данные синхронизируются)</translation>
@@ -303,7 +302,7 @@
 <translation id="1711528724596764268">Машинное обучение и искусственный интеллект</translation>
 <translation id="1712552549805331520">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение данных на вашем компьютере.</translation>
 <translation id="1713628304598226412">Лоток 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">П</translation>
 <translation id="1717218214683051432">Датчики движения</translation>
 <translation id="1717494416764505390">Почтовый ящик 3</translation>
 <translation id="1718029547804390981">Недоступно, так как документ слишком большой</translation>
@@ -380,7 +379,6 @@
 <translation id="1919345977826869612">Реклама</translation>
 <translation id="1919367280705858090">Как устранить определенные виды ошибок</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Нет}=1{1 сайт}one{# сайт}few{# сайта}many{# сайтов}other{# сайта}}</translation>
-<translation id="1923390796829649802">Кнопка "Открыть настройки специальных возможностей". Нажмите Ввод, чтобы открыть настройки специальных возможностей в Chrome OS.</translation>
 <translation id="1924727005275031552">Новый</translation>
 <translation id="1927439593081478069">Кнопка запуска проверки безопасности. Нажмите Ввод, чтобы запустить проверку безопасности в настройках Chrome</translation>
 <translation id="1939175642807587452">Разрешено отправлять запрос на показ уведомлений</translation>
@@ -639,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть настройки Chrome и удалить историю браузера, файлы cookie, кеш и прочее.</translation>
 <translation id="2650446666397867134">Доступ к файлу запрещен</translation>
 <translation id="2653659639078652383">Отправить</translation>
-<translation id="2659491813326907275">Персонализировать инструменты специальных возможностей в настройках Chrome OS</translation>
 <translation id="2660779039299703961">Событие</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />)}=2{2 пароля (для <ph name="DOMAIN_LIST" />)}one{# пароль (для <ph name="DOMAIN_LIST" />)}few{# пароля (для <ph name="DOMAIN_LIST" />)}many{# паролей (для <ph name="DOMAIN_LIST" />)}other{# пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Наверх</translation>
@@ -856,6 +853,7 @@
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3304073249511302126">поиск устройств Bluetooth</translation>
+<translation id="33073482541490531">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
 <translation id="3308738399950580893">Реклама</translation>
 <translation id="3320021301628644560">Добавьте платежный адрес</translation>
@@ -990,6 +988,7 @@
 <translation id="3658742229777143148">Версия</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
 <translation id="3667704023705708645">Венчурный капитал</translation>
+<translation id="367108335512738711">Закладки в Chrome</translation>
 <translation id="3671540257457995106">Разрешить изменение размера?</translation>
 <translation id="3675563144891642599">Третий рулон</translation>
 <translation id="3676592649209844519">Идентификатор устройства:</translation>
@@ -1481,6 +1480,7 @@
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="5043480802608081735">Скопированная ссылка</translation>
+<translation id="5044545992476246592">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Google Ассистент может сменить пароль автоматически.</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="5051305769747448211">Комедийные выступления</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Чтобы отправить этот файл с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}one{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}few{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}many{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}other{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}}</translation>
@@ -1493,6 +1493,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Проверьте адрес прокси-сервера<ph name="END_LINK" />.</translation>
 <translation id="5070838744279127212">Десятый рулон</translation>
 <translation id="507130231501693183">Почтовый ящик 4</translation>
+<translation id="5078060223219502807">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, измените его прямо сейчас и проверьте сохраненные пароли в Менеджере паролей.</translation>
 <translation id="5086225927071063542">Распределенные и облачные вычисления</translation>
 <translation id="5087286274860437796">Сертификат сервера не действителен в настоящее время.</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
@@ -2009,6 +2010,7 @@
 <translation id="6579630537141957243">Подключить MIDI-устройство?</translation>
 <translation id="6579990219486187401">Светло-розовый</translation>
 <translation id="6583674473685352014">B6 (конверт)</translation>
+<translation id="6585526963651937128">История Chrome</translation>
 <translation id="6587182488465657433">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, измените его прямо сейчас и проверьте надежность сохраненных паролей.</translation>
 <translation id="6587923378399804057">Скопированная ссылка</translation>
 <translation id="6591833882275308647">Это устройство <ph name="DEVICE_TYPE" /> не управляется администратором.</translation>
@@ -2117,6 +2119,7 @@
 <translation id="691024665142758461">скачивание нескольких файлов</translation>
 <translation id="6915804003454593391">Пользователь:</translation>
 <translation id="6916954549222464607">Финансовое планирование и менеджмент</translation>
+<translation id="6917795328362592458">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Менеджере паролей.</translation>
 <translation id="6934672428414710184">Это имя из вашего аккаунта Google</translation>
 <translation id="6939469646605424232">Телевизионные драмы</translation>
 <translation id="6944692733090228304">Вы ввели пароль на сайте, который не находится под управлением организации <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Чтобы защитить свой аккаунт, не используйте этот пароль для других приложений и сайтов.</translation>
@@ -2793,6 +2796,7 @@
 <translation id="8805819170075074995">Элемент списка "<ph name="LANGUAGE_ID" />": элемент проигнорирован, поскольку он уже включен в правило SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Товары для ухода за телом</translation>
 <translation id="8807160976559152894">Подрезать после каждой страницы</translation>
+<translation id="8808828119384186784">Настройки Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="882338992931677877">Слот для ручной подачи</translation>

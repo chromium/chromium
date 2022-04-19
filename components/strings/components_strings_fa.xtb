@@ -100,7 +100,6 @@
 <translation id="124116460088058876">زبان‌های بیشتر</translation>
 <translation id="1243027604378859286">نویسنده:</translation>
 <translation id="1246424317317450637">سیاه</translation>
-<translation id="1248573052514400575">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome OS، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1250759482327835220">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت، نام و نشانی صورت‌حسابتان را در حساب Google خود ذخیره کنید.</translation>
 <translation id="1252799212227771492">‏دکمه ایجاد کاربرگ؛ برای ایجاد سریع «کاربرگ‌نگار Google» جدید، کلید «ورود» را فشار دهید</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (همگام‌سازی‌شده)</translation>
@@ -303,7 +302,7 @@
 <translation id="1711528724596764268">یادگیری ماشین و هوش مصنوعی</translation>
 <translation id="1712552549805331520"><ph name="URL" /> می‌خواهد داده‌ها را برای همیشه در رایانه محلی‌تان ذخیره کند</translation>
 <translation id="1713628304598226412">سینی ۲</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">ج</translation>
 <translation id="1717218214683051432">حسگرهای حرکتی</translation>
 <translation id="1717494416764505390">صندوق پست ۳</translation>
 <translation id="1718029547804390981">این سند بسیار بزرگ است و نمی‌تواند حاشیه‌نویسی شود</translation>
@@ -384,7 +383,6 @@
 <translation id="1919345977826869612">آگهی‌ها</translation>
 <translation id="1919367280705858090">دریافت راهنمایی برای پیام خطایی خاص</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{هیچ‌کدام}=1{۱ سایت}one{# سایت}other{# سایت}}</translation>
-<translation id="1923390796829649802">‏دکمه «مدیریت تنظیمات دسترس‌پذیری»؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome OS، کلید «ورود» را فشار دهید</translation>
 <translation id="1924727005275031552">جدید</translation>
 <translation id="1927439593081478069">‏دکمه «اجرای بررسی ایمنی در Chrome»؛ برای اجرای «بررسی ایمنی» در تنظیمات Chrome، کلید «ورود» را فشار دهید</translation>
 <translation id="1939175642807587452">می‌تواند برای ارسال اعلان درخواست دهد</translation>
@@ -643,7 +641,6 @@
 <translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای پاک کردن سابقه مرور، کوکی‌ها، حافظه پنهان، و غیره در تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="2650446666397867134">دسترسی به فایل رد شد</translation>
 <translation id="2653659639078652383">ارسال</translation>
-<translation id="2659491813326907275">‏شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome OS</translation>
 <translation id="2660779039299703961">رویداد</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{هیچ‌کدام}=1{۱ گذرواژه (برای <ph name="DOMAIN_LIST" />)}=2{۲ گذرواژه (برای <ph name="DOMAIN_LIST" />)}one{# گذرواژه (برای <ph name="DOMAIN_LIST" />)}other{# گذرواژه (برای <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">بالا</translation>
@@ -861,6 +858,7 @@
 <translation id="3295444047715739395">‏گذرواژه‌هایتان را در تنظیمات Chrome مشاهده و مدیریت کنید</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
 <translation id="3304073249511302126">اسکن کردن بلوتوث</translation>
+<translation id="33073482541490531">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «مدیر گذرواژه» توصیه می‌کند این گذرواژه را همین‌حالا تغییر دهید.</translation>
 <translation id="3308006649705061278">‏واحد سازمانی (OU)</translation>
 <translation id="3308738399950580893">آگهی‌ها</translation>
 <translation id="3320021301628644560">افزودن نشانی صورتحساب</translation>
@@ -995,6 +993,7 @@
 <translation id="3658742229777143148">ویرایش</translation>
 <translation id="3664782872746246217">کلیدواژه‌ها:</translation>
 <translation id="3667704023705708645">سرمایه‌گذاری خطرپذیر</translation>
+<translation id="367108335512738711">‏نشانک‌های Chrome</translation>
 <translation id="3671540257457995106">تغییر اندازه مجاز باشد؟</translation>
 <translation id="3675563144891642599">رول سوم</translation>
 <translation id="3676592649209844519">شناسه دستگاه:</translation>
@@ -1491,6 +1490,7 @@
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5040262127954254034">حریم‌خصوصی</translation>
 <translation id="5043480802608081735">پیوندی که کپی کرده‌اید</translation>
+<translation id="5044545992476246592">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «دستیار Google» می‌تواند گذرواژه‌تان را به‌طور خودکار تغییر دهد.</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
 <translation id="5051305769747448211">کمدی زنده</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}one{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}other{برای ارسال این فایل‌ها ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}}</translation>
@@ -1503,6 +1503,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />بررسی آدرس پروکسی<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">رول دهم</translation>
 <translation id="507130231501693183">صندوق پست ۴</translation>
+<translation id="5078060223219502807">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید و سپس گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="5086225927071063542">پردازش ابری و توزیع‌شده</translation>
 <translation id="5087286274860437796">در حال حاضر گواهی سرور معتبر نیست.</translation>
 <translation id="5087580092889165836">افزودن کارت</translation>
@@ -2019,6 +2020,7 @@
 <translation id="6579630537141957243">‏دستگاه MIDI متصل شود؟</translation>
 <translation id="6579990219486187401">صورتی کم‌رنگ</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6585526963651937128">‏سابقه Chrome</translation>
 <translation id="6587182488465657433">‏Chrome گذرواژه‌ای را که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا کرده است. برای ایمن کردن حساب‌هایتان، توصیه می‌کنیم این گذرواژه را اکنون تغییر دهید، سپس گذارواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="6587923378399804057">پیوندی که کپی کرده‌اید</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> شما تحت مدیریت نیست</translation>
@@ -2127,6 +2129,7 @@
 <translation id="691024665142758461">بارگیری چندین فایل.</translation>
 <translation id="6915804003454593391">کاربر:</translation>
 <translation id="6916954549222464607">مدیریت و برنامه‌ریزی مالی</translation>
+<translation id="6917795328362592458">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه» توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="6934672428414710184">‏این نام از حساب Google شما گرفته شده است</translation>
 <translation id="6939469646605424232">نمایش تلویزیونی درام</translation>
 <translation id="6944692733090228304">گذرواژه‌تان را در سایتی وارد کردید که توسط <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> مدیریت نمی‌شود. برای محافظت از حسابتان، از گذرواژه‌تان در برنامه‌ها و سایت‌های دیگر استفاده نکنید.</translation>
@@ -2803,6 +2806,7 @@
 <translation id="8805819170075074995">‏ورودی فهرست «<ph name="LANGUAGE_ID" />»: ورودی نادیده گرفته شد زیرا در خط‌مشی SpellcheckLanguage نیز لحاظ شده است.</translation>
 <translation id="8806285662264631610">محصولات حمام و بدن</translation>
 <translation id="8807160976559152894">برش دادن بعد از چاپ هر صفحه</translation>
+<translation id="8808828119384186784">‏تنظیمات Chrome</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="882338992931677877">شیار دستی</translation>

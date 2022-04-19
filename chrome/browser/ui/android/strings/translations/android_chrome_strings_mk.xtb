@@ -148,7 +148,6 @@
 <translation id="1779766957982586368">Затвори го прозорецот</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792959175193046959">Променете ја стандардната локација за преземање во секое време</translation>
-<translation id="1795251344124198516">Дополнителни услови за користење на Chrome и Chrome OS</translation>
 <translation id="1807246157184219062">Светла</translation>
 <translation id="1810845389119482123">Првичното поставување на синхронизацијата не е завршено</translation>
 <translation id="1829244130665387512">Најди на страница</translation>
@@ -185,7 +184,6 @@
 <translation id="2000419248597011803">Испраќа колачиња и пребарувања од лентата за адреси и полето за пребарување во вашиот стандарден пребарувач</translation>
 <translation id="200114059308480249">Да се вклучи околниот текст во пребарувањата на Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# датотека}one{# датотека}other{# датотеки}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. Важи и <ph name="BEGIN_LINK3" />Политиката за приватност<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">Ќе ја задржите историјата на сите ваши синхронизирани уреди за да може да продолжите со активностите</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
 <translation id="2038563949887743358">Вклучи „Барај локација на работна површина“</translation>
@@ -462,7 +460,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за предложените содржини</translation>
 <translation id="3495219333887281978">Долниот лист за најавување е отворен на половина екран.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Ако користите Chrome, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Вклучена е „Стандардната заштита“</translation>
 <translation id="3509330069915219067">Офлајн. Chrome не може да провери дали има ажурирања.</translation>
 <translation id="3513704683820682405">Проширена реалност</translation>
@@ -589,6 +586,7 @@
 <translation id="4296252229500326964">Нова картичка „Инкогнито“</translation>
 <translation id="4298388696830689168">Поврзани сајтови</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4307992518367153382">Основи</translation>
 <translation id="4320177379694898372">Нема интернет поврзување</translation>
 <translation id="4321739720395210191">Камерата не може да се отвори. Рестартирајте го уредот и обидете се повторно.</translation>
@@ -957,7 +955,6 @@
 <translation id="6345878117466430440">Означи како прочитано</translation>
 <translation id="6363990818884053551">За да започне синхронизацијата, потврдете дека сте вие</translation>
 <translation id="6364438453358674297">Да се отстрани предлогот од историјата?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Најчесто однапред ги вчитува страниците што Chrome мисли дека ќе ги посетите. Поставкава може да доведе до зголемен сообраќај на податоци.</translation>
 <translation id="6385407407546870227">Кога пробните периоди се вклучени, намалувањето на спамот и измамите се потпира на токени за доверба за да им помогне на сајтовите да се борат против измамите и да ги разликуваат ботовите од луѓето.
 
@@ -1127,7 +1124,6 @@
 <translation id="7208109991155904980">Реакцијата се премести</translation>
 <translation id="7222235798733126207">Ограничено споделување меѓу сајтовите</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
-<translation id="7237045078887540010">Ако користите Chrome, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Важи и <ph name="BEGIN_PRIVACY_LINK" />Политиката за приватност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизирано нагласување <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Проверете дали синхронизацијата во Chrome е вклучена за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Ставете го телефонот близу до компјутерот</translation>

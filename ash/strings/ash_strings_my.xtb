@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">မင်တံ</translation>
 <translation id="4112140312785995938">နောက်သို့ ပြန်ရစ်ရန်</translation>
 <translation id="4114315158543974537">'ဖုန်းပင်မ' ဖွင့်ခြင်း</translation>
+<translation id="4115378294792113321">ပန်းခရမ်းရောင်</translation>
 <translation id="412298498316631026">ဝင်းဒိုး</translation>
 <translation id="4123259114412175274">Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်ဖုန်း၏ဘလူးတုသ် ဖွင့်ထားကြောင်း သေချာပါစေ</translation>
 <translation id="4129129681837227511">သင့်လော့ခ်ချမျက်နှာပြင်တွင် အကြောင်းကြားချက်များ ကြည့်ရန်အတွက် ဆင်တင်ပြောင်းရန် လော့ခ်ဖွင့်ပါ</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">ခြားနားချက်မြင့်သည့် လုပ်ဆောင်ချက်အတွက် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်လိုက်ပါသည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
 <translation id="4322742403972824594">‘Ctrl + Alt + အပေါ်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ပင်မ’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘ဘယ်ညွှန်မြား’ နှိပ်ပါ။</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">အသုံးပြုသူအများအပြား လက်မှတ်ထိုးဝင်ထားစဉ်တွင် Lacros ကို သုံး၍မရပါ။</translation>
 <translation id="4338109981321384717">မှန်ဘီလူး</translation>
 <translation id="4351433414020964307">Assistant ကို ဖွင့်နေပါသည်...</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">Play ဖိုင်များ</translation>
 <translation id="5790085346892983794">အောင်မြင်ခြင်း</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> စတင်ရန် နှိပ်ပါ</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ချိတ်ဆက်ထားသည့် စက်ဆက်တင်များ</translation>
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">အကောင့်ကို <ph name="FIRST_PARENT_EMAIL" /> နှင့် <ph name="SECOND_PARENT_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="793716872548410480">သင်၏ကလစ်ဘုတ်ကို ကြည့်ရန် <ph name="SHORTCUT_KEY_NAME" /> + V နှိပ်ပါ။ သင်မိတ္တူကူးထားသည့် နောက်ဆုံး ၅ ခုကို သင်၏ကလစ်ဘုတ်တွင် သိမ်းလိုက်သည်။</translation>
 <translation id="7942349550061667556">အနီရောင်</translation>
-<translation id="7952747673138230804">စူးစမ်းလေ့လာရန် အကြောင်းအရာအသစ်အတွက် အကြံပြုချက်များကို Chrome OS က ပြပေးသည်။ သုံးစွဲမှုဒေတာများကို မျှဝေရန် သင်ရွေးချယ်ထားမှသာ အရည်အသွေး ပိုမိုကောင်းမွန်လာစေရန် ကိန်းဂဏန်းစာရင်းများ ပို့ပါမည်။ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">အရောင်ခြားနားချက်မြင့်သော မုဒ်</translation>
 <translation id="7968693143708939792">ဖိုင်တွဲရွေးရန်...</translation>
 <translation id="7977927628060636163">မိုဘိုင်းကွန်ရက်ကို ရှာဖွေနေသည်...</translation>

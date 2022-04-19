@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Révision du matériel</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
-<translation id="1930797645656624981">Service de méthode d'entrée Chrome OS</translation>
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Photo de profil Google</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2006864819935886708">Connectivité</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de galerie d'art</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Commutateur de rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Commutateur de la disposition du clavier</translation>
 <translation id="225692081236532131">État de l'activation</translation>
 <translation id="2287186687001756809">Aucune image proposée. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
 <translation id="2584559707064218956">Pour configurer le réseau, accédez à Paramètres</translation>
-<translation id="2585245331261708204">Nouveautés dans Chrome OS</translation>
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> sélectionné</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
-<translation id="475869545581454722">Mot de passe de Chrome OS mis à jour</translation>
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
@@ -629,6 +628,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activer le mode Couleur automatique</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
+<translation id="8045012663542226664">Désactivation du microphone</translation>
 <translation id="8075838845814659848">Charge restante</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS à partir d'applications Android</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
@@ -739,6 +739,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Impossible de communiquer avec la passerelle à partir d'applications Android</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
+<translation id="932327136139879170">Accueil</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>

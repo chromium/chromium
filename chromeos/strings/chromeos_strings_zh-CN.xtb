@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1908234395526491708">UDP 请求失败</translation>
-<translation id="1930797645656624981">Chrome 操作系统输入法服务</translation>
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1951012854035635156">智能助理</translation>
+<translation id="1977994649430373166">Google 个人资料照片</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="1999615961760456652">强制门户</translation>
 <translation id="2006864819935886708">连接</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
 <translation id="2230005943220647148">摄氏度</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">键盘背光切换开关</translation>
 <translation id="2240366984605217732">布局切换</translation>
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">无法连接到互联网。</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
-<translation id="2585245331261708204">Chrome 操作系统的新变化</translation>
 <translation id="2619761439309613843">每日刷新</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="2640549051766135490">已选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">与您所选内容相关的信息</translation>
-<translation id="475869545581454722">Chrome 操作系统密码已更新</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4782311465517282004">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 张照片</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">启用自动颜色模式</translation>
 <translation id="8041089156583427627">发送反馈</translation>
+<translation id="8045012663542226664">麦克风静音</translation>
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="808894953321890993">更改密码</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">测试</translation>
 <translation id="9204237731135241582">无法从 Android 应用连接网关</translation>
 <translation id="9211490828691860325">所有桌面</translation>
+<translation id="932327136139879170">首页</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">未激活</translation>
 <translation id="960719561871045870">运营商代码</translation>

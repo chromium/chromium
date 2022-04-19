@@ -100,7 +100,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="124116460088058876">Još jezika</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Podebljano</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste personalizovali alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="1250759482327835220">Da biste sledeći put platili brže, sačuvajte karticu, ime i adresu za obračun na Google nalogu.</translation>
 <translation id="1252799212227771492">Dugme Napravite tabelu, pritisnite Enter da biste brzo napravili novu Google tabelu</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinhronizovano)</translation>
@@ -303,7 +302,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1711528724596764268">Mašinsko učenje i veštačka inteligencija</translation>
 <translation id="1712552549805331520"><ph name="URL" /> želi trajno da skladišti podatke na lokalnom računaru</translation>
 <translation id="1713628304598226412">2. fioka</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">P</translation>
 <translation id="1717218214683051432">Senzori pokreta</translation>
 <translation id="1717494416764505390">3. poštansko sanduče</translation>
 <translation id="1718029547804390981">Dokument je isuviše veliki da biste mu dodali napomene</translation>
@@ -384,7 +383,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919367280705858090">Potražite pomoć u vezi sa određenom porukom o grešci</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 sajt}one{# sajt}few{# sajta}other{# sajtova}}</translation>
-<translation id="1923390796829649802">Dugme Prilagodi podešavanja pristupačnosti, pritisnite Enter da biste personalizovali alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927439593081478069">Dugme Pokrenite Chrome proveru bezbednosti, pritisnite Enter da biste pokrenuli proveru bezbednosti u Chrome podešavanjima</translation>
 <translation id="1939175642807587452">Može da traži da šalje obaveštenja</translation>
@@ -514,6 +512,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2298855485018661510">Dugme Upravljajte kolačićima, pritisnite Enter da biste upravljali podešavanjima kolačića u podešavanjima Chrome-a</translation>
 <translation id="2300306941146563769">Nije otpremljeno</translation>
 <translation id="2310021320168182093">Chou2 (koverat)</translation>
+<translation id="2316159751672436664">Personalizujte alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="2316887270356262533">Oslobađa manje od 1 MB. Neki sajtovi će se možda sporije učitavati kad ih sledeći put posetite.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> zahteva korisničko ime i lozinku.</translation>
 <translation id="2318594867107319532">Poslednja vremenska oznaka smernica:</translation>
@@ -643,7 +642,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste obrisali istoriju pregledanja, kolačiće, keš i drugo u podešavanjima Chrome-a</translation>
 <translation id="2650446666397867134">Pristup datoteci je odbijen</translation>
 <translation id="2653659639078652383">Pošalji</translation>
-<translation id="2659491813326907275">Personalizujte alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="2660779039299703961">Događaj</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nijedna}=1{1 lozinka (za <ph name="DOMAIN_LIST" />)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />)}one{# lozinka (za <ph name="DOMAIN_LIST" />)}few{# lozinke (za <ph name="DOMAIN_LIST" />)}other{# lozinki (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Vrh</translation>
@@ -861,6 +859,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3295444047715739395">Pregledajte lozinke i upravljajte njima u podešavanjima Chrome-a</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretrage</translation>
 <translation id="3304073249511302126">Bluetooth skeniranje</translation>
+<translation id="33073482541490531">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Menadžer lozinki preporučuje da odmah promenite ovu lozinku.</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
 <translation id="3308738399950580893">oglasi</translation>
 <translation id="3320021301628644560">Dodajte adresu za obračun</translation>
@@ -995,6 +994,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3658742229777143148">Revizija</translation>
 <translation id="3664782872746246217">Ključne reči:</translation>
 <translation id="3667704023705708645">Akcijski kapital</translation>
+<translation id="367108335512738711">Chrome obeleživači</translation>
 <translation id="3671540257457995106">Želite da dozvolite promenu veličine?</translation>
 <translation id="3675563144891642599">Treći kotur</translation>
 <translation id="3676592649209844519">ID uređaja:</translation>
@@ -1491,6 +1491,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="5043480802608081735">Link koji ste kopirali</translation>
+<translation id="5044545992476246592">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Google pomoćnik može automatski da vam promeni lozinku.</translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
 <translation id="5051305769747448211">Komedija uživo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali ovaj fajl pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
@@ -1503,6 +1504,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />da proverite adresu proksija<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Deseti kotur</translation>
 <translation id="507130231501693183">4. poštansko sanduče</translation>
+<translation id="5078060223219502807">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Menadžer lozinki preporučuje da je odmah promenite, pa da proverite sačuvane lozinke.</translation>
 <translation id="5086225927071063542">Distribuirano i računarstvo u klaudu</translation>
 <translation id="5087286274860437796">Sertifikat servera trenutno nije važeći.</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
@@ -1668,6 +1670,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5518670652865028077">Umetnost i zabava</translation>
 <translation id="5519516356611866228">Sa promenama</translation>
 <translation id="5523118979700054094">Naziv smernica</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste personalizovali alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="5528532273234423708">Automatizacija doma</translation>
 <translation id="55293785478302737">Spajanje ivica šavom</translation>
 <translation id="553484882784876924">Prc6 (koverat)</translation>
@@ -2018,6 +2021,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6579630537141957243">Želite da povežete MIDI uređaj?</translation>
 <translation id="6579990219486187401">Svetloroze</translation>
 <translation id="6583674473685352014">B6 (koverat)</translation>
+<translation id="6585526963651937128">Istorija Chrome-a</translation>
 <translation id="6587182488465657433">Chrome je pronašao lozinku koju ste upravo koristili pri povredi podataka. Da biste zaštitili naloge, preporučujemo vam da odmah promenite lozinku, pa da proverite sačuvane lozinke.</translation>
 <translation id="6587923378399804057">Link koji ste kopirali</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-om se ne upravlja</translation>
@@ -2126,6 +2130,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="691024665142758461">da preuzme više datoteka</translation>
 <translation id="6915804003454593391">Korisnik:</translation>
 <translation id="6916954549222464607">Planiranje i upravljanje finansijama</translation>
+<translation id="6917795328362592458">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Menadžer lozinki preporučuje da proverite sačuvane lozinke.</translation>
 <translation id="6934672428414710184">To je ime sa vašeg Google naloga</translation>
 <translation id="6939469646605424232">TV drame</translation>
 <translation id="6944692733090228304">Uneli ste lozinku na sajtu kojim ne upravlja <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da biste zaštitili nalog, ne koristite lozinku ponovo u drugim aplikacijama ni na drugim sajtovima.</translation>
@@ -2243,6 +2248,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="722454870747268814">Nova kartica bez arhiviranja</translation>
 <translation id="7233592378249864828">List potvrde štampanja</translation>
 <translation id="7234638337680728591">Cene i točenje goriva</translation>
+<translation id="7237492777898608035">Ne prikazuj ovu poruku ponovo za ovaj sajt</translation>
 <translation id="7238585580608191973">SHA-256 Fingerprint</translation>
 <translation id="7240120331469437312">Alternativno ime subjekta sertifikata</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2625,6 +2631,7 @@ Dodatni detalji:
 <translation id="8242426110754782860">Nastavi</translation>
 <translation id="8249296373107784235">Otkaži</translation>
 <translation id="8249463483885748674">Standardni i prijemni testovi</translation>
+<translation id="8252991034201168845">Dugme Upravljajte podešavanjima pristupačnosti, pritisnite Enter da biste personalizovali alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="8253091569723639551">Adresa za obračun je obavezna</translation>
 <translation id="8257387598443225809">Ova aplikacija je dizajnirana za mobilne uređaje</translation>
 <translation id="825929999321470778">Prikaži sve sačuvane lozinke</translation>
@@ -2803,6 +2810,7 @@ Dodatni detalji:
 <translation id="8805819170075074995">Unos na listi „<ph name="LANGUAGE_ID" />“: Unos se zanemaruje jer je obuhvaćen i smernicama SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Proizvodi za kupanje i negu tela</translation>
 <translation id="8807160976559152894">Skraćivanje posle svake stranice</translation>
+<translation id="8808828119384186784">Podešavanje Chrome-a</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste ažurirali Chrome iz podešavanja Chrome-a</translation>
 <translation id="8820817407110198400">Obeleživači</translation>
 <translation id="882338992931677877">Otvor za ručni unos</translation>

@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">စက်ပစ္စည်း စိစစ်သုံးသပ်ခြင်း</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
 <translation id="1908234395526491708">UDP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
-<translation id="1930797645656624981">Chrome OS လက်ကွက်ဝန်ဆောင်မှု</translation>
 <translation id="1947737735496445907">ပုံနှိပ်ထုတ်ပြီးပြီ</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google ပရိုဖိုင်ဓာတ်ပုံ</translation>
 <translation id="1979103255016296513">စကားဝှက်ပြောင်းလဲမှု သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="1999615961760456652">စတင်ဝင်ရန် စာမျက်နှာ</translation>
 <translation id="2006864819935886708">ချိတ်ဆက်နိုင်မှု</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">အနည်းဆုံး အနုပညာပြခန်း အယ်လ်ဘမ်တစ်ခုကို ရွေးရန် လိုအပ်သည်</translation>
 <translation id="2230005943220647148">စင်တီဂရိတ်</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">ကီးဘုတ်နောက်ခံမီး ခလုတ်</translation>
 <translation id="2240366984605217732">အပြင်အဆင် ပြောင်းရန်</translation>
 <translation id="225692081236532131">စဖွင့်ခြင်း အခြေအနေ</translation>
 <translation id="2287186687001756809">ပုံမရရှိနိုင်ပါ။ ဓာတ်ပုံများ ထည့်ရန် <ph name="LINK" /> သို့သွားပါ</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
 <translation id="2584559707064218956">စနစ်ထည့်သွင်းရန် ဆက်တင်များသို့ သွားပါ</translation>
-<translation id="2585245331261708204">Chrome OS ၏ အသစ်ပါဝင်မှု</translation>
 <translation id="2619761439309613843">နေ့စဉ် ပြန်လည်စတင်ရန်</translation>
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> အယ်လ်ဘမ်ကို ရွေးထားသည်</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">မိဘ သုံးခွင့်</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4744944742468440486">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ</translation>
-<translation id="475869545581454722">Chrome OS စကားဝှက် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
 <translation id="4782311465517282004">ညာဘက်ခလုတ်ကို နှိပ်ချိန် (သို့) စာသားကိုတို့ထိ၍ ဖိထားချိန်တွင် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များကို ရယူနိုင်သည်</translation>
 <translation id="4791000909649665275">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
@@ -628,6 +627,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">အလိုအလျောက်အရောင်ချိန်မုဒ် ဖွင့်ရန်</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
+<translation id="8045012663542226664">မိုက်ခရိုဖုန်း အသံပိတ်ရန်ခလုတ်</translation>
 <translation id="8075838845814659848">ကျန်ရှိသော အားပမာဏ</translation>
 <translation id="8082366717211101304">Android အက်ပ်များမှ DNS ဖြေရှင်း၍မရပါ</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
@@ -738,6 +738,7 @@
 <translation id="917720651393141712">စမ်းသပ်မှု</translation>
 <translation id="9204237731135241582">Android အက်ပ်များမှ ဂိတ်ဝကို ဆက်သွယ်၍မရပါ</translation>
 <translation id="9211490828691860325">မျက်နှာပြင်နေရာအားလုံး</translation>
+<translation id="932327136139879170">ပင်မ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ဖွင့်မသုံးရသေး</translation>
 <translation id="960719561871045870">မိုဘိုင်းဝန်ဆောင်မှုဌာန ကုဒ်</translation>

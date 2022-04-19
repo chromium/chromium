@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">දෘඨාංග සංශෝධනය</translation>
 <translation id="1905710495812624430">ඉඩ දෙන උපරිම උත්සාහයන් ගණන ඉක්මවා ඇත.</translation>
 <translation id="1908234395526491708">UDP ඉල්ලීම් අසාර්ථක වීම්</translation>
-<translation id="1930797645656624981">Chrome OS ආදාන ක්‍රම සේවය</translation>
 <translation id="1947737735496445907">මුද්‍රණය කරන ලදි</translation>
 <translation id="1951012854035635156">සහායක</translation>
+<translation id="1977994649430373166">Google පැතිකඩ ඡායාරූපය</translation>
 <translation id="1979103255016296513">මුරපදය වෙනස් කිරීම කල් ගොස් ඇත</translation>
 <translation id="1999615961760456652">පිවිසුම් දොරටුව</translation>
 <translation id="2006864819935886708">සබැඳුම</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">අවම වශයෙන් එක් කලා ගැලරි ඇල්බමයක් තේරිය යුතුය</translation>
 <translation id="2230005943220647148">සෙල්සියස්</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">යතුරු පුවරු පසු ආලෝකය ටොගල කිරීම</translation>
 <translation id="2240366984605217732">පිරිසැලසුම් මාරුව</translation>
 <translation id="225692081236532131">සක්‍රිය කිරීමේ තත්ත්වය</translation>
 <translation id="2287186687001756809">රූප නැත. ඡායාරූප එක් කිරීමට, <ph name="LINK" /> වෙත යන්න</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">අන්තර්ජාලයට සම්බන්ධ විය නොහැකිය.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> පරීක්ෂාව ධාවනය කරමින්...</translation>
 <translation id="2584559707064218956">පිහිටුවීමට, සැකසීම් වෙත යන්න</translation>
-<translation id="2585245331261708204">Chrome OS හි අලුත් දේවල්</translation>
 <translation id="2619761439309613843">දිනපතා නැවුම් කිරීම</translation>
 <translation id="2620436844016719705">පද්ධතිය</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ඇල්බමය තෝරන ලදි</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4744944742468440486">ඔබගේ තේරීමට අදාළ තොරතුරු</translation>
-<translation id="475869545581454722">Chrome OS මුරපදය යාවත්කාලීන කරන ලදි</translation>
 <translation id="4773299976671772492">නවත්වන ලදි</translation>
 <translation id="4782311465517282004">ඔබ දකුණු-ක්ලික් කළ විට හෝ පෙළ ස්පර්ශ කර අල්ලාගෙන සිටින විට නිර්වචන, පරිවර්තන හෝ ඒකක පරිවර්තන ලබා ගන්න</translation>
 <translation id="4791000909649665275">ඡායාරූප <ph name="NUMBER" />ක්</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ස්වයං වර්ණ ප්‍රකාරය සබල කරන්න</translation>
 <translation id="8041089156583427627">ප්‍රතිපෝෂණ යවන්න</translation>
+<translation id="8045012663542226664">මයික්‍රෆෝනය නිහඬ කිරීම</translation>
 <translation id="8075838845814659848">ඉතිරි ආරෝපණය</translation>
 <translation id="8082366717211101304">Android යෙදුම් වෙතින් DNS විසඳිය නොහැකිය</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">පරීක්ෂාව</translation>
 <translation id="9204237731135241582">Android යෙදුම් වෙතින් වාහල සම්බන්ධ කර ගත නොහැකිය</translation>
 <translation id="9211490828691860325">සියලු වැඩතල</translation>
+<translation id="932327136139879170">මුල් පිටුව</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">සක්‍රීය කර නොමැත</translation>
 <translation id="960719561871045870">වාහක කේතය</translation>

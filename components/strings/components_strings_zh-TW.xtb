@@ -100,7 +100,6 @@
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1246424317317450637">粗體</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome OS 設定中依個人需求調整無障礙工具</translation>
 <translation id="1250759482327835220">只要將你的卡片資訊、姓名與帳單地址儲存到你的 Google 帳戶中，下次即可更快完成付款程序。</translation>
 <translation id="1252799212227771492">建立試算表的按鈕；按下 Enter 鍵即可快速建立新的 Google 試算表</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" /> (已同步)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">顯示完整清單</translation>
 <translation id="132390688737681464">儲存及填入地址</translation>
 <translation id="1330449323196174374">左半邊對折</translation>
+<translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="1333989956347591814">以下各方<ph name="BEGIN_EMPHASIS" />可能仍會看到<ph name="END_EMPHASIS" />你的活動：
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />你造訪的網站
@@ -302,7 +302,7 @@
 <translation id="1711528724596764268">機器學習與人工智慧</translation>
 <translation id="1712552549805331520"><ph name="URL" /> 要求在你的本機電腦上永久儲存資料</translation>
 <translation id="1713628304598226412">紙匣 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">五</translation>
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1718029547804390981">文件過大，無法加註</translation>
@@ -379,7 +379,6 @@
 <translation id="1919345977826869612">廣告</translation>
 <translation id="1919367280705858090">瞭解如何修正特定錯誤訊息指出的錯誤</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
-<translation id="1923390796829649802">「管理無障礙設定」按鈕；按下 Enter 鍵即可在 Chrome OS 設定中依個人需求調整無障礙工具</translation>
 <translation id="1924727005275031552">新地址</translation>
 <translation id="1927439593081478069">[執行 Chrome 安全檢查] 按鈕；按下 Enter 鍵即可在 Chrome 設定中執行安全檢查</translation>
 <translation id="1939175642807587452">可以要求傳送通知</translation>
@@ -638,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中清除你的瀏覽記錄、Cookie、快取和其他資料</translation>
 <translation id="2650446666397867134">存取檔案遭拒</translation>
 <translation id="2653659639078652383">提交</translation>
-<translation id="2659491813326907275">在 Chrome OS 設定中依個人需求調整無障礙工具</translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{無}=1{有 1 組密碼 (<ph name="DOMAIN_LIST" />)}=2{有 2 組密碼 (<ph name="DOMAIN_LIST" />)}other{有 # 組密碼 (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">置頂</translation>
@@ -742,6 +740,7 @@
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />，目前已選取。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌劇</translation>
+<translation id="2983666748527428214">開啟無痕分頁</translation>
 <translation id="2985306909656435243">啟用後，Chromium 會將您的信用卡資料儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
 <translation id="2986368408720340940">不支援所選的取件方式，請改選其他方式。</translation>
@@ -855,6 +854,7 @@
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
 <translation id="3304073249511302126">藍牙掃描</translation>
+<translation id="33073482541490531">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="3308006649705061278">組織單位 (OU)</translation>
 <translation id="3308738399950580893">廣告</translation>
 <translation id="3320021301628644560">新增帳單地址</translation>
@@ -989,6 +989,7 @@
 <translation id="3658742229777143148">修訂版本</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3667704023705708645">創業投資</translation>
+<translation id="367108335512738711">Chrome 書籤</translation>
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
 <translation id="3675563144891642599">第三卷</translation>
 <translation id="3676592649209844519">裝置 ID：</translation>
@@ -1480,6 +1481,7 @@
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="5043480802608081735">你複製的連結</translation>
+<translation id="5044545992476246592">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。Google 助理可以自動變更你的密碼。</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5051305769747448211">實況喜劇</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用鄰近分享功能傳送這個檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用鄰近分享功能傳送這些檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1492,6 +1494,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />檢查 Proxy 位址<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">第十卷</translation>
 <translation id="507130231501693183">出紙槽 4</translation>
+<translation id="5078060223219502807">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，密碼管理工具建議你立即變更這組密碼，然後檢查已儲存的密碼。</translation>
 <translation id="5086225927071063542">分散式與雲端運算</translation>
 <translation id="5087286274860437796">伺服器憑證目前無效。</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
@@ -1503,6 +1506,7 @@
 <translation id="5097099694988056070">CPU/RAM 使用量等裝置統計資料</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">這是不安全的網站</translation>
+<translation id="5109892411553231226">管理付款方式</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">紙匣 18</translation>
 <translation id="5114987907971894280">虛擬實境</translation>
@@ -1750,6 +1754,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">要填入你的 <ph name="CARD_DETAIL" /> 資訊嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
+<translation id="5808435672482059465">查看 Chrome 歷史記錄</translation>
 <translation id="5808542072418270309">模擬遊戲</translation>
 <translation id="5810442152076338065">您的 <ph name="DOMAIN" /> 連線使用過舊的加密套件進行加密。</translation>
 <translation id="5812947184178430888">當 Chrome 標記安全性事件時，系統會將與事件相關的資料傳送給系統管理員。這些資料可能包括檔案名稱或中繼資料、你在 Chrome 中造訪的網頁網址，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
@@ -2006,6 +2011,7 @@
 <translation id="6579630537141957243">要連接 MIDI 裝置嗎？</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6583674473685352014">B6 (信封)</translation>
+<translation id="6585526963651937128">Chrome 歷史記錄</translation>
 <translation id="6587182488465657433">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。如要確保帳戶安全，建議你立即變更密碼，並檢查已儲存的密碼。</translation>
 <translation id="6587923378399804057">你複製的連結</translation>
 <translation id="6591833882275308647">你的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
@@ -2114,6 +2120,7 @@
 <translation id="691024665142758461">下載多個檔案</translation>
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6916954549222464607">財務規劃與管理</translation>
+<translation id="6917795328362592458">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，密碼管理工具建議你立即檢查已儲存的密碼。</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
 <translation id="6939469646605424232">電視劇</translation>
 <translation id="6944692733090228304">你在不是由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
@@ -2790,6 +2797,7 @@
 <translation id="8805819170075074995">清單項目「<ph name="LANGUAGE_ID" />」：這個項目同時也納入在 SpellcheckLanguage 政策中，因此系統已予以忽略。</translation>
 <translation id="8806285662264631610">沐浴與身體護理產品</translation>
 <translation id="8807160976559152894">每完成一頁後裁切</translation>
+<translation id="8808828119384186784">Chrome 設定</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可透過 Chrome 設定來更新 Chrome</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="882338992931677877">手動插槽</translation>

@@ -523,6 +523,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4095366824370681039">Ink pen</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
 <translation id="4114315158543974537">I-on ang Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">window</translation>
 <translation id="4123259114412175274">Para i-unlock ang iyong Chromebook, tiyaking naka-on ang Bluetooth ng iyong telepono</translation>
 <translation id="4129129681837227511">Para makakita ng mga notification sa iyong screen ng lock, i-unlock para baguhin ang setting</translation>
@@ -562,7 +563,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Napindot mo ang keyboard shortcut para sa mataas na contrast. Gusto mo ba itong i-on?</translation>
 <translation id="4322742403972824594">Nagbago ang keyboard shortcut na Ctrl + Alt + Pataas na Arrow. Para magamit ang Home key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Kaliwang Arrow.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Hindi sinusuportahan ang Lacros kapag maraming user ang naka-sign in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
 <translation id="4351433414020964307">Naglo-load ang Assistant...</translation>
@@ -795,7 +795,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5788127256798019331">Mga Play file</translation>
 <translation id="5790085346892983794">Tagumpay</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@ Kaka-install lang</translation>
 <translation id="79341161159229895">Pinamamahalaan nina <ph name="FIRST_PARENT_EMAIL" /> at <ph name="SECOND_PARENT_EMAIL" /> ang account</translation>
 <translation id="793716872548410480">Pindutin ang <ph name="SHORTCUT_KEY_NAME" /> + V para tingnan ang iyong clipboard. Naka-save sa iyong clipboard ang huling 5 item na kinopya mo.</translation>
 <translation id="7942349550061667556">Pula</translation>
-<translation id="7952747673138230804">Nagpapakita ang Chrome OS ng mga suhestyon para sa bagong content na ie-explore. Magpapadala lang ng mga istatistika para mapahusay ang kalidad kung pinili mong ibahagi ang data ng paggamit. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">High-contrast mode</translation>
 <translation id="7968693143708939792">Pumili ng folder...</translation>
 <translation id="7977927628060636163">Naghahanap ng mga mobile network...</translation>

@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">হার্ডওয়্যার পুনর্বিবেচনাগুলি</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
-<translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি পরিষেবা</translation>
 <translation id="1947737735496445907">প্রিন্ট করা হয়েছে</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google প্রোফাইল ফটো</translation>
 <translation id="1979103255016296513">পাসওয়ার্ড পরিবর্তন করার সময় পেরিয়ে গেছে</translation>
 <translation id="1999615961760456652">ক্যাপটিভ পোর্টাল</translation>
 <translation id="2006864819935886708">সংযোজকতা</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">কমপক্ষে একটি আর্ট গ্যালারি অ্যালবাম বেছে নিতে হবে</translation>
 <translation id="2230005943220647148">সেলসিয়াস</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">'কীবোর্ড ব্যাকলাইট টগল কী'</translation>
 <translation id="2240366984605217732">লেআউট সুইচ করার বোতাম</translation>
 <translation id="225692081236532131">সক্রিয়করণ স্থিতি</translation>
 <translation id="2287186687001756809">কোনও ছবি নেই। ছবি যোগ করতে, <ph name="LINK" /> লিঙ্কে যান</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ইন্টারনেটের সাথে কানেক্ট করা যাচ্ছে না।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
 <translation id="2584559707064218956">সেট আপ করতে, সেটিংসে যান</translation>
-<translation id="2585245331261708204">Chrome OS-এ নতুন কী আছে</translation>
 <translation id="2619761439309613843">প্রতিদিন রিফ্রেশ করা হবে</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2640549051766135490">বেছে নেওয়া অ্যালবাম: <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4744944742468440486">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য</translation>
-<translation id="475869545581454722">Chrome OS-এর পাসওয়ার্ড আপডেট করা হয়েছে</translation>
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
 <translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />টি ফটো</translation>
@@ -628,6 +627,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
+<translation id="8045012663542226664">'মাইক্রোফোন মিউট কী'</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
@@ -738,6 +738,7 @@
 <translation id="917720651393141712">পরীক্ষা করুন</translation>
 <translation id="9204237731135241582">Android অ্যাপ থেকে গেটওয়েতে যোগাযোগ করা যাচ্ছে না</translation>
 <translation id="9211490828691860325">সব ডেক্স</translation>
+<translation id="932327136139879170">হোম</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">সক্রিয় নেই</translation>
 <translation id="960719561871045870">অপারেটরের কোড</translation>

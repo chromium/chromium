@@ -11,20 +11,22 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="110877069173485804">This is your Chrome</translation>
 <translation id="1125124144982679672">Who's using Chrome?</translation>
 <translation id="1142745911746664600">Can't update Chrome</translation>
+<translation id="1152920704813762236">About Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="1178374936842835197">If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN" />
         Chrome OS Flex settings<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome recommends that you don't download or open this file</translation>
 <translation id="1278833599417554002">Relaunch to update &amp;Chrome</translation>
-<translation id="1293325835983155583"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These Terms do not expand, modify or limit the Google Chrome OS Terms.</translation>
 <translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Flex terms.</translation>
+<translation id="1363996462118479832">Chrome OS could not sync your data due to an error signing in.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.</translation>
 <translation id="139993653570221430">You can change your mind at any time in Chrome settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome is using your camera.</translation>
@@ -50,8 +52,8 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
+<translation id="1952239763774043237">To get future Google Chrome updates, you'll need macOS 10.13 or later. This computer is using macOS 10.12.</translation>
 <translation id="2018528049276128029">Each profile holds its own Chrome info, like bookmarks, history, passwords and more</translation>
-<translation id="2063848847527508675">Chrome OS needs to be restarted to apply the update.</translation>
 <translation id="207902854391093810">When trials are on, ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
 <translation id="2094648590148273905">Chrome OS Flex terms</translation>
 <translation id="2094919256425865063">Quit Chrome anyway?</translation>
@@ -60,6 +62,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2121284319307530122">Relaunch to Update &amp;Chrome</translation>
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="2131230230468101642">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don't want Chrome to consider.</translation>
+<translation id="2139300032719313227">Restart Chrome OS</translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
 <translation id="2258103955319320201">To access your Chrome browser across all your devices, sign in, then turn on sync</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
@@ -70,6 +73,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="234869673307233423">Chrome can't check your passwords. Try again later.</translation>
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2401189691232800402">Chrome OS system</translation>
 <translation id="2429317896000329049">Google Chrome could not sync your data because Sync is not available for your domain.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -80,7 +84,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2580411288591421699">Cannot install the same Google Chrome version that is currently running. Please close Google Chrome and try again.</translation>
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
-<translation id="2644798301485385923">Chrome OS System</translation>
+<translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="2689103672227170538">This extension has changed the page that is shown when you start Chrome.</translation>
@@ -117,12 +121,12 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
-<translation id="3395323229510056640">Get help with Chrome OS</translation>
 <translation id="3396977131400919238">An operating system error occurred during installation. Please download Google Chrome again.</translation>
 <translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3434246496373299699">Chrome can check your passwords when you sign in with your Google Account</translation>
 <translation id="3451115285585441894">Adding to Chrome...</translation>
 <translation id="345171907106878721">Add yourself to Chrome</translation>
+<translation id="3453763134178591239">Chrome OS terms</translation>
 <translation id="34857402635545079">Also clear data from Chrome (<ph name="URL" />)</translation>
 <translation id="3503306920980160878">Chrome needs access to your location to share your location with this site</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
@@ -132,17 +136,20 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3596080736082218006">{COUNT,plural, =0{Your administrator requires that you relaunch Chrome to apply an update}=1{Your administrator requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
 <translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
+<translation id="3703994572283698466">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you start Chrome.</translation>
-<translation id="3779473566290487688">To get future Google Chrome updates, you'll need OS X 10.11 or later. This computer is using OS X 10.10.</translation>
+<translation id="3744202345691150878">Get help with Chrome OS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3835168907083856002">This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Please close all Google Chrome windows and try again.</translation>
 <translation id="3865754807470779944">Chrome version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3873044882194371212">Open link in Chrome inco&amp;gnito window</translation>
 <translation id="3889417619312448367">Uninstall Google Chrome</translation>
+<translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
@@ -157,19 +164,14 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chrome on this device.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4293420128516039005">Sign in to sync and personalise Chrome across your devices</translation>
-<translation id="4325083532956419387">Chrome OS version</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4335235004908507846">Chrome can help keep you safe from data breaches, bad extensions and more</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> has been added to Chrome</translation>
 <translation id="4384570495110188418">Chrome can't check your passwords because you're not signed in</translation>
-<translation id="4407807842708586359">Google Chrome OS</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4450664632294415862">Chrome – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4459234553906210702">Ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
-<translation id="4480040274068703980">Chrome OS could not sync your data due to an error signing in.</translation>
-<translation id="4521185804071812304">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="4561051373932531560">Google Chrome lets you click a phone number on the web and call it with Skype!</translation>
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
@@ -191,8 +193,10 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="495931528404527476">In Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="4970761609246024540">Welcome to Chrome profiles</translation>
+<translation id="4970880042055371251">Chrome OS version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5062123544085870375">Restart Chrome OS</translation>
+<translation id="5037581483200764584">To get future Google Chrome updates, you'll need macOS 10.13 or later. This computer is using OS X 10.11.</translation>
+<translation id="5112116809696021727">To see if your device is up to date, go to <ph name="LINK_BEGIN" />Chrome OS Settings<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Discover great apps, games, extensions and themes for Google Chrome.</translation>
 <translation id="5139423532931106058">Customise your Chrome profile</translation>
 <translation id="5163087008893166964">Welcome to Chrome; new browser window opened</translation>
@@ -201,7 +205,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chrome.</translation>
 <translation id="521447420733633466">If you share a device, friends and family can browse separately and set up Chrome just the way they want</translation>
 <translation id="5251420635869119124">Guests can use Chrome without leaving anything behind.</translation>
+<translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
+<translation id="5337648990166757586">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="5357889879764279201">Get help with Chrome OS Flex</translation>
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
 <translation id="5394833366792865639">Share a Chrome tab</translation>
@@ -219,7 +225,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome will restart in 1 second}other{Google Chrome will restart in # seconds}}</translation>
 <translation id="5727531838415286053">If Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month. Interests refresh unless you remove them.</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
-<translation id="573759479754913123">About Chrome OS</translation>
 <translation id="5756509061973259733">A Chrome profile with this account already exists on this device</translation>
 <translation id="5763280521700030406">Chrome blocked this file because it's too big for a security check. Try again with files up to 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -230,6 +235,8 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
 <translation id="5940385492829620908">Your web, bookmarks and other Chrome stuff live here.</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
+<translation id="5959292945051687759">If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN" />
+        Chrome OS settings<ph name="LINK_END" /></translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6113794647360055231">Chrome just got better</translation>
@@ -240,12 +247,10 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6291089322031436445">Chrome Dev Apps</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
-<translation id="6368958679917195344">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6568793831116033768">Chrome OS system</translation>
 <translation id="659498884637196217">In Google Password Manager on this device</translation>
 <translation id="6632473616050862500">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
@@ -255,11 +260,10 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6739177684496155661">Continue in a new Chrome profile?</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
-<translation id="6814748008107187409">If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN" />
-        Chrome OS settings<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
+<translation id="6933858244219479645">Chrome OS system</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>
 <translation id="6989339256997917931">Google Chrome has been updated, but you haven't used it for at least 30 days.</translation>
@@ -271,6 +275,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7085332316435785646">Choose whether to include Chrome history for more personalised experiences in Google services</translation>
 <translation id="7088681679121566888">Chrome is up to date</translation>
 <translation id="7098166902387133879">Google Chrome is using your microphone.</translation>
+<translation id="7099479769133613710">Relaunch to update &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
@@ -285,21 +290,18 @@ Permissions that you've already given to websites and apps may apply to this acc
 
 Permissions that you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN" />Settings<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
-<translation id="7408085963519505752">Chrome OS terms</translation>
 <translation id="7410958280246779049">Chrome blocked this file because it is dangerous</translation>
-<translation id="7419046106786626209">Chrome OS could not sync your data because Sync is not available for your domain.</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="7486227612705979895">Chrome will access your Drive to make suggestions in the address bar</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7573289029918943991">To see if your device is up to date, go to <ph name="LINK_BEGIN" />Chrome OS Settings<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Welcome to Chrome</translation>
+<translation id="7626072681686626474"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS terms.</translation>
 <translation id="7629695634924605473">Chrome lets you know if your passwords are ever compromised</translation>
 <translation id="7641148173327520642">Your system administrator has configured Google Chrome to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Chrome Enterprise logo</translation>
 <translation id="7655455401911432608">Your browsing history, a record of sites that you've visited using Chrome on this device.</translation>
-<translation id="7665553140559834626">Relaunch to update &amp;Chrome OS</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
@@ -315,7 +317,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7930071585467473040">Google Chrome is trying to copy passwords.</translation>
 <translation id="7951272445806340501">Chrome OS Flex needs to be restarted to apply the update.</translation>
 <translation id="7962410387636238736">This computer will no longer receive Google Chrome updates because Windows XP and Windows Vista are no longer supported</translation>
-<translation id="79947657522496226">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
 <translation id="8008534537613507642">Reinstall Chrome</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
@@ -333,6 +334,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="840084489713044809">Google Chrome wants to export your passwords.</translation>
 <translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
+<translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="8421734018304082652">Chrome blocked this file because it's encrypted. Ask its owner to decrypt it</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
@@ -366,7 +368,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
-<translation id="9026991721384951619">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="9053892488859122171">Chrome OS Flex system</translation>
 <translation id="9067395829937117663">Google Chrome requires Windows 7 or higher.</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>

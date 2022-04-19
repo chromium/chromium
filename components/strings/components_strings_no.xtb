@@ -100,7 +100,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="124116460088058876">Flere språk</translation>
 <translation id="1243027604378859286">Forfatter:</translation>
 <translation id="1246424317317450637">Fet</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å gi tilgjengelighetsverktøyene dine personlig preg i innstillingene for Chrome OS</translation>
 <translation id="1250759482327835220">For å betale raskere neste gang, lagre kortet og faktureringsadressen i Google-kontoen din.</translation>
 <translation id="1252799212227771492">Knappen «Opprett regneark» – trykk på Enter for å opprette et nytt Google-regneark raskt</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> og <ph name="TYPE_2" /> (synkronisert)</translation>
@@ -384,7 +383,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1919345977826869612">Annonser</translation>
 <translation id="1919367280705858090">Få hjelp med spesifikke feilmeldinger</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 nettsted}other{# nettsteder}}</translation>
-<translation id="1923390796829649802">«Administrer tilgjengelighetsinnstillinger»-knappen – trykk på Enter for å gi tilgjengelighetsverktøyene dine personlig preg i innstillingene for Chrome OS</translation>
 <translation id="1924727005275031552">Ny</translation>
 <translation id="1927439593081478069">Knappen «Kjør Chrome-sikkerhetssjekk» – trykk på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="1939175642807587452">Kan be om å få sende varsler</translation>
@@ -643,7 +641,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tømme nettleserloggen, slette informasjonskapsler, tømme bufferen med mer i Chrome-innstillingene</translation>
 <translation id="2650446666397867134">Tilgang til filen ble nektet</translation>
 <translation id="2653659639078652383">Send inn</translation>
-<translation id="2659491813326907275">Gi tilgjengelighetsverktøyene dine personlig preg i innstillingene for Chrome OS</translation>
 <translation id="2660779039299703961">Aktivitet</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ingen}=1{1 passord (for <ph name="DOMAIN_LIST" />)}=2{2 passord (for <ph name="DOMAIN_LIST" />)}other{# passord (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Topp</translation>
@@ -861,6 +858,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3295444047715739395">Se og administrer passordene dine i Chrome-innstillingene</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
 <translation id="3304073249511302126">Bluetooth-skanning</translation>
+<translation id="33073482541490531">Passordet du nettopp brukte, er funnet i et databrudd. Passordlagring anbefaler at du endrer dette passordet nå.</translation>
 <translation id="3308006649705061278">Organisasjonsenhet (OU)</translation>
 <translation id="3308738399950580893">annonser</translation>
 <translation id="3320021301628644560">Legg til faktureringsadresse</translation>
@@ -995,6 +993,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3658742229777143148">Versjon</translation>
 <translation id="3664782872746246217">Nøkkelord:</translation>
 <translation id="3667704023705708645">Risikokapital</translation>
+<translation id="367108335512738711">Chrome-bokmerker</translation>
 <translation id="3671540257457995106">Vil du tillate størrelsesendringer?</translation>
 <translation id="3675563144891642599">Tredje rull</translation>
 <translation id="3676592649209844519">Enhets-ID:</translation>
@@ -1491,6 +1490,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5040262127954254034">Personvern</translation>
 <translation id="5043480802608081735">Linken du kopierte</translation>
+<translation id="5044545992476246592">Passordet du nettopp brukte, er funnet i et databrudd. Google-assistenten kan endre passordet ditt automatisk.</translation>
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="5051305769747448211">Livekomedie</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
@@ -1503,6 +1503,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Sjekk proxy-tjeneradressen<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Tiende rull</translation>
 <translation id="507130231501693183">Postkasse 4</translation>
+<translation id="5078060223219502807">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Passordlagring at du endrer det nå og deretter sjekker de lagrede passordene dine.</translation>
 <translation id="5086225927071063542">Distribuert databehandling og databehandling i nettskyen</translation>
 <translation id="5087286274860437796">Sertifikatet til tjeneren er ikke gyldig for øyeblikket.</translation>
 <translation id="5087580092889165836">Legg til et kort</translation>
@@ -2019,6 +2020,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6579630537141957243">Vil du koble til MIDI-enheten din?</translation>
 <translation id="6579990219486187401">Lys rosa</translation>
 <translation id="6583674473685352014">B6 (konvolutt)</translation>
+<translation id="6585526963651937128">Chrome-logg</translation>
 <translation id="6587182488465657433">Chrome har funnet passordet du nettopp brukte, i et databrudd. For å sikre kontoene dine anbefaler vi at du endrer passordet nå, og deretter sjekker de lagrede passordene dine.</translation>
 <translation id="6587923378399804057">Linken du kopierte</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>
@@ -2127,6 +2129,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="691024665142758461">Last ned flere filer.</translation>
 <translation id="6915804003454593391">Bruker:</translation>
 <translation id="6916954549222464607">Økonomiplanlegging og -administrasjon</translation>
+<translation id="6917795328362592458">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Passordlagring at du sjekker de lagrede passordene dine.</translation>
 <translation id="6934672428414710184">Dette navnet er fra Google-kontoen din</translation>
 <translation id="6939469646605424232">TV-dramaer</translation>
 <translation id="6944692733090228304">Du har skrevet inn passordet ditt på et nettsted som ikke administreres av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. For å beskytte kontoen din må du ikke bruke det samme passordet i andre apper eller på andre nettsteder.</translation>
@@ -2802,6 +2805,7 @@ Mer informasjon:
 <translation id="8805819170075074995">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Oppføringen er ignorert fordi den også er inkludert i regelen SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Bade- og kroppsprodukter</translation>
 <translation id="8807160976559152894">Beskjær etter hver side</translation>
+<translation id="8808828119384186784">Chrome-innstillinger</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="882338992931677877">Manuelt spor</translation>

@@ -148,7 +148,6 @@
 <translation id="1779766957982586368">បិទផ្ទាំង</translation>
 <translation id="1791662854739702043">បាន​ដំឡើង</translation>
 <translation id="1792959175193046959">ប្ដូរ​ទីតាំង​ទាញយក​លំនាំដើម​បាន​គ្រប់ពេល</translation>
-<translation id="1795251344124198516">លក្ខខណ្ឌប្រើប្រាស់បន្ថែមរបស់ Chrome និង Chrome OS</translation>
 <translation id="1807246157184219062">ភ្លឺ</translation>
 <translation id="1810845389119482123">ការរៀបចំ​សមកាលកម្ម​ដំបូង​មិនបាន​បញ្ចប់​ទេ</translation>
 <translation id="1829244130665387512">ស្វែងរកក្នុងទំព័រ</translation>
@@ -185,7 +184,6 @@
 <translation id="2000419248597011803">បញ្ជូនការស្វែងរក និងខូគី​មួយចំនួនពី​របារអាសយដ្ឋាន និង​ប្រអប់​ស្វែងរកទៅ​ម៉ាស៊ីន​ស្វែងរក​លំនាំដើម​របស់​អ្នក</translation>
 <translation id="200114059308480249">រួមបញ្ចូល​អក្សរដែលនៅជុំវិញ​នៅក្នុង​ការស្វែងរកនៅលើ Google ឬ?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{ឯកសារ #}other{ឯកសារ #}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថាអ្នកយល់ព្រមតាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌប្រើប្រាស់បន្ថែមរបស់ Google Chrome និង Chrome OS<ph name="END_LINK2" />។ <ph name="BEGIN_LINK3" />គោលការណ៍​ឯកជនភាព<ph name="END_LINK3" />ក៏អនុវត្តផងដែរ។</translation>
 <translation id="2020309681647789787">អ្នកនឹងមានប្រវត្តិរបស់អ្នកនៅលើឧបករណ៍ដែលបានធ្វើ​សម​កាល​កម្មទាំងអស់របស់អ្នក ដើម្បីអាចឱ្យអ្នកបន្តអ្វីដែលអ្នកកំពុងបានធ្វើ</translation>
 <translation id="2021896219286479412">ការគ្រប់គ្រងទំព័រពេញអេក្រង់</translation>
 <translation id="2038563949887743358">បើកសំណើគេហទំព័រសម្រាប់កុំព្យូទ័រ</translation>
@@ -462,7 +460,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" />អំពីមាតិកាដែលបានណែនាំ</translation>
 <translation id="3495219333887281978">បានបើកសន្លឹកខាងក្រោមសម្រាប់ចូលគណនីពាក់កណ្ដាលអេក្រង់។</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">ប្រសិនបើប្រើ Chrome មានន័យថាអ្នកយល់ព្រមតាម<ph name="BEGIN_TOS_LINK" />លក្ខខណ្ឌប្រើប្រាស់ Google<ph name="END_TOS_LINK" /> និង<ph name="BEGIN_ATOS_LINK" />លក្ខខណ្ឌប្រើប្រាស់បន្ថែមរបស់ Google Chrome និង Chrome OS<ph name="END_ATOS_LINK" />។</translation>
 <translation id="3507132249039706973">ការការពារស្តង់ដារត្រូវបានបើក</translation>
 <translation id="3509330069915219067">គ្មានអ៊ីនធឺណិត។ Chrome មិនអាចពិនិត្យរក​កំណែថ្មីបានទេ។</translation>
 <translation id="3513704683820682405">AR</translation>
@@ -589,6 +586,7 @@
 <translation id="4296252229500326964">ផ្ទាំងឯកជន​ថ្មី</translation>
 <translation id="4298388696830689168">គេហទំព័រ​ដែលបានតភ្ជាប់</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
 <translation id="4307992518367153382">មូលដ្ឋាន</translation>
 <translation id="4320177379694898372">គ្មានការភ្ជាប់អ៊ីនធឺណិតទេ</translation>
 <translation id="4321739720395210191">មិនអាចបើក​កាមេរ៉ា​របស់អ្នក​បានទេ។ សូម​ចាប់ផ្ដើម​ឧបករណ៍​របស់អ្នក​ឡើងវិញ រួច​ព្យាយាម​ម្ដងទៀត។</translation>
@@ -957,7 +955,6 @@
 <translation id="6345878117466430440">សម្គាល់​ថា​បានអាន​ហើយ</translation>
 <translation id="6363990818884053551">ដើម្បី​ចាប់ផ្ដើម​សមកាលកម្ម សូមផ្ទៀងផ្ទាត់ថា​ជាអ្នក</translation>
 <translation id="6364438453358674297">យកការផ្តល់យោបល់ចេញពីប្រវត្តិ?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថាអ្នកយល់ព្រមតាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌប្រើប្រាស់បន្ថែមរបស់ Google Chrome និង Chrome OS<ph name="END_LINK2" />។</translation>
 <translation id="6380100320871303656">ផ្ទុកទំព័រជាមុន​កាន់តែញឹកញាប់​ដែល Chrome គិតថា​អ្នកទំនង​ជាចូលមើល។ ការកំណត់នេះ​អាចបណ្ដាលឱ្យ​ការប្រើប្រាស់ទិន្នន័យ​មានការកើនឡើង។</translation>
 <translation id="6385407407546870227">នៅពេល​ស្ថិតក្នុង​ការសាកល្បង ការកាត់បន្ថយ​សារឥតបានការ និង​ការគៃបន្លំ​ពឹងផ្អែកលើ​ថូខិនដែលជឿទុកចិត្ត ដើម្បីជួយគេហទំព័រ​ក្នុងការប្រយុទ្ធប្រឆាំងជាមួយ​ការគៃបន្លំ និងបែងចែក​រ៉ូបូតពីមនុស្ស។
 
@@ -1127,7 +1124,6 @@
 <translation id="7208109991155904980">បានផ្លាស់ទី​ប្រតិកម្ម</translation>
 <translation id="7222235798733126207">ដាក់កំហិតការចែករំលែករវាងគេហទំព័រនានា</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ការទាញយក 1 មិនទាន់​សម្រេចទេ}other{ការទាញយក # មិនទាន់​សម្រេចទេ}}</translation>
-<translation id="7237045078887540010">ប្រសិនបើប្រើ Chrome មានន័យថាអ្នកយល់ព្រមតាម<ph name="BEGIN_TOS_LINK" />លក្ខខណ្ឌប្រើប្រាស់ Google<ph name="END_TOS_LINK" /> និង<ph name="BEGIN_ATOS_LINK" />លក្ខខណ្ឌប្រើប្រាស់បន្ថែមរបស់ Google Chrome និង Chrome OS<ph name="END_ATOS_LINK" />។ <ph name="BEGIN_PRIVACY_LINK" />គោលការណ៍​ឯកជនភាព<ph name="END_PRIVACY_LINK" />ក៏អនុវត្តផងដែរ។</translation>
 <translation id="7242755609445462077">ការរំលេចដែលបានកំណត់រចនាប័ទ្ម <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">ត្រូវប្រាកដថា <ph name="TARGET_DEVICE_NAME" /> បានបើក​ការធ្វើសមកាលកម្ម​នៅក្នុង Chrome</translation>
 <translation id="7252076891734325316">ដាក់​ទូរសព្ទ​របស់អ្នក​នៅជិត​កុំព្យូទ័រ</translation>

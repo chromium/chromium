@@ -100,7 +100,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="124116460088058876">Boshqa tillar</translation>
 <translation id="1243027604378859286">Muallif:</translation>
 <translation id="1246424317317450637">Qalin</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS sozlamalari orqali qulaylik vositalarini moslashtirish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="1250759482327835220">Keyingi safar tezroq to‘lash uchun kartangizni Google hisobingizga saqlang.</translation>
 <translation id="1252799212227771492">Jadval yaratish tugmasi, Google Sheetda yangi jadvalni tez yaratish uchun Enter tugmasini bosing</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinxronlandi)</translation>
@@ -383,7 +382,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1919345977826869612">Reklamalar</translation>
 <translation id="1919367280705858090">Maxsus turdagi xato xabarlari asosida yordam olish</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yo‘q}=1{1 ta sayt}other{# ta sayt}}</translation>
-<translation id="1923390796829649802">Qulaylik sozlamalari boshqarish tugmasi, Chrome OS sozlamalari orqali qulaylik vositalarini moslashtirish uchun Enter tugmasini bosing</translation>
 <translation id="1924727005275031552">Yangi</translation>
 <translation id="1927439593081478069">Chrome sozlamalari orqali xavfsizlik tekshiruvini bajarish uchun Enter tugmasini bosing</translation>
 <translation id="1939175642807587452">Bildirishnomalar yuborish uchun ruxsat soʻrashi mumkin</translation>
@@ -642,7 +640,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali brauzer tarixi, cookie fayllari, kesh va boshqa maʼlumotlarni tozalash uchun Enter tugmasini bosing</translation>
 <translation id="2650446666397867134">Faylga kirish taqiqlandi</translation>
 <translation id="2653659639078652383">Yuborish</translation>
-<translation id="2659491813326907275">Chrome OS sozlamalari orqali qulayolik vositalarini moslashtirish</translation>
 <translation id="2660779039299703961">Hodisa</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Hech qanday}=1{1 ta parol (<ph name="DOMAIN_LIST" /> uchun)}=2{2 ta parol (<ph name="DOMAIN_LIST" /> uchun)}other{# ta parol (<ph name="DOMAIN_LIST" /> uchun)}}</translation>
 <translation id="2666092431469916601">Tepaga</translation>
@@ -858,6 +855,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3295444047715739395">Parollaringizni Chrome sozlamalari orqali koʻrish va boshqarish</translation>
 <translation id="3303855915957856445">Qidiruv hech qanday natija bermadi</translation>
 <translation id="3304073249511302126">bluetooth qurilmalarni qidirish</translation>
+<translation id="33073482541490531">Hozirgina siz foydalangan parol oshkor qilingan. Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="3308006649705061278">Bo‘lim (OU)</translation>
 <translation id="3308738399950580893">reklamalar</translation>
 <translation id="3320021301628644560">To‘lov manzilini kiriting</translation>
@@ -990,6 +988,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3664782872746246217">Kalit soʻzlar:</translation>
 <translation id="3667704023705708645">Venchur kapitali</translation>
+<translation id="367108335512738711">Chrome xatchoʻplari</translation>
 <translation id="3671540257457995106">Oʻlchami oʻzgaraversinmi?</translation>
 <translation id="3675563144891642599">Uchinchi oʻram</translation>
 <translation id="3676592649209844519">Qurilma identifikatori:</translation>
@@ -1486,6 +1485,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="5040262127954254034">Shaxsiy ma’lumotlar</translation>
 <translation id="5043480802608081735">Nusxalangan havola</translation>
+<translation id="5044545992476246592">Hozirgina siz foydalangan parol oshkor qilingan. Google Assistent parolingizni avtomatik oʻzgartira oladi.</translation>
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
 <translation id="5051305769747448211">Jonli komediya</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}other{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}}</translation>
@@ -1498,6 +1498,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proksi-server manzilini tekshirish<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Oʻninchi oʻram</translation>
 <translation id="507130231501693183">Pochta qutisi 4</translation>
+<translation id="5078060223219502807">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Parollar menejeri uni hoziroq almashtirishni va saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
 <translation id="5086225927071063542">Tarqatma va bulutli hisoblash</translation>
 <translation id="5087286274860437796">Server sertifikati ayni paytda yaroqsiz.</translation>
 <translation id="5087580092889165836">Yangi karta qo‘shish</translation>
@@ -2013,6 +2014,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6579630537141957243">MIDI qurilma ulansinmi?</translation>
 <translation id="6579990219486187401">Och pushti</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6585526963651937128">Chrome tarixi</translation>
 <translation id="6587182488465657433">Chrome hozirgina oshkor qilingan parol ishlatganini aniqladi. Hisoblaringiz himoyasi uchun parolni hoziroq yangilang va saqlangan parollaringizni tekshiring.</translation>
 <translation id="6587923378399804057">Nusxalangan havola</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> qurilmangiz mustaqil</translation>
@@ -2121,6 +2123,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="691024665142758461">Bir nechta faylni yuklab olish</translation>
 <translation id="6915804003454593391">Foydalanuvchi:</translation>
 <translation id="6916954549222464607">Moliyani rejalashtirish va boshqarish</translation>
+<translation id="6917795328362592458">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Parollar menejeri saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
 <translation id="6934672428414710184">Bu nom Google hisobingizga biriktirilgan</translation>
 <translation id="6939469646605424232">TV dramalar</translation>
 <translation id="6944692733090228304">Siz parol kiritgan sayt <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tomonidan boshqarilmaydi. Hisobingizni himoya qilish uchun boshqa ilova va saytlarda bu paroldan foydalanmang.</translation>
@@ -2797,6 +2800,7 @@ Batafsil axborot:
 <translation id="8805819170075074995">“<ph name="LANGUAGE_ID" />” tili: Bu til SpellcheckLanguage parametrida borligi uchun inkor etildi.</translation>
 <translation id="8806285662264631610">Vanna va tana parvarishi mahsulotlari</translation>
 <translation id="8807160976559152894">Har bir sahifa chekkasini qirqish</translation>
+<translation id="8808828119384186784">Chrome sozlamalari</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali Chromeni yangilash uchun Enter tugmasini bosing</translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="882338992931677877">Mustaqil orqaliq</translation>

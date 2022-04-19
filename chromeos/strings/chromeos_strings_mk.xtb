@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Ревизија на хардвер</translation>
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
 <translation id="1908234395526491708">Неуспешни UDP-барања</translation>
-<translation id="1930797645656624981">Услуга за метод за внесување во Chrome OS</translation>
 <translation id="1947737735496445907">Отпечатено</translation>
 <translation id="1951012854035635156">Помошник</translation>
+<translation id="1977994649430373166">Фотографија на профилот на Google</translation>
 <translation id="1979103255016296513">Измина рокот за промена на лозинката</translation>
 <translation id="1999615961760456652">Портал за проверка</translation>
 <translation id="2006864819935886708">Поврзување</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Треба да се избере минимум еден албум во „Уметничката галерија“</translation>
 <translation id="2230005943220647148">Целзиусови</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Вклучи/исклучи заднинско светло на тастатура</translation>
 <translation id="2240366984605217732">Прекинувач за распоред</translation>
 <translation id="225692081236532131">Статус на активирање</translation>
 <translation id="2287186687001756809">Нема достапна слика. За да додадете фотографии, одете на <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Не може да се поврзе на интернет.</translation>
 <translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">За да ја поставите, одете во „Поставки“</translation>
-<translation id="2585245331261708204">Што е ново во Chrome OS</translation>
 <translation id="2619761439309613843">Дневно освежување</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2640549051766135490">Избран е албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4744944742468440486">Информации поврзани со вашиот избор</translation>
-<translation id="475869545581454722">Лозинката за Chrome OS е ажурирана</translation>
 <translation id="4773299976671772492">Сопрено</translation>
 <translation id="4782311465517282004">Добивајте дефиниции, преводи или конверзија на вредности кога ќе кликнете со десно копче или ќе допрете и задржите текст</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фотографија</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Овозможете режим во автоматска боја</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
+<translation id="8045012663542226664">Исклучи звук на микрофон</translation>
 <translation id="8075838845814659848">Преостанато полнење</translation>
 <translation id="8082366717211101304">Не може да се одреди со DNS од апликации на Android</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">Тест</translation>
 <translation id="9204237731135241582">Не може да се стапи во контакт со портал од апликации на Android</translation>
 <translation id="9211490828691860325">Сите работни површини</translation>
+<translation id="932327136139879170">Дома</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="960719561871045870">Код на оператор</translation>

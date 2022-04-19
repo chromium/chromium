@@ -39,6 +39,7 @@
 <translation id="3345341804167540816">Koristite Chrome svuda</translation>
 <translation id="3522659714780527202">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, uključite sinhronizaciju</translation>
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može da proverava lozinke kada ih sačuvate.</translation>
+<translation id="3641179212828090796">Koristite lozinku koju ste sačuvali u Chrome-u radi bržeg prijavljivanja</translation>
 <translation id="3655656110921623717">To znači da će Chrome svaki put zahtevati mobilni sajt.</translation>
 <translation id="3706101708757577809">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="3720541637541300822">Zaključajte kartice bez arhiviranja posle zatvaranja Chrome-a</translation>
@@ -75,6 +76,7 @@
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Dozvolite Chrome-u da zaključa kartice bez arhiviranja.</translation>
 <translation id="6387994324662817823">Lozinke se čuvaju u Google menadžeru lozinki samo na ovom uređaju.</translation>
+<translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="6427126399757991875">Vaša organizacija podešava Chrome...</translation>
 <translation id="6600954340915313787">Kopirana u Chrome</translation>
 <translation id="6634107063912726160">Kada se odjavite, Chrome ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>

@@ -100,7 +100,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negrito</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar as ferramentas de acessibilidade nas configurações do Chrome OS</translation>
 <translation id="1250759482327835220">Para agilizar o pagamento na próxima vez, salve o cartão, seu nome e o endereço de faturamento na sua Conta do Google.</translation>
 <translation id="1252799212227771492">Botão para criar uma planilha. Pressione Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
@@ -303,7 +302,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1711528724596764268">Aprendizado de máquina e inteligência artificial</translation>
 <translation id="1712552549805331520"><ph name="URL" /> quer armazenar dados no computador local</translation>
 <translation id="1713628304598226412">Bandeja 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">S</translation>
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1717494416764505390">Caixa de e-mails 3</translation>
 <translation id="1718029547804390981">O documento é grande demais para receber anotações</translation>
@@ -344,7 +343,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Página inicial</translation>
 <translation id="1812527064848182527">paisagem</translation>
-<translation id="1813414402673211292">Limpar dados de navegação</translation>
+<translation id="1813414402673211292">Remover dados de navegação</translation>
 <translation id="182139138257690338">downloads automáticos</translation>
 <translation id="1821930232296380041">Solicitação ou parâmetros de solicitação inválidos</translation>
 <translation id="1822540298136254167">Os sites que você visita e o tempo gasto neles</translation>
@@ -380,7 +379,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
-<translation id="1923390796829649802">Botão "Gerenciar configurações de acessibilidade". Pressione Enter para personalizar as ferramentas de acessibilidade nas configurações do Chrome OS</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927439593081478069">Botão "Executar a confirmação de segurança do Chrome". Pressione Enter para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="1939175642807587452">Pode pedir para enviar notificações</translation>
@@ -639,7 +637,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para limpar o histórico de navegação, cookies, cache e muito mais nas configurações do Chrome</translation>
 <translation id="2650446666397867134">O acesso ao arquivo foi negado</translation>
 <translation id="2653659639078652383">Enviar</translation>
-<translation id="2659491813326907275">Personalizar as ferramentas de acessibilidade nas configurações do Chrome OS</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 senha (para <ph name="DOMAIN_LIST" />)}=2{2 senhas (para <ph name="DOMAIN_LIST" />)}one{# senha (para <ph name="DOMAIN_LIST" />)}other{# senhas (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
@@ -857,6 +854,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3295444047715739395">Veja e gerencie suas senhas nas configurações do Chrome</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
 <translation id="3304073249511302126">verificação de Bluetooth</translation>
+<translation id="33073482541490531">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas recomenda que você a mude imediatamente.</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
 <translation id="3308738399950580893">anúncios</translation>
 <translation id="3320021301628644560">Adicionar endereço de faturamento</translation>
@@ -970,7 +968,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />": idioma desconhecido ou não compatível.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3615877443314183785">Informe uma data de validade válida</translation>
-<translation id="36224234498066874">Limpar dados de navegação...</translation>
+<translation id="36224234498066874">Remover dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
 <translation id="3630155396527302611">Se ele já estiver listado como um programa que tem permissão para acessar a rede, tente
       removê-lo da lista e adicioná-lo novamente.</translation>
@@ -991,6 +989,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="3664782872746246217">Palavras-chave:</translation>
 <translation id="3667704023705708645">Capital de risco</translation>
+<translation id="367108335512738711">Favoritos do Chrome</translation>
 <translation id="3671540257457995106">Permitir o redimensionamento?</translation>
 <translation id="3675563144891642599">Terceiro rolo</translation>
 <translation id="3676592649209844519">Código do dispositivo:</translation>
@@ -1482,6 +1481,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Link que você copiou</translation>
+<translation id="5044545992476246592">A senha que você usou foi encontrada em uma violação de dados. O Google Assistente pode mudar a senha automaticamente.</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="5051305769747448211">Shows de comédia ao vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes arquivos usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
@@ -1494,6 +1494,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Verificar o endereço do proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Décimo rolo</translation>
 <translation id="507130231501693183">Caixa de e-mails 4</translation>
+<translation id="5078060223219502807">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas recomenda que você a mude e revise as senhas salvas.</translation>
 <translation id="5086225927071063542">Computação em nuvem e distribuída</translation>
 <translation id="5087286274860437796">O certificado do servidor não é válido no momento.</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
@@ -1626,7 +1627,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele não é válido no momento. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="5412236728747081950">Este site acessa seus interesses no Chrome para mostrar anúncios mais relevantes</translation>
 <translation id="541416427766103491">Empilhador 4</translation>
-<translation id="5421136146218899937">Limpar dados de navegação...</translation>
+<translation id="5421136146218899937">Remover dados de navegação...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
 <translation id="5428105026674456456">Espanhol</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
@@ -1662,7 +1663,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5528532273234423708">Automação residencial</translation>
 <translation id="55293785478302737">Costurar borda</translation>
 <translation id="553484882784876924">Prc6 (Envelope)</translation>
-<translation id="5535133333442455806">Botão "Limpar dados de navegação". Pressione "Enter" para limpar o histórico de navegação, os cookies, o cache e muito mais nas configurações do Chrome</translation>
+<translation id="5535133333442455806">Botão "Remover dados de navegação". Pressione "Enter" para limpar o histórico de navegação, os cookies, o cache e muito mais nas configurações do Chrome</translation>
 <translation id="5536214594743852365">Mostrar a seção "<ph name="SECTION" />"</translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Não foi possível encontrar o artigo solicitado.</translation>
@@ -2010,6 +2011,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6579630537141957243">Conectar dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa-claro</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6585526963651937128">Histórico do Chrome</translation>
 <translation id="6587182488465657433">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. Para proteger suas contas, recomendamos mudar a senha agora mesmo e verificar as senhas salvas.</translation>
 <translation id="6587923378399804057">Link que você copiou</translation>
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>
@@ -2118,6 +2120,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="691024665142758461">Fazer o download de vários arquivos</translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6916954549222464607">Planejamento e gerenciamento financeiro</translation>
+<translation id="6917795328362592458">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas recomenda que você revise as senhas salvas.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
 <translation id="6939469646605424232">Dramas de TV</translation>
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
@@ -2535,7 +2538,7 @@ Mais detalhes:
 <translation id="8009225694047762179">Gerenciar senha</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}one{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}other{Estes cartões e os endereços de faturamento deles serão salvos. Você poderá usá-los quando a conta <ph name="USER_EMAIL" /> estiver conectada.}}</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
-<translation id="8026334261755873520">Limpar dados de navegação</translation>
+<translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Formulários Google</translation>
 <translation id="8028960012888758725">Cortar ao término da impressão</translation>
@@ -2795,6 +2798,7 @@ Mais detalhes:
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />": entrada ignorada porque também foi incluída na política SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Produtos para banho e corpo</translation>
 <translation id="8807160976559152894">Cortar depois de cada página</translation>
+<translation id="8808828119384186784">Configurações do Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para atualizar o Chrome pelas configurações dele</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="882338992931677877">Entrada manual</translation>

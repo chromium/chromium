@@ -39,6 +39,7 @@
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
+<translation id="3641179212828090796">Use the password that you saved in Chrome to sign in faster</translation>
 <translation id="3655656110921623717">This means that Chrome will request the mobile site every time.</translation>
 <translation id="3706101708757577809">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="3720541637541300822">Lock incognito tabs when you close Chrome</translation>
@@ -75,6 +76,7 @@
 <translation id="6181930887571472871">Switch to Chrome</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
 <translation id="6387994324662817823">Passwords are saved to Google Password Manager on this device only.</translation>
+<translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6427126399757991875">Your organisation is setting up Chrome…</translation>
 <translation id="6600954340915313787">Copied to Chrome</translation>
 <translation id="6634107063912726160">When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>

@@ -357,7 +357,7 @@
 <translation id="3286372614333682499">dọc</translation>
 <translation id="3286390186030710347">Thanh trượt</translation>
 <translation id="3300348286427369683">Hỗ trợ văn bản đa dạng thức. ChromeVox hiện hỗ trợ các trường văn bản đa dạng thức, bao gồm cả lệnh di chuyển, định tuyến con trỏ chữ nổi, lựa chọn và các trường khác.</translation>
-<translation id="3300733168898541351">hủy</translation>
+<translation id="3300733168898541351">huỷ</translation>
 <translation id="3307886118343381874">Đi tới cuối bảng</translation>
 <translation id="3312997241656799641">Liên kết đã truy cập tiếp theo</translation>
 <translation id="3313245066383501820">Phím bổ trợ ChromeVox</translation>
@@ -851,7 +851,7 @@
 <translation id="6910211073230771657">Đã xóa</translation>
 <translation id="6910969481785184048">Bật, tắt và dừng</translation>
 <translation id="6919104639734799681">Hiển thị danh sách bảng</translation>
-<translation id="692135145298539227">xóa</translation>
+<translation id="692135145298539227">xoá</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6949846980769640811">Màu xanh nước biển hài hòa</translation>
 <translation id="6951482098621102657">Không có tiêu đề cấp 5 nào tiếp theo</translation>
@@ -966,8 +966,6 @@
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Giọng nói tự nhiên</translation>
 <translation id="7714340021005120797">Không có hộp kết hợp nào tiếp theo</translation>
-<translation id="772146615414628379">Xin chúc mừng! Bạn đã tìm hiểu xong thông tin cơ bản để sử dụng hiệu quả ChromeVox. Hãy nhớ rằng bạn có thể mở trình đơn lệnh của ChromeVox bất cứ lúc nào bằng cách nhấn tổ hợp phím Tìm kiếm+Dấu chấm. Để tìm hiểu thêm về ChromeVox và Chrome OS, hãy truy cập vào các bài viết sau đây.
-    Nếu bạn đã đọc xong phần hướng dẫn, hãy dùng ChromeVox để chuyển đến nút Đóng rồi nhấp vào nút đó.</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7731785449856576010">Không có tiện ích nghe nhìn nào tiếp theo</translation>
 <translation id="7735498529470878067">Tính năng Khám phá bằng cách chạm có thể giúp bạn nhanh chóng nắm được nội dung trên màn hình.</translation>
@@ -1046,7 +1044,7 @@
 <translation id="8212109599554677485">Thay đổi kiểu hiển thị thành song song</translation>
 <translation id="8215202828671303819">Đa chọn</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, độ mờ <ph name="OPACITY_PERCENTAGE" />%.</translation>
-<translation id="8261506727792406068">Xóa</translation>
+<translation id="8261506727792406068">Xoá</translation>
 <translation id="826825447994856889">Giới thiệu</translation>
 <translation id="827266600368092403">Lựa chọn bắt đầu hoặc kết thúc</translation>
 <translation id="827422111966801947">Màu chàm</translation>

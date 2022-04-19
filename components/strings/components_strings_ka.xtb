@@ -100,7 +100,6 @@
 <translation id="124116460088058876">სხვა ენები</translation>
 <translation id="1243027604378859286">ავტორი:</translation>
 <translation id="1246424317317450637">მუქი</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS პარამეტრებიდან მარტივი წვდომის ხელსაწყოების პერსონალიზირებისთვის დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="1250759482327835220">შემდგომი გადახდების დასაჩქარებლად შეგიძლიათ შეინახოთ თქვენი ბარათის მონაცემები, სახელი და ბილინგის მისამართი თქვენს Google ანგარიშში.</translation>
 <translation id="1252799212227771492">ფურცლის შექმნის ღილაკი, ახალი Google Sheet-ის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Enter</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (სინქრონიზებული)</translation>
@@ -303,7 +302,7 @@
 <translation id="1711528724596764268">მანქანური სწავლება და ხელოვნური ინტელექტი</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ითხოვს თქვენს ადგილობრივ კომპიუტერზე მონაცემების სამუდამოდ შენახვის ნებართვას</translation>
 <translation id="1713628304598226412">ლანგარი 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">პ</translation>
 <translation id="1717218214683051432">მოძრაობის სენსორები</translation>
 <translation id="1717494416764505390">საფოსტო ყუთი 3</translation>
 <translation id="1718029547804390981">დოკუმენტი ანოტირებისთვის მეტისმეტად დიდია</translation>
@@ -380,7 +379,6 @@
 <translation id="1919345977826869612">რეკლამა</translation>
 <translation id="1919367280705858090">შეცდომის შესახებ კონკრეტულ შეტყობინებებთან დაკავშირებული დახმარება</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{არცერთი}=1{1 საიტი}other{# საიტი}}</translation>
-<translation id="1923390796829649802">მარტივი წვდომის პარამეტრების მართვის ღილაკი, Chrome OS პარამეტრებიდან მარტივი წვდომის ხელსაწყოების პერსონალიზირებისთვის დააჭირეთ კლავიშს Enter</translation>
 <translation id="1924727005275031552">სიახლე</translation>
 <translation id="1927439593081478069">Chrome-ის უსაფრთხოების შემოწმების გაშვების ღილაკი, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად დააჭირეთ კლავიშს Enter</translation>
 <translation id="1939175642807587452">შეუძლია შეტყობინებების გამოგზავნის თხოვნა</translation>
@@ -510,6 +508,7 @@
 <translation id="2298855485018661510">ქუქი-ჩანაწერების მართვის ღილაკი, ქუქი-ჩანაწერების პარამეტრების Chrome-ის პარამეტრებიდან სამართავად დააჭირეთ კლავიშს Enter</translation>
 <translation id="2300306941146563769">აუტვირთავია</translation>
 <translation id="2310021320168182093">Chou2 (კონვერტი)</translation>
+<translation id="2316159751672436664">მარტივი წვდომის ხელსაწყოების პერსონალიზირება ChromeOS პარამეტრებიდან</translation>
 <translation id="2316887270356262533">გამოთავისუფლდება 1 მბაიტზე ნაკლები. ზოგიერთი საიტი შემდეგი მონახულებისას შეიძლება უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> საჭიროებს მომხმარებლის სახელსა და პაროლს.</translation>
 <translation id="2318594867107319532">წესების ბოლო დროის ანაბეჭდი:</translation>
@@ -639,7 +638,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან თქვენი დათვალიერების ისტორიის, ქუქი-ჩანაწერების, ქეშისა და სხვა კონტენტის გასასუფთავებლად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="2650446666397867134">წვდომა ფაილზე აკრძალულია</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
-<translation id="2659491813326907275">მარტივი წვდომის ხელსაწყოების პერსონალიზირება Chrome OS პარამეტრებიდან</translation>
 <translation id="2660779039299703961">მოვლენა</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{არცერთი}=1{1 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის)}=2{2 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის)}other{# პაროლი (<ph name="DOMAIN_LIST" />-ისთვის)}}</translation>
 <translation id="2666092431469916601">ზედა</translation>
@@ -857,6 +855,7 @@
 <translation id="3295444047715739395">იხილეთ თქვენი პაროლები და მართეთ ისინი Chrome-ის პარამეტრებიდან</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="3304073249511302126">Bluetooth სკანირება</translation>
+<translation id="33073482541490531">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ ეს პაროლი.</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
 <translation id="3308738399950580893">რეკლამა</translation>
 <translation id="3320021301628644560">ბილინგის მისამართის დამატება</translation>
@@ -991,6 +990,7 @@
 <translation id="3658742229777143148">რედაქცია</translation>
 <translation id="3664782872746246217">საკვანძო სიტყვები:</translation>
 <translation id="3667704023705708645">სარისკო კაპიტალდაბანდება</translation>
+<translation id="367108335512738711">Chrome-ის სანიშნები</translation>
 <translation id="3671540257457995106">გსურთ ზომის შეცვლის დაშვება?</translation>
 <translation id="3675563144891642599">მესამე რულონი</translation>
 <translation id="3676592649209844519">მოწყობილობის ID:</translation>
@@ -1482,6 +1482,7 @@
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5040262127954254034">კონფიდენციალურობა</translation>
 <translation id="5043480802608081735">თქვენ მიერ კოპირებული ბმული</translation>
+<translation id="5044545992476246592">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. Google ასისტენტს თქვენი პაროლის შეცვლა ავტომატურად შეუძლია.</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
 <translation id="5051305769747448211">ლაივკომედია</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ეს ფაილი მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}other{ეს ფაილები მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}}</translation>
@@ -1494,6 +1495,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />პროქსის მისამართის შემოწმება<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">მეათე რულონი</translation>
 <translation id="507130231501693183">საფოსტო ყუთი 4</translation>
+<translation id="5078060223219502807">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. თქვენი ანგარიშის დაცვის მიზნით, პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ ის, შემდეგ კი შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="5086225927071063542">გამოთვლა მონაცემების გადანაწილებისა და ინტერნეტ-რესურსების დახმარებით</translation>
 <translation id="5087286274860437796">სერვერის ამჟამინდელი სერტიფიკატი არასწორია.</translation>
 <translation id="5087580092889165836">ბარათის დამატება</translation>
@@ -1659,6 +1661,7 @@
 <translation id="5518670652865028077">ხელოვნება და გართობა</translation>
 <translation id="5519516356611866228">თქვენი ცვლილებებით</translation>
 <translation id="5523118979700054094">წესის სახელი</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS პარამეტრებიდან მარტივი წვდომის ხელსაწყოების პერსონალიზირებისთვის დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="5528532273234423708">სახლის ავტომატიზაცია</translation>
 <translation id="55293785478302737">კიდეების მიკერება</translation>
 <translation id="553484882784876924">Prc6 (კონვერტი)</translation>
@@ -2010,6 +2013,7 @@
 <translation id="6579630537141957243">გსურთ MIDI მოწყობილობასთან დაკავშირება?</translation>
 <translation id="6579990219486187401">ღია ვარდისფერი</translation>
 <translation id="6583674473685352014">B6 (კონვერტი)</translation>
+<translation id="6585526963651937128">Chrome-ის ისტორია</translation>
 <translation id="6587182488465657433">თქვენ მიერ ახლახან გამოყენებული პაროლი Chrome-მა გაჟონილ მონაცემებში იპოვა. თქვენი ანგარიშების დაცვის მიზნით, გირჩევთ, ახლავე შეცვალოთ ის, შემდეგ კი შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="6587923378399804057">თქვენ მიერ კოპირებული ბმული</translation>
 <translation id="6591833882275308647">თქვენი <ph name="DEVICE_TYPE" /> არ არის მართული</translation>
@@ -2118,6 +2122,7 @@
 <translation id="691024665142758461">მრავლობითი ფაილების ჩამოტვირთვა</translation>
 <translation id="6915804003454593391">მომხმარებელი:</translation>
 <translation id="6916954549222464607">ფინანსური დაგეგმვა და მართვა</translation>
+<translation id="6917795328362592458">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. თქვენი ანგარიშის დაცვის მიზნით, პაროლების მმართველი გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="6934672428414710184">ეს სახელი მომდინარეობს თქვენი Google ანგარიშიდან</translation>
 <translation id="6939469646605424232">სატელევიზიო დრამა</translation>
 <translation id="6944692733090228304">თქვენ შეიყვანეთ პაროლი საიტზე, რომელსაც არ მართავს <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. თქვენი ანგარიშის დასაცავად არ გამოიყენოთ იგივე პაროლი სხვა აპებსა და საიტებზე.</translation>
@@ -2235,6 +2240,7 @@
 <translation id="722454870747268814">ახალი ინკოგნიტო ჩანართი</translation>
 <translation id="7233592378249864828">ბეჭდვის დასტურის გვერდი</translation>
 <translation id="7234638337680728591">საწვავის ფასები და ავტომობილების საწვავით შევსება</translation>
+<translation id="7237492777898608035">აღარ მაჩვენოთ ეს შეტყობინება ამ საიტისთვის</translation>
 <translation id="7238585580608191973">SHA-256 თითის ანაბეჭდი</translation>
 <translation id="7240120331469437312">სერტიფიკატის თემის ალტერნატიული სახელი</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2617,6 +2623,7 @@
 <translation id="8242426110754782860">გაგრძელება</translation>
 <translation id="8249296373107784235">შეწყვეტა</translation>
 <translation id="8249463483885748674">სტანდარტიზებული და მისაღები ტესტები</translation>
+<translation id="8252991034201168845">მარტივი წვდომის პარამეტრების მართვის ღილაკი, ChromeOS პარამეტრებიდან მარტივი წვდომის ხელსაწყოების პერსონალიზირებისთვის დააჭირეთ კლავიშს Enter</translation>
 <translation id="8253091569723639551">ბილინგის მისამართი აუცილებელია</translation>
 <translation id="8257387598443225809">ეს აპი შექმნილია მობილურისთვის</translation>
 <translation id="825929999321470778">ყველა შენახული პაროლის ჩვენება</translation>
@@ -2794,6 +2801,7 @@
 <translation id="8805819170075074995">სიის ჩანაწერი „<ph name="LANGUAGE_ID" />“: ჩანაწერი იგნორირებულია, ვინაიდან მას შეიცავს „SpellcheckLanguage“ წესებიც.</translation>
 <translation id="8806285662264631610">სააბაზანოს და ტანის პროდუქცია</translation>
 <translation id="8807160976559152894">შემოჭრა თითოეული გვერდის შემდეგ</translation>
+<translation id="8808828119384186784">Chrome-ის პარამეტრები</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან Chrome-ის გასაახლებლად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="882338992931677877">ინდივიდუალური სათავსო</translation>

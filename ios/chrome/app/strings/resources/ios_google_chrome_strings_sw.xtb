@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Akaunti hii na data yoyote ambayo haijahifadhiwa itaondolewa kwenye Chrome na programu zingine za Google kwenye kifaa hiki.</translation>
 <translation id="1968388653333775699">Fanya Mengi Zaidi kwa kutumia Chrome</translation>
 <translation id="2009224836393115614">Chrome imeshindwa kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
+<translation id="2056123005618757196">Fanya mengi zaidi kwa kutumia Google Chrome ambayo ni rahisi, salama na yenye kasi zaidi.</translation>
 <translation id="2147651015520127414">Chrome imethibitisha kuwa <ph name="ISSUER" /> ndiye mtoa cheti cha tovuti hii.</translation>
 <translation id="2199719347983604670">Data kutoka usawazishaji wa Chrome</translation>
 <translation id="2313070403598893276">Google Chrome ni rahisi, salama na yenye kasi zaidi</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Baadhi ya programu jalizi husababisha Chrome iache kufanya kazi. Tafadhali ondoa:</translation>
 <translation id="4633328489441962921">Chrome imeshindwa kukagua kama kuna masasisho</translation>
 <translation id="4698415050768537821">Chrome imeshindwa kukagua manenosiri yote. Jaribu tena kesho au <ph name="BEGIN_LINK" />ukague manenosiri katika Akaunti yako ya Google.<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">Ili kusaidia kuboresha programu, Chrome hutuma takwimu ya matumizi na ripoti ya kuacha kufanya kazi kwenda Google. <ph name="BEGIN_LINK" />Dhibiti<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Haitumiki kwenye toleo la Beta la Chrome</translation>
 <translation id="5030102366287574140">Chrome inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, tovuti ambazo si salama na zaidi.</translation>
 <translation id="5108659628347594808">Boresha Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Badilisha utumie Chrome</translation>
 <translation id="6238746320622508509">Ruhusu Chrome ifunge vichupo vyako Fiche.</translation>
 <translation id="6387994324662817823">Manenosiri huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwenye kifaa hiki tu.</translation>
+<translation id="6412673304250309937">Hukagua URL zilizo na orodha ya tovuti zisizo salama zinazohifadhiwa kwenye Chrome. Iwapo tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama.</translation>
 <translation id="6427126399757991875">Shirika lako linaweka mipangilio ya Chrome...</translation>
 <translation id="6600954340915313787">Imenakiliwa kwenye Chrome</translation>
 <translation id="6634107063912726160">Ukiondoka katika akaunti, Chrome haitasawazisha data yoyote mpya kwenye Akaunti yako ya Google. Data iliyosawazishwa hapo awali husalia kwenye akaunti.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Kaa Salama Kwa Kutumia Google Chrome</translation>
 <translation id="8772179140489533211">Huonyesha vidokezo vya kuingia katika akaunti kwenye Chrome.</translation>
 <translation id="8788269841521769222">Hutahitaji kukumbuka nenosiri hili. Litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Inapokuwa imewashwa:
+<ph name="BEGIN_INDENT" />  • Saidia kuboresha Chrome kwa ajili ya watumiaji wengine wanaoitumia kama wewe unavyoitumia.<ph name="END_INDENT" />
+
+Mambo ya kuzingatia:
+<ph name="BEGIN_INDENT" />  • Taarifa kuhusu matumizi yako ya Chrome zitatumwa kwenda Google, lakini bila kukupa masharti yoyote.
+
+  • Ikiwa Chrome itaacha kufanya kazi, maelezo kuhusu kutofanya kazi yanaweza kuhusisha baadhi ya taarifa binafsi.
+
+  • Iwapo utawasha usawazishaji, vipimo vinaweza pia kujumuisha taarifa kuhusu URL unazozitembelea.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Ungependa Kuweka Chrome iwe Kivinjari chaguomsingi?</translation>
 <translation id="9122931302567044771">Hii inamaanisha kwamba Chrome itahitaji tovuti ya kompyuta kila wakati.</translation>
 </translationbundle>

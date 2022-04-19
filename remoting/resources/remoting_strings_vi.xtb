@@ -13,7 +13,7 @@
 <translation id="1742469581923031760">Đang kết nối...</translation>
 <translation id="177040763384871009">Để cho phép trình duyệt trên máy khách mở các đường liên kết được nhấp vào trên thiết bị từ xa, bạn cần thay đổi trình duyệt web của hệ thống thành "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP kênh dành cho ứng dụng khách: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' kênh='<ph name="CHANNEL_TYPE" />' kết nối='<ph name="CONNECTION_TYPE" />'.</translation>
-<translation id="1897488610212723051">Xóa</translation>
+<translation id="1897488610212723051">Xoá</translation>
 <translation id="2009755455353575666">Không kết nối được</translation>
 <translation id="2038229918502634450">Máy chủ đang khởi động lại, để thay đổi về chính sách có hiệu lực.</translation>
 <translation id="2078880767960296260">Quá trình lưu trữ trên máy chủ</translation>

@@ -148,7 +148,6 @@
 <translation id="1779766957982586368">विंडो बंद करा</translation>
 <translation id="1791662854739702043">इंस्टॉल केले</translation>
 <translation id="1792959175193046959">डीफॉल्ट डाउनलोडचे स्थान केव्हाही बदला</translation>
-<translation id="1795251344124198516">Chrome आणि Chrome OS अतिरिक्त सेवा अटी</translation>
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1810845389119482123">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही</translation>
 <translation id="1829244130665387512">या पृष्ठामध्ये शोधा</translation>
@@ -185,7 +184,6 @@
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
 <translation id="200114059308480249">Google वर शोधताना आसपासच्या मजकुराचा समावेश करायचा आहे का?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइल}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />गोपनीयता धोरण<ph name="END_LINK3" /> देखील लागू होते.</translation>
 <translation id="2020309681647789787">तुमच्याकडे तुमच्या सर्व डिव्हाइसवर सिंक केलेला इतिहास असेल, जेणेकरून तुम्ही जे करत होता ते पुढे सुरू ठेवू शकता</translation>
 <translation id="2021896219286479412">फुल स्क्रीन साइट नियंत्रणे</translation>
 <translation id="2038563949887743358">डेस्कटॉप साइट विनंती सुरू करा</translation>
@@ -462,7 +460,6 @@
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">अर्ध्या उंचीवर उघडलेल्या तळाशी असलेल्या शीटमध्ये साइन इन करा.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Chrome वापरून, तुम्ही <ph name="BEGIN_TOS_LINK" />Google सेवा अटी<ph name="END_TOS_LINK" /> व <ph name="BEGIN_ATOS_LINK" />Google Chrome आणि Chrome OS अतिरिक्त सेवा अटी<ph name="END_ATOS_LINK" /> यांना सहमती दर्शवता.</translation>
 <translation id="3507132249039706973">मानक संरक्षण सुरू आहे</translation>
 <translation id="3509330069915219067">ऑफलाइन. Chrome ला अपडेट तपासता आले नाहीत.</translation>
 <translation id="3513704683820682405">ऑगमेंटेड रिअ‍ॅलिटी</translation>
@@ -589,6 +586,7 @@
 <translation id="4296252229500326964">नवीन गुप्त टॅब</translation>
 <translation id="4298388696830689168">लिंक केलेल्या साइट</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="4307992518367153382">मूलभूत</translation>
 <translation id="4320177379694898372">कोणतेही इंटरनेट कनेक्शन नाही</translation>
 <translation id="4321739720395210191">तुमचा कॅमेरा उघडू शकत नाही. तुमचे डिव्हाइस रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -957,7 +955,6 @@
 <translation id="6345878117466430440">वाचलेले अशी खूण करा</translation>
 <translation id="6363990818884053551">सिंक सुरू करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="6364438453358674297">इतिहासातून सूचना काढून टाकायची?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
 <translation id="6380100320871303656">Chrome ला तुम्ही भेट देण्याची शक्यता आहे असे वाटत असलेली पेज ते अधिक वारंवार प्रीलोड करते. या सेटिंगमुळे डेटा वापर वाढू शकतो.</translation>
 <translation id="6385407407546870227">चाचण्या सुरू असताना, स्पॅम आणि घोटाळा कमी करणे हे ट्रस्ट टोकनवर अवलंबून असते, त्यांच्यामुळे साइटना घोटाळ्याविरुद्ध लढण्यात आणि लोक व बॉट यांच्यातील फरक ओळखण्यात मदत होते.
 
@@ -1127,7 +1124,6 @@
 <translation id="7208109991155904980">प्रतिक्रिया हलवली</translation>
 <translation id="7222235798733126207">साइटदरम्यान मर्यादित शेअरिंग</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
-<translation id="7237045078887540010">Chrome वापरून, तुम्ही <ph name="BEGIN_TOS_LINK" />Google सेवा अटी<ph name="END_TOS_LINK" /> आणि <ph name="BEGIN_ATOS_LINK" />Google Chrome व Chrome OS च्या अतिरिक्त सेवा अटी<ph name="END_ATOS_LINK" /> यांना सहमती दर्शवता. <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_LINK" /> देखील लागू होते.</translation>
 <translation id="7242755609445462077">स्टाइल केलेले हायलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> ने Chrome मध्ये सिंक सुरू केले असल्याची खात्री करा</translation>
 <translation id="7252076891734325316">तुमचा फोन कॉंप्युटरच्या जवळ ठेवा</translation>

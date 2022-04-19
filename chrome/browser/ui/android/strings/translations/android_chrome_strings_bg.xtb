@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1177863135347784049">По избор</translation>
 <translation id="1181037720776840403">Премахване</translation>
+<translation id="1193729455103054076">Да се използва ли надеждна парола?</translation>
 <translation id="1197267115302279827">Преместване на отметки</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1202892408424955784">Проследявани продукти</translation>
@@ -147,7 +148,6 @@
 <translation id="1779766957982586368">Затваряне на прозореца</translation>
 <translation id="1791662854739702043">Инсталиран</translation>
 <translation id="1792959175193046959">Променете стандартното местоположение за изтегляне по всяко време</translation>
-<translation id="1795251344124198516">Допълнителни общи условия на Chrome и Chrome OS</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1810845389119482123">Първоначалното настройване на синхронизирането не завърши</translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
@@ -184,7 +184,6 @@
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файла}}</translation>
-<translation id="2015836039326522978"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">Историята ви ще бъде достъпна на всичките ви синхронизирани устройства и ще можете да продължите това, което сте правили</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
 <translation id="2038563949887743358">Включване на функцията за заявяване на настолни сайтове</translation>
@@ -461,7 +460,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
 <translation id="3495219333887281978">Долният лист за вход в профила е отворен на половината височина.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">С използването на Chrome приемате <ph name="BEGIN_TOS_LINK" />Общите условия на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Режимът за стандартна защита е включен</translation>
 <translation id="3509330069915219067">Офлайн сте. Chrome не може да провери за актуализации.</translation>
 <translation id="3513704683820682405">Обогатена реалност</translation>
@@ -588,6 +586,7 @@
 <translation id="4296252229500326964">Нов раздел „инкогнито“</translation>
 <translation id="4298388696830689168">Свързани сайтове</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="4307992518367153382">Основни положения</translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="4321739720395210191">Камерата не може да се отвори. Рестартирайте устройството си и опитайте отново.</translation>
@@ -956,7 +955,6 @@
 <translation id="6345878117466430440">Означаване като прочетено</translation>
 <translation id="6363990818884053551">За да стартирате синхронизирането, потвърдете, че сте вие</translation>
 <translation id="6364438453358674297">Предложението да се премахне ли от историята?</translation>
-<translation id="6379829913050047669"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">По-често предварително зареждане на страниците, които Chrome смята, че е вероятно да посетите. Тази настройка може да повиши количеството използвани данни.</translation>
 <translation id="6385407407546870227">Когато експериментите са включени, функцията за намаляване на спама и измамите разчита на означения за доверие, за да помага на сайтовете да се борят с измамите и да различават роботи от хора.
 
@@ -1126,7 +1124,6 @@
 <translation id="7208109991155904980">Реакцията е преместена</translation>
 <translation id="7222235798733126207">Ограничено споделяне между сайтовете</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
-<translation id="7237045078887540010">С използването на Chrome приемате <ph name="BEGIN_TOS_LINK" />Общите условия на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_ATOS_LINK" />. В сила е и <ph name="BEGIN_PRIVACY_LINK" />Декларацията за поверителност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизирано открояване – <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Поставете телефона си близо до компютъра</translation>

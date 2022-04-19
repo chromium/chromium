@@ -599,6 +599,7 @@
 <translation id="6082256976217156453">Tệp nén lưu trữ LZMA</translation>
 <translation id="6096979789310008754">Đã xóa nội dung tìm kiếm, đang hiển thị tất cả các tệp và thư mục.</translation>
 <translation id="610101264611565198">Đang di chuyển <ph name="FILE_NAME" /> sang <ph name="FOLDER_NAME" /></translation>
+<translation id="61118516107968648">Văn bản CSV</translation>
 <translation id="6129953537138746214">Dấu cách</translation>
 <translation id="6133173853026656527">Đang di chuyển <ph name="FILE_NAME" />...</translation>
 <translation id="613750717151263950">Tiếng Nhật bằng bàn phím Anh-Mỹ</translation>
@@ -850,7 +851,7 @@
 <translation id="8223479393428528563">Để lưu các tệp này để sử dụng ngoại tuyến, hãy trực tuyến trở lại, nhấp chuột phải vào tệp và chọn tùy chọn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Hủy bỏ</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
-<translation id="8261506727792406068">Xóa</translation>
+<translation id="8261506727792406068">Xoá</translation>
 <translation id="8261561378965667560">Tiếng Trung (bộ gõ Array)</translation>
 <translation id="8269755669432358899">Thu gọn bảng dữ liệu phản hồi về tệp</translation>
 <translation id="8280151743281770066">Phiên âm tiếng Armenia</translation>

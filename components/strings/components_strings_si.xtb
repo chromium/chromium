@@ -100,7 +100,6 @@
 <translation id="124116460088058876">තවත් භාෂා</translation>
 <translation id="1243027604378859286">කර්තෘ:</translation>
 <translation id="1246424317317450637">තද</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="1250759482327835220">ඊළඟ වතාවේ ඉක්මනින් ගෙවීමට, ඔබගේ Google ගිණුමට ඔබගේ කාඩ්පත, නම සහ බිල්පත් ලිපිනය සුරකින්න.</translation>
 <translation id="1252799212227771492">පත්‍රය තනන්න බොත්තම, ඉක්මනින් නව Google Sheet එකක් තැනීමට Enter ඔබන්න</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (සමමුහුර්තයි)</translation>
@@ -303,7 +302,7 @@
 <translation id="1711528724596764268">යාන්ත්‍රික ඉගෙනුම සහ කෘත්‍රිම බුද්ධිය</translation>
 <translation id="1712552549805331520"><ph name="URL" /> හට ස්ථිරව දත්ත ඔබේ ස්ථානීය පරිගණකයේ ගබඩා කිරීමට අවශ්‍යයි.</translation>
 <translation id="1713628304598226412">බඳුන 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">සි</translation>
 <translation id="1717218214683051432">චලන සංවේදක</translation>
 <translation id="1717494416764505390">තැපැල් පෙට්ටිය 3</translation>
 <translation id="1718029547804390981">ලේඛනය අනුසටහන් කිරීමට විශාල වැඩියි</translation>
@@ -384,7 +383,6 @@
 <translation id="1919345977826869612">වෙළඳ දැන්වීම්</translation>
 <translation id="1919367280705858090">නිශ්චිත දෝෂ පණිවිඩයක් සමඟ උදවු ලබා ගන්න</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{කිසිවක් නැත}=1{1 අඩවියක්}one{අඩවි #ක්}other{අඩවි #ක්}}</translation>
-<translation id="1923390796829649802">ප්‍රවේශ්‍යතා සැකසීම් කළමනාකරණය කරන්න බොත්තම, Chrome OS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කිරීමට Enter</translation>
 <translation id="1924727005275031552">නව</translation>
 <translation id="1927439593081478069">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න බොත්තම, Chrome සැකසීම් තුළ ආරක්ෂක පරීක්ෂාවක් ධාවනය කිරීමට Enter ඔබන්න</translation>
 <translation id="1939175642807587452">දැනුම්දීම් යැවීමට ඉල්ලිය හැකිය</translation>
@@ -643,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකි, හැඹිලිය සහ තවත් දේ හිස් කිරීමට, Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="2650446666397867134">ගොනුවට පිවිසුම ප්‍රතික්ශේප විය</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
-<translation id="2659491813326907275">Chrome OS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කරන්න</translation>
 <translation id="2660779039299703961">ඉසව්ව</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{කිසිවක් නැත}=1{1 මුරපදයක් (<ph name="DOMAIN_LIST" /> සඳහා)}=2{මුරපද 2 ක් (<ph name="DOMAIN_LIST" /> සඳහා)}one{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා)}other{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා)}}</translation>
 <translation id="2666092431469916601">ඉහල</translation>
@@ -861,6 +858,7 @@
 <translation id="3295444047715739395">Chrome සැකසීම් තුළ ඔබගේ මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="3303855915957856445">සෙවුම් ප්‍රතිඵල හමු නොවිණි</translation>
 <translation id="3304073249511302126">බ්ලූටූත් ස්කෑන් කිරීම</translation>
+<translation id="33073482541490531">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. මුරපද කළමනාකරු මෙම මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="3308006649705061278">සංවිධාන එ්කකය (OU)</translation>
 <translation id="3308738399950580893">වෙළඳ දැන්වීම්</translation>
 <translation id="3320021301628644560">බිල්පත් ලිපිනය එක් කරන්න</translation>
@@ -995,6 +993,7 @@
 <translation id="3658742229777143148">පුනරීක්ශණය</translation>
 <translation id="3664782872746246217">මූලපද:</translation>
 <translation id="3667704023705708645">ව්‍යාපාර ප්‍රාග්ධනය</translation>
+<translation id="367108335512738711">Chrome පිටුසන්</translation>
 <translation id="3671540257457995106">ප්‍රතිප්‍රමාණ කිරීමට ඉඩ දෙන්නද?</translation>
 <translation id="3675563144891642599">Third Roll</translation>
 <translation id="3676592649209844519">උපාංග හැඳුනුම:</translation>
@@ -1488,6 +1487,7 @@
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
 <translation id="5040262127954254034">රහස්‍යතාවය</translation>
 <translation id="5043480802608081735">ඔබ පිටපත් කළ සබැඳිය</translation>
+<translation id="5044545992476246592">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ Google සහායකට ඔබගේ මුරපදය ස්වයංක්‍රියව වෙනස් කළ හැකිය.</translation>
 <translation id="5045550434625856497">රහස්වචනය වැරදියි</translation>
 <translation id="5051305769747448211">සජීවී ප්‍රහසන</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනුව යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}one{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}other{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}}</translation>
@@ -1500,6 +1500,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ප්‍රොක්සි ලිපිනය පරීක්ෂා කරමින්<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Tenth Roll</translation>
 <translation id="507130231501693183">තැපැල් පෙට්ටිය 4</translation>
+<translation id="5078060223219502807">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, මුරපද කළමනාකරු එය දැන් වෙනස් කර අනතුරුව ඔබගේ සුරකින ලද මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="5086225927071063542">බෙදා හරින ලද සහ ක්ලවුඩ් පරිගණකකරණය</translation>
 <translation id="5087286274860437796">මෙම අවස්ථාවේ සේවාදායකයේ සහතිකය වලංගු නැත.</translation>
 <translation id="5087580092889165836">කාඩ්පත එක් කරන්න</translation>
@@ -2016,6 +2017,7 @@
 <translation id="6579630537141957243">MIDI උපාංගය සම්බන්ධ කරන්නද?</translation>
 <translation id="6579990219486187401">ලා රෝස</translation>
 <translation id="6583674473685352014">B6 (ලියුම් කවරය)</translation>
+<translation id="6585526963651937128">Chrome ඉතිහාසය</translation>
 <translation id="6587182488465657433">කඩ කිරීමකදී ඔබ භාවිත කළ මුරපදය Chrome හට හමු විය. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, එය දැන් වෙනස් කර අනතුරුව ඔබගේ සුරකින ලද මුරපද පරීක්ෂා කිරීමට අපි නිර්දේශ කරමු.</translation>
 <translation id="6587923378399804057">ඔබ පිටපත් කළ සබැඳිය</translation>
 <translation id="6591833882275308647">ඔබේ <ph name="DEVICE_TYPE" /> කළමනා නොකෙරේ</translation>
@@ -2124,6 +2126,7 @@
 <translation id="691024665142758461">ගොනු කිහිපයක් බාගන්න</translation>
 <translation id="6915804003454593391">පරිශීලක</translation>
 <translation id="6916954549222464607">මූල්‍ය සැලසුම්කරණය සහ කළමනාකරණය</translation>
+<translation id="6917795328362592458">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, මුරපද කළමනාකරු ඔබගේ සුරකින ලද මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="6934672428414710184">මෙම නම ඔබගේ Google ගිණුමෙනි</translation>
 <translation id="6939469646605424232">TV නාට්‍ය</translation>
 <translation id="6944692733090228304">ඔබ ඔබගේ මුරපදය <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> වෙතින් කළමනාකරණය නොවන අඩවියකට ඇතුළත් කළා. ඔබගේ ගිණුම ආරක්ෂා කිරීමට, ඔබගේ මුරපදය වෙනත් යෙදුම් සහ අඩවිවල නැවත භාවිතා නොකරන්න.</translation>
@@ -2800,6 +2803,7 @@
 <translation id="8805819170075074995">ලැයිස්තු ඇතුළත් කිරීම "<ph name="LANGUAGE_ID" />": එය SpellcheckLanguage ප්‍රතිපත්තිය තුළ ද ඇතුළු කොට තිබෙන බැවින් ඇතුළත් කිරීම නොසලකා හරිනු ලැබේ.</translation>
 <translation id="8806285662264631610">නාන සහ ශරීර නිෂ්පාදන</translation>
 <translation id="8807160976559152894">සෑම පිටුවකටම පසුව කප්පාදු කරන්න</translation>
+<translation id="8808828119384186784">Chrome සැකසීම්</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="8820817407110198400">පිටුසන්</translation>
 <translation id="882338992931677877">Manual Slot</translation>

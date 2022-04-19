@@ -100,7 +100,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="124116460088058876">Bahasa lainnya</translation>
 <translation id="1243027604378859286">Pengarang:</translation>
 <translation id="1246424317317450637">Tebal</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk mempersonalisasi alat aksesibilitas Anda di setelan Chrome OS</translation>
 <translation id="1250759482327835220">Untuk membayar lebih cepat di pembelian berikutnya, simpan kartu, nama, dan alamat penagihan ke Akun Google Anda.</translation>
 <translation id="1252799212227771492">Tombol Buat sheet, tekan Enter untuk membuat Spreadsheet Google baru dengan cepat</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (disinkronkan)</translation>
@@ -139,6 +138,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1323433172918577554">Tampilkan Lebih Banyak</translation>
 <translation id="132390688737681464">Simpan dan Isi Alamat</translation>
 <translation id="1330449323196174374">Lipatan format gate di kiri</translation>
+<translation id="1333745675627230582">Mainkan Game Chrome Dino</translation>
 <translation id="1333989956347591814">Aktivitas Anda <ph name="BEGIN_EMPHASIS" />mungkin tetap dapat dilihat<ph name="END_EMPHASIS" /> oleh:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Situs yang Anda buka
@@ -302,7 +302,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1711528724596764268">Machine learning &amp; kecerdasan buatan</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ingin menyimpan data di komputer lokal Anda secara permanen</translation>
 <translation id="1713628304598226412">Baki 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">J</translation>
 <translation id="1717218214683051432">Sensor gerakan</translation>
 <translation id="1717494416764505390">Kotak surat 3</translation>
 <translation id="1718029547804390981">Dokumen terlalu besar untuk dianotasi</translation>
@@ -379,7 +379,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1919345977826869612">Iklan</translation>
 <translation id="1919367280705858090">Mendapatkan bantuan terkait pesan error tertentu</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Tidak ada}=1{1 situs}other{# situs}}</translation>
-<translation id="1923390796829649802">Tombol Kelola setelan aksesibilitas, Enter untuk mempersonalisasi alat aksesibilitas Anda di setelan Chrome OS</translation>
 <translation id="1924727005275031552">Baru</translation>
 <translation id="1927439593081478069">Tombol Jalankan pemeriksaan keamanan Chrome, tekan Enter untuk menjalankan pemeriksaan keamanan di setelan Chrome</translation>
 <translation id="1939175642807587452">Dapat meminta untuk mengirimkan notifikasi</translation>
@@ -638,7 +637,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menghapus histori penjelajahan, cookie, cache, dan lainnya di setelan Chrome</translation>
 <translation id="2650446666397867134">Akses ke file ditolak</translation>
 <translation id="2653659639078652383">Kirim</translation>
-<translation id="2659491813326907275">Personalisasi alat aksesibilitas Anda di setelan Chrome OS</translation>
 <translation id="2660779039299703961">Acara</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Tidak ada}=1{1 sandi (untuk <ph name="DOMAIN_LIST" />)}=2{2 sandi (untuk <ph name="DOMAIN_LIST" />)}other{# sandi (untuk <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Atas</translation>
@@ -742,6 +740,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2972581237482394796">&amp;Ulang</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, saat ini yang dipilih. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
+<translation id="2983666748527428214">Buka Tab Samaran</translation>
 <translation id="2985306909656435243">Jika diaktifkan, Chromium akan menyimpan salinan kartu Anda di perangkat ini untuk pengisian formulir yang lebih cepat.</translation>
 <translation id="2985398929374701810">Masukkan alamat yang valid</translation>
 <translation id="2986368408720340940">Metode pengambilan tidak tersedia. Coba metode lain.</translation>
@@ -855,6 +854,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3295444047715739395">Lihat dan kelola sandi Anda di setelan Chrome</translation>
 <translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
 <translation id="3304073249511302126">pemindaian bluetooth</translation>
+<translation id="33073482541490531">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Pengelola Sandi merekomendasikan untuk mengubah sandi ini sekarang.</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
 <translation id="3308738399950580893">iklan</translation>
 <translation id="3320021301628644560">Tambahkan alamat penagihan</translation>
@@ -988,6 +988,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3658742229777143148">Revisi</translation>
 <translation id="3664782872746246217">Kata kunci:</translation>
 <translation id="3667704023705708645">Modal ventura</translation>
+<translation id="367108335512738711">Bookmark Chrome</translation>
 <translation id="3671540257457995106">Izinkan pengubahan ukuran?</translation>
 <translation id="3675563144891642599">Rol Ketiga</translation>
 <translation id="3676592649209844519">ID Perangkat:</translation>
@@ -1479,6 +1480,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="5043480802608081735">Link yang Anda Salin</translation>
+<translation id="5044545992476246592">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Asisten Google dapat mengubah sandi Anda secara otomatis.</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
 <translation id="5051305769747448211">Komedi live</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}other{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}}</translation>
@@ -1491,6 +1493,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Periksa alamat proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Rol Kesepuluh</translation>
 <translation id="507130231501693183">Kotak surat 4</translation>
+<translation id="5078060223219502807">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Untuk mengamankan akun Anda, Pengelola Sandi merekomendasikan untuk mengubah sandi tersebut sekarang lalu memeriksa sandi tersimpan Anda.</translation>
 <translation id="5086225927071063542">Komputasi cloud &amp; terdistribusi</translation>
 <translation id="5087286274860437796">Sertifikat server saat ini tidak valid.</translation>
 <translation id="5087580092889165836">Tambahkan kartu</translation>
@@ -1502,6 +1505,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5097099694988056070">Statistik perangkat seperti penggunaan CPU/RAM</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Situs tidak aman</translation>
+<translation id="5109892411553231226">Kelola Metode Pembayaran</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Baki 18</translation>
 <translation id="5114987907971894280">virtual reality</translation>
@@ -1749,6 +1753,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5789643057113097023">:</translation>
 <translation id="5803412860119678065">Ingin mengisi <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Izin</translation>
+<translation id="5808435672482059465">Lihat Histori Chrome Anda</translation>
 <translation id="5808542072418270309">Game simulasi</translation>
 <translation id="5810442152076338065">Sambungan Anda ke <ph name="DOMAIN" /> dienkripsi menggunakan cipher suite yang sudah usang.</translation>
 <translation id="5812947184178430888">Saat peristiwa keamanan ditandai oleh Chrome, data yang relevan dengan peristiwa tersebut akan dikirimkan ke administrator Anda. Data ini dapat mencakup URL halaman yang Anda buka di Chrome, metadata atau nama file, serta nama pengguna yang Anda gunakan untuk login ke aplikasi berbasis web, perangkat Anda, dan Chrome.</translation>
@@ -2005,6 +2010,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6579630537141957243">Hubungkan perangkat MIDI?</translation>
 <translation id="6579990219486187401">Merah Muda Terang</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6585526963651937128">Histori Chrome</translation>
 <translation id="6587182488465657433">Chrome menemukan sandi yang baru saja Anda gunakan dalam pelanggaran data. Untuk mengamankan akun, sebaiknya ubah sandi sekarang dan periksa sandi tersimpan Anda.</translation>
 <translation id="6587923378399804057">Link yang Anda salin</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> Anda tidak dikelola</translation>
@@ -2113,6 +2119,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="691024665142758461">Mendownload beberapa file</translation>
 <translation id="6915804003454593391">Pengguna:</translation>
 <translation id="6916954549222464607">Perencanaan &amp; pengelolaan keuangan</translation>
+<translation id="6917795328362592458">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Untuk mengamankan akun Anda, Pengelola Sandi merekomendasikan untuk memeriksa sandi tersimpan Anda.</translation>
 <translation id="6934672428414710184">Nama ini dari Akun Google Anda</translation>
 <translation id="6939469646605424232">Drama TV</translation>
 <translation id="6944692733090228304">Anda memasukkan sandi di situs yang tidak dikelola oleh <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Untuk melindungi akun, jangan gunakan sandi yang sama di aplikasi dan situs lain.</translation>
@@ -2785,6 +2792,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8805819170075074995">Entri daftar "<ph name="LANGUAGE_ID" />": Entri diabaikan karena entri tersebut juga disertakan dalam kebijakan SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Produk mandi &amp; perawatan tubuh</translation>
 <translation id="8807160976559152894">Trim setelah setiap halaman tercetak</translation>
+<translation id="8808828119384186784">Setelan Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengupdate Chrome dari setelan Chrome</translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="882338992931677877">Slot Manual</translation>

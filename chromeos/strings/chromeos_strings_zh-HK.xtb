@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
-<translation id="1930797645656624981">Chrome 作業系統輸入方法服務</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">助理</translation>
+<translation id="1977994649430373166">Google 個人檔案相片</translation>
 <translation id="1979103255016296513">變更密碼已逾期</translation>
 <translation id="1999615961760456652">強制網絡入口</translation>
 <translation id="2006864819935886708">連線問題</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
 <translation id="2230005943220647148">攝氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">切換鍵盤背光</translation>
 <translation id="2240366984605217732">版面配置切換</translation>
 <translation id="225692081236532131">啟用狀態</translation>
 <translation id="2287186687001756809">沒有圖片。如要新增相片，請前往 <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">無法連線至互聯網。</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
 <translation id="2584559707064218956">如要進行設定，請前往「設定」頁面</translation>
-<translation id="2585245331261708204">Chrome 作業系統的新功能</translation>
 <translation id="2619761439309613843">每日重新整理</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="2640549051766135490">揀咗相簿 <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">所揀內容嘅相關資料</translation>
-<translation id="475869545581454722">已更新 Chrome 作業系統密碼</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4782311465517282004">按住文字或在文字上按一下右鍵後，就能取得定義、翻譯或單位轉換結果</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 張相片</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">啟用自動調色模式</translation>
 <translation id="8041089156583427627">提供意見</translation>
+<translation id="8045012663542226664">將麥克風設定為靜音</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="808894953321890993">變更密碼</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">測試</translation>
 <translation id="9204237731135241582">無法從 Android 應用程式連線至閘道</translation>
 <translation id="9211490828691860325">所有桌面</translation>
+<translation id="932327136139879170">首頁</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">未啟用</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>

@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">ମେନୁକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="1364382257761975320">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1364618750746929654">ଟ୍ରାନ୍ସକ୍ରିପସନ ସୃଷ୍ଟି କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="1372545819342940910">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ଡେସ୍କ ସେଭ କରନ୍ତୁ</translation>
 <translation id="1383597849754832576">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ଚାଲୁ</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">ଇଙ୍କ ପେନ୍</translation>
 <translation id="4112140312785995938">ପଛକୁ ଆଣନ୍ତୁ</translation>
 <translation id="4114315158543974537">ଫୋନ୍ ହବ୍ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="4115378294792113321">ମାଜେଣ୍ଟା</translation>
 <translation id="412298498316631026">ୱିଣ୍ଡୋ</translation>
 <translation id="4123259114412175274">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଫୋନର ବ୍ଲୁଟୁଥ ଚାଲୁ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="4129129681837227511">ଆପଣଙ୍କର ଲକ୍ ସ୍କ୍ରିନ୍‌ରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଦେଖିବା ପାଇଁ, ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ପାଇଁ ଆପଣ କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ ଦବାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ଉପର ତୀର କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। Home କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ବାମ ତୀର କୀ ଦବାନ୍ତୁ।</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">ଏକାଧିକ ଉପଯୋଗକର୍ତ୍ତା ସାଇନ୍ ଇନ୍ କରିଥିବା ସମୟରେ Lacros ବ୍ରାଉଜର୍ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="4338109981321384717">ମାଗ୍ନିଫାଇଂ ଗ୍ଲାସ୍</translation>
 <translation id="4351433414020964307">Assistant ଲୋଡ୍‌ ହେଉଛି...</translation>
@@ -794,7 +795,6 @@
 <translation id="5788127256798019331">Play ଫାଇଲ୍ସ</translation>
 <translation id="5790085346892983794">ସଫଳ ହୋଇଛି</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1145,7 +1145,6 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ଏବଂ <ph name="SECOND_PARENT_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="793716872548410480">ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡ ଦେଖିବାକୁ <ph name="SHORTCUT_KEY_NAME" /> + V ଦବାନ୍ତୁ। ଆପଣ କପି କରିଥିବା ଗତ 5ଟି ଆଇଟମକୁ ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡରେ ସେଭ୍ କରାଯାଇଛି।</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
-<translation id="7952747673138230804">Chrome OS ଏକ୍ସପ୍ଲୋର୍ କରିବାକୁ ନୂଆ ବିଷୟବସ୍ତୁର ପ୍ରସ୍ତାବଗୁଡ଼ିକ ଦେଖାଇଥାଏ। ଯଦି ଆପଣ ବ୍ୟବହାର ଡାଟା ସେୟାର୍ କରିବାକୁ ବାଛିଥାଆନ୍ତି ତେବେ କେବଳ ଗୁଣବତ୍ତାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ପରିସଂଖ୍ୟାନ ପଠାଏ। <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍</translation>
 <translation id="7968693143708939792">ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
 <translation id="7977927628060636163">ମୋବାଇଲ୍ ନେଟ୍‌ୱର୍କ ଖୋଜୁଛି...</translation>

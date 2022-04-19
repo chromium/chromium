@@ -27,6 +27,7 @@
 <translation id="2195025571279539885">Souhaitez-vous que Chromium vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite ?</translation>
 <translation id="2218146227246548550">Votre organisation exige que vous vous connectiez pour utiliser Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">Cela signifie que Chromium demandera la version pour ordinateur à chaque fois.</translation>
+<translation id="2313870531055795960">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="2426113998523353159">Votre organisation exige que vous vous connectiez pour utiliser Chromium.</translation>
 <translation id="2450140762465183767">Chaque fois que vous appuierez sur des liens figurant dans des messages, des documents et d'autres applis, le contenu s'affichera dans Chromium.</translation>
 <translation id="2478931088402984578">Sélectionnez <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -49,11 +50,13 @@
 <translation id="4099085513035183040">Non disponible dans la version bêta de Chromium</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Chaque fois que vous appuierez sur des liens figurant dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chromium.</translation>
+<translation id="4654936625574199632">Pour améliorer l'appli, Chromium envoie des données de plantage et d'utilisation à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activer le lecteur Chromium</translation>
 <translation id="4736424910885271643">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront effacées de cet appareil</translation>
 <translation id="4806326830773390517">Contribuez à améliorer Chromium en envoyant des statistiques d'utilisation et des rapports d'erreurs à Google</translation>
 <translation id="4828317641996116749">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="4985291216379576555">Chromium ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
+<translation id="4996471330284142407">Soyez plus efficace grâce à Chromium, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
@@ -110,6 +113,15 @@
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="865600487977764604">Vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applis Google lorsque vous êtes connecté.</translation>
 <translation id="8663480472502753423">Garder Chromium à jour</translation>
+<translation id="8747378496147986285">Si l'option est activée :
+<ph name="BEGIN_INDENT" />  • Vous contribuez à améliorer Chromium pour les personnes qui l'utilisent comme vous.<ph name="END_INDENT" />
+
+Éléments à prendre en compte :
+<ph name="BEGIN_INDENT" />  • Des infos sur l'utilisation de Chromium, mais qui ne sont pas rattachées à vous, sont transmises à Google.
+
+  • Si Chromium plante, les détails sur ce plantage peuvent contenir des infos personnelles.
+
+  • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>
 <translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>

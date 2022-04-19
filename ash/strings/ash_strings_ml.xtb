@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
 <translation id="1364382257761975320">Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കുക</translation>
 <translation id="1364618750746929654">ട്രാൻസ്‌ക്രിപ്ഷൻ സൃഷ്ടിക്കാനാകുന്നില്ല</translation>
+<translation id="1372545819342940910">പിന്നീട് ഉപയോഗിക്കാൻ ഡെസ്ക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="1383597849754832576">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ഓണാണ്</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">മഷി പേന</translation>
 <translation id="4112140312785995938">പുറകിലേക്ക് നീക്കുക</translation>
 <translation id="4114315158543974537">ഫോൺ ഹബ് ഓണാക്കുക</translation>
+<translation id="4115378294792113321">മജന്ത</translation>
 <translation id="412298498316631026">വിൻഡോ</translation>
 <translation id="4123259114412175274">നിങ്ങളുടെ Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫോണിന്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="4129129681837227511">നിങ്ങളുടെ ലോക്ക് സ്‌ക്രീനിൽ അറിയിപ്പുകൾ കാണാൻ, ക്രമീകരണം മാറ്റാനായി അൺലോക്ക് ചെയ്യുക</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">നിങ്ങൾ ഉയർന്ന ദൃശ്യതീവ്രതയ്‌ക്കുള്ള കീബോഡ് കുറുക്കുവഴി അമർത്തി. അത് ഓണാക്കണോ?</translation>
 <translation id="4322742403972824594">'Ctrl + Alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Home കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">ഒന്നിലേറെ ഉപയോക്താക്കൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ Lacros-ന് പിന്തുണയുണ്ടാകില്ല.</translation>
 <translation id="4338109981321384717">മാഗ്‌നിഫൈയിംഗ് ഗ്ലാസ്</translation>
 <translation id="4351433414020964307">സഹായി ലോഡുചെയ്യുന്നു...</translation>
@@ -794,7 +795,6 @@
 <translation id="5788127256798019331">Play ഫയലുകൾ</translation>
 <translation id="5790085346892983794">വിജയകരം</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> സജീവമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">കണക്റ്റ് ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾക്കുള്ള ക്രമീകരണം</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
@@ -1146,7 +1146,6 @@
 <translation id="79341161159229895">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="FIRST_PARENT_EMAIL" />, <ph name="SECOND_PARENT_EMAIL" /> എന്നിവരാണ്</translation>
 <translation id="793716872548410480">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡ് കാണാൻ <ph name="SHORTCUT_KEY_NAME" /> + V അമർത്തുക. നിങ്ങൾ അവസാനമായി പകർത്തിയ 5 ഇനങ്ങൾ ക്ലിപ്പ്ബോർഡിൽ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
-<translation id="7952747673138230804">പുതിയ ഉള്ളടക്കം അടുത്തറിയുന്നതിനായി Chrome OS നിർദേശങ്ങൾ കാണിക്കുന്നു. ഉപയോഗ ഡാറ്റ പങ്കിടാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തിട്ടുണ്ടെങ്കിൽ മാത്രം, നിലവാരം മെച്ചപ്പെടുത്താനായി സ്ഥിതിവിവരക്കണക്കുകൾ അയയ്ക്കുന്നു. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">ഉയർന്ന ദൃശ്യതീവ്രതാ മോഡ്</translation>
 <translation id="7968693143708939792">ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="7977927628060636163">മൊബൈൽ നെറ്റ്‌വർക്കുകൾ തിരയുന്നു...</translation>

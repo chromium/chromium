@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1029669172902658969">‏ChromiumOS&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="1065672644894730302">آپ کی ترجیحات کو نہیں پڑھا جا سکتا ہے۔
 
 کچھ خصوصیات غیر دستیاب ہو سکتی ہیں اور ترجیحات میں تبدیلیاں محفوظ نہیں ہونگی۔</translation>
@@ -12,7 +13,6 @@
 <translation id="1315551408014407711">‏اپنی نئی Chromium پروفائل سیٹ اپ کریں</translation>
 <translation id="1396446129537741364">‏Chromium پاس ورڈز دکھانے کی کوشش کر رہا ہے۔</translation>
 <translation id="1414495520565016063">‏آپ Chromium میں سائن ان ہیں!</translation>
-<translation id="151962892725702025">‏Chromium OS آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا کیونکہ Sync آپ کے ڈومین کیلئے دستیاب نہیں ہے۔</translation>
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
 <translation id="1553461853655228091">‏پنے اطراف کا 3D نقشہ تخلیق کرنے کی خاطر Chromium کو آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1602421994560205104">‏Chromium نے اس فائل کو مسدود کر دیا ہے کیونکہ یہ سیکیورٹی چیک کے لیے بہت بڑی ہے۔ ‎50 MB تک کی فائلز کے ساتھ دوبارہ کوشش کریں</translation>
@@ -30,31 +30,29 @@
 <translation id="1881322772814446296">‏آپ ایک منظم اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اپنے Chromium پروفائل پر اس کا انتظامی کنٹرول دے رہے ہیں۔ آپ کا Chromium ڈیٹا جیسے آپ کی ایپس، بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات <ph name="USER_NAME" /> سے مستقل طور پر جڑ جائیں گی۔ آپ اس ڈیٹا کو Google اکاؤنٹس ڈیش بورڈ کے ذریعے حذف کر سکیں گے لیکن آپ اس ڈیٹا کو دوسرے اکاؤنٹ کے ساتھ وابستہ نہیں کر سکیں گے۔ آپ اپنا موجودہ Chromium ڈیٹا الگ رکھنے کیلئے اختیاری طور پر ایک نیا پروفائل بنا سکتے ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">‏اسے آف کر کے، آپ Chromium میں سائن ان کیے بغیر Gmail جیسی Google سائٹس میں سائن ان کر سکتے ہیں</translation>
 <translation id="1929939181775079593">‏Chromium جواب نہیں دے رہا ہے۔ ابھی دوبارہ شروع کریں؟</translation>
+<translation id="193439633299369377">‏اپ ڈیٹ لاگو کرنے کیلئے ChromiumOS کو دوبارہ شروع کرنے کی ضرورت ہے۔</translation>
 <translation id="1940680973325097484">‏اگر آپ اس اکاؤنٹ کو صرف ایک بار استعمال کرنا چاہتے ہیں تو آپ Chromium براؤزر میں مہمان وضع کا استعمال کر سکتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں تو اپنے <ph name="DEVICE_TYPE" /> میں <ph name="LINK_BEGIN" />ایک نیا شخص شامل کریں<ph name="LINK_END" />۔
 
 ویب سائٹس اور ایپس کو پہلے سے آپ کی دی گئی اجازتیں اس اکاؤنٹ پر لاگو ہو سکتی ہیں۔ آپ <ph name="SETTINGS_LINK_BEGIN" />ترتیبات<ph name="SETTINGS_LINK_END" /> میں اپنے Google اکاؤنٹس کا نظم کر سکتے ہیں۔</translation>
 <translation id="1966382378801805537">‏Chromium ڈیفالٹ براؤزر کا تعین یا اس کو سیٹ نہیں کر سکتا ہے</translation>
-<translation id="1981611865800294956">‏Chromium OS&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="2008474315282236005">‏یہ اس آلہ سے 1 آئٹم کو حذف کر دے گا۔ بعد میں اپنا ڈیٹا بازیافت کرنے کیلئے، Chromium میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
 <translation id="2020032459870799438">‏یہ دیکھنے کے لئے کہ آیا آپ کے دیگر پاس ورڈز ڈیٹا کی خلاف ورزیوں اور دیگر سیکیورٹی مسائل سے محفوظ ہیں، <ph name="BEGIN_LINK" />Chromium میں سائن ان کریں<ph name="END_LINK" />۔</translation>
 <translation id="2049376729098081731">‏منتخب کریں کہ آیا Google سروسز میں مزید ذاتی نوعیت کے تجربات کے لیے Chromium کی سرگزشت کو شامل کریں</translation>
 <translation id="2174178932569897599">‏Chromium کو حسب ضرورت بنائیں</translation>
 <translation id="2185166961232948079">‏Chromium - نیٹ ورک سائن ان - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">‏اگر آپ ایک کمپیوٹر کا اشتراک کرتے ہیں تو دوست اور خاندان الگ الگ براؤز کر سکتے ہیں اور اپنی مرضی کے موافق Chromium کو ترتیب دے سکتے ہیں۔</translation>
-<translation id="2294245788148774212">‏اختیاری: Google کو ڈائیگناسٹک اور استعمال کا ڈیٹا خودکار طور پر بھیج کر Chromium OS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں۔</translation>
 <translation id="2313870531055795960">‏Chromium میں اسٹور کردہ غیر محفوظ سائٹس کی فہرست کے URLs چیک کرتا ہے۔ اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chromium محفوظ براؤزنگ پر صفحہ کے مواد کے بائٹس سمیت URLs بھیجتا ہے۔</translation>
 <translation id="2343156876103232566">‏یہاں سے اپنے Android فون پر نمبر بھیجنے کے لیے، دونوں آلات پر Chromium میں سائن ان کریں۔</translation>
 <translation id="2347108572062610441">‏آپ کی جانب سے Chromium شروع کرنے پر دکھائی دینے والے صفحہ کو اس ایکسٹینشن نے تبدیل کر دیا ہے۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
+<translation id="2384373936468275798">‏ChromeOS آپ کے اکاؤنٹ کی سائن ان تفصیلات پرانی ہونے کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="2396765026452590966">‏آپ کی جانب سے Chromium شروع کرنے پر دکھائی دینے والے صفحہ کو ایکسٹینشن "<ph name="EXTENSION_NAME" />" نے تبدیل کر دیا ہے۔</translation>
 <translation id="2401032172288869980">‏Chromium کو اس سائٹ کے لیے کیمرے اور مائیکروفون کی اجازتیں درکار ہیں</translation>
 <translation id="2483889755041906834">‏Chromium میں</translation>
 <translation id="2485422356828889247">ان انسٹال کریں</translation>
-<translation id="2535480412977113886">‏Chromium OS آپ کے اکاؤنٹ کی سائن ان تفصیلات پرانی ہونے کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="2560420686485554789">‏Chromium کو فائلیں ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی درکار ہے</translation>
 <translation id="2572494885440352020">‏Chromium ہیلپر</translation>
 <translation id="2583187216237139145">‏دفتری پروفائل کا منتظم اس پروفائل کے استعمال کے دوران جنریٹ ہونے والے کسی بھی Chromium ڈیٹا (جیسے، بُک مارکس کی تخلیق، سرگزشت، پاس ورڈز اور دیگر ترتیبات) کو ہٹا سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
-<translation id="2587578672395088481">‏اپ ڈیٹ لاگو کرنے کیلئے Chromium OS کو دوبارہ شروع کرنے کی ضرورت ہے۔</translation>
 <translation id="2648074677641340862">‏انسٹالیشن کے دوران آپریٹنگ سسٹم کی ایک خرابی پیش آ گئی۔ براہ کرم Chromium دوبارہ ڈاؤن لوڈ کریں۔</translation>
 <translation id="2661879430930417727">‏اگر آپ کسی آلے کا اشتراک کرتے ہیں تو دوست اور اہل خانہ الگ الگ براؤز کر سکتے ہیں اور Chromium کو اپنی مرضی کے مطابق سیٹ اپ کر سکتے ہیں</translation>
 <translation id="2711502716910134313">‏Chromium ٹیب</translation>
@@ -86,9 +84,9 @@
 <translation id="3283186697780795848">‏Chromium ورژن <ph name="PRODUCT_VERSION" /> انسٹال ہے</translation>
 <translation id="328888136576916638">‏Google API کلیدیں دستیاب نہیں ہیں۔ Chromium کی کچھ فعالیت غیر فعال ہو جائے گی۔</translation>
 <translation id="3296368748942286671">‏Chromium بند ہو جانے پر پس منظر کی ایپس چلانا جاری رکھیں</translation>
-<translation id="331951419404882060">‏Chromium OS سائن ان میں ایک خرابی کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="3349211344363550267">‏Chromium تجویز کرتا ہے کہ آپ اس فائل کو ڈاؤن لوڈ نہ کریں یا نہ کھولیں</translation>
 <translation id="3350761136195634146">‏اس اکاؤنٹ کے ساتھ ایک Chromium پروفائل پہلے سے موجود ہے</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏موجودہ Chromium پروفائل پر سوئچ کریں؟</translation>
 <translation id="3412460710772753638">اس آلہ پر پاس ورڈ مینیجر میں</translation>
 <translation id="3430503420100763906">‏Chromium کی پروفائلز کے ساتھ آپ اپنے تمام Chromium مواد کو الگ کر سکتے ہیں۔ دوستوں اور فیملی کیلئے پروفائلز تخلیق کریں یا کام اور تفریح کے درمیان تقسیم کریں۔</translation>
@@ -108,37 +106,42 @@
 <translation id="3713809861844741608">‏لنک کو نئے Chromium &amp;ٹیب میں کھولیں</translation>
 <translation id="3728336900324680424">‏پتہ بار میں تجاویز پیش کرنے کے لیے Chromium آپ کی Drive تک رسائی حاصل کرے گا</translation>
 <translation id="378917192836375108">‏Chromium آپ کو ویب پر فون نمبر کلک کرنے دیتا ہے اور اسے Skype کے ساتھ کال کرنے دیتا ہے!</translation>
+<translation id="3830894615770080216">‏ChromiumOS سسٹم</translation>
 <translation id="3848258323044014972">‎<ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386822487697155367">‏ChromiumOS کے بارے میں مدد حاصل کریں</translation>
 <translation id="388648406173476553">‏Chromium کو حسب ضرورت بنائیں اور کنٹرول کریں۔ کچھ چیزوں کو آپ کی توجہ درکار ہے۔ تفصیلات کیلئے کلک کریں۔</translation>
 <translation id="3889543394854987837">‏Chromium کو کھولنے اور براؤزنگ شروع کرنے کیلئے اپنے نام پر کلک کریں۔</translation>
 <translation id="390528597099634151">‏<ph name="EXISTING_USER" /> اس Chromium پروفائل میں پہلے سے سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کیلئے، Chromium آپ کیلئے آپ کی ذاتی پروفائل تخلیق کر سکتا ہے۔</translation>
 <translation id="3945058413678539331">‏Chromium پاس ورڈز کاپی کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="3962623956404948996">‏Chromium اس فائل کو اسکین کرنے کی تجویز کرتا ہے کیونکہ یہ خطرناک ہو سکتی ہے</translation>
+<translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>
+<translation id="4019629340646866719">‏ChromiumOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="4036079820698952681">‏<ph name="BEGIN_LINK" />موجودہ ترتیبات<ph name="END_LINK" /> کی اطلاع دے کر Chromium کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4050175100176540509">اہم سیکیورٹی اصلاحات اور نئی خصوصیات تازہ ترین ورژن میں دستیاب ہیں۔</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان - Chromium</translation>
 <translation id="421369550622382712">‏Chromium کیلئے زبردست ایپس، گیمز، ایکسٹینشنز اور تھیمز دریافت کریں۔</translation>
 <translation id="4216212958613226427">‏اس زبان کا استعمال Chromium UI ڈسپلے کرنے کیلئے کیا جاتا ہے</translation>
 <translation id="4230135487732243613">‏اپنا Chromium ڈیٹا اس اکاؤنٹ سے لنک کریں؟</translation>
-<translation id="4264410486868823224">‏<ph name="MANAGER" /> تقاضہ کرتا ہے کہ آپ یہ آلہ استعمال کرنے سے پہلے مندرجہ ذیل سروس کی شرائط کو پڑھیں اور قبول کریں۔ یہ شرائط Chromium OS کی شرائط کی توسیع، ان میں ترمیم یا انہیں محدود نہیں کرتی ہیں۔</translation>
 <translation id="4271805377592243930">‏Chromium کے بارے میں مدد حاصل کریں</translation>
 <translation id="4285930937574705105">‏غیر متعینہ خرابی کی وجہ سے انسٹالیشن ناکام ہو گیا۔ اگر فی الحال Chromium چل رہا ہے تو براہ کرم اسے بند کر دیں اور دوبارہ کوشش کریں۔</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
+<translation id="439358628917130594">‏<ph name="MANAGER" /> تقاضہ کرتا ہے کہ آپ یہ آلہ استعمال کرنے سے پہلے مندرجہ ذیل سروس کی شرائط کو پڑھیں اور قبول کریں۔ یہ شرائط ChromiumOS کی شرائط کی توسیع، ان میں ترمیم یا انہیں محدود نہیں کرتی ہیں۔</translation>
 <translation id="4407044323746248786">‏بہر حال Chromium کو بند کریں؟</translation>
 <translation id="4415566066719264597">‏Chromium کو پس منظر میں چلنے دیں</translation>
 <translation id="4423735387467980091">‏Chromium کو حسب ضرورت بنائیں اور کنٹرول کریں</translation>
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
+<translation id="4440114195512068100">‏یہ دیکھنے کی لیے کہ کیا آپ کا آلہ اپ ٹو ڈیٹ ہے، <ph name="LINK_BEGIN" />ChromiumOS کی ترتیبات<ph name="LINK_END" /> پر جائیں</translation>
 <translation id="452711251841752011">‏Chromium میں آپ کا استقبال ہے، براؤزر کی نئی ونڈو کھلی</translation>
 <translation id="4544142686420020088">‏Chromium اپ ڈیٹ نہیں ہوا، کچھ غلط ہو گیا۔ <ph name="BEGIN_LINK" />Chrome اپ ڈیٹ کی دشواریوں اور ناکام اپ ڈیٹس کو درست کریں۔<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">‏ایک نئی Chromium پروفائل میں جاری رکھیں؟</translation>
 <translation id="4567424176335768812">آپ <ph name="USER_EMAIL_ADDRESS" /> کے بطور سائن ان کردہ ہیں۔ اب آپ اپنے سبھی سائن ان کردہ آلات پر اپنے بُک مارکس، سرگزشت اور دیگر ترتیبات تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="4594305310729380060">اس آلہ پر پاس ورڈ مینیجر کو</translation>
 <translation id="459535195905078186">‏Chromium ایپس</translation>
+<translation id="4613863813562375431">‏ChromiumOS ورژن</translation>
 <translation id="4621240073146040695">‏تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے Chromium کو دوبارہ شروع کریں۔</translation>
 <translation id="4665829708273112819">‏وارننگ: Chromium ایکسٹینشنز کو آپ کی براؤزنگ سرگزشت ریکارڈ کرنے سے نہیں روک سکتا۔ اس ایکسٹینشن کو پوشیدگی وضع میں غیر فعال کرنے کے لیے اس اختیار کو غیر منتخب کریں۔</translation>
 <translation id="4673151026126227699">‏اگر آپ Chromium کے استعمال کی رپورٹس کا بھی اشتراک کرتے ہیں تو ان رپورٹس میں آپ کے ملاحظہ کردہ URLs شامل ہوں گے</translation>
 <translation id="4677944499843243528">‏پروفائل دوسرے کمپیوٹر (<ph name="HOST_NAME" />) پر دوسری Chromium کارروائی (<ph name="PROCESS_ID" />) کے ذریعہ زیر استعمال معلوم پڑتا ہے۔ Chromium نے کارروائی کو مقفل کر دیا ہے تاکہ یہ خراب نہ ہو جائے۔ اگر آپ کو یقین ہے کہ کوئی دیگر کارروائیاں اس پروفائل کو استعمال نہیں کر رہی ہیں تو آپ پروفائل کو غیر مقفل کر کے Chromium کو دوبارہ شروع کر سکتے ہیں۔</translation>
-<translation id="469338717132742108">‏Chromium OS کے بارے میں مدد حاصل کریں</translation>
 <translation id="4708774505295300557">‏کسی نے قبل ازیں اس کمپیوٹر پر Chromium میں <ph name="ACCOUNT_EMAIL_LAST" /> کے بطور سائن ان کیا۔ اپنی معلومات علیحدہ رکھنے کیلئے براہ کرم ایک نیا Chromium صارف بنائیں۔</translation>
 <translation id="4746050847053251315">‏بہر حال Chromium بند کریں؟</translation>
 <translation id="4748217263233248895">‏Chromium کے لیے ایک خاص سیکیورٹی اپ ڈیٹ ابھی ابھی لاگو کیا گیا ہے۔ ابھی دوبارہ شروع کریں اور ہم آپ کے ٹیبز کو بحال کر دیں گے۔</translation>
@@ -170,8 +173,6 @@
 <translation id="5634636535844844681">‏Chromium کیلئے Windows 7 یا اس کے بعد کا ورژن درکار ہے۔</translation>
 <translation id="5653831366781983928">‏براہ کرم ابھی Chromium کو ری اسٹارٹ کریں</translation>
 <translation id="5698481217667032250">‏Chromium کو اس زبان میں ڈسپلے کریں</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
-<translation id="5854740544000584380">‏Chromium OS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="5862307444128926510">‏Chromium میں خوش آمدید</translation>
 <translation id="5883558403894052917">‏Chromium کو پتا چلا ہے کہ یہ آئٹمز میلوئیر پر مشتمل ہیں:</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
@@ -179,7 +180,6 @@
 <translation id="5972142260211327093">‏اگر Chromium نے آپ کو اتفاقی طور پر ایک فعال ٹرائل میں رکھا ہے تو آپ کی براؤزنگ کی سرگزشت آپ کے دیکھے جانے والے اشتہارات اور ذیل میں لگائے گئے اندازے کے مطابق دلچسپیوں کو متاثر کرتی ہے۔ آپ کی رازداری کے تحفظ کے لیے، Chromium آپ کی دلچسپیوں کو ہر ماہ رولنگ کے تحت حذف کرتا ہے۔ دلچسپیاں آپ کے ہٹانے تک ریفریش ہوتی ہیں۔</translation>
 <translation id="5987687638152509985">‏مطابقت پذیری شروع کرنے کیلئے Chromium کو اپ ڈیٹ کریں</translation>
 <translation id="5988505247484123880">‏جن سائٹس کو آپ ملاحظہ کرتے ہیں ان میں آپ کی دلچسپیوں کو یاد رکھنا سائٹس کے لئے عام بات ہے تاکہ وہ آپ کے تجربے کو ذاتی نوعیت کا بنا سکیں۔ سائٹس Chromium کے ساتھ آپ کی دلچسپیوں کے بارے میں معلومات بھی اسٹور کر سکتی ہیں۔</translation>
-<translation id="6039377483953237732">‏‫Chromium OS ورژن</translation>
 <translation id="6055895534982063517">‏Chromium کا ایک نیا ورژن دستیاب ہے اور وہ پہلے سے کہیں زیادہ تیز ہے۔</translation>
 <translation id="6063093106622310249">‏Chromium میں &amp;کھولیں</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> کو Chromium میں شامل کر دیا گیا ہے</translation>
@@ -208,7 +208,7 @@
 <translation id="6373523479360886564">‏کیا آپ واقعی Chromium کو ان انسٹال کرنا چاہتے ہیں؟</translation>
 <translation id="6384011394608460044">‏<ph name="BEGIN_BOLD" />ہمارا اس ڈیٹا کو استعمال کرنے کا طریقہ:<ph name="END_BOLD" /> Chromium آپ کی دلچسپیوں کا اندازہ لگا سکتا ہے۔ بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے کے لیے Chromium سے آپ کی دلچسپیوں کو دیکھنے کا مطالبہ کر سکتی ہے۔</translation>
 <translation id="6403826409255603130">‏Chromium ایک ایسا ویب براؤزر ہے جو ویب صفحات اور ایپلیکیشنز کو روشنی کی رفتار سے چلاتا ہے۔ Chromium میں پہلے سے شامل میلویئر اور فریب دہی تحفظ کے ساتھ ویب کو مزید محفوظ طور پر براؤز کریں۔</translation>
-<translation id="6434250628340475518">‏Chromium OS سسٹم</translation>
+<translation id="6442900851116057561">‏ChromiumOS کو ری سٹارٹ کریں</translation>
 <translation id="6455857529632101747">‏Chromium کی پروفائلز میں خوش آمدید</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{‏1 سیکنڈ میں Chromium دوبارہ شروع ہو جائے گا}other{‏# سیکنڈ میں Chromium دوبارہ شروع ہو جائے گا}}</translation>
 <translation id="6475912303565314141">‏یہ اس کو بھی کنٹرول کرتا ہے جب آپ Chromium کو اسٹارٹ کرتے ہیں تو کون سا صفحہ دکھایا جاتا ہے۔</translation>
@@ -219,6 +219,7 @@
 <translation id="6613594504749178791">‏آپ کی تبدیلیاں Chromium کو اگلی بار آپ کے دوبارہ شروع کرنے کے وقت نافذ ہوں گی۔</translation>
 <translation id="665732753414869868">‏Chromium کو آپ کے اطراف کا 3D نقشہ تخلیق کرنے کے لیے کیمرے کی اجازت درکار ہے</translation>
 <translation id="6676384891291319759">انٹرنیٹ تک رسائی حاصل کریں</translation>
+<translation id="668175097507315160">‏ChromiumOS سائن ان میں ایک خرابی کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="6709350901466051922">‏Chromium کو اس سائٹ کے لیے مائیکروفون کی اجازت درکار ہے</translation>
 <translation id="6717134281241384636">‏آپ کا پروفائل استعمال نہیں کیا جا سکتا ہے کیونکہ یہ Chromium کے ایک جدید تر ورژن سے ہے۔
 
@@ -226,6 +227,7 @@
 <translation id="6734291798041940871">‏Chromium پہلے سے آپ کے کمپیوٹر پر سبھی صارفین کیلئے انسٹال ہے۔</translation>
 <translation id="673636774878526923">‏اپنے تمام آلات پر اپنی Chromium کی چیزوں تک رسائی حاصل کرنے کیلئے، سائن ان کریں اور پھر مطابقت پذیری کو آن کریں۔</translation>
 <translation id="6774082503108938489">‏آپ کے والدین نے "Chromium کی خاطر سائٹس، ایپس اور ایکسٹینشنز کے لیے اجازتوں" کو آف کر دیا ہے۔ اس <ph name="EXTENSION_TYPE_PARAMETER" /> کو فعال کرنے کی اجازت نہیں ہے۔</translation>
+<translation id="6779406956731413166">‏ChromeOS اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن ہو پایا ہے۔</translation>
 <translation id="6847869444787758381">‏Chromium آپ کو بتاتا ہے کہ آیا آپ کے پاس ورڈز کے ساتھ کبھی چھیڑ چھاڑ کی گئی ہے</translation>
 <translation id="6852530923436401894">‏Chromium نے اس فائل کو مسدود کر دیا کیونکہ اس میں میلوئیر ہے</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" />‎</translation>
@@ -237,6 +239,7 @@
 <translation id="6940431691900807093">‏بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے کے لیے Chromium سے آپ کی دلچسپیوں کو دیکھنے کا مطالبہ کر سکتی ہے۔ Chromium‏ 3 دلچسپیوں تک کا اشتراک کر سکتا ہے۔</translation>
 <translation id="6964305034639999644">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="6978145336957848883">‏کمزور پاس ورڈز کا اندازہ لگانا آسان ہوتا ہے۔ Chromium کو <ph name="BEGIN_LINK" />آپ کے لیے مضبوط پاس ورڈز تخلیق کرنے اور یاد رکھنے دیں<ph name="END_LINK" />۔</translation>
+<translation id="6985329841647292029">‏ChromiumOS کی شرائط</translation>
 <translation id="6990124437352146030">‏Chromium کو اس سائٹ کیلئے آپ کے مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
 <translation id="705851970750939768">‏Chromium کو اپ ڈیٹ کریں</translation>
 <translation id="7067091210845072982">‏اگر کسی تصویر میں مفید تفصیل موجود نہیں ہے تو Chromium آپ کے لیے تفصیل فراہم کرنے کی کوشش کرے گا۔ تفصیلات تخلیق کرنے کے لیے، تصاویر Google کو بھیجی جاتی ہیں۔</translation>
@@ -257,17 +260,13 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="734373864078049451">‏آپ کی ویب، بُک مارکس اور دیگر Chromium مواد یہاں پر لائیو ہے۔</translation>
 <translation id="7349591376906416160">‏آپ کے سسٹم کے منتظم نے <ph name="TARGET_URL_HOSTNAME" /> تک رسائی حاصل کرنے کیلئے Chromium کو <ph name="ALTERNATIVE_BROWSER_NAME" /> کھولنے کیلئے کنفیگر کیا ہے۔</translation>
 <translation id="7398989605938454041">‏Chromium کی پروفائلز کے ساتھ آپ اپنی تمام Chromium چیزوں کو الگ کر سکتے ہیں۔ یہ کام اور تفریح کے درمیان تقسیم کرنا زیادہ آسان بناتا ہے۔</translation>
-<translation id="7448255348454382571">‏Chromium OS کو ری سٹارٹ کریں</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">‏Chromium کو اس سائٹ کیلئے آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="7467949745582939695">‏Chromium کو بند کر کے دوبارہ چلائیں؟</translation>
 <translation id="7483335560992089831">‏Chromium کا وہی ورژن انسٹال نہیں کیا جا سکتا ہے جو فی الحال چل رہا ہے۔ براہ کرم Chromium بند کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="753534427205733210">{0,plural, =1{‏1 منٹ میں Chromium دوبارہ لانچ ہوگا}other{‏# منٹ میں Chromium دوبارہ لانچ ہوگا}}</translation>
-<translation id="7549178288319965365">‏Chromium OS کے بارے میں</translation>
 <translation id="7561906087460245826">‏Chromium کا ڈیٹا بھی صاف کریں (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">‏Chromium آپ کی دلچسپیوں کا اندازہ لگا سکتا ہے۔ بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے کے لیے Chromium سے آپ کی دلچسپیوں کو دیکھنے کا مطالبہ کر سکتی ہے۔</translation>
-<translation id="7585853947355360626">‏اگر اس صفحے پر کوئی ترتیب دکھائی نہیں دے رہی ہے تو اپنے <ph name="LINK_BEGIN" />
-      Chromium OS کی ترتیبات<ph name="LINK_END" /> میں دیکھیں</translation>
 <translation id="7597596667193879455">‏آپ نے اپنے اکاؤنٹ میں بہتر کردہ محفوظ براؤزنگ کو آن کیا ہے۔ اب اسے Chromium کے لیے حاصل کریں۔</translation>
 <translation id="761356813943268536">‏Chromium آپ کا کیمرا اور مائیکروفون استعمال کر رہا ہے۔</translation>
 <translation id="7617377681829253106">‏Chromium اور بھی بہتر ہوگیا ہے</translation>
@@ -280,16 +279,17 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="7747138024166251722">انسٹالر ایک عارضی ڈائرکٹری نہیں بنا سکا۔ سافٹ ویئر انسٹال کرنے کیلئے براہ کرم ڈسک کی خالی جگہ اور اجازت کو چیک کریں۔</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7828947555739565424">‏اس آلے پر اس اکاؤنٹ کے ساتھ ایک Chromium پروفائل پہلے سے موجود ہے</translation>
-<translation id="7857220146454061152">‏آئندہ کے Chromium اپ ڈیٹس حاصل کرنے کے لیے، آپ کو OS X 10.11 یا بعد کی ضرورت ہوگی۔ یہ کمپیوٹر OS X 10.10 کا استعمال کر رہا ہے۔</translation>
 <translation id="7867198900892795913">‏Chromium تازہ ترین ورژن میں اپ ڈیٹ نہیں ہو سکا اسلئے آپ نئی خصوصیات اور سیکیورٹی کی اصلاحات سے محروم ہو رہے ہیں۔</translation>
 <translation id="7877292582355102282">‏<ph name="BEGIN_BOLD" />آپ کس طرح اپنے ڈیٹا کا نظم کر سکتے ہیں:<ph name="END_BOLD" /> آپ کی رازداری کے تحفظ کے لئے، ہم 4 ہفتے سے زیادہ پرانی آپ کی دلچسپیوں کو خودکار طور پر حذف کر دیتے ہیں۔ جب تک آپ براؤزنگ جاری رکھتے ہیں، فہرست پر دلچسپی دوبارہ ظاہر ہو سکتی ہے۔ یا آپ ان دلچسپیوں کو ہٹا سکتے ہیں جنہیں آپ چاہتے ہیں کہ Chromium نہ دکھائے۔</translation>
-<translation id="7898472181347242998">‏یہ دیکھنے کی لیے کہ کیا آپ کا آلہ اپ ٹو ڈیٹ ہے، <ph name="LINK_BEGIN" />Chromium OS کی ترتیبات<ph name="LINK_END" /> پر جائیں</translation>
 <translation id="7937630085815544518">‏آپ Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان تھے۔ براہ کرم دوبارہ سائن ان کرنے کیلئے وہی اکاؤنٹ استعمال کریں۔</translation>
 <translation id="7975919845073681630">‏یہ Chromium کا ثانوی انسٹالیشن ہے اور اسے آپ کا ڈیفالٹ براؤزر نہیں بنایا جا سکتا ہے۔</translation>
+<translation id="7982481011030453202">‏اگر اس صفحے پر کوئی ترتیب دکھائی نہیں دیتی ہے تو اپنے <ph name="LINK_BEGIN" />
+      ChromiumOS کی ترتیبات<ph name="LINK_END" /> میں دیکھیں</translation>
 <translation id="7997934263947464652">‏نامعلوم ذرائع سے ایکسٹینشنز، ایپس اور تھیمز آپ کے آلے کو نقصان پہنچا سکتے ہیں۔ Chromium صرف انہیں <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> سے انسٹال کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="8013436988911883588">‏Chromium کو رسائی مل جانے کے بعد، ویب سائٹس آپ سے رسائی طلب کر سکیں گی۔</translation>
 <translation id="8045118833343856403">‏درج ذیل اکاؤنٹس کسی Chromium پروفائل میں سائن ان نہیں ہیں۔ اگر آپ کسی دوسری پروفائل میں اکاؤنٹ استعمال کرنا چاہتے ہیں تو پہلے اس پروفائل کو ہٹا دیں۔</translation>
 <translation id="8105840573057009683">‏Chromium کو اس سائٹ کے لیے مقام کی اجازت درکار ہے</translation>
+<translation id="8133124826068723441">‏ChromiumOS آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا کیونکہ Sync آپ کے ڈومین کیلئے دستیاب نہیں ہے۔</translation>
 <translation id="81770708095080097">‏یہ فائل خطرناک ہے، اس لیے Chromium نے اسے مسدود کر دیا ہے۔</translation>
 <translation id="8248265253516264921">‏اگر کسی تصویر میں مفید تفصیل موجود نہیں ہے تو Chromium آپ کے لیے تفصیل فراہم کرنے کی کوشش کرے گا۔ تفصیلات تخلیق کرنے کے لیے، تصاویر Google کو بھیجی جاتی ہیں۔ آپ اسے ترتیبات میں کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="8266560134891435528">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا کیونکہ آپ سائن ان نہیں ہیں</translation>
@@ -300,6 +300,7 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8357820681460164151">‏اپنے تمام آلات پر اپنے Chromium براؤزر کی چیزوں تک رسائی حاصل کرنے کیلئے، سائن ان کریں اور پھر مطابقت پذیری کو آن کریں</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏ایک دن کے اندر Chromium کو دوبارہ لانچ کریں}other{‏# دن کے اندر Chromium کو دوبارہ لانچ کریں}}</translation>
 <translation id="8453117565092476964">‏انسٹالر آرکائیو خراب یا غلط ہے۔ براہ کرم Chromium کو دوبارہ ڈاؤن لوڈ کریں۔</translation>
+<translation id="8463672209299734063">‏اختیاری: Google کو ڈائیگناسٹک اور استعمال کا ڈیٹا خودکار طور پر بھیج کر ChromiumOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں۔</translation>
 <translation id="8493179195440786826">‏Chromium پرانا ہے</translation>
 <translation id="8550334526674375523">یہ دفتری پروفائل آپ کی ذاتی پروفائل سے پوری طرح علیحدہ ہے۔</translation>
 <translation id="8558383651099478961">‏آپ کے والدین نے "Chromium کی خاطر سائٹس، ایپس اور ایکسٹینشنز کے لیے اجازتوں" کو آف کر دیا ہے۔ اس <ph name="EXTENSION_TYPE_PARAMETER" /> کو شامل کرنے کی اجازت نہیں ہے۔</translation>
@@ -313,8 +314,8 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8713679423359107094">‏جب آپ سبھی Chromium ونڈوز بند کرتے ہیں تو کوکیز اور سائٹ کے ڈیٹا خودکار طور پر صاف ہو جاتے ہیں</translation>
 <translation id="8796443464227412154">‏آپ کے Chromium کو بند کرنے پر، آپ کو <ph name="BEGIN_BOLD" />بیشتر سائٹس سے سائن آؤٹ<ph name="END_BOLD" /> کر دیا جائے گا۔ 'سِنک کرنا' آف ہونے پر، آپ کو <ph name="BEGIN_BOLD" />Google سروسز اور Chromium سے بھی سائن آؤٹ<ph name="END_BOLD" /> کر دیا جائے گا۔</translation>
 <translation id="8796602469536043152">‏Chromium کو اس سائٹ کیلئے آپ کے کیمرے اور مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
-<translation id="8803635938069941624">‏Chromium OS کی شرائط</translation>
 <translation id="8821041990367117597">‏Chromium آپ کے اکاؤنٹ کی سائن ان تفصیلات پرانی ہونے کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
+<translation id="8833697763442816810">‏ChromiumOS سسٹم</translation>
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />کون سا ڈیٹا استعمال کیا جاتا ہے:<ph name="END_BOLD" /> آپ کی براؤزنگ کی سرگزشت، ان سائٹس کا ریکارڈ جو آپ اس آلے پر Chromium کا استعمال کر کے ملاحظہ کر چکے ہیں۔</translation>
 <translation id="8862326446509486874">سسٹم کی سطح پر انسٹال کرنے کیلئے آپ کے پاس مناسب حقوق نہیں ہیں۔ انسٹالر کو دوبارہ منتظم کے بطور چلانے کی کوشش کریں۔</translation>
 <translation id="8880203542552872219">‏اگر ایسا ہے تو براہ کرم Chromium میں اپنے محفوظ کردہ پاس ورڈ میں ترمیم کریں تاکہ یہ آپ کے نئے پاس ورڈ سے مماثل ہو جائے۔</translation>
@@ -322,7 +323,6 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8907580949721785412">‏Chromium پاس ورڈز دکھانے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کیلئے اپنا Windows کا پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="8931379085695076764">‏Chromium گزشتہ کچھ ہفتوں کی آپ کی براؤزنگ کی سرگزشت کی بنیاد پر آپ کی دلچسپیوں کا اندازہ لگا سکتا ہے۔ یہ معلومات آپ کے آلے پر برقرار رہتی ہے۔</translation>
 <translation id="8941642502866065432">‏Chromium اپ ڈیٹ نہیں ہو سکتا</translation>
-<translation id="8974095189086268230">‏Chromium OS اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن ہو پایا ہے۔</translation>
 <translation id="897581876605952338">‏Chromium Enterprise لوگو</translation>
 <translation id="8986207147630327271">آپ اس براؤزر میں ایک دفتری پروفائل شامل کر رہے ہیں اور اپنے منتظم کو صرف دفتری پروفائل پر کنٹرول فراہم کر رہے ہیں۔</translation>
 <translation id="9019929317751753759">‏Chromium کو محفوظ تر بنانے کیلئے، ہم نے مندرجہ ذیل ایکسٹینشن کو غیر فعال کر دیا ہے جو <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> میں مندرج نہیں ہے اور ممکن ہے کہ اسے آپ کے علم کے بغیر شامل کر دیا گیا ہو۔</translation>
@@ -334,7 +334,6 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="9158494823179993217">‏آپ کے سسٹم کے منتظم نے <ph name="TARGET_URL_HOSTNAME" /> تک رسائی حاصل کرنے کے لیے Chromium کو ایک متبادل براؤزر کھولنے کے لیے کنفیگر کیا ہے۔</translation>
 <translation id="9185526690718004400">‏Chromium&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="9190841055450128916">‎Chromium (mDNS-In)‎</translation>
-<translation id="9214764063801632699">‏Chromium OS سسٹم</translation>
 <translation id="93478295209880648">‏ممکن ہے کہ Chromium ٹھیک طریقے سے کام نہ کرے کیونکہ یہ اب Windows XP یا Windows Vista پر تعاون یافتہ نہیں ہے</translation>
 <translation id="965162752251293939">‏Chromium کون استعمال کر رہا ہے؟</translation>
 <translation id="967427899662692980">‏Chromium کی مضبوط ترین سیکیورٹی حاصل کریں</translation>

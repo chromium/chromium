@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chrome un citām Google lietotnēm šajā ierīcē.</translation>
 <translation id="1968388653333775699">Produktīvāks darbs pārlūkā Chrome</translation>
 <translation id="2009224836393115614">Pārlūkprogrammā Chrome nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
+<translation id="2056123005618757196">Izmantojiet vairāk iespēju vienkāršajā un drošajā pārlūkā Google Chrome, kas tagad ir vēl ātrāks.</translation>
 <translation id="2147651015520127414">Chrome apstiprināja, ka <ph name="ISSUER" /> izsniedza šīs vietnes sertifikātu.</translation>
 <translation id="2199719347983604670">Chrome sinhronizācijas dati</translation>
 <translation id="2313070403598893276">Google Chrome — ērts, drošs un tagad vēl ātrāks pārlūks</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Daži papildinājumi var izraisīt pārlūka Chrome avarēšanu. Lūdzu, atinstalējiet šos papildinājumus:</translation>
 <translation id="4633328489441962921">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4698415050768537821">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chrome. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Netiek atbalstīta pārlūkā Chrome Beta.</translation>
 <translation id="5030102366287574140">Chrome var palīdzēt aizsargāt jūs pret datu pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="5108659628347594808">Uzlabojiet pārlūku Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Pāriet uz Chrome</translation>
 <translation id="6238746320622508509">Atļaujiet pārlūkā Chrome bloķēt inkognito cilnes.</translation>
 <translation id="6387994324662817823">Paroles tiek saglabātas tikai šīs ierīces Google paroļu pārvaldniekā.</translation>
+<translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
 <translation id="6427126399757991875">Notiek Chrome iestatīšana jūsu organizācijā...</translation>
 <translation id="6600954340915313787">Nokopēta pārlūkā Chrome.</translation>
 <translation id="6634107063912726160">Ja izrakstīsieties, jaunie dati pārlūkā Chrome netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Droša pārlūkošana, izmantojot pārlūku Google Chrome</translation>
 <translation id="8772179140489533211">Tiek rādīti aicinājumi pierakstīties pārlūkā Chrome.</translation>
 <translation id="8788269841521769222">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> Google paroļu pārvaldniekā.</translation>
+<translation id="8969290730818637510">Kad iestatījums ir ieslēgts
+<ph name="BEGIN_INDENT" />  • Palīdziet uzlabot pārlūku Chrome visiem lietotājiem, kuri to izmanto līdzīgi jums.<ph name="END_INDENT" />
+
+Svarīga informācija
+<ph name="BEGIN_INDENT" />  • Uzņēmumam Google tiek nosūtīta informācija par Chrome lietojumu, taču tā netiek saistīta ar jums.
+
+  • Ja pārlūks Chrome avarē, informācija par avāriju var ietvert noteiktu personas informāciju.
+
+  • Ja ieslēgsiet sinhronizāciju, dati var ietvert arī informāciju par jūsu apmeklētajiem vietrāžiem URL.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Vai iestatīt Chrome kā noklusējuma pārlūku?</translation>
 <translation id="9122931302567044771">Tas nozīmē, ka Chrome katru reizi pieprasīs datoriem paredzēto vietni.</translation>
 </translationbundle>

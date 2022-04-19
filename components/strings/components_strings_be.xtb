@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Іншыя мовы</translation>
 <translation id="1243027604378859286">Аўтар:</translation>
 <translation id="1246424317317450637">Паўтлусты</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб персаналізаваць інструменты даступнасці ў наладах Chrome OS, націсніце Tab, затым Enter</translation>
 <translation id="1250759482327835220">Каб наступны раз плаціць хутчэй, захавайце картку, імя і адрас для выстаўлення рахункаў ва Уліковым запісе Google.</translation>
 <translation id="1252799212227771492">Кнопка "Стварыць табліцу". Каб хутка стварыць новую табліцу Google, націсніце Enter</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (сінхранізаваныя)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">Паказаць яшчэ</translation>
 <translation id="132390688737681464">Захоўваць і запаўняць адрасы</translation>
 <translation id="1330449323196174374">Згіб "вароты" злева</translation>
+<translation id="1333745675627230582">Пагуляць у Chrome Dino</translation>
 <translation id="1333989956347591814">Вашы дзеянні <ph name="BEGIN_EMPHASIS" />могуць быць па-ранейшаму бачныя<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />вэб-сайтам, якія вы наведваеце,
@@ -302,7 +302,7 @@
 <translation id="1711528724596764268">Машыннае навучанне і штучны інтэлект</translation>
 <translation id="1712552549805331520">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на лакальным камп'ютары</translation>
 <translation id="1713628304598226412">Латок 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Пт</translation>
 <translation id="1717218214683051432">Датчыкі руху</translation>
 <translation id="1717494416764505390">Паштовая скрынка 3</translation>
 <translation id="1718029547804390981">Занадта вялікі дакумент для анатацый</translation>
@@ -383,7 +383,6 @@
 <translation id="1919345977826869612">Рэклама</translation>
 <translation id="1919367280705858090">Дапамога пры асобных паведамленнях аб памылцы</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}one{# сайт}few{# сайты}many{# сайтаў}other{# сайта}}</translation>
-<translation id="1923390796829649802">Кнопка "Кіраваць наладамі спецыяльных магчымасцей". Каб персаналізаваць адпаведныя інструменты ў наладах Chrome OS, націсніце Enter</translation>
 <translation id="1924727005275031552">Новая форма</translation>
 <translation id="1927439593081478069">Кнопка "Запусціць праверку бяспекі Chrome", націсніце Enter, каб выканаць праверку бяспекі ў наладах Chrome</translation>
 <translation id="1939175642807587452">Сайт можа запытваць дазвол на адпраўку апавяшчэнняў</translation>
@@ -642,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выдаліць даныя гісторыі праглядаў сайтаў, файлы cookie, кэшаванае змесціва і іншае праз налады Chrome, націсніце Tab, затым Enter</translation>
 <translation id="2650446666397867134">У доступе да файла адмоўлена</translation>
 <translation id="2653659639078652383">Адправіць</translation>
-<translation id="2659491813326907275">Персаналізаваць інструменты спецыяльных магчымасцей у наладах Chrome OS</translation>
 <translation id="2660779039299703961">Падзея</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Няма}=1{1 пароль (для даменаў <ph name="DOMAIN_LIST" />)}=2{2 паролі (для даменаў <ph name="DOMAIN_LIST" />)}one{# пароль (для даменаў <ph name="DOMAIN_LIST" />)}few{# паролі (для даменаў <ph name="DOMAIN_LIST" />)}many{# пароляў (для даменаў <ph name="DOMAIN_LIST" />)}other{# пароля (для даменаў <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Зверху</translation>
@@ -746,6 +744,7 @@
 <translation id="2972581237482394796">&amp;Узнавіць</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, радок выбраны. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
+<translation id="2983666748527428214">Адкрыць укладку ў рэжыме інкогніта</translation>
 <translation id="2985306909656435243">Калі ўключана, Chromium будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
 <translation id="2985398929374701810">Увядзіце сапраўдны адрас</translation>
 <translation id="2986368408720340940">Гэты спосаб прыняцця недаступны. Выберыце іншы.</translation>
@@ -859,6 +858,7 @@
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3304073249511302126">пошук прылад Bluetooth</translation>
+<translation id="33073482541490531">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
 <translation id="3308738399950580893">рэклама</translation>
 <translation id="3320021301628644560">Дадаць адрас для выстаўлення рахункаў</translation>
@@ -992,6 +992,7 @@
 <translation id="3658742229777143148">Рэдакцыя</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
 <translation id="3667704023705708645">Венчурны капітал</translation>
+<translation id="367108335512738711">Закладкі Chrome</translation>
 <translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
 <translation id="3675563144891642599">Трэці рулон</translation>
 <translation id="3676592649209844519">Ідэнтыфікатар прылады:</translation>
@@ -1488,6 +1489,7 @@
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="5043480802608081735">Скапіраваная вамі спасылка</translation>
+<translation id="5044545992476246592">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Памочнік Google можа аўтаматычна змяніць ваш пароль.</translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
 <translation id="5051305769747448211">Імправізацыйная камедыя</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Каб адправіць гэты файл з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}one{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}few{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}many{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}other{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1500,6 +1502,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Праверыць адрас проксі-сервера<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Дзясяты рулон</translation>
 <translation id="507130231501693183">Паштовая скрынка 4</translation>
+<translation id="5078060223219502807">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Каб абараніць свае ўліковыя запісы, зараз жа змяніце яго, а затым праверце захаваныя паролі ў Менеджары пароляў.</translation>
 <translation id="5086225927071063542">Размеркаваныя і воблачныя вылічэнні</translation>
 <translation id="5087286274860437796">На гэты момант сертыфікат сервера несапраўдны.</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
@@ -1511,6 +1514,7 @@
 <translation id="5097099694988056070">Статыстыка па абсталяванні, напрыклад загружанасць працэсара і выкарыстанне аператыўнай памяці</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Сайт не з'яўляецца бяспечным</translation>
+<translation id="5109892411553231226">Наладзіць спосабы аплаты</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Латок 18</translation>
 <translation id="5114987907971894280">віртуальная рэальнасць</translation>
@@ -1758,6 +1762,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065">Запоўніць наступныя даныя: <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дазволы</translation>
+<translation id="5808435672482059465">Праглядзець гісторыю Chrome</translation>
 <translation id="5808542072418270309">Сімулятары</translation>
 <translation id="5810442152076338065">Падключэнне да дамена <ph name="DOMAIN" /> зашыфравана з дапамогай састарэлага алгарытму шыфравання.</translation>
 <translation id="5812947184178430888">Калі Chrome пазначае падзеі бяспекі, то адпаведныя даныя аб гэтых падзеях адпраўляюцца адміністратару. Сярод гэтых даных могуць быць URL-адрасы старонак, якія вы наведваеце ў Chrome, назвы файлаў або метаданыя, а таксама імя карыстальніка, якое вы выкарыстоўваеце для ўваходу ў вэб-версіі праграм, сваю прыладу або ў Chrome.</translation>
@@ -2014,6 +2019,7 @@
 <translation id="6579630537141957243">Падключыць прыладу MIDI?</translation>
 <translation id="6579990219486187401">Светла-ружовы</translation>
 <translation id="6583674473685352014">B6 (канверт)</translation>
+<translation id="6585526963651937128">Гісторыя Chrome</translation>
 <translation id="6587182488465657433">Браўзер Chrome выявіў, што пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Мы рэкамендуем вам абараніць свае ўліковыя запісы, змяніўшы гэты пароль і праверыўшы тыя, якія вы захавалі.</translation>
 <translation id="6587923378399804057">Скапіраваная вамі спасылка</translation>
 <translation id="6591833882275308647">Прылада <ph name="DEVICE_TYPE" /> не знаходзіцца пад кіраваннем</translation>
@@ -2122,6 +2128,7 @@
 <translation id="691024665142758461">Спампаваць некалькі файлаў</translation>
 <translation id="6915804003454593391">Карыстальнік:</translation>
 <translation id="6916954549222464607">Фінансавае планаванне і менеджмент</translation>
+<translation id="6917795328362592458">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Каб абараніць свае ўліковыя запісы, праверце захаваныя паролі ў Менеджары пароляў.</translation>
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
 <translation id="6939469646605424232">Тэлевізійныя драмы</translation>
 <translation id="6944692733090228304">Вы ўвялі пароль на сайце, які не знаходзіцца пад кіраваннем арганізацыі <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Каб абараніць свой уліковы запіс, не выкарыстоўвайце пароль на іншых прыладах і сайтах.</translation>
@@ -2799,6 +2806,7 @@
 <translation id="8805819170075074995">Элемент спіса "<ph name="LANGUAGE_ID" />": запіс ігнаруецца, бо ён уключаны і ў палітыку "SpellcheckLanguage".</translation>
 <translation id="8806285662264631610">Тавары для ванны і цела</translation>
 <translation id="8807160976559152894">Абрэзка пасля кожнай старонкі</translation>
+<translation id="8808828119384186784">Налады Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="882338992931677877">Слот ручной падачы</translation>

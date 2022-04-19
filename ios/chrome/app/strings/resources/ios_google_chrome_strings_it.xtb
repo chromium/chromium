@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Questo account e gli eventuali dati non salvati verranno rimossi da Chrome e da altre app Google su questo dispositivo.</translation>
 <translation id="1968388653333775699">Aumenta la tua produttività con Chrome</translation>
 <translation id="2009224836393115614">Chrome non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
+<translation id="2056123005618757196">Aumenta la tua produttività grazie a Google Chrome, che ti offre semplicità, sicurezza e velocità senza precedenti.</translation>
 <translation id="2147651015520127414">Chrome ha verificato che <ph name="ISSUER" /> ha emesso il certificato del sito web.</translation>
 <translation id="2199719347983604670">Dati dalla sincronizzazione Chrome</translation>
 <translation id="2313070403598893276">Google Chrome è semplice, sicuro e più veloce che mai</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Disinstallali.</translation>
 <translation id="4633328489441962921">Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="4698415050768537821">Chrome non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Non supportata su Chrome beta</translation>
 <translation id="5030102366287574140">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
 <translation id="5108659628347594808">Migliora Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Passa a Chrome</translation>
 <translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
 <translation id="6387994324662817823">Le password vengono salvate in Gestore delle password di Google solo su questo dispositivo.</translation>
+<translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
 <translation id="6427126399757991875">La tua organizzazione sta configurando Chrome…</translation>
 <translation id="6600954340915313787">Copiata in Chrome</translation>
 <translation id="6634107063912726160">Se esci, Chrome non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Resta al sicuro con Google Chrome</translation>
 <translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>
 <translation id="8788269841521769222">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Quando l'opzione è attiva:
+<ph name="BEGIN_INDENT" />  • Contribuisci a migliorare Chrome per le persone che lo usano come fai tu.<ph name="END_INDENT" />
+
+Aspetti da considerare:
+<ph name="BEGIN_INDENT" />  • Google riceve delle informazioni relative al tuo utilizzo di Chrome, ma che non sono riconducibili a te.
+
+  • Se Chrome si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali.
+
+  • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Impostare Chrome come browser predefinito?</translation>
 <translation id="9122931302567044771">Ciò significa che Chrome richiederà ogni volta il sito desktop.</translation>
 </translationbundle>

@@ -63,7 +63,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
         <ph name="EVENT_SUMMARY" />. Selecciónalo para ver más detalles en Google Calendar.</translation>
 <translation id="1266097335951928626">Iniciar cámara frontal</translation>
 <translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
-<translation id="1269405891096105529">No se puede usar el periférico en el modo invitados</translation>
+<translation id="1269405891096105529">No se puede usar el periférico en el modo Invitados</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1275285675049378717">Alimentando a <ph name="POWER_SOURCE" /></translation>
@@ -87,6 +87,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1351937230027495976">Ocultar menú</translation>
 <translation id="1364382257761975320">Para desbloquear tu Chromebook, usa tu huella digital</translation>
 <translation id="1364618750746929654">No se puede generar la transcripción</translation>
+<translation id="1372545819342940910">Guardar escritorio para más tarde</translation>
 <translation id="1383597849754832576">No se han podido descargar los archivos de voz. Prueba de nuevo más tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Activada</translation>
@@ -209,7 +210,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2170530631236737939">Desliza tres dedos hacia abajo para salir de la vista general</translation>
 <translation id="219905428774326614">Menú de aplicaciones, todas las aplicaciones</translation>
 <translation id="2201071101391734388">Foto reciente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
-<translation id="2208323208084708176">Modo de escritorio unificado</translation>
+<translation id="2208323208084708176">Modo Escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
 <translation id="2224075387478458881">La grabación de pantalla no está permitida cuando se muestra contenido protegido</translation>
@@ -460,7 +461,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3702809606464356667">Se muestran las ventanas del escritorio actual. Pulsa la tecla de la flecha hacia arriba para ver las ventanas de todos los escritorios.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3708186454126126312">Conectados anteriormente</translation>
+<translation id="3708186454126126312">Conectado anteriormente</translation>
 <translation id="3712317119236351467">No se puede guardar la grabación</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir al terminar</translation>
@@ -523,6 +524,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4095366824370681039">Pluma</translation>
 <translation id="4112140312785995938">Ir hacia atrás</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">ventana</translation>
 <translation id="4123259114412175274">Para desbloquear tu Chromebook, asegúrate de que el Bluetooth de tu teléfono esté activado</translation>
 <translation id="4129129681837227511">Para poder ver las notificaciones desde la pantalla de bloqueo, desbloquea el dispositivo para cambiar este ajuste</translation>
@@ -562,7 +564,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Has pulsado la combinación de teclas que activa el contraste alto. ¿Quieres activarlo?</translation>
 <translation id="4322742403972824594">La combinación de teclas Ctrl + Alt + tecla de flecha hacia arriba ha cambiado. Para usar la tecla de inicio, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + tecla de flecha hacia la izquierda.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">No es posible lanzar Lacros si varios usuarios han iniciado sesión.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">El Asistente se está cargando...</translation>
@@ -795,7 +796,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5788127256798019331">Archivos de Play</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
 <translation id="5805809050170488595">Clic para activar <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
@@ -829,7 +829,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="598882571027504733">Para recibir la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="5992218262414051481">Se ha habilitado el modo de contraste alto. Pulsa Ctrl + Tecla de búsqueda + H de nuevo para desactivarlo.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
-<translation id="6018164090099858612">Saliendo del modo de proyección</translation>
+<translation id="6018164090099858612">Saliendo del modo Espejo</translation>
 <translation id="602001110135236999">Desplazar a la izquierda</translation>
 <translation id="6022924867608035986">Borrar el texto del cuadro de búsqueda</translation>
 <translation id="602472752137106327">Mostrar ventanas de todos los escritorios, botón seleccionado</translation>
@@ -1147,7 +1147,6 @@ Nueva instalación</translation>
 <translation id="79341161159229895">Cuenta gestionada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pulsa <ph name="SHORTCUT_KEY_NAME" /> + V para ver el portapapeles, que guarda los 5 últimos elementos que hayas copiado.</translation>
 <translation id="7942349550061667556">Rojo</translation>
-<translation id="7952747673138230804">Chrome OS muestra sugerencias sobre nuevos contenidos por descubrir. Envía estadísticas para mejorar la calidad solo si has elegido compartir datos de uso. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Modo de contraste alto</translation>
 <translation id="7968693143708939792">Seleccionar carpeta...</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
@@ -1210,7 +1209,7 @@ Nueva instalación</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8364673525741149932">Activa o desactiva Grupo de estanterías. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Avanzar por carácter</translation>
-<translation id="8371991222807690464">Es posible que el rendimiento de los periféricos esté limitado en el Modo invitados</translation>
+<translation id="8371991222807690464">Es posible que el rendimiento de los periféricos esté limitado en el Modo Invitados</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> y tu teléfono se conectarán automáticamente</translation>
 <translation id="8380784334203145311">Buenas noches,</translation>
 <translation id="8382715499079447151">Protección frente a visualizaciones</translation>
@@ -1348,7 +1347,7 @@ Nueva instalación</translation>
 <translation id="9198992156681343238">La resolución de <ph name="DISPLAY_NAME" /> se ha cambiado a <ph name="RESOLUTION" />. Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Conecta <ph name="NAME" /> a este Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestionada por el administrador</translation>
-<translation id="9210037371811586452">Saliendo del modo de escritorio unificado</translation>
+<translation id="9210037371811586452">Saliendo del modo Escritorio unificado</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="9211681782751733685">Tiempo restante para que se cargue totalmente la batería: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Fondo de pantalla</translation>

@@ -35,6 +35,7 @@
 <translation id="1173894706177603556">Ailenwi</translation>
 <translation id="1177863135347784049">Personol</translation>
 <translation id="1181037720776840403">Dileu</translation>
+<translation id="1193729455103054076">Defnyddio cyfrinair cryf?</translation>
 <translation id="1197267115302279827">Symud nodau tudalen</translation>
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1202892408424955784">Cynhyrchion sy'n cael eu dilyn</translation>
@@ -147,7 +148,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="1779766957982586368">Cau'r ffenestr</translation>
 <translation id="1791662854739702043">Wedi gosod</translation>
 <translation id="1792959175193046959">Gallwch newid y lleoliad lawrlwytho diofyn ar unrhyw adeg</translation>
-<translation id="1795251344124198516">Telerau Gwasanaeth Ychwanegol Chrome a Chrome OS</translation>
 <translation id="1807246157184219062">Golau</translation>
 <translation id="1810845389119482123">Mae'r gosodiad cysoni cychwynnol heb ei orffen</translation>
 <translation id="1829244130665387512">Chwilio'r dudalen</translation>
@@ -184,7 +184,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2000419248597011803">Yn anfon rhai cwcis a chwiliadau o'r bar cyfeiriadau a'r blwch chwilio i'ch peiriant chwilio diofyn</translation>
 <translation id="200114059308480249">Cynnwys testun o'i amgylch mewn chwiliadau Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Ffeil}zero{# Ffeil}two{# Ffeil}few{# Ffeil}many{# Ffeil}other{# Ffeil}}</translation>
-<translation id="2015836039326522978">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a Chrome OS<ph name="END_LINK2" />. Mae'r <ph name="BEGIN_LINK3" />Polisi Preifatrwydd<ph name="END_LINK3" /> hefyd yn berthnasol.</translation>
 <translation id="2020309681647789787">Bydd gennych eich hanes ar eich holl ddyfeisiau sydd wedi'u cysoni, felly gallwch barhau â'r hyn yr oeddech yn ei wneud</translation>
 <translation id="2021896219286479412">Rheolyddion gwefan sgrîn lawn</translation>
 <translation id="2038563949887743358">Troi Gofyn am wefan bwrdd gwaith ymlaen</translation>
@@ -461,7 +460,6 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am gynnwys a awgrymir</translation>
 <translation id="3495219333887281978">Mae'r ddalen waelod mewngofnodi wedi'i hagor ar hanner uchder.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Drwy ddefnyddio Chrome, rydych yn cytuno i <ph name="BEGIN_TOS_LINK" />Delerau Gwasanaeth Google<ph name="END_TOS_LINK" />, a <ph name="BEGIN_ATOS_LINK" />Thelerau Gwasanaeth Ychwanegol Google Chrome a Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Mae Amddiffyniad Safonol ymlaen</translation>
 <translation id="3509330069915219067">All-lein. Ni all Chrome wirio am ddiweddariadau.</translation>
 <translation id="3513704683820682405">Realiti Estynedig</translation>
@@ -588,6 +586,7 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="4296252229500326964">Tab Anhysbys newydd</translation>
 <translation id="4298388696830689168">Gwefannau cysylltiedig</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Rheolwr Cyfrineiriau</translation>
 <translation id="4307992518367153382">Hanfodion</translation>
 <translation id="4320177379694898372">Dim cysylltiad rhyngrwyd</translation>
 <translation id="4321739720395210191">Methu ag agor eich camera. Ailgychwynnwch eich dyfais a rhowch gynnig arall arni.</translation>
@@ -956,7 +955,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6345878117466430440">Marcio fel wedi'i darllen</translation>
 <translation id="6363990818884053551">I ddechrau cysoni, cadarnhewch mai chi sydd yno</translation>
 <translation id="6364438453358674297">Tynnu'r awgrym o'r hanes?</translation>
-<translation id="6379829913050047669">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Yn amlach yn rhaglwytho tudalennau y mae Chrome yn meddwl eich bod yn debygol o ymweld â nhw. Gall y gosodiad hwn arwain at fwy o ddefnydd o ddata.</translation>
 <translation id="6385407407546870227">Pan fydd treialon ymlaen, mae lleihau sothach a thwyll yn dibynnu ar docynnau ymddiriedaeth i helpu gwefannau i ymladd twyll a gwahaniaethu rhwng botiau a phobl.
 
@@ -1126,7 +1124,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="7208109991155904980">Wedi symud yr ymateb</translation>
 <translation id="7222235798733126207">Rhannu cyfyngedig rhwng gwefannau</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad ar y gweill}zero{Mae # lawrlwythiad ar y gweill}two{Mae # lawrlwythiad ar y gweill}few{Mae # lawrlwythiad ar y gweill}many{Mae # lawrlwythiad ar y gweill}other{Mae # lawrlwythiad ar y gweill}}</translation>
-<translation id="7237045078887540010">Drwy ddefnyddio Chrome, rydych yn cytuno i <ph name="BEGIN_TOS_LINK" />Delerau Gwasanaeth Google<ph name="END_TOS_LINK" />, a <ph name="BEGIN_ATOS_LINK" />Thelerau Gwasanaeth Ychwanegol Google Chrome a Chrome OS<ph name="END_ATOS_LINK" />. Mae'r <ph name="BEGIN_PRIVACY_LINK" />Polisi Preifatrwydd<ph name="END_PRIVACY_LINK" /> hefyd yn berthnasol.</translation>
 <translation id="7242755609445462077">Amlygu sydd wedi'i arddullio <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Gwnewch yn siŵr bod cysoni yn <ph name="TARGET_DEVICE_NAME" /> wedi'i droi ymlaen yn Chrome.</translation>
 <translation id="7252076891734325316">Rhowch eich ffôn yn agos at y cyfrifiadur</translation>

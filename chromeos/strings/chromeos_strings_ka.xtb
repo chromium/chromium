@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
 <translation id="1908234395526491708">წარუმატებელი UDP მოთხოვნები</translation>
-<translation id="1930797645656624981">Chrome OS-ის შეყვანის მეთოდის სერვისი</translation>
 <translation id="1947737735496445907">დაბეჭდილი</translation>
 <translation id="1951012854035635156">ასისტენტი</translation>
+<translation id="1977994649430373166">Google პროფილის ფოტო</translation>
 <translation id="1979103255016296513">პაროლის შეცვლა დაგვიანებულია</translation>
 <translation id="1999615961760456652">ავტორიზაციის პორტალი</translation>
 <translation id="2006864819935886708">კავშირი</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">ასარჩევია ხელოვნების გალერეის მინიმუმ ერთი ალბომი</translation>
 <translation id="2230005943220647148">ცელსიუსი</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">კლავიატურის შენათების გადართვა</translation>
 <translation id="2240366984605217732">განლაგების გადართვა</translation>
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
 <translation id="2287186687001756809">სურათი მიუწვდომელია. ფოტოების დასამატებლად გადადით აქ: <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ინტერნეტთან დაკავშირება ვერ მოხერხდა.</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2584559707064218956">დასაყენებლად გადადით პარამეტრებზე</translation>
-<translation id="2585245331261708204">სიახლეები Chrome OS-ში</translation>
 <translation id="2619761439309613843">ყოველდღიური განახლება</translation>
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="2640549051766135490">არჩეულია ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">მოწყობილობის ტიპი უცნობია.</translation>
 <translation id="3966286471246132217">მაქსიმალურად ზუსტი შედეგები რომ მიიღოთ, დახურეთ ყველა აპი, სანამ ტესტი არ დასრულდება.</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
+<translation id="3969602104473960991">ChromeOS-ის პაროლი განახლდა</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="39823212440917567">ბეჭდვის <ph name="NUMBER_OF_DAYS" /> დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3993704782688964914">თქვენი <ph name="DEVICE_NAME" /> ახლა განახლებულია</translation>
@@ -323,7 +324,6 @@
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4744944742468440486">თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
-<translation id="475869545581454722">Chrome OS-ის პაროლი განახლდა</translation>
 <translation id="4773299976671772492">შეწყვეტილია</translation>
 <translation id="4782311465517282004">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ფოტო</translation>
@@ -463,6 +463,7 @@
 <translation id="6113701710518389813">ისარი ზემოთ</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> სხვა ალბომი</translation>
 <translation id="6122191549521593678">ონლაინ</translation>
+<translation id="6122277663991249694">ChromeOS-ის შეყვანის მეთოდის სერვისი</translation>
 <translation id="6137767437444130246">მომხმარებლის სერტიფიკატი</translation>
 <translation id="6146993107019042706">დასასრულებლად შეიყვანეთ თქვენი ახალი პაროლი</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -629,6 +630,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ავტომატური ფერის რეჟიმის ჩართვა</translation>
 <translation id="8041089156583427627">გამოხმაურება</translation>
+<translation id="8045012663542226664">მიკროფონის დადუმება</translation>
 <translation id="8075838845814659848">დარჩენილი მუხტი</translation>
 <translation id="8082366717211101304">DNS-ის დარეგულირება ვერ მოხერხდა Android აპებიდან</translation>
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">სიხშირე, რომლითაც მოწყობილობა ამჟამად იტენება ან იცლება</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">შიდა კლავიატურა</translation>
+<translation id="8431300646573772016">სიახლეები ChromeOS-ში</translation>
 <translation id="843568408673868420">ინტერნეტ-კავშირი</translation>
 <translation id="844521431886043384">DNS არ არის დაყენებული</translation>
 <translation id="8461329675984532579">ადგილობრივი პროვაიდერის სახელი</translation>
@@ -739,6 +742,7 @@
 <translation id="917720651393141712">შემოწმება</translation>
 <translation id="9204237731135241582">გეითვეისთან დაკავშირება ვერ ხერხდება Android აპების მეშვეობით</translation>
 <translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
+<translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">არ არის გააქტიურებული</translation>
 <translation id="960719561871045870">ოპერატორის კოდი</translation>

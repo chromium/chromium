@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">மெனுவைச் சுருக்கு</translation>
 <translation id="1364382257761975320">Chromebookகை அன்லாக் செய்ய, உங்கள் கைரேகையைப் பயன்படுத்தவும்</translation>
 <translation id="1364618750746929654">டிரான்ஸ்கிரிப்ஷனை உருவாக்க முடியவில்லை</translation>
+<translation id="1372545819342940910">பின்னர் பயன்படுத்துவதற்காக டெஸ்க்கைச் சேமி</translation>
 <translation id="1383597849754832576">உடனடி வசனத்தின் ஃபைல்களைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">இயக்கப்பட்டுள்ளது</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">இங்க் பேனா</translation>
 <translation id="4112140312785995938">பின்செல்</translation>
 <translation id="4114315158543974537">Phone Hubபை இயக்குதல்</translation>
+<translation id="4115378294792113321">மெஜந்தா</translation>
 <translation id="412298498316631026">சாளரம்</translation>
 <translation id="4123259114412175274">Chromebookகை அன்லாக் செய்ய, உங்கள் மொபைலில் புளூடூத் இயக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="4129129681837227511">பூட்டுத் திரையில் அறிவிப்புகளைப் பார்க்க, அமைப்பை மாற்றுவதற்குச் சாதனத்தை அன்லாக் செய்யவும்</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">உயர் ஒளி மாறுபாட்டின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="4322742403972824594">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + மேல்நோக்கிய அம்புக்குறி. Home பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + இடது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">பல பயனர்கள் உள்நுழைந்திருக்கும்போது Lacros உலாவியைப் பயன்படுத்த இயலாது.</translation>
 <translation id="4338109981321384717">உருப்பெருக்கி</translation>
 <translation id="4351433414020964307">அசிஸ்டண்ட்டை ஏற்றுகிறது...</translation>
@@ -794,7 +795,6 @@
 <translation id="5788127256798019331">Play ஃபைல்கள் </translation>
 <translation id="5790085346892983794">வெற்றி</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> நெட்வொர்க்கை இயக்க, கிளிக் செய்யவும்</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>
@@ -1146,7 +1146,6 @@
 <translation id="79341161159229895">கணக்கை நிர்வகிப்பது: <ph name="FIRST_PARENT_EMAIL" /> மற்றும் <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">கிளிப்போர்டைப் பார்க்க, <ph name="SHORTCUT_KEY_NAME" /> + V ஆகிய விசைகளைச் சேர்த்து அழுத்தவும். நீங்கள் நகலெடுத்த கடைசி 5 உள்ளடக்கம் கிளிப்போர்டில் சேமிக்கப்பட்டிருக்கும்.</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
-<translation id="7952747673138230804">உலாவுவதற்கான புதிய உள்ளடக்கப் பரிந்துரைகளை Chrome OS காட்டுகிறது. உபயோகத் தரவுப் பகிர்வை தேர்வுசெய்திருந்தால் மட்டுமே தரத்தை மேம்படுத்துவதற்காகப் புள்ளிவிவரங்களை அனுப்பும். <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="7968693143708939792">ஃபோல்டரைத் தேர்ந்தெடு...</translation>
 <translation id="7977927628060636163">மொபைல் நெட்வொர்க்குகளைத் தேடுகிறது...</translation>

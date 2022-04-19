@@ -15,7 +15,6 @@
 <translation id="1178374936842835197">Калі налада адсутнічае на гэтай старонцы, перайдзіце ў <ph name="LINK_BEGIN" />налады Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome рэкамендуе не спампоўваць і не адкрываць гэты файл</translation>
 <translation id="1278833599417554002">Перазапусціць, каб абнавіць &amp;Chrome</translation>
-<translation id="1293325835983155583"><ph name="MANAGER" /> патрабуе ад вас прачытаць і прыняць наступныя Умовы выкарыстання, перш чым пачаць карыстацца прыладай. Гэтыя ўмовы не пашыраюць, не змяняюць і не абмяжоўваюць Умовы выкарыстання Google Chrome OS.</translation>
 <translation id="1302523850133262269">Пачакайце, пакуль Chrome усталюе апошнія абнаўленні сістэмы.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> патрабуе ад вас прачытаць і прыняць наступныя Умовы выкарыстання, перш чым пачаць карыстацца прыладай. Гэтыя ўмовы не пашыраюць, не змяняюць і не абмяжоўваюць Умовы выкарыстання Chrome OS Flex.</translation>
 <translation id="137466361146087520">Google Chrome (бэта-версія)</translation>
@@ -50,7 +49,6 @@
 <translation id="1877026089748256423">Chrome састарэў</translation>
 <translation id="1919130412786645364">Дазволіць уваход ва ўліковы запіс Chrome</translation>
 <translation id="2018528049276128029">У кожным профілі захоўваюцца свае даныя Chrome, напрыклад закладкі, гісторыя, паролі і не толькі</translation>
-<translation id="2063848847527508675">Каб прымяніць абнаўленне, трэба перазапусціць Chrome OS.</translation>
 <translation id="207902854391093810">Калі ўключаны пробныя функцыі, тэхналогія вымярэння паказчыкаў, звязаных з рэкламай, дазваляе сайтам, якія вы наведваеце, запытваць інфармацыю ў Chrome, каб выкарыстоўваць яе для ацэнкі эфектыўнасці сваёй рэкламы. Яна таксама абмяжоўвае механізмы адсочвання паводзін на розных сайтах, перадаючы паміж імі мінімальны аб'ём інфармацыі.</translation>
 <translation id="2094648590148273905">Умовы Chrome OS Flex</translation>
 <translation id="2094919256425865063">Усё роўна выйсці з Chrome?</translation>
@@ -79,7 +77,6 @@
 <translation id="2580411288591421699">Немагчыма ўсталяваць тую ж версію Google Chrome, што зараз працуе. Закрыйце Google Chrome і паўтарыце спробу.</translation>
 <translation id="2586406160782125153">Гэта дзеянне выдаліць з прылады даныя прагляду старонак у інтэрнэце. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2622559029861875898">Браўзеру Chrome не ўдаецца праверыць наяўнасць абнаўленняў. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
-<translation id="2644798301485385923">Сістэма Chrome OS</translation>
 <translation id="2652691236519827073">Адкрыць спасылку ў новай &amp;укладцы Chrome</translation>
 <translation id="2665296953892887393">Дапамажыце палепшыць Google Chrome, адпраўляючы ў Google справаздачы аб збоях і <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Гэта пашырэнне змяніла старонку, якая паказваецца пры запуску Chrome.</translation>
@@ -116,7 +113,6 @@
 <translation id="3245429137663807393">Калі вы абагульваеце справаздачы пра выкарыстанне браўзера Chrome, у іх уключаюцца URL-адрасы наведаных вамі старонак.</translation>
 <translation id="3360895254066713204">Памочнік Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Перазапуск Chrome адбудзецца зараз}=1{Chrome будзе перазапушчаны праз 1 секунду}one{Chrome будзе перазапушчаны праз # секунду}few{Chrome будзе перазапушчаны праз # секунды}many{Chrome будзе перазапушчаны праз # секунд}other{Chrome будзе перазапушчаны праз # секунды}}</translation>
-<translation id="3395323229510056640">Даведка па Chrome OS</translation>
 <translation id="3396977131400919238">Падчас усталявання адбылася памылка аперацыйнай сістэмы. Спампуйце Google Chrome зноў.</translation>
 <translation id="3428747202529429621">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="3434246496373299699">Chrome зможа праверыць паролі толькі пасля таго, як вы ўвойдзеце ва Уліковы запіс Google</translation>
@@ -134,7 +130,6 @@
 <translation id="3716540481907974026">Версія Chrome OS Flex</translation>
 <translation id="3718181793972440140">Будзе выдалены 1 элемент з гэтай прылады. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Пашырэнне "<ph name="EXTENSION_NAME" />" змяніла старонку, якая паказваецца пры запуску Chrome.</translation>
-<translation id="3779473566290487688">Каб атрымліваць наступныя абнаўленні Google Chrome, вам патрэбна версія OS X 10.11 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">АС Chrome OS Flex не змагла сінхранізаваць даныя з-за памылкі ўваходу.</translation>
 <translation id="3835168907083856002">Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -156,19 +151,14 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Якія даныя выкарыстоўваюцца:<ph name="END_BOLD" /> гісторыя прагляду сайтаў – пералік сайтаў, якія вы наведалі праз Chrome на гэтай прыладзе.</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
 <translation id="4293420128516039005">Увайдзіце ў Chrome, каб сінхранізаваць і персаналізаваць яго на сваіх прыладах</translation>
-<translation id="4325083532956419387">Версія Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome для распрацоўшчыкаў (mDNS-In)</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4335235004908507846">Chrome дапамагае прадухіляць праблемы, звязаныя з уцечкай даных, выкарыстаннем няправільных пашырэнняў і г. д.</translation>
 <translation id="4343195214584226067">Пашырэнне <ph name="EXTENSION_NAME" /> дададзена ў Chrome</translation>
 <translation id="4384570495110188418">Chrome не можа праверыць вашы паролі, пакуль вы не ўвойдзеце ва ўліковы запіс</translation>
-<translation id="4407807842708586359">АС Google Chrome</translation>
 <translation id="4427306783828095590">Функцыя палепшанай абароны яшчэ надзейней блакіруе фішынг і шкодныя праграмы</translation>
 <translation id="4450664632294415862">Chrome – Уваход у сетку – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">У Google Chrome выконваецца іншая аперацыя. Паўтарыце спробу пазней.</translation>
 <translation id="4459234553906210702">Тэхналогія вымярэння паказчыкаў, звязаных з рэкламай, дазваляе сайтам, якія вы наведваеце, запытваць інфармацыю ў Chrome, каб выкарыстоўваць яе для ацэнкі эфектыўнасці сваёй рэкламы. Яна таксама абмяжоўвае механізмы адсочвання паводзін на розных сайтах, перадаючы паміж імі мінімальны аб'ём інфармацыі.</translation>
-<translation id="4480040274068703980">Сістэма Chrome OS не змагла сінхранізаваць даныя з-за памылкі ўваходу.</translation>
-<translation id="4521185804071812304">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome OS шляхам аўтаматычнай адпраўкі ў Google даных пра выкарыстанне і дыягностыку (неабавязкова).</translation>
 <translation id="4561051373932531560">Google Chrome дазваляе націснуць на нумар тэлефона з вэб-старонкі і выклікаць яго праз Skype!</translation>
 <translation id="4567424176335768812">Вы ўвайшлі як <ph name="USER_EMAIL_ADDRESS" /> і цяпер маеце доступ да закладак, гісторыі і іншых налад на ўсіх прыладах, дзе выкананы ўваход.</translation>
 <translation id="4571503333518166079">Перайсці ў налады апавяшчэнняў Chrome</translation>
@@ -191,7 +181,6 @@
 <translation id="4969674060580488087">АС Chrome OS Flex не змагла сінхранізаваць даныя: даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="4970761609246024540">Вітаем у профілях Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5062123544085870375">Перазапусціце Chrome OS</translation>
 <translation id="5132929315877954718">Адкрывайце для сябе выдатныя праграмы, гульні, пашырэнні і тэмы для Google Chrome.</translation>
 <translation id="5139423532931106058">Наладзьце свой профіль Chrome</translation>
 <translation id="5163087008893166964">Вітаем у Chrome! Адкрыта новае акно браўзера</translation>
@@ -218,7 +207,6 @@
 <translation id="5715063361988620182">{SECONDS,plural, =1{Перазапуск Google Chrome адбудзецца праз 1 секунду}one{Перазапуск Google Chrome адбудзецца праз # секунду}few{Перазапуск Google Chrome адбудзецца праз # секунды}many{Перазапуск Google Chrome адбудзецца праз # секунд}other{Перазапуск Google Chrome адбудзецца праз # секунды}}</translation>
 <translation id="5727531838415286053">Калі Chrome выпадкова зробіць вас карыстальнікам актыўнай пробнай функцыі, ваша гісторыя прагляду сайтаў будзе ўплываць на тое, якая рэклама будзе вам паказвацца, і на ацэнку вашых інтарэсаў, пералічаных у спісе ніжэй. У мэтах аховы вашай прыватнасці звесткі пра вашы інтарэсы ў Chrome штомесяц рэгулярна выдаляюцца. Інтарэсы будуць абнаўляцца, пакуль вы іх не выдаліце.</translation>
 <translation id="5736850870166430177">Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі</translation>
-<translation id="573759479754913123">Пра Chrome OS</translation>
 <translation id="5756509061973259733">Профіль Chrome з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="5763280521700030406">Браўзер Chrome заблакіраваў гэты файл, бо ён занадта вялікі, каб прайсці праверку бяспекі. Паўтарыце спробу, выкарыстоўваючы файлы, памер якіх не перавышаў бы 50 МБ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -239,12 +227,10 @@
 <translation id="6247557882553405851">Менеджар пароляў Google</translation>
 <translation id="6291089322031436445">Праграмы Chrome для распрацоўшчыкаў</translation>
 <translation id="6291549208091401781">Google Chrome зараз усталяваны для ўсіх карыстальнікаў на камп'ютары.</translation>
-<translation id="6368958679917195344">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6412673304250309937">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
 <translation id="6418662306461808273">Пераключыцца на існуючы профіль Chrome?</translation>
 <translation id="6506909944137591434">Каб стварыць 3D-карту наваколля, Chrome запытвае дазвол на доступ да камеры</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome для распрацоўшчыкаў</translation>
-<translation id="6568793831116033768">Сістэма Chrome OS</translation>
 <translation id="659498884637196217">У Менеджары пароляў Google на гэтай прыладзе</translation>
 <translation id="6632473616050862500">Chrome OS Flex працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
@@ -254,7 +240,6 @@
 <translation id="6739177684496155661">Працягнуць працу ў новым профілі Chrome?</translation>
 <translation id="6750954913813541382">Для выпраўлення арфаграфічных памылак Chrome адпраўляе ў Google тэкст, які вы набіраеце ў браўзеры</translation>
 <translation id="677276454032249905">Усё роўна выйсці з Chrome?</translation>
-<translation id="6814748008107187409">Калі налада адсутнічае на гэтай старонцы, перайдзіце ў <ph name="LINK_BEGIN" />налады Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Уваходнае правіла для Google Chrome Canary, якое дазваляе трафік mDNS.</translation>
 <translation id="6881299373831449287">Ідзе абнаўленне браўзера Chrome</translation>
 <translation id="6885412569789873916">Праграмы бэта-версіі Chrome</translation>
@@ -283,13 +268,10 @@
 
 Дазволы, якія вы ўжо далі вэб-сайтам і праграмам, могуць дзейнічаць для гэтага ўліковага запісу. Кіраваць Уліковымі запісамі Google можна ў <ph name="SETTINGS_LINK_BEGIN" />Наладах<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Раней вы ўваходзілі ў Chrome як <ph name="USER_EMAIL_ADDRESS" />. Для паўторнага ўваходу скарыстайце той жа ўліковы запіс.</translation>
-<translation id="7408085963519505752">Умовы выкарыстання Chrome OS</translation>
 <translation id="7410958280246779049">Chrome заблакіраваў гэты файл, бо ён небяспечны</translation>
-<translation id="7419046106786626209">Chrome OS не ўдалося сінхранізаваць даныя, бо гэта функцыя недаступная для вашага дамена.</translation>
 <translation id="7481213027396403996">Засцеражыце браўзер Chrome ад небяспек</translation>
 <translation id="7486227612705979895">Каб выводзіць прапановы ў адрасным радку, браўзер Chrome будзе карыстацца доступам да вашага Дыска</translation>
 <translation id="7535429826459677826">Google Chrome для распрацоўшчыкаў</translation>
-<translation id="7573289029918943991">Каб даведацца, ці абноўлена прылада, адкрыйце <ph name="LINK_BEGIN" />Налады Chrome OS<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Сінхранізаваць даныя ў браўзеры Google Chrome не ўдалося: даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Вас вітае Chrome</translation>
@@ -297,7 +279,6 @@
 <translation id="7641148173327520642">Ваш сістэмны адміністратар наладзіў Google Chrome так, каб для доступу да <ph name="TARGET_URL_HOSTNAME" /> адкрываць <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7651907282515937834">Лагатып Chrome Enterprise</translation>
 <translation id="7655455401911432608">Гісторыя прагляду сайтаў – інфармацыя пра сайты, якія вы наведалі праз Chrome на гэтай прыладзе.</translation>
-<translation id="7665553140559834626">Перазапусціць, каб абнавіць &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Усталёўшчыку не ўдалося стварыць часовы каталог. Праверце, ці ёсць вольнае месца на дыску і дазвол на ўсталяванне праграмнага забеспячэння.</translation>
 <translation id="7761834446675418963">Каб адкрыць Chrome і пачаць прагляд вэб-старонак, націсніце на сваё імя.</translation>
 <translation id="7777080907402804672">Калі відарыс не мае прыдатнага апісання, Chrome паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google. Гэты параметр можна адключыць у наладах у любы час.</translation>
@@ -313,7 +294,6 @@
 <translation id="7930071585467473040">Google Chrome спрабуе скапіраваць паролі.</translation>
 <translation id="7951272445806340501">Каб прымяніць абнаўленне, трэба перазапусціць Chrome OS Flex.</translation>
 <translation id="7962410387636238736">Гэты камп'ютар больш не будзе атрымліваць абнаўленні Google Chrome: Windows XP і Windows Vista цяпер не падтрымліваюцца</translation>
-<translation id="79947657522496226">Chrome OS, як і <ph name="BEGIN_LINK_LINUX_OSS" />Асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8005666035647241369">У Менеджары пароляў Google на гэтай прыладзе</translation>
 <translation id="8008534537613507642">Пераўсталяваць Chrome</translation>
 <translation id="8013993649590906847">Калі відарыс не мае прыдатнага апісання, Chrome паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google.</translation>
@@ -364,7 +344,6 @@
 <translation id="8986207147630327271">Вы дадаяце працоўны профіль у гэты браўзер і даяце адміністратару кантроль толькі над працоўным профілем.</translation>
 <translation id="8989968390305463310">Гісторыя прагляду сайтаў уплывае на рэкламу, якая вам паказваецца, і на спіс пералічаных ніжэй інтарэсаў. У мэтах аховы вашай прыватнасці звесткі пра вашы інтарэсы ў Chrome штомесяц аўтаматычна выдаляюцца. Інтарэсы могуць абнаўляцца, пакуль вы іх не выдаліце.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ёсць абнаўленне Chrome}=1{Ёсць абнаўленне Chrome}one{Абнаўленне Chrome выйшла ўжо # дзень таму}few{Абнаўленне Chrome выйшла # дні таму}many{Абнаўленне Chrome выйшла # дзён таму}other{Абнаўленне Chrome выйшла # дня таму}}</translation>
-<translation id="9026991721384951619">Сінхранізаваць даныя ў сістэме Chrome OS не ўдалося: даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="9053892488859122171">Сістэма Chrome OS Flex</translation>
 <translation id="9067395829937117663">Для браўзера Google Chrome патрабуецца Windows 7 або навейшая версія.</translation>
 <translation id="911206726377975832">Выдаліць таксама гісторыю праглядаў?</translation>

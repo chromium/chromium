@@ -116,7 +116,7 @@
 <translation id="1923342640370224680">Акыркы саатта</translation>
 <translation id="1930989359703290198">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Көчүрүү үчүн эки жолу таптап коюңуз.</translation>
-<translation id="1943478190258551035">Меню → Тууралоолор</translation>
+<translation id="1943478190258551035">Меню → Тууралоо</translation>
 <translation id="1952172573699511566">Мүмкүн болгон учурда вебсайттар текстти сиз каалаган тилде көрсөтүшөт.</translation>
 <translation id="1965935827552890526">Жасап жаткан нерсени Chrome'дун ачык терезесинде улантыңыз.</translation>
 <translation id="196896377990863006">Алдын ала көрүү шилтемесин көрсөтүү</translation>
@@ -359,6 +359,7 @@
 <translation id="4049507953662678203">Тармакка туташып турганыңызды текшерип, кайталап көрүңүз.</translation>
 <translation id="4063300985191096908">Түрмөккө өтүү</translation>
 <translation id="408404951701638773">Издөө тилкесине өтүү оңой болуп калды</translation>
+<translation id="4108998448622696017">Кооптуу нерселер орун алганда аларды аныктап, сизге кабарлап турат.</translation>
 <translation id="411254640334432676">Жүктөлүп алынбай калды.</translation>
 <translation id="4112644173421521737">Издөө</translation>
 <translation id="4113030288477039509">Администраторуңуз башкарат</translation>
@@ -609,6 +610,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6232736989810857397">Google Lens аркылуу жылнаамада иш-чараларды түзө аласыз.</translation>
 <translation id="6254066287920239840">Шилтемелерди серепчиден эмес, колдонмодон ачыңыз.</translation>
 <translation id="6255097610484507482">Насыя картсын түзтүү</translation>
+<translation id="6277426346321820595">Коопсуздук корголгон жок</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> тилин которууну сунуштоо</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> каналына жазылуу токтотулду</translation>
 <translation id="6293101329759844770">Коопсуз серептөөнү күйгүзүү үчүн <ph name="BEGIN_LINK" />Google кызматтарын<ph name="END_LINK" /> ачып, Коопсуз серептөөнү таптаңыз.</translation>
@@ -781,7 +783,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7603852183842204213">Калкп чыкм бөгөтт (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Сырсөздү жок кылуу</translation>
 <translation id="7638584964844754484">Туура эмес купуя сөз айкашы</translation>
-<translation id="7646263789464975852">Меню → Тууралоолор → Коопсуздукту текшерүү</translation>
+<translation id="7646263789464975852">Меню → Тууралоо → Коопсуздукту текшерүү</translation>
 <translation id="7646772052135772216">Сырсөздү шайкештирүү иштеген жок</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
@@ -790,7 +792,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7720410380936703141">КАЙТАЛОО</translation>
 <translation id="7726702057919861819">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
 <translation id="7741325291586284254">Жаңы жашыруун өтмөк барагы</translation>
-<translation id="7756478488453921771">Меню → Тууралоолор → Төлөм ыкмалары</translation>
+<translation id="7756478488453921771">Меню → Тууралоо → Төлөм ыкмалары</translation>
 <translation id="7765158879357617694">Жылуу</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7781011649027948662">Бул баракча которулсунбу?</translation>
@@ -807,6 +809,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7884694604461143138">Издөө таржымалы (<ph name="COUNT" /> табылды)</translation>
 <translation id="7887198238286927132">Купуялыгыңызды коргоо максатында, Chrome бул талааны автоматтык түрдө толтурбайт.</translation>
 <translation id="7911190106180361398">Уюмуңуз бардык маалыматты шайкештирүүгө тыюу салган.</translation>
+<translation id="7920949005883349320">Купуялык жана коопсуздук</translation>
 <translation id="7930998711684428189">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтүлсүн.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Сырсөздөрдү экспорттоо…</translation>
@@ -964,4 +967,5 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="988141524645182168">Бшк түзмкт</translation>
 <translation id="989988560359834682">Даректи өзгөртүү</translation>
 <translation id="994757059139821576">Макалаларды сунуштоо</translation>
+<translation id="997742718232442409">Бул вебсайт жылнаама файлын жүктөп алууга аракет кылып жатат.</translation>
 </translationbundle>

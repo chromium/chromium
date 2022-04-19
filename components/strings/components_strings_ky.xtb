@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Дагы тилдер</translation>
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Жоон</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS жөндөөлөрүндө атайын мүмкүнчүлүктөр куралдарын жекелештирүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="1250759482327835220">Кийинки жолу тезирээк төлөө үчүн картаңызды, аты-жөнүңүздү жана эсептешүү дарегин Google аккаунтуңузга сактап коюңуз.</translation>
 <translation id="1252799212227771492">Таблица түзүү баскычы. Google таблицасын тез түзүү үчүн Enter баскычын басыңыз</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (шайкештирилген)</translation>
@@ -303,7 +302,7 @@
 <translation id="1711528724596764268">Машина менен үйрөтүү жана жасалма интеллект</translation>
 <translation id="1712552549805331520"><ph name="URL" /> компьютериңизге дайындарды биротоло сактаганы жатат</translation>
 <translation id="1713628304598226412">2-түпкүч</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Жм</translation>
 <translation id="1717218214683051432">Кыймыл сенсорлору</translation>
 <translation id="1717494416764505390">3-электрондук каттар кутусу</translation>
 <translation id="1718029547804390981">Документ өтө чоң, андыктан Аннотация режиминде түзөтүүгө болбойт.</translation>
@@ -384,7 +383,6 @@
 <translation id="1919345977826869612">Жарнамалар</translation>
 <translation id="1919367280705858090">Белгилүү бир каталар боюнча жардам алуу</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Бирөө да жок}=1{1 сайт}other{# сайт}}</translation>
-<translation id="1923390796829649802">"Атайын мүмкүнчүлүктөрдү тууралоону башкаруу" баскычы. Chrome OS жөндөөлөрүндө атайын мүмкүнчүлүктөр куралдарын жекелештирүү үчүн Enter баскычын басыңыз</translation>
 <translation id="1924727005275031552">Жаңы</translation>
 <translation id="1927439593081478069">Chrome'дун коопсуздугун текшерүү баскычы, Chrome жөндөөлөрүнөн коопсуздукту текшерүү үчүн Enter баскычын басыңыз</translation>
 <translation id="1939175642807587452">Билдирмелерди жөнөтүүгө уруксат сурай алат</translation>
@@ -579,7 +577,7 @@
 <translation id="2505268675989099013">Аккаунттун коопсуздугун коргоо</translation>
 <translation id="2509167091171468975">Тамак-аш жана азык-түлүк сатуучулар</translation>
 <translation id="2512101340618156538">Тыюу салынган (демейки)</translation>
-<translation id="2512413427717747692">Chrome'ду демейки серепчи катары коюу баскычы, iOS жөндөөлөрүнөн Chrome'ду тутумдун демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
+<translation id="2512413427717747692">Chrome'ду демейки серепчи катары коюу баскычы, iOS жөндөөлөрүнөн Chrome'ду системанын демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
 <translation id="2515629240566999685">Аймагыңыздагы сигналды текшерип көрүңүз</translation>
 <translation id="2521385132275182522">Төмөнк оң жагын илмек менен бекитүү</translation>
 <translation id="2521736961081452453">Форма түзүү</translation>
@@ -643,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome жөндөөлөрүнөн көрүлгөн вебсайттарды, cookie файлдарын, кештерди жана башкаларды тазалоо үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="2650446666397867134">Файлды колдонуу мүмкүнчүлүгү четке кагылды</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
-<translation id="2659491813326907275">Chrome OS жөндөөлөрүндө атайын мүмкүнчүлүктөр куралдарын жекелештирүү</translation>
 <translation id="2660779039299703961">Иш-чара</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Жок}=1{1 сырсөз (<ph name="DOMAIN_LIST" /> доменде)}=2{2 сырсөз (<ph name="DOMAIN_LIST" /> доменде)}other{# сырсөз (<ph name="DOMAIN_LIST" /> доменде)}}</translation>
 <translation id="2666092431469916601">Өйдө</translation>
@@ -861,6 +858,7 @@
 <translation id="3295444047715739395">Сырсөздөрүңүздү Chrome'дун жөндөөлөрүндө көрүп, башкарыңыз</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>
 <translation id="3304073249511302126">bluetooth түзмөктөрүн издөө</translation>
+<translation id="33073482541490531">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Сырсөздөрдү башкаргыч бул сырсөздү азыр өзгөртүүнү сунуштайт.</translation>
 <translation id="3308006649705061278">Уюмдук бирдик (OU)</translation>
 <translation id="3308738399950580893">жарнамалар</translation>
 <translation id="3320021301628644560">Төлөмдүн дарегин кошуу</translation>
@@ -994,6 +992,7 @@
 <translation id="3658742229777143148">Карап чыгуу</translation>
 <translation id="3664782872746246217">Ачкыч сөздөр:</translation>
 <translation id="3667704023705708645">Венчурдук капитал</translation>
+<translation id="367108335512738711">Chrome'догу кыстармалар</translation>
 <translation id="3671540257457995106">Өлчөмү өзгөрсүнбү?</translation>
 <translation id="3675563144891642599">Үчүнчү барабан</translation>
 <translation id="3676592649209844519">Түзмөктүн идентификатору:</translation>
@@ -1490,6 +1489,7 @@
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="5043480802608081735">Сиз көчүргөн шилтеме</translation>
+<translation id="5044545992476246592">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Google Жардамчыңыз сырсөзүңүздү автоматтык түрдө өзгөртө алат.</translation>
 <translation id="5045550434625856497">Сырсөз туура эмес</translation>
 <translation id="5051305769747448211">Түз берилүүчү комедия</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Бул файлды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}other{Бул файлдарды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}}</translation>
@@ -1502,6 +1502,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Прокси дарегин текшерип көрүңүз<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Онунчу барабан</translation>
 <translation id="507130231501693183">4-электрондук каттар кутусу</translation>
+<translation id="5078060223219502807">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Сырсөздөрдү башкаргыч аны азыр өзгөртүп жана башка сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
 <translation id="5086225927071063542">Бөлүштүрүлгөн жана булуттагы эсептөөлөр</translation>
 <translation id="5087286274860437796">Азыркы учурда сервердин тастыктамасы жарактуу эмес.</translation>
 <translation id="5087580092889165836">Карточка кошуу</translation>
@@ -1933,7 +1934,7 @@
 <translation id="6319249456820053699">Камералар жана видеокамералар</translation>
 <translation id="6321917430147971392">DNS жөндөөлөрүңүздү текшериңиз</translation>
 <translation id="6322182122604171028">Windows Hello'ну колдонуу мүмкүн эмес</translation>
-<translation id="6326947323444967009">iOS жөндөөлөрүнөн Chrome'ду тутумдун демейки серепчиси катары коюу</translation>
+<translation id="6326947323444967009">iOS жөндөөлөрүнөн Chrome'ду системанын демейки серепчиси катары коюу</translation>
 <translation id="6328639280570009161">Тармакты алдын-ала божомолдоо мүмкүнчүлүгүн өчүрүп көрүңүз</translation>
 <translation id="6328784461820205019">"Туташууңуз купуя эмес" же "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" же "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" же "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" же "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" же "SSL тастыктамасынын катасы"</translation>
 <translation id="6328786501058569169">Бул – жасалма сайт</translation>
@@ -2018,6 +2019,7 @@
 <translation id="6579630537141957243">MIDI түзмөгү туташтырылсынбы?</translation>
 <translation id="6579990219486187401">Мала кызгылтым</translation>
 <translation id="6583674473685352014">B6 (Конверт)</translation>
+<translation id="6585526963651937128">Chrome´до көрүлгөн вебсайттар</translation>
 <translation id="6587182488465657433">Chrome жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганын аныктады. Аккаунттарыңызды коопсуздандыруу үчүн аны азыр өзгөртүп, андан кийин сакталган сырсөздөрүңүздү текшерүүнү сунуштайбыз.</translation>
 <translation id="6587923378399804057">Сиз көчүргөн шилтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> түзмөгүңүз башкарылган жок</translation>
@@ -2126,6 +2128,7 @@
 <translation id="691024665142758461">Бир нече файл жүктөп алуу</translation>
 <translation id="6915804003454593391">Колдонуучу:</translation>
 <translation id="6916954549222464607">Каржылык пландаштыруу жана башкаруу</translation>
+<translation id="6917795328362592458">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Сырсөздөрдү башкаргыч сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
 <translation id="6934672428414710184">Бул ысым Google аккаунтуңуздан алынды</translation>
 <translation id="6939469646605424232">ТВ драмалары</translation>
 <translation id="6944692733090228304">Сырсөзүңүздү <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> тарабынан башкарылбаган сайтка киргиздиңиз. Аккаунтуңузду коргоо үчүн сырсөзүңүздү башка колдонмолор менен сайттарда колдонбоңуз.</translation>
@@ -2802,6 +2805,7 @@
 <translation id="8805819170075074995">Тизмедеги жазуу "<ph name="LANGUAGE_ID" />": SpellcheckLanguage саясатында камтылгандыктан, киргизүү этибарга алынган жок.</translation>
 <translation id="8806285662264631610">Ваннага жана денеге арналган буюмдар</translation>
 <translation id="8807160976559152894">Ар бир барактан кийин кыркуу</translation>
+<translation id="8808828119384186784">Chrome'дун параметрлери</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome жөндөөлөрүңүздөн Chrome'ду жаңыртуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="882338992931677877">Кол менен киргизилген түпкүч</translation>
@@ -2899,7 +2903,7 @@
 <translation id="908796725011587895">Академиялык спорт</translation>
 <translation id="9089260154716455634">Саясат иштебей турган убакыт:</translation>
 <translation id="9095388113577226029">Дагы тилдер...</translation>
-<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS жөндөөлөрүнөн Chrome'ду тутумдун демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS жөндөөлөрүнөн Chrome'ду системанын демейки серепчиси катары коюу үчүн Enter баскычын басыңыз</translation>
 <translation id="9096679202588811390">Телешоулор жана программалар</translation>
 <translation id="9101630580131696064">1-түпкүч</translation>
 <translation id="9103537084693478942">Видео үчүн программалык камсыздоо</translation>

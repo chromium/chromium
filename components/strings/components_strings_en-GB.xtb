@@ -100,7 +100,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="124116460088058876">More languages</translation>
 <translation id="1243027604378859286">Author:</translation>
 <translation id="1246424317317450637">Bold</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="1250759482327835220">To pay faster next time, save your card, name and billing address to your Google Account.</translation>
 <translation id="1252799212227771492">Create sheet button: press Enter to create a new Google Sheet quickly</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synced)</translation>
@@ -383,7 +382,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1919345977826869612">Ads</translation>
 <translation id="1919367280705858090">Get help with a specific error message</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 site}other{# sites}}</translation>
-<translation id="1923390796829649802">Manage accessibility settings button, Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="1924727005275031552">New</translation>
 <translation id="1927439593081478069">Run Chrome safety check button; press Enter to run a safety check in Chrome settings</translation>
 <translation id="1939175642807587452">Can ask to send notifications</translation>
@@ -513,6 +511,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2298855485018661510">Manage cookies button, press Enter to manage your cookie preferences in Chrome settings</translation>
 <translation id="2300306941146563769">Not uploaded</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
+<translation id="2316159751672436664">Personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="2316887270356262533">Frees up less than 1 MB. Some sites may load more slowly on your next visit.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="2318594867107319532">Last policy timestamp:</translation>
@@ -642,7 +641,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="2650446666397867134">Access to the file was denied</translation>
 <translation id="2653659639078652383">Submit</translation>
-<translation id="2659491813326907275">Personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="2660779039299703961">Event</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />)}=2{2 passwords (for <ph name="DOMAIN_LIST" />)}other{# passwords (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Top</translation>
@@ -860,6 +858,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3295444047715739395">View and manage your passwords in Chrome settings</translation>
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3304073249511302126">bluetooth scanning</translation>
+<translation id="33073482541490531">The password that you just used was found in a data breach. Password Manager recommends changing this password now.</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
 <translation id="3308738399950580893">ads</translation>
 <translation id="3320021301628644560">Add billing address</translation>
@@ -994,6 +993,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3667704023705708645">Venture capital</translation>
+<translation id="367108335512738711">Chrome bookmarks</translation>
 <translation id="3671540257457995106">Allow resizing?</translation>
 <translation id="3675563144891642599">Third roll</translation>
 <translation id="3676592649209844519">Device ID:</translation>
@@ -1490,6 +1490,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5043480802608081735">Link that you copied</translation>
+<translation id="5044545992476246592">The password that you just used was found in a data breach. Your Google Assistant can change your password automatically.</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5051305769747448211">Live comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
@@ -1502,6 +1503,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Checking the proxy address<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Tenth roll</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
+<translation id="5078060223219502807">The password that you just used was found in a data breach. To secure your accounts, Password Manager recommends changing it now and then checking your saved passwords.</translation>
 <translation id="5086225927071063542">Distributed and cloud computing</translation>
 <translation id="5087286274860437796">Server's certificate is not valid at this time.</translation>
 <translation id="5087580092889165836">Add card</translation>
@@ -1667,6 +1669,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5518670652865028077">Arts and entertainment</translation>
 <translation id="5519516356611866228">With your changes</translation>
 <translation id="5523118979700054094">Policy name</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="5528532273234423708">Home automation</translation>
 <translation id="55293785478302737">Edge stitch</translation>
 <translation id="553484882784876924">Prc6 (Envelope)</translation>
@@ -2018,6 +2021,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6579630537141957243">Connect MIDI device?</translation>
 <translation id="6579990219486187401">Light pink</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6585526963651937128">Chrome history</translation>
 <translation id="6587182488465657433">Chrome found the password that you just used in a data breach. To secure your accounts, we recommend changing it now and then checking your saved passwords.</translation>
 <translation id="6587923378399804057">Link that you copied</translation>
 <translation id="6591833882275308647">Your <ph name="DEVICE_TYPE" /> is not managed</translation>
@@ -2126,6 +2130,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="691024665142758461">Download multiple files</translation>
 <translation id="6915804003454593391">User:</translation>
 <translation id="6916954549222464607">Financial planning and management</translation>
+<translation id="6917795328362592458">The password that you just used was found in a data breach. To secure your accounts, Password Manager recommends checking your saved passwords.</translation>
 <translation id="6934672428414710184">This name is from your Google Account</translation>
 <translation id="6939469646605424232">TV dramas</translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
@@ -2243,6 +2248,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="722454870747268814">New Incognito Tab</translation>
 <translation id="7233592378249864828">Print confirmation sheet</translation>
 <translation id="7234638337680728591">Gas prices and vehicle fueling</translation>
+<translation id="7237492777898608035">Don't show this message again for this site</translation>
 <translation id="7238585580608191973">SHA-256 fingerprint</translation>
 <translation id="7240120331469437312">Certificate Subject Alternative Name</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2625,6 +2631,7 @@ Additional details:
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="8249296373107784235">Abort</translation>
 <translation id="8249463483885748674">Standardised and admissions tests</translation>
+<translation id="8252991034201168845">Manage accessibility settings button, Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="8253091569723639551">Billing address required</translation>
 <translation id="8257387598443225809">This app is designed for mobile</translation>
 <translation id="825929999321470778">Show all saved passwords</translation>
@@ -2802,6 +2809,7 @@ Additional details:
 <translation id="8805819170075074995">List entry '<ph name="LANGUAGE_ID" />': entry ignored because it is also included in the SpellcheckLanguage policy.</translation>
 <translation id="8806285662264631610">Bath and body products</translation>
 <translation id="8807160976559152894">Trim after each page</translation>
+<translation id="8808828119384186784">Chrome settings</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">Manual slot</translation>

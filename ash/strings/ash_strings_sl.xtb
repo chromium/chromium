@@ -87,6 +87,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1351937230027495976">Strni meni</translation>
 <translation id="1364382257761975320">Če želite odkleniti Chromebook, uporabite prstni odtis.</translation>
 <translation id="1364618750746929654">Ni mogoče ustvariti prepisa</translation>
+<translation id="1372545819342940910">Shrani namizje za pozneje</translation>
 <translation id="1383597849754832576">Datotek za govor ni mogoče prenesti. Poskusite pozneje.</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1391102559483454063">Vklopljeno</translation>
@@ -522,6 +523,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4095366824370681039">Nalivno pero</translation>
 <translation id="4112140312785995938">Išči nazaj</translation>
 <translation id="4114315158543974537">Vklop središča za telefone</translation>
+<translation id="4115378294792113321">Škrlatna</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Če želite odkleniti Chromebook, mora biti vklopljen Bluetooth v telefonu.</translation>
 <translation id="4129129681837227511">Če si želite ogledati obvestila na zaklenjenem zaslonu, ga odklenite in spremenite nastavitev</translation>
@@ -561,7 +563,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Pritisnili ste bližnjično tipko za visoki kontrast. Ali ga želite vklopiti?</translation>
 <translation id="4322742403972824594">Bližnjica na tipkovnici ctrl + alt + puščica gor je spremenjena. Če želite uporabiti tipko Home, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico levo.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
 <translation id="4351433414020964307">Pomočnik se nalaga ...</translation>
@@ -794,7 +795,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5788127256798019331">Datoteke iz Googla Play</translation>
 <translation id="5790085346892983794">Uspešno</translation>
 <translation id="5805809050170488595">Kliknite, če želite aktivirati omrežje <ph name="NETWORK_NAME" />.</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
 <translation id="583281660410589416">Neznano</translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1146,6 @@ Nova namestitev</translation>
 <translation id="79341161159229895">Račun upravljata <ph name="FIRST_PARENT_EMAIL" /> in <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V, če si želite ogledati odložišče. Zadnjih pet kopiranih elementov je shranjenih v odložišču.</translation>
 <translation id="7942349550061667556">Rdeča</translation>
-<translation id="7952747673138230804">Chrome OS prikazuje predloge za novo vsebino, ki jo lahko raziščete. Statistične podatke za izboljšanje kakovosti pošilja samo, če ste izbrali možnost deljenja podatkov o uporabi. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Visokokontrastni način</translation>
 <translation id="7968693143708939792">Izberite mapo …</translation>
 <translation id="7977927628060636163">Iskanje mobilnih omrežij ...</translation>

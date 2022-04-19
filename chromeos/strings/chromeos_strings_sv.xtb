@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Revision av maskinvara</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1908234395526491708">Misslyckade UDP-förfrågningar</translation>
-<translation id="1930797645656624981">Tjänst för inmatningsmetod för Chrome OS</translation>
 <translation id="1947737735496445907">Utskrivet</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1977994649430373166">Profilbild på Google</translation>
 <translation id="1979103255016296513">Tiden för att ändra lösenordet har gått ut</translation>
 <translation id="1999615961760456652">Infångstportal</translation>
 <translation id="2006864819935886708">Anslutning</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Minst ett album i konstgalleriet måste vara markerat</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Aktivera och inaktivera tangentbordets bakgrundsbelysning</translation>
 <translation id="2240366984605217732">Tangenten som byter tangentbordslayout</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Det gick inte att ansluta till internet.</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
-<translation id="2585245331261708204">Nyheter i Chrome OS</translation>
 <translation id="2619761439309613843">Daglig uppdatering</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2640549051766135490">Detta album har markerats: <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
-<translation id="475869545581454722">Lösenordet för Chrome OS har uppdaterats</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -629,6 +628,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivera automatiskt färgläge</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
+<translation id="8045012663542226664">Stäng av mikrofonen</translation>
 <translation id="8075838845814659848">Batteritid som återstår</translation>
 <translation id="8082366717211101304">Det gick inte att matcha DNS från Android-appar</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
@@ -739,6 +739,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="917720651393141712">Testa</translation>
 <translation id="9204237731135241582">Det gick inte att kontakta gateway från Android-appar</translation>
 <translation id="9211490828691860325">Alla skrivbord</translation>
+<translation id="932327136139879170">Startsida</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Inte aktiverat</translation>
 <translation id="960719561871045870">Operatörskod</translation>

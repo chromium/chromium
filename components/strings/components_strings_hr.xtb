@@ -100,7 +100,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="124116460088058876">Više jezika</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Podebljano</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste prilagodili svoje alate za pristupačnost u postavkama OS-a Chrome</translation>
 <translation id="1250759482327835220">Da biste sljedeći put platili brže, spremite karticu, ime i adresu za naplatu na svoj Google račun.</translation>
 <translation id="1252799212227771492">Gumb Izradite tablicu, pritisnite Enter da biste brzo izradili novu Google tablicu</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizirano)</translation>
@@ -303,7 +302,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1711528724596764268">Strojno učenje i umjetna inteligencija</translation>
 <translation id="1712552549805331520"><ph name="URL" /> želi trajno pohraniti podatke na vaše lokalno računalo</translation>
 <translation id="1713628304598226412">Ladica 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">P</translation>
 <translation id="1717218214683051432">Senzori kretanja</translation>
 <translation id="1717494416764505390">Izlazni spremnik s odjeljcima 3</translation>
 <translation id="1718029547804390981">Dokument je prevelik za dodavanje bilješki</translation>
@@ -384,7 +383,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919367280705858090">Pomoć za konkretne poruke pogreške</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nijedna}=1{1 web-lokacija}one{# web-lokacija}few{# web-lokacije}other{# web-lokacija}}</translation>
-<translation id="1923390796829649802">Gumb Upravljajte postavkama pristupačnosti, pritisnite Enter da biste prilagodili svoje alate za pristupačnost u postavkama OS-a Chrome</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927439593081478069">Gumb Pokreni Chromeovu sigurnosnu provjeru, pritisnite Enter da biste pokrenuli sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="1939175642807587452">Može tražiti dopuštenje za slanje obavijesti</translation>
@@ -643,7 +641,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste izbrisali povijest pregledavanja, kolačiće, predmemoriju i još mnogo toga u postavkama Chromea</translation>
 <translation id="2650446666397867134">Pristup datoteci nije dopušten</translation>
 <translation id="2653659639078652383">Pošalji</translation>
-<translation id="2659491813326907275">U postavkama OS-a Chrome prilagodite svoje alate za pristupačnost</translation>
 <translation id="2660779039299703961">Događaj</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nijedna}=1{Jedna zaporka (za <ph name="DOMAIN_LIST" />)}=2{Dvije zaporke (za <ph name="DOMAIN_LIST" />)}one{# zaporka (za <ph name="DOMAIN_LIST" />)}few{# zaporke (za <ph name="DOMAIN_LIST" />)}other{# zaporki (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Gornji</translation>
@@ -861,6 +858,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3295444047715739395">Pregled zaporki u postavkama Chromea i upravljanje njima</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretraživanja</translation>
 <translation id="3304073249511302126">traženje Bluetootha</translation>
+<translation id="33073482541490531">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Upravitelj zaporki preporučuje da odmah promijenite tu zaporku.</translation>
 <translation id="3308006649705061278">Organizacijska jedinica (OU)</translation>
 <translation id="3308738399950580893">oglasi</translation>
 <translation id="3320021301628644560">Dodajte adresu za naplatu</translation>
@@ -994,6 +992,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3658742229777143148">Izmjena</translation>
 <translation id="3664782872746246217">Ključne riječi:</translation>
 <translation id="3667704023705708645">Rizični kapital</translation>
+<translation id="367108335512738711">Chromeove oznake</translation>
 <translation id="3671540257457995106">Dopustiti promjenu veličine?</translation>
 <translation id="3675563144891642599">Treći kolut</translation>
 <translation id="3676592649209844519">ID uređaja:</translation>
@@ -1491,6 +1490,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5039804452771397117">Dopusti</translation>
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="5043480802608081735">Veza koju ste kopirali</translation>
+<translation id="5044545992476246592">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Vaš Google asistent može automatski promijeniti vašu zaporku.</translation>
 <translation id="5045550434625856497">Pogrešna zaporka</translation>
 <translation id="5051305769747448211">Komedija uživo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali tu datoteku pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali te datoteke pomoću dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
@@ -1503,6 +1503,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />provjerite proxy adresu<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Deseti kolut</translation>
 <translation id="507130231501693183">Izlazni spremnik s odjeljcima 4</translation>
+<translation id="5078060223219502807">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Upravitelj zaporki preporučuje da je odmah promijenite, a zatim provjerite svoje spremljene zaporke.</translation>
 <translation id="5086225927071063542">Distribuirano računalstvo i računalstvo u oblaku</translation>
 <translation id="5087286274860437796">Certifikat poslužitelja trenutačno nije važeći.</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
@@ -2019,6 +2020,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6579630537141957243">Povezati MIDI uređaj?</translation>
 <translation id="6579990219486187401">Svijetloružičasta</translation>
 <translation id="6583674473685352014">B6 (omotnica)</translation>
+<translation id="6585526963651937128">Povijest na Chromeu</translation>
 <translation id="6587182488465657433">Chrome je saznao da je zaporka koju ste upravo upotrijebili otkrivena u povredi podataka. Da biste zaštitili svoje račune, preporučujemo da je odmah promijenite i zatim provjerite spremljene zaporke.</translation>
 <translation id="6587923378399804057">Veza koju ste kopirali</translation>
 <translation id="6591833882275308647">Uređaj <ph name="DEVICE_TYPE" /> nije upravljani uređaj</translation>
@@ -2127,6 +2129,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="691024665142758461">preuzeti više datoteka</translation>
 <translation id="6915804003454593391">Korisnik:</translation>
 <translation id="6916954549222464607">Usluge planiranja i upravljanja financijama</translation>
+<translation id="6917795328362592458">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Upravitelj zaporki preporučuje da provjerite svoje spremljene zaporke.</translation>
 <translation id="6934672428414710184">To je ime s vašeg Google računa</translation>
 <translation id="6939469646605424232">TV drame</translation>
 <translation id="6944692733090228304">Unijeli ste zaporku na web-lokaciju kojom ne upravlja <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da biste zaštitili račun, nemojte upotrebljavati tu zaporku za druge aplikacije i web-lokacije.</translation>
@@ -2804,6 +2807,7 @@ Dodatne pojedinosti:
 <translation id="8805819170075074995">Unos na popisu "<ph name="LANGUAGE_ID" />": unos je zanemaren jer je uključen i u pravilu SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Proizvodi za kupanje i tijelo</translation>
 <translation id="8807160976559152894">Obreži nakon svake stranice</translation>
+<translation id="8808828119384186784">Postavke preglednika Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste ažurirali Chrome iz postavki Chromea</translation>
 <translation id="8820817407110198400">Knjižne oznake</translation>
 <translation id="882338992931677877">Utor za ručno umetanje</translation>

@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">摺埋選單</translation>
 <translation id="1364382257761975320">如要解鎖 Chromebook，請使用指紋</translation>
 <translation id="1364618750746929654">無法產生轉錄文字</translation>
+<translation id="1372545819342940910">儲存桌面以便日後使用</translation>
 <translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1391102559483454063">已開啟</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">墨水筆</translation>
 <translation id="4112140312785995938">向後回轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
+<translation id="4115378294792113321">洋紅色</translation>
 <translation id="412298498316631026">視窗</translation>
 <translation id="4123259114412175274">如要解鎖 Chromebook，請確保手機的藍牙已開啟</translation>
 <translation id="4129129681837227511">如要在上鎖畫面上查看通知，請將裝置解鎖並變更相關設定</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您已按下高對比度的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="4322742403972824594">「Ctrl + Alt + 向上箭咀」的鍵盤快速鍵已變更。如要使用 Home 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向左箭咀。</translation>
-<translation id="4331809312908958774">Chrome 作業系統</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4351433414020964307">正在載入小幫手…</translation>
@@ -793,7 +794,6 @@
 <translation id="5788127256798019331">Play 檔案</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5805809050170488595">按一下即可啟用 <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium 作業系統</translation>
 <translation id="5825969630400862129">已連接裝置設定</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
@@ -1144,7 +1144,6 @@
 <translation id="79341161159229895">帳戶由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="793716872548410480">按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。您最後複製的 5 個項目會儲存至剪貼簿。</translation>
 <translation id="7942349550061667556">紅色</translation>
-<translation id="7952747673138230804">Chrome 作業系統會顯示新內容建議以供探索。只有在您選擇分享使用情況資料時，系統才會傳送統計資料以改善服務質素。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">高對比模式</translation>
 <translation id="7968693143708939792">選取資料夾…</translation>
 <translation id="7977927628060636163">正在搜尋流動網絡…</translation>

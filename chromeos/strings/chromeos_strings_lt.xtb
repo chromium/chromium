@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Aparatinės įrangos taisymas</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
 <translation id="1908234395526491708">Nepavyko pateikti UDP užklausų</translation>
-<translation id="1930797645656624981">„Chrome“ OS įvesties metodo paslauga</translation>
 <translation id="1947737735496445907">Atspausdinta</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
+<translation id="1977994649430373166">„Google“ profilio nuotrauka</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
 <translation id="1999615961760456652">Fiksuotasis portalas</translation>
 <translation id="2006864819935886708">Jungiamumas</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Reikia pasirinkti bent vieną meno galerijos albumą</translation>
 <translation id="2230005943220647148">Celsijaus laipsniai</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Klaviatūros foninio apšvietimo perjungiklis</translation>
 <translation id="2240366984605217732">Išdėstymo jungiklis</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
 <translation id="2287186687001756809">Nėra jokių vaizdų. Jei norite pridėti nuotraukų, eikite adresu <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Nepavyko prisijungti prie interneto.</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
 <translation id="2584559707064218956">Norėdami nustatyti eikite į Nustatymus</translation>
-<translation id="2585245331261708204">„Chrome“ OS naujienos</translation>
 <translation id="2619761439309613843">Atnaujinimas per dieną</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2640549051766135490">Pasirinktas albumas „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
-<translation id="475869545581454722">Atnaujintas „Chrome OS“ slaptažodis</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> nuotrauk.</translation>
@@ -629,6 +628,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Įgalinti automatinių spalvų režimą</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
+<translation id="8045012663542226664">Mikrofono nutildymas</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="8082366717211101304">Nepavyko pateikti DNS iš „Android“ programų</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
@@ -739,6 +739,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="917720651393141712">Bandyti</translation>
 <translation id="9204237731135241582">Iš „Android“ programų prie tinklų sietuvo prisijungti nepavyko</translation>
 <translation id="9211490828691860325">Visi darbalaukiai</translation>
+<translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nesuaktyvinta</translation>
 <translation id="960719561871045870">Operacijos ženklo kodas</translation>

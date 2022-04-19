@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">하드웨어 버전</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
-<translation id="1930797645656624981">Chrome OS 입력 방법 서비스</translation>
 <translation id="1947737735496445907">인쇄됨</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
+<translation id="1977994649430373166">Google 프로필 사진</translation>
 <translation id="1979103255016296513">비밀번호 변경 기한 지남</translation>
 <translation id="1999615961760456652">종속 포털</translation>
 <translation id="2006864819935886708">연결</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">아트 갤러리 앨범을 하나 이상 선택해야 합니다.</translation>
 <translation id="2230005943220647148">섭씨</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">키보드 백라이트 토글</translation>
 <translation id="2240366984605217732">레이아웃 전환</translation>
 <translation id="225692081236532131">활성화 상태</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">인터넷에 연결할 수 없습니다.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
 <translation id="2584559707064218956">설정하려면 설정으로 이동하세요.</translation>
-<translation id="2585245331261708204">Chrome OS의 새로운 기능</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
-<translation id="475869545581454722">Chrome OS 비밀번호 업데이트됨</translation>
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4782311465517282004">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다</translation>
 <translation id="4791000909649665275">사진 <ph name="NUMBER" />장</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">색상 자동조절 사용</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
+<translation id="8045012663542226664">마이크 음소거</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">테스트</translation>
 <translation id="9204237731135241582">Android 앱에서 게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
+<translation id="932327136139879170">홈</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>
 <translation id="960719561871045870">운영자 코드</translation>

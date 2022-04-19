@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">Свиване на менюто</translation>
 <translation id="1364382257761975320">За да отключите своя Chromebook, използвайте отпечатъка си</translation>
 <translation id="1364618750746929654">Не може да бъде генериран препис</translation>
+<translation id="1372545819342940910">Запазване на работния кът за по-късно</translation>
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1391102559483454063">Включено</translation>
@@ -135,7 +136,7 @@
 <translation id="1708345662127501511">Работен кът: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Настройки за мрежата</translation>
 <translation id="1715293566947629045">Потребителският профил се деактивира. Изчакайте няколко минути.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">пт</translation>
 <translation id="1719094688023114093">Функцията „Надписи на живо“ е включена.</translation>
 <translation id="1720011244392820496">Включване на функцията за синхронизиране на Wi-Fi</translation>
 <translation id="1736898441010944794">Устройството <ph name="NAME" /> е видимо за устройства с Bluetooth.</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">Писалка</translation>
 <translation id="4112140312785995938">Придвижване назад</translation>
 <translation id="4114315158543974537">Включване на функцията „Център за телефоните“</translation>
+<translation id="4115378294792113321">пурпурно</translation>
 <translation id="412298498316631026">прозорец</translation>
 <translation id="4123259114412175274">За да отключите своя Chromebook, функцията за Bluetooth на телефона ви трябва да е включена</translation>
 <translation id="4129129681837227511">За да виждате известия на заключения екран, отключете устройството и променете настройката</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Използвахте клавишната комбинация за режима на висок контраст. Искате ли да го включите?</translation>
 <translation id="4322742403972824594">Клавишната комбинация Ctrl + Alt + стрелка нагоре се промени. За да използвате клавиша Home, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката наляво.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros не се поддържа, когато няколко потребители са влезли в профилите си.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Асистент се зарежда...</translation>
@@ -794,7 +795,6 @@
 <translation id="5788127256798019331">Файлове от Google Play</translation>
 <translation id="5790085346892983794">Успех</translation>
 <translation id="5805809050170488595">Кликнете за активиране на <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Настройки за свързани устройства</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
@@ -1146,7 +1146,6 @@
 <translation id="79341161159229895">Профилът се управлява от <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Натиснете <ph name="SHORTCUT_KEY_NAME" /> + V, за да видите буферната памет. В нея се запазват последните 5 неща, които сте копирали.</translation>
 <translation id="7942349550061667556">червено</translation>
-<translation id="7952747673138230804">Chrome OS показва предложения за ново съдържание. Изпраща статистически данни, за да подобри качеството на предложенията, само ако сте избрали да споделяте данни за употребата. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Режим на висок контраст</translation>
 <translation id="7968693143708939792">Избор на папка...</translation>
 <translation id="7977927628060636163">Търсят се мобилни мрежи...</translation>

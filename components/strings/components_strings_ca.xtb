@@ -100,7 +100,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="124116460088058876">Més idiomes</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negreta</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="1250759482327835220">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta, el nom i l'adreça de facturació al Compte de Google.</translation>
 <translation id="1252799212227771492">Botó Crea un full de càlcul: prem Retorn per crear un full de càlcul de Google ràpidament</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (informació sincronitzada)</translation>
@@ -303,7 +302,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1711528724596764268">Intel·ligència artificial i aprenentatge automàtic</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vol emmagatzemar dades a l'ordinador local de manera permanent</translation>
 <translation id="1713628304598226412">Safata 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Dv.</translation>
 <translation id="1717218214683051432">Sensors de moviment</translation>
 <translation id="1717494416764505390">Bústia de correu 3</translation>
 <translation id="1718029547804390981">No es poden afegir anotacions a aquest fitxer perquè és massa gran</translation>
@@ -380,7 +379,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1919345977826869612">Anuncis</translation>
 <translation id="1919367280705858090">Obtenir ajuda amb un missatge d'error específic</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Cap}=1{1 lloc}other{# llocs}}</translation>
-<translation id="1923390796829649802">Botó Gestiona la configuració d'accessibilitat: prem Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="1924727005275031552">Nous</translation>
 <translation id="1927439593081478069">Botó Executa la comprovació de seguretat de Chrome: prem Retorn per executar la comprovació de seguretat a la configuració de Chrome</translation>
 <translation id="1939175642807587452">Pot demanar permís per enviar notificacions</translation>
@@ -639,7 +637,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per esborrar l'historial de navegació, les galetes, la memòria cau i altres dades des de la configuració de Chrome</translation>
 <translation id="2650446666397867134">S'ha denegat l'accés al fitxer</translation>
 <translation id="2653659639078652383">Envia</translation>
-<translation id="2659491813326907275">Personalitza les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="2660779039299703961">Esdeveniment</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Cap}=1{1 contrasenya (per a <ph name="DOMAIN_LIST" />)}=2{2 contrasenyes (per a <ph name="DOMAIN_LIST" />)}other{# contrasenyes (per a <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Superior</translation>
@@ -857,6 +854,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3295444047715739395">Consulta i gestiona les teves contrasenyes a la configuració de Chrome</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3304073249511302126">cerca de dispositius Bluetooth</translation>
+<translation id="33073482541490531">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. El gestor de contrasenyes recomana que la canviïs ara.</translation>
 <translation id="3308006649705061278">Unitat organitzativa (OU)</translation>
 <translation id="3308738399950580893">anuncis</translation>
 <translation id="3320021301628644560">Afegeix una adreça de facturació</translation>
@@ -991,6 +989,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3658742229777143148">Revisió</translation>
 <translation id="3664782872746246217">Paraules clau:</translation>
 <translation id="3667704023705708645">Capital de risc</translation>
+<translation id="367108335512738711">Adreces d'interès de Chrome</translation>
 <translation id="3671540257457995106">Vols permetre que canviï de mida?</translation>
 <translation id="3675563144891642599">Tercer corró</translation>
 <translation id="3676592649209844519">Identificador del dispositiu:</translation>
@@ -1478,10 +1477,11 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5031870354684148875">Sobre el Traductor de Google</translation>
 <translation id="503498442187459473"><ph name="HOST" /> vol utilitzar la càmera i el micròfon</translation>
 <translation id="5035135400558156732">Jardineria</translation>
-<translation id="5039762155821394373">Mida de la lletra</translation>
+<translation id="5039762155821394373">Mida de la font</translation>
 <translation id="5039804452771397117">Permet</translation>
 <translation id="5040262127954254034">Privadesa</translation>
 <translation id="5043480802608081735">Enllaç que has copiat</translation>
+<translation id="5044545992476246592">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. L'Assistent de Google pot canviar la contrasenya automàticament.</translation>
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
 <translation id="5051305769747448211">Comèdia en directe</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per enviar aquest fitxer amb Compartició Nearby, allibera espai (<ph name="DISK_SPACE_SIZE" />) al dispositiu}other{Per enviar aquests fitxers amb Compartició Nearby, allibera espai (<ph name="DISK_SPACE_SIZE" />) al dispositiu}}</translation>
@@ -1494,6 +1494,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Comproveu l'adreça del servidor intermediari<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Desè corró</translation>
 <translation id="507130231501693183">Bústia de correu 4</translation>
+<translation id="5078060223219502807">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes recomana que la canviïs ara i que després comprovis les contrasenyes desades.</translation>
 <translation id="5086225927071063542">Informàtica distribuïda i en núvol</translation>
 <translation id="5087286274860437796">En aquest moment el certificat del servidor no és vàlid.</translation>
 <translation id="5087580092889165836">Afegeix una targeta</translation>
@@ -2010,6 +2011,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6579630537141957243">Vols connectar el dispositiu MIDI?</translation>
 <translation id="6579990219486187401">Rosa clar</translation>
 <translation id="6583674473685352014">B6 (sobre)</translation>
+<translation id="6585526963651937128">Historial de Chrome</translation>
 <translation id="6587182488465657433">Chrome ha trobat la contrasenya que acabes de fer servir en una violació de les dades. Per protegir els teus comptes, et recomanem que la canviïs ara i que, després, comprovis les contrasenyes que tens desades.</translation>
 <translation id="6587923378399804057">Enllaç que has copiat</translation>
 <translation id="6591833882275308647">El dispositiu <ph name="DEVICE_TYPE" /> no està gestionat</translation>
@@ -2042,7 +2044,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6671697161687535275">Voleu suprimir el suggeriment de formulari de Chromium?</translation>
 <translation id="6683717648675961851">Ofertes de feina</translation>
 <translation id="6685834062052613830">Tanqueu la sessió i completeu la configuració</translation>
-<translation id="6687335167692595844">Mida de la lletra sol·licitada</translation>
+<translation id="6687335167692595844">Mida de la font sol·licitada</translation>
 <translation id="6687696737818665306">Interpretació i teatre</translation>
 <translation id="6688743156324860098">Actualitza…</translation>
 <translation id="6688775486821967877">La targeta virtual no està disponible en aquests moments. Torna-ho a provar més tard.</translation>
@@ -2118,6 +2120,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="691024665142758461">Baixa diversos fitxers</translation>
 <translation id="6915804003454593391">Usuari:</translation>
 <translation id="6916954549222464607">Gestió i planificació financera</translation>
+<translation id="6917795328362592458">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes recomana que comprovis les contrasenyes desades.</translation>
 <translation id="6934672428414710184">Aquest nom prové del teu Compte de Google</translation>
 <translation id="6939469646605424232">Sèries dramàtiques de televisió</translation>
 <translation id="6944692733090228304">Has introduït la contrasenya en un lloc web que no està gestionat per <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Per protegir el teu compte, no facis servir la mateixa contrasenya en altres aplicacions ni llocs web.</translation>
@@ -2794,6 +2797,7 @@ Detalls addicionals:
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />" de la llista: l'entrada s'ha ignorat perquè també s'inclou a la política SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Productes corporals i per al bany</translation>
 <translation id="8807160976559152894">Retalla després de cada pàgina</translation>
+<translation id="8808828119384186784">Configuració de Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per actualitzar Chrome des de la configuració de Chrome</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="882338992931677877">Alimentador manual</translation>

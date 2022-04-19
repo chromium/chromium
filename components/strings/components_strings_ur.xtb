@@ -101,7 +101,6 @@
 <translation id="124116460088058876">مزید زبانیں</translation>
 <translation id="1243027604378859286">مصنف:</translation>
 <translation id="1246424317317450637">بولڈ</translation>
-<translation id="1248573052514400575">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome OS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="1250759482327835220">‏اگلی بار زیادہ تیزی سے ادائیگی کرنے کیلئے، اپنے کارڈ، نام اور بلنگ پتہ کو اپنے Google اکاؤنٹ میں محفوظ کریں۔</translation>
 <translation id="1252799212227771492">‏شیٹ تخلیق کریں بٹن، تیزی سے ایک نئی Google Sheet تخلیق کرنے کیلئے Enter دبائیں</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (مطابقت پذیر کردہ)</translation>
@@ -385,7 +384,6 @@
 <translation id="1919345977826869612">اشتہارات</translation>
 <translation id="1919367280705858090">خرابی کے کسی مخصوص پیغام کے بارے میں مدد حاصل کریں</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 سائٹ}other{# سائٹس}}</translation>
-<translation id="1923390796829649802">‏ایکسیسبیلٹی کی ترتیبات کے بٹن کا نظم کریں، Chrome OS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے اینٹر دبائیں</translation>
 <translation id="1924727005275031552">نئی</translation>
 <translation id="1927439593081478069">‏Chrome کا سیفٹی چیک بٹن چلائیں، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے اینٹر دبائیں</translation>
 <translation id="1939175642807587452">سائٹ اطلاعات بھیجنے کیلئے پوچھ سکتی ہے</translation>
@@ -515,6 +513,7 @@
 <translation id="2298855485018661510">‏کوکیز کے بٹن کا نظم کریں، Chrome کی ترتیبات میں اپنی کوکی کی ترجیحات کا نظم کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="2300306941146563769">اپ لوڈ نہیں ہوا</translation>
 <translation id="2310021320168182093">Chou2 ‎(Envelope‎)‎</translation>
+<translation id="2316159751672436664">‏ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="2316887270356262533">‏MB 1 سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> کو ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
 <translation id="2318594867107319532">پالیسی کی آخری ٹائم سٹیمپ:</translation>
@@ -644,7 +643,6 @@
 <translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، کیش اور بہت کچھ کو صاف کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="2650446666397867134">فائل تک رسائی مسترد کر دی گئی</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
-<translation id="2659491813326907275">‏Chrome کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="2660779039299703961">ایونٹ</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{کوئی نہیں}=1{(<ph name="DOMAIN_LIST" /> کے لیے) 1 پاس ورڈ}=2{(<ph name="DOMAIN_LIST" /> کے لیے) 2 پاس ورڈز}other{(<ph name="DOMAIN_LIST" /> کے لیے) # پاس ورڈز}}</translation>
 <translation id="2666092431469916601">سرفہرست</translation>
@@ -863,6 +861,7 @@
 <translation id="3295444047715739395">‏Chrome ترتیبات میں اپنے پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
 <translation id="3304073249511302126">بلوٹوتھ اسکیننگ</translation>
+<translation id="33073482541490531">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ پاس ورڈ مینیجر اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
 <translation id="3308738399950580893">اشتہارات</translation>
 <translation id="3320021301628644560">بلنگ پتہ شامل کریں</translation>
@@ -997,6 +996,7 @@
 <translation id="3658742229777143148">نظرثانی</translation>
 <translation id="3664782872746246217">کلیدی الفاظ:</translation>
 <translation id="3667704023705708645">وینچر کیپٹل</translation>
+<translation id="367108335512738711">‏Chrome بُک مارکس</translation>
 <translation id="3671540257457995106">سائز تبدیل کرنے کی اجازت دیں؟</translation>
 <translation id="3675563144891642599">تیسرا رول</translation>
 <translation id="3676592649209844519">‏آلہ کی ID:</translation>
@@ -1493,6 +1493,7 @@
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5040262127954254034">رازداری</translation>
 <translation id="5043480802608081735">آپ کا کاپی کردہ لنک</translation>
+<translation id="5044545992476246592">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ آپ کی Google اسسٹنٹ آپ کا پاس ورڈ خودکار طور پر تبدیل کر سکتی ہے۔</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="5051305769747448211">لائیو کامیڈی</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{اس فائل کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}other{ان فائلز کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}}</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />پراکسی پتہ چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">دسواں رول</translation>
 <translation id="507130231501693183">میل باکس 4</translation>
+<translation id="5078060223219502807">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، پاس ورڈ مینیجر اسے ابھی تبدیل کرنے اور پھر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="5086225927071063542">تقسیم کردہ اور کلاؤڈ کمپیوٹنگ</translation>
 <translation id="5087286274860437796">سرور کا سرٹیفکیٹ اس وقت درست نہیں ہے۔</translation>
 <translation id="5087580092889165836">کارڈ شامل کریں</translation>
@@ -1670,6 +1672,7 @@
 <translation id="5518670652865028077">آرٹس اور تفریح</translation>
 <translation id="5519516356611866228">آپ کی تبدیلیوں کے ساتھ</translation>
 <translation id="5523118979700054094">پالیسی کا نام</translation>
+<translation id="5526617258931667850">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="5528532273234423708">ہوم آٹومیشن</translation>
 <translation id="55293785478302737">کنارے کی سلائی</translation>
 <translation id="553484882784876924">Prc6 ‎(Envelope‎)‎</translation>
@@ -2022,6 +2025,7 @@
 <translation id="6579630537141957243">‏MIDI آلہ منسلک کریں؟</translation>
 <translation id="6579990219486187401">ہلکا گلابی</translation>
 <translation id="6583674473685352014">B6 ‎(Envelope‎)‎</translation>
+<translation id="6585526963651937128">‏Chrome کی سرگزشت</translation>
 <translation id="6587182488465657433">‏Chrome کو وہ پاس ورڈ مل گیا جو آپ نے ابھی ڈیٹا کی خلاف ورزی میں استعمال کیا ہے۔ اپنے اکاؤنٹس کو محفوظ کرنے کے لیے ہم اسے ابھی تبدیل کرنے اور آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتے ہیں۔</translation>
 <translation id="6587923378399804057">آپ کا کاپی کردہ لنک</translation>
 <translation id="6591833882275308647">آپ کا <ph name="DEVICE_TYPE" /> زیر انتظام نہیں ہے</translation>
@@ -2130,6 +2134,7 @@
 <translation id="691024665142758461">متعدد فائلیں ڈاؤن لوڈ کریں</translation>
 <translation id="6915804003454593391">صارف:</translation>
 <translation id="6916954549222464607">مالی منصوبہ بندی اور نظم و نسق</translation>
+<translation id="6917795328362592458">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>
 <translation id="6939469646605424232">‏TV ڈرامے</translation>
 <translation id="6944692733090228304">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
@@ -2247,6 +2252,7 @@
 <translation id="722454870747268814">نیا پوشیدگی ٹیب</translation>
 <translation id="7233592378249864828">تصدیقی شیٹ پرنٹ کریں</translation>
 <translation id="7234638337680728591">گیس کی قیمتیں اور گاڑی میں ایندھن بھرنا</translation>
+<translation id="7237492777898608035">اس سائٹ کے لیے یہ پیغام دوبارہ نہ دکھائیں</translation>
 <translation id="7238585580608191973">‏SHA-256 فنگر پرنٹ</translation>
 <translation id="7240120331469437312">سرٹیفیکیٹ موضوع کا متبادل نام</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />، <ph name="SIGNIN_DATA" /></translation>
@@ -2629,6 +2635,7 @@
 <translation id="8242426110754782860">آگے بڑھیں</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="8249463483885748674">معیار بند اور داخلہ ٹیسٹس</translation>
+<translation id="8252991034201168845">‏ایکسیسبیلٹی کی ترتیبات کے بٹن کا نظم کریں ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے Enter دبائیں</translation>
 <translation id="8253091569723639551">بلنگ پتہ درکار ہے</translation>
 <translation id="8257387598443225809">یہ ایپ موبائل کے لیے بنائی گئی ہے</translation>
 <translation id="825929999321470778">سبھی 'محفوظ پاسورڈز' دکھائيں</translation>
@@ -2806,6 +2813,7 @@
 <translation id="8805819170075074995">‏فہرست کا اندراج "<ph name="LANGUAGE_ID" />": اندراج کو نظر انداز کیا گیا کیونکہ یہ SpellcheckLanguage پالیسی میں بھی شامل ہے۔</translation>
 <translation id="8806285662264631610">نہانے اور جسم کے پروڈکٹس</translation>
 <translation id="8807160976559152894">ہر صفحہ کے بعد تراشیں</translation>
+<translation id="8808828119384186784">‏Chrome کی ترتیبات</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنی Chrome کی ترتیبات سے Chrome اپ ڈیٹ کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="882338992931677877">دستی سلاٹ</translation>

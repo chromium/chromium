@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Avadanlıq versiyası</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
-<translation id="1930797645656624981">Chrome OS Daxiletmə Metodu Xidməti</translation>
 <translation id="1947737735496445907">Çap edilib</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1977994649430373166">Google profil şəkli</translation>
 <translation id="1979103255016296513">Parol dəyişikliyinin gecikməsi</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Ən azı bir İncəsənət qalereyası albomu seçilməlidir</translation>
 <translation id="2230005943220647148">Selsi</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Klaviaturanın arxa işığının keçiricisi</translation>
 <translation id="2240366984605217732">Düzən keçiricisi</translation>
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
 <translation id="2287186687001756809">Əlçatan şəkil yoxdur. Foto əlavə etmək üçün <ph name="LINK" /> ünvanına keçin</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">İnternetə qoşulmaq olmur.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi icra edilir...</translation>
 <translation id="2584559707064218956">Ayarlamaq üçün Ayarlara keçin</translation>
-<translation id="2585245331261708204">Chrome OS üzrə yeniliklər</translation>
 <translation id="2619761439309613843">Gündəlik Yenilənmə</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albomu seçildi</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
-<translation id="475869545581454722">Chrome OS parolu güncəllənib</translation>
 <translation id="4773299976671772492">Durmuş</translation>
 <translation id="4782311465517282004">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -628,6 +627,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Avtomatik rəng rejimini aktiv edin</translation>
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
+<translation id="8045012663542226664">Mikrofonun səssiz düyməsi</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
@@ -738,6 +738,7 @@
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Android tətbiqlərindən giriş ilə əlaqə saxlamaq olmur</translation>
 <translation id="9211490828691860325">Bütün masalar</translation>
+<translation id="932327136139879170">Ev</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Aktiv edilməyib</translation>
 <translation id="960719561871045870">Operator kodu</translation>

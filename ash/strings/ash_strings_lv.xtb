@@ -87,6 +87,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
 <translation id="1364382257761975320">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu.</translation>
 <translation id="1364618750746929654">Nevar izveidot atšifrējumu</translation>
+<translation id="1372545819342940910">Saglabāt darbvietu vēlākai izmantošanai</translation>
 <translation id="1383597849754832576">Nevar lejupielādēt automātisko subtitru failus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1391102559483454063">Ieslēgta</translation>
@@ -135,7 +136,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1708345662127501511">Darbvieta: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Tīkla iestatījumi</translation>
 <translation id="1715293566947629045">Notiek profila atspējošana. Uzgaidiet dažas minūtes.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">P</translation>
 <translation id="1719094688023114093">Subtitri reāllaikā ir ieslēgti.</translation>
 <translation id="1720011244392820496">Wi-Fi sinhronizācijas ieslēgšana</translation>
 <translation id="1736898441010944794">Bluetooth ierīces var uztvert šo ierīci: <ph name="NAME" />.</translation>
@@ -522,6 +523,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4095366824370681039">Tintes pildspalva</translation>
 <translation id="4112140312785995938">Pārtīt atpakaļ</translation>
 <translation id="4114315158543974537">Ieslēdziet funkciju Phone Hub</translation>
+<translation id="4115378294792113321">Fuksīnsarkana</translation>
 <translation id="412298498316631026">logs</translation>
 <translation id="4123259114412175274">Lai atbloķētu Chromebook datoru, pārliecinieties, ka tālrunī ir ieslēgts Bluetooth savienojums.</translation>
 <translation id="4129129681837227511">Lai skatītu paziņojumus bloķēšanas ekrānā, atbloķējiet, lai mainītu iestatījumu</translation>
@@ -561,7 +563,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Jūs nospiedāt augsta kontrasta īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
 <translation id="4322742403972824594">Šie īsinājumtaustiņi ir mainījušies: Ctrl + Alt + augšupvērstais bulttaustiņš. Lai izmantotu sākumvietas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + kreisais bulttaustiņš.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Pārlūks Lacros netiek atbalstīts, ja ir pierakstījušies vairāki lietotāji.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Notiek Asistenta ielāde...</translation>
@@ -794,7 +795,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5788127256798019331">Play faili</translation>
 <translation id="5790085346892983794">Veiksmīgi pabeigts</translation>
 <translation id="5805809050170488595">Noklikšķiniet, lai aktivizētu tīklu <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Saistīto ierīču iestatījumi</translation>
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5837036133683224804">Pārtraukt “<ph name="ROUTE_TITLE" />” apraidi ierīcē “<ph name="RECEIVER_NAME" />”</translation>
@@ -1146,7 +1146,6 @@ Jauna instalācija</translation>
 <translation id="79341161159229895">Kontu pārvalda <ph name="FIRST_PARENT_EMAIL" /> un <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Lai skatītu starpliktuvi, nospiediet <ph name="SHORTCUT_KEY_NAME" /> + V. Pēdējie pieci nokopētie vienumi ir saglabāti starpliktuvē.</translation>
 <translation id="7942349550061667556">Sarkana</translation>
-<translation id="7952747673138230804">Chrome OS rāda ieteikumus jaunam pieejamajam saturam. Statistikas dati kvalitātes uzlabošanai tiek sūtīti tikai tad, ja esat piekritis kopīgot lietojuma datus. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Augsta kontrasta režīms</translation>
 <translation id="7968693143708939792">Atlasīt mapi…</translation>
 <translation id="7977927628060636163">Notiek mobilo tīklu meklēšana...</translation>

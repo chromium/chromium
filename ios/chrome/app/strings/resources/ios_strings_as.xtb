@@ -359,6 +359,7 @@
 <translation id="4049507953662678203">আপোনাৰ নেটৱৰ্ক সংযোগ থকাটো নিশ্চিত কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="4063300985191096908">ফীডলৈ যাওক</translation>
 <translation id="408404951701638773">সন্ধান বাৰডাল বিচাৰি পোৱাটো এতিয়া সহজ</translation>
+<translation id="4108998448622696017">বিপজ্জনক ঘটনাবোৰৰ চিনাক্ত কৰে আৰু সেইবোৰ ঘটাৰ সময়ত আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="411254640334432676">ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
@@ -609,6 +610,7 @@
 <translation id="6232736989810857397">এইটোৱে আপোনাক Google Lens ব্যৱহাৰ কৰি সহজে কেলেণ্ডাৰৰ অনুষ্ঠান সৃষ্টি কৰিবলৈ দিয়ে।</translation>
 <translation id="6254066287920239840">ব্ৰাউজাৰৰ পৰিৱৰ্তে এপত লিংকসমূহ খোলক৷</translation>
 <translation id="6255097610484507482">ক্ৰেডিট কাৰ্ড সম্পাদনা কৰক</translation>
+<translation id="6277426346321820595">কোনো সুৰক্ষা নাই</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />ক আনফ’ল’ কৰিলে</translation>
 <translation id="6293101329759844770">সুৰক্ষিত ব্ৰাউজিং অন কৰিবলৈ <ph name="BEGIN_LINK" />Google সেৱা<ph name="END_LINK" /> খোলক আৰু সুৰক্ষিত ব্ৰাউজিঙত টিপক।</translation>
@@ -786,6 +788,7 @@
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7671141431838911305">ইনষ্টল কৰক</translation>
+<translation id="7687508192620387263">কেলেণ্ডাৰৰ ফাইল উপলব্ধ</translation>
 <translation id="7701040980221191251">নাই</translation>
 <translation id="7720410380936703141">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7726702057919861819">মেনু → ইতিহাস → ব্ৰাউজিঙৰ ডেটা মচক</translation>
@@ -807,6 +810,7 @@
 <translation id="7884694604461143138">সন্ধানৰ ইতিহাস (<ph name="COUNT" /> টা পোৱা গৈছে)</translation>
 <translation id="7887198238286927132">আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ Chromeএ এই ক্ষেত্ৰখন স্বয়ংক্ৰিয়ভাৱে পূৰ নকৰে।</translation>
 <translation id="7911190106180361398">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক আটাইবোৰ ছিংক কৰাৰ অনুমতি নিদিয়ে।</translation>
+<translation id="7920949005883349320">গোপনীয়তা আৰু সুৰক্ষা</translation>
 <translation id="7930998711684428189">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">পাছৱর্ডসমূহ ৰপ্তানি কৰক...</translation>
@@ -889,6 +893,7 @@
 <translation id="8588404856427128947">অফ আছে</translation>
 <translation id="8590913940444621808">কেতিয়াও নুসুধিব</translation>
 <translation id="8591976964826315682">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
+<translation id="8592752150819985187">পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="8605219856220328675">টেব বন্ধ কৰক।</translation>
 <translation id="8620640915598389714">সম্পাদনা কৰক</translation>
 <translation id="8626393685701737946">আপুনি ছেটিং &gt; সমলৰ ছেটিঙত ছাইটৰ ডিফ’ল্ট ভিউ ডেস্কটপলৈ সলনি কৰিব পাৰে</translation>
@@ -907,6 +912,7 @@
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />ত আপোনাৰ Google একাউণ্টৰ অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
 <translation id="8750037785291841318">ইয়াত আপুনি নিজৰ টেবসমূহ বিচাৰি পাব</translation>
 <translation id="8756969031206844760">পাছৱৰ্ড আপডে’ট কৰিবনে?</translation>
+<translation id="8764015330924122850"><ph name="DOMAIN_NAME" />ক আনফ’ল’ কৰক</translation>
 <translation id="8775144690796719618">অমান্য URL</translation>
 <translation id="8787968206789828143">ৱেবত সন্ধান কৰক</translation>
 <translation id="8803639129939845298">সুৰক্ষিত</translation>
@@ -964,4 +970,5 @@
 <translation id="988141524645182168">অন্য ডিভাইচ</translation>
 <translation id="989988560359834682">ঠিকনা সম্পাদনা কৰক</translation>
 <translation id="994757059139821576">লেখনিৰ পৰামর্শ</translation>
+<translation id="997742718232442409">এই ৱেবছাইটটোৱে এটা কেলেণ্ডাৰৰ ফাইল ডাউনল’ড কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 </translationbundle>

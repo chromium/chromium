@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Revisió de maquinari</translation>
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
 <translation id="1908234395526491708">Errors en la sol·licitud d'UDP</translation>
-<translation id="1930797645656624981">Servei del mètode d'introducció de text a Chrome OS</translation>
 <translation id="1947737735496445907">Imprès</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1977994649430373166">Foto de perfil de Google</translation>
 <translation id="1979103255016296513">Canvi de contrasenya vençut</translation>
 <translation id="1999615961760456652">Portal captiu</translation>
 <translation id="2006864819935886708">Connectivitat</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">S'ha de seleccionar un àlbum de la galeria d'art com a mínim</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Commutador del teclat amb retroil·luminació</translation>
 <translation id="2240366984605217732">Canvi de disseny</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
 <translation id="2287186687001756809">No hi ha cap imatge disponible. Per afegir fotos, ves a <ph name="LINK" />.</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">No es pot connectar a Internet.</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Per configurar-la, ves a Configuració</translation>
-<translation id="2585245331261708204">Novetats de Chrome OS</translation>
 <translation id="2619761439309613843">Actualització diària</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2640549051766135490">S'ha seleccionat l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
-<translation id="475869545581454722">S'ha actualitzat la contrasenya de Chrome OS</translation>
 <translation id="4773299976671772492">En pausa</translation>
 <translation id="4782311465517282004">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -629,6 +628,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activa el mode de color automàtic</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
+<translation id="8045012663542226664">Silenci del micròfon</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
@@ -739,6 +739,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="917720651393141712">Prova</translation>
 <translation id="9204237731135241582">No es pot contactar amb la passarel·la des d'aplicacions d'Android</translation>
 <translation id="9211490828691860325">Tots els escriptoris</translation>
+<translation id="932327136139879170">Inici</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">No activat</translation>
 <translation id="960719561871045870">Codi d'operador</translation>

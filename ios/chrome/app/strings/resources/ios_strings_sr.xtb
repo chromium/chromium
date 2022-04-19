@@ -359,6 +359,7 @@
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
 <translation id="4063300985191096908">Иди на фид</translation>
 <translation id="408404951701638773">Трака за претрагу је сада доступнија</translation>
+<translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="411254640334432676">Преузимање није успело.</translation>
 <translation id="4112644173421521737">Претражи</translation>
 <translation id="4113030288477039509">Овим управља администратор</translation>
@@ -609,6 +610,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6232736989810857397">Ово вам омогућава да једноставно правите догађаје у календару помоћу Google објективa.</translation>
 <translation id="6254066287920239840">Отварајте ликнове у апликацији уместо у прегледачу.</translation>
 <translation id="6255097610484507482">Измена кредитне картице</translation>
+<translation id="6277426346321820595">Без заштите</translation>
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
@@ -786,6 +788,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7671141431838911305">ИНСТАЛИРАЊЕ</translation>
+<translation id="7687508192620387263">Доступан је фајл календара</translation>
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7720410380936703141">ПРОБАЈ ПОНОВО</translation>
 <translation id="7726702057919861819">Мени → Историја → Обриши податке прегледања</translation>
@@ -807,6 +810,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7884694604461143138">Историја претраге (пронађено је <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Ради заштите приватности Chrome неће аутоматски попуњавати ово поље.</translation>
 <translation id="7911190106180361398">Организација не дозвољава да синхронизујете све.</translation>
+<translation id="7920949005883349320">Приватност и безбедност</translation>
 <translation id="7930998711684428189">Упозорава вас ако су лозинке откривене при упаду у податке.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извези лозинке…</translation>
@@ -889,6 +893,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8588404856427128947">Искључено</translation>
 <translation id="8590913940444621808">Никада не питај</translation>
 <translation id="8591976964826315682">Блокирајте колачиће трећих страна у режиму без архивирања</translation>
+<translation id="8592752150819985187">Аутоматски попуните лозинке</translation>
 <translation id="8605219856220328675">Затвори картицу.</translation>
 <translation id="8620640915598389714">Измени</translation>
 <translation id="8626393685701737946">Можете да промените подразумевани приказ сајта на рачунар у одељку Подешавања &gt; Подешавања садржаја</translation>
@@ -907,6 +912,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8741995161408053644">Google налог има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Овде ћете пронаћи картице</translation>
 <translation id="8756969031206844760">Желите ли да ажурирате лозинку?</translation>
+<translation id="8764015330924122850">Опозовите праћење: <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8787968206789828143">Претражите на вебу</translation>
 <translation id="8803639129939845298">Безбедан</translation>
@@ -964,4 +970,5 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="988141524645182168">Други уређаји</translation>
 <translation id="989988560359834682">Измена адресе</translation>
 <translation id="994757059139821576">Предлози чланака</translation>
+<translation id="997742718232442409">Овај веб-сајт покушава да преузме фајл календара.</translation>
 </translationbundle>

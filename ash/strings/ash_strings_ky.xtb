@@ -136,7 +136,7 @@
 <translation id="1708345662127501511">Иш такта: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Тармак жөндөөлөрү</translation>
 <translation id="1715293566947629045">Профиль өчүрүлүүдө. Бир нече мүнөт күтө туруңуз.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Жм</translation>
 <translation id="1719094688023114093">Ыкчам коштомо жазуулар күйүк.</translation>
 <translation id="1720011244392820496">Wi-Fi Sync'ти күйгүзүү</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth түзмөктөрүнө көрүнөт.</translation>
@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">Сыя калемсап</translation>
 <translation id="4112140312785995938">Артка түрдүрүү</translation>
 <translation id="4114315158543974537">Phone Hub'ды күйгүзүңүз</translation>
+<translation id="4115378294792113321">Маджента</translation>
 <translation id="412298498316631026">терезе</translation>
 <translation id="4123259114412175274">Chromebook'тун кулпусун ачуу үчүн телефонуңуздагы Bluetooth күйүп турганын текшериңиз</translation>
 <translation id="4129129681837227511">Билдирмелерди кулпуланган экранда көрүү максатында өзгөртүү киргизүү үчүн, түзмөгүңүздүн кулпусун ачыңыз</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">Жогорку контрастты колдонуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Башкы бет баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + солго жебени басыңыз.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Бир нече колдонуучу кирип турганда Lacros иштебей калат.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Жардамчы жүктөлүүдө...</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">Google Play файлдары</translation>
 <translation id="5790085346892983794">Ийгилик</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> тармагын жандыруу үчүн басыңыз</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Туташтырылган түзмөктөрдүн жөндөөлөрү</translation>
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> бөлмөсүндөгү <ph name="ROUTE_TITLE" /> токтотулсун</translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">Аккаунтту башкарган: <ph name="FIRST_PARENT_EMAIL" /> жана <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Алмашуу буфериңизди көрүү үчүн <ph name="SHORTCUT_KEY_NAME" /> + V баскычтарын басыңыз. Көчүрүлгөн акыркы 5 объект алмашуу буфериңизге сакталды.</translation>
 <translation id="7942349550061667556">Кызыл</translation>
-<translation id="7952747673138230804">Chrome OS изилдөө үчүн жаңы мазмундарды сунуштайт. Сапатын жакшыртуу максатында колдонуу статистикаңыз жөнөтүлөт (статистиканы бөлүшүүнү тандаган болсоңуз гана). <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Жогорку контраст режими</translation>
 <translation id="7968693143708939792">Папка тандоо…</translation>
 <translation id="7977927628060636163">Мобилдик тармактар изделүүдө…</translation>

@@ -359,6 +359,7 @@ Pratite korake u nastavku:</translation>
 <translation id="4049507953662678203">Proverite da li ste povezani na mrežu i pokušajte ponovo.</translation>
 <translation id="4063300985191096908">Idi na fid</translation>
 <translation id="408404951701638773">Traka za pretragu je sada dostupnija</translation>
+<translation id="4108998448622696017">Otkriva opasne događaje kada se dogode i upozorava vas na njih.</translation>
 <translation id="411254640334432676">Preuzimanje nije uspelo.</translation>
 <translation id="4112644173421521737">Pretraži</translation>
 <translation id="4113030288477039509">Ovim upravlja administrator</translation>
@@ -609,6 +610,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6232736989810857397">Ovo vam omogućava da jednostavno pravite događaje u kalendaru pomoću Google objektiva.</translation>
 <translation id="6254066287920239840">Otvarajte liknove u aplikaciji umesto u pregledaču.</translation>
 <translation id="6255097610484507482">Izmena kreditne kartice</translation>
+<translation id="6277426346321820595">Bez zaštite</translation>
 <translation id="6284652193729350524">Ponudi prevod za <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Opozvali ste praćenje kanala <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Da biste uključili Bezbedno pregledanje, otvorite <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" /> i dodirnite Bezbedno pregledanje.</translation>
@@ -786,6 +788,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7671141431838911305">INSTALIRANJE</translation>
+<translation id="7687508192620387263">Dostupan je fajl kalendara</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7720410380936703141">PROBAJ PONOVO</translation>
 <translation id="7726702057919861819">Meni → Istorija → Obriši podatke pregledanja</translation>
@@ -807,6 +810,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7884694604461143138">Istorija pretrage (pronađeno je <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Radi zaštite privatnosti Chrome neće automatski popunjavati ovo polje.</translation>
 <translation id="7911190106180361398">Organizacija ne dozvoljava da sinhronizujete sve.</translation>
+<translation id="7920949005883349320">Privatnost i bezbednost</translation>
 <translation id="7930998711684428189">Upozorava vas ako su lozinke otkrivene pri upadu u podatke.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Izvezi lozinke…</translation>
@@ -889,6 +893,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8590913940444621808">Nikada ne pitaj</translation>
 <translation id="8591976964826315682">Blokirajte kolačiće trećih strana u režimu bez arhiviranja</translation>
+<translation id="8592752150819985187">Automatski popunite lozinke</translation>
 <translation id="8605219856220328675">Zatvori karticu.</translation>
 <translation id="8620640915598389714">Izmeni</translation>
 <translation id="8626393685701737946">Možete da promenite podrazumevani prikaz sajta na računar u odeljku Podešavanja &gt; Podešavanja sadržaja</translation>
@@ -907,6 +912,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8741995161408053644">Google nalog ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Ovde ćete pronaći kartice</translation>
 <translation id="8756969031206844760">Želite li da ažurirate lozinku?</translation>
+<translation id="8764015330924122850">Opozovite praćenje: <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8787968206789828143">Pretražite na vebu</translation>
 <translation id="8803639129939845298">Bezbedan</translation>
@@ -964,4 +970,5 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="988141524645182168">Drugi uređaji</translation>
 <translation id="989988560359834682">Izmena adrese</translation>
 <translation id="994757059139821576">Predlozi članaka</translation>
+<translation id="997742718232442409">Ovaj veb-sajt pokušava da preuzme fajl kalendara.</translation>
 </translationbundle>

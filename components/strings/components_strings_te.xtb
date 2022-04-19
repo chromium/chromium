@@ -100,7 +100,6 @@
 <translation id="124116460088058876">మరిన్ని భాషలు</translation>
 <translation id="1243027604378859286">రచయిత:</translation>
 <translation id="1246424317317450637">బోల్డ్</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="1250759482327835220">తర్వాతిసారి మరింత వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్, పేరు మరియు బిల్లింగ్ అడ్రస్‌ను మీ Google ఖాతాకు సేవ్ చేయండి.</translation>
 <translation id="1252799212227771492">'షీట్‌ను క్రియేట్ చేయండి' బటన్, కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (సమకాలీకరించబడ్డాయి)</translation>
@@ -386,7 +385,6 @@
 <translation id="1919345977826869612">యాడ్స్</translation>
 <translation id="1919367280705858090">నిర్దిష్ట ఎర్రర్ మెసేజ్‌కు సంబంధించిన సహాయం పొందండి</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ఏమీ లేవు}=1{1 సైట్}other{# సైట్‌లు}}</translation>
-<translation id="1923390796829649802">'యాక్సెసిబిలిటీ సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, Chrome OS సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి Enterను నొక్కండి</translation>
 <translation id="1924727005275031552">కొత్త</translation>
 <translation id="1927439593081478069">'Chrome భద్రతా తనిఖీ రన్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="1939175642807587452">నోటిఫికేషన్‌లను పంపడానికి సైట్ అనుమతి అడగవచ్చు</translation>
@@ -645,7 +643,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్ ఇంకా మరిన్నింటిని క్లియర్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="2650446666397867134">ఫైల్‌కు యాక్సెస్ తిరస్కరించబడింది</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
-<translation id="2659491813326907275">Chrome OS సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించండి</translation>
 <translation id="2660779039299703961">ఈవెంట్</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్‌వర్డ్ (<ph name="DOMAIN_LIST" /> కోసం)}=2{2 పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" /> కోసం)}other{# పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" /> కోసం)}}</translation>
 <translation id="2666092431469916601">పైన</translation>
@@ -863,6 +860,7 @@
 <translation id="3295444047715739395">Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
 <translation id="3304073249511302126">బ్లూటూత్ స్కానింగ్</translation>
+<translation id="33073482541490531">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. ఈ పాస్‌వర్డ్‌ను ఇప్పుడే మార్చమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
 <translation id="3308006649705061278">ఆర్గనైజేషనల్ యూనిట్ (OU)</translation>
 <translation id="3308738399950580893">యాడ్‌లు</translation>
 <translation id="3320021301628644560">బిల్లింగ్ అడ్రస్‌ను జోడించండి</translation>
@@ -997,6 +995,7 @@
 <translation id="3658742229777143148">పునర్విమర్శ</translation>
 <translation id="3664782872746246217">కీవర్డ్‌లు:</translation>
 <translation id="3667704023705708645">వెంచర్ క్యాపిటల్</translation>
+<translation id="367108335512738711">Chrome బుక్‌మార్క్‌లు</translation>
 <translation id="3671540257457995106">పరిమాణం మార్చడానికి అనుమతించాలా?</translation>
 <translation id="3675563144891642599">థర్డ్ రోల్</translation>
 <translation id="3676592649209844519">పరికర ID:</translation>
@@ -1493,6 +1492,7 @@
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5040262127954254034">గోప్యత</translation>
 <translation id="5043480802608081735">మీరు కాపీ చేసిన లింక్</translation>
+<translation id="5044545992476246592">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ Google Assistant మీ పాస్‌వర్డ్‌ను ఆటోమేటిక్‌గా మార్చగలదు.</translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="5051305769747448211">లైవ్ కామెడీ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైల్‌ను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}other{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైళ్ళను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}}</translation>
@@ -1505,6 +1505,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ప్రాక్సీ అడ్రస్‌ను తనిఖీ చేయడం<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">టెన్త్ రోల్</translation>
 <translation id="507130231501693183">మెయిల్‌బాక్స్ 4</translation>
+<translation id="5078060223219502807">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, ఆ పాస్‌వర్డ్‌ను ఇప్పుడే మార్చి, ఆపై మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
 <translation id="5086225927071063542">డిస్ట్రీబ్యూటెడ్ &amp; క్లౌడ్ కంప్యూటింగ్</translation>
 <translation id="5087286274860437796">ప్రస్తుతం సర్వర్ ప్రమాణపత్రం చెల్లదు.</translation>
 <translation id="5087580092889165836">కార్డ్‌ను జోడించు</translation>
@@ -2021,6 +2022,7 @@
 <translation id="6579630537141957243">MIDI పరికరానికి కనెక్ట్ చేయాలా?</translation>
 <translation id="6579990219486187401">లేత గులాబీ రంగు</translation>
 <translation id="6583674473685352014">B6 (ఎన్వలప్)</translation>
+<translation id="6585526963651937128">Chrome హిస్టరీ</translation>
 <translation id="6587182488465657433">డేటా ఉల్లంఘనలో మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్‌ను Chrome కనుగొనింది. మీ ఖాతాలను సురక్షించడానికి, వాటిని మార్చుకుని, ఆపై సేవ్ చేయబడిన పాస్‌వర్డ్‌లను చెక్ చేయమని మేము సిఫార్సు చేస్తున్నాము.</translation>
 <translation id="6587923378399804057">మీరు కాపీ చేసిన లింక్</translation>
 <translation id="6591833882275308647">మీ <ph name="DEVICE_TYPE" /> నిర్వహించబడటం లేదు</translation>
@@ -2129,6 +2131,7 @@
 <translation id="691024665142758461">బహుళ ఫైళ్లను డౌన్‌లోడ్ చేయాలనుకుంటోంది</translation>
 <translation id="6915804003454593391">వినియోగదారు:</translation>
 <translation id="6916954549222464607">ఆర్థిక ప్లానింగ్ &amp; మేనేజ్‌మెంట్</translation>
+<translation id="6917795328362592458">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
 <translation id="6934672428414710184">ఇది మీ Google ఖాతాలో ఉన్న పేరు</translation>
 <translation id="6939469646605424232">టీవీ డ్రామాలు</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ని నమోదు చేశారు. మీ ఖాతాని రక్షించడం కోసం, మీ పాస్‌వర్డ్‌ని ఇతర యాప్‌లు మరియు సైట్‌లలో తిరిగి ఉపయోగించవద్దు.</translation>
@@ -2805,6 +2808,7 @@
 <translation id="8805819170075074995">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": నమోదు విస్మరించబడింది, ఎందుకంటే ఇది SpellcheckLanguage విధానంలో కూడా ఉంది.</translation>
 <translation id="8806285662264631610">స్నానానికి వినియోగించే &amp; శరీర ప్రోడక్ట్‌లు</translation>
 <translation id="8807160976559152894">ప్రతి పేజీ తర్వాత కత్తిరించండి</translation>
+<translation id="8808828119384186784">Chrome సెట్టింగ్‌లు</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌ల నుండి Chromeని అప్‌డేట్ చేయడానికి 'Tab' నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">మాన్యువల్ స్లాట్</translation>

@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
 <translation id="1905710495812624430">Wedi mynd y tu hwnt i'r ymgeisiau uchaf a ganiateir.</translation>
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
-<translation id="1930797645656624981">Gwasanaeth Dull Mewnbynnu Chrome OS</translation>
 <translation id="1947737735496445907">Argraffwyd</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Llun proffil Google</translation>
 <translation id="1979103255016296513">Rydych yn hwyr yn newid eich cyfrinair</translation>
 <translation id="1999615961760456652">Porth Caeth</translation>
 <translation id="2006864819935886708">Cysylltedd</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Mae angen dewis o leiaf un albwm oriel Gelf</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Toglo ôl-olau'r bysellfwrdd</translation>
 <translation id="2240366984605217732">Switsh cynllun</translation>
 <translation id="225692081236532131">Statws gweithredu</translation>
 <translation id="2287186687001756809">Nid oes unrhyw lun ar gael. I ychwanegu lluniau, ewch i <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Ni ellir cysylltu â'r we.</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
-<translation id="2585245331261708204">Beth sy'n newydd gyda Chrome OS</translation>
 <translation id="2619761439309613843">Ail-lwytho'n Ddyddiol</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2640549051766135490">Wedi dewis albwm <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Mynediad rhieni</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4744944742468440486">Gwybodaeth yn ymwneud â'ch dewis</translation>
-<translation id="475869545581454722">Cyfrinair Chrome OS wedi'i ddiweddaru</translation>
 <translation id="4773299976671772492">Wedi stopio</translation>
 <translation id="4782311465517282004">Cael diffiniadau, cyfieithiadau, neu drosiadau uned pan fyddwch yn de-glicio neu'n cyffwrdd a dal testun</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> llun</translation>
@@ -629,6 +628,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Galluogi'r modd lliw awtomatig</translation>
 <translation id="8041089156583427627">Anfon adborth</translation>
+<translation id="8045012663542226664">Distewi'r meicroffon</translation>
 <translation id="8075838845814659848">Faint o fatri sy'n weddill</translation>
 <translation id="8082366717211101304">Methu â datrys DNS o apiau Android</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>
@@ -739,6 +739,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="917720651393141712">Prawf</translation>
 <translation id="9204237731135241582">Methu â chysylltu'r porth o apiau Android</translation>
 <translation id="9211490828691860325">Pob desg</translation>
+<translation id="932327136139879170">Cartref</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Heb ei weithredu</translation>
 <translation id="960719561871045870">Cod gweithredwr</translation>

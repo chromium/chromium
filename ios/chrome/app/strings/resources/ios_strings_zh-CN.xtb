@@ -359,6 +359,7 @@
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4063300985191096908">前往 Feed</translation>
 <translation id="408404951701638773">现在可以更方便地使用搜索栏</translation>
+<translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
 <translation id="411254640334432676">下载失败。</translation>
 <translation id="4112644173421521737">搜索</translation>
 <translation id="4113030288477039509">由您的管理员管理</translation>
@@ -609,6 +610,7 @@
 <translation id="6232736989810857397">这样您就可以使用 Google 智能镜头轻松创建日历活动。</translation>
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
+<translation id="6277426346321820595">无保护</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="6289501276895392862">已取消关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
@@ -807,6 +809,7 @@
 <translation id="7884694604461143138">在历史记录中搜索（找到了 <ph name="COUNT" /> 项结果）</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
+<translation id="7920949005883349320">隐私与安全</translation>
 <translation id="7930998711684428189">密码遭遇数据泄露时向您发出警告。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">导出密码…</translation>
@@ -964,4 +967,5 @@
 <translation id="988141524645182168">其他设备</translation>
 <translation id="989988560359834682">修改地址</translation>
 <translation id="994757059139821576">文章推荐</translation>
+<translation id="997742718232442409">此网站正要尝试下载一个日历文件。</translation>
 </translationbundle>

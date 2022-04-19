@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
 <translation id="1908234395526491708">Mga hindi naisagawang kahilingan sa UDP</translation>
-<translation id="1930797645656624981">Serbisyo ng Pamamaraan ng Pag-input ng Chrome OS</translation>
 <translation id="1947737735496445907">Na-print</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Larawan sa profile sa Google</translation>
 <translation id="1979103255016296513">Overdue na ang pagpapalit ng password</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Pagkakakonekta</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Kailangang pumili ng hindi bababa sa isang album sa Art gallery</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Toggle ng backlight ng keyboard</translation>
 <translation id="2240366984605217732">Switch ng layout</translation>
 <translation id="225692081236532131">Status ng pag-activate</translation>
 <translation id="2287186687001756809">Walang available na larawan. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Hindi makakonekta sa internet.</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
-<translation id="2585245331261708204">Ano'ng bago sa Chrome OS</translation>
 <translation id="2619761439309613843">Araw-araw na Pag-refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2640549051766135490">Pinili ang album na <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
-<translation id="475869545581454722">Na-update ang password sa Chrome OS</translation>
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> larawan</translation>
@@ -629,6 +628,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">I-enable ang auto color mode</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
+<translation id="8045012663542226664">Pang-mute ng mikropono</translation>
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
@@ -739,6 +739,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Hindi makaugnayan ang gateway mula sa mga Android app</translation>
 <translation id="9211490828691860325">Lahat ng desk</translation>
+<translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Hindi na-activate</translation>
 <translation id="960719561871045870">Operator code</translation>

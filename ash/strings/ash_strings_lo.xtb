@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">ຫຍໍ້ເມນູ</translation>
 <translation id="1364382257761975320">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃຊ້ລາຍນິ້ວມືຂອງທ່ານ</translation>
 <translation id="1364618750746929654">ບໍ່ສາມາດສ້າງການຖອດຖ່າຍຂໍ້ຄວາມໄດ້</translation>
+<translation id="1372545819342940910">ບັນທຶກໂຕະໄວ້ພາຍຫຼັງ</translation>
 <translation id="1383597849754832576">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ສຽງເວົ້າໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1391102559483454063">ເປີດ</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">ບິກໝຶກ</translation>
 <translation id="4112140312785995938">ເລື່ອນກັບຫຼັງ</translation>
 <translation id="4114315158543974537">ເປີດ Phone Hub</translation>
+<translation id="4115378294792113321">ສີແດງມ່ວງ</translation>
 <translation id="412298498316631026">ໜ້າຈໍ</translation>
 <translation id="4123259114412175274">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ກວດສອບວ່າທ່ານເປີດ Bluetooth ຂອງໂທລະສັບທ່ານແລ້ວ</translation>
 <translation id="4129129681837227511">ເພື່ອເບິ່ງການແຈ້ງເຕືອນໃນໜ້າຈໍລັອກຂອງທ່ານ, ກະລຸນາປົດລັອກເພື່ອປ່ຽນການຕັ້ງຄ່າ</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບຄວາມຄົມຊັດສູງແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
 <translation id="4322742403972824594">ຄີລັດ Ctrl + Alt + ລູກສອນຂຶ້ນຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Home, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຊ້າຍ.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">ບໍ່ຮອງຮັບ Lacros ໃນເວລາທີ່ມີຜູ້ໃຊ້ຫຼາຍຄົນເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="4338109981321384717">ແວ່ນຂະຫຍາຍ</translation>
 <translation id="4351433414020964307">ຜູ້ຊ່ວຍກຳລັງໂຫຼດຢູ່...</translation>
@@ -794,7 +795,6 @@
 <translation id="5788127256798019331">ໄຟລ໌ Play</translation>
 <translation id="5790085346892983794">ສໍາ​ເລັດ</translation>
 <translation id="5805809050170488595">ຄລິກເພື່ອເປີດໃຊ້ <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ການຕັ້ງຄ່າອຸປະກອນທີ່ເຊື່ອມຕໍ່</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
 <translation id="5837036133683224804">ຢຸດ <ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1146,6 @@
 <translation id="79341161159229895">ບັນຊີທີ່ຈັດການໂດຍ <ph name="FIRST_PARENT_EMAIL" /> ແລະ <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">ກົດ <ph name="SHORTCUT_KEY_NAME" /> + V ເພື່ອເບິ່ງຄລິບບອດຂອງທ່ານ. 5 ລາຍການສຸດທ້າຍທີ່ທ່ານສຳເນົາໄວ້ຈະຖືກບັນທຶກໄວ້ໃນຄລິບບອດຂອງທ່ານ.</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
-<translation id="7952747673138230804">Chrome OS ຈະສະແດງການແນະນຳເນື້ອຫາໃໝ່ໃຫ້ສຳຫຼວດເບິ່ງ. ສົ່ງສະຖິຕິເພື່ອປັບປຸງຄຸນນະພາບພຽງແຕ່ຖ້າທ່ານໄດ້ເລືອກແບ່ງປັນຂໍ້ມູນການນຳໃຊ້ເທົ່ານັ້ນ. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">ໂໝດສີຕັດກັນສູງ</translation>
 <translation id="7968693143708939792">ເລືອກໂຟນເດີ...</translation>
 <translation id="7977927628060636163">ກຳລັງຊອກຫາເຄືອຂ່າຍມືຖື...</translation>

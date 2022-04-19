@@ -136,7 +136,7 @@
 <translation id="1708345662127501511">Γραφείο: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ρυθμίσεις δικτύου</translation>
 <translation id="1715293566947629045">Απενεργοποίηση προφίλ. Περιμένετε λίγα λεπτά.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Π</translation>
 <translation id="1719094688023114093">Οι Ζωντανοί υπότιτλοι είναι ενεργοποιημένοι.</translation>
 <translation id="1720011244392820496">Ενεργοποίηση του Συγχρονισμού Wi-Fi</translation>
 <translation id="1736898441010944794">Το "<ph name="NAME" />" είναι ορατό σε συσκευές Bluetooth.</translation>
@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">Στυλό</translation>
 <translation id="4112140312785995938">Αναζήτηση προς τα πίσω</translation>
 <translation id="4114315158543974537">Ενεργοποίηση του Phone Hub</translation>
+<translation id="4115378294792113321">Ματζέντα</translation>
 <translation id="412298498316631026">παράθυρο</translation>
 <translation id="4123259114412175274">Για να ξεκλειδώσετε το Chromebook, βεβαιωθείτε ότι το Bluetooth του τηλεφώνου είναι ενεργοποιημένο</translation>
 <translation id="4129129681837227511">Για να βλέπετε ειδοποιήσεις στην οθόνη κλειδώματος, ξεκλειδώστε τη συσκευή για να αλλάξετε τη ρύθμιση</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Πατήσατε τη συντόμευση πληκτρολογίου για την υψηλή αντίθεση. Θέλετε να την ενεργοποιήσετε;</translation>
 <translation id="4322742403972824594">Η συντόμευση πληκτρολογίου Ctrl + Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Home, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Αριστερό βέλος.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Το Lacros δεν υποστηρίζεται κατά τη σύνδεση πολλών χρηστών.</translation>
 <translation id="4338109981321384717">Μεγεθυντικός φακός</translation>
 <translation id="4351433414020964307">Γίνεται φόρτωση του Βοηθού…</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">Αρχεία Play</translation>
 <translation id="5790085346892983794">Επιτυχία</translation>
 <translation id="5805809050170488595">Κλικ για ενεργοποίηση <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ρυθμίσεις συνδεδεμένων συσκευών</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">Ο λογαριασμός είναι διαχειριζόμενος από τους χρήστες <ph name="FIRST_PARENT_EMAIL" /> και <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Πιέστε <ph name="SHORTCUT_KEY_NAME" /> + V για να δείτε το πρόχειρο. Τα τελευταία 5 στοιχεία που αντιγράψατε αποθηκεύονται στο πρόχειρο.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
-<translation id="7952747673138230804">Το Chrome OS εμφανίζει προτάσεις για νέο περιεχόμενο για εξερεύνηση. Στέλνει στατιστικά στοιχεία για τη βελτίωση της ποιότητας, μόνο σε περίπτωση που έχετε επιλέξει να κοινοποιείτε δεδομένα χρήσης. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Λειτουργία υψηλής αντίθεσης</translation>
 <translation id="7968693143708939792">Επιλογή φακέλου…</translation>
 <translation id="7977927628060636163">Αναζήτηση για δίκτυα κινητής τηλεφωνίας…</translation>

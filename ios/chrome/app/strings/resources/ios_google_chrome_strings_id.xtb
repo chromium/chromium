@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chrome dan Google app lainnya di perangkat ini.</translation>
 <translation id="1968388653333775699">Tingkatkan Produktivitas dengan Chrome</translation>
 <translation id="2009224836393115614">Chrome tidak dapat memeriksa sandi Anda. Coba periksa koneksi internet Anda.</translation>
+<translation id="2056123005618757196">Tingkatkan produktivitas dengan Google Chrome yang lebih praktis, aman, dan cepat.</translation>
 <translation id="2147651015520127414">Chrome memverifikasi bahwa <ph name="ISSUER" /> menerbitkan sertifikat situs web ini.</translation>
 <translation id="2199719347983604670">Data dari sinkronisasi Chrome</translation>
 <translation id="2313070403598893276">Google Chrome mudah digunakan, aman, dan lebih cepat</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Beberapa pengaya (pengaya) menyebabkan Chrome mogok. Uninstal:</translation>
 <translation id="4633328489441962921">Chrome tidak dapat memeriksa update</translation>
 <translation id="4698415050768537821">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Untuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Tidak didukung di Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya.</translation>
 <translation id="5108659628347594808">Buat Chrome Menjadi Lebih Baik</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Beralih ke Chrome</translation>
 <translation id="6238746320622508509">Izinkan Chrome mengunci tab Samaran Anda.</translation>
 <translation id="6387994324662817823">Sandi hanya disimpan ke Pengelola Sandi Google di perangkat ini.</translation>
+<translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6427126399757991875">Organisasi Anda sedang menyiapkan Chrome ...</translation>
 <translation id="6600954340915313787">Disalin ke Chrome</translation>
 <translation id="6634107063912726160">Jika Anda logout, Chrome tidak akan menyinkronkan data baru apa pun ke Akun Google Anda. Data yang sebelumnya disinkronkan tetap tersimpan di akun.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Tetap Aman dengan Google Chrome</translation>
 <translation id="8772179140489533211">Menampilkan perintah untuk login ke Chrome.</translation>
 <translation id="8788269841521769222">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Jika aktif:
+<ph name="BEGIN_INDENT" />  • Membantu Chrome menjadi lebih baik bagi pengguna lain seperti Anda.<ph name="END_INDENT" />
+
+Hal-hal yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" />  • Info tentang penggunaan Chrome akan dikirim ke Google, tetapi tidak dikaitkan dengan Anda.
+
+  • Jika Chrome mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
+
+  • Jika Anda mengaktifkan sinkronisasi, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Setel Chrome sebagai Default?</translation>
 <translation id="9122931302567044771">Artinya, Chrome akan selalu meminta situs desktop.</translation>
 </translationbundle>

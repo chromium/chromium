@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">મેનૂ સંકુચિત કરો</translation>
 <translation id="1364382257761975320">તમારી Chromebook અનલૉક કરવા માટે, તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરો</translation>
 <translation id="1364618750746929654">ટ્રાન્સક્રિપ્શન જનરેટ કરી શકતા નથી</translation>
+<translation id="1372545819342940910">પછીથી ઉપયોગ માટે ડૅસ્ક સાચવો</translation>
 <translation id="1383597849754832576">સ્પીચ ફાઇલો ડાઉનલોડ કરી શકાતી નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1391102559483454063">ચાલુ</translation>
@@ -200,6 +201,7 @@
 <translation id="2107914222138020205">તમારો USB-C કેબલ Thunderboltને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="2108303511227308752">Alt કી + Backspace કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Delete કીનો ઉપયોગ કરવા માટે <ph name="LAUNCHER_KEY_NAME" /> કી + backspace કી દબાવો.</translation>
 <translation id="211328683600082144">માઇક્રોફોન ચાલુ કરો</translation>
+<translation id="2123115117533398272">ChromeOS શોધખોળ કરવા નવા કન્ટેન્ટના સૂચનો બતાવે છે. જો તમે વપરાશનો ડેટા શેર કરવાનું પસંદ કર્યું હોય, તો જ તે ક્વૉલિટીને બહેતર બનાવવા માટે આંકડા મોકલે છે. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">નવું ડેસ્ક</translation>
 <translation id="2127372758936585790">નિમ્ન-પાવર ચાર્જર</translation>
 <translation id="2132302418721800944">પૂર્ણ સ્ક્રીન રેકોર્ડ કરો</translation>
@@ -270,6 +272,7 @@
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="263399434338050016">"તમામ પસંદ કરો"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">વિન્ડો કૅપ્ચર</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2658778018866295321">ક્લિક કરો અને ખેંચો</translation>
@@ -395,6 +398,7 @@
 <translation id="3375634426936648815">કનેક્ટ કરેલું</translation>
 <translation id="3378442621503952303">પ્રોફાઇલ સાથે કનેક્ટ કરી રહ્યાં છીએ. થોડીવાર રાહ જુઓ.</translation>
 <translation id="3386978599540877378">પૂર્ણ-સ્ક્રીન મેગ્નિફાયર</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">વધારાના સેટિંગ</translation>
 <translation id="3410336247007142655">ઘેરી થીમના સેટિંગ બતાવો</translation>
 <translation id="3413817803639110246">હજુ સુધી જોવા માટે કંઈ નથી</translation>
@@ -522,6 +526,7 @@
 <translation id="4095366824370681039">ઇંક પેન</translation>
 <translation id="4112140312785995938">પાછળ કરો</translation>
 <translation id="4114315158543974537">ફોન હબ ચાલુ કરો</translation>
+<translation id="4115378294792113321">કિરમજી</translation>
 <translation id="412298498316631026">વિન્ડો</translation>
 <translation id="4123259114412175274">તમારા Chromebookને અનલૉક કરવા માટે, તમારા ફોનનું બ્લૂટૂથ ચાલુ હોવાની ખાતરી કરો</translation>
 <translation id="4129129681837227511">તમારી લૉક સ્ક્રીન પર નોટિફિકેશન જોવા માટે, સેટિંગને બદલવા માટે અનલૉક કરો</translation>
@@ -561,7 +566,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">તમે હાઇ કૉન્ટ્રાસ્ટ માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="4322742403972824594">Ctrl કી + Alt કી + ઉપરની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Home કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ડાબી ઍરો કી દબાવો.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">એકથી વધુ વપરાશકર્તાઓએ સાઇન ઇન કર્યું હોય, ત્યારે Lacros કામ કરતું નથી.</translation>
 <translation id="4338109981321384717">બૃહદદર્શક કાચ</translation>
 <translation id="4351433414020964307">Assistant લોડ થઈ રહ્યું છે…</translation>
@@ -794,7 +798,6 @@
 <translation id="5788127256798019331">Play ફાઇલો</translation>
 <translation id="5790085346892983794">સફળતા</translation>
 <translation id="5805809050170488595">સક્રિય કરવા માટે ક્લિક કરો <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">કનેક્ટ થયેલા ડિવાઇસના સેટિંગ</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" />ને રોકો</translation>
@@ -1146,7 +1149,6 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="793716872548410480">તમારું ક્લિપબોર્ડ જોવા માટે <ph name="SHORTCUT_KEY_NAME" /> + V દબાવો. તમે કૉપિ કરેલી છેલ્લી 5 આઇટમ તમારા ક્લિપબોર્ડ પર સાચવવામાં આવી છે.</translation>
 <translation id="7942349550061667556">લાલ</translation>
-<translation id="7952747673138230804">Chrome OS શોધખોળ કરવાના નવા કન્ટેન્ટ માટે સૂચનો બતાવે છે. જો તમે વપરાશનો ડેટા શેર કરવાનું પસંદ કર્યું હોય, તો જ તે ક્વૉલિટીને બહેતર બનાવવા માટે આંકડા મોકલે છે. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
 <translation id="7968693143708939792">ફોલ્ડર પસંદ કરો...</translation>
 <translation id="7977927628060636163">મોબાઇલ નેટવર્કની શોધ કરી રહ્યું છે...</translation>

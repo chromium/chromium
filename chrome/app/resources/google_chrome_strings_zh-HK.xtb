@@ -15,7 +15,6 @@
 <translation id="1178374936842835197">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />ChromeOS Flex 設定<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome 建議您不要下載或開啟此檔案</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
-<translation id="1293325835983155583">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Google Chrome 作業系統條款》。</translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
 <translation id="1335640173511558774">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Google ChromeOS Flex 條款》。</translation>
 <translation id="137466361146087520">Google Chrome 測試版</translation>
@@ -50,7 +49,6 @@
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="2018528049276128029">每個設定檔都會保存本身專屬的 Chrome 資料，例如書籤、記錄、密碼等</translation>
-<translation id="2063848847527508675">必須重新啟動 Chrome 作業系統，才能套用更新。</translation>
 <translation id="207902854391093810">在試用期間，「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 條款</translation>
 <translation id="2094919256425865063">仍要退出 Chrome 嗎？</translation>
@@ -79,7 +77,6 @@
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="2622559029861875898">Chrome 無法檢查更新，請檢查互聯網連線。</translation>
-<translation id="2644798301485385923">Chrome 作業系統</translation>
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2689103672227170538">擴充功能已變更 Chrome 啟動時所顯示的網頁。</translation>
@@ -116,7 +113,6 @@
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將於 1 秒後重新啟動}other{Chrome 將於 # 秒後重新啟動}}</translation>
-<translation id="3395323229510056640">取得 Chrome 作業系統相關說明</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
 <translation id="3428747202529429621">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
 <translation id="3434246496373299699">Chrome 可在您使用 Google 帳戶登入時檢查密碼</translation>
@@ -134,7 +130,6 @@
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
 <translation id="3718181793972440140">這會刪除此裝置上的 1 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="3735758079232443276">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chrome 啟動時所顯示的網頁。</translation>
-<translation id="3779473566290487688">如要取得日後的 Google Chrome 更新，您將需要 OS X 10.11 或以上版本。此電腦正在使用 OS X 10.10。</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步您的資料。</translation>
 <translation id="3835168907083856002">此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
@@ -156,19 +151,14 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />需要使用什麼資料：<ph name="END_BOLD" />您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4293420128516039005">登入即可在不同裝置上同步和設定個人化的 Chrome</translation>
-<translation id="4325083532956419387">Chrome 作業系統版本</translation>
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
-<translation id="4331809312908958774">Chrome 作業系統</translation>
 <translation id="4335235004908507846">Chrome 能確保系統安全，避免發生資料外洩或擴充程式損毀等問題</translation>
 <translation id="4343195214584226067">已將 <ph name="EXTENSION_NAME" /> 加到 Chrome</translation>
 <translation id="4384570495110188418">由於您尚未登入帳戶，因此 Chrome 無法檢查密碼</translation>
-<translation id="4407807842708586359">Google Chrome 作業系統</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
 <translation id="4459234553906210702">「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
-<translation id="4480040274068703980">登入時發生錯誤，因此 Chrome 作業系統無法同步處理您的數據。</translation>
-<translation id="4521185804071812304">選用：將診斷和使用情況資料自動傳送給 Google，協助改善 Chrome 作業系統的功能和效能。</translation>
 <translation id="4561051373932531560">Google Chrome 可讓您按一下網頁上的電話號碼，隨即透過 Skype 撥打電話！</translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
@@ -191,7 +181,6 @@
 <translation id="4969674060580488087">您的帳戶登入詳情已過時，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
 <translation id="4970761609246024540">歡迎使用 Chrome 設定檔</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5062123544085870375">重新啟動 Chrome 作業系統</translation>
 <translation id="5132929315877954718">為您的 Google Chrome 探索各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="5139423532931106058">自訂您的 Chrome 設定檔</translation>
 <translation id="5163087008893166964">歡迎使用 Chrome；開咗新瀏覽器視窗</translation>
@@ -218,7 +207,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 將於 1 秒後重新啟動}other{Google Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="5727531838415286053">如果 Chrome 隨機將您加入啟用的試用功能中，您的瀏覽紀錄會影響系統顯示的廣告，以及以下推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="5736850870166430177">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
-<translation id="573759479754913123">關於 Chrome 作業系統</translation>
 <translation id="5756509061973259733">此裝置上已有此帳戶的 Chrome 設定檔</translation>
 <translation id="5763280521700030406">由於此檔案太大，無法進行安全檢查，因此已被 Chrome 封鎖。請嘗試使用大小不超過 50 MB 的檔案再試一次</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -239,12 +227,10 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6291089322031436445">Chrome 開發人員應用程式</translation>
 <translation id="6291549208091401781">電腦上的所有使用者均安裝了 Google Chrome。</translation>
-<translation id="6368958679917195344">Chrome 作業系統的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
 <translation id="6412673304250309937">使用儲存在 Chrome 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="6418662306461808273">要切換至現有 Chrome 設定檔嗎？</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據您身處的環境製作 3D 地圖</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
-<translation id="6568793831116033768">Chrome 作業系統</translation>
 <translation id="659498884637196217">前往此裝置的「Google 密碼管理工具」進行更新</translation>
 <translation id="6632473616050862500">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
 <translation id="6676384891291319759">連線到互聯網</translation>
@@ -254,7 +240,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6739177684496155661">要透過新的 Chrome 設定檔繼續瀏覽嗎？</translation>
 <translation id="6750954913813541382">Chrome 會將您在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
-<translation id="6814748008107187409">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />Chrome 作業系統設定<ph name="LINK_END" />。</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
@@ -283,13 +268,10 @@ Google Chrome 無法復原您的設定。</translation>
 
 您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="7398801000654795464">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
-<translation id="7408085963519505752">Chrome 作業系統條款</translation>
 <translation id="7410958280246779049">由於此檔案不安全，因此 Chrome 已封鎖此檔案</translation>
-<translation id="7419046106786626209">您的網域無法使用「同步功能」，因此 Chrome 作業系統無法同步處理您的數據。</translation>
 <translation id="7481213027396403996">取得 Chrome 最強大的安全防護</translation>
 <translation id="7486227612705979895">Chrome 會存取您的「雲端硬碟」，然後在網址列提出建議</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
-<translation id="7573289029918943991">如要查看裝置是否已更新，請前往 <ph name="LINK_BEGIN" />Chrome 作業系統設定<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">您的帳戶登入詳情尚未更新，因此 Google Chrome 無法同步處理您的數據。</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
@@ -297,7 +279,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7641148173327520642">系統管理員已設定由 Google Chrome 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7651907282515937834">Chrome 企業標誌</translation>
 <translation id="7655455401911432608">您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
-<translation id="7665553140559834626">重新啟動以更新 &amp;Chrome 作業系統</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7761834446675418963">按一下您的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>
@@ -313,7 +294,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7930071585467473040">Google Chrome 正在嘗試複製密碼。</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
 <translation id="7962410387636238736">由於 Google Chrome 將停止支援 Windows XP 和 Windows Vista，因此這部電腦不會再收到 Google Chrome 更新。</translation>
-<translation id="79947657522496226">「Chrome 作業系統」的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="8005666035647241369">儲存至此裝置的「Google 密碼管理工具」</translation>
 <translation id="8008534537613507642">重新安裝 Chrome</translation>
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
@@ -364,7 +344,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8986207147630327271">您即將在此瀏覽器中新增工作設定檔，並只將工作設定檔的控制權授予管理員。</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
-<translation id="9026991721384951619">您的帳戶登入詳情尚未更新，因此 Chrome 作業系統無法同步處理您的數據。</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
 <translation id="9067395829937117663">Google Chrome 只能在 Windows 7 或以上作業系統中執行。</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>

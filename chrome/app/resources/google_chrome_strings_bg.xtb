@@ -14,7 +14,6 @@
 <ph name="LINK_BEGIN" />настройките на ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome препоръчва да не изтегляте, нито да отваряте този файл</translation>
 <translation id="1278833599417554002">Повторно стартиране за актуализиране на &amp;Chrome</translation>
-<translation id="1293325835983155583"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google Chrome OS.</translation>
 <translation id="1302523850133262269">Моля, изчакайте, докато Chrome инсталира най-новите системни актуализации.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google ChromeOS Flex.</translation>
 <translation id="137466361146087520">Google Chrome бета</translation>
@@ -50,7 +49,6 @@
 <translation id="1877026089748256423">Chrome не е актуален</translation>
 <translation id="1919130412786645364">Разрешаване на влизането в Chrome</translation>
 <translation id="2018528049276128029">Всеки потребителски профил съхранява своя собствена информация в Chrome, като например отметки, история, пароли и др.</translation>
-<translation id="2063848847527508675">Chrome OS трябва да се рестартира, за да приложи актуализацията.</translation>
 <translation id="207902854391093810">Когато експериментите са включени, функцията за измерване на рекламите дава възможност на посещаваните от вас сайтове да искат от Chrome информация, с чиято помощ да измерват ефективността на рекламите си. Тази функция ограничава проследяването в различни сайтове, като между тях се прехвърля възможно най-малко информация.</translation>
 <translation id="2094648590148273905">Общи условия на ChromeOS Flex</translation>
 <translation id="2094919256425865063">Искате ли да затворите Chrome въпреки това?</translation>
@@ -79,7 +77,6 @@
 <translation id="2580411288591421699">Не може да се инсталира същата версия на Google Chrome, която се използва понастоящем. Моля, затворете браузъра и опитайте отново.</translation>
 <translation id="2586406160782125153">Данните за сърфирането ви ще се изтрият от това устройство. За да ги извлечете по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="2622559029861875898">Chrome не може да провери за актуализации. Проверете връзката си с интернет.</translation>
-<translation id="2644798301485385923">Система Chrome OS</translation>
 <translation id="2652691236519827073">Отваряне на връзката в нов &amp;раздел на Chrome</translation>
 <translation id="2665296953892887393">Помогнете ни да подобрим Google Chrome, като ни изпращате <ph name="UMA_LINK" /> му и сигнали за сривове</translation>
 <translation id="2689103672227170538">Това разширение промени страницата, която се показва при стартиране на Chrome.</translation>
@@ -116,7 +113,6 @@
 <translation id="3245429137663807393">Ако споделяте и отчети за употребата на Chrome, те ще включват посещаваните от вас URL адреси</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ще се стартира отново сега}=1{Chrome ще се стартира отново след 1 секунда}other{Chrome ще се стартира отново след # секунди}}</translation>
-<translation id="3395323229510056640">Получаване на помощ за Chrome OS</translation>
 <translation id="3396977131400919238">По време на инсталирането възникна грешка в операционната система. Моля, изтеглете Google Chrome отново.</translation>
 <translation id="3428747202529429621">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="3434246496373299699">Chrome може да проверява паролите ви, когато влезете с профила си в Google</translation>
@@ -134,7 +130,6 @@
 <translation id="3716540481907974026">Версия на ChromeOS Flex</translation>
 <translation id="3718181793972440140">1 елемент ще се изтрие от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Разширението „<ph name="EXTENSION_NAME" />“ промени страницата, която се показва при стартиране на Chrome.</translation>
-<translation id="3779473566290487688">За да получавате бъдещи актуализации на Google Chrome, трябва да използвате OS X 10.11 или по-нова версия. Компютърът ви работи с OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex не успя да синхронизира данните ви поради грешка при влизане в профила.</translation>
 <translation id="3835168907083856002">Това ще създаде нов потребителски профил в Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -156,19 +151,14 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Какви данни се използват<ph name="END_BOLD" />: Вашата история на сърфиране – списък на сайтовете, които сте посетили чрез Chrome на това устройство.</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4293420128516039005">Влезте в профила си, за да синхронизирате и персонализирате Chrome на всичките си устройства</translation>
-<translation id="4325083532956419387">Версия на Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4335235004908507846">Chrome може да ви защити от нарушения на сигурността на данните, злонамерени разширения и др.</translation>
 <translation id="4343195214584226067">Разширението <ph name="EXTENSION_NAME" /> бе добавено към Chrome</translation>
 <translation id="4384570495110188418">Chrome не може да провери паролите ви, защото не сте влезли в профила си</translation>
-<translation id="4407807842708586359">Google Chrome OS</translation>
 <translation id="4427306783828095590">Режимът за подобрена защита предприема повече действия за блокиране на фишинг атаки и злонамерен софтуер</translation>
 <translation id="4450664632294415862">Chrome – Вход в мрежата – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Извършва се друго действие, свързано с Google Chrome. Моля, опитайте отново по-късно.</translation>
 <translation id="4459234553906210702">Функцията за измерване на рекламите дава възможност на посещаваните от вас сайтове да искат от Chrome информация, с чиято помощ да измерват ефективността на рекламите си. Тази функция ограничава проследяването в различни сайтове, като между тях се прехвърля възможно най-малко информация.</translation>
-<translation id="4480040274068703980">Chrome OS не можа да синхронизира данните ви поради грешка при влизане в профила.</translation>
-<translation id="4521185804071812304">По избор: Помогнете за подобряването на функциите и ефективността на Chrome OS, като автоматично изпращате до Google данни за диагностиката и употребата.</translation>
 <translation id="4561051373932531560">Google Chrome ви позволява да кликнете върху телефонен номер в мрежата и да се обадите до него със Skype!</translation>
 <translation id="4567424176335768812">Влезли сте като <ph name="USER_EMAIL_ADDRESS" />. Сега имате достъп до отметките, историята и другите си настройки на всички устройства, на които сте влезли.</translation>
 <translation id="4571503333518166079">Към настройките за известия в Chrome</translation>
@@ -191,7 +181,6 @@
 <translation id="4969674060580488087">ChromeOS Flex не успя да синхронизира данните ви, защото потребителското име и паролата за вход в профила ви не са актуални.</translation>
 <translation id="4970761609246024540">Добре дошли в потребителските профили в Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5062123544085870375">Рестартиране на Chrome OS</translation>
 <translation id="5132929315877954718">Открийте отлични приложения, игри, разширения и теми за Google Chrome.</translation>
 <translation id="5139423532931106058">Персонализиране на потребителския ви профил в Chrome</translation>
 <translation id="5163087008893166964">Добре дошли в Chrome. Отворен е нов прозорец на браузъра</translation>
@@ -214,7 +203,6 @@
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ще се рестартира след 1 секунда}other{Google Chrome ще се рестартира след # секунди}}</translation>
 <translation id="5727531838415286053">Aко Chrome ви е добавил на случаен принцип към активен експеримент, историята ви на сърфиране влияе върху показваните ви реклами и прогнозираните по-долу интереси. С цел защита на поверителността ви Chrome автоматично изтрива интересите ви всеки месец. Те се опресняват, освен ако не ги премахнете.</translation>
 <translation id="5736850870166430177">Ако сайт се опита да открадне паролата ви или изтеглите опасен файл, Chrome може също да изпрати до Безопасно сърфиране URL адресите и част от съдържанието на страницата</translation>
-<translation id="573759479754913123">Всичко за Chrome OS</translation>
 <translation id="5756509061973259733">На това устройство вече съществува потребителски профил в Chrome за този профил</translation>
 <translation id="5763280521700030406">Chrome блокира този файл, защото е твърде голям за проверка на сигурността. Опитайте отново с файл до 50 МБ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -235,12 +223,10 @@
 <translation id="6247557882553405851">Google Мениджър на паролите</translation>
 <translation id="6291089322031436445">Приложения за Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome вече е инсталиран за всички потребители на компютъра ви.</translation>
-<translation id="6368958679917195344">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6412673304250309937">Проверка на URL адресите в съхраняван в Chrome списък с опасни сайтове. Ако сайт се опита да открадне паролата ви или изтеглите опасен файл от сайт, Chrome може също така да изпрати до „Безопасно сърфиране“ URL адресите и част от съдържанието на страницата.</translation>
 <translation id="6418662306461808273">Искате ли да превключите към съществуващ потребителски профил в Chrome?</translation>
 <translation id="6506909944137591434">Chrome се нуждае от разрешение за достъп до камерата, за да създаде триизмерна карта на заобикалящата ви среда</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6568793831116033768">Система Chrome OS</translation>
 <translation id="659498884637196217">В мениджъра на паролите в Google на това устройство</translation>
 <translation id="6632473616050862500">ChromeOS Flex съществува благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6676384891291319759">Достъп до интернет</translation>
@@ -250,7 +236,6 @@
 <translation id="6739177684496155661">Искате ли да продължите с нов потребителски профил в Chrome?</translation>
 <translation id="6750954913813541382">С цел поправка на правописни грешки Chrome изпраща до Google текста, който въвеждате в браузъра</translation>
 <translation id="677276454032249905">Искате ли да излезете от Chrome въпреки това?</translation>
-<translation id="6814748008107187409">Ако дадена настройка не се показва на тази страница, потърсете в <ph name="LINK_BEGIN" />настройките на Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Правило за Google Chrome Canary за допускане на входящия трафик за mDNS.</translation>
 <translation id="6881299373831449287">Chrome се актуализира</translation>
 <translation id="6885412569789873916">Приложения за Chrome бета</translation>
@@ -279,13 +264,10 @@
 
 За този профил може да важат разрешенията, които вече сте предоставили на уебсайтове и приложения. Имате възможност да управлявате профилите си в Google в <ph name="SETTINGS_LINK_BEGIN" />Настройки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Бяхте влезли в Chrome като <ph name="USER_EMAIL_ADDRESS" />. Моля, използвайте същия профил, за да влезете отново.</translation>
-<translation id="7408085963519505752">Общи условия на Chrome OS</translation>
 <translation id="7410958280246779049">Chrome блокира този файл, защото е опасен</translation>
-<translation id="7419046106786626209">Chrome OS не можа да синхронизира данните ви, защото тази функция не е налице за домейна ви.</translation>
 <translation id="7481213027396403996">Получете най-високото ниво на сигурност на Chrome</translation>
 <translation id="7486227612705979895">Chrome ще осъществява достъп до хранилището ви в Диск, за да извежда предложения в адресната лента</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7573289029918943991">За да разберете дали устройството ви е актуално, отворете <ph name="LINK_BEGIN" />настройките на Chrome OS<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome не можа да синхронизира данните ви, защото потребителското име и паролата за вход в профила ви не са актуални.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Добре дошли в Chrome</translation>
@@ -293,7 +275,6 @@
 <translation id="7641148173327520642">Системният ви администратор е конфигурирал Google Chrome да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
 <translation id="7655455401911432608">Вашата история на сърфиране – списък на сайтовете, които сте посетили чрез Chrome на това устройство.</translation>
-<translation id="7665553140559834626">Повторно стартиране за актуализиране на &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Инсталационната програма не можа да създаде временна директория. Моля, проверете дали има свободно дисково пространство и разрешение за инсталиране на софтуер.</translation>
 <translation id="7761834446675418963">Кликнете върху името си, за да отворите Chrome и да започнете да сърфирате.</translation>
 <translation id="7777080907402804672">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google. По всяко време можете да изключите тази функция от настройките.</translation>
@@ -309,7 +290,6 @@
 <translation id="7930071585467473040">Google Chrome се опитва да копира паролите.</translation>
 <translation id="7951272445806340501">ChromeOS Flex трябва да се рестартира, за да бъде приложена актуализацията.</translation>
 <translation id="7962410387636238736">От сега нататък този компютър няма да получава актуализации на Google Chrome, тъй като Windows XP и Windows Vista вече не се поддържат</translation>
-<translation id="79947657522496226">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8005666035647241369">Към мениджъра на паролите в Google на това устройство</translation>
 <translation id="8008534537613507642">Повторно инсталиране на Chrome</translation>
 <translation id="8013993649590906847">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google.</translation>
@@ -360,7 +340,6 @@
 <translation id="8986207147630327271">Добавяте служебен потребителски профил към този браузър и предоставяте на администратора си контрол само над него.</translation>
 <translation id="8989968390305463310">Историята ви на сърфиране влияе върху показваните ви реклами и прогнозираните по-долу интереси. С цел защита на поверителността ви Chrome автоматично изтрива интересите ви всеки месец. Те могат да се опресняват, освен ако не ги премахнете.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Налице е актуализация за Chrome}=1{Налице е актуализация за Chrome}other{Налице е актуализация за Chrome от # дни}}</translation>
-<translation id="9026991721384951619">Chrome OS не можа да синхронизира данните ви, защото потребителското име и паролата за вход в профила ви не са актуални.</translation>
 <translation id="9053892488859122171">Система ChromeOS Flex</translation>
 <translation id="9067395829937117663">За Google Chrome се изисква Windows 7 или по-нова версия.</translation>
 <translation id="911206726377975832">Да се изтрият ли и данните от сърфирането?</translation>

@@ -100,7 +100,6 @@
 <translation id="124116460088058876">Інші мови</translation>
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Жирний</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях ОС Chrome</translation>
 <translation id="1250759482327835220">Щоб наступного разу платити швидше, збережіть дані картки, ім’я та платіжну адресу в обліковому записі Google.</translation>
 <translation id="1252799212227771492">Кнопка "Створити таблицю"; натисніть Enter, щоб швидко створити нову таблицю Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронізовано)</translation>
@@ -384,7 +383,6 @@
 <translation id="1919345977826869612">Оголошення</translation>
 <translation id="1919367280705858090">Як виправити конкретну помилку</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Немає}=1{1 сайт}one{# сайт}few{# сайти}many{# сайтів}other{# сайту}}</translation>
-<translation id="1923390796829649802">Кнопка "Керувати налаштуваннями спеціальних можливостей"; натисніть Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях ОС Chrome.</translation>
 <translation id="1924727005275031552">Нові дані</translation>
 <translation id="1927439593081478069">Кнопка "Виконати перевірку безпеки Chrome"; натисніть Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="1939175642807587452">Може просити дозвіл надсилати сповіщення</translation>
@@ -643,7 +641,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб очистити історію веб-перегляду, файли cookie, кеш та інше в налаштуваннях Chrome</translation>
 <translation id="2650446666397867134">У доступі до файлу відмовлено</translation>
 <translation id="2653659639078652383">Надіслати</translation>
-<translation id="2659491813326907275">Персоналізуйте інструменти спеціальних можливостей у налаштуваннях ОС Chrome</translation>
 <translation id="2660779039299703961">Подія</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />)}=2{2 паролі (для <ph name="DOMAIN_LIST" />)}one{# пароль (для <ph name="DOMAIN_LIST" />)}few{# паролі (для <ph name="DOMAIN_LIST" />)}many{# паролів (для <ph name="DOMAIN_LIST" />)}other{# пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Верх</translation>
@@ -861,6 +858,7 @@
 <translation id="3295444047715739395">Переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
 <translation id="3304073249511302126">пошук пристроїв із Bluetooth</translation>
+<translation id="33073482541490531">Введений пароль розкрито через порушення безпеки даних. Менеджер паролів радить негайно його змінити.</translation>
 <translation id="3308006649705061278">Організаційний підрозділ (OU)</translation>
 <translation id="3308738399950580893">оголошення</translation>
 <translation id="3320021301628644560">Додати платіжну адресу</translation>
@@ -995,6 +993,7 @@
 <translation id="3658742229777143148">Редакція</translation>
 <translation id="3664782872746246217">Ключові слова:</translation>
 <translation id="3667704023705708645">Венчурний капітал</translation>
+<translation id="367108335512738711">Закладки Chrome</translation>
 <translation id="3671540257457995106">Дозволити змінити розмір?</translation>
 <translation id="3675563144891642599">Третій рулон</translation>
 <translation id="3676592649209844519">Ідентифікатор пристрою:</translation>
@@ -1491,6 +1490,7 @@
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5040262127954254034">Конфіденційність</translation>
 <translation id="5043480802608081735">Скопійоване посилання</translation>
+<translation id="5044545992476246592">Введений пароль розкрито через порушення безпеки даних. Google Асистент може змінити його автоматично.</translation>
 <translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="5051305769747448211">Виступи коміків наживо</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Щоб надіслати цей файл через функцію "Передавання поблизу", звільніть місце (<ph name="DISK_SPACE_SIZE" />) на пристрої}one{Щоб надіслати ці файли через функцію "Передавання поблизу", звільніть місце (<ph name="DISK_SPACE_SIZE" />) на пристрої}few{Щоб надіслати ці файли через функцію "Передавання поблизу", звільніть місце (<ph name="DISK_SPACE_SIZE" />) на пристрої}many{Щоб надіслати ці файли через функцію "Передавання поблизу", звільніть місце (<ph name="DISK_SPACE_SIZE" />) на пристрої}other{Щоб надіслати ці файли через функцію "Передавання поблизу", звільніть місце (<ph name="DISK_SPACE_SIZE" />) на пристрої}}</translation>
@@ -1503,6 +1503,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />перевірити адресу проксі-сервера<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Десятий рулон</translation>
 <translation id="507130231501693183">Поштова скринька 4</translation>
+<translation id="5078060223219502807">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів радить негайно його змінити й перевірити збережені паролі.</translation>
 <translation id="5086225927071063542">Розподілені та хмарні обчислення</translation>
 <translation id="5087286274860437796">Сертифікат сервера зараз недійсний.</translation>
 <translation id="5087580092889165836">Додати картку</translation>
@@ -2019,6 +2020,7 @@
 <translation id="6579630537141957243">Підключити пристрій MIDI?</translation>
 <translation id="6579990219486187401">Світло-рожевий</translation>
 <translation id="6583674473685352014">B6 (конверт)</translation>
+<translation id="6585526963651937128">Історія Chrome</translation>
 <translation id="6587182488465657433">Веб-переглядач Chrome виявив, що введений пароль розкрито через порушення безпеки даних. Щоб захистити свої облікові записи, радимо негайно змінити його й перевірити надійність збережених паролів.</translation>
 <translation id="6587923378399804057">Скопійоване посилання</translation>
 <translation id="6591833882275308647">Пристроєм <ph name="DEVICE_TYPE" /> не керує адміністратор</translation>
@@ -2127,6 +2129,7 @@
 <translation id="691024665142758461">завантажити кілька файлів</translation>
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6916954549222464607">Фінансове планування та менеджмент</translation>
+<translation id="6917795328362592458">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів радить перевірити збережені паролі.</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
 <translation id="6939469646605424232">Телевізійні драми</translation>
 <translation id="6944692733090228304">Ви ввели пароль на сайті, яким не керує <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
@@ -2804,6 +2807,7 @@
 <translation id="8805819170075074995">Елемент списку <ph name="LANGUAGE_ID" />: елемент ігнорується, оскільки його також включено в правило SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Косметика для ванної та догляду за тілом</translation>
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
+<translation id="8808828119384186784">Налаштування Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="882338992931677877">Лоток для ручного введення</translation>

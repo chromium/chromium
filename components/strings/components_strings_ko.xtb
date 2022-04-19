@@ -100,7 +100,6 @@
 <translation id="124116460088058876">다른 언어</translation>
 <translation id="1243027604378859286">작성자:</translation>
 <translation id="1246424317317450637">굵게</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS 설정에서 접근성 도구를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="1250759482327835220">다음번에 더 빠르게 결제할 수 있도록 Google 계정에 카드, 이름, 청구서 수신 주소를 저장하세요.</translation>
 <translation id="1252799212227771492">시트 만들기 버튼, Enter를 눌러 빠르게 새 Google 시트 만들기</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" />(동기화됨)</translation>
@@ -139,6 +138,7 @@
 <translation id="1323433172918577554">더보기</translation>
 <translation id="132390688737681464">주소 저장 및 자동 입력</translation>
 <translation id="1330449323196174374">왼쪽 게이트 폴드</translation>
+<translation id="1333745675627230582">Chrome 공룡 게임 플레이</translation>
 <translation id="1333989956347591814">다음의 관계자는 내 활동 내역을 <ph name="BEGIN_EMPHASIS" />확인할 수도 있습니다<ph name="END_EMPHASIS" />.
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />방문한 웹사이트
@@ -379,7 +379,6 @@
 <translation id="1919345977826869612">광고</translation>
 <translation id="1919367280705858090">특정 오류 메시지에 관한 도움말 보기</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{없음}=1{사이트 1개}other{사이트 #개}}</translation>
-<translation id="1923390796829649802">접근성 설정 관리 버튼, Chrome OS 설정의 접근성 도구를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="1924727005275031552">새로운 주소</translation>
 <translation id="1927439593081478069">Chrome 안전 확인 실행 버튼, Chrome 설정에서 안전 확인을 실행하려면 Enter를 누르세요</translation>
 <translation id="1939175642807587452">알림 전송을 요청할 수 있음</translation>
@@ -638,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="2650446666397867134">파일 액세스 거부됨</translation>
 <translation id="2653659639078652383">제출</translation>
-<translation id="2659491813326907275">Chrome OS 설정에서 접근성 도구 맞춤설정</translation>
 <translation id="2660779039299703961">이벤트</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{없음}=1{비밀번호 1개(도메인: <ph name="DOMAIN_LIST" />)}=2{비밀번호 2개(도메인: <ph name="DOMAIN_LIST" />)}other{비밀번호 #개(도메인: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">맨 위</translation>
@@ -742,6 +740,7 @@
 <translation id="2972581237482394796">다시 실행(&amp;R)</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />이(가) 현재 선택되어 있습니다. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">오페라</translation>
+<translation id="2983666748527428214">시크릿 탭 열기</translation>
 <translation id="2985306909656435243">선택하면 이 기기에 카드 사본이 저장되어 Chromium에서 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="2985398929374701810">올바른 주소를 입력하세요.</translation>
 <translation id="2986368408720340940">사용할 수 없는 수령 방법입니다. 다른 방법을 선택하세요.</translation>
@@ -855,6 +854,7 @@
 <translation id="3295444047715739395">Chrome 설정에서 비밀번호를 확인하고 관리하세요.</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
 <translation id="3304073249511302126">블루투스 검색</translation>
+<translation id="33073482541490531">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기를 바랍니다.</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
 <translation id="3308738399950580893">광고</translation>
 <translation id="3320021301628644560">청구지 주소 추가</translation>
@@ -989,6 +989,7 @@
 <translation id="3658742229777143148">개정</translation>
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3667704023705708645">벤처 자본</translation>
+<translation id="367108335512738711">Chrome 북마크</translation>
 <translation id="3671540257457995106">크기 조절을 허용하시겠습니까?</translation>
 <translation id="3675563144891642599">3번째 롤</translation>
 <translation id="3676592649209844519">기기 ID:</translation>
@@ -1480,6 +1481,7 @@
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="5043480802608081735">복사한 링크</translation>
+<translation id="5044545992476246592">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. Google 어시스턴트가 비밀번호를 자동으로 바꿀 수 있습니다.</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="5051305769747448211">라이브 코미디</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
@@ -1492,6 +1494,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />프록시 주소 확인<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">10번째 롤</translation>
 <translation id="507130231501693183">메일박스 4</translation>
+<translation id="5078060223219502807">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정 보호를 위해 비밀번호 관리자에서 지금 바로 비밀번호를 변경하고 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="5086225927071063542">분산 및 클라우드 컴퓨팅</translation>
 <translation id="5087286274860437796">서버의 인증서가 현재 유효하지 않습니다.</translation>
 <translation id="5087580092889165836">카드 추가</translation>
@@ -1503,6 +1506,7 @@
 <translation id="5097099694988056070">CPU/RAM 사용 등의 기기 통계</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">안전하지 않은 사이트</translation>
+<translation id="5109892411553231226">결제 수단 관리</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">트레이 18</translation>
 <translation id="5114987907971894280">가상 현실</translation>
@@ -1750,6 +1754,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />을(를) 입력하시겠습니까?</translation>
 <translation id="5804241973901381774">권한</translation>
+<translation id="5808435672482059465">Chrome 방문 기록 보기</translation>
 <translation id="5808542072418270309">시뮬레이션 게임</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />에 대한 연결이 더 이상 사용되지 않는 암호화 기술을 사용하여 암호화됩니다.</translation>
 <translation id="5812947184178430888">Chrome에서 보안 관련 활동을 신고한 경우 활동에 관한 데이터가 관리자에게 전송됩니다. 여기에는 Chrome에서 방문한 페이지 URL, 파일 이름 또는 메타데이터와 더불어 웹 기반 애플리케이션, 기기, Chrome에 로그인할 때 사용한 사용자 이름이 포함될 수 있습니다.</translation>
@@ -2006,6 +2011,7 @@
 <translation id="6579630537141957243">MIDI 기기에 연결하시겠습니까?</translation>
 <translation id="6579990219486187401">연한 분홍색</translation>
 <translation id="6583674473685352014">B6(봉투)</translation>
+<translation id="6585526963651937128">Chrome 방문 기록</translation>
 <translation id="6587182488465657433">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 지금 바로 비밀번호를 변경한 후 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="6587923378399804057">복사한 링크</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
@@ -2114,6 +2120,7 @@
 <translation id="691024665142758461">여러 파일 다운로드</translation>
 <translation id="6915804003454593391">사용자:</translation>
 <translation id="6916954549222464607">재무 설계 및 관리</translation>
+<translation id="6917795328362592458">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정 보호를 위해 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="6934672428414710184">Google 계정에 등록된 이름입니다.</translation>
 <translation id="6939469646605424232">TV 드라마</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />에서 관리하지 않는 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
@@ -2789,6 +2796,7 @@
 <translation id="8805819170075074995">목록 항목 '<ph name="LANGUAGE_ID" />': SpellcheckLanguage 정책에도 포함되었기 때문에 항목이 무시되었습니다.</translation>
 <translation id="8806285662264631610">목욕 및 바디 제품</translation>
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
+<translation id="8808828119384186784">Chrome 설정</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 Chrome을 업데이트하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="882338992931677877">수동 슬롯</translation>

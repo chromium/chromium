@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Revize hardwaru</translation>
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
 <translation id="1908234395526491708">Selhání požadavků UDP</translation>
-<translation id="1930797645656624981">Služba metod zadávání systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1951012854035635156">Asistent</translation>
+<translation id="1977994649430373166">Profilová fotka Google</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="1999615961760456652">Captive portál</translation>
 <translation id="2006864819935886708">Připojení</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Je potřeba vybrat alespoň jedno album v Galerii umění</translation>
 <translation id="2230005943220647148">Stupně Celsia</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Přepínač podsvícení klávesnice</translation>
 <translation id="2240366984605217732">Přepnout rozvržení</translation>
 <translation id="225692081236532131">Stav aktivace</translation>
 <translation id="2287186687001756809">Žádné snímky. Fotky můžete přidat na adrese <ph name="LINK" />.</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Nelze se připojit k internetu.</translation>
 <translation id="2570743873672969996">Běží test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Konfiguraci lze provést v sekci Nastavení</translation>
-<translation id="2585245331261708204">Novinky v Chrome OS</translation>
 <translation id="2619761439309613843">Denní obnovení</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2640549051766135490">Je vybráno album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4744944742468440486">Informace související s vaším výběrem</translation>
-<translation id="475869545581454722">Heslo Chrome OS byla aktualizováno</translation>
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4782311465517282004">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotka</translation>
@@ -629,6 +628,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Zapnout režim automatických barev</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
+<translation id="8045012663542226664">Ztlumení mikrofonu</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="8082366717211101304">Z aplikací pro Android nelze přeložit záznamy DNS</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
@@ -739,6 +739,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Z aplikací pro Android nelze kontaktovat bránu</translation>
 <translation id="9211490828691860325">Všechny plochy</translation>
+<translation id="932327136139879170">Domovská stránka</translation>
 <translation id="939519157834106403">Identifikátor SSID</translation>
 <translation id="952992212772159698">Není aktivováno</translation>
 <translation id="960719561871045870">Kód operátora</translation>

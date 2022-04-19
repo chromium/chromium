@@ -27,6 +27,7 @@
 <translation id="2195025571279539885">Adakah anda mahu Chromium menawarkan halaman <ph name="LANGUAGE_NAME" /> dari tapak ini diterjemahkan pada masa akan datang?</translation>
 <translation id="2218146227246548550">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="2236584955986023187">Ini bermakna Chromium akan meminta laman desktop setiap masa.</translation>
+<translation id="2313870531055795960">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium. Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="2426113998523353159">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium.</translation>
 <translation id="2450140762465183767">Kini anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="2478931088402984578">Pilih <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -49,11 +50,13 @@
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Kini, anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
+<translation id="4654936625574199632">Untuk membantu dalam usaha meningkatkan apl, Chromium menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Hidupkan pengimbas Chromium</translation>
 <translation id="4736424910885271643">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chromium anda akan dikosongkan daripada peranti ini</translation>
 <translation id="4806326830773390517">Bantu tingkatkan Chromium dengan menghantar perangkaan penggunaan dan laporan ranap sistem kepada Google</translation>
 <translation id="4828317641996116749">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
 <translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemaskinian</translation>
+<translation id="4996471330284142407">Selesaikan lebih banyak tugas dengan Chromium yang mudah, selamat dan lebih pantas berbanding dahulu.</translation>
 <translation id="4999538639245140991">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Akaun Google anda.</translation>
 <translation id="5171868502429358653">Log Masuk ke Chromium</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
@@ -111,6 +114,15 @@
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="865600487977764604">Memastikan anda selamat pada Chromium dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>
 <translation id="8663480472502753423">Pastikan Chromium terkini</translation>
+<translation id="8747378496147986285">Apabila dihidupkan:
+<ph name="BEGIN_INDENT" />  • Bantu jadikan Chromium lebih baik untuk orang yang menggunakannya seperti yang anda lakukan.<ph name="END_INDENT" />
+
+Perkara yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" />  • Maklumat tentang penggunaan Chromium anda dihantar kepada Google, tetapi maklumat ini tidak terikat dengan anda.
+
+  • Jika Chromium ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
+
+  • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chromium.</translation>
 <translation id="894437814105052438">Apabila anda log keluar, Chromium tidak akan menyegerakkan sebarang data baharu ke Akaun Google anda. Data yang disegerakkan sebelumnya akan dikekalkan dalam akaun.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>

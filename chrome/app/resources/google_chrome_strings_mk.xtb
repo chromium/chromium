@@ -16,7 +16,6 @@
         поставките за ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">Chrome препорачува да не ја преземате или отворате датотекава</translation>
 <translation id="1278833599417554002">Рестартирајте за да се ажурира &amp;Chrome</translation>
-<translation id="1293325835983155583"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Google Chrome OS“.</translation>
 <translation id="1302523850133262269">Почекајте додека Chrome ги инсталира последните системски ажурирања.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Google ChromeOS Flex“.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -51,8 +50,8 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
+<translation id="1952239763774043237">За да добивате идни ажурирања на Google Chrome, потребен ви е macOS 10.13 или понова верзија. Компјутеров користи macOS 10.12.</translation>
 <translation id="2018528049276128029">Секој профил содржи сопствени податоци на Chrome, како обележувачи, историја, лозинки и друго</translation>
-<translation id="2063848847527508675">Оперативниот систем Chrome треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="207902854391093810">Кога пробните периоди се вклучени, мерењето на рекламите им овозможува на сајтовите што ги посетувате да бараат податоци од Chrome што му помагаат на сајтот да ја мери изведбата на своите реклами. Мерењето на рекламите го ограничува следењето меѓу сајтовите со префрлање што е можно помалку податоци меѓу сајтовите.</translation>
 <translation id="2094648590148273905">Услови за ChromeOS Flex</translation>
 <translation id="2094919256425865063">Сепак да се напушти Chrome?</translation>
@@ -81,7 +80,6 @@
 <translation id="2580411288591421699">Не може да се инсталира истата верзија на Google Chrome што работи во моментов. Затворете го Google Chrome и обидете се повторно.</translation>
 <translation id="2586406160782125153">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="2622559029861875898">Chrome не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
-<translation id="2644798301485385923">Систем Chrome OS</translation>
 <translation id="2652691236519827073">Отвори го линкот во нова &amp;картичка на Chrome</translation>
 <translation id="2665296953892887393">Помогнете да го подобриме Google Chrome со испраќање извештаи за падови и <ph name="UMA_LINK" /> до Google</translation>
 <translation id="2689103672227170538">Екстензијата ја смени страницата што се прикажува кога го стартувате Chrome.</translation>
@@ -118,7 +116,6 @@
 <translation id="3245429137663807393">Ако ги споделувате и извештаите за користењето на Chrome, тие ги содржат URL-адресите што ги посетувате</translation>
 <translation id="3360895254066713204">Помошник на Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ќе се рестартира сега}=1{Chrome ќе се рестартира по 1 секунда}one{Chrome ќе се рестартира по # секунда}other{Chrome ќе се рестартира по # секунди}}</translation>
-<translation id="3395323229510056640">Добијте помош за Chrome OS</translation>
 <translation id="3396977131400919238">Се појави грешка во оперативниот систем додека се инсталираше. Преземете го Google Chrome повторно.</translation>
 <translation id="3428747202529429621">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени</translation>
 <translation id="3434246496373299699">Chrome може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google</translation>
@@ -136,7 +133,6 @@
 <translation id="3716540481907974026">Верзија на ChromeOS Flex</translation>
 <translation id="3718181793972440140">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Екстензијата „<ph name="EXTENSION_NAME" />“ ја смени страницата што се прикажува кога го стартувате Chrome.</translation>
-<translation id="3779473566290487688">За да добивате идни ажурирања на Google Chrome, потребен ви е OS X 10.11 или понова верзија. Компјутеров користи OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex не може да ги синхронизира вашите податоци поради грешка при најавување.</translation>
 <translation id="3835168907083856002">Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -158,19 +154,14 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Кои податоци се користат:<ph name="END_BOLD" /> вашата историја на прелистувањето, евиденцијата на сајтовите што сте ги посетиле со Chrome на овој уред.</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
 <translation id="4293420128516039005">Најавете се за да го синхронизирате и персонализирате Chrome на сите ваши уреди</translation>
-<translation id="4325083532956419387">Верзија на Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4335235004908507846">Chrome може да ве штити од упад во податоците, злонамерни екстензии и друго</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> е додадена на Chrome</translation>
 <translation id="4384570495110188418">Chrome не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
-<translation id="4407807842708586359">Google Chrome OS</translation>
 <translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4450664632294415862">Chrome - Мрежно најавување - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Во тек е друга операција на Google Chrome. Обидете се повторно подоцна.</translation>
 <translation id="4459234553906210702">Мерењето на рекламите им овозможува на сајтовите што ги посетувате да бараат податоци од Chrome што му помагаат на сајтот да ја мери изведбата на своите реклами. Мерењето на рекламите го ограничува следењето меѓу сајтовите со префрлање што е можно помалку податоци меѓу сајтовите.</translation>
-<translation id="4480040274068703980">Chrome OS не може да ги синхронизира вашите податоци поради грешка при пријавувањето.</translation>
-<translation id="4521185804071812304">Незадолжително: помогнете да се подобрат функциите и изведбата на Chrome OS со автоматско испраќање дијагностички податоци и податоци за користењето до Google.</translation>
 <translation id="4561051373932531560">Google Chrome ви овозможува да кликнете на телефонски број на интернет и да го повикате со Skype!</translation>
 <translation id="4567424176335768812">Најавени сте како <ph name="USER_EMAIL_ADDRESS" />. Сега може да пристапувате кон вашите обележувачи, историја и други поставки на сите најавени уреди.</translation>
 <translation id="4571503333518166079">Одете во поставките за известувања на Chrome</translation>
@@ -193,7 +184,7 @@
 <translation id="4969674060580488087">ChromeOS Flex не можеше да ги синхронизира вашите податоци бидејќи вашите детали за најавување на сметката се застарени.</translation>
 <translation id="4970761609246024540">Добре дојдовте во профили на Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Канари</translation>
-<translation id="5062123544085870375">Рестартирајте го Chrome OS</translation>
+<translation id="5037581483200764584">За да добивате идни ажурирања на Google Chrome, потребен ви е macOS 10.13 или понова верзија. Компјутеров користи OS X 10.11.</translation>
 <translation id="5132929315877954718">Открива одлични апликации, игри, наставки и теми за Google Chrome.</translation>
 <translation id="5139423532931106058">Приспособете го вашиот профил на Chrome</translation>
 <translation id="5163087008893166964">Добре дојдовте на Chrome; отворен е нов прозорец во прелистувачот</translation>
@@ -220,7 +211,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ќе се рестартира за 1 секунда}one{Google Chrome ќе се рестартира за # секунда}other{Google Chrome ќе се рестартира за # секунди}}</translation>
 <translation id="5727531838415286053">Ако Chrome по случаен избор ве ставил во активен пробен период, вашата историја на прелистувањето влијае на рекламите што ги гледате и интересите како што е проценето долу. За да ја заштити приватноста, Chrome ги брише вашите интереси секој месец. Интересите се освежуваат освен ако не ги отстраните.</translation>
 <translation id="5736850870166430177">Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chrome може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“</translation>
-<translation id="573759479754913123">За Chrome OS</translation>
 <translation id="5756509061973259733">На уредов веќе постои профил на Chrome со оваа сметка</translation>
 <translation id="5763280521700030406">Chrome ја блокираше датотекава бидејќи е преголема за безбедносна проверка. Пробајте повторно со датотеки до 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -241,12 +231,10 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6291089322031436445">Апликации на Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome веќе е инсталиран за сите корисници на вашиот компјутер.</translation>
-<translation id="6368958679917195344">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6412673304250309937">Ги проверува URL-адресите во список со небезбедни сајтови меморирани во Chrome. Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chrome може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“.</translation>
 <translation id="6418662306461808273">Сакате да се префрлите на постојниот профил на Chrome?</translation>
 <translation id="6506909944137591434">На Chrome му треба дозвола за камерата за да создаде 3D-карта на опкружувањето</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6568793831116033768">Систем Chrome OS</translation>
 <translation id="659498884637196217">Во „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="6632473616050862500">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
@@ -256,8 +244,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6739177684496155661">Сакате да продолжите на нов профил на Chrome?</translation>
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
 <translation id="677276454032249905">Сепак да се излезе од Chrome?</translation>
-<translation id="6814748008107187409">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
-    поставките за Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Дојдовно правило за Google Chrome Canary за да овозможи сообраќај mDNS.</translation>
 <translation id="6881299373831449287">Chrome се ажурира</translation>
 <translation id="6885412569789873916">Апликации на Chrome Beta</translation>
@@ -286,13 +272,10 @@ Google Chrome не може да ги обнови вашите поставки
 
 Дозволите што веќе сте им ги дале на веб-сајтовите и апликациите можеби ќе важат за оваа сметка. Можете да управувате со сметките на Google во <ph name="SETTINGS_LINK_BEGIN" />Поставки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Бевте најавени на Chrome како <ph name="USER_EMAIL_ADDRESS" />. Користете ја истата сметка за повторно да се најавите.</translation>
-<translation id="7408085963519505752">Услови на Chrome OS</translation>
 <translation id="7410958280246779049">Chrome ја блокираше датотекава бидејќи е опасна</translation>
-<translation id="7419046106786626209">Chrome ОС не може да ги синхронизира вашите податоци бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
 <translation id="7481213027396403996">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="7486227612705979895">Chrome ќе пристапува до Drive за да дава предлози во лентата за адреси</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7573289029918943991">За да видите дали уредот ви е ажуриран, одете на <ph name="LINK_BEGIN" />Поставки за Chrome OS<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Добре дојдовте на Chrome</translation>
@@ -300,7 +283,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7641148173327520642">Системскиот администратор го конфигурирал Google Chrome да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
 <translation id="7655455401911432608">Вашата историја на прелистувањето, евиденција на сајтовите што сте ги посетиле со Chrome на овој уред.</translation>
-<translation id="7665553140559834626">Рестартирајте за да се ажурира &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Инсталаторот не може да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>
 <translation id="7761834446675418963">Кликнете си на името за да го отворите Chrome и да започнете со прелистување.</translation>
 <translation id="7777080907402804672">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
@@ -316,7 +298,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7930071585467473040">Google Chrome се обидува да копира лозинки.</translation>
 <translation id="7951272445806340501">ChromeOS Flex треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="7962410387636238736">Компјутеров веќе нема да добива ажурирања за Google Chrome затоа што Windows XP и Windows Vista веќе не се поддржуваат</translation>
-<translation id="79947657522496226">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />Linux-околината за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8005666035647241369">До „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="8008534537613507642">Преинсталирај го Chrome</translation>
 <translation id="8013993649590906847">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
@@ -367,7 +348,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8986207147630327271">Додавате работен профил во овој прелистувач и му давате контрола на администраторот само врз тој профил.</translation>
 <translation id="8989968390305463310">Вашата историја на прелистувањето влијае на рекламите што ги гледате и на интересите како што е проценето подолу. За да ја заштитите приватноста, Chrome автоматски ги брише вашите интереси секој месец. Интересите може да се освежуваат освен ако не ги отстраните.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Достапно е ажурирање за Chrome}=1{Достапно е ажурирање за Chrome}one{Достапно е ажурирање за Chrome веќе # ден}other{Достапно е ажурирање за Chrome веќе # дена}}</translation>
-<translation id="9026991721384951619">Chrome OS не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>
 <translation id="9053892488859122171">Системот ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome бара Windows 7 или понова верзија.</translation>
 <translation id="911206726377975832">Да се избришат ли и вашите податоци од пребарувањата?</translation>

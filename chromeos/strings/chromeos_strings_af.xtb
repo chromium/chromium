@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Hardewarehersiening</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
-<translation id="1930797645656624981">Chrome-bedryfstelsel se invoermetodediens</translation>
 <translation id="1947737735496445907">Gedruk</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1977994649430373166">Google-profielfoto</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1999615961760456652">Kontroleringsportaal</translation>
 <translation id="2006864819935886708">Konnektiwiteit</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Jy moet 'n minimum van een kunsgalery-album kies</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Sleutelbordagterligwisselaar</translation>
 <translation id="2240366984605217732">Uitlegomskakelaar</translation>
 <translation id="225692081236532131">Aktiveringstatus</translation>
 <translation id="2287186687001756809">Geen prent is beskikbaar nie. Gaan na <ph name="LINK" /> om foto's by te voeg</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Kan nie aan die internet koppel nie.</translation>
 <translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
 <translation id="2584559707064218956">Gaan na Instellings om dit op te stel</translation>
-<translation id="2585245331261708204">Wat's nuut in Chrome OS</translation>
 <translation id="2619761439309613843">Herlaai daagliks</translation>
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> is gekies</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
-<translation id="475869545581454722">Chrome-bedryfstelselwagwoord is opgedateer</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4782311465517282004">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -629,6 +628,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktiveer outokleurmodus</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>
+<translation id="8045012663542226664">Demp mikrofoon</translation>
 <translation id="8075838845814659848">Oorblywende batterykrag</translation>
 <translation id="8082366717211101304">Kan nie DNS van Android-programme af oplos nie</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
@@ -739,6 +739,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="917720651393141712">Toets</translation>
 <translation id="9204237731135241582">Kan nie die deurgang van Android-programme af kontak nie</translation>
 <translation id="9211490828691860325">Alle lessenaars</translation>
+<translation id="932327136139879170">Tuis</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nie geaktiveer nie</translation>
 <translation id="960719561871045870">Diensverskafferkode</translation>

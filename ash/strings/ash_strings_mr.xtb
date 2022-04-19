@@ -523,6 +523,7 @@
 <translation id="4095366824370681039">इंक पेन</translation>
 <translation id="4112140312785995938">मागे शोधा</translation>
 <translation id="4114315158543974537">फोन हब सुरू करा</translation>
+<translation id="4115378294792113321">किरमिजी</translation>
 <translation id="412298498316631026">विंडो</translation>
 <translation id="4123259114412175274">तुमचे Chromebook अनलॉक करण्यासाठी, तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा</translation>
 <translation id="4129129681837227511">तुमच्या लॉक स्क्रीनवर सूचना पाहाण्यासाठी, सेटिंग बदलण्याकरिता अनलॉक करा</translation>
@@ -562,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">तुम्ही उच्च कॉंट्रास्टसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Up Arrow कीबोर्ड शॉर्टकट बदलला आहे. होम की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + लेफ्ट अ‍ॅरो दाबा.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">एकाहून अधिक वापरकर्त्यांनी साइन इन केले असेल तेव्हा Lacros सपोर्ट करत नाही.</translation>
 <translation id="4338109981321384717">भिंग</translation>
 <translation id="4351433414020964307">साहाय्यक लोड होत आहे...</translation>
@@ -795,7 +795,6 @@
 <translation id="5788127256798019331">Play फाइल</translation>
 <translation id="5790085346892983794">यशस्वी</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
@@ -1147,7 +1146,6 @@
 <translation id="79341161159229895">खाते <ph name="FIRST_PARENT_EMAIL" /> आणि <ph name="SECOND_PARENT_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
 <translation id="793716872548410480">तुमचा क्लिपबोर्ड पाहण्यासाठी <ph name="SHORTCUT_KEY_NAME" /> + V दाबा. तुम्ही कॉपी केलेल्या शेवटच्या पाच गोष्टी तुमच्या क्लिपबोर्डवर सेव्ह केल्या आहेत.</translation>
 <translation id="7942349550061667556">लाल</translation>
-<translation id="7952747673138230804">Chrome OS नवीन आशय एक्सप्लोर करण्यासाठी सूचना दाखवते. तुम्ही वापर डेटा शेअर करणे निवडले असेल तरच गुणवत्तेत सुधारणा करण्यासाठी आकडेवारी पाठवते. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">उच्च काँट्रास्ट मोड</translation>
 <translation id="7968693143708939792">फोल्डर निवडा…</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क शोधत आहे...</translation>

@@ -14,7 +14,6 @@
         إعدادات نظام التشغيل ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1182414570724401860">‏ينصح Chrome بعدم تنزيل هذا الملف أو فتحه.</translation>
 <translation id="1278833599417554002">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
-<translation id="1293325835983155583">‏يشترط <ph name="MANAGER" /> عليك قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم بأنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل Google Chrome ولا تعدلِّها ولا تفرض قيودًا عليها.</translation>
 <translation id="1302523850133262269">‏يُرجى الانتظار لحين تثبيت Chrome لآخر تحديثات النظام.</translation>
 <translation id="1335640173511558774">‏يطلب <ph name="MANAGER" /> منك قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم بأنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل ChromeOS Flex من Google ولا تعدلِّها ولا تفرض قيودًا عليها.</translation>
 <translation id="137466361146087520">‏الإصدار التجريبي من Google Chrome</translation>
@@ -50,7 +49,6 @@
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
 <translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
 <translation id="2018528049276128029">‏يحتفظ كل ملف شخصي بالمعلومات الخاصة به على Chrome، مثل الإشارات المرجعية والسجلّ وكلمات المرور وغير ذلك.</translation>
-<translation id="2063848847527508675">‏يلزم إعادة تشغيل نظام التشغيل Chrome حتى يتم تطبيق التحديث.</translation>
 <translation id="207902854391093810">‏عندما تكون التجارب مفعَّلة، يسمح Ad measurement للمواقع الإلكترونية التي تنتقل إليها بطلب معلومات من Chrome تساعد الموقع الإلكتروني في قياس أداء الإعلانات التي يعرضها. ويحدّ Ad measurement من عملية تتبّع البيانات ونشاط التصفّح على المواقع الإلكترونية، وذلك من خلال نقل أقل قدر ممكن من المعلومات بينها.</translation>
 <translation id="2094648590148273905">‏أحكام نظام التشغيل ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏هل تريد الخروج من Chrome على أي حال؟</translation>
@@ -79,7 +77,6 @@
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="2622559029861875898">‏يتعذّر على Chrome البحث عن تحديثات. يُرجى التحقّق من اتصال الإنترنت.</translation>
-<translation id="2644798301485385923">‏نظام التشغيل Chrome</translation>
 <translation id="2652691236519827073">‏فتح الرابط في علامة تبويب جديدة في Chrome</translation>
 <translation id="2665296953892887393">‏يمكنك المساعدة في تحسين Google Chrome عن طريق إرسال تقارير الأعطال و<ph name="UMA_LINK" /> إلى Google</translation>
 <translation id="2689103672227170538">‏غيّرت هذه الإضافة الصفحة التي تظهر عند بدء تشغيل Chrome.</translation>
@@ -116,7 +113,6 @@
 <translation id="3245429137663807393">‏في حال مشاركة تقارير استخدام Chrome أيضًا، ستتضمّن هذه التقارير عناوين URL التي تزورها</translation>
 <translation id="3360895254066713204">‏مساعد Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏ستتم إعادة تشغيل Chrome الآن}=1{‏ستتم إعادة تشغيل Chrome في غضون ثانية واحدة}two{‏ستتم إعادة تشغيل Chrome في غضون ثانيتين}few{‏ستتم إعادة تشغيل Chrome في غضون # ثوان}many{‏ستتم إعادة تشغيل Chrome في غضون # ثانيةً}other{‏ستتم إعادة تشغيل Chrome في غضون # ثانية}}</translation>
-<translation id="3395323229510056640">‏الحصول على مساعدة في نظام التشغيل Chrome</translation>
 <translation id="3396977131400919238">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="3428747202529429621">‏يوفّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجلًا دخولك.</translation>
 <translation id="3434246496373299699">‏لا يستطيع Chrome التحقّق من كلمات المرور إلا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
@@ -134,7 +130,6 @@
 <translation id="3716540481907974026">‏إصدار نظام التشغيل ChromeOS Flex</translation>
 <translation id="3718181793972440140">‏سيعمل هذا على حذف عنصر واحد من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">‏غيّرت الإضافة "<ph name="EXTENSION_NAME" />" الصفحة التي تظهر عند بدء Chrome.</translation>
-<translation id="3779473566290487688">‏للحصول على تحديثات Google Chrome في المستقبل، يجب أن تستخدم جهازًا يعمل بنظام التشغيل OS X 10.11 أو إصدار أحدث. يعمل جهاز الكمبيوتر هذا بنظام التشغيل OS X 10.10.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">‏تعذَّر على ChromeOS Flex مزامنة البيانات بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="3835168907083856002">‏سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -156,19 +151,14 @@
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> سجلّ تصفُّحك، بالإضافة إلى سجلّ بالمواقع الإلكترونية التي زرتها باستخدام Chrome على هذا الجهاز</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4293420128516039005">‏يمكنك تسجيل الدخول لمزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
-<translation id="4325083532956419387">‏إصدار "نظام التشغيل Chrome"</translation>
 <translation id="4328355335528187361">‏إصدار مطوّري البرامج من Google Chrome ‏(mDNS-In)</translation>
-<translation id="4331809312908958774">‏نظام تشغيل Chrome</translation>
 <translation id="4335235004908507846">‏يستطيع Chrome مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والإضافات الضارة وغيرها من المشاكل.</translation>
 <translation id="4343195214584226067">‏تمت إضافة <ph name="EXTENSION_NAME" /> إلى Chrome</translation>
 <translation id="4384570495110188418">‏يتعذّر على Chrome التحقّق من كلمات المرور لأنك لم تسجّل الدخول.</translation>
-<translation id="4407807842708586359">‏نظام تشغيل Google Chrome</translation>
 <translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
 <translation id="4450664632294415862">‏Chrome - تسجيل الدخول إلى الشبكة - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏عملية أخرى على Google Chrome قيد التقدم. يُرجى المحاولة مرة أخرى لاحقًا.</translation>
 <translation id="4459234553906210702">‏يسمح Ad measurement للمواقع الإلكترونية التي تنتقل إليها بطلب معلومات من Chrome تساعد الموقع الإلكتروني في قياس أداء الإعلانات التي يعرضها. ويحدّ Ad measurement من عملية تتبّع البيانات ونشاط التصفّح على المواقع الإلكترونية، وذلك من خلال نقل أقل قدر ممكن من المعلومات بينها.</translation>
-<translation id="4480040274068703980">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لوجود خطأ في تسجيل الدخول.</translation>
-<translation id="4521185804071812304">‏اختياري: يمكنك المساعدة في تحسين ميزات نظام التشغيل Chrome وأدائه من خلال إرسال بيانات التشخيص والاستخدام تلقائيًا إلى Google.</translation>
 <translation id="4561051373932531560">‏يتيح لك Google Chrome النقر على رقم هاتف على الويب والاتصال به باستخدام Skype!</translation>
 <translation id="4567424176335768812">لقد سجلت دخولك باعتبارك <ph name="USER_EMAIL_ADDRESS" />. ويُمكنك الآن الاستمتاع بالدخول إلى الإشارات المرجعية، والسجلّ، والإعدادات الأخرى على جميع الأجهزة التي تسجّل الدخول إليها.</translation>
 <translation id="4571503333518166079">‏الانتقال إلى إعدادات الإشعارات في Chrome</translation>
@@ -191,7 +181,6 @@
 <translation id="4969674060580488087">‏تعذَّر على ChromeOS Flex مزامنة البيانات لأنّ تفاصيل الحساب المُستخدَم في تسجيل الدخول قديمة.</translation>
 <translation id="4970761609246024540">‏مرحبًا بك في الملفات الشخصية على Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5062123544085870375">‏إعادة تشغيل نظام التشغيل Chrome</translation>
 <translation id="5132929315877954718">‏يمكنك اكتشاف تطبيقات، وألعاب، وإضافات، ومظاهر رائعة لمتصفح Google Chrome.</translation>
 <translation id="5139423532931106058">‏تخصيص ملفك الشخصي في Chrome</translation>
 <translation id="5163087008893166964">‏مرحبًا بك في Chrome. تم فتح نافذة متصفّح جديدة.</translation>
@@ -216,7 +205,6 @@
 <translation id="5715063361988620182">{SECONDS,plural, =1{‏ستتم إعادة تشغيل Google Chrome خلال ثانية واحدة}zero{‏ستتم إعادة تشغيل Google Chrome خلال # ثانية}two{‏ستتم إعادة تشغيل Google Chrome خلال ثانيتين (#)}few{‏ستتم إعادة تشغيل Google Chrome خلال # ثوانٍ}many{‏ستتم إعادة تشغيل Google Chrome خلال # ثانيةً}other{‏ستتم إعادة تشغيل Google Chrome خلال # ثانية}}</translation>
 <translation id="5727531838415286053">‏في حال أضافك Chrome عشوائيًا إلى تجربة نشطة، سيؤثر سجلّ تصفّحك في الإعلانات التي تظهر لك والاهتمامات التي يتم تقديرها على النحو الموضّح أدناه. ولحماية خصوصيتك، يحذف Chrome اهتماماتك بشكل متواصل مرة واحدة على الأقل شهريًا. يتم تحديث الاهتمامات ما لم تزِلها.</translation>
 <translation id="5736850870166430177">‏إذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسِل متصفِّح Chrome أيضًا عناوين URL تتضمّن أجزاءً من محتوى الصفحة إلى خدمة "التصفُّح الآمن".</translation>
-<translation id="573759479754913123">‏لمحة عن نظام التشغيل Chrome</translation>
 <translation id="5756509061973259733">‏يتوفّر حاليًا على هذا الجهاز ملف شخصي لهذا الحساب على Chrome.</translation>
 <translation id="5763280521700030406">‏حَظَر Chrome هذا الملف لأنّ حجمه كبير بدرجة تعيق إجراء فحص الأمان. يمكنك المحاولة مرة أخرى من خلال ملفات لا يزيد حجمها على 50 ميغابايت.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -237,12 +225,10 @@
 <translation id="6247557882553405851">‏مدير كلمات المرور في Google</translation>
 <translation id="6291089322031436445">‏تطبيقات إصدار مطوري البرامج من Chrome</translation>
 <translation id="6291549208091401781">‏تم تثبيت Google Chrome من قبل لجميع المستخدمين على الكمبيوتر.</translation>
-<translation id="6368958679917195344">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج مفتوح المصدر<ph name="END_LINK_CROS_OSS" /> إضافي.</translation>
 <translation id="6412673304250309937">‏يعمل على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفّح الآمن".</translation>
 <translation id="6418662306461808273">‏هل تريد الانتقال إلى ملف شخصي حالي على Chrome؟</translation>
 <translation id="6506909944137591434">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للمكان حولك.</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
-<translation id="6568793831116033768">‏نظام التشغيل Chrome</translation>
 <translation id="659498884637196217">‏تعديل كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
 <translation id="6632473616050862500">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>
@@ -252,8 +238,6 @@
 <translation id="6739177684496155661">‏هل تريد المتابعة باستخدام ملف شخصي جديد على Chrome؟</translation>
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
-<translation id="6814748008107187409">‏في حال عدم ظهور أحد الإعدادات على هذه الصفحة، انتقِل إلى <ph name="LINK_BEGIN" />
-        إعدادات نظام التشغيل Chrome<ph name="LINK_END" />.</translation>
 <translation id="683440813066116847">‏قاعدة الوارد إلى Google Chrome Canary للسماح بحركة مرور mDNS.</translation>
 <translation id="6881299373831449287">‏جارٍ تحديث Chrome.</translation>
 <translation id="6885412569789873916">‏تطبيقات الإصدار التجريبي من Chrome</translation>
@@ -278,13 +262,10 @@
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7388770099345495132">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام "وضع الضيف" في متصفّح Chrome. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">‏تم تسجيل دخولك إلى Chrome باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
-<translation id="7408085963519505752">‏بنود نظام التشغيل Chrome</translation>
 <translation id="7410958280246779049">‏حَظَر Chrome هذا الملف لأنّه ملف ضار.</translation>
-<translation id="7419046106786626209">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
 <translation id="7481213027396403996">‏الحصول على أعلى مستوى من الأمان في متصفِّح Chrome</translation>
 <translation id="7486227612705979895">‏سيصل Chrome إلى Drive لإنشاء الاقتراحات في شريط العناوين.</translation>
 <translation id="7535429826459677826">‏إصدار مطوري البرامج من Google Chrome</translation>
-<translation id="7573289029918943991">‏للتأكّد من أن جهازك يستخدم أحدث إصدار من نظام التشغيل، يُرجى الانتقال إلى <ph name="LINK_BEGIN" />إعدادات نظام التشغيل Chrome<ph name="LINK_END" />.</translation>
 <translation id="7592736734348559088">‏تعذر على Google Chrome مزامنة البيانات نظرًا لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="7606334485649076285">‏نظام التشغيل ChromeOS Flex من Google</translation>
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
@@ -292,7 +273,6 @@
 <translation id="7641148173327520642">‏ضَبَط مشرف النظام Google Chrome لفتح <ph name="ALTERNATIVE_BROWSER_NAME" /> للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">‏شعار Chrome Enterprise</translation>
 <translation id="7655455401911432608">‏سجلّ تصفّحك، وهو سجل يشمل المواقع الإلكترونية التي انتقلت إليها باستخدام Chrome على هذا الجهاز.</translation>
-<translation id="7665553140559834626">‏إعادة تشغيل نظام التشغيل Chrome لتحديثه</translation>
 <translation id="7747138024166251722">تعذر على أداة المثبِّت إنشاء دليل مؤقت. يُرجى التحقق من وجود مساحة خالية على القرص وتوفر الإذن اللازم لتثبيت البرنامج.</translation>
 <translation id="7761834446675418963">‏انقر على اسمك لفتح Chrome وبدء التصفح.</translation>
 <translation id="7777080907402804672">‏في حال لم تتضمن صورة  ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
@@ -308,7 +288,6 @@
 <translation id="7930071585467473040">‏يحاول Google Chrome نسخ كلمات المرور.</translation>
 <translation id="7951272445806340501">‏يجب إعادة تشغيل نظام التشغيل ChromeOS Flex لتثبيت التحديث.</translation>
 <translation id="7962410387636238736">‏لن يستلم جهاز الكمبيوتر هذا تحديثات Google Chrome لأن Windows XP وWindows Vista أصبحا غير مدعومين.</translation>
-<translation id="79947657522496226">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير أدوات Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8005666035647241369">‏حفظ كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
 <translation id="8008534537613507642">‏إعادة تثبيت Chrome</translation>
 <translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
@@ -359,7 +338,6 @@
 <translation id="8986207147630327271">أنت على وشك إضافة ملف شخصي للعمل إلى هذا المتصفِّح ومنح المشرف إمكانية التحكُّم في هذا الملف الشخصي للعمل فقط.</translation>
 <translation id="8989968390305463310">‏يؤثر سجلّ تصفّحك في الإعلانات التي تظهر لك وفي تقدير اهتماماتك على النحو الموضّح أدناه. لحماية خصوصيتك، يحذف Chrome تلقائيًا اهتماماتك بشكل متواصل مرة واحدة على الأقل شهريًا. ويمكنك تحديث الاهتمامات ما لم تزِلها.</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏يتوفر تحديث لمتصفح Chrome}=1{‏يتوفر تحديث لمتصفح Chrome}two{‏يتوفر تحديث لمتصفح Chrome منذ يومين}few{‏يتوفر تحديث لمتصفح Chrome منذ # أيام}many{‏يتوفر تحديث لمتصفح Chrome منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chrome منذ # يوم}}</translation>
-<translation id="9026991721384951619">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="9053892488859122171">‏نظام التشغيل ChromeOS Flex</translation>
 <translation id="9067395829937117663">‏يتطلب متصفح Google Chrome نظام التشغيل Windows 7 أو إصدارًا أحدث.</translation>
 <translation id="911206726377975832">هل تريد أيضًا حذف بيانات التصفح؟</translation>

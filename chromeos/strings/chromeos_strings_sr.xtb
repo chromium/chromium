@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Ревизија хардвера</translation>
 <translation id="1905710495812624430">Премашен је максимални број покушаја.</translation>
 <translation id="1908234395526491708">Неуспели UDP захтеви</translation>
-<translation id="1930797645656624981">Услуга метода уноса за Chrome ОС</translation>
 <translation id="1947737735496445907">Одштампано</translation>
 <translation id="1951012854035635156">Помоћник</translation>
+<translation id="1977994649430373166">Слика Google профила</translation>
 <translation id="1979103255016296513">Рок за промену лозинке је истекао</translation>
 <translation id="1999615961760456652">Улазни портал</translation>
 <translation id="2006864819935886708">Успостављање везе</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Мора да буде изабран бар један албум ликовне галерије</translation>
 <translation id="2230005943220647148">Целзијус</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Укључивање/искључивање позадинског осветљења тастатуре</translation>
 <translation id="2240366984605217732">Прекидач распореда</translation>
 <translation id="225692081236532131">Статус активације</translation>
 <translation id="2287186687001756809">Слика није доступна. Да бисте додали слике, идите на <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Повезивање на интернет није успело.</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
-<translation id="2585245331261708204">Ново у вези Chrome ОС-а</translation>
 <translation id="2619761439309613843">Дневно освежавање</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2640549051766135490">Изабран је албум <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Тип уређаја је непознат.</translation>
 <translation id="3966286471246132217">Да бисте добили тачније резултате, затворите све апликације док се тест не доврши.</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
+<translation id="3969602104473960991">Chrome OS лозинка је ажурирана</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
 <translation id="3993704782688964914">Уређај <ph name="DEVICE_NAME" /> је ажуриран</translation>
@@ -323,7 +324,6 @@
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4744944742468440486">Информације везане за ваш избор</translation>
-<translation id="475869545581454722">Chrome OS лозинка је ажурирана</translation>
 <translation id="4773299976671772492">Заустављено је</translation>
 <translation id="4782311465517282004">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> слика</translation>
@@ -463,6 +463,7 @@
 <translation id="6113701710518389813">Стрелица нагоре</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, још <ph name="NUMBER" /> албума</translation>
 <translation id="6122191549521593678">Онлајн</translation>
+<translation id="6122277663991249694">Услуга метода уноса за Chrome ОС</translation>
 <translation id="6137767437444130246">Кориснички сертификат</translation>
 <translation id="6146993107019042706">Да бисте завршили, унесите нову лозинку</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -629,6 +630,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Омогућите режим аутоподешавања боја</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
+<translation id="8045012663542226664">Искључивање звука микрофона</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Интерна тастатура</translation>
+<translation id="8431300646573772016">Новости у Chrome ОС-у</translation>
 <translation id="843568408673868420">Повезивање на интернет</translation>
 <translation id="844521431886043384">DNS није подешен</translation>
 <translation id="8461329675984532579">Назив добављача за Home</translation>
@@ -739,6 +742,7 @@
 <translation id="917720651393141712">Тестирај</translation>
 <translation id="9204237731135241582">Контакт са мрежним пролазом не успева из Android апликација</translation>
 <translation id="9211490828691860325">Све радне површине</translation>
+<translation id="932327136139879170">Почетна</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Није активирано</translation>
 <translation id="960719561871045870">Кôд мобилног оператера</translation>

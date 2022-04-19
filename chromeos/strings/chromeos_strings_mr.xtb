@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
-<translation id="1930797645656624981">Chrome OS इनपुट पद्धत सेवा</translation>
 <translation id="1947737735496445907">प्रिंट केले</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google प्रोफाइल फोटो</translation>
 <translation id="1979103255016296513">पासवर्ड बदलण्याची मुदत संपली आहे</translation>
 <translation id="1999615961760456652">कॅप्टिव्ह पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिव्हिटी</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">किमान एक आर्ट गॅलरी अल्बम निवडणे आवश्यक आहे</translation>
 <translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">कीबोर्ड बॅकलाइट टॉगल</translation>
 <translation id="2240366984605217732">लेआउट स्विच</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">इंटरनेटशी कनेक्ट करू शकत नाही.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
 <translation id="2584559707064218956">सेट करण्यासाठी, सेटिंग्ज वर जा</translation>
-<translation id="2585245331261708204">Chrome OS मध्ये नवीन</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2640549051766135490">अल्‍बम <ph name="TITLE" /> <ph name="DESC" /> निवडला</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4744944742468440486">तुमच्या निवडीशी संबंधित माहिती</translation>
-<translation id="475869545581454722">Chrome OS चा पासवर्ड अपडेट करण्यात आला</translation>
 <translation id="4773299976671772492">थांबविले</translation>
 <translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ऑटो कलर मोड सुरू करा</translation>
 <translation id="8041089156583427627">अभिप्राय पाठवा</translation>
+<translation id="8045012663542226664">मायक्रोफोन म्यूट</translation>
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
 <translation id="8082366717211101304">Android अ‍ॅप्सवरून DNS चे निराकरण करू शकत नाही</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">चाचणी करा</translation>
 <translation id="9204237731135241582">Android अ‍ॅप्सवरून गेटवेशी संपर्क साधू शकत नाही</translation>
 <translation id="9211490828691860325">सर्व डेस्क</translation>
+<translation id="932327136139879170">होम</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय नाही</translation>
 <translation id="960719561871045870">ऑपरेटर कोड</translation>

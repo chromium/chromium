@@ -87,6 +87,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
 <translation id="1364382257761975320">Pentru a debloca Chromebookul, folosește amprenta</translation>
 <translation id="1364618750746929654">Nu se poate genera transcrierea</translation>
+<translation id="1372545819342940910">Salvează desktopul pentru mai târziu</translation>
 <translation id="1383597849754832576">Nu se pot descărca fișierele de redare în scris a vorbirii. Încearcă din nou mai târziu.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1391102559483454063">Activată</translation>
@@ -522,6 +523,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4095366824370681039">Stilou cu cerneală</translation>
 <translation id="4112140312785995938">Derulează înapoi</translation>
 <translation id="4114315158543974537">Activează Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">fereastră</translation>
 <translation id="4123259114412175274">Pentru a debloca Chromebookul, asigură-te că funcția Bluetooth a telefonului este activată</translation>
 <translation id="4129129681837227511">Pentru a vedea notificările pe ecranul de blocare, deblochează pentru a modifica setarea</translation>
@@ -561,7 +563,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ai accesat comanda rapidă de la tastatură pentru contrast ridicat. Vrei să-l activezi?</translation>
 <translation id="4322742403972824594">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în sus s-a schimbat. Pentru a folosi tasta Home, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre stânga.</translation>
-<translation id="4331809312908958774">Sistemul de operare Chrome</translation>
 <translation id="4333628967105022692">Lacros nu este acceptat dacă se conectează mai mulți utilizatori.</translation>
 <translation id="4338109981321384717">Lupă</translation>
 <translation id="4351433414020964307">Asistentul se încarcă...</translation>
@@ -794,7 +795,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5788127256798019331">Fișiere Play</translation>
 <translation id="5790085346892983794">Ai reușit</translation>
 <translation id="5805809050170488595">Dă clic pentru a activa <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Sistemul de operare Chromium</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1146,6 @@ Instalare nouă</translation>
 <translation id="79341161159229895">Cont gestionat de <ph name="FIRST_PARENT_EMAIL" /> și de <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Apasă <ph name="SHORTCUT_KEY_NAME" /> + V pentru a vedea clipboardul. Ultimele cinci elemente pe care le-ai copiat sunt salvate în clipboard.</translation>
 <translation id="7942349550061667556">Roșu</translation>
-<translation id="7952747673138230804">Sistemul de operare Chrome afișează sugestii pentru conținut nou de explorat. Trimite statistici pentru a îmbunătăți calitatea numai dacă ai ales să permiți accesul la datele de utilizare. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Modul de contrast ridicat</translation>
 <translation id="7968693143708939792">Selectează dosarul...</translation>
 <translation id="7977927628060636163">Se caută rețele mobile…</translation>

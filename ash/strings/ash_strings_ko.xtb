@@ -87,6 +87,7 @@
 <translation id="1351937230027495976">메뉴 접기</translation>
 <translation id="1364382257761975320">Chromebook을 잠금 해제하려면 지문을 사용하세요.</translation>
 <translation id="1364618750746929654">스크립트를 생성할 수 없음</translation>
+<translation id="1372545819342940910">나중을 위해 데스크 저장</translation>
 <translation id="1383597849754832576">음성 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1391102559483454063">사용</translation>
@@ -522,6 +523,7 @@
 <translation id="4095366824370681039">잉크 펜</translation>
 <translation id="4112140312785995938">뒤로 탐색</translation>
 <translation id="4114315158543974537">휴대전화 허브 사용 설정</translation>
+<translation id="4115378294792113321">자홍색</translation>
 <translation id="412298498316631026">창</translation>
 <translation id="4123259114412175274">Chromebook을 잠금 해제하려면 휴대전화의 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="4129129681837227511">잠금 화면에 알림이 표시되도록 하려면 잠금을 해제하여 설정을 변경하세요.</translation>
@@ -561,7 +563,6 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">고대비 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + 위쪽 화살표 단축키가 변경되었습니다. Home 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 왼쪽 화살표 키를 누르세요.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros는 여러 사용자가 로그인된 상태에서 지원되지 않습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
 <translation id="4351433414020964307">어시스턴트 로드 중...</translation>
@@ -794,7 +795,6 @@
 <translation id="5788127256798019331">Play 파일</translation>
 <translation id="5790085346892983794">완료</translation>
 <translation id="5805809050170488595">클릭하여 <ph name="NETWORK_NAME" /> 활성화</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">연결된 기기 설정</translation>
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
@@ -1146,7 +1146,6 @@
 <translation id="79341161159229895">계정 관리자: <ph name="FIRST_PARENT_EMAIL" /> 및 <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">클립보드를 보려면 <ph name="SHORTCUT_KEY_NAME" /> + V 키를 누르세요. 최근 복사한 5개 항목이 클립보드에 저장되어 있습니다.</translation>
 <translation id="7942349550061667556">빨간색</translation>
-<translation id="7952747673138230804">Chrome OS에서 탐색할 새 추천 콘텐츠를 표시합니다. 사용 데이터를 공유하기로 선택한 경우에만 추천 기능 개선을 위해 통계를 전송합니다. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">고대비 모드</translation>
 <translation id="7968693143708939792">폴더 선택...</translation>
 <translation id="7977927628060636163">모바일 네트워크 검색 중...</translation>

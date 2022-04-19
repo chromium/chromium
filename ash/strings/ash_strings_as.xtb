@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">আপোনাৰ USB-C কে’বলে Thunderbolt সমৰ্থন নকৰে। ডিভাইচৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে।</translation>
 <translation id="2108303511227308752">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + বেকস্পেচটো সলনি হৈছে। ডিলিট কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + বেকস্পেচ টিপক।</translation>
 <translation id="211328683600082144">মাইক্ৰ’ফ’ন অন কৰক</translation>
+<translation id="2123115117533398272">ChromeOSএ অন্বেষণ কৰিবৰ বাবে নতুন সমলৰ পৰামৰ্শ দেখুৱায়। আপুনি ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰিবলৈ বিচাৰিলেহে সমলৰ গুণগত মান উন্নত কৰিবলৈ পৰিসংখ্যা পঠিয়ায়। <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
 <translation id="2127372758936585790">কম শক্তিৰ চ্চাৰ্জাৰ</translation>
 <translation id="2132302418721800944">পূৰ্ণ স্ক্ৰীন ৰেকৰ্ড কৰক</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="2621713457727696555">সুৰক্ষিত</translation>
 <translation id="263399434338050016">"আটাইবোৰ বাছনি কৰক"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ৱিণ্ড' কেপচাৰ</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
 <translation id="2658778018866295321">ক্লিক কৰি টানি আনক</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">সংযোগ কৰা হ’ল</translation>
 <translation id="3378442621503952303">প্ৰ’ফাইলৰ সৈতে সংযোগ কৰি থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="3386978599540877378">সম্পূর্ণ স্ক্ৰীণৰ বিৱৰ্ধকটো</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">অতিৰিক্ত ছেটিংসমূহ</translation>
 <translation id="3410336247007142655">গাঢ় ৰঙৰ থীমৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="3413817803639110246">চাবলৈ এতিয়ালৈ একো নাই</translation>
@@ -523,6 +526,7 @@
 <translation id="4095366824370681039">চিয়াঁহী কলম</translation>
 <translation id="4112140312785995938">পিছলৈ যাওক</translation>
 <translation id="4114315158543974537">ফ’ন হাব অন কৰক</translation>
+<translation id="4115378294792113321">মেজেণ্টা</translation>
 <translation id="412298498316631026">ৱিণ্ড’</translation>
 <translation id="4123259114412175274">আপোনাৰ Chromebook আনলক কৰিবলৈ আপোনাৰ ফ’নৰ ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক</translation>
 <translation id="4129129681837227511">আপোনাৰ লক স্ক্রীণত জাননীসমূহ চাবলৈ ছেটিংটো সলনি কৰিবলৈ আনলক কৰক</translation>
@@ -562,7 +566,6 @@
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">আপুনি হাই কনট্ৰাষ্টৰ বাবে কীব’ৰ্ডৰ শ্বৰ্টকাটত টিপিছে৷ আপুনি এইটো অন কৰিব বিচাৰেনে?</translation>
 <translation id="4322742403972824594">কীব’ৰ্ডৰ শ্বৰ্টকাট কণ্ট্ৰ'ল+ অল্ট + আপ এৰ'টো সলনি হৈছে। হ'ম কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + লেফ্ট এৰ' টিপক।</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">একাধিক ব্যৱহাৰকাৰী ছাইন ইন হৈ থকাৰ সময়ত Lacrosএ কাম নকৰে।</translation>
 <translation id="4338109981321384717">বিবৰ্ধক কাঁচ</translation>
 <translation id="4351433414020964307">Assistant ল’ড হৈ আছে...</translation>
@@ -795,7 +798,6 @@
 <translation id="5788127256798019331">Play ফাইল</translation>
 <translation id="5790085346892983794">সফল হৈছে</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> সক্ৰিয় কৰিবলৈ টিপক</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">সংযুক্ত হৈ থকা ডিভাইচৰ ছেটিংসমূহ</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ত <ph name="ROUTE_TITLE" /> বন্ধ কৰক</translation>
@@ -1147,7 +1149,6 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> আৰু <ph name="SECOND_PARENT_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে</translation>
 <translation id="793716872548410480">আপোনাৰ ক্লিপব’ৰ্ড চাবলৈ <ph name="SHORTCUT_KEY_NAME" /> + ভি টিপক। আপুনি প্ৰতিলিপি কৰা অন্তিম ৫ টা বস্তু আপোনাৰ ক্লিপব’ৰ্ডত ছেভ কৰা হৈছে।</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
-<translation id="7952747673138230804">Chrome OSএ অন্বেষণ কৰিবৰ বাবে নতুন সমলৰ পৰামৰ্শ দিয়ে। আপুনি ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰিবলৈ বাছনি কৰিলেহে পৰামৰ্শিত সমলৰ গুণাগুণ উন্নত কৰিবলৈ পৰিসংখ্যা পঠিয়ায়। <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">ৰঙৰ উচ্চ প্ৰভেদযুক্ত ম’ড</translation>
 <translation id="7968693143708939792">ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="7977927628060636163">ম'বাইল নেটৱৰ্ক বিচাৰি থকা হৈছে...</translation>

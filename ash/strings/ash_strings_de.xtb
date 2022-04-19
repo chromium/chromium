@@ -520,6 +520,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4095366824370681039">Füllfederhalter</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
 <translation id="4114315158543974537">Phone Hub aktivieren</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">Fenster</translation>
 <translation id="4123259114412175274">Prüfe zum Entsperren deines Chromebooks, ob Bluetooth auf dem Smartphone aktiviert ist</translation>
 <translation id="4129129681837227511">Wenn du Benachrichtigungen auf dem Sperrbildschirm sehen möchtest, entsperre das Gerät, um die Einstellung zu ändern</translation>
@@ -559,7 +560,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4321179778687042513">Strg</translation>
 <translation id="4321776623976362024">Du hast die Tastenkombination für den Modus "Hoher Kontrast" gedrückt. Möchtest du ihn aktivieren?</translation>
 <translation id="4322742403972824594">Die Tastenkombination Strg + Alt + Aufwärtspfeil hat sich geändert. Wenn du jetzt die Pos1-Taste benötigst, drücke <ph name="LAUNCHER_KEY_NAME" />-Taste + Linkspfeil.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros wird nicht unterstützt, wenn viele Nutzer angemeldet sind.</translation>
 <translation id="4338109981321384717">Lupe</translation>
 <translation id="4351433414020964307">Assistant wird geladen…</translation>
@@ -792,7 +792,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5788127256798019331">Google Play-Dateien</translation>
 <translation id="5790085346892983794">Abgeschlossen</translation>
 <translation id="5805809050170488595">Zum Aktivieren von <ph name="NETWORK_NAME" /> klicken</translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Einstellungen für verbundene Geräte</translation>
 <translation id="583281660410589416">Unbekannt</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /> beenden</translation>
@@ -1143,7 +1142,6 @@ Neuinstallation</translation>
 <translation id="79341161159229895">Konto verwaltet von <ph name="FIRST_PARENT_EMAIL" /> und <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Drücke „<ph name="SHORTCUT_KEY_NAME" /> + V“, um die Zwischenablage zu öffnen. In der Zwischenablage werden immer die letzten fünf Elemente, die du kopiert hast, gespeichert.</translation>
 <translation id="7942349550061667556">Rot</translation>
-<translation id="7952747673138230804">Chrome OS zeigt Vorschläge zum Entdecken neuer Inhalte. Statistiken zur Verbesserung von Vorschlägen werden nur gesendet, wenn du der Freigabe von Nutzungsdaten zugestimmt hast. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Modus mit hohem Kontrast</translation>
 <translation id="7968693143708939792">Ordner auswählen...</translation>
 <translation id="7977927628060636163">Nach Mobilfunknetzen wird gesucht…</translation>

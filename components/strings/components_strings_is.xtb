@@ -100,7 +100,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="124116460088058876">Fleiri tungumál</translation>
 <translation id="1243027604378859286">Höfundur:</translation>
 <translation id="1246424317317450637">Feitletur</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að sérsníða aðgengisverkfærin þín í stillingum Chrome OS</translation>
 <translation id="1250759482327835220">Til að greiða hraðar næst geturðu vistað kortið og nafn og heimilisfang greiðanda á Google reikningnum.</translation>
 <translation id="1252799212227771492">Hnappurinn „Búa til töflureikni“, ýttu á Enter til að búa til nýjan Google töflureikni á skjótan hátt</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (samstillt)</translation>
@@ -384,7 +383,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1919345977826869612">Auglýsingar</translation>
 <translation id="1919367280705858090">Fáðu aðstoð varðandi einstök villuskilaboð</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ekkert}=1{Eitt vefsvæði}one{# vefsvæði}other{# vefsvæði}}</translation>
-<translation id="1923390796829649802">Stjórnaðu hnappi aðgengisstillinga, ýttu á Enter til að sérsníða aðgengisverkfærin þín í stillingum Chrome OS</translation>
 <translation id="1924727005275031552">Nýtt</translation>
 <translation id="1927439593081478069">Hnappur til að keyra öryggisathugun í Chrome, ýttu á Enter til að keyra öryggisathugun í stillingum Chrome</translation>
 <translation id="1939175642807587452">Getur beðið um að senda tilkynningar</translation>
@@ -643,7 +641,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að hreinsa vafraferil, fótspor, skyndiminni og fleira í stillingum Chrome</translation>
 <translation id="2650446666397867134">Aðgangi að skránni var hafnað</translation>
 <translation id="2653659639078652383">Senda</translation>
-<translation id="2659491813326907275">Þú getur sérsniðið aðgengisverkfærin þín í stillingum Chrome OS</translation>
 <translation id="2660779039299703961">Tilvik</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ekkert}=1{1 aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}=2{2 aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}one{# aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}other{# aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Efst</translation>
@@ -861,6 +858,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3295444047715739395">Skoða og stjórna aðgangsorðunum þínum í stillingum Chrome</translation>
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>
 <translation id="3304073249511302126">Bluetooth-leit</translation>
+<translation id="33073482541490531">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Aðgangsorðastjórnun mælir með að þessu aðgangsorði verði breytt núna.</translation>
 <translation id="3308006649705061278">Skipulagseining (OU)</translation>
 <translation id="3308738399950580893">auglýsingar</translation>
 <translation id="3320021301628644560">Bæta við heimilisfangi greiðanda</translation>
@@ -995,6 +993,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3658742229777143148">Endurskoðun</translation>
 <translation id="3664782872746246217">Leitarorð:</translation>
 <translation id="3667704023705708645">Áhættufjárfestingar</translation>
+<translation id="367108335512738711">Bókamerki í Chrome</translation>
 <translation id="3671540257457995106">Leyfa breytingar á stærð?</translation>
 <translation id="3675563144891642599">Þriðja rúlla</translation>
 <translation id="3676592649209844519">Auðkenni tækis:</translation>
@@ -1491,6 +1490,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5040262127954254034">Persónuvernd</translation>
 <translation id="5043480802608081735">Tengill sem þú afritaðir</translation>
+<translation id="5044545992476246592">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Google hjálparinn getur breytt aðgangsorðinu sjálfkrafa.</translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
 <translation id="5051305769747448211">Uppistand</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessa skrá með nærdeilingu}one{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessa skrá með nærdeilingu}other{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessar skrár með nærdeilingu}}</translation>
@@ -1503,6 +1503,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Athuga vistfang staðgengilsþjóns<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Tíunda rúlla</translation>
 <translation id="507130231501693183">Pósthólf 4</translation>
+<translation id="5078060223219502807">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Aðgangsorðastjórnun mælir með því að breyta aðgangsorðinu núna og athuga vistuð aðgangsorð til að tryggja öryggi reikninganna þinna.</translation>
 <translation id="5086225927071063542">Samtengd tölvuvinnsla og skýjatölvun</translation>
 <translation id="5087286274860437796">Vottorð þjóns er ekki gilt núna.</translation>
 <translation id="5087580092889165836">Bæta við korti</translation>
@@ -2019,6 +2020,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6579630537141957243">Tengja MIDI-tæki?</translation>
 <translation id="6579990219486187401">Ljósbleikur</translation>
 <translation id="6583674473685352014">B6 (umslag)</translation>
+<translation id="6585526963651937128">Chrome ferill</translation>
 <translation id="6587182488465657433">Chrome fann aðgangsorðið sem þú varst að nota í öryggisbroti. Til að tryggja öryggi reikninganna þinna mælum við með að þú breytir þeim núna og athugir svo vistuðu aðgangsorðin þín.</translation>
 <translation id="6587923378399804057">Tengill sem þú afritaðir</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> er ekki stjórnað</translation>
@@ -2127,6 +2129,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="691024665142758461">Sækja margar skrár</translation>
 <translation id="6915804003454593391">Notandi:</translation>
 <translation id="6916954549222464607">Fjármálaáætlanir og -umsjón</translation>
+<translation id="6917795328362592458">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Aðgangsorðastjórnun mælir með að þú athugir vistuð aðgangsorð til að tryggja öryggi reikninganna þinna.</translation>
 <translation id="6934672428414710184">Þetta nafn kemur af Google reikningnum þínum</translation>
 <translation id="6939469646605424232">Dramatískir sjónvarpsþættir</translation>
 <translation id="6944692733090228304">Þú slóst aðgangsorðið þitt inn á vefsvæði sem <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hefur ekki umsjón með. Til að vernda reikninginn þinn skaltu ekki nota sama aðgangsorð í öðrum forritum eða vefsvæðum.</translation>
@@ -2803,6 +2806,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8805819170075074995">Listafærslan „<ph name="LANGUAGE_ID" />“: Færslan er hunsuð því hún kemur einnig fram í reglunni „SpellcheckLanguage“.</translation>
 <translation id="8806285662264631610">Bað- og líkamsvörur</translation>
 <translation id="8807160976559152894">Klippa eftir hverja síðu</translation>
+<translation id="8808828119384186784">Stillingar Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að uppfæra Chrome úr stillingum Chrome</translation>
 <translation id="8820817407110198400">Bókamerki</translation>
 <translation id="882338992931677877">Handvirkt hólf</translation>

@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
-<translation id="1930797645656624981">Chrome OS ઇનપુટ પદ્ધતિ સેવા</translation>
 <translation id="1947737735496445907">પ્રિન્ટ થઈ ગયું</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google પ્રોફાઇલ ફોટો</translation>
 <translation id="1979103255016296513">પાસવર્ડ બદલવાની તારીખ નીકળી ગઈ છે</translation>
 <translation id="1999615961760456652">કૅપ્ટિવ પોર્ટલ</translation>
 <translation id="2006864819935886708">કનેક્ટિવિટી</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">ઓછામાં ઓછું એક આર્ટ ગૅલરી આલ્બમ પસંદ કરો</translation>
 <translation id="2230005943220647148">સેલ્સિયસ</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">કીબોર્ડની બૅકલાઇટ માટે ટૉગલ કી</translation>
 <translation id="2240366984605217732">લેઆઉટ સ્વિચ કી</translation>
 <translation id="225692081236532131">સક્રિયતાની સ્થિતિ</translation>
 <translation id="2287186687001756809">કોઈ છબી ઉપલબ્ધ નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
-<translation id="2585245331261708204">Chrome OSમાં નવું શું છે</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2640549051766135490">આલ્બમ <ph name="TITLE" /> <ph name="DESC" />ની પસંદગી કરી</translation>
@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">ડિવાઇસનો પ્રકાર અજાણ્યો છે.</translation>
 <translation id="3966286471246132217">વધુ ચોક્કસ પરિણામો માટે, પરીક્ષણ પૂરું થાય ત્યાં સુધી બધી ઍપ બંધ રાખો.</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
+<translation id="3969602104473960991">ChromeOSનો પાસવર્ડ અપડેટ કરવામાં આવ્યો</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3993704782688964914">તમારું <ph name="DEVICE_NAME" /> હવે અપ ટૂ ડેટ છે</translation>
@@ -323,7 +324,6 @@
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4744944742468440486">તમારી પસંદગી સંબંધિત માહિતી</translation>
-<translation id="475869545581454722">Chrome OSનો પાસવર્ડ અપડેટ કરવામાં આવ્યો</translation>
 <translation id="4773299976671772492">રોક્યું</translation>
 <translation id="4782311465517282004">તમે જ્યારે રાઇટ ક્લિક કરો અથવા ટેક્સ્ટને ટચ કરીને થોડીવાર દબાવી રાખો ત્યારે વ્યાખ્યાઓ, અનુવાદો અથવા એકમના રૂપાંતરણો મેળવો</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ફોટો</translation>
@@ -462,6 +462,7 @@
 <translation id="6113701710518389813">ઉપરની ઍરો કી</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + વધુ <ph name="NUMBER" /> આલ્બમ</translation>
 <translation id="6122191549521593678">ઓનલાઇન</translation>
+<translation id="6122277663991249694">ChromeOSની ઇનપુટ પદ્ધતિની સેવા</translation>
 <translation id="6137767437444130246">વપરાશકર્તા પ્રમાણપત્ર</translation>
 <translation id="6146993107019042706">સમાપ્ત કરવા માટે, તમારો નવો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -628,6 +629,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
+<translation id="8045012663542226664">માઇક્રોફોનને મ્યૂટ કરવાની કી</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">ડિવાઇસ હાલમાં જે ઝડપથી ચાર્જ કે ડિસ્ચાર્જ થઈ રહ્યું છે તે ઝડપ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">આંતરિક કીબોર્ડ</translation>
+<translation id="8431300646573772016">ChromeOSમાં નવું શું છે</translation>
 <translation id="843568408673868420">ઇન્ટરનેટ કનેક્ટિવિટી</translation>
 <translation id="844521431886043384">DNSનું સેટઅપ કર્યું</translation>
 <translation id="8461329675984532579">હોમ પ્રદાતાનું નામ</translation>
@@ -738,6 +741,7 @@
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
 <translation id="9204237731135241582">Android ઍપથી ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="9211490828691860325">તમામ ડેસ્ક</translation>
+<translation id="932327136139879170">હોમ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>

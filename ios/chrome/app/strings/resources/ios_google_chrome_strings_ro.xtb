@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Acest cont și toate datele nesalvate vor fi eliminate din Chrome și din alte aplicații Google de pe acest dispozitiv.</translation>
 <translation id="1968388653333775699">Poți să faci mai multe cu Chrome</translation>
 <translation id="2009224836393115614">Chrome nu a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
+<translation id="2056123005618757196">Poți să faci mai multe cu browserul Google Chrome, simplu, sigur și mai rapid ca oricând.</translation>
 <translation id="2147651015520127414">Chrome s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Datele din Sincronizarea Chrome</translation>
 <translation id="2313070403598893276">Google Chrome este simplu, sigur și mai rapid ca oricând</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Unele suplimente determină blocarea browserului Chrome. Dezinstalează:</translation>
 <translation id="4633328489441962921">Chrome nu poate căuta actualizări</translation>
 <translation id="4698415050768537821">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Pentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nu se acceptă în Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>
 <translation id="5108659628347594808">Contribuie la îmbunătățirea Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Treci la Chrome</translation>
 <translation id="6238746320622508509">Permite ca Chrome să blocheze filele incognito.</translation>
 <translation id="6387994324662817823">Parolele sunt salvate în Managerul de parole Google numai pe acest dispozitiv.</translation>
+<translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6427126399757991875">Organizația ta configurează Chrome...</translation>
 <translation id="6600954340915313787">Copiat în Chrome</translation>
 <translation id="6634107063912726160">Când te deconectezi, Chrome nu va sincroniza datele noi cu Contul tău Google. Datele sincronizate anterior rămân în cont.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Protejează-te cu Google Chrome</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
 <translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Când opțiunea este activă
+<ph name="BEGIN_INDENT" />  • Contribui la îmbunătățirea Chrome pentru cei care-l folosesc în mod similar cu tine<ph name="END_INDENT" />
+
+De reținut
+<ph name="BEGIN_INDENT" />  • Google primește informații despre modul în care folosești Chrome, dar acestea nu pot fi asociate cu tine.
+
+  • Dacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal.
+
+  • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Setezi Chrome ca browser prestabilit?</translation>
 <translation id="9122931302567044771">Aceasta înseamnă că Chrome va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
 </translationbundle>

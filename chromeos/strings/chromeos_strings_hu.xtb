@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Hardver ellenőrzése</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1908234395526491708">Hibás UDP-kérelmek.</translation>
-<translation id="1930797645656624981">Chrome OS beviteli módszere szolgáltatás</translation>
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1951012854035635156">Segéd</translation>
+<translation id="1977994649430373166">Google-profilfotó</translation>
 <translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
 <translation id="1999615961760456652">Hitelesítési portál</translation>
 <translation id="2006864819935886708">Kapcsolódási hiba</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">Legalább egy Művészeti albumot ki kell választani</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="2240366984605217732">Kiosztásváltó</translation>
 <translation id="225692081236532131">Aktiválás állapota</translation>
 <translation id="2287186687001756809">Nem található kép. Fotók hozzáadásához ugorjon a következőre: <ph name="LINK" />.</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Nem lehet csatlakozni az internethez.</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
 <translation id="2584559707064218956">A beállításhoz nyissa meg a Beállításokat</translation>
-<translation id="2585245331261708204">A Chrome OS újdonságai</translation>
 <translation id="2619761439309613843">Napi frissítés</translation>
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4744944742468440486">A kiválasztott elemhez kapcsolódó információ</translation>
-<translation id="475869545581454722">Chrome OS-jelszó módosítva</translation>
 <translation id="4773299976671772492">Leállítva</translation>
 <translation id="4782311465517282004">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva hozzáférhet a definíciókhoz, a fordításokhoz és az átváltott mértékegységekhez.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotó</translation>
@@ -629,6 +628,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Automatikus szín mód engedélyezése</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
+<translation id="8045012663542226664">Mikrofon némítása</translation>
 <translation id="8075838845814659848">Töltöttségi szint</translation>
 <translation id="8082366717211101304">Nem sikerült feloldani a DNS-t androidos alkalmazásokról</translation>
 <translation id="808894953321890993">Jelszó módosítása</translation>
@@ -739,6 +739,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="917720651393141712">Tesztmérkőzés</translation>
 <translation id="9204237731135241582">Nem lehet csatlakozni az átjáróhoz androidos alkalmazásokról</translation>
 <translation id="9211490828691860325">Az összes asztal</translation>
+<translation id="932327136139879170">Főoldal</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nincs aktiválva</translation>
 <translation id="960719561871045870">Operátorkód</translation>

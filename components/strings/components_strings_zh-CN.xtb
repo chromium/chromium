@@ -100,7 +100,6 @@
 <translation id="124116460088058876">更多语言</translation>
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1246424317317450637">粗体</translation>
-<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 操作系统设置中定制您的个性化无障碍工具</translation>
 <translation id="1250759482327835220">若想在下次购物时更快捷地付款，请将您的付款卡信息、姓名和帐单邮寄地址保存到您的 Google 帐号名下。</translation>
 <translation id="1252799212227771492">“创建表格”按钮，按 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（已同步）</translation>
@@ -380,7 +379,6 @@
 <translation id="1919345977826869612">广告</translation>
 <translation id="1919367280705858090">了解如何解决特定错误消息指出的错误</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
-<translation id="1923390796829649802">“管理无障碍设置”按钮，按 Enter 键即可在 Chrome 操作系统设置中定制您的个性化无障碍工具</translation>
 <translation id="1924727005275031552">新</translation>
 <translation id="1927439593081478069">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="1939175642807587452">可以询问能否向您发送通知</translation>
@@ -639,7 +637,6 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中清除您的浏览记录、Cookie、缓存及其他数据</translation>
 <translation id="2650446666397867134">访问文件遭拒</translation>
 <translation id="2653659639078652383">提交</translation>
-<translation id="2659491813326907275">在 Chrome 操作系统设置中定制无障碍工具</translation>
 <translation id="2660779039299703961">事件</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />）}}</translation>
 <translation id="2666092431469916601">顶部</translation>
@@ -855,6 +852,7 @@
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3304073249511302126">蓝牙扫描</translation>
+<translation id="33073482541490531">系统检测到，您刚才使用的密码遭遇了数据泄露。密码管理工具建议您立即更改此密码。</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
 <translation id="3308738399950580893">广告</translation>
 <translation id="3320021301628644560">添加账单邮寄地址</translation>
@@ -987,6 +985,7 @@
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3667704023705708645">风险投资</translation>
+<translation id="367108335512738711">Chrome 书签</translation>
 <translation id="3671540257457995106">允许调整大小？</translation>
 <translation id="3675563144891642599">第 3 卷</translation>
 <translation id="3676592649209844519">设备 ID：</translation>
@@ -1478,6 +1477,7 @@
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="5043480802608081735">您复制的链接</translation>
+<translation id="5044545992476246592">系统检测到，您刚才使用的密码遭遇了数据泄露。您的 Google 助理可以自动更改您的密码。</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5051305769747448211">相声/小品</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1490,6 +1490,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />检查代理服务器地址<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">第 10 卷</translation>
 <translation id="507130231501693183">信箱 4</translation>
+<translation id="5078060223219502807">系统检测到，您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，密码管理工具建议您立即更改此密码并检查已保存的所有密码。</translation>
 <translation id="5086225927071063542">分布式计算与云计算</translation>
 <translation id="5087286274860437796">服务器的证书目前无效。</translation>
 <translation id="5087580092889165836">添加新卡</translation>
@@ -2005,6 +2006,7 @@
 <translation id="6579630537141957243">连接 MIDI 设备？</translation>
 <translation id="6579990219486187401">浅粉色</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6585526963651937128">Chrome 历史记录</translation>
 <translation id="6587182488465657433">Chrome 发现您刚才使用的密码已遭遇数据泄露。为确保您的帐号安全，建议您立即更改此密码，然后检查您保存的密码。</translation>
 <translation id="6587923378399804057">您复制的链接</translation>
 <translation id="6591833882275308647">您的 <ph name="DEVICE_TYPE" /> 不受管理</translation>
@@ -2113,6 +2115,7 @@
 <translation id="691024665142758461">下载多个文件</translation>
 <translation id="6915804003454593391">用户：</translation>
 <translation id="6916954549222464607">财务规划与管理</translation>
+<translation id="6917795328362592458">系统检测到，您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，密码管理工具建议您检查已保存的所有密码。</translation>
 <translation id="6934672428414710184">此名称来自您的 Google 帐号</translation>
 <translation id="6939469646605424232">电视剧</translation>
 <translation id="6944692733090228304">您在一个不受 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的网站上输入了您的密码。为了保护您的帐号，请不要在其他应用和网站上重复使用您的密码。</translation>
@@ -2790,6 +2793,7 @@
 <translation id="8805819170075074995">列表条目“<ph name="LANGUAGE_ID" />”：该条目因同时存在于 SpellcheckLanguage 政策中而被忽略。</translation>
 <translation id="8806285662264631610">沐浴与身体护理产品</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
+<translation id="8808828119384186784">Chrome 设置</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="882338992931677877">手动插槽</translation>

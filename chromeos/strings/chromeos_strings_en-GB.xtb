@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">Hardware revision</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1908234395526491708">UDP request failures</translation>
-<translation id="1930797645656624981">Chrome OS Input Method Service</translation>
 <translation id="1947737735496445907">Printed</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google profile photo</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectivity</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Keyboard backlight toggle</translation>
 <translation id="2240366984605217732">Layout switch</translation>
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
-<translation id="2585245331261708204">What's new with Chrome OS</translation>
 <translation id="2619761439309613843">Daily Refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selected</translation>
@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Device type is unknown.</translation>
 <translation id="3966286471246132217">For more accurate results, close all apps until the test is complete.</translation>
 <translation id="3967822245660637423">Download complete</translation>
+<translation id="3969602104473960991">Chrome OS password updated</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
 <translation id="3993704782688964914">Your <ph name="DEVICE_NAME" /> is now up to date</translation>
@@ -323,7 +324,6 @@
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info related to your selection</translation>
-<translation id="475869545581454722">Chrome OS password updated</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
@@ -463,6 +463,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6113701710518389813">Up arrow</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> more albums</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Chrome OS input method service</translation>
 <translation id="6137767437444130246">User certificate</translation>
 <translation id="6146993107019042706">To finish, enter your new password</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -629,6 +630,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Enable auto colour mode</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
+<translation id="8045012663542226664">Microphone mute</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
 <translation id="808894953321890993">Change password</translation>
@@ -660,6 +662,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Internal keyboard</translation>
+<translation id="8431300646573772016">What's new with Chrome OS</translation>
 <translation id="843568408673868420">Internet connectivity</translation>
 <translation id="844521431886043384">DNS isn't set up</translation>
 <translation id="8461329675984532579">Home provider name</translation>
@@ -739,6 +742,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Can't contact the gateway from Android apps</translation>
 <translation id="9211490828691860325">All desks</translation>
+<translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Not activated</translation>
 <translation id="960719561871045870">Operator code</translation>

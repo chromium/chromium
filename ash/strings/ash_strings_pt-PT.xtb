@@ -136,7 +136,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Definições de rede</translation>
 <translation id="1715293566947629045">A desativar o perfil. Aguarde alguns minutos.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">S</translation>
 <translation id="1719094688023114093">As Legendas instantâneas estão ativadas.</translation>
 <translation id="1720011244392820496">Desative o Sync Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
@@ -523,6 +523,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4095366824370681039">Caneta de tinta</translation>
 <translation id="4112140312785995938">Procurar para trás</translation>
 <translation id="4114315158543974537">Ative o Centro do telemóvel</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">janela</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, certifique-se de que o Bluetooth do telemóvel está ativado</translation>
 <translation id="4129129681837227511">Para ver notificações no ecrã de bloqueio, desbloqueie o mesmo para alterar a definição</translation>
@@ -562,7 +563,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Premiu o atalho de teclado de alto contraste. Pretende ativá-lo?</translation>
 <translation id="4322742403972824594">O atalho de teclado Ctrl + Alt + seta para cima foi alterado. Para utilizar a tecla Início, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a esquerda.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">O Lacros não é suportado enquanto vários utilizadores tiverem sessão iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">A carregar o Assistente...</translation>
@@ -795,7 +795,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5788127256798019331">Ficheiros do Google Play</translation>
 <translation id="5790085346892983794">Sucesso</translation>
 <translation id="5805809050170488595">Clicar para ativar <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">SO Chromium</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5837036133683224804">Parar o <ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
@@ -1147,7 +1146,6 @@ Nova instalação</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
-<translation id="7952747673138230804">O Chrome OS mostra sugestões de novo conteúdo a explorar. Apenas envia estatísticas para melhorar a qualidade se tiver optado por partilhar os dados de utilização. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Modo de alto contraste</translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="7977927628060636163">A pesquisar redes móveis...</translation>

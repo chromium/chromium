@@ -87,6 +87,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1351937230027495976">Sbalit nabídku</translation>
 <translation id="1364382257761975320">Pokud chcete Chromebook odemknout, použijte otisk prstu</translation>
 <translation id="1364618750746929654">Přepis nelze vytvořit</translation>
+<translation id="1372545819342940910">Uložit plochu na později</translation>
 <translation id="1383597849754832576">Stažení řečových souborů se nezdařilo. Zkuste to znovu později.</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1391102559483454063">Zapnuto</translation>
@@ -522,6 +523,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4095366824370681039">Pero</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
 <translation id="4114315158543974537">Zapnutí funkce Phone Hub</translation>
+<translation id="4115378294792113321">Purpurová</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Pokud chcete odemknout Chromebook, zkontrolujte, zda je na telefonu zapnutý Bluetooth</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
@@ -561,7 +563,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Stiskli jste klávesovou zkratku pro vysoký kontrast. Chcete ho zapnout?</translation>
 <translation id="4322742403972824594">Klávesová zkratka Ctrl + Alt + šipka nahoru se změnila. Pokud chcete použít klávesu Home, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vlevo.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros není podporován, když je přihlášeno více uživatelů.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Asistent se načítá...</translation>
@@ -794,7 +795,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5788127256798019331">Soubory Play</translation>
 <translation id="5790085346892983794">Úspěšně provedeno</translation>
 <translation id="5805809050170488595">Kliknutím aktivujete síť <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
@@ -1146,7 +1146,6 @@ Nová instalace</translation>
 <translation id="79341161159229895">Správci účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Stisknutím kláves <ph name="SHORTCUT_KEY_NAME" /> + V zobrazíte schránku. Ve schránce je uloženo posledních pět zkopírovaných položek.</translation>
 <translation id="7942349550061667556">Červená</translation>
-<translation id="7952747673138230804">Chrome OS zobrazuje návrhy nového obsahu k prozkoumání. Statistiky k vylepšení kvality se odesílají, pouze pokud jste povolili sdílení údajů o využití. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Režim vysokého kontrastu</translation>
 <translation id="7968693143708939792">Vyberte složku…</translation>
 <translation id="7977927628060636163">Vyhledávání mobilních sítí...</translation>

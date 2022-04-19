@@ -84,6 +84,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1351937230027495976">Comprimi il menu</translation>
 <translation id="1364382257761975320">Per sbloccare Chromebook, utilizza la tua impronta</translation>
 <translation id="1364618750746929654">Impossibile generare la trascrizione</translation>
+<translation id="1372545819342940910">Salva scrivania per dopo</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1391102559483454063">On</translation>
@@ -520,6 +521,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4095366824370681039">Penna stilografica</translation>
 <translation id="4112140312785995938">Vai indietro</translation>
 <translation id="4114315158543974537">Attiva Phone Hub</translation>
+<translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">finestra</translation>
 <translation id="4123259114412175274">Per sbloccare Chromebook, assicurati che il Bluetooth del telefono sia attivo</translation>
 <translation id="4129129681837227511">Se vuoi vedere le notifiche nella schermata di blocco, sblocca il dispositivo per cambiare l'impostazione</translation>
@@ -559,7 +561,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Hai premuto la scorciatoia da tastiera per l'alto contrasto. Vuoi attivarlo?</translation>
 <translation id="4322742403972824594">La scorciatoia da tastiera Ctrl + Alt + Freccia su è cambiata. Per usare il tasto Home, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia sinistra.</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros non è supportato quando più utenti hanno effettuato l'accesso.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
 <translation id="4351433414020964307">L'assistente è in fase di caricamento…</translation>
@@ -792,7 +793,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5788127256798019331">File Google Play</translation>
 <translation id="5790085346892983794">Completato</translation>
 <translation id="5805809050170488595">Fai clic per attivare <ph name="NETWORK_NAME" /></translation>
-<translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Impostazioni dei dispositivi connessi</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
@@ -1143,7 +1143,6 @@ Nuova installazione</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Premi <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare gli appunti. Gli ultimi 5 elementi copiati sono stati salvati negli appunti.</translation>
 <translation id="7942349550061667556">Rosso</translation>
-<translation id="7952747673138230804">Chrome OS mostra suggerimenti relativi a nuovi contenuti da esplorare. Vengono inviate statistiche per migliorare la qualità solo se hai scelto di condividere i dati sull'utilizzo. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Modalità ad alto contrasto</translation>
 <translation id="7968693143708939792">Seleziona cartella…</translation>
 <translation id="7977927628060636163">Ricerca di reti mobili...</translation>

@@ -93,9 +93,9 @@
 <translation id="1887850431809612466">ହାର୍ଡୱେୟାର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
-<translation id="1930797645656624981">Chrome OS ଇନ୍‍ପୁଟ୍ ପଦ୍ଧତି ସେବା</translation>
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google ପ୍ରୋଫାଇଲ ଫଟୋ</translation>
 <translation id="1979103255016296513">ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନର ସମୟ ବିଳମ୍ବ ହୋଇଯାଇଛି</translation>
 <translation id="1999615961760456652">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲ୍</translation>
 <translation id="2006864819935886708">ସଂଯୋଗ</translation>
@@ -122,6 +122,7 @@
 <translation id="222447520299472966">ଅତି କମରେ ଏକ ଆର୍ଟ ଗ୍ୟାଲେରୀ ଆଲବମ୍ ଚୟନ କରାଯିବା ଆବଶ୍ୟକ</translation>
 <translation id="2230005943220647148">ସେଲସିୟସ୍</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ ଟୋଗଲ</translation>
 <translation id="2240366984605217732">ଲେଆଉଟ ସ୍ୱିଚ</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
@@ -150,7 +151,6 @@
 <translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
-<translation id="2585245331261708204">Chrome OSରେ ନୂଆ କଣ ଅଛି</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="2640549051766135490">ଆଲବମ୍ <ph name="TITLE" /> <ph name="DESC" /> ଚୟନ କରାଯାଇଛି</translation>
@@ -323,7 +323,6 @@
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="4744944742468440486">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା</translation>
-<translation id="475869545581454722">Chrome OSର ପାସୱାର୍ଡ ଅପଡେଟ୍ ହୋଇଛି</translation>
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="4782311465517282004">ଯେତେବେଳେ ଆପଣ ଟେକ୍ସଟରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଏହାକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତି, ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ ରୂପାନ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />ଟି ଫଟୋ</translation>
@@ -629,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
+<translation id="8045012663542226664">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ</translation>
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
 <translation id="8082366717211101304">Android ଆପଗୁଡ଼ିକରୁ DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
@@ -739,6 +739,7 @@
 <translation id="917720651393141712">ପରୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="9204237731135241582">Android ଆପଗୁଡ଼ିକରୁ ଗେଟୱେ ସହ ଯୋଗାଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9211490828691860325">ସମସ୍ତ ଡେସ୍କ</translation>
+<translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
 <translation id="960719561871045870">ଅପରେଟର୍ କୋଡ୍</translation>

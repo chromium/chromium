@@ -359,6 +359,7 @@
 <translation id="4049507953662678203">మీ ఇంట‌ర్నెట్ ప‌ని చేస్తోందో లేదో చెక్ చేసుకుని మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="4063300985191096908">ఫీడ్‌కు వెళ్లండి</translation>
 <translation id="408404951701638773">ఇప్పుడు శోధన పట్టీకి మరింత సులభంగా చేరుకోవచ్చు</translation>
+<translation id="4108998448622696017">ప్రమాదకరమైన సంఘటనలు జరిగినప్పుడు గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="411254640334432676">డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="4112644173421521737">సెర్చ్</translation>
 <translation id="4113030288477039509">మీ నిర్వాహకుడు ద్వారా నిర్వహించబడుతోంది</translation>
@@ -609,6 +610,7 @@
 <translation id="6232736989810857397">Google Lensను ఉపయోగించి సులభంగా క్యాలెండర్ ఈవెంట్‌లను క్రియేట్ చేయడానికి ఇది మిమ్మల్ని అనుమతిస్తుంది.</translation>
 <translation id="6254066287920239840">లింక్‌లను బ్రౌజర్‌కు బదులుగా యాప్‌లో తెరవండి.</translation>
 <translation id="6255097610484507482">క్రెడిట్ కార్డ్‌ను ఎడిట్ చేయండి</translation>
+<translation id="6277426346321820595">రక్షణ లేదు</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />లోకి అనువాదం అందించే సూచన</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />‌ను అన్-ఫాలో చేశారు</translation>
 <translation id="6293101329759844770">సురక్షిత బ్రౌజింగ్ ఆన్ చేయడానికి, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను తెరిచి, 'సురక్షిత బ్రౌజింగ్'ను ట్యాప్ చేయండి.</translation>
@@ -807,6 +809,7 @@
 <translation id="7884694604461143138">సెర్చ్ హిస్టరీ (<ph name="COUNT" /> కనుగొనబడింది)</translation>
 <translation id="7887198238286927132">మీ గోప్యతను సంరక్షించడానికి, Chrome ఈ ఫీల్డ్‌ను ఆటోమేటిక్‌గా పూరించదు.</translation>
 <translation id="7911190106180361398">అన్నింటిని సింక్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు.</translation>
+<translation id="7920949005883349320">గోప్యత, సెక్యూరిటీ</translation>
 <translation id="7930998711684428189">పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">పాస్‌వర్డ్‌లను ఎగుమతి చేయి...</translation>
@@ -964,4 +967,5 @@
 <translation id="988141524645182168">ఇతర పరికరాలు</translation>
 <translation id="989988560359834682">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
 <translation id="994757059139821576">కథనం సూచనలు</translation>
+<translation id="997742718232442409">ఈ వెబ్‌సైట్ క్యాలెండర్ ఫైల్‌ను డౌన్‌లోడ్ చేయడానికి ట్రై చేస్తోంది.</translation>
 </translationbundle>

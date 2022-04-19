@@ -148,7 +148,6 @@
 <translation id="1779766957982586368">Закрыть окно</translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792959175193046959">Вы можете в любой момент изменить расположение скачиваемых файлов по умолчанию.</translation>
-<translation id="1795251344124198516">Дополнительные условия использования Chrome и Chrome OS</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1810845389119482123">Синхронизация не настроена</translation>
 <translation id="1829244130665387512">Найти на странице</translation>
@@ -185,7 +184,6 @@
 <translation id="2000419248597011803">Отправлять некоторые файлы cookie и поисковые запросы из адресной строки в поисковую систему по умолчанию</translation>
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
-<translation id="2015836039326522978">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Также действует <ph name="BEGIN_LINK3" />Политика конфиденциальности<ph name="END_LINK3" />.</translation>
 <translation id="2020309681647789787">История будет храниться на всех ваших синхронизированных устройствах, поэтому вы легко сможете, например, начать работу на одном устройстве, а продолжить ее на другом.</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
@@ -462,7 +460,6 @@
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
 <translation id="3495219333887281978">Нижний экран входа в аккаунт открыт наполовину.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3502647154914451322">Используя Chrome, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Стандартная защита включена</translation>
 <translation id="3509330069915219067">Вы не в Сети. Браузеру Chrome не удается проверить наличие обновлений.</translation>
 <translation id="3513704683820682405">Дополненная реальность</translation>
@@ -589,6 +586,7 @@
 <translation id="4296252229500326964">Новая вкладка инкогнито</translation>
 <translation id="4298388696830689168">Связанные сайты</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="4304713468139749426">Диспетчер паролей</translation>
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
 <translation id="4321739720395210191">Не удается открыть камеру. Перезапустите устройство и повторите попытку.</translation>
@@ -957,7 +955,6 @@
 <translation id="6345878117466430440">Отметить как прочитанное</translation>
 <translation id="6363990818884053551">Чтобы включить синхронизацию, подтвердите свою личность.</translation>
 <translation id="6364438453358674297">Удалить подсказку из истории?</translation>
-<translation id="6379829913050047669">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Chrome чаще предзагружает страницы, которые вы с большой вероятностью посетите. Может увеличиться расход трафика.</translation>
 <translation id="6385407407546870227">Если пробные функции включены, противодействие спаму и мошенничеству будет осуществляться с использованием токенов доверия. Токены помогают сайтам бороться с недобросовестными действиями и отличать ботов от людей.
 
@@ -1127,7 +1124,6 @@
 <translation id="7208109991155904980">Отклик перемещен</translation>
 <translation id="7222235798733126207">Ограниченный обмен данными между сайтами</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ожидание скачивания 1 файла…}one{Ожидание скачивания # файла…}few{Ожидание скачивания # файлов…}many{Ожидание скачивания # файлов…}other{Ожидание скачивания # файла…}}</translation>
-<translation id="7237045078887540010">Используя Chrome, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Также действует <ph name="BEGIN_PRIVACY_LINK" />Политика конфиденциальности<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизованный контент: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Убедитесь, что в браузере Chrome на устройстве <ph name="TARGET_DEVICE_NAME" /> включена синхронизация.</translation>
 <translation id="7252076891734325316">Поднесите телефон к компьютеру.</translation>

@@ -12,6 +12,7 @@
 <translation id="1917964099031477364">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chrome ac apiau Google eraill ar y ddyfais hon.</translation>
 <translation id="1968388653333775699">Gwneud Rhagor gyda Chrome</translation>
 <translation id="2009224836393115614">Ni all Chrome wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
+<translation id="2056123005618757196">Gwneud rhagor â Chrome syml, diogel a chyflymach nag erioed.</translation>
 <translation id="2147651015520127414">Gwnaeth Chrome ddilysu bod <ph name="ISSUER" /> wedi cyhoeddi tystysgrif y wefan hon.</translation>
 <translation id="2199719347983604670">Data o gysoni Chrome</translation>
 <translation id="2313070403598893276">Mae Google Chrome yn syml, diogel a chyflymach nag erioed</translation>
@@ -54,6 +55,7 @@
 <translation id="4523886039239821078">Mae rhai ychwanegion yn achosi i Chrome dorri. Dadosodwch:</translation>
 <translation id="4633328489441962921">Ni all Chrome wirio am ddiweddariadau</translation>
 <translation id="4698415050768537821">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
+<translation id="4819268619367838612">Er mwyn helpu i wella'r ap, mae Chrome yn anfon data defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ni chefnogir ar Chrome Beta</translation>
 <translation id="5030102366287574140">Gall Chrome helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
 <translation id="5108659628347594808">Gwella Chrome</translation>
@@ -73,6 +75,7 @@
 <translation id="6181930887571472871">Newid i Chrome</translation>
 <translation id="6238746320622508509">Caniatáu i Chrome gloi eich tabiau Anhysbys</translation>
 <translation id="6387994324662817823">Mae cyfrineiriau'n cael eu cadw i Rheolwr Cyfrineiriau Google ar y ddyfais hon yn unig.</translation>
+<translation id="6412673304250309937">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chrome. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="6427126399757991875">Mae'ch sefydliad wrthi'n gosod Chrome…</translation>
 <translation id="6600954340915313787">Copïwyd i Chrome</translation>
 <translation id="6634107063912726160">Pan fyddwch yn allgofnodi, ni fydd Chrome yn cysoni unrhyw ddata newydd i'ch Cyfrif Google. Mae data sydd wedi'u cysoni yn flaenorol yn aros yn y cyfrif.</translation>
@@ -118,6 +121,15 @@
 <translation id="8736550665979974340">Cadwch yn Ddiogel gyda Google Chrome</translation>
 <translation id="8772179140489533211">Dangos anogwyr i fewngofnodi i Chrome.</translation>
 <translation id="8788269841521769222">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" /></translation>
+<translation id="8969290730818637510">Pan fydd ymlaen:
+<ph name="BEGIN_INDENT" />  • Helpwch i wneud Chrome yn well i bob sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
+
+Pethau i'w hystyried:
+<ph name="BEGIN_INDENT" />  • Anfonir gwybodaeth at Google am eich defnydd Chrome, ond nid yw'n gysylltiedig â chi.
+
+  • Os bydd Chrome yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol.
+
+  • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Gosod Chrome fel y porwr diofyn?</translation>
 <translation id="9122931302567044771">Mae hyn yn golygu y bydd Chrome yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
 </translationbundle>
