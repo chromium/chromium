@@ -607,7 +607,8 @@ void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
   // If the fixedpos containing block is fragmented, adjust the offset to be
   // from the first containing block fragment to the fragmentation context root.
   if (!descendant.fixedpos_containing_block.Fragment() &&
-      node_.IsFixedContainer()) {
+      (node_.IsFixedContainer() ||
+       descendant.fixedpos_inline_container.container)) {
     descendant.fixedpos_containing_block.IncreaseBlockOffset(
         -previous_consumed_block_size);
   }
@@ -622,8 +623,7 @@ LayoutUnit NGBoxFragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
 
 void NGBoxFragmentBuilder::
     AdjustFixedposContainingBlockForFragmentainerDescendants() {
-  if (!HasOutOfFlowFragmentainerDescendants() || !PreviousBreakToken() ||
-      !node_.IsFixedContainer())
+  if (!HasOutOfFlowFragmentainerDescendants() || !PreviousBreakToken())
     return;
 
   for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
@@ -633,8 +633,7 @@ void NGBoxFragmentBuilder::
 }
 
 void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
-  if (!HasMulticolsWithPendingOOFs() || !PreviousBreakToken() ||
-      !node_.IsFixedContainer())
+  if (!HasMulticolsWithPendingOOFs() || !PreviousBreakToken())
     return;
 
   // If the fixedpos containing block is fragmented, adjust the offset to be
@@ -645,7 +644,9 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
       PreviousBreakToken()->ConsumedBlockSize();
   for (auto& multicol : multicols_with_pending_oofs_) {
     NGMulticolWithPendingOOFs<LogicalOffset>& value = *multicol.value;
-    if (!value.fixedpos_containing_block.Fragment()) {
+    if (!value.fixedpos_containing_block.Fragment() &&
+        (node_.IsFixedContainer() ||
+         value.fixedpos_inline_container.container)) {
       value.fixedpos_containing_block.IncreaseBlockOffset(
           -previous_consumed_block_size);
       value.multicol_offset.block_offset += previous_consumed_block_size;

@@ -363,11 +363,14 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void AddChildInternal(const NGPhysicalFragment*, const LogicalOffset&);
 
   // Set the fixedpos inline container and containing block based on the current
-  // |box_fragment|.
+  // |box_fragment|, |relative_offset| and |current_inline_container|.
   void AdjustFixedposContainerInfo(
       const NGPhysicalFragment* box_fragment,
+      LogicalOffset relative_offset,
       NGInlineContainer<LogicalOffset>* fixedpos_inline_container,
-      const NGPhysicalFragment** fixedpos_containing_block_fragment) const;
+      const NGPhysicalFragment** fixedpos_containing_block_fragment,
+      const NGInlineContainer<LogicalOffset>* current_inline_container =
+          nullptr) const;
 
   NGLayoutInputNode node_;
   const NGConstraintSpace* space_;
