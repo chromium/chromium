@@ -535,6 +535,7 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Wait for and verify hard-coded selection failure.
     const methodName = 'selectGooglePhotosPhoto';
+    wallpaperProvider.selectGooglePhotosPhotoResponse = false;
     assertEquals(await wallpaperProvider.whenCalled(methodName), photo.id);
     await waitAfterNextRender(googlePhotosPhotosElement);
     assertEquals(personalizationStore.data.wallpaper.loading.setImage, 0);

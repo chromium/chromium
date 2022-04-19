@@ -6,6 +6,7 @@
  * @fileoverview Utility functions to be used in trusted code.
  */
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
@@ -25,6 +26,20 @@ export function isFilePath(obj: any): obj is FilePath {
 /** Checks whether |obj| is an instance of |GooglePhotosPhoto|. */
 export function isGooglePhotosPhoto(obj: any): obj is GooglePhotosPhoto {
   return !!obj && typeof obj.id === 'string';
+}
+
+/** Returns the unique identifier for |image|. */
+export function getImageKey(image: WallpaperImage|FilePath|
+                            GooglePhotosPhoto): string {
+  if (isWallpaperImage(image)) {
+    return image.assetId.toString();
+  }
+  if (isFilePath(image)) {
+    // TODO(b/229420564): Update key extraction for local images.
+    return image.path.substr(image.path.lastIndexOf('/') + 1);
+  }
+  assert(isGooglePhotosPhoto(image));
+  return image.id;
 }
 
 /**

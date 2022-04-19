@@ -31,6 +31,7 @@ import './user/avatar_camera_element.js';
 import './user/avatar_list_element.js';
 import './user/user_preview_element.js';
 import './user/user_subpage_element.js';
+import './utils.js';
 import './wallpaper/index.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -84,6 +85,7 @@ export {setUserProviderForTesting} from './user/user_interface_provider.js';
 export {UserPreview} from './user/user_preview_element.js';
 export {UserSubpage} from './user/user_subpage_element.js';
 export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './user/webcam_utils_proxy.js';
+export {getImageKey} from './utils.js';
 export {GooglePhotosAlbums} from './wallpaper/google_photos_albums_element.js';
 export {GooglePhotosCollection} from './wallpaper/google_photos_collection_element.js';
 export {GooglePhotosPhotosByAlbumId} from './wallpaper/google_photos_photos_by_album_id_element.js';
