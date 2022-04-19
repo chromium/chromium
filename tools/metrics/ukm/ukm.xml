@@ -1838,10 +1838,29 @@ be describing additional metrics about the same event.
   <summary>
     Recorded when user submits a form.
   </summary>
+  <metric name="AutocompleteFills">
+    <summary>
+      Number of Autocomplete fills invoked by the user on the current form.
+    </summary>
+  </metric>
+  <metric name="AutofillFills">
+    <summary>
+      Number of Autofill fills invoked by the user on the current form.
+    </summary>
+  </metric>
   <metric name="AutofillFormSubmittedState">
     <summary>
       Whether form's fields were all autofilled, some fields were autofilled, or
       none of the field were autofilled. See |AutofillFormSubmittedState|.
+    </summary>
+  </metric>
+  <metric name="FormElementUserModifications">
+    <summary>
+      Number of times a user focused on a form element and changed its value.
+      Consecutive value changes on the same form element are not counted,
+      neither are JS invoked changes. Also, re-focusing a form element and
+      changing its value is only counted if another form element's value was
+      changed in the meantime.
     </summary>
   </metric>
   <metric name="FormSignature">

@@ -445,6 +445,8 @@ BrowserAutofillManager::BrowserAutofillManager(
 
   CountryNames::SetLocaleString(app_locale_);
   offer_manager_ = client->GetAutofillOfferManager();
+
+  form_interactions_counter_ = std::make_unique<FormInteractionsCounter>();
 }
 
 BrowserAutofillManager::~BrowserAutofillManager() {
@@ -932,6 +934,9 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
   }
 
   UpdateInitialInteractionTimestamp(timestamp);
+
+  form_interactions_counter_->OnTextFieldDidChange(
+      autofill_field->GetFieldSignature());
 }
 
 bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
@@ -1420,6 +1425,7 @@ void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value) {
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value);
+  form_interactions_counter_->OnAutocompleteFill();
 }
 
 void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
@@ -1572,7 +1578,7 @@ void BrowserAutofillManager::UploadFormDataAsyncCallback(
     submitted_form->LogQualityMetrics(
         submitted_form->form_parsed_timestamp(), interaction_time,
         submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
-        observed_submission);
+        observed_submission, form_interactions_counter_->GetCounts());
   }
   if (submitted_form->ShouldBeUploaded())
     UploadFormData(*submitted_form, observed_submission);
@@ -1632,6 +1638,7 @@ void BrowserAutofillManager::Reset() {
   initial_interaction_timestamp_ = TimeTicks();
   external_delegate_->Reset();
   filling_context_.clear();
+  form_interactions_counter_ = std::make_unique<FormInteractionsCounter>();
 }
 
 bool BrowserAutofillManager::RefreshDataModels() {
@@ -1945,12 +1952,14 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       credit_card_form_event_logger_->OnDidFillSuggestion(
           credit_card_, *form_structure, *autofill_field, newly_filled_fields,
           base::flat_set<FieldGlobalId>(std::move(safe_fields)), sync_state_);
+      form_interactions_counter_->OnAutofillFill();
     }
 
     if (!is_credit_card) {
       address_form_event_logger_->OnDidFillSuggestion(
           *absl::get<const AutofillProfile*>(profile_or_credit_card),
           *form_structure, *autofill_field, sync_state_);
+      form_interactions_counter_->OnAutofillFill();
     }
   }
 

@@ -43,6 +43,9 @@ namespace {
 // Exponential bucket spacing for UKM event data.
 constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
+// Overflow bucket for form user interactions
+constexpr int64_t kFormUserInteractionsOverflowBucket = 20;
+
 // Translates structured name types into simple names that are used for
 // naming histograms.
 constexpr auto kStructuredNameTypeToNameMap =
@@ -2388,7 +2391,8 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
     const DenseSet<FormType>& form_types,
     const base::TimeTicks& form_parsed_timestamp,
     FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    const FormInteractionCounts& form_interaction_counts) {
   UMA_HISTOGRAM_ENUMERATION("Autofill.FormSubmittedState", state,
                             AUTOFILL_FORM_SUBMITTED_STATE_ENUM_SIZE);
 
@@ -2424,7 +2428,7 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
   }
   form_interactions_ukm_logger->LogFormSubmitted(
       is_for_credit_card, has_upi_vpa_field, form_types, state,
-      form_parsed_timestamp, form_signature);
+      form_parsed_timestamp, form_signature, form_interaction_counts);
 }
 
 // static
@@ -3081,7 +3085,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
     const DenseSet<FormType>& form_types,
     AutofillFormSubmittedState state,
     const base::TimeTicks& form_parsed_timestamp,
-    FormSignature form_signature) {
+    FormSignature form_signature,
+    const FormInteractionCounts& form_interaction_counts) {
   if (!CanLog())
     return;
 
@@ -3090,7 +3095,14 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
       .SetIsForCreditCard(is_for_credit_card)
       .SetHasUpiVpaField(has_upi_vpa_field)
       .SetFormTypes(FormTypesToBitVector(form_types))
-      .SetFormSignature(HashFormSignature(form_signature));
+      .SetFormSignature(HashFormSignature(form_signature))
+      .SetFormElementUserModifications(
+          std::min(form_interaction_counts.form_element_user_modifications,
+                   kFormUserInteractionsOverflowBucket))
+      .SetAutofillFills(std::min(form_interaction_counts.autofill_fills,
+                                 kFormUserInteractionsOverflowBucket))
+      .SetAutocompleteFills(std::min(form_interaction_counts.autocomplete_fills,
+                                     kFormUserInteractionsOverflowBucket));
   if (form_parsed_timestamp.is_null())
     DCHECK(state == NON_FILLABLE_FORM_OR_NEW_DATA ||
            state == FILLABLE_FORM_AUTOFILLED_NONE_DID_NOT_SHOW_SUGGESTIONS)

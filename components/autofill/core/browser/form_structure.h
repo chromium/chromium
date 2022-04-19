@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_interactions_counter.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/language_code.h"
@@ -207,7 +208,8 @@ class FormStructure {
       const base::TimeTicks& submission_time,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       bool did_show_suggestions,
-      bool observed_submission) const;
+      bool observed_submission,
+      const FormInteractionCounts& form_interaction_counts) const;
 
   // Log the quality of the heuristics and server predictions for this form
   // structure, if autocomplete attributes are present on the fields (they are

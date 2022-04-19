@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/form_interactions_counter.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -1284,7 +1285,8 @@ class AutofillMetrics {
                           const DenseSet<FormType>& form_types,
                           AutofillFormSubmittedState state,
                           const base::TimeTicks& form_parsed_timestamp,
-                          FormSignature form_signature);
+                          FormSignature form_signature,
+                          const FormInteractionCounts& form_interaction_counts);
     void LogFormEvent(FormEvent form_event,
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
@@ -1798,7 +1800,8 @@ class AutofillMetrics {
       const DenseSet<FormType>& form_types,
       const base::TimeTicks& form_parsed_timestamp,
       FormSignature form_signature,
-      FormInteractionsUkmLogger* form_interactions_ukm_logger);
+      FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      const FormInteractionCounts& form_interaction_counts);
 
   // Logs if every non-empty field in a submitted form was filled by Autofill.
   // If |is_address| an address was filled, otherwise it was a credit card.
