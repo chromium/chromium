@@ -1,6 +1,0 @@
-This test checks how text editor handles different movements: ctrl-left, ctrl-right, ctrl-shift-left, ctrl-backspace, alt-left, alt-right, alt-shift-left, alt-shift-right.
-
-PROMISE FAILURE: TypeError: SourceFrame.SourcesTextEditorDelegate is not a constructor
-    at Object.SourcesTestRunner.createTestEditor (http://127.0.0.1:8000/inspector-sources/legacy_test_runner/sources_test_runner/EditorTestRunner.js:12:63)
-    at http://127.0.0.1:8000/devtools/editor/text-editor-word-jumps.js:27:38
-
