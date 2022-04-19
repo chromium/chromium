@@ -729,7 +729,7 @@ need to be translated for each locale.-->
         <message name="IDS_APP_FULLSCREEN_KEY" desc="This refers to the 'Fullscreen' media key on certain keyboards.">
           Fullscreen
         </message>
-        <message name="IDS_APP_OVERVIEW_KEY" desc="This refers to the 'Overview' or 'Show All Windows' media key on Chrome OS keyboards.">
+        <message name="IDS_APP_OVERVIEW_KEY" desc="This refers to the 'Overview' or 'Show All Windows' media key on ChromeOS keyboards.">
           Overview
         </message>
       </if>
@@ -803,7 +803,7 @@ need to be translated for each locale.-->
         <ph name="NUMBER">$1<ex>75</ex></ph> %
       </message>
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_CHROMEOS_SYSTEM" desc="The label to describe the notification comes from ChromeOS system.">
-        <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>Chrome OS</ex></ph> system
+        <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph> system
       </message>
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The default placeholder text for notification inline reply.">
         Send message

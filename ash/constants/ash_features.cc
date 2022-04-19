@@ -191,7 +191,7 @@ const base::Feature kAutoNightLight{"AutoNightLight",
 const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables params tuning experiment for autocorrect on Chrome OS.
+// Enables params tuning experiment for autocorrect on ChromeOS.
 const base::Feature kAutocorrectParamsTuning{"AutocorrectParamsTuning",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -209,7 +209,7 @@ const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kBluetoothFixA2dpPacketSize{
     "BluetoothFixA2dpPacketSize", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables the Chrome OS Bluetooth Revamp, which updates Bluetooth
+// Enables or disables the ChromeOS Bluetooth Revamp, which updates Bluetooth
 // system UI and related infrastructure. See https://crbug.com/1010321.
 const base::Feature kBluetoothRevamp{"BluetoothRevamp",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
@@ -315,7 +315,7 @@ const base::Feature kDesksCloseAll{"DesksCloseAll",
 const base::Feature kContextualNudges{"ContextualNudges",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables Crosh System Web App. When enabled, crosh (Chrome OS
+// Enables or disables Crosh System Web App. When enabled, crosh (ChromeOS
 // Shell) will run as a tabbed System Web App rather than a normal browser tab.
 const base::Feature kCroshSWA{"CroshSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -403,7 +403,7 @@ const base::Feature kCryptohomeRecoveryFlow{"CryptohomeRecoveryFlow",
 const base::Feature kDemoModeSWA{"DemoModeSWA",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables Sync for desk templates on Chrome OS.
+// Enables or disables Sync for desk templates on ChromeOS.
 const base::Feature kDeskTemplateSync{"DeskTemplateSync",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -423,7 +423,7 @@ const base::Feature kDisableCryptAuthV1DeviceSync{
 
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
-// improve perceived performance of web browsing within the Chrome OS user
+// improve perceived performance of web browsing within the ChromeOS user
 // session by avoiding re-estabshing TLS connections that require client
 // certificates.
 const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
@@ -493,7 +493,7 @@ const base::Feature kEnableDesksTrackpadSwipeImprovements{
     "EnableDesksTrackpadSwipeImprovements", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the DNS proxy service providing support split and secure DNS
-// for Chrome OS.
+// for ChromeOS.
 const base::Feature kEnableDnsProxy{"EnableDnsProxy",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -709,7 +709,7 @@ const base::Feature kFiltersInRecentsV2{"FiltersInRecentsV2",
 const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables Floating Workspace feature on Chrome OS
+// Enables or disables Floating Workspace feature on ChromeOS
 const base::Feature kFloatingWorkspace{"FloatingWorkspace",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -770,7 +770,7 @@ const base::Feature kHelpAppDiscoverTab{"HelpAppDiscoverTab",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables the Help App Discover tab notifications on non-stable
-// Chrome OS channels. Used for testing.
+// ChromeOS channels. Used for testing.
 const base::Feature kHelpAppDiscoverTabNotificationAllChannels{
     "HelpAppDiscoverTabNotificationAllChannels",
     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -779,7 +779,7 @@ const base::Feature kHelpAppDiscoverTabNotificationAllChannels{
 const base::Feature kHelpAppLauncherSearch{"HelpAppLauncherSearch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable Chrome OS hibernation features.
+// Enable ChromeOS hibernation features.
 const base::Feature kHibernate{"Hibernate", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables the flag to synchronize launcher item colors. It is
@@ -832,7 +832,7 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable a new header bar for the Chrome OS virtual keyboard.
+// Enable or disable a new header bar for the ChromeOS virtual keyboard.
 const base::Feature kVirtualKeyboardNewHeader{
     "VirtualKeyboardNewHeader", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -862,11 +862,11 @@ const base::Feature kImeStylusHandwriting{"StylusHandwriting",
 const base::Feature kImprovedDesksKeyboardShortcuts{
     "ImprovedDesksKeyboardShortcuts", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables Instant Tethering on Chrome OS.
+// Enables or disables Instant Tethering on ChromeOS.
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables to use lacros-chrome as the only web browser on Chrome OS.
+// Enables to use lacros-chrome as the only web browser on ChromeOS.
 // This works only when both LacrosSupport and LacrosPrimary below are enabled.
 // NOTE: Use crosapi::browser_util::IsAshWebBrowserEnabled() instead of checking
 // the feature directly. Similar to LacrosSupport and LacrosPrimary,
@@ -874,7 +874,7 @@ const base::Feature kInstantTethering{"InstantTethering",
 const base::Feature kLacrosOnly{"LacrosOnly",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables to use lacros-chrome as a primary web browser on Chrome OS.
+// Enables to use lacros-chrome as a primary web browser on ChromeOS.
 // This works only when LacrosSupport below is enabled.
 // NOTE: Use crosapi::browser_util::IsLacrosPrimary() instead of checking
 // the feature directly. Similar to LacrosSupport, this may not be allowed
@@ -882,7 +882,7 @@ const base::Feature kLacrosOnly{"LacrosOnly",
 const base::Feature kLacrosPrimary{"LacrosPrimary",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables "Linux and Chrome OS" support. Allows a Linux version of Chrome
+// Enables "Linux and ChromeOS" support. Allows a Linux version of Chrome
 // ("lacros-chrome") to run as a Wayland client with this instance of Chrome
 // ("ash-chrome") acting as the Wayland server and window manager.
 // NOTE: Use crosapi::browser_util::IsLacrosEnabled() instead of checking the
@@ -1001,7 +1001,7 @@ const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
 const base::Feature kMojoDBusRelay{"MojoDBusRelay",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables support for multilingual assistive typing on Chrome OS.
+// Enables support for multilingual assistive typing on ChromeOS.
 const base::Feature kMultilingualTyping{"MultilingualTyping",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1051,7 +1051,7 @@ const base::Feature kOnDeviceSpeechRecognition{
 const base::Feature kOobeConsolidatedConsent{"OobeConsolidatedConsent",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables the Chrome OS OOBE HID Detection Revamp, which updates
+// Enables or disables the ChromeOS OOBE HID Detection Revamp, which updates
 // the OOBE HID detection screen UI and related infrastructure. See
 // https://crbug.com/1299099.
 const base::Feature kOobeHidDetectionRevamp{"OobeHidDetectionRevamp",
@@ -1070,7 +1070,7 @@ const base::Feature kOobeNewRecommendApps{"OobeNewRecommendApps",
 const base::Feature kOobeRemoveShutdownButton{
     "OobeRemoveShutdownButton", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables the feedback tool new UX on Chrome OS.
+// Enables or disables the feedback tool new UX on ChromeOS.
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
 // tool on CrOS.
@@ -1105,7 +1105,7 @@ const base::Feature kPersonalizationHub{"PersonalizationHub",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Provides a UI for users to view information about their Android phone
-// and perform phone-side actions within Chrome OS.
+// and perform phone-side actions within ChromeOS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the Camera Roll feature in Phone Hub, which allows users to access
@@ -1203,12 +1203,12 @@ const base::Feature kQuickUnlockPinAutosubmitBackfill{
 const base::Feature kRedirectToDefaultIdP{"RedirectToDefaultIdP",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables Release Notes notifications on non-stable Chrome OS
+// Enables or disables Release Notes notifications on non-stable ChromeOS
 // channels. Used for testing.
 const base::Feature kReleaseNotesNotificationAllChannels{
     "ReleaseNotesNotificationAllChannels", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables Release Notes suggestion chip on Chrome OS.
+// Enables or disables Release Notes suggestion chip on ChromeOS.
 const base::Feature kReleaseNotesSuggestionChip{
     "ReleaseNotesSuggestionChip", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1227,7 +1227,7 @@ const base::Feature kScalableStatusArea{"ScalableStatusArea",
 const base::Feature kSecondaryGoogleAccountUsage{
     "SecondaryGoogleAccountUsage", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Overrides semantic colors in Chrome OS for easier debugging.
+// Overrides semantic colors in ChromeOS for easier debugging.
 const base::Feature kSemanticColorsDebugOverride{
     "SemanticColorDebugOverride", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1341,7 +1341,7 @@ const base::Feature kSystemJapanesePhysicalTyping{
 const base::Feature kSystemTransliterationPhysicalTyping{
     "SystemTransliterationPhysicalTyping", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the Chrome OS system-proxy daemon, only for system services. This
+// Enables the ChromeOS system-proxy daemon, only for system services. This
 // means that system services like tlsdate, update engine etc. can opt to be
 // authenticated to a remote HTTP web proxy via system-proxy.
 const base::Feature kSystemProxyForSystemServices{
@@ -1351,7 +1351,7 @@ const base::Feature kSystemProxyForSystemServices{
 const base::Feature kTabClusterUI{"TabClusterUI",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables Chrome OS Telemetry Extension.
+// Enables ChromeOS Telemetry Extension.
 const base::Feature kTelemetryExtension{"TelemetryExtension",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1373,7 +1373,7 @@ const base::Feature kTrilinearFiltering{"TrilinearFiltering",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Unblock the UsbPeripheralNotificationController class in ash to display
-// USB related notifications from the type-c daemon in Chrome OS.
+// USB related notifications from the type-c daemon in ChromeOS.
 const base::Feature kUsbNotificationController{
     "UsbNotificationController", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1392,7 +1392,7 @@ const base::Feature kUseMessagesStagingUrl{"UseMessagesStagingUrl",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Remap search+click to right click instead of the legacy alt+click on
-// Chrome OS.
+// ChromeOS.
 const base::Feature kUseSearchClickForRightClick{
     "UseSearchClickForRightClick", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1406,17 +1406,17 @@ const base::Feature kUseWallpaperStagingUrl{"UseWallpaperStagingUrl",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables user activity prediction for power management on
-// Chrome OS.
+// ChromeOS.
 // Defined here rather than in //chrome alongside other related features so that
 // PowerPolicyController can check it.
 const base::Feature kUserActivityPrediction{"UserActivityPrediction",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disable bordered key for virtual keyboard on Chrome OS.
+// Enable or disable bordered key for virtual keyboard on ChromeOS.
 const base::Feature kVirtualKeyboardBorderedKey{
     "VirtualKeyboardBorderedKey", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disable multitouch for virtual keyboard on Chrome OS.
+// Enable or disable multitouch for virtual keyboard on ChromeOS.
 const base::Feature kVirtualKeyboardMultitouch{
     "VirtualKeyboardMultitouch", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1473,23 +1473,23 @@ const base::Feature kWifiSyncApplyDeletes{"WifiSyncApplyDeletes",
 const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables Fresnel Device Active reporting on Chrome OS.
+// Enables or disables Fresnel Device Active reporting on ChromeOS.
 const base::Feature kDeviceActiveClient{"DeviceActiveClient",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables PSM CheckMembership for daily device active pings
-// on Chrome OS.
+// on ChromeOS.
 const base::Feature kDeviceActiveClientDailyCheckMembership{
     "DeviceActiveClientDailyCheckMembership",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables PSM CheckIn for the monthly device active pings
-// on Chrome OS.
+// on ChromeOS.
 const base::Feature kDeviceActiveClientMonthlyCheckIn{
     "DeviceActiveClientMonthlyCheckIn", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables PSM CheckMembership for monthly device active pings
-// on Chrome OS.
+// on ChromeOS.
 const base::Feature kDeviceActiveClientMonthlyCheckMembership{
     "DeviceActiveClientMonthlyCheckMembership",
     base::FEATURE_DISABLED_BY_DEFAULT};
