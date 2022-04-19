@@ -372,8 +372,11 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     set_client_socket_factory(client_socket_factory.get());
     storage->set_client_socket_factory(std::move(client_socket_factory));
 
+    HostResolver::ManagerOptions manager_options;
+    manager_options.insecure_dns_client_enabled = false;
+    manager_options.additional_types_via_insecure_dns_enabled = false;
     host_resolver_ = HostResolver::CreateStandaloneNetworkBoundResolver(
-        context->net_log(), bound_network_);
+        context->net_log(), bound_network_, manager_options);
 
     if (!quic_context_)
       set_quic_context(std::make_unique<QuicContext>());

@@ -239,15 +239,45 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
 #if BUILDFLAG(IS_ANDROID)
   auto resolve_context = std::make_unique<ResolveContext>(
       nullptr /*url_request_context */, enable_caching);
-
-  // Currently, only the system host resolver can perform lookups for a
-  // specific network.
-  // TODO(crbug.com/1309094): Remove this once the built-in resolver can also do
-  // this.
   auto manager_options = std::move(options).value_or(ManagerOptions());
-  manager_options.insecure_dns_client_enabled = false;
-  manager_options.additional_types_via_insecure_dns_enabled = false;
+  // Support the use of the built-in resolver when possible.
+  bool is_builtin_resolver_supported =
+      manager_options.insecure_dns_client_enabled &&
+      base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_P;
+  if (is_builtin_resolver_supported) {
+    // Pre-existing DnsConfigOverride is currently ignored, consider extending
+    // if a use case arises.
+    DCHECK(manager_options.dns_config_overrides == DnsConfigOverrides());
 
+    std::vector<IPEndPoint> dns_servers;
+    bool dns_over_tls_active;
+    std::string dns_over_tls_hostname;
+    std::vector<std::string> search_suffixes;
+    if (android::GetDnsServersForNetwork(&dns_servers, &dns_over_tls_active,
+                                         &dns_over_tls_hostname,
+                                         &search_suffixes, target_network)) {
+      if (dns_over_tls_active) {
+        // To be safe, disable when DNS over TLS is supported as we currently do
+        // not support it.
+        // TODO(stefanoduo): Also inject DNS over TLS settings and support this
+        // case.
+        is_builtin_resolver_supported = false;
+      } else {
+        DnsConfigOverrides dns_config_overrides =
+            DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
+        dns_config_overrides.nameservers = dns_servers;
+        dns_config_overrides.search = search_suffixes;
+
+        manager_options.dns_config_overrides = dns_config_overrides;
+      }
+    } else {
+      // Disable when android::GetDnsServersForNetwork fails.
+      is_builtin_resolver_supported = false;
+    }
+  }
+
+  manager_options.insecure_dns_client_enabled = is_builtin_resolver_supported;
   return std::make_unique<ContextHostResolver>(
       HostResolverManager::CreateNetworkBoundHostResolverManager(
           manager_options, target_network, net_log),
