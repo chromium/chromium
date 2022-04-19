@@ -102,7 +102,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "misc",
+            category = "fuchsia ci",
             short_name = "det",
         ),
     ],

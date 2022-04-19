@@ -223,7 +223,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "misc",
+            category = "fyi",
             short_name = "clang-x64",
         ),
     ],
@@ -239,7 +239,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "misc",
+            category = "fyi",
             short_name = "clang-off",
         ),
     ],

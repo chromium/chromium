@@ -156,7 +156,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
+            category = "fuchsia ci",
             short_name = "a64-dbg",
         ),
     ],
@@ -204,7 +204,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
+            category = "fuchsia ci",
             short_name = "asan",
         ),
     ],
@@ -222,7 +222,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
+            category = "fuchsia ci",
             short_name = "x64-dbg",
         ),
     ],

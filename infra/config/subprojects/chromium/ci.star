@@ -101,8 +101,7 @@ consoles.console_view(
     title = "Fuchsia Sheriff Console",
     ordering = {
         "*type*": consoles.ordering(short_names = ["a64", "x64"]),
-        None: ["ci", "fyi", "astro", "sherlock", "misc"],
-        "chromium.mac": "*type*",
+        None: ["ci", "fuchsia ci", "hardware", "fyi"],
         "chromium.fyi|13": "*type*",
     },
 )
@@ -114,16 +113,16 @@ consoles.console_view(
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
-    ("fuchsia-fyi-arm64-size", "fyi", "a64-size"),
-    ("fuchsia-fyi-astro", "astro", "gpu"),
-    ("fuchsia-fyi-atlas", "atlas", "gpu"),
-    ("fuchsia-fyi-sherlock", "sherlock", "gpu"),
-    ("fuchsia-builder-perf-fyi", "fyi", "builder-perf"),
-    ("fuchsia-builder-perf-x64", "fyi", "builder-perf-x64"),
-    ("fuchsia-perf-fyi", "astro", "perf"),
-    ("fuchsia-perf-atlas-fyi", "atlas", "perf"),
-    ("fuchsia-perf-sherlock-fyi", "sherlock", "perf"),
-    ("fuchsia-x64", "ci", "x64-chrome"),
+    ("fuchsia-fyi-arm64-size", "fuchsia ci", "a64-size"),
+    ("fuchsia-fyi-astro", "hardware", "ast"),
+    ("fuchsia-fyi-atlas", "hardware", "atl"),
+    ("fuchsia-fyi-sherlock", "hardware", "slk"),
+    ("fuchsia-builder-perf-fyi", "fuchsia ci", "builder-perf"),
+    ("fuchsia-builder-perf-x64", "fuchsia ci", "builder-perf-x64"),
+    ("fuchsia-perf-fyi", "hardware", "ast-perf"),
+    ("fuchsia-perf-atlas-fyi", "hardware", "atl-perf"),
+    ("fuchsia-perf-sherlock-fyi", "hardware", "slk-perf"),
+    ("fuchsia-x64", "fuchsia ci", "x64-chrome"),
 )]
 
 exec("./ci/chromium.star")
