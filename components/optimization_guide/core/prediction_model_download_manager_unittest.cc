@@ -96,6 +96,8 @@ class PredictionModelDownloadManagerTest : public testing::Test {
     return mock_download_service_.get();
   }
 
+  base::FilePath models_dir() const { return temp_models_dir_.GetPath(); }
+
  protected:
   void SetDownloadServiceReady(
       const std::set<std::string>& pending_guids,
@@ -619,13 +621,13 @@ TEST_F(
   EXPECT_EQ(observer.last_ready_model()->model_info().optimization_target(),
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_EQ(observer.last_ready_model()->model_info().version(), 123);
+  // Make sure that there is a file path is written to the model file.
   EXPECT_EQ(StringToFilePath(
                 observer.last_ready_model().value().model().download_url())
                 .value()
                 .DirName()
-                .BaseName()
-                .value(),
-            FILE_PATH_LITERAL("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD_123"));
+                .DirName(),
+            models_dir());
   EXPECT_EQ(StringToFilePath(
                 observer.last_ready_model().value().model().download_url())
                 .value()

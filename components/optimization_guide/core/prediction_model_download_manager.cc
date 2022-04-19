@@ -80,14 +80,6 @@ const base::FilePath::CharType kModelInfoFileName[] =
 const base::FilePath::CharType kModelFileName[] =
     FILE_PATH_LITERAL("model.tflite");
 
-base::FilePath GetDirectoryForModelInfo(const base::FilePath& dir,
-                                        const proto::ModelInfo& model_info) {
-  return dir.AppendASCII(base::StringPrintf(
-      "%s_%s",
-      proto::OptimizationTarget_Name(model_info.optimization_target()).c_str(),
-      base::NumberToString(model_info.version()).c_str()));
-}
-
 void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
   base::UmaHistogramEnumeration(
       "OptimizationGuide.PredictionModelDownloadManager."
@@ -373,8 +365,8 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
   // Move each packaged file away from temp directory into a new directory.
 
-  base::FilePath store_dir =
-      GetDirectoryForModelInfo(model_dir_path, model_info);
+  base::FilePath store_dir = model_dir_path.AppendASCII(
+      base::GUID::GenerateRandomV4().AsLowercaseString());
   if (!base::CreateDirectory(store_dir)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kCouldNotCreateDirectory);
