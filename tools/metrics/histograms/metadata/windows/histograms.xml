@@ -65,16 +65,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.FileDeleteLastRetryError" enum="WinGetLastError"
-    expires_after="2022-05-01">
-  <owner>grt@chromium.org</owner>
-  <owner>davidbienvenu@chromium.org</owner>
-  <summary>
-    Last File deletion error in DeleteFileWithRetry when no retry succeeded,
-    because we exceeded the retry count.
-  </summary>
-</histogram>
-
 <histogram name="Windows.FileDeleteRetryCount" units="attempts"
     expires_after="2022-10-16">
   <owner>grt@chromium.org</owner>
