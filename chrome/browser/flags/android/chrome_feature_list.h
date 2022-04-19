@@ -30,7 +30,6 @@ extern const base::Feature kAppToWebAttribution;
 extern const base::Feature kBackgroundThreadPool;
 extern const base::Feature kBookmarkBottomSheet;
 extern const base::Feature kBulkTabRestore;
-extern const base::Feature kCloseAllTabsModalDialog;
 extern const base::Feature kCloseTabSuggestions;
 extern const base::Feature kCriticalPersistedTabData;
 extern const base::Feature kCastDeviceFilter;

@@ -8181,13 +8181,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWaylandScreenCoordinatesEnabled)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"close-all-tabs-modal-dialog",
-     flag_descriptions::kCloseAllTabsModalDialogName,
-     flag_descriptions::kCloseAllTabsModalDialogDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCloseAllTabsModalDialog)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"tailored-security-integration",
      flag_descriptions::kTailoredSecurityIntegrationName,
      flag_descriptions::kTailoredSecurityIntegrationDescription, kOsAll,
