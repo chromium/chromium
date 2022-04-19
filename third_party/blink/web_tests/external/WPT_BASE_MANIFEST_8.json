@@ -325243,6 +325243,10 @@
      "6ff3147e4c80f250e5ece7bd58b6f1aa170ca5c8",
      []
     ],
+    "preconnect-onerror-event-expected.txt": [
+     "d507b6ca1488ae1225cd359f0de0e7142f265cf0",
+     []
+    ],
     "preload-in-data-doc-ref.html": [
      "f6bf517e0b6730c0d085708b86585776959fbc8f",
      []
@@ -336049,10 +336053,6 @@
       ],
       "constructor-allowed-to-start-expected.txt": [
        "f7801aceefcb51a24ffe4be09b804f7794154167",
-       []
-      ],
-      "promise-methods-after-discard-expected.txt": [
-       "53d0510f1ad7acfeddc2f5dba09840e91890c075",
        []
       ],
       "resources": {
@@ -503248,6 +503248,15 @@
     ],
     "onload-event.html": [
      "2e1e8d390071821af99fe209679c56d0f04301d5",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "preconnect-onerror-event.html": [
+     "4ce583d4db8502d626c5c563c078b36fa08a768d",
      [
       null,
       {
