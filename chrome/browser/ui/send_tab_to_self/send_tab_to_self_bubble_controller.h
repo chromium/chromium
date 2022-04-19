@@ -35,7 +35,8 @@ class SendTabToSelfBubbleView;
 struct TargetDeviceInfo;
 
 class SendTabToSelfBubbleController
-    : public content::WebContentsUserData<SendTabToSelfBubbleController> {
+    : public content::WebContentsUserData<SendTabToSelfBubbleController>,
+      public base::SupportsWeakPtr<SendTabToSelfBubbleController> {
  public:
   SendTabToSelfBubbleController(const SendTabToSelfBubbleController&) = delete;
   SendTabToSelfBubbleController& operator=(

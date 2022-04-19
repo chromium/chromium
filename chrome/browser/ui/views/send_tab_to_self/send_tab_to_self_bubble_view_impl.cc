@@ -63,7 +63,7 @@ SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
     content::WebContents* web_contents,
     SendTabToSelfBubbleController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      controller_(controller) {
+      controller_(controller->AsWeakPtr()) {
   DCHECK(controller_);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
