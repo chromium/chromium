@@ -7,13 +7,14 @@
 Parses SQLite source code and produces renaming macros for its exported symbols.
 
 Usage:
-    extract_sqlite_api.py sqlite.h rename_macros.h
+    extract_sqlite_api.py sqlite.h rename_exports.h
 
 For example, the following renaming macro is produced for sqlite3_initialize().
 
     #define sqlite3_initialize chrome_sqlite3_initialize
 '''
 
+from datetime import datetime
 import re
 import sys
 
@@ -340,8 +341,7 @@ def ProcessSourceFile(api_export_macro, symbol_prefix, header_line,
     with open(output_file, 'w') as f:
         f.write('\n'.join(output_lines))
 
-
-header_line = '''// Copyright 2018 The Chromium Authors. All rights reserved.
+header_line = '''// Copyright %s The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -349,7 +349,7 @@ header_line = '''// Copyright 2018 The Chromium Authors. All rights reserved.
 
 #ifndef THIRD_PARTY_SQLITE_AMALGAMATION_RENAME_EXPORTS_H_
 #define THIRD_PARTY_SQLITE_AMALGAMATION_RENAME_EXPORTS_H_
-'''
+''' % datetime.now().strftime('%Y')
 
 footer_line = '''
 #endif  // THIRD_PARTY_SQLITE_AMALGAMATION_RENAME_EXPORTS_H_
