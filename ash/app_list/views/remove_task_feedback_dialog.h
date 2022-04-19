@@ -89,6 +89,9 @@ class RemoveTaskFeedbackDialog : public views::WidgetDelegateView {
   RemoveTaskFeedbackDialog::FeedbackBuckets GetFeedbackBucketValue();
   void LogMetricsOnFeedbackSubmitted();
 
+  views::Label* title_ = nullptr;
+  views::Label* feedback_text_ = nullptr;
+
   // Primary feedback options. Indicates user preference regarding what
   // suggestions they would not have shown. Detailed feedback may be given as
   // selected.
