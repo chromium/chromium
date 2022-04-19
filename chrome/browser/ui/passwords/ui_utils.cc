@@ -205,6 +205,8 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
         return "safe_state";
       case ManagePasswordsReferrer::kSaveUpdateBubble:
         return "save_update_password_bubble";
+      case ManagePasswordsReferrer::kPasswordGenerationPrompt:
+        return "password_generation_prompt_in_autofill_dropdown";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
       case ManagePasswordsReferrer::kTouchToFill:
       case ManagePasswordsReferrer::kPasswordBreachDialog:

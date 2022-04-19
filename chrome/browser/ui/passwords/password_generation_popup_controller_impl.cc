@@ -42,6 +42,15 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/text_utils.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using autofill::PopupHidingReason;
 
 // Handles registration for key events with RenderFrameHost.
@@ -307,6 +316,30 @@ void PasswordGenerationPopupControllerImpl::SelectionCleared() {
 void PasswordGenerationPopupControllerImpl::SetSelected() {
   PasswordSelected(true);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void PasswordGenerationPopupControllerImpl::
+    OnGooglePasswordManagerLinkClicked() {
+  NavigateToManagePasswordsPage(
+      chrome::FindBrowserWithWebContents(GetWebContents()),
+      password_manager::ManagePasswordsReferrer::kPasswordGenerationPrompt);
+}
+
+std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents)
+    return std::u16string();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager)
+    return std::u16string();
+  return base::UTF8ToUTF16(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 gfx::NativeView PasswordGenerationPopupControllerImpl::container_view() const {
   return controller_common_.container_view;

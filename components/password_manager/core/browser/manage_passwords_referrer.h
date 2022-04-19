@@ -52,7 +52,10 @@ enum class ManagePasswordsReferrer {
   // On Desktop, the Google Password Manager link was clicked in the footer of
   // Save/Update bubble.
   kSaveUpdateBubble = 11,
-  kMaxValue = kSaveUpdateBubble,
+  // On Desktop, the Google Password Manager link was clicked in the password
+  // generation prompt in the Autofill dropdown.
+  kPasswordGenerationPrompt = 12,
+  kMaxValue = kPasswordGenerationPrompt,
 };
 
 }  // namespace password_manager

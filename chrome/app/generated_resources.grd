@@ -5682,6 +5682,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PASSWORD_BUBBLES_FOOTER_SAVING_ON_DEVICE" desc="The footer text of the bubbles that offers users to save, update or manage stored passwords only locally in Chrome.">
         Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> on this device
       </message>
+      <message name="IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER" desc="Autofill dropdown text describing password generation.">
+          You won't need to remember this password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>
+      </message>
       <message name="IDS_PASSWORD_MANAGEMENT_BUBBLE_FOOTER_ACCOUNT_STORE_USERS" desc="The footer text of the managment bubble the lists saved password for this website. This is used only for account store users.">
         Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
       </message>

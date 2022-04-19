@@ -134,7 +134,6 @@ static_library("ui") {
     "passwords/account_avatar_fetcher.h",
     "passwords/manage_passwords_state.cc",
     "passwords/manage_passwords_state.h",
-    "passwords/password_generation_popup_controller.cc",
     "passwords/password_generation_popup_controller.h",
     "passwords/password_generation_popup_controller_impl.cc",
     "passwords/password_generation_popup_controller_impl.h",

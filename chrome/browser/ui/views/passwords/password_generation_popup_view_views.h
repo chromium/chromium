@@ -14,6 +14,7 @@ class PasswordGenerationPopupController;
 
 namespace views {
 class Label;
+class StyledLabel;
 }
 
 class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
@@ -52,8 +53,12 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   // Sub view that displays the actual generated password.
   raw_ptr<GeneratedPasswordBox> password_view_ = nullptr;
 
-  // The footer label.
+  // TODO(crbug.com/1310270): Clean-up this variable when
+  // kUnifiedPasswordManagerDesktop is launched. The footer label.
   raw_ptr<views::Label> help_label_ = nullptr;
+
+  // The footer label when kUnifiedPasswordManagerDesktop feature is enabled.
+  raw_ptr<views::StyledLabel> help_styled_label_ = nullptr;
 
   // Controller for this view. Weak reference.
   base::WeakPtr<PasswordGenerationPopupController> controller_;
