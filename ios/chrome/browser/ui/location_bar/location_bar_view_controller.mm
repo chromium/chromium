@@ -44,6 +44,14 @@ typedef NS_ENUM(int, TrailingButtonState) {
   kVoiceSearchButton,
 };
 
+// Returns the default configuration for Symbols.
+UIImageConfiguration* SymbolConfiguration() {
+  return [UIImageSymbolConfiguration
+      configurationWithPointSize:18
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+}
+
 // FullScreen progress threshold in which to toggle between full screen on and
 // off mode for the badge view.
 const double kFullscreenProgressBadgeViewThreshold = 0.85;
@@ -471,10 +479,17 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                     action:@selector(shareButtonPressed)
           forControlEvents:UIControlEventTouchUpInside];
 
+      UIImage* shareImage;
+      if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
+        shareImage = [UIImage systemImageNamed:@"square.and.arrow.up"
+                             withConfiguration:SymbolConfiguration()];
+      } else {
+        shareImage = [UIImage imageNamed:@"location_bar_share"];
+      }
+
       [self.locationBarSteadyView.trailingButton
-          setImage:
-              [[UIImage imageNamed:@"location_bar_share"]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+          setImage:[shareImage imageWithRenderingMode:
+                                   UIImageRenderingModeAlwaysTemplate]
           forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE);
@@ -492,10 +507,18 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                  addTarget:self
                     action:@selector(startVoiceSearch)
           forControlEvents:UIControlEventTouchUpInside];
+
+      UIImage* micImage;
+      if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
+        micImage = [UIImage systemImageNamed:@"mic.fill"
+                           withConfiguration:SymbolConfiguration()];
+      } else {
+        micImage = [UIImage imageNamed:@"location_bar_voice"];
+      }
+
       [self.locationBarSteadyView.trailingButton
-          setImage:
-              [[UIImage imageNamed:@"location_bar_voice"]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+          setImage:[micImage imageWithRenderingMode:
+                                 UIImageRenderingModeAlwaysTemplate]
           forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH);

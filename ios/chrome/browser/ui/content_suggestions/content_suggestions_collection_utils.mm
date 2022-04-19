@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -24,6 +25,14 @@
 #endif
 
 namespace {
+
+// Returns the default configuration for Symbols.
+UIImageConfiguration* SymbolConfiguration() {
+  return [UIImageSymbolConfiguration
+      configurationWithPointSize:18
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+}
 
 // Width of search field.
 const CGFloat kSearchFieldLarge = 432;
@@ -178,8 +187,16 @@ void configureVoiceSearchButton(UIButton* voiceSearchButton,
 
   [voiceSearchButton setAdjustsImageWhenHighlighted:NO];
 
-  UIImage* micImage = [[UIImage imageNamed:@"location_bar_voice"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImage* micImage;
+  if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
+    micImage = [[UIImage systemImageNamed:@"mic.fill"
+                        withConfiguration:SymbolConfiguration()]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  } else {
+    micImage = [[UIImage imageNamed:@"location_bar_voice"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+
   [voiceSearchButton setImage:micImage forState:UIControlStateNormal];
   voiceSearchButton.tintColor = [UIColor colorNamed:kGrey500Color];
   [voiceSearchButton setAccessibilityLabel:l10n_util::GetNSString(
