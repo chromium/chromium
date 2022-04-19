@@ -641,25 +641,23 @@ void AXObject::Init(AXObject* parent) {
 
   UpdateCachedAttributeValuesIfNeeded(false);
 
-  // The recently introduced CHECK below fails for shadowDOM fenced
-  // frame, so bypass the CHECK below if it's a shadowDOM fenced frame.
-  // TODO(crbug.com/1316348): see if AXNodeObject::AddNodeChildren() needs to
-  // change for fenced frames similar to iframes and whether this change would
-  // then still be necessary.
-  bool is_shadow_dom_fenced_frame = false;
-  if (parent_ && parent_->GetNode()) {
-    is_shadow_dom_fenced_frame =
-        parent_ && blink::features::IsFencedFramesEnabled() &&
-        blink::features::IsFencedFramesShadowDOMBased() &&
-        IsA<HTMLFencedFrameElement>(*parent_->GetNode());
+#if defined(AX_FAIL_FAST_BUILD)
+  if (parent_ && parent_->RoleValue() == ax::mojom::blink::Role::kIframe &&
+      RoleValue() != ax::mojom::blink::Role::kDocument) {
+    // A frame/iframe can only have a document child.
+    if (!blink::features::IsFencedFramesEnabled() ||
+        !blink::features::IsFencedFramesShadowDOMBased() ||
+        !IsA<HTMLFencedFrameElement>(parent_->GetNode())) {
+      // Exception for now: shadow DOM fenced frame.
+      // TODO(crbug.com/1316348): see if AXNodeObject::AddNodeChildren() needs
+      // to change for fenced frames similar to iframes and whether this change
+      // would then still be necessary.
+      NOTREACHED() << "An iframe can only have a document child."
+                   << "\n* Child = " << ToString(true, true)
+                   << "\n* Parent =  " << parent_->ToString(true, true);
+    }
   }
-
-  SANITIZER_CHECK(!parent_ || is_shadow_dom_fenced_frame ||
-                  parent_->RoleValue() != ax::mojom::blink::Role::kIframe ||
-                  RoleValue() == ax::mojom::blink::Role::kDocument)
-      << "An iframe can only have a document child."
-      << "\n* Child = " << ToString(true, true)
-      << "\n* Parent =  " << parent_->ToString(true, true);
+#endif
 }
 
 void AXObject::Detach() {
