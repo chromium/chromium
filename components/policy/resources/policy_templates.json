@@ -20704,7 +20704,7 @@
     },
     {
       'name': 'PasswordProtectionWarningTrigger',
-      'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
+      'owners': ['nwokedi@chromium.org', 'nparker@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -21153,7 +21153,7 @@
     },
     {
       'name': 'SafeBrowsingWhitelistDomains',
-      'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
+      'owners': ['nwokedi@chromium.org', 'nparker@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -21179,7 +21179,7 @@
     },
     {
       'name': 'SafeBrowsingAllowlistDomains',
-      'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
+      'owners': ['nwokedi@chromium.org', 'nparker@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -21204,7 +21204,7 @@
     },
     {
       'name': 'PasswordProtectionLoginURLs',
-      'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
+      'owners': ['nwokedi@chromium.org', 'nparker@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -21227,7 +21227,7 @@
     },
     {
       'name': 'PasswordProtectionChangePasswordURL',
-      'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
+      'owners': ['nwokedi@chromium.org', 'nparker@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:69-', 'chrome_os:69-'],
@@ -21247,7 +21247,7 @@
     },
     {
       'name': 'SafeBrowsingExtendedReportingEnabled',
-      'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
+      'owners': ['nwokedi@chromium.org', 'nparker@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:66-', 'chrome_os:66-', 'android: 87-'],
@@ -22009,7 +22009,7 @@
     },
     {
       'name': 'SafeSitesFilterBehavior',
-      'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
+      'owners': ['nwokedi@chromium.org', 'nparker@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',

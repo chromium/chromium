@@ -1964,7 +1964,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenCompletion"
     enum="BooleanSuccess" expires_after="2022-09-09">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Safe Browsing needs a token in order to make a request to get the tailored
@@ -1975,7 +1975,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenErrorState"
     enum="GoogleServiceAuthError" expires_after="2022-09-09">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Safe Browsing needs a token in order to make a request to get the tailored
@@ -1986,7 +1986,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenResponseCode"
     units="code" expires_after="2022-09-09">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     HTTP Response code returned by the server when trying to fetch the OAuth
