@@ -183,10 +183,34 @@ TEST_F(RemotingMessageFactoriesTest, CreateMessageForFlushComplete) {
 
 TEST_F(RemotingMessageFactoriesTest, CreateMessageForAcquireRendererDone) {
   int kTestHandle = 42;
-  auto rpc = CreateMessageForAcquireRendererDone(kTestHandle);
+  const auto rpc = CreateMessageForAcquireRendererDone(kTestHandle);
   EXPECT_EQ(rpc->proc(),
             openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
   EXPECT_EQ(rpc->integer_value(), kTestHandle);
+}
+
+TEST_F(RemotingMessageFactoriesTest, CreateMessageForDemuxerStreamInitialize) {
+  constexpr int kTestHandle = 42;
+  const auto rpc = CreateMessageForDemuxerStreamInitialize(kTestHandle);
+  EXPECT_EQ(rpc->proc(), openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
+  EXPECT_EQ(rpc->integer_value(), kTestHandle);
+}
+
+TEST_F(RemotingMessageFactoriesTest, CreateMessageForDemuxerStreamReadUntil) {
+  constexpr int kTestHandle = 42;
+  constexpr uint32_t kTotalCount = 63;
+  const auto rpc =
+      CreateMessageForDemuxerStreamReadUntil(kTestHandle, kTotalCount);
+  EXPECT_EQ(rpc->proc(), openscreen::cast::RpcMessage::RPC_DS_READUNTIL);
+  ASSERT_TRUE(rpc->has_demuxerstream_readuntil_rpc());
+  auto& message = rpc->demuxerstream_readuntil_rpc();
+  EXPECT_EQ(message.count(), kTotalCount);
+  EXPECT_EQ(message.callback_handle(), kTestHandle);
+}
+
+TEST_F(RemotingMessageFactoriesTest, CreateMessageForDemuxerStreamError) {
+  const auto rpc = CreateMessageForDemuxerStreamError();
+  EXPECT_EQ(rpc->proc(), openscreen::cast::RpcMessage::RPC_DS_ONERROR);
 }
 
 }  // namespace remoting

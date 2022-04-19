@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"
 #include "media/base/pipeline_status.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace gfx {
 class Size;
@@ -66,7 +67,20 @@ CreateMessageForInitializationComplete(bool has_succeeded);
 std::unique_ptr<openscreen::cast::RpcMessage> CreateMessageForFlushComplete();
 
 std::unique_ptr<openscreen::cast::RpcMessage>
-CreateMessageForAcquireRendererDone(int receiver_renderer_handle);
+CreateMessageForAcquireRendererDone(
+    openscreen::cast::RpcMessenger::Handle receiver_renderer_handle);
+
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamInitialize(
+    openscreen::cast::RpcMessenger::Handle local_handle);
+
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamReadUntil(
+    openscreen::cast::RpcMessenger::Handle local_handle,
+    uint32_t buffers_requested);
+
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamError();
 
 }  // namespace remoting
 }  // namespace cast_streaming

@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "media/base/media_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
@@ -13,6 +16,7 @@
 using testing::_;
 using testing::Invoke;
 using testing::Return;
+using testing::StrictMock;
 
 namespace cast_streaming {
 namespace remoting {
@@ -21,7 +25,6 @@ class RpcCallMessageHandlerTest : public testing::Test {
  public:
   class MockRpcRendererCallMessageHandler
       : public RpcRendererCallMessageHandler {
-   protected:
    public:
     ~MockRpcRendererCallMessageHandler() override = default;
 
@@ -34,7 +37,6 @@ class RpcCallMessageHandlerTest : public testing::Test {
 
   class MockRpcInitializationCallMessageHandler
       : public RpcInitializationCallMessageHandler {
-   protected:
    public:
     ~MockRpcInitializationCallMessageHandler() override = default;
 
@@ -42,8 +44,46 @@ class RpcCallMessageHandlerTest : public testing::Test {
     MOCK_METHOD2(OnRpcAcquireDemuxer, void(int, int));
   };
 
-  MockRpcRendererCallMessageHandler renderer_client_;
-  MockRpcInitializationCallMessageHandler initialization_client_;
+  class MockRpcDemuxerStreamCBMessageHandler
+      : public RpcDemuxerStreamCBMessageHandler {
+   public:
+    ~MockRpcDemuxerStreamCBMessageHandler() override = default;
+
+    MOCK_METHOD3(OnRpcInitializeCallback,
+                 void(int,
+                      absl::optional<media::AudioDecoderConfig>,
+                      absl::optional<media::VideoDecoderConfig>));
+    MOCK_METHOD4(OnRpcReadUntilCallback,
+                 void(int,
+                      absl::optional<media::AudioDecoderConfig>,
+                      absl::optional<media::VideoDecoderConfig>,
+                      uint32_t));
+  };
+
+  RpcCallMessageHandlerTest() = default;
+
+  media::AudioDecoderConfig test_audio_config_ =
+      media::AudioDecoderConfig(media::AudioCodec::kAAC,
+                                media::SampleFormat::kSampleFormatF32,
+                                media::CHANNEL_LAYOUT_MONO,
+                                10000,
+                                media::EmptyExtraData(),
+                                media::EncryptionScheme::kUnencrypted);
+  media::VideoDecoderConfig test_video_config_ =
+      media::VideoDecoderConfig(media::VideoCodec::kH264,
+                                media::VideoCodecProfile::H264PROFILE_MAIN,
+                                media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+                                media::VideoColorSpace::JPEG(),
+                                media::VideoTransformation(),
+                                {1920, 1080},
+                                {1920, 1080},
+                                {1920, 1080},
+                                media::EmptyExtraData(),
+                                media::EncryptionScheme::kUnencrypted);
+
+  StrictMock<MockRpcRendererCallMessageHandler> renderer_client_;
+  StrictMock<MockRpcInitializationCallMessageHandler> initialization_client_;
+  StrictMock<MockRpcDemuxerStreamCBMessageHandler> demuxer_stream_client_;
 };
 
 TEST_F(RpcCallMessageHandlerTest, OnRpcInitialize) {
@@ -118,6 +158,157 @@ TEST_F(RpcCallMessageHandlerTest, OnInvalidInitializationMessage) {
   rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_SETVOLUME);
   EXPECT_FALSE(
       DispatchInitializationRpcCall(rpc.get(), &initialization_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamInitializeCallbackValid) {
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  constexpr int kHandle = 123;
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE_CALLBACK);
+  rpc->set_handle(kHandle);
+  auto* initialize_cb = rpc->mutable_demuxerstream_initializecb_rpc();
+  auto* audio_config = initialize_cb->mutable_audio_decoder_config();
+  auto* video_config = initialize_cb->mutable_video_decoder_config();
+
+  ConvertAudioDecoderConfigToProto(test_audio_config_, audio_config);
+  ConvertVideoDecoderConfigToProto(test_video_config_, video_config);
+  EXPECT_CALL(demuxer_stream_client_, OnRpcInitializeCallback(kHandle, _, _))
+      .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
+                       absl::optional<media::AudioDecoderConfig> audio_config,
+                       absl::optional<media::VideoDecoderConfig> video_config) {
+        EXPECT_TRUE(audio_config.has_value());
+        EXPECT_TRUE(test_audio_config_.Matches(audio_config.value()));
+        EXPECT_TRUE(video_config.has_value());
+        EXPECT_TRUE(test_video_config_.Matches(video_config.value()));
+      });
+  EXPECT_TRUE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamInitializeCallbackOneConfig) {
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE_CALLBACK);
+  constexpr int kHandle = 123;
+  rpc->set_handle(kHandle);
+  auto* initialize_cb = rpc->mutable_demuxerstream_initializecb_rpc();
+  auto* video_config = initialize_cb->mutable_video_decoder_config();
+  ConvertVideoDecoderConfigToProto(test_video_config_, video_config);
+  EXPECT_CALL(demuxer_stream_client_, OnRpcInitializeCallback(kHandle, _, _))
+      .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
+                       absl::optional<media::AudioDecoderConfig> audio_config,
+                       absl::optional<media::VideoDecoderConfig> video_config) {
+        EXPECT_FALSE(audio_config.has_value());
+        EXPECT_TRUE(video_config.has_value());
+        EXPECT_TRUE(test_video_config_.Matches(video_config.value()));
+      });
+  EXPECT_TRUE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamInitializeCallbackNoConfig) {
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE_CALLBACK);
+  rpc->set_handle(123);
+  EXPECT_FALSE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamReadUntilCallbackValid) {
+  constexpr int kHandle = 123;
+  constexpr int kCount = 456;
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  rpc->set_handle(kHandle);
+  auto* readuntil_cb = rpc->mutable_demuxerstream_readuntilcb_rpc();
+  auto* audio_config = readuntil_cb->mutable_audio_decoder_config();
+  auto* video_config = readuntil_cb->mutable_video_decoder_config();
+
+  ConvertAudioDecoderConfigToProto(test_audio_config_, audio_config);
+  ConvertVideoDecoderConfigToProto(test_video_config_, video_config);
+  readuntil_cb->set_count(kCount);
+  readuntil_cb->set_status(
+      ToProtoDemuxerStreamStatus(media::DemuxerStream::kConfigChanged).value());
+  EXPECT_CALL(demuxer_stream_client_,
+              OnRpcReadUntilCallback(kHandle, _, _, kCount))
+      .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
+                       absl::optional<media::AudioDecoderConfig> audio_config,
+                       absl::optional<media::VideoDecoderConfig> video_config,
+                       uint32_t count) {
+        EXPECT_TRUE(audio_config.has_value());
+        EXPECT_TRUE(test_audio_config_.Matches(audio_config.value()));
+        EXPECT_TRUE(video_config.has_value());
+        EXPECT_TRUE(test_video_config_.Matches(video_config.value()));
+      });
+  EXPECT_TRUE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamReadUntilCallbackOneConfig) {
+  constexpr int kHandle = 123;
+  constexpr int kCount = 456;
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  rpc->set_handle(kHandle);
+  auto* readuntil_cb = rpc->mutable_demuxerstream_readuntilcb_rpc();
+  auto* video_config = readuntil_cb->mutable_video_decoder_config();
+  ConvertVideoDecoderConfigToProto(test_video_config_, video_config);
+  readuntil_cb->set_count(kCount);
+  readuntil_cb->set_status(
+      ToProtoDemuxerStreamStatus(media::DemuxerStream::kConfigChanged).value());
+  EXPECT_CALL(demuxer_stream_client_,
+              OnRpcReadUntilCallback(kHandle, _, _, kCount))
+      .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
+                       absl::optional<media::AudioDecoderConfig> audio_config,
+                       absl::optional<media::VideoDecoderConfig> video_config,
+                       uint32_t count) {
+        EXPECT_FALSE(audio_config.has_value());
+        EXPECT_TRUE(video_config.has_value());
+        EXPECT_TRUE(test_video_config_.Matches(video_config.value()));
+      });
+  EXPECT_TRUE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamReadUntilCallbackNoConfig) {
+  constexpr int kHandle = 123;
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  rpc->set_handle(kHandle);
+  auto* readuntil_cb = rpc->mutable_demuxerstream_readuntilcb_rpc();
+  readuntil_cb->set_status(
+      ToProtoDemuxerStreamStatus(media::DemuxerStream::kConfigChanged).value());
+  EXPECT_FALSE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamReadUntilCallbackNonConfig) {
+  constexpr int kHandle = 123;
+  constexpr int kCount = 456;
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK);
+  rpc->set_handle(kHandle);
+  auto* readuntil_cb = rpc->mutable_demuxerstream_readuntilcb_rpc();
+  readuntil_cb->set_count(kCount);
+  readuntil_cb->set_status(
+      ToProtoDemuxerStreamStatus(media::DemuxerStream::kOk).value());
+  EXPECT_CALL(demuxer_stream_client_,
+              OnRpcReadUntilCallback(kHandle, _, _, kCount))
+      .WillOnce([](openscreen::cast::RpcMessenger::Handle handle,
+                   absl::optional<media::AudioDecoderConfig> audio_config,
+                   absl::optional<media::VideoDecoderConfig> video_config,
+                   uint32_t count) {
+        EXPECT_FALSE(audio_config.has_value());
+        EXPECT_FALSE(video_config.has_value());
+      });
+  EXPECT_TRUE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnInvalidDemuxerStreamMessage) {
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER);
+  rpc->set_integer_value(42);
+  EXPECT_FALSE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
 }
 
 }  // namespace remoting

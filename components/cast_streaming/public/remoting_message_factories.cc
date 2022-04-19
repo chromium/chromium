@@ -118,10 +118,41 @@ std::unique_ptr<openscreen::cast::RpcMessage> CreateMessageForFlushComplete() {
 }
 
 std::unique_ptr<openscreen::cast::RpcMessage>
-CreateMessageForAcquireRendererDone(int receiver_renderer_handle) {
+CreateMessageForAcquireRendererDone(
+    openscreen::cast::RpcMessenger::Handle receiver_renderer_handle) {
   auto rpc =
       CreateMessage(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
   rpc->set_integer_value(receiver_renderer_handle);
+  return rpc;
+}
+
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamInitialize(
+    openscreen::cast::RpcMessenger::Handle local_handle) {
+  DCHECK_NE(local_handle, openscreen::cast::RpcMessenger::kInvalidHandle);
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
+  rpc->set_integer_value(local_handle);
+  return rpc;
+}
+
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamReadUntil(
+    openscreen::cast::RpcMessenger::Handle local_handle,
+    uint32_t buffers_requested) {
+  DCHECK_NE(local_handle, openscreen::cast::RpcMessenger::kInvalidHandle);
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL);
+  auto* message = rpc->mutable_demuxerstream_readuntil_rpc();
+  message->set_count(buffers_requested);
+  message->set_callback_handle(local_handle);
+  return rpc;
+}
+
+std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamError() {
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_ONERROR);
   return rpc;
 }
 

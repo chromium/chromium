@@ -6,6 +6,10 @@
 #define COMPONENTS_CAST_STREAMING_PUBLIC_RPC_CALL_MESSAGE_HANDLER_H_
 
 #include "base/time/time.h"
+#include "media/base/audio_decoder_config.h"
+#include "media/base/video_decoder_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace openscreen {
 namespace cast {
@@ -23,9 +27,11 @@ class RpcInitializationCallMessageHandler {
  public:
   virtual ~RpcInitializationCallMessageHandler();
 
-  virtual void OnRpcAcquireRenderer(int handle) = 0;
-  virtual void OnRpcAcquireDemuxer(int audio_stream_handle,
-                                   int video_stream_handle) = 0;
+  virtual void OnRpcAcquireRenderer(
+      openscreen::cast::RpcMessenger::Handle handle) = 0;
+  virtual void OnRpcAcquireDemuxer(
+      openscreen::cast::RpcMessenger::Handle audio_stream_handle,
+      openscreen::cast::RpcMessenger::Handle video_stream_handle) = 0;
 };
 
 class RpcRendererCallMessageHandler {
@@ -39,12 +45,29 @@ class RpcRendererCallMessageHandler {
   virtual void OnRpcSetVolume(double volume) = 0;
 };
 
+class RpcDemuxerStreamCBMessageHandler {
+ public:
+  virtual ~RpcDemuxerStreamCBMessageHandler();
+
+  virtual void OnRpcInitializeCallback(
+      openscreen::cast::RpcMessenger::Handle handle,
+      absl::optional<media::AudioDecoderConfig> audio_config,
+      absl::optional<media::VideoDecoderConfig> video_config) = 0;
+  virtual void OnRpcReadUntilCallback(
+      openscreen::cast::RpcMessenger::Handle handle,
+      absl::optional<media::AudioDecoderConfig> audio_config,
+      absl::optional<media::VideoDecoderConfig> video_config,
+      uint32_t total_frames_received) = 0;
+};
+
 // Processes the incoming |message| and forwards it to the appropriate |client|
 // method.
 bool DispatchInitializationRpcCall(openscreen::cast::RpcMessage* message,
                                    RpcInitializationCallMessageHandler* client);
 bool DispatchRendererRpcCall(openscreen::cast::RpcMessage* message,
                              RpcRendererCallMessageHandler* client);
+bool DispatchDemuxerStreamCBRpcCall(openscreen::cast::RpcMessage* message,
+                                    RpcDemuxerStreamCBMessageHandler* client);
 
 }  // namespace remoting
 }  // namespace cast_streaming

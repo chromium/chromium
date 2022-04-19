@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cast_streaming/public/rpc_call_message_handler.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace openscreen::cast {
 class RpcMessage;
@@ -27,21 +28,25 @@ class RpcInitializationCallHandlerBase
 
   // Called following an RPC call to acquire the Renderer. Callback parameter is
   // the handle to be used by future calls associated with the Renderer.
-  using AcquireRendererCB = base::OnceCallback<void(int)>;
+  using AcquireRendererCB =
+      base::OnceCallback<void(openscreen::cast::RpcMessenger::Handle)>;
   virtual void RpcAcquireRendererAsync(AcquireRendererCB cb) = 0;
 
  protected:
-  using RpcProcessMessageCB = base::RepeatingCallback<
-      void(int handle, std::unique_ptr<openscreen::cast::RpcMessage>)>;
-
+  using RpcProcessMessageCB = base::RepeatingCallback<void(
+      openscreen::cast::RpcMessenger::Handle handle,
+      std::unique_ptr<openscreen::cast::RpcMessage>)>;
   explicit RpcInitializationCallHandlerBase(
       RpcProcessMessageCB message_processor);
 
  private:
-  void OnAcquireRendererDone(int sender_handle, int receiver_handle);
+  void OnAcquireRendererDone(
+      openscreen::cast::RpcMessenger::Handle sender_handle,
+      openscreen::cast::RpcMessenger::Handle receiver_handle);
 
   // RpcInitializationCallMessageHandler partial implementation.
-  void OnRpcAcquireRenderer(int sender_handle) override;
+  void OnRpcAcquireRenderer(
+      openscreen::cast::RpcMessenger::Handle sender_handle) override;
 
   RpcProcessMessageCB message_processor_;
 
