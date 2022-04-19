@@ -61,7 +61,7 @@ class PreferredAppsList : public PreferredAppsListHandle {
   // Note that removed filters are processed before new filters are added. If
   // the same filter appears in both |changes->added_filters| and
   // |changes->removed_filters|, it be removed and then immediately added back.
-  void ApplyBulkUpdate(apps::mojom::PreferredAppChangesPtr changes);
+  void ApplyBulkUpdate(apps::PreferredAppChangesPtr changes);
 
   // PreferredAppsListHandler overrides:
   bool IsInitialized() const override;

@@ -710,7 +710,8 @@ void AppServiceProxyBase::Clone(
 
 void AppServiceProxyBase::OnPreferredAppsChanged(
     apps::mojom::PreferredAppChangesPtr changes) {
-  preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
+  preferred_apps_list_.ApplyBulkUpdate(
+      ConvertMojomPreferredAppChangesToPreferredAppChanges(changes));
 }
 
 void AppServiceProxyBase::InitializePreferredApps(

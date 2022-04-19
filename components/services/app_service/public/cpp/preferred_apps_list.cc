@@ -160,8 +160,7 @@ PreferredAppsList::DeleteSupportedLinks(const std::string& app_id) {
   return out;
 }
 
-void PreferredAppsList::ApplyBulkUpdate(
-    apps::mojom::PreferredAppChangesPtr changes) {
+void PreferredAppsList::ApplyBulkUpdate(apps::PreferredAppChangesPtr changes) {
   // Process removed filters first. There's no difference in behavior whether we
   // handle removals or additions first, but doing removals first means there
   // are fewer items in the list to search through when finding matches.
@@ -175,8 +174,7 @@ void PreferredAppsList::ApplyBulkUpdate(
     auto iter = preferred_apps_.begin();
     while (iter != preferred_apps_.end()) {
       if ((*iter)->app_id == app_id &&
-          base::Contains(filters, ConvertIntentFilterToMojomIntentFilter(
-                                      (*iter)->intent_filter))) {
+          Contains(filters, (*iter)->intent_filter)) {
         iter = preferred_apps_.erase(iter);
       } else {
         iter++;
@@ -203,13 +201,13 @@ void PreferredAppsList::ApplyBulkUpdate(
     const std::string& app_id = added_filters.first;
     bool has_supported_link = false;
     for (auto& filter : added_filters.second) {
-      if (EntryExists(app_id, filter)) {
+      if (EntryExists(app_id, ConvertIntentFilterToMojomIntentFilter(filter))) {
         continue;
       }
       has_supported_link = has_supported_link ||
                            apps_util::IsSupportedLinkForApp(app_id, filter);
-      preferred_apps_.push_back(std::make_unique<PreferredApp>(
-          ConvertMojomIntentFilterToIntentFilter(filter), app_id));
+      preferred_apps_.push_back(
+          std::make_unique<PreferredApp>(std::move(filter), app_id));
     }
 
     // Notify observers if any of the added filters added were supported links.

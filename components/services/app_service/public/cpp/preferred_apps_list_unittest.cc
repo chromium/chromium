@@ -694,13 +694,13 @@ TEST_F(PreferredAppListTest, DeleteSupportedLinksForMultipleConditionValues) {
 
 TEST_F(PreferredAppListTest, ApplyBulkUpdateAdditions) {
   GURL filter_url_1 = GURL("https://www.google.com/abc");
-  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
   GURL filter_url_2 = GURL("https://www.google.com/def");
-  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_2);
   GURL filter_url_3 = GURL("https://www.google.com/hij");
-  auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+  auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
 
-  auto changes = apps::mojom::PreferredAppChanges::New();
+  auto changes = std::make_unique<apps::PreferredAppChanges>();
   changes->added_filters[kAppId1].push_back(intent_filter_1->Clone());
   changes->added_filters[kAppId1].push_back(intent_filter_2->Clone());
   changes->added_filters[kAppId2].push_back(intent_filter_3->Clone());
@@ -714,13 +714,13 @@ TEST_F(PreferredAppListTest, ApplyBulkUpdateAdditions) {
 
 TEST_F(PreferredAppListTest, ApplyBulkUpdateDuplicateAdditions) {
   GURL filter_url_1 = GURL("https://www.google.com/abc");
-  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
   GURL filter_url_2 = GURL("https://www.google.com/def");
-  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_2);
   GURL filter_url_3 = GURL("https://www.google.com/hij");
-  auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+  auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
 
-  auto changes = apps::mojom::PreferredAppChanges::New();
+  auto changes = std::make_unique<apps::PreferredAppChanges>();
   changes->added_filters[kAppId1].push_back(intent_filter_1->Clone());
   changes->added_filters[kAppId1].push_back(intent_filter_2->Clone());
   changes->added_filters[kAppId2].push_back(intent_filter_3->Clone());
@@ -747,14 +747,15 @@ TEST_F(PreferredAppListTest, ApplyBulkUpdateDuplicateAdditions) {
 TEST_F(PreferredAppListTest, ApplyBulkUpdateAddAndRemove) {
   GURL filter_url_base = GURL("https://www.google.com/foo");
   auto intent_filter_base =
-      apps_util::CreateIntentFilterForUrlScope(filter_url_base);
+      apps_util::MakeIntentFilterForUrlScope(filter_url_base);
   GURL filter_url_ext = GURL("https://www.google.com/foo/bar");
   auto intent_filter_ext =
-      apps_util::CreateIntentFilterForUrlScope(filter_url_ext);
+      apps_util::MakeIntentFilterForUrlScope(filter_url_ext);
 
-  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_base);
+  preferred_apps_.AddPreferredApp(
+      kAppId1, ConvertIntentFilterToMojomIntentFilter(intent_filter_base));
 
-  auto changes = apps::mojom::PreferredAppChanges::New();
+  auto changes = std::make_unique<apps::PreferredAppChanges>();
   changes->added_filters[kAppId1].push_back(intent_filter_ext->Clone());
   changes->removed_filters[kAppId1].push_back(intent_filter_base->Clone());
 
@@ -770,20 +771,21 @@ TEST_F(PreferredAppListTest, ApplyBulkUpdateAddAndRemove) {
 TEST_F(PreferredAppListTest, ApplyBulkUpdateRemoveMatchesExactly) {
   GURL filter_url_base = GURL("https://www.google.com/foo");
   auto intent_filter_base =
-      apps_util::CreateIntentFilterForUrlScope(filter_url_base);
+      apps_util::MakeIntentFilterForUrlScope(filter_url_base);
   GURL filter_url_ext = GURL("https://www.google.com/foo/bar");
   auto intent_filter_ext =
-      apps_util::CreateIntentFilterForUrlScope(filter_url_ext);
+      apps_util::MakeIntentFilterForUrlScope(filter_url_ext);
 
-  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_ext);
+  preferred_apps_.AddPreferredApp(
+      kAppId1, ConvertIntentFilterToMojomIntentFilter(intent_filter_ext));
 
-  auto changes = apps::mojom::PreferredAppChanges::New();
+  auto changes = std::make_unique<apps::PreferredAppChanges>();
   changes->removed_filters[kAppId1].push_back(intent_filter_base->Clone());
   preferred_apps_.ApplyBulkUpdate(std::move(changes));
 
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_ext));
 
-  changes = apps::mojom::PreferredAppChanges::New();
+  changes = std::make_unique<apps::PreferredAppChanges>();
   changes->removed_filters[kAppId1].push_back(intent_filter_ext->Clone());
   preferred_apps_.ApplyBulkUpdate(std::move(changes));
 

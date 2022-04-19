@@ -611,7 +611,8 @@ void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
 
 void AppServiceProxyLacros::OnPreferredAppsChanged(
     apps::mojom::PreferredAppChangesPtr changes) {
-  preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
+  preferred_apps_list_.ApplyBulkUpdate(
+      ConvertMojomPreferredAppChangesToPreferredAppChanges(changes));
 }
 
 void AppServiceProxyLacros::InitializePreferredApps(

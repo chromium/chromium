@@ -262,6 +262,16 @@ bool IsEqual(const IntentFilters& source, const IntentFilters& target) {
   return true;
 }
 
+bool Contains(const IntentFilters& intent_filters,
+              const IntentFilterPtr& intent_filter) {
+  for (const auto& filter : intent_filters) {
+    if (*filter == *intent_filter) {
+      return true;
+    }
+  }
+  return false;
+}
+
 ConditionType ConvertMojomConditionTypeToConditionType(
     const apps::mojom::ConditionType& mojom_condition_type) {
   switch (mojom_condition_type) {

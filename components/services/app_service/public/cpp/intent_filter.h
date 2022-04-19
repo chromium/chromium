@@ -195,6 +195,11 @@ IntentFilters CloneIntentFilters(const IntentFilters& intent_filters);
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const IntentFilters& source, const IntentFilters& target);
 
+// Returns true if `intent_filters` contains `intent_filter`.
+COMPONENT_EXPORT(APP_TYPES)
+bool Contains(const IntentFilters& intent_filters,
+              const IntentFilterPtr& intent_filter);
+
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
 COMPONENT_EXPORT(APP_TYPES)

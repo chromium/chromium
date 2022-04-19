@@ -39,6 +39,8 @@ struct PreferredAppChanges {
   PreferredAppChanges& operator=(const PreferredAppChanges&) = delete;
   ~PreferredAppChanges();
 
+  std::unique_ptr<PreferredAppChanges> Clone() const;
+
   base::flat_map<std::string, IntentFilters> added_filters;
   base::flat_map<std::string, IntentFilters> removed_filters;
 };

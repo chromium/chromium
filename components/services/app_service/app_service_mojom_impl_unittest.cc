@@ -227,7 +227,8 @@ class FakeSubscriber : public apps::mojom::Subscriber {
 
   void OnPreferredAppsChanged(
       apps::mojom::PreferredAppChangesPtr changes) override {
-    preferred_apps_.ApplyBulkUpdate(std::move(changes));
+    preferred_apps_.ApplyBulkUpdate(
+        ConvertMojomPreferredAppChangesToPreferredAppChanges(changes));
   }
 
   void InitializePreferredApps(
