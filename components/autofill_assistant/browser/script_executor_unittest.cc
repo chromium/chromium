@@ -2209,5 +2209,20 @@ TEST_F(ScriptExecutorTest, ClearPersistentUiOnError) {
   ASSERT_EQ(nullptr, ui_delegate_.GetPersistentGenericUi());
 }
 
+TEST_F(ScriptExecutorTest, RequestUserData) {
+  EXPECT_CALL(mock_service_, GetUserData)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  base::MockCallback<
+      base::OnceCallback<void(bool, const GetUserDataResponseProto&)>>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(true, _));
+
+  executor_->RequestUserData(CollectUserDataOptions(), mock_callback.Get());
+  EXPECT_THAT(delegate_.GetStateHistory(),
+              ElementsAre(AutofillAssistantState::RUNNING));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

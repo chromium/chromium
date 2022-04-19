@@ -1078,6 +1078,7 @@ void ScriptExecutor::RequestUserData(
   auto* service = delegate_->GetService();
   DCHECK(service);
 
+  delegate_->EnterState(AutofillAssistantState::RUNNING);
   service->GetUserData(
       options, run_id_,
       base::BindOnce(&ScriptExecutor::OnRequestUserData,

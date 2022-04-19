@@ -457,6 +457,9 @@ class ActionDelegate {
   // gets attached to the action's response if non empty.
   virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
 
+  // Sends a request to retrieve the required user data for this flow. Returns
+  // the result through the |callback|. Enters the |RUNNING| state while doing
+  // so.
   virtual void RequestUserData(
       const CollectUserDataOptions& options,
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
