@@ -17,9 +17,9 @@ namespace web {
 // |kFakeJavaScriptFeatureLoadedText|, exposes the function
 // |kScriptReplaceDivContents| and tracks the count of received errors.
 const char kJavaScriptFeatureInjectOnceTestScript[] =
-    "java_script_feature_test_inject_once_js";
+    "java_script_feature_test_inject_once";
 const char kJavaScriptFeatureReinjectTestScript[] =
-    "java_script_feature_test_reinject_js";
+    "java_script_feature_test_reinject";
 
 const char kFakeJavaScriptFeatureLoadedText[] = "injected_script_loaded";
 

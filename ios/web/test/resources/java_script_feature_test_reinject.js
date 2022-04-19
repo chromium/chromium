@@ -6,7 +6,6 @@
  * @fileoverview Setup used in JavaScriptFeature inttests. This file
  * will be reinjected if the document JS object is modified.
  */
-goog.provide('__crWeb.javaScriptFeatureTestReinject');
 
 window.addEventListener('error', function(event) {
   __gCrWeb.javaScriptFeatureTest.errorReceivedCount =

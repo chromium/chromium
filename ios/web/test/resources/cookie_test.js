@@ -4,7 +4,6 @@
 /**
  * @fileoverview Add functionality used in tests.
  */
-goog.provide('__crWeb.cookieTest');
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -78,17 +77,6 @@ __gCrWeb.cookieTest.setSessionStorage = function(key, value) {
   }
 };
 
-async function setCache(key, value) {
-  const cache = await caches.open('cache');
-  return cache.put(`/${key}`, new Response(value));
-}
-
-async function getCache(key) {
-  const cache = await caches.open('cache');
-  const result = await cache.match(new Request(`/${key}`));
-  return result && result.text();
-}
-
 function onError(error) {
   if (error instanceof DOMException || error instanceof ReferenceError) {
     __gCrWeb.message.invokeOnHost({
@@ -122,13 +110,13 @@ async function asyncSetWrapper(key, value, setter) {
 }
 
 async function setCache(key, value) {
-  let cache = await caches.open('cache');
+  const cache = await caches.open('cache');
   return cache.put(`/${key}`, new Response(value));
 }
 
 async function getCache(key) {
-  let cache = await caches.open('cache');
-  let result = await cache.match(new Request(`/${key}`));
+  const cache = await caches.open('cache');
+  const result = await cache.match(new Request(`/${key}`));
   return result && result.text();
 }
 
