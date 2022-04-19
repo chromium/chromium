@@ -156,14 +156,25 @@ ipcz_source_set("impl") {
   public = [
     "ipcz/api_object.h",
     "ipcz/node.h",
+    "ipcz/portal.h",
+    "ipcz/router.h",
     "ipcz/sequence_number.h",
     "ipcz/sequenced_queue.h",
   ]
   sources = [
     "ipcz/api_object.cc",
+    "ipcz/link_side.cc",
+    "ipcz/link_side.h",
+    "ipcz/link_type.cc",
+    "ipcz/link_type.h",
+    "ipcz/local_router_link.cc",
+    "ipcz/local_router_link.h",
     "ipcz/node.cc",
     "ipcz/node_name.cc",
     "ipcz/node_name.h",
+    "ipcz/portal.cc",
+    "ipcz/router.cc",
+    "ipcz/router_link.h",
   ]
   public_deps = [
     ":ipcz_header",

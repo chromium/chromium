@@ -15,7 +15,10 @@ class TestBase : public testing::Test {
   TestBase();
   ~TestBase() override;
 
-  IpczAPI ipcz = {.size = sizeof(ipcz)};
+  const IpczAPI& ipcz() const { return ipcz_; }
+
+ private:
+  IpczAPI ipcz_ = {.size = sizeof(ipcz_)};
 };
 
 }  // namespace ipcz::test

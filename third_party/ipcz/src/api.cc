@@ -9,6 +9,7 @@
 #include "ipcz/api_object.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
+#include "ipcz/portal.h"
 #include "util/ref_counted.h"
 
 extern "C" {
@@ -75,7 +76,15 @@ IpczResult OpenPortals(IpczHandle node_handle,
                        const void* options,
                        IpczHandle* portal0,
                        IpczHandle* portal1) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Node* node = ipcz::Node::FromHandle(node_handle);
+  if (!node || !portal0 || !portal1) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  ipcz::Portal::Pair portals = ipcz::Portal::CreatePair(WrapRefCounted(node));
+  *portal0 = ipcz::Portal::ReleaseAsHandle(std::move(portals.first));
+  *portal1 = ipcz::Portal::ReleaseAsHandle(std::move(portals.second));
+  return IPCZ_RESULT_OK;
 }
 
 IpczResult MergePortals(IpczHandle portal0,
@@ -89,7 +98,15 @@ IpczResult QueryPortalStatus(IpczHandle portal_handle,
                              uint32_t flags,
                              const void* options,
                              IpczPortalStatus* status) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
+  if (!portal) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+  if (!status || status->size < sizeof(IpczPortalStatus)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  return portal->QueryStatus(*status);
 }
 
 IpczResult Put(IpczHandle portal_handle,

@@ -11,7 +11,7 @@
 namespace ipcz::test {
 
 TestBase::TestBase() {
-  IpczGetAPI(&ipcz);
+  IpczGetAPI(&ipcz_);
 }
 
 TestBase::~TestBase() = default;
