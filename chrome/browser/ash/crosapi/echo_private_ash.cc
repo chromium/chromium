@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 
 #include "base/bind.h"
+#include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,6 +19,11 @@ namespace crosapi {
 
 EchoPrivateAsh::EchoPrivateAsh() = default;
 EchoPrivateAsh::~EchoPrivateAsh() = default;
+
+void EchoPrivateAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::EchoPrivate> pending_receiver) {
+  receivers_.Add(this, std::move(pending_receiver));
+}
 
 void EchoPrivateAsh::CheckRedeemOffersAllowed(aura::Window* window,
                                               const std::string& service_name,
@@ -37,6 +43,18 @@ void EchoPrivateAsh::CheckRedeemOffersAllowed(aura::Window* window,
   // Callback was dropped in this case. Manually invoke.
   if (status == ash::CrosSettingsProvider::TRUSTED)
     DidPrepareTrustedValues(window, service_name, origin);
+}
+
+void EchoPrivateAsh::CheckRedeemOffersAllowed(const std::string& window_id,
+                                              const std::string& service_name,
+                                              const std::string& origin,
+                                              BoolCallback callback) {
+  gfx::NativeWindow window = crosapi::GetShellSurfaceWindow(window_id);
+  if (!window) {
+    std::move(callback).Run(/*allowed=*/false);
+    return;
+  }
+  CheckRedeemOffersAllowed(window, service_name, origin, std::move(callback));
 }
 
 void EchoPrivateAsh::DidPrepareTrustedValues(aura::Window* window,

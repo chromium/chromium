@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
@@ -37,6 +38,11 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/lacros/window_utility.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace echo_api = extensions::api::echo_private;
 
@@ -222,6 +228,7 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
   }
 
   DCHECK(web_contents);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->echo_private_ash()
@@ -230,6 +237,20 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
           params->consent_requester.service_name,
           params->consent_requester.origin,
           base::BindOnce(&EchoPrivateGetUserConsentFunction::Finalize, this));
+#else
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>()) {
+    const std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
+        web_contents->GetTopLevelNativeWindow());
+    lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()
+        ->CheckRedeemOffersAllowed(
+            std::move(window_id), params->consent_requester.service_name,
+            params->consent_requester.origin,
+            base::BindOnce(&EchoPrivateGetUserConsentFunction::Finalize, this));
+  } else {
+    return RespondNow(Error("EchoPrivate unavailable."));
+  }
+#endif
   return RespondLater();
 }
 

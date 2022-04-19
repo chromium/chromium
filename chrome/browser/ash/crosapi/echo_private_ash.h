@@ -10,6 +10,9 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
+#include "chromeos/crosapi/mojom/echo_private.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace aura {
 class Window;
@@ -19,12 +22,14 @@ namespace crosapi {
 
 // The ash-chrome implementation of the EchoPrivate crosapi interface.
 // This class must only be used from the main thread.
-class EchoPrivateAsh : public ash::EchoDialogListener {
+class EchoPrivateAsh : public ash::EchoDialogListener, mojom::EchoPrivate {
  public:
   EchoPrivateAsh();
   EchoPrivateAsh(const EchoPrivateAsh&) = delete;
   EchoPrivateAsh& operator=(const EchoPrivateAsh&) = delete;
   ~EchoPrivateAsh() override;
+
+  void BindReceiver(mojo::PendingReceiver<mojom::EchoPrivate> receiver);
 
   // This method does two things:
   //   (1) Checks that the device is trusted.
@@ -37,6 +42,12 @@ class EchoPrivateAsh : public ash::EchoDialogListener {
                                 const std::string& service_name,
                                 const std::string& origin,
                                 BoolCallback callback);
+
+  // mojom::EchoPrivate:
+  void CheckRedeemOffersAllowed(const std::string& window_id,
+                                const std::string& service_name,
+                                const std::string& origin,
+                                BoolCallback callback) override;
 
  private:
   // Continues with the CheckRedeemOffersAllowed process.
@@ -53,6 +64,8 @@ class EchoPrivateAsh : public ash::EchoDialogListener {
   // to limitations of EchoDialogListener. This should have no user impact since
   // the in-flight check creates a modal dialog.
   BoolCallback in_flight_callback_;
+
+  mojo::ReceiverSet<mojom::EchoPrivate> receivers_;
 
   base::WeakPtrFactory<EchoPrivateAsh> weak_factory_{this};
 };

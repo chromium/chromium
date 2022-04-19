@@ -47,6 +47,7 @@
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
+#include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
@@ -195,6 +196,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Dlp>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DownloadController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DriveIntegrationService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::EchoPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Feedback>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FieldTrialService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileManager>(),

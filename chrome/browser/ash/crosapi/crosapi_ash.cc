@@ -614,6 +614,11 @@ void CrosapiAsh::BindDriveIntegrationService(
   drive_integration_service_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindEchoPrivate(
+    mojo::PendingReceiver<mojom::EchoPrivate> receiver) {
+  echo_private_ash_->BindReceiver(std::move(receiver));
+}
+
 void CrosapiAsh::BindStructuredMetricsService(
     mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
   structured_metrics_service_ash_->BindReceiver(std::move(receiver));
