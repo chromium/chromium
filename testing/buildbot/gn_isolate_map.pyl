@@ -74,6 +74,11 @@
 #
 # The optional "skip_usage_check" field indicates that we should skip the check
 # that the target is used in at least one buildbot json file.
+#
+# The optional "python3" field is a boolean that is used by tests to
+# say whether we should run the test under Python2 or Python3. It does
+# not apply to 'generated_script' tests, where the generated wrapper
+# should control this instead.
 
 {
   "All_syzygy": {
