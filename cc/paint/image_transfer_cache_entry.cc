@@ -150,9 +150,9 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
     DLOG(ERROR) << "Invalid color type";
     return false;
   }
-  uint32_t width;
+  uint32_t width = 0;
   reader.Read(&width);
-  uint32_t height;
+  uint32_t height = 0;
   reader.Read(&height);
   if (width == 0 || height == 0) {
     DLOG(ERROR) << "Empty width or height";
@@ -163,14 +163,14 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
   reader.Read(&color_space);
   auto image_info = SkImageInfo::Make(width, height, color_type,
                                       kPremul_SkAlphaType, color_space);
-  size_t row_bytes;
+  size_t row_bytes = 0;
   reader.ReadSize(&row_bytes);
   if (row_bytes < image_info.minRowBytes()) {
     DLOG(ERROR) << "Row bytes " << row_bytes << " less than minimum "
                 << image_info.minRowBytes();
     return false;
   }
-  size_t data_size;
+  size_t data_size = 0;
   reader.ReadSize(&data_size);
   if (image_info.computeByteSize(row_bytes) > data_size) {
     DLOG(ERROR) << "Data size too small";
@@ -504,7 +504,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
       return false;
     }
     subsampling_ = subsampling;
-    SkYUVColorSpace yuv_color_space;
+    SkYUVColorSpace yuv_color_space = kIdentity_SkYUVColorSpace;
     reader.Read(&yuv_color_space);
     yuv_color_space_ = yuv_color_space;
     sk_sp<SkColorSpace> decoded_color_space;
