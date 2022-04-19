@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL suspend() Cannot read properties of undefined (reading 'then')
-PASS resume()
-PASS close()
-Harness: the test ran to completion.
-
