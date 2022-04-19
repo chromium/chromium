@@ -23,7 +23,7 @@ using autofill::CreateStringCallback;
 namespace password_manager {
 
 namespace {
-constexpr char kScriptName[] = "password_controller_js";
+constexpr char kScriptName[] = "password_controller";
 
 // The timeout for any JavaScript call in this file.
 constexpr int64_t kJavaScriptExecutionTimeoutInSeconds = 5;

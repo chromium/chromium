@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -77,8 +77,8 @@ source_set("account_select_fill_data") {
   ]
 }
 
-js_compile_bundle("password_controller_js") {
-  closure_entry_point = "__crWeb.passwords"
+optimize_js("password_controller_js") {
+  primary_script = "resources/password_controller.js"
   sources = [ "resources/password_controller.js" ]
 }
 

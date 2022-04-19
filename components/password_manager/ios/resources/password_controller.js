@@ -11,11 +11,6 @@
  * be translated to struct FormData for further processing.
  */
 
-goog.provide('__crWeb.passwords');
-
-/* Beginning of anonymous object. */
-(function() {
-
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
  * injected.
@@ -411,7 +406,7 @@ __gCrWeb.passwords.getPasswordFormDataFromUnownedElements = function(window) {
   if (unownedControlElements.length === 0) {
     return;
   }
-  const unownedForm = new __gCrWeb['common'].JSONSafeObject;
+  const unownedForm = new __gCrWeb['common'].JSONSafeObject();
   const hasUnownedForm =
       __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
           window, fieldsets, unownedControlElements, extractMask, false,
@@ -434,5 +429,3 @@ __gCrWeb.passwords.getPasswordFormData = function(formElement, win) {
       null /* field */);
   return ok ? formData : null;
 };
-
-}());  // End of anonymous object
