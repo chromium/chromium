@@ -3156,6 +3156,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "fast-pair-saved-devices",
+    "owners": [ "//ash/quick_pair/OWNERS", "julietlevesque@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "fast-pair-software-scanning",
     "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
     "expiry_milestone": 102

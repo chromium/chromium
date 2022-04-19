@@ -123,6 +123,9 @@ class RetroactivePairingDetectorImpl final
   void NotifyDeviceFound(const std::string& model_id,
                          const std::string& ble_address,
                          const std::string& classic_address);
+  void VerifyDeviceFound(const std::string& model_id,
+                         const std::string& ble_address,
+                         const std::string& classic_address);
 
   void RemoveDeviceInformation(const std::string& device_address);
 

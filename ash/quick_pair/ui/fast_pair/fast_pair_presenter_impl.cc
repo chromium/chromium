@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -129,25 +130,27 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
           Shell::Get()->session_controller()->login_status())) {
     QP_LOG(VERBOSE) << __func__
                     << ": in guest mode, showing guest notification";
-    notification_controller_->ShowGuestDiscoveryNotification(
-        base::ASCIIToUTF16(device_metadata->GetDetails().name()),
-        device_metadata->image(),
-        base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryClicked,
-                            weak_pointer_factory_.GetWeakPtr(), callback),
-        base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryLearnMoreClicked,
-                            weak_pointer_factory_.GetWeakPtr(), callback),
-        base::BindOnce(&FastPairPresenterImpl::OnDiscoveryDismissed,
-                       weak_pointer_factory_.GetWeakPtr(), callback));
+    ShowGuestDiscoveryNotification(device, std::move(callback),
+                                   device_metadata);
     return;
   }
 
   // Check if the user is opted in to saving devices to their account. If the
   // user is not opted in, we will show the guest notification which does not
-  // mention saving devices to the user account.
-  FastPairRepository::Get()->CheckOptInStatus(
-      base::BindOnce(&FastPairPresenterImpl::OnCheckOptInStatus,
-                     weak_pointer_factory_.GetWeakPtr(), device,
-                     std::move(callback), device_metadata));
+  // mention saving devices to the user account. This is flagged depending if
+  // the Fast Pair Saved Devices is enabled.
+  if (features::IsFastPairSavedDevicesEnabled()) {
+    QP_LOG(INFO) << __func__ << ": Saved Devices Flag enabled";
+    FastPairRepository::Get()->CheckOptInStatus(
+        base::BindOnce(&FastPairPresenterImpl::OnCheckOptInStatus,
+                       weak_pointer_factory_.GetWeakPtr(), device,
+                       std::move(callback), device_metadata));
+    return;
+  }
+
+  // If we don't have SavedDevices flag enabled, then we can ignore the user's
+  // opt in status and move forward to showing the User Discovery notification.
+  ShowUserDiscoveryNotification(device, std::move(callback), device_metadata);
 }
 
 void FastPairPresenterImpl::OnCheckOptInStatus(
@@ -158,20 +161,39 @@ void FastPairPresenterImpl::OnCheckOptInStatus(
   QP_LOG(INFO) << __func__;
 
   if (status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
-    notification_controller_->ShowGuestDiscoveryNotification(
-        base::ASCIIToUTF16(device_metadata->GetDetails().name()),
-        device_metadata->image(),
-        base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryClicked,
-                            weak_pointer_factory_.GetWeakPtr(), callback),
-        base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryLearnMoreClicked,
-                            weak_pointer_factory_.GetWeakPtr(), callback),
-        base::BindOnce(&FastPairPresenterImpl::OnDiscoveryDismissed,
-                       weak_pointer_factory_.GetWeakPtr(), callback));
+    ShowGuestDiscoveryNotification(device, std::move(callback),
+                                   device_metadata);
     return;
   }
 
+  ShowUserDiscoveryNotification(device, std::move(callback), device_metadata);
+}
+
+void FastPairPresenterImpl::ShowGuestDiscoveryNotification(
+    scoped_refptr<Device> device,
+    DiscoveryCallback callback,
+    DeviceMetadata* device_metadata) {
+  notification_controller_->ShowGuestDiscoveryNotification(
+      base::ASCIIToUTF16(device_metadata->GetDetails().name()),
+      device_metadata->image(),
+      base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryClicked,
+                          weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryLearnMoreClicked,
+                          weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindOnce(&FastPairPresenterImpl::OnDiscoveryDismissed,
+                     weak_pointer_factory_.GetWeakPtr(), callback));
+}
+
+void FastPairPresenterImpl::ShowUserDiscoveryNotification(
+    scoped_refptr<Device> device,
+    DiscoveryCallback callback,
+    DeviceMetadata* device_metadata) {
+  // Since we check this in |OnDiscoveryMetadataRetrieved| to determine if we
+  // should show the Guest notification, this should never be null.
   signin::IdentityManager* identity_manager =
       QuickPairBrowserDelegate::Get()->GetIdentityManager();
+  DCHECK(identity_manager);
+
   const std::string email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;

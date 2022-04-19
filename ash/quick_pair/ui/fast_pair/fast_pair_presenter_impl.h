@@ -73,6 +73,12 @@ class FastPairPresenterImpl : public FastPairPresenter {
                           DeviceMetadata* device_metadata,
                           nearby::fastpair::OptInStatus status);
 
+  void ShowUserDiscoveryNotification(scoped_refptr<Device> device,
+                                     DiscoveryCallback callback,
+                                     DeviceMetadata* device_metadata);
+  void ShowGuestDiscoveryNotification(scoped_refptr<Device> device,
+                                      DiscoveryCallback callback,
+                                      DeviceMetadata* device_metadata);
   void OnDiscoveryClicked(DiscoveryCallback action_callback);
   void OnDiscoveryDismissed(DiscoveryCallback callback, bool user_dismissed);
   void OnDiscoveryLearnMoreClicked(DiscoveryCallback action_callback);

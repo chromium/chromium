@@ -393,8 +393,17 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
     return;
   }
 
-  FastPairRepository::Get()->CheckOptInStatus(base::BindOnce(
-      &FastPairPairerImpl::OnCheckOptInStatus, weak_ptr_factory_.GetWeakPtr()));
+  // We want to verify the opt in status if the flag is enabled before we write
+  // an account key.
+  if (features::IsFastPairSavedDevicesEnabled()) {
+    QP_LOG(INFO) << __func__ << ": Saved Devices Flag enabled";
+    FastPairRepository::Get()->CheckOptInStatus(
+        base::BindOnce(&FastPairPairerImpl::OnCheckOptInStatus,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  WriteAccountKey();
 }
 
 void FastPairPairerImpl::OnCheckOptInStatus(
@@ -408,6 +417,10 @@ void FastPairPairerImpl::OnCheckOptInStatus(
     return;
   }
 
+  WriteAccountKey();
+}
+
+void FastPairPairerImpl::WriteAccountKey() {
   std::array<uint8_t, 16> account_key;
   RAND_bytes(account_key.data(), account_key.size());
   account_key[0] = 0x04;

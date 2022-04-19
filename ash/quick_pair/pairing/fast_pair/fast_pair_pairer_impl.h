@@ -135,6 +135,8 @@ class FastPairPairerImpl : public FastPairPairer,
 
   void StartPairing();
 
+  void WriteAccountKey();
+
   // Initial timestamps used for metrics.
   base::TimeTicks ask_confirm_passkey_initial_time_;
   base::TimeTicks confirm_passkey_initial_time_;

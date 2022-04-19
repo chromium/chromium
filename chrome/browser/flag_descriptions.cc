@@ -4424,6 +4424,12 @@ const char kFastPairSubsequentPairingUXDescription[] =
     "Enables the \"Subsequent Pairing\" Fast Pair scenario in Bluetooth "
     "Settings and Quick Settings.";
 
+const char kFastPairSavedDevicesName[] = "Enable Fast Pair Saved Devices";
+const char kFastPairSavedDevicesDescription[] =
+    "Enables the Fast Pair \"Saved Devices\" page to display a list of the "
+    "user's devices and provide the option to opt in or out of saving devices "
+    "to their account.";
+
 const char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 const char kUseHDRTransferFunctionDescription[] =

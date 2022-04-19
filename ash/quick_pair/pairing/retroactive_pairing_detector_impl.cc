@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/pairing/retroactive_pairing_detector_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
@@ -308,10 +309,19 @@ void RetroactivePairingDetectorImpl::NotifyDeviceFound(
   // class is created), but then opted-in later one, and then unable to save
   // devices to their account, or vice versa. By checking every time we want
   // to notify a device is found, we can accurately reflect a user's status
-  // in the moment.
-  FastPairRepository::Get()->CheckOptInStatus(base::BindOnce(
-      &RetroactivePairingDetectorImpl::OnCheckOptInStatus,
-      weak_ptr_factory_.GetWeakPtr(), model_id, ble_address, classic_address));
+  // in the moment. This is flagged on whether the user has the Fast Pair
+  // Saved Devices flag enabled.
+  if (features::IsFastPairSavedDevicesEnabled()) {
+    FastPairRepository::Get()->CheckOptInStatus(
+        base::BindOnce(&RetroactivePairingDetectorImpl::OnCheckOptInStatus,
+                       weak_ptr_factory_.GetWeakPtr(), model_id, ble_address,
+                       classic_address));
+    return;
+  }
+
+  // If the SavedDevices flag is not enabled, we don't have to check opt in
+  // status and can move forward with verifying the device found.
+  VerifyDeviceFound(model_id, ble_address, classic_address);
 }
 
 void RetroactivePairingDetectorImpl::OnCheckOptInStatus(
@@ -327,6 +337,15 @@ void RetroactivePairingDetectorImpl::OnCheckOptInStatus(
     RemoveDeviceInformation(classic_address);
     return;
   }
+
+  VerifyDeviceFound(model_id, ble_address, classic_address);
+}
+
+void RetroactivePairingDetectorImpl::VerifyDeviceFound(
+    const std::string& model_id,
+    const std::string& ble_address,
+    const std::string& classic_address) {
+  QP_LOG(INFO) << __func__;
 
   device::BluetoothDevice* bluetooth_device =
       adapter_->GetDevice(classic_address);
@@ -352,6 +371,8 @@ void RetroactivePairingDetectorImpl::OnCheckOptInStatus(
 void RetroactivePairingDetectorImpl::OnHandshakeComplete(
     scoped_refptr<Device> device,
     absl::optional<PairFailure> failure) {
+  QP_LOG(INFO) << __func__;
+
   if (failure) {
     QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
                     << " because: " << failure.value();

@@ -2531,6 +2531,9 @@ extern const char kFastPairSoftwareScanningDescription[];
 extern const char kFastPairSubsequentPairingUXName[];
 extern const char kFastPairSubsequentPairingUXDescription[];
 
+extern const char kFastPairSavedDevicesName[];
+extern const char kFastPairSavedDevicesDescription[];
+
 extern const char kUseHDRTransferFunctionName[];
 extern const char kUseHDRTransferFunctionDescription[];
 
