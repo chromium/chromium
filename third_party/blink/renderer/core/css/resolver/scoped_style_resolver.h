@@ -94,7 +94,6 @@ class CORE_EXPORT ScopedStyleResolver final
   void Trace(Visitor*) const;
 
  private:
-  void AddSlottedRules(const RuleSet&, CSSStyleSheet*, unsigned sheet_index);
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
