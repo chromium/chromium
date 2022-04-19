@@ -61,7 +61,7 @@
     margin-top: 6px;
   }
 
-  #checkIcon {
+  .chip-icon {
     height: 20px;
     inset-inline-end: 16px;
     position: absolute;
@@ -73,13 +73,21 @@
   }
 </style>
 
-<cr-button id="componentButton" disabled="[[disabled]]"
-    on-click="onComponentButtonClicked_">
-  <div id="labelDiv">
-    <span id="componentName">[[componentName]]</span>
-    <div id="componentIdentifier">[[componentIdentifier]]</div>
-  </div>
-  <iron-icon id="checkIcon" icon="shimless-icon24:check-circle"
-      hidden="[[!checked]]">
-  </iron-icon>
-</cr-button>
+<div id="componentButtonWrapper">
+  <cr-button id="componentButton" disabled="[[disabled]]"
+      on-click="onComponentButtonClicked_">
+    <div id="labelDiv">
+      <span id="componentName">[[componentName]]</span>
+      <div id="componentIdentifier">[[componentIdentifier]]</div>
+    </div>
+    <iron-icon id="checkIcon" class="chip-icon"
+        icon="shimless-icon24:check-circle" hidden="[[!checked]]">
+    </iron-icon>
+    <iron-icon id="infoIcon" class="chip-icon" icon="shimless-icon:info"
+        hidden="[[!disabled]]">
+    </iron-icon>
+  </cr-button>
+</div>
+<paper-tooltip for="componentButtonWrapper" hidden="[[!disabled]]">
+  [[i18n('undetectedComponentText')]]
+</paper-tooltip>

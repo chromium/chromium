@@ -102,6 +102,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // Select components page
       {"selectComponentsTitleText",
        IDS_SHIMLESS_RMA_SELECT_COMPONENTS_PAGE_TITLE},
+      {"undetectedComponentText", IDS_SHIMLESS_RMA_UNDETECTED_COMPONENT_LABEL},
       {"reworkFlowLinkText", IDS_SHIMLESS_RMA_REWORK_FLOW_LINK},
       // Choose destination page
       {"chooseDestinationTitleText", IDS_SHIMLESS_RMA_CHOOSE_DESTINATION},

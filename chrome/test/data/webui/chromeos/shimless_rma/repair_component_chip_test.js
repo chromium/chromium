@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RepairComponentChipElement} from 'chrome://shimless-rma/repair_component_chip.js';
+import {RepairComponentChip} from 'chrome://shimless-rma/repair_component_chip.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
-export function repairComponentChipElementTest() {
-  /** @type {?RepairComponentChipElement} */
+export function repairComponentChipTest() {
+  /** @type {?RepairComponentChip} */
   let component = null;
 
   setup(() => {
@@ -28,7 +28,7 @@ export function repairComponentChipElementTest() {
   function initializeRepairComponentChip(componentName, componentIdentifier) {
     assertFalse(!!component);
 
-    component = /** @type {!RepairComponentChipElement} */ (
+    component = /** @type {!RepairComponentChip} */ (
         document.createElement('repair-component-chip'));
     component.componentName = componentName;
     component.componentIdentifier = componentIdentifier;

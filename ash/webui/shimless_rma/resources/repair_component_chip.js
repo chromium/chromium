@@ -11,7 +11,8 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
@@ -19,7 +20,15 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
  * as replaced.
  */
 
-export class RepairComponentChipElement extends PolymerElement {
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const RepairComponentChipBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class RepairComponentChip extends RepairComponentChipBase {
   static get is() {
     return 'repair-component-chip';
   }
@@ -58,5 +67,4 @@ export class RepairComponentChipElement extends PolymerElement {
   }
 }
 
-customElements.define(
-    RepairComponentChipElement.is, RepairComponentChipElement);
+customElements.define(RepairComponentChip.is, RepairComponentChip);

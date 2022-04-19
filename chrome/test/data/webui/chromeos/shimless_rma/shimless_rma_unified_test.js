@@ -23,7 +23,7 @@ import {reimagingCalibrationSetupPageTest} from './reimaging_calibration_setup_p
 import {reimagingDeviceInformationPageTest} from './reimaging_device_information_page_test.js';
 import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_test.js';
 import {reimagingProvisioningPageTest} from './reimaging_provisioning_page_test.js';
-import {repairComponentChipElementTest} from './repair_component_chip_test.js';
+import {repairComponentChipTest} from './repair_component_chip_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
 import {wrapupFinalizePageTest} from './wrapup_finalize_page_test.js';
 import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
@@ -69,7 +69,7 @@ runSuite('ReimagingFirmwareUpdatePageTest', reimagingFirmwareUpdatePageTest);
 runSuite(
     'ReimagingDeviceInformationPageTest', reimagingDeviceInformationPageTest);
 runSuite('ReimagingProvisioningPageTest', reimagingProvisioningPageTest);
-runSuite('RepairComponentChipElementTest', repairComponentChipElementTest);
+runSuite('RepairComponentChipTest', repairComponentChipTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
 runSuite('WrapupFinalizePageTest', wrapupFinalizePageTest);
 runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);
