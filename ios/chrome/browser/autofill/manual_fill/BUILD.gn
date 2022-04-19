@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
-
 source_set("manual_fill") {
   sources = [
     "passwords_fetcher.h",
