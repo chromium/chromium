@@ -57,6 +57,16 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
        */
       allButtonsDisabled: Boolean,
 
+      /**
+       * Keeps the shutdown and reboot buttons disabled after the response from
+       * the service to prevent successive shutdown or reboot attempts.
+       * @protected {boolean}
+       */
+      shutdownButtonsDisabled_: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @protected */
       log_: {
         type: String,
@@ -144,6 +154,9 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
 
   /** @private */
   shutDownOrReboot_() {
+    // Keeps the buttons disabled until the device is shutdown.
+    this.shutdownButtonsDisabled_ = true;
+
     if (this.selectedFinishRmaOption_ === FinishRmaOption.SHUTDOWN) {
       this.endRmaAndShutdown_();
     } else {
@@ -290,6 +303,14 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
    */
   disableBatteryCutButton_() {
     return this.pluggedIn_ || this.allButtonsDisabled;
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  disableShutdownButtons_() {
+    return this.shutdownButtonsDisabled_ || this.allButtonsDisabled;
   }
 }
 

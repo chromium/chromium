@@ -394,6 +394,7 @@ export function wrapupRepairCompletePageTest() {
     const batteryCutButton =
         component.shadowRoot.querySelector('#batteryCutButton');
 
+    component.allButtonsDisabled = false;
     assertFalse(shutDownButton.disabled);
     assertFalse(rebootButton.disabled);
     assertFalse(diagnosticsButton.disabled);
@@ -409,5 +410,41 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(diagnosticsButton.disabled);
     assertTrue(rmaLogButton.disabled);
     assertTrue(batteryCutButton.disabled);
+  });
+
+  test('ShutdownButtonsStayDisabledAfterShutdown', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(false);
+
+    service.endRma = (seenShutdownMethod) => {
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#shutDownButton');
+    await flushTasks();
+
+    assertTrue(component.shadowRoot.querySelector('#shutDownButton').disabled);
+    assertTrue(component.shadowRoot.querySelector('#rebootButton').disabled);
+  });
+
+  test('ShutdownButtonsStayDisabledAfterReboot', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(false);
+
+    service.endRma = (seenShutdownMethod) => {
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#rebootButton');
+    await flushTasks();
+
+    assertTrue(component.shadowRoot.querySelector('#shutDownButton').disabled);
+    assertTrue(component.shadowRoot.querySelector('#rebootButton').disabled);
   });
 }
