@@ -39,6 +39,8 @@ constexpr char kPresentationId[] = "thePresentationId";
 // Metrics constants.
 constexpr char kHistogramSessionLength[] =
     "MediaRouter.CastStreaming.Session.Length";
+constexpr char kHistogramSessionLengthAccessCode[] =
+    "MediaRouter.CastStreaming.Session.Length.AccessCode";
 constexpr char kHistogramSessionLengthDesktop[] =
     "MediaRouter.CastStreaming.Session.Length.Screen";
 constexpr char kHistogramSessionLengthFile[] =
@@ -93,10 +95,12 @@ class MirroringActivityTest
 
   void MakeActivity() { MakeActivity(MediaSource::ForTab(kTabId), kTabId); }
 
-  void MakeActivity(const MediaSource& source, int tab_id = -1) {
+  void MakeActivity(const MediaSource& source, int tab_id = -1,
+      CastDiscoveryType discovery_type = CastDiscoveryType::kMdns) {
     CastSinkExtraData cast_data;
     cast_data.cast_channel_id = kChannelId;
     cast_data.capabilities = cast_channel::AUDIO_OUT | cast_channel::VIDEO_OUT;
+    cast_data.discovery_type = discovery_type;
     MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_);
     route.set_presentation_id(kPresentationId);
     activity_ = std::make_unique<MirroringActivity>(
@@ -151,6 +155,7 @@ TEST_F(MirroringActivityTest, MirrorDesktop) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthFile, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, MirrorTab) {
@@ -168,6 +173,7 @@ TEST_F(MirroringActivityTest, MirrorTab) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthFile, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 1);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, CreateMojoBindingsForTabWithCastAppUrl) {
@@ -187,6 +193,7 @@ TEST_F(MirroringActivityTest, CreateMojoBindingsForTabWithCastAppUrl) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthFile, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 1);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, MirrorOffscreenTab) {
@@ -207,6 +214,7 @@ TEST_F(MirroringActivityTest, MirrorOffscreenTab) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthFile, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 1);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, MirrorFile) {
@@ -224,6 +232,25 @@ TEST_F(MirroringActivityTest, MirrorFile) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthFile, 1);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
+}
+
+TEST_F(MirroringActivityTest, MirrorAccessCode) {
+  base::HistogramTester uma_recorder;
+  EXPECT_CALL(media_router_, GetMirroringServiceHostForTab(kTabId, _));
+  MediaSource source = MediaSource::ForTab(kTabId);
+  ASSERT_TRUE(source.IsTabMirroringSource());
+  MakeActivity(source, kTabId, CastDiscoveryType::kAccessCodeManualEntry);
+
+  activity_->DidStart();
+  activity_.reset();
+
+  uma_recorder.ExpectTotalCount(kHistogramSessionLength, 1);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthDesktop, 0);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthFile, 0);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 1);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
+  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 1);
 }
 
 TEST_F(MirroringActivityTest, OnError) {

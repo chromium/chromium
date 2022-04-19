@@ -5669,6 +5669,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.CastStreaming.Session.Length.AccessCode"
+    units="ms" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Total length of a Cast Streaming mirror session of any type, when the cast
+    sink was discovered via access code.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.CastStreaming.Session.Length.File" units="ms"
     expires_after="2022-07-01">
   <owner>takumif@chromium.org</owner>
@@ -5702,6 +5712,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.CastStreaming.Start.Failure.AccessCodeManualEntry"
+    enum="MirroringServiceErrorType" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Whenever a Cast Streaming session to a device discovered by access code
+    manual entry fails to start, record the error associated with the event.
+  </summary>
+</histogram>
+
+<histogram
+    name="MediaRouter.CastStreaming.Start.Failure.AccessCodeRememberedDevice"
+    enum="MirroringServiceErrorType" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Whenever a Cast Streaming session to a device discovered by access code and
+    remembered via caching fails to start, record the error associated with the
+    event.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.CastStreaming.Start.Failure.Native"
     enum="MirroringServiceErrorType" expires_after="2022-10-04">
   <owner>takumif@chromium.org</owner>
@@ -5719,6 +5751,29 @@ chromium-metrics-reviews@google.com.
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Whenever a Cast Streaming session is successfully started, record if it was
+    for a Tab or Desktop mirroring session.
+  </summary>
+</histogram>
+
+<histogram name="MediaRouter.CastStreaming.Start.Success.AccessCodeManualEntry"
+    enum="MirrorType" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Whenever a Cast Streaming session is successfully started, when the device
+    was discovered by access code maual entry, record if it was for a Tab or
+    Desktop mirroring session.
+  </summary>
+</histogram>
+
+<histogram
+    name="MediaRouter.CastStreaming.Start.Success.AccessCodeRememberedDevice"
+    enum="MirrorType" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Whenever a Cast Streaming session is successfully started, when the device
+    was discovered by access code remembered device caching, record if it was
     for a Tab or Desktop mirroring session.
   </summary>
 </histogram>
