@@ -558,7 +558,13 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   // TODO(crbug.com/1052397): Revisit the macro expression once build flag
   // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-  pairings_from_extension = base::span<const device::CableDiscoveryData>();
+  if (std::any_of(pairings_from_extension.begin(),
+                  pairings_from_extension.end(),
+                  [](const device::CableDiscoveryData& v) -> bool {
+                    return v.version == device::CableDiscoveryData::Version::V1;
+                  })) {
+    pairings_from_extension = base::span<const device::CableDiscoveryData>();
+  }
 #endif
 
   std::vector<device::CableDiscoveryData> pairings;
