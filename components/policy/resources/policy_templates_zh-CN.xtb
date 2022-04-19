@@ -3175,7 +3175,7 @@
 
       * 如果 <ph name="FILTER_PLACEHOLDER" /> 包含值为 <ph name="FILTER_STRING_ORGANIZATION" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 部分，证书便需要包含至少 1 个与指定值匹配的组织才会被选中。
 
-      * 如果 <ph name="FILTER_PLACEHOLDER" /> 包含值为 <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 部分，证书便需要包含至少 1 个与指定值匹配的组织单元才会被选中。
+      * 如果 <ph name="FILTER_PLACEHOLDER" /> 包含值为 <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 部分，证书便需要包含至少 1 个与指定值匹配的组织部门才会被选中。
 
       * 如果 <ph name="FILTER_PLACEHOLDER" /> 设为 <ph name="EMPTY_DICTIONARY" />，系统在选择客户端证书时便不会受到额外限制。请注意，网络服务器提供的过滤条件仍然适用。
 
@@ -3905,7 +3905,7 @@
 <translation id="5508307164752647432">启用 Kerberos 功能</translation>
 <translation id="5511702823008968136">启用书签栏</translation>
 <translation id="5512418063782665071">主页网址</translation>
-<translation id="551639594034811656">此政策可指定一个百分比列表，这些百分比用于界定组织单元中每天（从首次发现相应更新的那一天起算）要更新的那部分 <ph name="PRODUCT_OS_NAME" />设备。发现时间会晚于更新发布时间，这是因为设备可能要在更新发布一段时间之后才会检查是否有更新。
+<translation id="551639594034811656">此政策可指定一个百分比列表，这些百分比用于界定组织部门中每天（从首次发现相应更新的那一天起算）要更新的那部分 <ph name="PRODUCT_OS_NAME" />设备。发现时间会晚于更新发布时间，这是因为设备可能要在更新发布一段时间之后才会检查是否有更新。
 
       每个 (天数, 百分比) 对都包含自发现更新当天起的指定天数内，必须完成更新的设备百分比。例如，如果有以下对：[(4, 40), (10, 70), (15, 100)]，则表示在发现更新后的 4 天内，应完成 40% 的设备更新，10 天内完成 70% 的设备更新，以此类推。
 
@@ -4373,9 +4373,9 @@
 
       0：无特殊限制。默认。
 
-      1：拦截已被“安全浏览”服务器标记的恶意文件以及所有危险文件类型。仅推荐用于对误判有较高容忍度的单位部门/浏览器/用户。
+      1：拦截已被“安全浏览”服务器标记的恶意文件以及所有危险文件类型。仅推荐用于对误判有较高容忍度的组织部门/浏览器/用户。
 
-      2：拦截已被“安全浏览”服务器标记的恶意文件、不常见或不需要的文件，以及所有危险文件类型。仅推荐用于对误判有较高容忍度的单位部门/浏览器/用户。
+      2：拦截已被“安全浏览”服务器标记的恶意文件、不常见或不需要的文件，以及所有危险文件类型。仅推荐用于对误判有较高容忍度的组织部门/浏览器/用户。
 
       3：拦截所有下载内容。不推荐，特殊使用情形除外。
 
@@ -7088,7 +7088,7 @@
 
       * 如果 <ph name="FILTER_PLACEHOLDER" /> 包含值为 <ph name="FILTER_STRING_ORGANIZATION" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 部分，证书便需要包含至少 1 个与指定值匹配的组织才会被选中。
 
-      * 如果 <ph name="FILTER_PLACEHOLDER" /> 包含值为 <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 部分，证书便需要包含至少 1 个与指定值匹配的组织单元才会被选中。
+      * 如果 <ph name="FILTER_PLACEHOLDER" /> 包含值为 <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 部分，证书便需要包含至少 1 个与指定值匹配的组织部门才会被选中。
 
       * 如果 <ph name="FILTER_PLACEHOLDER" /> 设为 <ph name="EMPTY_DICTIONARY" />，系统在选择客户端证书时便不会受到额外限制。请注意，网络服务器提供的过滤条件仍然适用。
 

@@ -14,7 +14,7 @@
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
 <translation id="1032854598605920125">Girar hacia la derecha</translation>
-<translation id="1033329911862281889">El modo de incógnito no te hace invisible online:
+<translation id="1033329911862281889">El modo Incógnito no te hace invisible online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Los sitios y los servicios que usen pueden ver las visitas<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Las empresas o los centros educativos pueden monitorizar la actividad de navegación<ph name="END_LIST_ITEM" />
@@ -298,7 +298,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     el encabezado tiene errores, lo que impide al navegador procesar
     tu solicitud de ir a <ph name="SITE" />. Los operadores de sitios
     pueden usar las políticas de origen para configurar la seguridad y otras propiedades de un sitio web.</translation>
-<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Más información sobre el modo de incógnito de Chromium<ph name="END_LINK" /></translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Más información sobre el modo Incógnito de Chromium<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">Las pestañas abiertas aparecen aquí</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -319,7 +319,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1838374766361614909">Borrar búsqueda</translation>
 <translation id="1839551713262164453">No se ha podido hacer la validación de los valores de la política porque se han producido errores</translation>
 <translation id="1842969606798536927">Pagar</translation>
-<translation id="1856713167556118146">Lo que no hace el modo de incógnito</translation>
+<translation id="1856713167556118146">Lo que no hace el modo Incógnito</translation>
 <translation id="1863257867908022953">Bandeja 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de secuencia de comandos .pac.</translation>
@@ -519,7 +519,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
 <translation id="2524461107774643265">Añade más información</translation>
 <translation id="2529899080962247600">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán las demás entradas.</translation>
-<translation id="2535585790302968248">Abre una pestaña de incógnito nueva para navegar en privado</translation>
+<translation id="2535585790302968248">Abre una pestaña de Incógnito nueva para navegar en privado</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
 <translation id="2536110899380797252">Añadir dirección</translation>
 <translation id="2539524384386349900">Detectar</translation>
@@ -619,7 +619,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2859806420264540918">Este sitio web muestra anuncios invasivos o engañosos.</translation>
 <translation id="286512204874376891">Una tarjeta virtual oculta tu tarjeta real para protegerte frente a posibles fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">Amistosa</translation>
-<translation id="2876489322757410363">Saldrás del modo de incógnito para pagar en una aplicación externa. ¿Quieres continuar?</translation>
+<translation id="2876489322757410363">Saldrás del modo Incógnito para pagar en una aplicación externa. ¿Quieres continuar?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para gestionar Navegación segura y otras opciones en la configuración de Chrome</translation>
 <translation id="2878197950673342043">Plegado en cruz</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -1050,7 +1050,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     &lt;li&gt;Accede a cualquier sitio web que empiece por &lt;code&gt;http://&lt;/code&gt;, como &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
     &lt;li&gt;En la página de inicio de sesión que se abre, inicia sesión para utilizar la conexión a Internet.&lt;/li&gt;
     &lt;/ol&gt;
-    &lt;h4&gt;Paso 2: Abre la página en modo de incógnito (solo en ordenadores)&lt;/h4&gt;
+    &lt;h4&gt;Paso 2: Abre la página en modo Incógnito (solo en ordenadores)&lt;/h4&gt;
     &lt;p&gt;Abre la página que estabas visitando en una ventana de incógnito.&lt;/p&gt;
     &lt;p&gt;Si la página se abre, significa que una extensión de Chrome no funciona correctamente. Para solucionarlo, desactiva esa extensión.&lt;/p&gt;
     &lt;h4&gt;Paso 3: Actualiza tu sistema operativo&lt;/h4&gt;
@@ -1142,7 +1142,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Autocompletar se ha desactivado.</translation>
 <translation id="4477350412780666475">Pista siguiente</translation>
-<translation id="4481251927743463293">Lo que hace el modo de incógnito</translation>
+<translation id="4481251927743463293">Lo que hace el modo Incógnito</translation>
 <translation id="4482953324121162758">Este sitio web no se traducirá.</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Cifrar contraseñas sincronizadas con tu cuenta de Google</translation>
@@ -1223,7 +1223,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4742407542027196863">Gestionar contraseñas…</translation>
 <translation id="4744514002166662487">Crear presentación</translation>
 <translation id="4744603770635761495">Ruta del ejecutable</translation>
-<translation id="4749011317274908093">Estás en modo de incógnito</translation>
+<translation id="4749011317274908093">Estás en modo Incógnito</translation>
 <translation id="4750917950439032686">Tu información (por ejemplo, tus contraseñas o números de tarjeta de crédito) es privada cuando se envía a este sitio web.</translation>
 <translation id="4751476147751820511">Sensores de luz o movimiento</translation>
 <translation id="4754461935447132332">No permitido en sitios no seguros</translation>
@@ -1487,7 +1487,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5560088892362098740">Fecha de caducidad</translation>
 <translation id="55635442646131152">Esquema del documento</translation>
-<translation id="5565613213060953222">Abrir pestaña de incógnito</translation>
+<translation id="5565613213060953222">Abrir pestaña de Incógnito</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5570825185877910964">Proteger cuenta</translation>
 <translation id="5571083550517324815">Los pedidos no se pueden recoger en esta dirección. Selecciona otra.</translation>
@@ -1649,7 +1649,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6120179357481664955">¿Recuerdas tu ID de UPI?</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6127379762771434464">Elemento quitado</translation>
-<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Más información sobre el modo de incógnito de Chrome<ph name="END_LINK" /></translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Más información sobre el modo Incógnito de Chrome<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">Comprueba los cables y reinicia los routers, los módems o cualquier otro dispositivo
     de red que estés utilizando.</translation>
 <translation id="614940544461990577">Prueba a:</translation>
@@ -1954,7 +1954,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7192203810768312527">Libera <ph name="SIZE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">El administrador puede consultar lo siguiente:</translation>
-<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una pestaña de incógnito nueva y navegar de forma privada</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una pestaña de Incógnito nueva y navegar de forma privada</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">La página <ph name="HOST_NAME" /> no cumple los estándares de seguridad.</translation>
 <translation id="7210993021468939304">Los administradores pueden ver la actividad de Linux en el contenedor, y también pueden instalar y ejecutar aplicaciones de Linux en el contenedor</translation>
@@ -1964,7 +1964,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7219179957768738017">La conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando pago</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
-<translation id="722454870747268814">Nueva pestaña de incógnito</translation>
+<translation id="722454870747268814">Nueva pestaña de Incógnito</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
 <translation id="7238585580608191973">Huella digital SHA-256</translation>
 <translation id="7240120331469437312">Nombre alternativo de la entidad receptora del certificado</translation>
@@ -2004,7 +2004,7 @@ Más información:
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>
 <translation id="7359588939039777303">Los anuncios están bloqueados.</translation>
-<translation id="7363096869660964304">Sin embargo, tus acciones no son invisibles. El modo de incógnito no oculta tu actividad de navegación a tu empresa, a tu proveedor de Internet ni a los sitios web que visites.</translation>
+<translation id="7363096869660964304">Sin embargo, tus acciones no son invisibles. El modo Incógnito no oculta tu actividad de navegación a tu empresa, a tu proveedor de Internet ni a los sitios web que visites.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para añadir y gestionar direcciones en la configuración de Chrome</translation>
 <translation id="7365849542400970216">¿Detectar el uso de tu dispositivo?</translation>
 <translation id="7366362069757178916">Controladores de pago</translation>
@@ -2220,7 +2220,7 @@ Más información:
 <translation id="799149739215780103">Encuadernar</translation>
 <translation id="7992044431894087211">Se ha reanudado la pantalla compartida con <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Sin especificar</translation>
-<translation id="7998269595945679889">Botón Abrir pestaña de incógnito, pulsa Intro para abrir una pestaña de incógnito nueva para navegar de forma privada</translation>
+<translation id="7998269595945679889">Botón Abrir pestaña de Incógnito, pulsa Intro para abrir una pestaña de Incógnito nueva para navegar de forma privada</translation>
 <translation id="800218591365569300">Prueba a cerrar otros programas o pestañas para liberar memoria.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Se guardará la tarjeta y su dirección de facturación. Podrás utilizarla cuando inicies sesión como <ph name="USER_EMAIL" />.}other{Se guardarán las tarjetas y sus direcciones de facturación. Podrás utilizarlas cuando inicies sesión como <ph name="USER_EMAIL" />.}}</translation>
@@ -2288,7 +2288,7 @@ Más información:
 <translation id="822964464349305906"><ph name="TYPE_1" /> o <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatura de plataforma</translation>
 <translation id="8233773197406738106">Preparando archivo</translation>
-<translation id="8238581221633243064">Abre una página en una nueva pestaña de incógnito</translation>
+<translation id="8238581221633243064">Abre una página en una nueva pestaña de Incógnito</translation>
 <translation id="8241707690549784388">La página que buscas ha utilizado la información que has especificado. Volver a la página podría provocar la repetición de alguna acción. ¿Quieres continuar?</translation>
 <translation id="8241712895048303527">Bloquear en este sitio web</translation>
 <translation id="8242426110754782860">Continuar</translation>
@@ -2332,7 +2332,7 @@ Más información:
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8355270400102541638">Contexto del fallo local:</translation>
-<translation id="8363502534493474904">Desactivar el modo avión</translation>
+<translation id="8363502534493474904">Desactivar el modo Avión</translation>
 <translation id="8364627913115013041">No establecida</translation>
 <translation id="8368027906805972958">Dispositivo desconocido o no compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servicios de Google Play</translation>
