@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "build/buildflag.h"
@@ -193,6 +194,13 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
 
   // Returns a map of KeyboardEvent code to KeyboardEvent key values.
   virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;
+
+  // Returns the names of available system themes. Used only in test.
+  virtual std::vector<std::string> GetAvailableSystemThemeNamesForTest()
+      const = 0;
+
+  // Set the system theme by name. Used only in test.
+  virtual void SetSystemThemeByNameForTest(const std::string& theme_name) = 0;
 
  protected:
   LinuxUI();

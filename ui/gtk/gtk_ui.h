@@ -111,6 +111,8 @@ class GtkUi : public views::LinuxUI {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
+  std::vector<std::string> GetAvailableSystemThemeNamesForTest() const override;
+  void SetSystemThemeByNameForTest(const std::string& theme_name) override;
 
   // ui::TextEditKeybindingDelegate:
   bool MatchEvent(const ui::Event& event,
