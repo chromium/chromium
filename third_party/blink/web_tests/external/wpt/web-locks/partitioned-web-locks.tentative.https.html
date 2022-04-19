@@ -3,15 +3,13 @@
 <meta charset="utf-8"/>
 <title>Web Locks API: Partitioned WebLocks</title>
 
+<!-- Pull in get_host_info() -->
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
-<script src="/cookies/resources/cookie-helper.sub.js"></script>
-<script src="../credentialless/resources/common.js"></script>
 <script src="resources/helpers.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <body>
 <script>
 
@@ -87,7 +85,7 @@ async function nested_iframe_test(t) {
             assert_true(false)
             return;
           }
-          // Obtain and store the release functions for clean-up
+          // Obtain and store the release functions for clean-up.
           let lock_id = next_lock_id_2++;
           let release;
           const promise = new Promise(r => { release = r; });
