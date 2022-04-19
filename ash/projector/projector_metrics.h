@@ -11,34 +11,36 @@ namespace ash {
 
 // These enum values represent buttons on the Projector toolbar and log to UMA.
 // Entries should not be renumbered and numeric values should never be reused.
+// When removing an unused enumerator, comment it out, making it clear the value
+// was previously used.
 // Please keep in sync with "ProjectorToolbar" in
 // src/tools/metrics/histograms/enums.xml.
 enum class ProjectorToolbar {
-  kToolbarOpened = 0,
-  kToolbarClosed = 1,
-  kKeyIdea = 2,
-  kLaserPointer = 3,
+  // kToolbarOpened = 0,
+  // kToolbarClosed = 1,
+  // kKeyIdea = 2,
+  // kLaserPointer = 3,
   kMarkerTool = 4,
-  kExpandMarkerTools = 5,
-  kCollapseMarkerTools = 6,
-  kClearAllMarkers = 7,
-  kStartMagnifier = 8,
-  kStopMagnifier = 9,
+  // kExpandMarkerTools = 5,
+  // kCollapseMarkerTools = 6,
+  // kClearAllMarkers = 7,
+  // kStartMagnifier = 8,
+  // kStopMagnifier = 9,
   // kStartSelfieCamera = 10,
   // kStopSelfieCamera = 11,
-  kStartClosedCaptions = 12,
-  kStopClosedCaptions = 13,
-  kToolbarLocationBottomLeft = 14,
-  kToolbarLocationTopLeft = 15,
-  kToolbarLocationTopRight = 16,
-  kToolbarLocationBottomRight = 17,
-  kUndo = 18,
-  kToolbarLocationTopCenter = 19,
-  kToolbarLocationBottomCenter = 20,
+  // kStartClosedCaptions = 12,
+  // kStopClosedCaptions = 13,
+  // kToolbarLocationBottomLeft = 14,
+  // kToolbarLocationTopLeft = 15,
+  // kToolbarLocationTopRight = 16,
+  // kToolbarLocationBottomRight = 17,
+  // kUndo = 18,
+  // kToolbarLocationTopCenter = 19,
+  // kToolbarLocationBottomCenter = 20,
   // Add future entries above this comment, in sync with
   // "ProjectorToolbar" in src/tools/metrics/histograms/enums.xml.
   // Update kMaxValue to the last value.
-  kMaxValue = kToolbarLocationBottomCenter
+  kMaxValue = kMarkerTool
 };
 
 // These enum values represent marker colors on the Projector toolbar and log to

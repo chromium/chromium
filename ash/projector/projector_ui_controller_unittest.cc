@@ -36,6 +36,8 @@ constexpr char kProjectorCreationFlowErrorHistogramName[] =
     "Ash.Projector.CreationFlowError.ClamshellMode";
 constexpr char kProjectorMarkerColorHistogramName[] =
     "Ash.Projector.MarkerColor.ClamshellMode";
+constexpr char kProjectorToolbarHistogramName[] =
+    "Ash.Projector.Toolbar.ClamshellMode";
 
 }  // namespace
 
@@ -94,6 +96,8 @@ TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
 }
 
 TEST_F(ProjectorUiControllerTest, CloseToolbarWhenAnnotatorIsEnabled) {
+  base::HistogramTester histogram_tester;
+
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
@@ -106,11 +110,17 @@ TEST_F(ProjectorUiControllerTest, CloseToolbarWhenAnnotatorIsEnabled) {
   controller_->CloseToolbar();
   EXPECT_FALSE(projector_annotation_tray->visible_preferred());
   EXPECT_FALSE(controller_->is_annotator_enabled());
+
+  histogram_tester.ExpectUniqueSample(kProjectorToolbarHistogramName,
+                                      ProjectorToolbar::kMarkerTool,
+                                      /*count=*/1);
 }
 
 // Verifies that toggling on the marker on Projector tools enables the
 // annotator.
 TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
+  base::HistogramTester histogram_tester;
+
   // Enable marker.
   controller_->OnMarkerPressed();
   EXPECT_TRUE(controller_->is_annotator_enabled());
@@ -118,6 +128,10 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
   EXPECT_CALL(projector_client_, Clear());
   controller_->ResetTools();
   EXPECT_FALSE(controller_->is_annotator_enabled());
+
+  histogram_tester.ExpectUniqueSample(kProjectorToolbarHistogramName,
+                                      ProjectorToolbar::kMarkerTool,
+                                      /*count=*/1);
 }
 
 TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
@@ -126,9 +140,9 @@ TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
   EXPECT_CALL(projector_client_, SetTool(tool));
 
   controller_->SetAnnotatorTool(tool);
-  histogram_tester.ExpectBucketCount(kProjectorMarkerColorHistogramName,
-                                     ProjectorMarkerColor::kBlack,
-                                     /*count=*/1);
+  histogram_tester.ExpectUniqueSample(kProjectorMarkerColorHistogramName,
+                                      ProjectorMarkerColor::kBlack,
+                                      /*count=*/1);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
