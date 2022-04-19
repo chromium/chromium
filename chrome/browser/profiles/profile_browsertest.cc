@@ -95,7 +95,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/account_id/account_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -1069,10 +1069,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     crosapi::mojom::BrowserInitParamsPtr init_params =
         crosapi::mojom::BrowserInitParams::New();
     init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
-    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+    EXPECT_EQ(chromeos::BrowserInitParams::Get()->session_type,
               crosapi::mojom::SessionType::kPublicSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
@@ -1100,10 +1099,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     crosapi::mojom::BrowserInitParamsPtr init_params =
         crosapi::mojom::BrowserInitParams::New();
     init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
-    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+    EXPECT_EQ(chromeos::BrowserInitParams::Get()->session_type,
               crosapi::mojom::SessionType::kWebKioskSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
@@ -1134,10 +1132,9 @@ IN_PROC_BROWSER_TEST_F(
     init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
     init_params->device_mode =
         crosapi::mojom::DeviceMode::kEnterpriseActiveDirectory;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
-    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+    EXPECT_EQ(chromeos::BrowserInitParams::Get()->session_type,
               crosapi::mojom::SessionType::kRegularSession);
     EXPECT_TRUE(profile->IsMainProfile());
 

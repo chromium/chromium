@@ -33,7 +33,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,8 +104,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
   void SetSessionType(SessionType type) {
     BrowserInitParamsPtr init_params = BrowserInitParams::New();
     init_params->session_type = type;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
   }
 
   void CreateFullscreenWindow() {
@@ -121,7 +120,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     // Verify `AppSession` object is created when `NewFullscreenWindow` is
     // called in the Web Kiosk session. Then, disable the `AttemptUserExit`
     // method to do nothing.
-    if (chromeos::LacrosService::Get()->init_params()->session_type ==
+    if (chromeos::BrowserInitParams::Get()->session_type ==
         SessionType::kWebKioskSession) {
       chromeos::AppSession* app_session =
           KioskSessionServiceLacros::Get()->GetAppSessionForTesting();

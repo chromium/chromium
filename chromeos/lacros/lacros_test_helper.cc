@@ -5,12 +5,14 @@
 #include "chromeos/lacros/lacros_test_helper.h"
 
 #include "base/check.h"
+#include "chromeos/startup/browser_init_params.h"
 
 namespace chromeos {
 
 ScopedDisableCrosapiForTesting::ScopedDisableCrosapiForTesting()
-    : disable_crosapi_resetter_(&LacrosService::disable_crosapi_for_testing_,
-                                true) {
+    : disable_crosapi_resetter_(
+          &BrowserInitParams::disable_crosapi_for_testing_,
+          true) {
   // Ensure that no instance exist, to prevent interference.
   CHECK(!LacrosService::Get());
 }

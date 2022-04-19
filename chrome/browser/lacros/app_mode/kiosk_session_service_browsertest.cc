@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "content/public/test/browser_test.h"
 
 using crosapi::mojom::BrowserInitParams;
@@ -64,10 +65,9 @@ class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
 
   void SetSessionType(SessionType type) {
     BrowserInitParamsPtr init_params =
-        chromeos::LacrosService::Get()->init_params()->Clone();
+        chromeos::BrowserInitParams::Get()->Clone();
     init_params->session_type = type;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
   }
 
   void CreateKioskMainWindow() {

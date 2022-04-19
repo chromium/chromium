@@ -132,7 +132,7 @@
 #include "components/policy/core/common/policy_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -4112,7 +4112,7 @@ class StartupBrowserCreatorLacrosNoWindowTest
           crosapi::mojom::BrowserInitParams::New();
       init_params->initial_browser_action =
           crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow;
-      chromeos::LacrosService::Get()->SetInitParamsForTests(
+      chromeos::BrowserInitParams::SetInitParamsForTests(
           std::move(init_params));
     }
 

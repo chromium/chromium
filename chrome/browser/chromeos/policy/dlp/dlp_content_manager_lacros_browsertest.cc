@@ -9,6 +9,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,11 +81,10 @@ class DlpContentManagerLacrosBrowserTest : public InProcessBrowserTest {
 
   void SetDlpInterfaceVersion(int version) {
     crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::LacrosService::Get()->init_params()->Clone();
+        chromeos::BrowserInitParams::Get()->Clone();
     init_params->interface_versions.value()[crosapi::mojom::Dlp::Uuid_] =
         version;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
   }
 
   DlpContentManagerLacros* manager() {

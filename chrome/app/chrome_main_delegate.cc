@@ -191,6 +191,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"  // nogncheck
 #include "media/base/media_switches.h"
 #endif
 
@@ -556,8 +557,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   lacros_service_ = std::make_unique<chromeos::LacrosService>();
   {
     const crosapi::mojom::BrowserInitParams* init_params =
-        lacros_service_->init_params();
-    chrome::SetLacrosDefaultPathsFromInitParams(init_params);
+        chromeos::BrowserInitParams::Get();
     // This lives here rather than in ChromeBrowserMainExtraPartsLacros due to
     // timing constraints. If we relocate it, then the flags aren't propagated
     // to the GPU process.
@@ -1041,7 +1041,19 @@ void ChromeMainDelegate::PreSandboxStartup() {
   if (chrome::ProcessNeedsProfileDir(process_type))
     InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
 
-  // Register component_updater PathProvider after DIR_USER_DATA overidden by
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Initialize BrowserInitParams only for browser process before launching
+  // zygote and utility process.
+  if (process_type.empty()) {
+    // TODO(elkurin): Add comments here when resource loading using ash
+    // resources is implemented.
+    const crosapi::mojom::BrowserInitParams* init_params =
+        chromeos::BrowserInitParams::Get();
+    chrome::SetLacrosDefaultPathsFromInitParams(init_params);
+  }
+#endif
+
+  // Register component_updater PathProvider after DIR_USER_DATA overridden by
   // command line flags. Maybe move the chrome PathProvider down here also?
   int alt_preinstalled_components_dir =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
