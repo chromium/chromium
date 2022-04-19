@@ -960,7 +960,7 @@
 <translation id="1976928778492259496">指紋感應器位於「<ph name="DEVICE_TYPE" />」的左側。請單指輕觸這個按鍵。</translation>
 <translation id="1977965994116744507">讓你的手機靠近 <ph name="DEVICE_TYPE" />，即可將其解鎖。</translation>
 <translation id="1978057560491495741">移除地址</translation>
-<translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
+<translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
 <translation id="1979280758666859181">你即將變更為較舊版本的 <ph name="PRODUCT_NAME" />。該版本的版本號與你電腦上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
 <translation id="1981434377190976112">讀取你在所有網站上的所有資料</translation>
@@ -7603,7 +7603,7 @@
 <translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或抬頭顯示導航等 AR 功能</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" />目前已在這部電腦上使用這個帳戶。</translation>
 <translation id="9023015617655685412">將此分頁加入書籤...</translation>
-<translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
+<translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
 <translation id="9024127637873500333">在新分頁中開啟(&amp;O)</translation>
 <translation id="9024158959543687197">掛接共用裝置時發生錯誤。請檢查檔案共用網址，然後再試一次。</translation>
 <translation id="9024692527554990034">只要在網址列中輸入快捷字詞，即可快速搜尋特定網站，或使用其他搜尋引擎</translation>

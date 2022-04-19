@@ -11,7 +11,7 @@
 <translation id="1546934824884762070">Күтүлбөгөн ката кетти. Бул көйгөй жөнүндө иштеп чыгуучуларга кабарлаңыз.</translation>
 <translation id="1697532407822776718">Баары даяр!</translation>
 <translation id="1742469581923031760">Туташууда…</translation>
-<translation id="177040763384871009">Шилтемелерди пульт менен басып, кардардын серепчисинде ачуу үчүн тутумдун веб-серепчисин төмөнкүгө өзгөртүшүңүз керек: "<ph name="URL_FORWARDER_NAME" />".</translation>
+<translation id="177040763384871009">Шилтемелерди пульт менен басып, кардардын серепчисинде ачуу үчүн системанын веб-серепчисин төмөнкүгө өзгөртүшүңүз керек: "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">Кардар үчүн IP каналы: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' хост_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' канал='<ph name="CHANNEL_TYPE" />' туташуу='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Жок кылуу</translation>
 <translation id="2009755455353575666">Туташпай койду</translation>
