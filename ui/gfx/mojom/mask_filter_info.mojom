@@ -5,10 +5,9 @@
 module gfx.mojom;
 
 import "ui/gfx/mojom/rrect_f.mojom";
-import "ui/gfx/mojom/linear_gradient.mojom";
 
-// See ui/gfx/geometry/mask_filter_info.h.
+// See ui/gfx/mask_filter_info.h.
 struct MaskFilterInfo {
   gfx.mojom.RRectF rounded_corner_bounds;
-  gfx.mojom.LinearGradient gradient_mask;
+  // TODO(crbug.com/1039003): add gradient mask field
 };
