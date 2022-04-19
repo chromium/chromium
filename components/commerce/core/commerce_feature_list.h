@@ -154,7 +154,8 @@ enum class DiscountConsentNtpVariation {
   kStringChange = 1,
   kInline = 2,
   kDialog = 3,
-  kMaxValue = kDialog
+  kNativeDialog = 4,
+  kMaxValue = kNativeDialog
 };
 
 // Param indicates the ConsentV2 variation. See DiscountConsentNtpVariation
