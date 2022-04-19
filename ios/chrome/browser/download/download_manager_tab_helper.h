@@ -65,6 +65,7 @@ class DownloadManagerTabHelper
   web::WebState* web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
   std::unique_ptr<web::DownloadTask> task_;
+  bool delegate_started_ = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
