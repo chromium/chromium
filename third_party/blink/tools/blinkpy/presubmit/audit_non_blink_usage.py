@@ -675,6 +675,12 @@ _CONFIG = [
             'absl::holds_alternative',
             'absl::variant',
             'absl::visit',
+
+            # 128-bit absl types
+            'absl::MakeInt128',
+            'absl::MakeUint128',
+            'absl::int128',
+            'absl::uint128',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',
