@@ -193,10 +193,11 @@ class PowerMetricsReporter
       const BatteryLevelProvider::BatteryState& battery_state);
 
   // Report the UKMs for the past interval.
-  void ReportUKMs(const UsageScenarioDataStore::IntervalData& interval_data,
-                  const ProcessMonitor::Metrics& aggregated_process_metrics,
-                  base::TimeDelta interval_duration,
-                  BatteryDischarge battery_discharge) const;
+  static void ReportUKMs(
+      const UsageScenarioDataStore::IntervalData& interval_data,
+      const ProcessMonitor::Metrics& aggregated_process_metrics,
+      base::TimeDelta interval_duration,
+      BatteryDischarge battery_discharge);
 
   // Computes and returns the battery discharge mode and rate during the
   // interval, and reset |battery_state_| to the current state. If the discharge

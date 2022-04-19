@@ -326,6 +326,7 @@ void PowerMetricsReporter::OnFirstSampleForTesting(base::OnceClosure closure) {
   }
 }
 
+// static
 int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
     base::TimeDelta value) {
   return GetBucketForSample(value);
@@ -346,12 +347,14 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
 #endif  // BUILDFLAG(IS_MAC)
 }
 
+// static
 std::vector<const char*>
 PowerMetricsReporter::GetLongIntervalSuffixesForTesting(
     const UsageScenarioDataStore::IntervalData& interval_data) {
   return GetLongIntervalSuffixes(interval_data);
 }
 
+// static
 void PowerMetricsReporter::ReportLongIntervalHistograms(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const ProcessMonitor::Metrics& aggregated_process_metrics,
@@ -377,6 +380,7 @@ void PowerMetricsReporter::ReportLongIntervalHistograms(
 }
 
 #if BUILDFLAG(IS_MAC)
+// static
 void PowerMetricsReporter::ReportShortIntervalHistograms(
     const char* scenario_suffix,
     absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate) {
@@ -412,6 +416,7 @@ void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+// static
 void PowerMetricsReporter::ReportBatteryHistograms(
     base::TimeDelta interval_duration,
     BatteryDischarge battery_discharge,
@@ -632,13 +637,12 @@ void PowerMetricsReporter::ReportResourceCoalitionHistograms(
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+// static
 void PowerMetricsReporter::ReportUKMs(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
-    BatteryDischarge battery_discharge) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+    BatteryDischarge battery_discharge) {
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
   // may also be unavailable if browser shutdown has started; so this may be a
   // nullptr. If it's unavailable, UKM reporting will be skipped.
