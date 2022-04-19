@@ -424,7 +424,15 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
 // Web popups don't exist on Android, so this test doesn't have to be run on
 // this platform.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, HitTestInPopup) {
+
+// crbug.com/1317505: Flaky on Lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HitTestInPopup DISABLED_HitTestInPopup
+#else
+#define MAYBE_HitTestInPopup HitTestInPopup
+#endif
+IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
+                       MAYBE_HitTestInPopup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
