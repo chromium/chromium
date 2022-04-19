@@ -17,7 +17,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {BatteryType} from './bluetooth_types.js';
-import {getBatteryPercentage, hasAnyDetailedBatteryInfo} from './bluetooth_utils.js';
+import {getBatteryPercentage} from './bluetooth_utils.js';
 
 /**
  * The threshold percentage where any battery percentage lower is considered

@@ -53,8 +53,7 @@ export function getDeviceName(device) {
  * the battery type, or the battery percentage is out of bounds. Clients that
  * call this method should explicitly check if the return value is undefined to
  * differentiate it from a return value of 0.
- * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
- *     device
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
  * @param {!BatteryType} batteryType
  * @return {number|undefined}
  */
@@ -98,8 +97,7 @@ export function getBatteryPercentage(device, batteryType) {
 
 /**
  * Returns true if the the device contains any multiple battery information.
- * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
- *     device
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
  * @return {boolean}
  */
 export function hasAnyDetailedBatteryInfo(device) {
@@ -110,8 +108,7 @@ export function hasAnyDetailedBatteryInfo(device) {
 
 /**
  * Returns true if the device contains the default image URL.
- * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
- *     device
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
  * @return {boolean}
  */
 export function hasDefaultImage(device) {
@@ -121,8 +118,7 @@ export function hasDefaultImage(device) {
 
 /**
  * Returns true if the device contains True Wireless Images.
- * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
- *     device
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
  * @return {boolean}
  */
 export function hasTrueWirelessImages(device) {
