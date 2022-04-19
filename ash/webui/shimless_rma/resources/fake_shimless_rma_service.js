@@ -88,6 +88,12 @@ export class FakeShimlessRmaService {
      */
     this.resolveMethodDelayMs_ = 0;
 
+    /**
+     * The result of calling trackConfiguredNetworks.
+     * @private {boolean}
+     */
+    this.trackConfiguredNetworksCalled_ = false;
+
     this.reset();
   }
 
@@ -181,6 +187,14 @@ export class FakeShimlessRmaService {
   beginFinalization() {
     return this.getNextStateForMethod_(
         'beginFinalization', State.kWelcomeScreen);
+  }
+
+  trackConfiguredNetworks() {
+    this.trackConfiguredNetworksCalled_ = true;
+  }
+
+  getTrackConfiguredNetworks() {
+    return this.trackConfiguredNetworksCalled_;
   }
 
   /**
@@ -1207,6 +1221,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('beginFinalization');
 
+    this.methods_.register('trackConfiguredNetworks');
     this.methods_.register('networkSelectionComplete');
 
     this.methods_.register('getCurrentOsVersion');

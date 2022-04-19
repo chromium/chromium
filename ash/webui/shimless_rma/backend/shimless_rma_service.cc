@@ -16,6 +16,7 @@
 #include "ash/webui/shimless_rma/mojom/shimless_rma_mojom_traits.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
@@ -23,6 +24,8 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 
 using chromeos::network_config::mojom::ConnectionStateType;
@@ -35,6 +38,8 @@ namespace ash {
 namespace shimless_rma {
 
 namespace {
+
+namespace network_mojom = ::chromeos::network_config::mojom;
 
 mojom::State RmadStateToMojo(rmad::RmadState::StateCase rmadState) {
   return mojo::EnumTraits<ash::shimless_rma::mojom::State,
@@ -80,12 +85,23 @@ mojom::QrCodePtr GenerateQRCode(const std::string& input) {
   qr_code->data.assign(qr_data->data.begin(), qr_data->data.end());
   return qr_code;
 }
+
+chromeos::network_config::mojom::NetworkFilterPtr GetConfiguredWiFiFilter() {
+  return network_mojom::NetworkFilter::New(
+      network_mojom::FilterType::kConfigured, network_mojom::NetworkType::kWiFi,
+      network_mojom::kNoLimit);
+}
+
 }  // namespace
 
 ShimlessRmaService::ShimlessRmaService(
     std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate)
     : shimless_rma_delegate_(std::move(shimless_rma_delegate)) {
   chromeos::RmadClient::Get()->AddObserver(this);
+
+  network_config::BindToInProcessInstance(
+      remote_cros_network_config_.BindNewPipeAndPassReceiver());
+
   version_updater_.SetOsUpdateStatusCallback(
       base::BindRepeating(&ShimlessRmaService::OnOsUpdateStatusCallback,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -165,6 +181,97 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
         base::BindOnce(&ShimlessRmaService::OsUpdateOrNextRmadStateCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback));
     version_updater_.CheckOsUpdateAvailable();
+  }
+}
+
+void ShimlessRmaService::TrackConfiguredNetworks() {
+  if (mojo_state_ != mojom::State::kConfigureNetwork) {
+    LOG(ERROR) << "TrackConfiguredNetworks called from incorrect state "
+               << state_proto_.state_case() << " / " << mojo_state_;
+    return;
+  }
+
+  // Only populate `existing_saved_network_guids_` once to avoid treating a new
+  // network like an existing network. TrackConfiguredNetworks() can potentially
+  // be called twice if the user navigates back to the networking page.
+  if (existing_saved_network_guids_.has_value()) {
+    LOG(WARNING) << "Already captured configured networks.";
+    return;
+  }
+
+  remote_cros_network_config_->GetNetworkStateList(
+      GetConfiguredWiFiFilter(),
+      base::BindOnce(&ShimlessRmaService::OnTrackConfiguredNetworks,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShimlessRmaService::OnTrackConfiguredNetworks(
+    std::vector<network_mojom::NetworkStatePropertiesPtr> networks) {
+  DCHECK(!existing_saved_network_guids_.has_value());
+
+  existing_saved_network_guids_ = base::flat_set<std::string>();
+  for (auto& network : networks) {
+    existing_saved_network_guids_->insert(std::move(network->guid));
+  }
+}
+
+void ShimlessRmaService::ForgetNewNetworkConnections(
+    base::OnceClosure end_rma_callback) {
+  // Skip forgetting networks if a saved list of network guids was never
+  // created.
+  if (!existing_saved_network_guids_.has_value()) {
+    std::move(end_rma_callback).Run();
+    return;
+  }
+
+  end_rma_callback_ = std::move(end_rma_callback);
+  remote_cros_network_config_->GetNetworkStateList(
+      GetConfiguredWiFiFilter(),
+      base::BindOnce(&ShimlessRmaService::OnForgetNewNetworkConnections,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShimlessRmaService::OnForgetNewNetworkConnections(
+    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+        networks) {
+  DCHECK(existing_saved_network_guids_.has_value());
+  DCHECK(pending_network_guids_to_forget_.empty());
+
+  for (auto& network : networks) {
+    const std::string& guid = network->guid;
+    const bool found_network_guid =
+        base::Contains(existing_saved_network_guids_.value(), guid);
+
+    if (!found_network_guid) {
+      pending_network_guids_to_forget_.insert(guid);
+    }
+  }
+
+  // No networks to forget, invoke end RMA callback.
+  if (pending_network_guids_to_forget_.empty()) {
+    DCHECK(!end_rma_callback_.is_null());
+
+    std::move(end_rma_callback_).Run();
+    return;
+  }
+
+  for (const auto& guid : pending_network_guids_to_forget_) {
+    remote_cros_network_config_->ForgetNetwork(
+        guid, base::BindOnce(&ShimlessRmaService::OnForgetNetwork,
+                             weak_ptr_factory_.GetWeakPtr(), guid));
+  }
+}
+
+void ShimlessRmaService::OnForgetNetwork(const std::string& guid,
+                                         bool success) {
+  pending_network_guids_to_forget_.erase(guid);
+  if (!success) {
+    LOG(ERROR) << "Failed to forget saved network configuration GUID: " << guid;
+  }
+
+  // End RMA once each network has been forgotten.
+  if (pending_network_guids_to_forget_.empty()) {
+    std::move(end_rma_callback_).Run();
   }
 }
 
@@ -871,6 +978,15 @@ void ShimlessRmaService::EndRma(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
+
+  ForgetNewNetworkConnections(base::BindOnce(
+      &ShimlessRmaService::EndRmaForgetNetworkResponse,
+      weak_ptr_factory_.GetWeakPtr(), shutdown_method, std::move(callback)));
+}
+
+void ShimlessRmaService::EndRmaForgetNetworkResponse(
+    rmad::RepairCompleteState::ShutdownMethod shutdown_method,
+    EndRmaCallback callback) {
   state_proto_.mutable_repair_complete()->set_shutdown(shutdown_method);
   TransitionNextStateGeneric(std::move(callback));
 }
@@ -1110,6 +1226,15 @@ void ShimlessRmaService::OnAbortRmaResponse(
     return;
   }
 
+  ForgetNewNetworkConnections(base::BindOnce(
+      &ShimlessRmaService::AbortRmaForgetNetworkResponse,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), reboot, response));
+}
+
+void ShimlessRmaService::AbortRmaForgetNetworkResponse(
+    AbortRmaCallback callback,
+    bool reboot,
+    absl::optional<rmad::AbortRmaReply> response) {
   // Send status before shutting down or restarting Chrome session.
   std::move(callback).Run(rmad::RMAD_ERROR_OK);
 

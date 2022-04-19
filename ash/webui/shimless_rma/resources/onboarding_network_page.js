@@ -147,6 +147,10 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   /** @override */
   ready() {
     super.ready();
+
+    // Before displaying the available networks, track the pre-existing
+    // configured networks.
+    this.shimlessRmaService_.trackConfiguredNetworks();
     this.refreshNetworks();
     enableNextButton(this);
   }

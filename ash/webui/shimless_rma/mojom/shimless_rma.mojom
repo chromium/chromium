@@ -500,6 +500,9 @@ interface ShimlessRmaService {
   ///////////////////////////////////////
   // Methods for kConfigureNetwork state.
   //
+  // Called on page initialization to track the pre-existing configured Wi-Fi
+  // networks on the device.
+  TrackConfiguredNetworks();
   // Called when next is clicked after a network is successfully connected or
   // the user skips connecting to a network.
   NetworkSelectionComplete()

@@ -175,4 +175,12 @@ export function onboardingNetworkPageTest() {
     component.allButtonsDisabled = true;
     assertTrue(networkList.disabled);
   });
+
+  test('TrackConfiguredNetworksCalled', async () => {
+    await initializeOnboardingNetworkPage();
+
+    // trackConfiguredNetworks() should be called during
+    // 'onboarding-network-page' initialization.
+    assertTrue(shimlessRmaService.getTrackConfiguredNetworks());
+  });
 }
