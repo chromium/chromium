@@ -13,7 +13,7 @@ const base::Feature kDiscoverFeedInNtp{"DiscoverFeedInNtp",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature disabled by default.
-const base::Feature kSingleNtp{"SingleNTP", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSingleNtp{"SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature disabled by default.
 const base::Feature kSingleCellContentSuggestions{
