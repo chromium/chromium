@@ -54,6 +54,11 @@ bool ShouldResetFirstFollowCount();
 // TODO(crbug.com/1312124): Remove after launch.
 void DidResetFirstFollowCount();
 
+// Returns true if the First Follow modal should always be shown when the user
+// follows a channel.
+// TODO(crbug.com/1312124): Remove after launch.
+bool ShouldAlwaysShowFirstFollow();
+
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 
