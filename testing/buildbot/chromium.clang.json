@@ -41469,7 +41469,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "absl_hardening_tests iPhone 6S 12.3.1",
+        "name": "absl_hardening_tests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41486,7 +41486,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41515,7 +41515,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPhone 6S 12.3.1",
+        "name": "base_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41532,7 +41532,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41561,7 +41561,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_crypto_tests iPhone 6S 12.3.1",
+        "name": "boringssl_crypto_tests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41578,7 +41578,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41607,7 +41607,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_ssl_tests iPhone 6S 12.3.1",
+        "name": "boringssl_ssl_tests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41624,7 +41624,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41653,7 +41653,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests iPhone 6S 12.3.1",
+        "name": "components_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41670,7 +41670,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41699,7 +41699,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "crypto_unittests iPhone 6S 12.3.1",
+        "name": "crypto_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41716,7 +41716,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41745,7 +41745,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests iPhone 6S 12.3.1",
+        "name": "gfx_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41762,7 +41762,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41791,7 +41791,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "google_apis_unittests iPhone 6S 12.3.1",
+        "name": "google_apis_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41808,7 +41808,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41837,7 +41837,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests iPhone 6S 12.3.1",
+        "name": "ios_chrome_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41854,7 +41854,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41883,7 +41883,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_net_unittests iPhone 6S 12.3.1",
+        "name": "ios_net_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41900,7 +41900,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41929,7 +41929,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests iPhone 6S 12.3.1",
+        "name": "ios_web_inttests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41946,7 +41946,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -41975,7 +41975,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests iPhone 6S 12.3.1",
+        "name": "ios_web_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41992,7 +41992,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -42021,7 +42021,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests iPhone 6S 12.3.1",
+        "name": "ios_web_view_inttests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42038,7 +42038,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -42067,7 +42067,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "net_unittests iPhone 6S 12.3.1",
+        "name": "net_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42084,7 +42084,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -42113,7 +42113,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests iPhone 6S 12.3.1",
+        "name": "skia_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42130,7 +42130,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -42159,7 +42159,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "sql_unittests iPhone 6S 12.3.1",
+        "name": "sql_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42176,7 +42176,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -42205,7 +42205,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests iPhone 6S 12.3.1",
+        "name": "ui_base_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42222,7 +42222,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],
@@ -42251,7 +42251,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "url_unittests iPhone 6S 12.3.1",
+        "name": "url_unittests iPhone 7 15.4.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42268,7 +42268,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "device": "iPhone8,1",
+              "device": "iPhone9,1",
               "os": "Mac-10.15"
             }
           ],

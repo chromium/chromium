@@ -7120,7 +7120,7 @@
     'ios_clang_tot_device_tests': {
       'ios_clang_tests': {
         'variants': [
-          'IPHONE_6S_12_3_1',
+          'IPHONE_7_15_4_1',
         ],
       }
     },

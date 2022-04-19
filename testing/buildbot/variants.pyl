@@ -9,16 +9,16 @@
 # * trailing commas are allowed.
 
 {
-  'IPHONE_6S_12_3_1': {
+  'IPHONE_7_15_4_1': {
     'swarming': {
       'dimension_sets': [
         {
-          'os': 'iOS-12.3.1',
-          'device': 'iPhone8,1'
+          'os': 'iOS-15.4.1',
+          'device': 'iPhone9,1'
         }
       ]
     },
-    'identifier': 'iPhone 6S 12.3.1'
+    'identifier': 'iPhone 7 15.4.1'
   },
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [
