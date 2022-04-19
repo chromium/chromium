@@ -1444,9 +1444,9 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     doneOnce = YES;
     if (attemptRestore) {
       Profile* lastProfile = [self lastProfile];
-      if (!lastProfile) {
-        // There is no session to be restored without a valid profile. Return NO
-        // to do nothing.
+      if (!lastProfile || IsProfileSignedOut(lastProfile)) {
+        // There is no session to be restored without a valid profile or a
+        // profile that is locked and requires signin. Return NO to do nothing.
         return NO;
       }
       SessionService* sessionService =

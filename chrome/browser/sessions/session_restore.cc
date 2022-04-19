@@ -40,6 +40,9 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -1032,6 +1035,17 @@ Browser* SessionRestore::RestoreSession(
     Browser* browser,
     SessionRestore::BehaviorBitmask behavior,
     const StartupTabs& startup_tabs) {
+#if DCHECK_IS_ON()
+  // Profiles that are locked because they require signin should not be
+  // restored.
+  if (g_browser_process->profile_manager()) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile->GetPath());
+    DCHECK(!entry || !entry->IsSigninRequired());
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::BootTimesRecorder::Get()->AddLoginTimeMarker("SessionRestore-Start",
                                                     false);
