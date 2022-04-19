@@ -1343,7 +1343,7 @@ const base::FeatureParam<double> kScaleTileMemoryLimitFactor{
     &kScaleTileMemoryLimit, "Factor", 1.0};
 
 const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, allows web pages to use the experimental EditContext API to
 // better control text input. See crbug.com/999184.
