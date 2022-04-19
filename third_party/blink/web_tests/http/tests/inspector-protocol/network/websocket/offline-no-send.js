@@ -5,6 +5,7 @@
   const {page, session, dp} = await testRunner.startURL(
       '/',
       `Verifies that WebSocket does not send messages when emulating offline network.`);
+  setTimeout(() => testRunner.die('Timeout', new Error()), 5000);
 
   await dp.Network.enable();
 
