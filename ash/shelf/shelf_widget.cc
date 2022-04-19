@@ -44,6 +44,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/focus/focus_search.h"
@@ -176,8 +177,8 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
       return;
 
     HighlightBorder::PaintBorderToCanvas(canvas, gfx::Rect(layer()->size()),
-                                         corner_radius_, highlight_border_type_,
-                                         false);
+                                         gfx::RoundedCornersF(corner_radius_),
+                                         highlight_border_type_, false);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,

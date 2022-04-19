@@ -35,6 +35,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
@@ -162,21 +163,22 @@ class BackgroundLayerDelegate : public ui::LayerDelegate {
     gfx::Canvas* canvas = recorder.canvas();
 
     // Get the corner radius from `layer_`.
-    const int corner_radius = layer_->rounded_corner_radii().upper_left();
+    gfx::RoundedCornersF corner_radii = layer_->rounded_corner_radii();
 
     // cc::PaintFlags flags for the background.
     cc::PaintFlags flags;
     flags.setColor(background_color_);
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radius, flags);
+    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radii.upper_left(),
+                          flags);
 
     // Don't draw highlight border if the shelf widget is showing.
     if (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app())
       return;
 
     HighlightBorder::PaintBorderToCanvas(
-        canvas, gfx::Rect(layer_->size()), corner_radius,
+        canvas, gfx::Rect(layer_->size()), corner_radii,
         HighlightBorder::Type::kHighlightBorder2, false);
   }
 

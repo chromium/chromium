@@ -10,6 +10,7 @@
 
 namespace gfx {
 class Rect;
+class RoundedCornersF;
 }  // namespace gfx
 
 namespace ash {
@@ -48,7 +49,7 @@ class ASH_EXPORT HighlightBorder : public views::Border {
   // when using HighlightBorder class.
   static void PaintBorderToCanvas(gfx::Canvas* canvas,
                                   const gfx::Rect& bounds,
-                                  int corner_radius,
+                                  const gfx::RoundedCornersF& corner_radii,
                                   Type type,
                                   bool use_light_colors);
 

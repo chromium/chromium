@@ -6,9 +6,13 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
+#include "ash/style/highlight_border.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -17,7 +21,9 @@
 
 namespace ash {
 
-TrayContainer::TrayContainer(Shelf* shelf) : shelf_(shelf) {
+TrayContainer::TrayContainer(Shelf* shelf,
+                             TrayBackgroundView* tray_background_view)
+    : shelf_(shelf), tray_background_view_(tray_background_view) {
   DCHECK(shelf_);
 
   SetPaintToLayer();
@@ -80,6 +86,38 @@ void TrayContainer::SetMargin(int main_axis_margin, int cross_axis_margin) {
 void TrayContainer::SetSpacingBetweenChildren(int space_dip) {
   spacing_between_children_ = space_dip;
   UpdateLayout();
+}
+
+void TrayContainer::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+
+  // We only add highlight border to the system tray when it is in tablet mode
+  // and not in app mode.
+  if (!features::IsDarkLightModeEnabled() || !Shell::Get()->IsInTabletMode() ||
+      ShelfConfig::Get()->is_in_app()) {
+    return;
+  }
+
+  // We add highlight border here since TrayBackgroundView's layer is solid
+  // color, which hides the border. However, the painting bounds should be the
+  // layer clip rect defined in the background view, so we calculate that bound
+  // relative to local bounds and do a custom highlight border paint here.
+  const gfx::Rect background_bounds =
+      tray_background_view_->GetBackgroundBounds();
+  const auto bounds_origin =
+      (tray_background_view_->GetBoundsInScreen().origin() +
+       background_bounds.OffsetFromOrigin()) -
+      GetBoundsInScreen().origin();
+
+  const gfx::RoundedCornersF rounded_corners =
+      tray_background_view_->GetRoundedCorners();
+
+  HighlightBorder::PaintBorderToCanvas(
+      canvas,
+      gfx::Rect(gfx::PointAtOffsetFromOrigin(bounds_origin),
+                background_bounds.size()),
+      rounded_corners, HighlightBorder::Type::kHighlightBorder2,
+      /*use_light_colors=*/false);
 }
 
 void TrayContainer::ChildPreferredSizeChanged(views::View* child) {

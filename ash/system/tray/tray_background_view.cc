@@ -219,7 +219,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf,
     // Note the ink drop style is ignored.
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       shelf_(shelf),
-      tray_container_(new TrayContainer(shelf)),
+      tray_container_(new TrayContainer(shelf, this)),
       is_active_(false),
       separator_visible_(true),
       visible_preferred_(false),

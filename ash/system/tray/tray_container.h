@@ -16,12 +16,13 @@ class Border;
 
 namespace ash {
 class Shelf;
+class TrayBackgroundView;
 
 // Base class for tray containers. Sets the border and layout. The container
 // auto-resizes the widget when necessary.
 class TrayContainer : public views::View {
  public:
-  explicit TrayContainer(Shelf* shelf);
+  TrayContainer(Shelf* shelf, TrayBackgroundView* tray_background_view);
 
   TrayContainer(const TrayContainer&) = delete;
   TrayContainer& operator=(const TrayContainer&) = delete;
@@ -40,6 +41,7 @@ class TrayContainer : public views::View {
 
  protected:
   // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(View* child) override;
   void ViewHierarchyChanged(
@@ -85,6 +87,7 @@ class TrayContainer : public views::View {
   std::unique_ptr<views::BoxLayout> layout_manager_;
 
   Shelf* const shelf_;
+  TrayBackgroundView* const tray_background_view_;
 
   int main_axis_margin_ = 0;
   int cross_axis_margin_ = 0;

@@ -47,6 +47,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
@@ -360,7 +361,7 @@ void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
 void SearchBoxView::OnPaintBorder(gfx::Canvas* canvas) {
   if (should_paint_highlight_border_) {
     HighlightBorder::PaintBorderToCanvas(
-        canvas, GetContentsBounds(), corner_radius_,
+        canvas, GetContentsBounds(), gfx::RoundedCornersF(corner_radius_),
         HighlightBorder::Type::kHighlightBorder1, false);
   }
 }

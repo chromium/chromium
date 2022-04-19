@@ -9,6 +9,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
 
@@ -17,11 +19,12 @@ namespace ash {
 constexpr int kHighlightBorderThickness = 1;
 
 // static
-void HighlightBorder::PaintBorderToCanvas(gfx::Canvas* canvas,
-                                          const gfx::Rect& bounds,
-                                          int corner_radius,
-                                          HighlightBorder::Type type,
-                                          bool use_light_colors) {
+void HighlightBorder::PaintBorderToCanvas(
+    gfx::Canvas* canvas,
+    const gfx::Rect& bounds,
+    const gfx::RoundedCornersF& corner_radii,
+    Type type,
+    bool use_light_colors) {
   AshColorProvider* color_provider = AshColorProvider::Get();
   const AshColorProvider::ControlsLayerType highlight_color_type =
       type == HighlightBorder::Type::kHighlightBorder1
@@ -55,17 +58,26 @@ void HighlightBorder::PaintBorderToCanvas(gfx::Canvas* canvas,
   gfx::ScopedCanvas scoped_canvas(canvas);
   const float dsf = canvas->UndoDeviceScaleFactor();
   const gfx::RectF pixel_bounds = gfx::ConvertRectToPixels(bounds, dsf);
-  const float scaled_corner_radius = dsf * corner_radius;
-  gfx::RectF outer_border_bounds(pixel_bounds);
 
+  const SkScalar radii[8] = {
+      corner_radii.upper_left() * dsf,  corner_radii.upper_left() * dsf,
+      corner_radii.upper_right() * dsf, corner_radii.upper_right() * dsf,
+      corner_radii.lower_right() * dsf, corner_radii.lower_right() * dsf,
+      corner_radii.lower_left() * dsf,  corner_radii.lower_left() * dsf};
+
+  gfx::RectF outer_border_bounds(pixel_bounds);
   outer_border_bounds.Inset(half_thickness);
-  canvas->DrawRoundRect(outer_border_bounds, scaled_corner_radius, flags);
+  SkPath outer_path;
+  outer_path.addRoundRect(gfx::RectFToSkRect(outer_border_bounds), radii);
+  canvas->DrawPath(outer_path, flags);
 
   gfx::RectF inner_border_bounds(pixel_bounds);
   inner_border_bounds.Inset(kHighlightBorderThickness);
   inner_border_bounds.Inset(half_thickness);
   flags.setColor(inner_color);
-  canvas->DrawRoundRect(inner_border_bounds, scaled_corner_radius, flags);
+  SkPath inner_path;
+  inner_path.addRoundRect(gfx::RectFToSkRect(inner_border_bounds), radii);
+  canvas->DrawPath(inner_path, flags);
 }
 
 HighlightBorder::HighlightBorder(int corner_radius,
@@ -78,7 +90,8 @@ HighlightBorder::HighlightBorder(int corner_radius,
       insets_type_(insets_type) {}
 
 void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
-  PaintBorderToCanvas(canvas, view.GetLocalBounds(), corner_radius_, type_,
+  PaintBorderToCanvas(canvas, view.GetLocalBounds(),
+                      gfx::RoundedCornersF(corner_radius_), type_,
                       use_light_colors_);
 }
 
