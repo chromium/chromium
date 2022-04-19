@@ -2004,7 +2004,9 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
               OnChangePasswordFlowStarted(
                   initialUrl.DeprecatedGetOriginAsURL(), username,
                   password_manager::PasswordChangeSuccessTracker::StartEvent::
-                      kAutomatedFlow));
+                      kAutomatedFlow,
+                  password_manager::PasswordChangeSuccessTracker::EntryPoint::
+                      kLeakCheckInSettings));
 
   EXPECT_TRUE(controller_->Start(
       initialUrl, std::make_unique<TriggerContext>(

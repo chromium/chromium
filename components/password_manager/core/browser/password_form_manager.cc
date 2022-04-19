@@ -296,10 +296,14 @@ void PasswordFormManager::Save() {
 
   // This is potentially the conclusion of a password change flow. It might also
   // not be related to such a flow at all, but the tracker will figure it out.
+  PasswordChangeSuccessTracker::EndEvent end_event =
+      HasGeneratedPassword() ? PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowGeneratedPasswordChosen
+                             : PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowOwnPasswordChosen;
   client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
       parsed_submitted_form_->url,
-      base::UTF16ToUTF8(GetPendingCredentials().username_value),
-      PasswordChangeSuccessTracker::EndEvent::kManualFlow);
+      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event);
 
   password_save_manager_->Save(observed_form(), *parsed_submitted_form_);
 
@@ -309,10 +313,14 @@ void PasswordFormManager::Save() {
 void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
   // This is potentially the conclusion of a password change flow. It might also
   // not be related to such a flow at all, but the tracker will figure it out.
+  PasswordChangeSuccessTracker::EndEvent end_event =
+      HasGeneratedPassword() ? PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowGeneratedPasswordChosen
+                             : PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowOwnPasswordChosen;
   client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
       parsed_submitted_form_->url,
-      base::UTF16ToUTF8(GetPendingCredentials().username_value),
-      PasswordChangeSuccessTracker::EndEvent::kManualFlow);
+      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event);
 
   password_save_manager_->Update(credentials_to_update, observed_form(),
                                  *parsed_submitted_form_);

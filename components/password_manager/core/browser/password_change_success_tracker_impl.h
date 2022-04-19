@@ -20,7 +20,19 @@ class PasswordChangeSuccessTrackerImpl
 
   void OnChangePasswordFlowStarted(const GURL& url,
                                    const std::string& username,
-                                   StartEvent event_type) override;
+                                   StartEvent event_type,
+                                   EntryPoint entry_point) override;
+
+  void OnManualChangePasswordFlowStarted(const GURL& url,
+                                         const std::string& username,
+                                         EntryPoint entry_point) override;
+
+  void OnChangePasswordFlowModified(const GURL& url,
+                                    StartEvent new_event_type) override;
+
+  void OnChangePasswordFlowModified(const GURL& url,
+                                    const std::string& username,
+                                    StartEvent new_event_type) override;
 
   void OnChangePasswordFlowCompleted(const GURL& url,
                                      const std::string& username,

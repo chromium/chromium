@@ -52,7 +52,8 @@ void SaveSubmittedPasswordAction::InternalProcessAction(
     delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
         delegate_->GetUserData()->selected_login_->origin,
         delegate_->GetUserData()->selected_login_->username,
-        PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow);
+        PasswordChangeSuccessTracker::EndEvent::
+            kAutomatedFlowOwnPasswordChosen);
   }
 
   // If a timeout is specified, perform a leak check.

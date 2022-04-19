@@ -71,9 +71,9 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
   EXPECT_CALL(
       mock_password_change_success_tracker_,
-      OnChangePasswordFlowCompleted(
-          GURL(kOrigin), kUsername,
-          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+      OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
+                                    PasswordChangeSuccessTracker::EndEvent::
+                                        kAutomatedFlowOwnPasswordChosen));
 
   // Check for leaked credentials.
   EXPECT_CALL(mock_website_login_manager_,
@@ -143,9 +143,9 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveLeakedNewSubmittedPassword) {
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
   EXPECT_CALL(
       mock_password_change_success_tracker_,
-      OnChangePasswordFlowCompleted(
-          GURL(kOrigin), kUsername,
-          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+      OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
+                                    PasswordChangeSuccessTracker::EndEvent::
+                                        kAutomatedFlowOwnPasswordChosen));
 
   // Check for leaked credentials.
   EXPECT_CALL(mock_website_login_manager_,
@@ -180,9 +180,9 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordLeakError) {
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
   EXPECT_CALL(
       mock_password_change_success_tracker_,
-      OnChangePasswordFlowCompleted(
-          GURL(kOrigin), kUsername,
-          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+      OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
+                                    PasswordChangeSuccessTracker::EndEvent::
+                                        kAutomatedFlowOwnPasswordChosen));
 
   // Check for leaked credentials.
   EXPECT_CALL(mock_website_login_manager_,
@@ -221,9 +221,9 @@ TEST_F(SaveSubmittedPasswordActionTest,
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
   EXPECT_CALL(
       mock_password_change_success_tracker_,
-      OnChangePasswordFlowCompleted(
-          GURL(kOrigin), kUsername,
-          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+      OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
+                                    PasswordChangeSuccessTracker::EndEvent::
+                                        kAutomatedFlowOwnPasswordChosen));
 
   // Since no timeout was submitted in the action, no leak check is performed.
   EXPECT_CALL(mock_website_login_manager_,
@@ -271,9 +271,9 @@ TEST_F(SaveSubmittedPasswordActionTest,
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
   EXPECT_CALL(
       mock_password_change_success_tracker_,
-      OnChangePasswordFlowCompleted(
-          GURL(kOrigin), kUsername,
-          PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
+      OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
+                                    PasswordChangeSuccessTracker::EndEvent::
+                                        kAutomatedFlowOwnPasswordChosen));
 
   // Since no timeout was submitted in the action, no leak check is performed.
   EXPECT_CALL(mock_website_login_manager_,

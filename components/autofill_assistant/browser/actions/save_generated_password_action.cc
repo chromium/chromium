@@ -61,7 +61,8 @@ void SaveGeneratedPasswordAction::InternalProcessAction(
   delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
       delegate_->GetUserData()->selected_login_->origin,
       delegate_->GetUserData()->selected_login_->username,
-      PasswordChangeSuccessTracker::EndEvent::kAutomatedGeneratedPasswordFlow);
+      PasswordChangeSuccessTracker::EndEvent::
+          kAutomatedFlowGeneratedPasswordChosen);
 
   EndAction(ClientStatus(ACTION_APPLIED));
 }

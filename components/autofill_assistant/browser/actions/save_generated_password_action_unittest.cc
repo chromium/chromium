@@ -82,7 +82,7 @@ TEST_F(SaveGeneratedPasswordActionTest, SavedPassword) {
       mock_password_change_success_tracker_,
       OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
                                     PasswordChangeSuccessTracker::EndEvent::
-                                        kAutomatedGeneratedPasswordFlow));
+                                        kAutomatedFlowGeneratedPasswordChosen));
 
   action.ProcessAction(callback_.Get());
 
