@@ -130,14 +130,20 @@ class DTraceParser:
       line_content = line.strip()
       if not line_content:
         continue
+
+      # If the next line is non-empty it's not the last in the stack.
       if next_line.strip():
-        if re.search('\+0x', line_content) and len(
-            line_content.split('`')) == 2:
-          module, line_content = line_content.split('`', 1)
-          [function, offset] = line_content.split('+0x')
-        else:
-          function = "unsymbolized function"
+        # Matches lines like: "0x17e018987e"
+        if line_content.startswith("0x"):
+          function = line_content
           module = "unsymbolized module"
+        else:
+          module, function = line_content.split('`', 1)
+
+          # Matches lines with offset like: "module`function+0xf6"
+          if len(function.split('+0x')) == 2:
+            [function, offset] = function.split('+0x')
+
         stack_frames.append((module, function))
       else:
         if len(stack_frames) == 0:
