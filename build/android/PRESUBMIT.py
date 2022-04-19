@@ -12,6 +12,12 @@ USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
+  # These tools don't run on Windows so these tests don't work and give many
+  # verbose and cryptic failure messages. Linting the code is also skipped on
+  # Windows because it will fail due to os differences.
+  if input_api.sys.platform == 'win32':
+    return []
+
   build_android_dir = input_api.PresubmitLocalPath()
 
   def J(*dirs):
