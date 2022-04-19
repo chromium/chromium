@@ -179,6 +179,7 @@ source_set("policy_specific_browser_tests") {
     "test/safe_browsing_policy_browsertest.cc",
     "test/shared_clipboard_enabled_browsertest.cc",
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
+    "test/url_keyed_anonymized_data_collection_enabled_browsertest.cc",
     "test/web_rtc_udp_port_range_policy_browsertest.cc",
   ]
   if (is_chromeos) {
@@ -195,6 +196,7 @@ source_set("policy_specific_browser_tests") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/unified_consent",
     "//content/test:test_support",
     "//testing/gmock",
   ]

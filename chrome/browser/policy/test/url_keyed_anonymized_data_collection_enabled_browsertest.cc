@@ -5,7 +5,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -16,7 +16,7 @@
 namespace policy {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, UrlKeyedAnonymizedDataCollection) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
   prefs->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   EXPECT_TRUE(prefs->GetBoolean(
