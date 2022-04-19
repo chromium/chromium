@@ -19,7 +19,7 @@ struct OmniboxText: View {
   func replaceTextColor(nsAttributedString: NSAttributedString, color: Color) -> NSAttributedString
   {
 
-    var mutableAttributedString = NSMutableAttributedString(attributedString: nsAttributedString)
+    let mutableAttributedString = NSMutableAttributedString(attributedString: nsAttributedString)
 
     let wholeStringRange = NSRange(location: 0, length: nsAttributedString.length)
     mutableAttributedString.removeAttribute(
