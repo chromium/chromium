@@ -1593,21 +1593,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CaptivePortal.DetectionResultSincePortal"
-    enum="BooleanPresent" expires_after="M86">
-  <obsolete>
-    Retired in M87.
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
-  <summary>
-    Within one minute of the default network reporting a portal network, if we
-    see an offline detection result, it is likely the client got blacklisted.
-    Record the boolean rate that Chrome observes offline vs non-offline
-    detection results. See go/bad-portal for client blacklisting problem.
-  </summary>
-</histogram>
-
 <histogram name="CaptivePortal.DetectResult" enum="CaptivePortalDetectResult"
     expires_after="2021-08-01">
   <owner>meacer@chromium.org</owner>
