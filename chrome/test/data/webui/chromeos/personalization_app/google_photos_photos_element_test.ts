@@ -52,12 +52,12 @@ suite('GooglePhotosPhotosTest', function() {
     const sections: GooglePhotosPhotosSection[] = [];
 
     photos.forEach((photo, i) => {
-      const title = toString(photo.date);
+      const date = toString(photo.date);
 
       // Find/create the appropriate |section| in which to insert |photo|.
       let section = sections[sections.length - 1];
-      if (section?.title !== title) {
-        section = {title, rows: []};
+      if (section?.date !== date) {
+        section = {date, locations: new Set<string>(), rows: []};
         sections.push(section);
       }
 
@@ -69,6 +69,10 @@ suite('GooglePhotosPhotosTest', function() {
       }
 
       row!.push({...photo, index: i});
+
+      if (photo.location) {
+        section.locations.add(photo.location);
+      }
     });
 
     return sections;
@@ -155,25 +159,42 @@ suite('GooglePhotosPhotosTest', function() {
 
   test('displays photos', async () => {
     const photos: GooglePhotosPhoto[] = [
+      // Section of photos without location.
       {
         id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
         name: 'foo',
         date: toString16('Wednesday, February 16, 2022'),
         url: {url: 'foo.com'},
-        location: 'home1'
+        location: undefined
       },
+      // Section of photos with one location.
       {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
         name: 'bar',
         date: toString16('Friday, November 12, 2021'),
         url: {url: 'bar.com'},
-        location: 'home2'
+        location: 'home1'
       },
       {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
         name: 'baz',
         date: toString16('Friday, November 12, 2021'),
         url: {url: 'baz.com'},
+        location: 'home1'
+      },
+      // Section of photos with different locations.
+      {
+        id: '0a5231as-97a2-42e1-bdbf-3e75870ca042',
+        name: 'bare',
+        date: toString16('Friday, July 16, 2021'),
+        url: {url: 'bare.com'},
+        location: 'home2'
+      },
+      {
+        id: '0a268a11-877a-4936-81d4-38cc8s9dn396',
+        name: 'baze',
+        date: toString16('Friday, July 16, 2021'),
+        url: {url: 'baze.com'},
         location: 'home3'
       }
     ];
@@ -190,10 +211,10 @@ suite('GooglePhotosPhotosTest', function() {
         initElement(GooglePhotosPhotos, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
-    // The |personalizationStore| should be empty, so no titles or |photos|
+    // The |personalizationStore| should be empty, so no info or |photos|
     // should be rendered initially.
-    const titleSelector = '.title:not([hidden])';
-    assertEquals(querySelectorAll(titleSelector)!.length, 0);
+    const photoRowInfo = '.photo-row-info:not([hidden])';
+    assertEquals(querySelectorAll(photoRowInfo)!.length, 0);
     const photoSelector =
         'wallpaper-grid-item:not([hidden]).photo:not([placeholder])';
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
@@ -205,8 +226,8 @@ suite('GooglePhotosPhotosTest', function() {
     // The wallpaper controller is expected to impose max resolution.
     photos.forEach(photo => photo.url.url += '=s512');
 
-    // Verify that the number of rendered titles and |photos| is as expected.
-    assertEquals(querySelectorAll(titleSelector)!.length, sections.length);
+    // Verify that the number of rendered row-info and |photos| is as expected.
+    assertEquals(querySelectorAll(photoRowInfo)!.length, sections.length);
     assertEquals(querySelectorAll(photoSelector)!.length, photos.length);
 
     // Verify that the expected |sections| are rendered.
@@ -218,11 +239,20 @@ suite('GooglePhotosPhotosTest', function() {
             `.row:not([hidden]):nth-of-type(${absoluteRowIndex + 1})`);
         assertNotEquals(rowEl, null);
 
-        // Verify that the expected title is rendered.
+        // Verify that the expected date is rendered.
         if (rowIndex === 0) {
-          const titleEl = rowEl!.querySelector(titleSelector);
-          assertNotEquals(titleEl, null);
-          assertEquals(titleEl!.innerHTML, section.title);
+          const dateEl = rowEl!.querySelector(`${photoRowInfo} .date`);
+          assertNotEquals(dateEl, null);
+          assertEquals(dateEl!.innerHTML, section.date);
+        }
+
+        // Verify that the expected location is rendered.
+        if (rowIndex === 0) {
+          const locationEl = rowEl!.querySelector(`${photoRowInfo} .location`);
+          assertNotEquals(locationEl, null);
+          assertEquals(
+              locationEl!.innerHTML,
+              Array.from(section.locations).sort().join(' · '));
         }
 
         // Verify that the expected |photos| are rendered.

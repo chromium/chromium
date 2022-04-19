@@ -58,7 +58,8 @@ export type GooglePhotosPhotosRow = GooglePhotosPhotoWithIndex[];
 
 /** A titled list of |GooglePhotosPhotosRow|'s to be rendered in a section. */
 export type GooglePhotosPhotosSection = {
-  title: string,
+  date: string,
+  locations: Set<string>,
   rows: GooglePhotosPhotosRow[],
 };
 
@@ -350,12 +351,12 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     const sections: GooglePhotosPhotosSection[] = [];
 
     photos.forEach((photo, i) => {
-      const title = photo.date.data.map(c => String.fromCodePoint(c)).join('');
+      const date = photo.date.data.map(c => String.fromCodePoint(c)).join('');
 
       // Find/create the appropriate |section| in which to insert |photo|.
       let section = sections[sections.length - 1];
-      if (!section || section.title !== title) {
-        section = {title, rows: []};
+      if (!section || section.date !== date) {
+        section = {date, locations: new Set<string>(), rows: []};
         sections.push(section);
       }
 
@@ -367,28 +368,48 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
       }
 
       row.push({...photo, index: i});
+
+      if (photo.location) {
+        section.locations.add(photo.location);
+      }
     });
 
     return sections;
   }
 
-  // Returns the title to display for the specified grid |row|.
-  private getGridRowTitle_(
+  // Returns the date to display for the specified grid |row|.
+  private getGridRowDate_(
       row: GooglePhotosPhotosRow,
       photosBySection: GooglePhotosPhotos['photosBySection_']): string
       |undefined {
     if (!photosBySection) {
       return undefined;
     }
-    const gridRow = photosBySection.find(section => section.rows[0] === row);
-    return !gridRow ? undefined : gridRow.title;
+    const gridRowSection =
+        photosBySection.find(section => section.rows[0] === row);
+    return gridRowSection ? gridRowSection.date : undefined;
+  }
+
+  // Returns the locations to display for the specified grid |row|.
+  private getGridRowLocations_(
+      row: GooglePhotosPhotosRow,
+      photosBySection: GooglePhotosPhotos['photosBySection_']): string
+      |undefined {
+    if (!photosBySection) {
+      return undefined;
+    }
+    const gridRowSection =
+        photosBySection.find(section => section.rows[0] === row);
+    return gridRowSection ?
+        Array.from(gridRowSection.locations).sort().join(' · ') :
+        undefined;
   }
 
   // Returns whether the title for the specified grid |row| is visible.
   private isGridRowTitleVisible_(
       row: GooglePhotosPhotosRow,
       photosBySection: GooglePhotosPhotos['photosBySection_']): boolean {
-    return !!this.getGridRowTitle_(row, photosBySection);
+    return !!this.getGridRowDate_(row, photosBySection);
   }
 
   /** Returns whether the specified |photo| is a placeholder. */
