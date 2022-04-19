@@ -332,6 +332,7 @@ const char kEnableCaretBrowsing[] = "enable-caret-browsing";
 //   net::features::kSameSiteDefaultChecksMethodRigorously
 //   net::features::kSchemefulSameSite
 //   net::features::kCookieSameSiteConsidersRedirectChain
+//   net::features::kPartitionedCookies
 const char kEnableExperimentalCookieFeatures[] =
     "enable-experimental-cookie-features";
 
