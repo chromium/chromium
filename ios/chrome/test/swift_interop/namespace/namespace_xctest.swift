@@ -10,12 +10,20 @@ class NamespaceTest: XCTestCase {
 
   func testNamespaceClass() throws {
     // Non-namespaced class.
+#if swift(>=5.6)
+    let goat = Goat()
+#else
     var goat = Goat()
+#endif
     XCTAssertEqual(goat.GetValue(), 7, "Values don't match")
 
     // Namespaced class with the same type name, verify the namespaced one
     // is the one created.
+#if swift(>=5.6)
+    let spaceGoat = space.Goat()
+#else
     var spaceGoat = space.Goat()
+#endif
     spaceGoat.DoNothing()
     XCTAssertEqual(spaceGoat.GetValue(), 42, "Values don't match")
   }
@@ -29,20 +37,21 @@ class NamespaceTest: XCTestCase {
     // let vehicle = space.Vehicle.boat
 
     // namespaced class enum.
-    // ASSERTS:
-    // While evaluating request ASTLoweringRequest(Lowering AST to SIL for
-    // module ios_chrome_test_swift_interop_swift_interop_tests)
-    // top-level value not found
-    // Cross-reference to module '__ObjC'
-    // ... space
+    // Compiles ONLY with Swift greater than version 5.6 (Xcode 13.3).
+#if swift(>=5.6)
+    let animal = space.Animal.goat
+    XCTAssertEqual(animal, space.Animal.goat, "values don't match")
+    XCTAssertNotEqual(animal, space.Animal.dog, "values don't match")
+#endif
 
-    // let animal = space.Animal.goat
-    // XCTAssertEqual(animal, space.Animal.goat, "values don't match")
-    // XCTAssertNotEqual(animal, space.Animal.dog, "values don't match")
   }
 
   func testNestedNamespace() throws {
+#if swift(>=5.6)
+    let goat = outer.inner.NestedGoat()
+#else
     var goat = outer.inner.NestedGoat()
+#endif
     XCTAssertEqual(goat.GetValue(), 50, "values don't match")
   }
 }
