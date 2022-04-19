@@ -94,10 +94,8 @@ mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
   if (!create_dialog_func_)
     return mojom::ResultCode::kSuccess;
 
-  if (!print_dialog_) {
+  if (!print_dialog_)
     print_dialog_ = create_dialog_func_(this);
-    print_dialog_->AddRefToDialog();
-  }
   print_dialog_->UseDefaultSettings();
 
   return mojom::ResultCode::kSuccess;
@@ -118,10 +116,8 @@ mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
   if (!create_dialog_func_)
     return mojom::ResultCode::kSuccess;
 
-  if (!print_dialog_) {
+  if (!print_dialog_)
     print_dialog_ = create_dialog_func_(this);
-    print_dialog_->AddRefToDialog();
-  }
 
   // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_ will
   // remain non-null after this line.

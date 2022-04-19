@@ -44,7 +44,6 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
       PrintingContextLinux::PrintSettingsCallback callback) override;
   void PrintDocument(const printing::MetafilePlayer& metafile,
                      const std::u16string& document_name) override;
-  void AddRefToDialog() override;
   void ReleaseDialog() override;
 
   // Handles print job response.
@@ -72,7 +71,7 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
 
   // Printing dialog callback.
   PrintingContextLinux::PrintSettingsCallback callback_;
-  PrintingContextLinux* const context_;
+  PrintingContextLinux* context_;
 
   // Print dialog settings. PrintDialogGtk owns |dialog_| and holds references
   // to the other objects.
