@@ -9,15 +9,15 @@ description: Archive of WebView CTS tests
 data:
   - file: arm64/M/android-cts-arm64-6.0_r32.zip
   - file: arm64/N/android-cts-arm64-7.0_r33.zip
-  - file: arm64/O/android-cts-arm64-8.0_r24.zip
-  - file: arm64/P/android-cts-arm64-9.0_r13.zip
-  - file: arm64/Q/android-cts-arm64-10_r5.zip
+  - file: arm64/O/android-cts-arm64-8.0_r26.zip
+  - file: arm64/P/android-cts-arm64-9.0_r19.zip
+  - file: arm64/Q/android-cts-arm64-10_r11.zip
   - file: arm64/R/android-cts-arm64-11_r7.zip
   - file: arm64/S/android-cts-arm64-12_r3.zip
   - file: x86/M/android-cts-x86-6.0_r32.zip
   - file: x86/N/android-cts-x86-7.0_r33.zip
-  - file: x86/O/android-cts-x86-8.0_r24.zip
-  - file: x86/P/android-cts-x86-9.0_r13.zip
-  - file: x86/Q/android-cts-x86-10_r5.zip
+  - file: x86/O/android-cts-x86-8.0_r26.zip
+  - file: x86/P/android-cts-x86-9.0_r19.zip
+  - file: x86/Q/android-cts-x86-10_r11.zip
   - file: x86/R/android-cts-x86-11_r7.zip
   - file: x86/S/android-cts-x86-12_r3.zip
