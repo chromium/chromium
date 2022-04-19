@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideStep, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SettingsPrefsElement, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {getSyncAllPrefs} from './sync_test_util.js';
@@ -98,10 +98,16 @@ function whenPopState(causeEvent: () => void): Promise<void> {
 
 suite('PrivacyGuidePage', function() {
   let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let shouldShowCookiesCard: boolean;
   let shouldShowSafeBrowsingCard: boolean;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -113,30 +119,7 @@ suite('PrivacyGuidePage', function() {
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-guide-page');
     page.disableAnimationsForTesting();
-    page.prefs = {
-      privacy_guide: {
-        viewed: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-      url_keyed_anonymized_data_collection: {
-        enabled: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true,
-        },
-      },
-      generated: {
-        cookie_primary_setting: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
-        },
-        safe_browsing: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SafeBrowsingSetting.STANDARD,
-        },
-      },
-    };
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     shouldShowCookiesCard = true;
     shouldShowSafeBrowsingCard = true;
@@ -847,8 +830,14 @@ suite('PrivacyGuidePage', function() {
 
 suite('PrivacyGuideFragmentMetrics', function() {
   let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -860,30 +849,7 @@ suite('PrivacyGuideFragmentMetrics', function() {
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-guide-page');
     page.disableAnimationsForTesting();
-    page.prefs = {
-      privacy_guide: {
-        viewed: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-      url_keyed_anonymized_data_collection: {
-        enabled: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true,
-        },
-      },
-      generated: {
-        cookie_primary_setting: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
-        },
-        safe_browsing: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SafeBrowsingSetting.STANDARD,
-        },
-      },
-    };
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
 
     // Simulates the route of the user entering the privacy guide from the S&P
