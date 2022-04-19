@@ -362,6 +362,10 @@ class FakePasswordScriptsFetcher : public PasswordScriptsFetcher {
     return base::Value::Dict();
   }
 
+  base::Value::List GetCacheEntries() const override {
+    return base::Value::List();
+  }
+
  private:
   ResponseCallback callback_;
 };

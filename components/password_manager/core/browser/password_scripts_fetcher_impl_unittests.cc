@@ -433,4 +433,32 @@ TEST_F(PasswordScriptsFetcherImplTest, DebugInformationForInternals) {
       *script_list_url);
 }
 
+TEST_F(PasswordScriptsFetcherImplTest, CheckCacheEntries) {
+  fetcher()->PrewarmCache();
+  EXPECT_EQ(1, GetNumberOfPendingRequests());
+
+  // Cache should still be empty, too.
+  base::Value::List cache_entries = fetcher()->GetCacheEntries();
+  EXPECT_EQ(cache_entries.size(), 0u);
+
+  SimulateResponse();
+  EXPECT_EQ(0, GetNumberOfPendingRequests());
+
+  // Cache should now contain three entries.
+  cache_entries = fetcher()->GetCacheEntries();
+  EXPECT_EQ(cache_entries.size(), 3u);
+
+  std::vector<std::string> urls;
+  // Only `kOriginWithoutScript` is not expected to have a script.
+  for (auto it = cache_entries.begin(); it != cache_entries.end(); ++it) {
+    const std::string* url = it->GetDict().FindString("url");
+    ASSERT_TRUE(url);
+    urls.push_back(*url);
+  }
+
+  // There should be entries for all sites with a script.
+  EXPECT_THAT(urls, UnorderedElementsAre(kOriginWithScript1, kOriginWithScript2,
+                                         kOriginWithScript3));
+}
+
 }  // namespace password_manager

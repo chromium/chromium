@@ -51,6 +51,35 @@ function onAutofillAssistantInfoReceived(autofillAssistantInfo) {
   }
 }
 
+function resetScriptCache() {
+  const element = $('script_cache_content');
+  element.textContent = 'Cache not loaded.';
+}
+
+function requestScriptCache() {
+  chrome.send('get-script-cache');
+}
+
+function onScriptCacheReceived(scriptsCacheInfo) {
+  const element = $('script_cache_content');
+  if (!scriptsCacheInfo.length) {
+    element.textContent = 'Cache is empty.';
+    return;
+  }
+
+  const table = document.createElement('table');
+  for (const cacheEntry of scriptsCacheInfo) {
+    const columns = [cacheEntry['url']];
+    if ('has_script' in cacheEntry) {
+      columns.push(cacheEntry['has_script'] ? 'Available' : 'Not available');
+    }
+
+    const row = createTableRow(...columns);
+    table.appendChild(row);
+  }
+  element.replaceChildren(table);
+}
+
 document.addEventListener('DOMContentLoaded', function(event) {
   addWebUIListener('on-flags-information-received', onFlagsInfoReceived);
   addWebUIListener(
@@ -58,6 +87,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
   addWebUIListener(
       'on-autofill-assistant-information-received',
       onAutofillAssistantInfoReceived);
+  addWebUIListener('on-script-cache-received', onScriptCacheReceived);
+
+  resetScriptCache();
+  $('scripts_clear').onclick = resetScriptCache;
+  $('scripts_refresh').onclick = requestScriptCache;
 
   chrome.send('loaded');
 });

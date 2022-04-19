@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
@@ -41,6 +42,10 @@ void APCInternalsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "loaded", base::BindRepeating(&APCInternalsHandler::OnLoaded,
                                     base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "get-script-cache",
+      base::BindRepeating(&APCInternalsHandler::OnScriptCacheRequested,
+                          base::Unretained(this)));
 }
 
 void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
@@ -53,6 +58,12 @@ void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
                     base::Value(GetPasswordScriptFetcherInformation()));
   FireWebUIListener("on-autofill-assistant-information-received",
                     base::Value(GetAutofillAssistantInformation()));
+}
+
+void APCInternalsHandler::OnScriptCacheRequested(
+    const base::Value::List& args) {
+  FireWebUIListener("on-script-cache-received",
+                    base::Value(GetPasswordScriptFetcherCache()));
 }
 
 // Returns a list of dictionaries that contain the name and the state of
@@ -103,6 +114,20 @@ base::Value::Dict APCInternalsHandler::GetPasswordScriptFetcherInformation() {
     return scripts_fetcher->GetDebugInformationForInternals();
 #endif
   return base::Value::Dict();
+}
+
+base::Value::List APCInternalsHandler::GetPasswordScriptFetcherCache() {
+#if BUILDFLAG(IS_ANDROID)
+  content::BrowserContext* browser_context =
+      web_ui()->GetWebContents()->GetBrowserContext();
+  password_manager::PasswordScriptsFetcher* scripts_fetcher =
+      PasswordScriptsFetcherFactory::GetForBrowserContext(browser_context);
+  if (scripts_fetcher) {
+    return scripts_fetcher->GetCacheEntries();
+  }
+#endif
+
+  return base::Value::List();
 }
 
 base::Value::Dict APCInternalsHandler::GetAutofillAssistantInformation() const {

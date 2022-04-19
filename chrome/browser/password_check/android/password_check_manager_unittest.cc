@@ -105,6 +105,8 @@ class MockPasswordScriptsFetcher
               GetDebugInformationForInternals,
               (),
               (const override));
+
+  MOCK_METHOD(base::Value::List, GetCacheEntries, (), (const override));
 };
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(

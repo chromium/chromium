@@ -62,6 +62,9 @@ class PasswordScriptsFetcher : public KeyedService {
   // Return high-level state summary of the PasswordScriptsFetcher in form
   // of a `base::Value::Dict` for display on chrome://apc-internals.
   virtual base::Value::Dict GetDebugInformationForInternals() const = 0;
+
+  // Return a list of all entries currently held in the cache.
+  virtual base::Value::List GetCacheEntries() const = 0;
 };
 
 }  // namespace password_manager

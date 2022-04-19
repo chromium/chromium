@@ -587,4 +587,30 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, DebugInformationForInternals) {
   CheckScriptAvailabilityDefaultResults();
 }
 
+TEST_F(SavedPasswordsCapabilitiesFetcherTest, CheckCacheEntries) {
+  ExpectCacheRefresh();
+  fetcher_->PrewarmCache();
+
+  // Cache should now contain four entries.
+  base::Value::List cache_entries = fetcher_->GetCacheEntries();
+  EXPECT_EQ(cache_entries.size(), 4u);
+
+  std::vector<std::string> urls;
+  // Only `kOriginWithoutScript` is not expected to have a script.
+  for (auto it = cache_entries.begin(); it != cache_entries.end(); ++it) {
+    base::Value::Dict& entry = it->GetDict();
+    const std::string* url = entry.FindString("url");
+    absl::optional<bool> has_script = entry.FindBool("has_script");
+    EXPECT_TRUE(url);
+    EXPECT_TRUE(has_script.has_value());
+    EXPECT_EQ(*url != kOriginWithoutScript, has_script.value());
+    urls.push_back(*url);
+  }
+
+  // There should be entries for all requested sites.
+  EXPECT_THAT(urls,
+              UnorderedElementsAre(kOriginWithoutScript, kOriginWithScript1,
+                                   kOriginWithScript2, kOriginWithScript3));
+}
+
 }  // namespace password_manager

@@ -313,4 +313,16 @@ SavedPasswordsCapabilitiesFetcher::GetDebugInformationForInternals() const {
   return result;
 }
 
+base::Value::List SavedPasswordsCapabilitiesFetcher::GetCacheEntries() const {
+  base::Value::List cache_entries;
+  for (const auto& [origin, capabilities] : cache_) {
+    base::Value::Dict entry;
+    entry.Set("url", origin.Serialize());
+    entry.Set("has_script", capabilities.has_script);
+    cache_entries.Append(std::move(entry));
+  }
+
+  return cache_entries;
+}
+
 }  // namespace password_manager

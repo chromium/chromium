@@ -49,6 +49,7 @@ class SavedPasswordsCapabilitiesFetcher
                                ResponseCallback callback) override;
   bool IsScriptAvailable(const url::Origin& origin) const override;
   base::Value::Dict GetDebugInformationForInternals() const override;
+  base::Value::List GetCacheEntries() const override;
 
  private:
   using CacheState = PasswordScriptsFetcher::CacheState;
