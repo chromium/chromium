@@ -156,6 +156,12 @@ class ASH_EXPORT CaptureModeSession
   // active.
   gfx::Rect GetCameraPreviewConfineBounds() const;
 
+  // Returns the in-session target value that should be used for the visibility
+  // of the camera preview (if any). During the session, things like dragging
+  // the user region may affect the camera preview's visibility, and hence this
+  // function should be consulted.
+  bool CalculateCameraPreviewTargetVisibility() const;
+
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -206,7 +212,7 @@ class ASH_EXPORT CaptureModeSession
   void OnCameraPreviewDragStarted();
   void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
                                 bool is_touch);
-  void OnCameraPreviewBoundsChanged();
+  void OnCameraPreviewBoundsOrVisibilityChanged();
 
  private:
   friend class CaptureModeSettingsTestApi;
@@ -389,8 +395,8 @@ class ASH_EXPORT CaptureModeSession
   void MaybeReparentCameraPreviewWidget();
 
   // Called at the beginning or end of the drag of capture region to update the
-  // camera preview's visibility.
-  void MaybeUpdateCameraPreviewVisibility();
+  // camera preview's bounds and visibility.
+  void MaybeUpdateCameraPreviewBounds();
 
   CaptureModeController* const controller_;
 

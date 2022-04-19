@@ -186,10 +186,11 @@ class ASH_EXPORT CaptureModeCameraController
   // bounds accordingly.
   void SetCameraPreviewSnapPosition(CameraPreviewSnapPosition value);
 
-  // Updates the bounds of `camera_preview_widget_` to current
-  // GetPreviewWidgetBounds() when necessary. If `animate` is set to true, the
-  // widget will animate to the new target bounds.
-  void MaybeUpdatePreviewWidgetBounds(bool animate = false);
+  // Updates the bounds and visibility of `camera_preview_widget_` according to
+  // the current state of the capture surface within which the camera preview
+  // is confined and snapped to one of its corners. If `animate` is set to true,
+  // the widget will animate to the new target bounds.
+  void MaybeUpdatePreviewWidget(bool animate = false);
 
   // Handles drag events forwarded from `camera_preview_view_`.
   void StartDraggingPreview(const gfx::PointF& screen_location);
@@ -199,11 +200,6 @@ class ASH_EXPORT CaptureModeCameraController
   // Updates the bounds of the preview widget and the value of
   // `is_camera_preview_collapsed_` when the resize button is pressed.
   void ToggleCameraPreviewSize();
-
-  // Fades in or out the `camera_preview_widget_` and updates its visibility
-  // accordingly.
-  void FadeInCameraPreview();
-  void FadeOutCameraPreview();
 
   void OnRecordingStarted(bool is_in_projector_mode);
   void OnRecordingEnded();
@@ -264,15 +260,23 @@ class ASH_EXPORT CaptureModeCameraController
   void OnSelectedCameraDisconnected();
 
   // Returns the bounds of the preview widget which doesn't intersect with
-  // system tray. Always try `camera_preview_snap_position_` first. If camera
-  // preview at all snap positions intersects with system tray, returns the
-  // bounds of `camera_preview_snap_position_`.
-  gfx::Rect CalculatePreviewWidgetTargetBounds();
+  // system tray, which should be confined within the given `confine_bounds`,
+  // and have the given `preview_size`. Always tries the current
+  // `camera_preview_snap_position_` first. Once a snap position with which the
+  // preview has no collisions is found, it will be set in
+  // `camera_preview_snap_position_`. If the camera preview at all possible snap
+  // positions intersects with system tray, returns the bounds for the current
+  // `camera_preview_snap_position_`.
+  gfx::Rect CalculatePreviewWidgetTargetBounds(const gfx::Rect& confine_bounds,
+                                               const gfx::Size& preview_size);
 
-  // Call by `CalculatePreviewWidgetTargetBounds` above. Returns the bounds of
-  // the preview widget that matches the coordinate system of the confine
-  // bounds.
+  // Called by `CalculatePreviewWidgetTargetBounds` above. Returns the bounds of
+  // the preview widget that matches the coordinate system of the given
+  // `confine_bounds` with the given `preview_size` at the given
+  // `snap_position`.
   gfx::Rect GetPreviewWidgetBoundsForSnapPosition(
+      const gfx::Rect& confine_bounds,
+      const gfx::Size& preview_size,
       CameraPreviewSnapPosition snap_position) const;
 
   // Called by `EndDraggingPreview`, updating `camera_preview_snap_position_`
@@ -291,6 +295,21 @@ class ASH_EXPORT CaptureModeCameraController
   // camera preview and floating windows, such as PIP windows and some a11y
   // panels.
   void RunPostRefreshCameraPreview(bool was_preview_visible_before);
+
+  // Sets the visibility of the camera preview to the given `target_visibility`
+  // and returns true only if the `target_visibility` is different than the
+  // current.
+  bool SetCameraPreviewVisibility(bool target_visibility, bool animate);
+
+  // Fades in or out the `camera_preview_widget_` and updates its visibility
+  // accordingly.
+  void FadeInCameraPreview();
+  void FadeOutCameraPreview();
+
+  // Sets the given `target_bounds` on the camera preview widget, potentially
+  // animating to it if `animate` is true. Returns true if the bounds actually
+  // changed from the current.
+  bool SetCameraPreviewBounds(const gfx::Rect& target_bounds, bool animate);
 
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.

@@ -347,7 +347,7 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
   // window being recorded is changed.
   auto* camera_controller = controller_->camera_controller();
   if (camera_controller)
-    camera_controller->MaybeUpdatePreviewWidgetBounds();
+    camera_controller->MaybeUpdatePreviewWidget();
 }
 
 void VideoRecordingWatcher::OnWindowOpacitySet(
@@ -469,7 +469,7 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
   // handled in `OnWindowBoundsChanged`;
   auto* camera_controller = controller_->camera_controller();
   if (camera_controller && recording_source_ != CaptureModeSource::kWindow)
-    camera_controller->MaybeUpdatePreviewWidgetBounds();
+    camera_controller->MaybeUpdatePreviewWidget();
 
   // We don't show a dimming overlay when recording a fullscreen.
   if (recording_source_ == CaptureModeSource::kFullscreen)

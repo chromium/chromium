@@ -24,9 +24,7 @@ namespace views {
 class View;
 }  // namespace views
 
-namespace ash {
-
-namespace capture_mode_util {
+namespace ash::capture_mode_util {
 
 // Returns true if the capture mode feature is enabled and capture mode is
 // active. This method allows callers to avoid including the full header for
@@ -85,8 +83,28 @@ std::unique_ptr<views::View> CreateBannerView();
 // notification.
 std::unique_ptr<views::View> CreatePlayIconView();
 
-}  // namespace capture_mode_util
+// Defines an object to hold the values of the camera preview size specs.
+struct CameraPreviewSizeSpecs {
+  // The size to which the camera preview should be set under the current
+  // conditions.
+  const gfx::Size size;
 
-}  // namespace ash
+  // True if the expanded size of the camera preview is big enough to allow it
+  // to be collapsible. False otherwise.
+  const bool is_collapsible;
+
+  // True if the surface within which the camera preview is confined is big
+  // enough to allow it to show. False otherwise.
+  const bool should_be_visible;
+};
+
+// Calculates the size specs of the camera preview which will be confined within
+// the given `confine_bounds_size` and will be either expanded or collapsed
+// based on the given `is_collapsed`.
+ASH_EXPORT CameraPreviewSizeSpecs
+CalculateCameraPreviewSizeSpecs(const gfx::Size& confine_bounds_size,
+                                bool is_collapsed);
+
+}  // namespace ash::capture_mode_util
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_UTIL_H_

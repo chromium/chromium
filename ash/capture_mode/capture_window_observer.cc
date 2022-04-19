@@ -92,7 +92,7 @@ void CaptureWindowObserver::OnWindowBoundsChanged(
   auto* controller = CaptureModeController::Get();
   auto* camera_controller = controller->camera_controller();
   if (camera_controller && !controller->is_recording_in_progress())
-    camera_controller->MaybeUpdatePreviewWidgetBounds();
+    camera_controller->MaybeUpdatePreviewWidget();
 }
 
 void CaptureWindowObserver::OnWindowVisibilityChanging(aura::Window* window,

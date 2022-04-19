@@ -10,9 +10,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace ash {
-
-namespace capture_mode {
+namespace ash::capture_mode {
 
 constexpr gfx::Size kButtonSize{32, 32};
 
@@ -36,9 +34,25 @@ constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 // The space between the `image_toggle_button_` and `video_toggle_button_`.
 constexpr int kSpaceBetweenCaptureModeTypeButtons = 2;
 
-constexpr gfx::Size kCameraPreviewSize{192, 192};
+// The minimum value we use to clamp the camera preview diameter.
+constexpr int kMinCameraPreviewDiameter = 120;
 
-constexpr gfx::Size kCollapsedPreviewSize{96, 96};
+// The minimum value if the diameter of the expanded camera preview goes below
+// which, the camera preview will be considered too small to be collapsible.
+constexpr int kMinCollapsibleCameraPreviewDiameter = 150;
+
+// The minimum value of the shorter side of the surface within which the camera
+// preview is confined. Less values will cause the camera preview to hide.
+constexpr int kMinCaptureSurfaceShortSideLengthForVisibleCamera = 176;
+
+// The value by which we divide the shorter side of the surface within which the
+// camera preview is confined (e.g. the display work area when recrding the
+// fullscreen) to calculate the expanded diameter.
+constexpr int kCaptureSurfaceShortSideDivider = 4;
+
+// The divider used to calculate the collapsed diameter from the expanded
+// diameter.
+constexpr int kCollapsedPreviewDivider = 2;
 
 // The space between the camera preview and edges of the bounds that will be
 // recorded.
@@ -52,8 +66,6 @@ constexpr int kSpaceBetweenResizeButtonAndCameraPreview = 12;
 // preview bounds or the last tap on the preview widget.
 constexpr base::TimeDelta kResizeButtonShowDuration = base::Milliseconds(4500);
 
-}  // namespace capture_mode
-
-}  // namespace ash
+}  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

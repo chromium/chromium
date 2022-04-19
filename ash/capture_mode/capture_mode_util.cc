@@ -5,7 +5,9 @@
 #include "ash/capture_mode/capture_mode_util.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
@@ -27,14 +29,32 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
+namespace ash::capture_mode_util {
+
 namespace {
+
 constexpr int kBannerViewTopRadius = 0;
 constexpr int kBannerViewBottomRadius = 8;
+
+bool CalculateCameraPreviewTargetVisibility(
+    int confine_bounds_short_side_length) {
+  // If the short side of the bounds within which the camera preview should be
+  // confined is too small, the camera should be hidden.
+  if (confine_bounds_short_side_length <
+      capture_mode::kMinCaptureSurfaceShortSideLengthForVisibleCamera) {
+    return false;
+  }
+
+  // Now that we determined that its size doesn't affect its visibility, we need
+  // to check if we're in a capture mode session that is in a state that affects
+  // the camera preview's visibility.
+  auto* controller = CaptureModeController::Get();
+  return !controller->IsActive() ||
+         controller->capture_mode_session()
+             ->CalculateCameraPreviewTargetVisibility();
+}
+
 }  // namespace
-
-namespace ash {
-
-namespace capture_mode_util {
 
 bool IsCaptureModeActive() {
   return CaptureModeController::Get()->IsActive();
@@ -252,6 +272,37 @@ std::unique_ptr<views::View> CreatePlayIconView() {
   return play_view;
 }
 
-}  // namespace capture_mode_util
+CameraPreviewSizeSpecs CalculateCameraPreviewSizeSpecs(
+    const gfx::Size& confine_bounds_size,
+    bool is_collapsed) {
+  // We divide the shorter side of the confine bounds by a divider to calculate
+  // the expanded diameter. Note that both expanded and collapsed diameters are
+  // clamped at a minimum value of `kMinCameraPreviewDiameter`.
+  const int short_side =
+      std::min(confine_bounds_size.width(), confine_bounds_size.height());
+  const int expanded_diameter =
+      std::max(short_side / capture_mode::kCaptureSurfaceShortSideDivider,
+               capture_mode::kMinCameraPreviewDiameter);
 
-}  // namespace ash
+  // If the expanded diameter is below a certain threshold, we consider it too
+  // small to allow it to collapse, and in that case the resize button will be
+  // hidden.
+  const bool is_collapsible =
+      expanded_diameter >= capture_mode::kMinCollapsibleCameraPreviewDiameter;
+
+  // Pick the actual diameter based on whether the preview is currently expanded
+  // or collapsed.
+  const int diameter =
+      !is_collapsed
+          ? expanded_diameter
+          : std::max(expanded_diameter / capture_mode::kCollapsedPreviewDivider,
+                     capture_mode::kMinCameraPreviewDiameter);
+
+  const bool should_be_visible =
+      CalculateCameraPreviewTargetVisibility(short_side);
+
+  return CameraPreviewSizeSpecs{gfx::Size(diameter, diameter), is_collapsible,
+                                should_be_visible};
+}
+
+}  // namespace ash::capture_mode_util
