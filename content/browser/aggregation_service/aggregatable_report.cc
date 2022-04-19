@@ -18,7 +18,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
@@ -301,34 +301,33 @@ AggregatableReportSharedInfo& AggregatableReportSharedInfo::operator=(
 AggregatableReportSharedInfo::~AggregatableReportSharedInfo() = default;
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
 
-  value.SetStringKey("privacy_budget_key", privacy_budget_key);
+  value.Set("privacy_budget_key", privacy_budget_key);
 
   DCHECK(report_id.is_valid());
-  value.SetStringKey("report_id", report_id.AsLowercaseString());
+  value.Set("report_id", report_id.AsLowercaseString());
 
-  value.SetStringKey("reporting_origin", reporting_origin.Serialize());
+  value.Set("reporting_origin", reporting_origin.Serialize());
 
   // Encoded as the number of seconds since the Unix epoch, ignoring leap
   // seconds and rounded down.
   DCHECK(!scheduled_report_time.is_null());
   DCHECK(!scheduled_report_time.is_inf());
-  value.SetStringKey("scheduled_report_time",
-                     base::NumberToString(scheduled_report_time.ToJavaTime() /
-                                          base::Time::kMillisecondsPerSecond));
+  value.Set("scheduled_report_time",
+            base::NumberToString(scheduled_report_time.ToJavaTime() /
+                                 base::Time::kMillisecondsPerSecond));
 
   // TODO(alexmt): Replace with a real version once a version string is decided.
-  value.SetStringKey("version", "");
+  value.Set("version", "");
 
   // Only include the field if enabled.
   if (debug_mode == DebugMode::kEnabled) {
-    value.SetStringKey("debug_mode", "enabled");
+    value.Set("debug_mode", "enabled");
   }
 
   std::string serialized_value;
-  JSONStringValueSerializer serializer(&serialized_value);
-  bool succeeded = serializer.Serialize(value);
+  bool succeeded = base::JSONWriter::Write(value, &serialized_value);
   DCHECK(succeeded);
 
   return serialized_value;
@@ -544,19 +543,18 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
                             std::move(encoded_shared_info));
 }
 
-base::Value::DictStorage AggregatableReport::GetAsJson() const {
-  base::Value::DictStorage value;
+base::Value::Dict AggregatableReport::GetAsJson() const {
+  base::Value::Dict value;
 
-  value.emplace("shared_info", shared_info_);
+  value.Set("shared_info", shared_info_);
 
-  base::Value payloads_list_value(base::Value::Type::LIST);
+  base::Value::List payloads_list_value;
   for (const AggregationServicePayload& payload : payloads_) {
-    base::Value payload_dict_value(base::Value::Type::DICTIONARY);
-    payload_dict_value.SetStringKey("payload",
-                                    base::Base64Encode(payload.payload));
-    payload_dict_value.SetStringKey("key_id", payload.key_id);
+    base::Value::Dict payload_dict_value;
+    payload_dict_value.Set("payload", base::Base64Encode(payload.payload));
+    payload_dict_value.Set("key_id", payload.key_id);
     if (payload.debug_cleartext_payload.has_value()) {
-      payload_dict_value.SetStringKey(
+      payload_dict_value.Set(
           "debug_cleartext_payload",
           base::Base64Encode(payload.debug_cleartext_payload.value()));
     }
@@ -564,7 +562,7 @@ base::Value::DictStorage AggregatableReport::GetAsJson() const {
     payloads_list_value.Append(std::move(payload_dict_value));
   }
 
-  value.emplace("aggregation_service_payloads", std::move(payloads_list_value));
+  value.Set("aggregation_service_payloads", std::move(payloads_list_value));
 
   return value;
 }

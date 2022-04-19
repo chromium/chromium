@@ -100,12 +100,12 @@ class TestAggregationService {
                              base::OnceCallback<void(bool)> callback) = 0;
 
   // Construct an aggregatable report from the information in `request`.
-  // `callback` will be run once completed which takes a
-  // base::Value::DictStorage for the JSON representation of the aggregatable
-  // report. Empty base::Value::DictStorage will be returned in case of error.
+  // `callback` will be run once completed which takes a `base::Value::Dict` for
+  // the JSON representation of the aggregatable report. Empty
+  // `base::Value::Dict` will be returned in case of error.
   virtual void AssembleReport(
       AssembleRequest request,
-      base::OnceCallback<void(base::Value::DictStorage)> callback) = 0;
+      base::OnceCallback<void(base::Value::Dict)> callback) = 0;
 
   // Sends the aggregatable report to the specified reporting endpoint `url`.
   // `callback` will be run once completed which returns whether the report was

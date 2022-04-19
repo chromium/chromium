@@ -397,10 +397,9 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
                         /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info");
-  base::Value::DictStorage report_json_value = report.GetAsJson();
 
   std::string report_json_string;
-  base::JSONWriter::Write(base::Value(report_json_value), &report_json_string);
+  base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
   const char kExpectedJsonString[] =
       R"({)"
@@ -422,10 +421,9 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
                         /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info");
-  base::Value::DictStorage report_json_value = report.GetAsJson();
 
   std::string report_json_string;
-  base::JSONWriter::Write(base::Value(report_json_value), &report_json_string);
+  base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
   const char kExpectedJsonString[] =
       R"({)"
@@ -445,10 +443,9 @@ TEST(AggregatableReportTest, GetAsJsonDebugCleartextPayload_ValidJsonReturned) {
                         /*debug_cleartext_payload=*/kEFGH5678AsBytes);
 
   AggregatableReport report(std::move(payloads), "example_shared_info");
-  base::Value::DictStorage report_json_value = report.GetAsJson();
 
   std::string report_json_string;
-  base::JSONWriter::Write(base::Value(report_json_value), &report_json_string);
+  base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
   const char kExpectedJsonString[] = R"({)"
                                      R"("aggregation_service_payloads":[{)"

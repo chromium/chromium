@@ -265,7 +265,7 @@ int main(int argc, char* argv[]) {
 
   bool is_debug_mode_enabled = command_line.HasSwitch(kSwitchEnableDebugMode);
 
-  base::Value::DictStorage report_dict = tool.AssembleReport(
+  base::Value::Dict report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(aggregation_mode), std::move(reporting_origin),
@@ -286,7 +286,7 @@ int main(int argc, char* argv[]) {
         additional_fields, /*key_value_delimiter=*/'=',
         /*key_value_pair_delimiter=*/',', &kv_pairs);
     for (std::pair<std::string, std::string>& kv : kv_pairs) {
-      report_dict.emplace(std::move(kv.first), std::move(kv.second));
+      report_dict.Set(std::move(kv.first), std::move(kv.second));
     }
   }
 

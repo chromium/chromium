@@ -53,16 +53,16 @@ class AggregationServiceTool {
   bool SetPublicKeys(const std::vector<UrlKeyFile>& key_files);
 
   // Construct an aggregatable report from the specified information and returns
-  // a base::Value::DictStorage for its JSON representation. Empty
-  // base::Value::DictStorage will be returned in case of error.
-  base::Value::DictStorage AssembleReport(std::string operation_str,
-                                          std::string bucket_str,
-                                          std::string value_str,
-                                          std::string aggregation_mode_str,
-                                          url::Origin reporting_origin,
-                                          std::string privacy_budget_key,
-                                          std::vector<GURL> processing_urls,
-                                          bool is_debug_mode_enabled);
+  // a `base::Value::Dict` for its JSON representation. Empty
+  // `base::Value::Dict` will be returned in case of error.
+  base::Value::Dict AssembleReport(std::string operation_str,
+                                   std::string bucket_str,
+                                   std::string value_str,
+                                   std::string aggregation_mode_str,
+                                   url::Origin reporting_origin,
+                                   std::string privacy_budget_key,
+                                   std::vector<GURL> processing_urls,
+                                   bool is_debug_mode_enabled);
 
   // Sends the contents of the aggregatable report to the specified reporting
   // url `url` and returns whether it's successful.

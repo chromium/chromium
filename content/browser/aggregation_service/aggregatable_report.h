@@ -217,7 +217,7 @@ class CONTENT_EXPORT AggregatableReport {
   // field: `"debug_cleartext_payload": "<base64 encoded payload cleartext>"`.
   // Note that APIs may wish to add additional key-value pairs to this returned
   // value.
-  base::Value::DictStorage GetAsJson() const;
+  base::Value::Dict GetAsJson() const;
 
   // TODO(crbug.com/1247409): Expose static method to validate that a
   // base::Value appears to represent a valid report.

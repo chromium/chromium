@@ -151,77 +151,70 @@ base::Value AttributionReport::ReportBody() const {
     raw_ptr<const AttributionReport> report;
 
     base::Value operator()(const EventLevelData& data) {
-      base::Value dict(base::Value::Type::DICTIONARY);
+      base::Value::Dict dict;
 
       const CommonSourceInfo& common_source_info =
           report->attribution_info().source.common_info();
 
-      dict.SetStringKey("attribution_destination",
-                        common_source_info.ConversionDestination().Serialize());
+      dict.Set("attribution_destination",
+               common_source_info.ConversionDestination().Serialize());
 
       // The API denotes these values as strings; a `uint64_t` cannot be put in
       // a dict as an integer in order to be opaque to various API
       // configurations.
-      dict.SetStringKey(
-          "source_event_id",
-          base::NumberToString(common_source_info.source_event_id()));
+      dict.Set("source_event_id",
+               base::NumberToString(common_source_info.source_event_id()));
 
-      dict.SetStringKey("trigger_data",
-                        base::NumberToString(data.trigger_data));
+      dict.Set("trigger_data", base::NumberToString(data.trigger_data));
 
-      dict.SetStringKey("source_type", AttributionSourceTypeToString(
-                                           common_source_info.source_type()));
+      dict.Set("source_type",
+               AttributionSourceTypeToString(common_source_info.source_type()));
 
-      dict.SetStringKey("report_id",
-                        report->external_report_id().AsLowercaseString());
+      dict.Set("report_id", report->external_report_id().AsLowercaseString());
 
-      dict.SetDoubleKey("randomized_trigger_rate",
-                        data.randomized_trigger_rate);
+      dict.Set("randomized_trigger_rate", data.randomized_trigger_rate);
 
-      if (absl::optional<uint64_t> debug_key = common_source_info.debug_key()) {
-        dict.SetStringKey("source_debug_key", base::NumberToString(*debug_key));
-      }
+      if (absl::optional<uint64_t> debug_key = common_source_info.debug_key())
+        dict.Set("source_debug_key", base::NumberToString(*debug_key));
 
       if (absl::optional<uint64_t> debug_key =
               report->attribution_info().debug_key) {
-        dict.SetStringKey("trigger_debug_key",
-                          base::NumberToString(*debug_key));
+        dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
       }
 
-      return dict;
+      return base::Value(std::move(dict));
     }
 
     base::Value operator()(const AggregatableAttributionData& data) {
-      base::Value::DictStorage dict;
+      base::Value::Dict dict;
 
       if (data.assembled_report.has_value()) {
         dict = data.assembled_report->GetAsJson();
       } else {
         // This generally should only be called when displaying the report for
         // debugging/internals.
-        dict.emplace("shared_info", "not generated prior to send");
-        dict.emplace("aggregation_service_payloads",
-                     "not generated prior to send");
+        dict.Set("shared_info", "not generated prior to send");
+        dict.Set("aggregation_service_payloads", "not generated prior to send");
       }
 
       const CommonSourceInfo& common_info =
           report->attribution_info().source.common_info();
 
-      dict.emplace("source_site", common_info.ImpressionSite().Serialize());
-      dict.emplace("attribution_destination",
-                   common_info.ConversionDestination().Serialize());
+      dict.Set("source_site", common_info.ImpressionSite().Serialize());
+      dict.Set("attribution_destination",
+               common_info.ConversionDestination().Serialize());
 
       // source_registration_time is rounded down to whole day and in seconds.
-      dict.emplace("source_registration_time",
-                   base::NumberToString(EncodeTimeRoundDownToWholeDayInSeconds(
-                       common_info.impression_time())));
+      dict.Set("source_registration_time",
+               base::NumberToString(EncodeTimeRoundDownToWholeDayInSeconds(
+                   common_info.impression_time())));
 
       if (absl::optional<uint64_t> debug_key = common_info.debug_key())
-        dict.emplace("source_debug_key", base::NumberToString(*debug_key));
+        dict.Set("source_debug_key", base::NumberToString(*debug_key));
 
       if (absl::optional<uint64_t> debug_key =
               report->attribution_info().debug_key) {
-        dict.emplace("trigger_debug_key", base::NumberToString(*debug_key));
+        dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
       }
 
       return base::Value(std::move(dict));

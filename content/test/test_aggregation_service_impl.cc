@@ -53,13 +53,13 @@ AggregationServicePayloadContents::AggregationMode ConvertToAggregationMode(
 }
 
 void HandleAggregatableReportCallback(
-    base::OnceCallback<void(base::Value::DictStorage)> callback,
+    base::OnceCallback<void(base::Value::Dict)> callback,
     absl::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
   if (!report.has_value()) {
     LOG(ERROR) << "Failed to assemble the report, status: "
                << static_cast<int>(status);
-    std::move(callback).Run(base::Value::DictStorage());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
@@ -131,7 +131,7 @@ void TestAggregationServiceImpl::SetPublicKeys(
 
 void TestAggregationServiceImpl::AssembleReport(
     AssembleRequest request,
-    base::OnceCallback<void(base::Value::DictStorage)> callback) {
+    base::OnceCallback<void(base::Value::Dict)> callback) {
   AggregationServicePayloadContents payload_contents(
       ConvertToOperation(request.operation),
       {AggregationServicePayloadContents::HistogramContribution{
@@ -152,7 +152,7 @@ void TestAggregationServiceImpl::AssembleReport(
           std::move(request.processing_urls), std::move(payload_contents),
           std::move(shared_info));
   if (!report_request.has_value()) {
-    std::move(callback).Run(base::Value::DictStorage());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
