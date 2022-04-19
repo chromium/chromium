@@ -15,10 +15,6 @@ namespace features {
 COMPONENT_EXPORT(LOOKALIKES_FEATURES)
 extern const base::Feature kDetectTargetEmbeddingLookalikes;
 
-// This feature enables interstitial warnings for certain punycode domains.
-COMPONENT_EXPORT(LOOKALIKES_FEATURES)
-extern const base::Feature kLookalikeInterstitialForPunycode;
-
 // This feature enables Digital Asset Link validations for lookalikes.
 COMPONENT_EXPORT(LOOKALIKES_FEATURES)
 extern const base::Feature kLookalikeDigitalAssetLinks;

@@ -115,9 +115,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
       });
   if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
                          proto, &matched_domain, &match_type)) {
-    if (base::FeatureList::IsEnabled(
-            lookalikes::features::kLookalikeInterstitialForPunycode) &&
-        ShouldBlockBySpoofCheckResult(navigated_domain)) {
+    if (ShouldBlockBySpoofCheckResult(navigated_domain)) {
       match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
       RecordUMAFromMatchType(match_type);
       LookalikeUrlContainer* lookalike_container =

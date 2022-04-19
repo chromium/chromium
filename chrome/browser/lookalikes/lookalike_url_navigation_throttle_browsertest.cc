@@ -205,7 +205,7 @@ namespace test {
 
 class LookalikeUrlNavigationThrottleBrowserTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   void SetUp() override {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
@@ -220,15 +220,6 @@ class LookalikeUrlNavigationThrottleBrowserTest
     } else {
       disabled_features.push_back(
           lookalikes::features::kDetectTargetEmbeddingLookalikes);
-    }
-
-    if (punycode_interstitial_enabled()) {
-      enabled_features.emplace_back(
-          lookalikes::features::kLookalikeInterstitialForPunycode,
-          base::FieldTrialParams());
-    } else {
-      disabled_features.push_back(
-          lookalikes::features::kLookalikeInterstitialForPunycode);
     }
 
     if (digital_asset_links_enabled()) {
@@ -246,8 +237,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
   }
 
   bool target_embedding_enabled() const { return std::get<0>(GetParam()); }
-  bool punycode_interstitial_enabled() const { return std::get<1>(GetParam()); }
-  bool digital_asset_links_enabled() const { return std::get<2>(GetParam()); }
+  bool digital_asset_links_enabled() const { return std::get<1>(GetParam()); }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -478,7 +468,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LookalikeUrlNavigationThrottleBrowserTest,
     testing::Combine(testing::Bool() /* target_embedding_enabled */,
-                     testing::Bool() /* punycode_interstitial_enabled */,
                      testing::Bool() /* digital_asset_links_enabled */));
 
 // Navigating to a non-IDN shouldn't show an interstitial or record metrics.
@@ -705,13 +694,8 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        Punycode_NoSuggestedUrl_NoInterstitial) {
   const GURL kNavigatedUrl = GetURL("ɴoτ-τoρ-ďoᛖaiɴ.com");
 
-  if (!punycode_interstitial_enabled()) {
-    TestInterstitialNotShown(browser(), kNavigatedUrl);
-  } else {
-    TestPunycodeInterstitialShown(
-        browser(), kNavigatedUrl,
-        NavigationSuggestionEvent::kFailedSpoofChecks);
-  }
+  TestPunycodeInterstitialShown(browser(), kNavigatedUrl,
+                                NavigationSuggestionEvent::kFailedSpoofChecks);
   CheckUkm({kNavigatedUrl}, "MatchType",
            LookalikeUrlMatchType::kFailedSpoofChecks);
 }
@@ -751,9 +735,6 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 // (latin middle dot) is configured to show a punycode interstitial.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        Punycode_NoSuggestedUrl_Interstitial) {
-  if (!punycode_interstitial_enabled()) {
-    return;
-  }
   // Navigate to a domain that doesn't trigger target embedding:
   const GURL kNavigatedUrl = GetURL("example·com.com");
   TestPunycodeInterstitialShown(browser(), kNavigatedUrl,
@@ -769,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 // take priority.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        PunycodeAndTargetEmbedding_NoSuggestedUrl_Interstitial) {
-  if (!(target_embedding_enabled() && punycode_interstitial_enabled())) {
+  if (!(target_embedding_enabled())) {
     return;
   }
   // Navigate to a domain that triggers target embedding:
@@ -1678,7 +1659,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
     testing::Combine(testing::Bool() /* target_embedding_enabled */,
-                     testing::Bool() /* punycode_interstitial_enabled */,
                      testing::Bool() /* digital_asset_links_enabled */));
 
 // Navigates to a 127.0.0.1 URL that serves a signed exchange for
@@ -1948,7 +1928,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
     testing::Combine(testing::Bool() /* target_embedding_enabled */,
-                     testing::Bool() /* punycode_interstitial_enabled */,
                      testing::Values(true) /* digital_asset_links_enabled */));
 
 // Neither site serves a manifest.

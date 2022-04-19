@@ -733,9 +733,7 @@ bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
         lookalikes::features::kDetectTargetEmbeddingLookalikes);
 #endif
   }
-  if (match_type == LookalikeUrlMatchType::kFailedSpoofChecks &&
-      base::FeatureList::IsEnabled(
-          lookalikes::features::kLookalikeInterstitialForPunycode)) {
+  if (match_type == LookalikeUrlMatchType::kFailedSpoofChecks) {
     return true;
   }
   return match_type == LookalikeUrlMatchType::kSkeletonMatchTop500;
