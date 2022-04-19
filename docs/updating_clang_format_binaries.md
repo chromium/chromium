@@ -61,6 +61,29 @@ rm /tmp/clang-format-$CLANG_REV.tgz
 rm buildtools/mac/clang-format.x64 buildtools/mac/clang-format.arm64
 ```
 
+## Check that the new clang-format works as expected
+
+Compare the diffs created by running the old and new clang-format versions to
+see if the new version does anything unexpected. Running them on some
+substantial directory like `third_party/blink` or `base` should be sufficient.
+Upload the diffs as two patchsets in a CL for easy inspection of the
+clang-format differences by choosing patchset 1 as the base for the gerrit diff.
+
+```shell
+## New gerrit CL with results of old clang-format.
+# use old clang-format
+find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/clang-format -i
+git commit -a
+git cl upload
+## New patchset on gerrit CL with results of new clang-format.
+# update to new clang-format
+find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/clang-format -i
+git commit -a --amend --no-edit
+git cl upload
+```
+
+If there are any unexpected diffs, file a bug upstream (and fix it if you can :)).
+
 ## Upload a CL according to the following template
 
     Update clang-format binaries and scripts for all platforms.
@@ -70,7 +93,10 @@ rm buildtools/mac/clang-format.x64 buildtools/mac/clang-format.arm64
 
     The binaries were built at clang revision ####### on ##CRREV##.
 
-    Bug:
+    Diff on base/ from previous revision of clang-format to this version:
+    https://crrev.com/c/123123123/1..2
+
+    Bug: #######
 
 The change should **always** include new `.sha1` files for each platform (we
 want to keep these in lockstep), should **never** include `clang-format`
