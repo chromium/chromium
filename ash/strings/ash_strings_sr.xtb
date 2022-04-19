@@ -132,7 +132,7 @@
 <translation id="1708345662127501511">Радна површина: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Подешавања мреже</translation>
 <translation id="1715293566947629045">Профил се онемогућава. Сачекајте неколико минута.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">П</translation>
 <translation id="1719094688023114093">Титл уживо је укључен.</translation>
 <translation id="1720011244392820496">Укључите WiFi синхронизацију</translation>
 <translation id="1736898441010944794">Ставка „<ph name="NAME" />“ је видљива за Bluetooth уређаје.</translation>
@@ -1164,7 +1164,7 @@
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8203795194971602413">Десни клик</translation>
 <translation id="8209010265547628927">Ресетуј</translation>
-<translation id="8219451629189078428">Chromebook треба да остане укључен и повезан на напајање током тог периода. Уверите се да су каблови пуњача или адаптера исправно прикључени, и у Chromebook и у утичницу Не искључујте Chromebook.</translation>
+<translation id="8219451629189078428">Chromebook треба да остане укључен и повезан на извор напајања током тог периода. Уверите се да су каблови пуњача или адаптера исправно прикључени, и у Chromebook и у утичницу Не искључујте Chromebook.</translation>
 <translation id="8236042855478648955">Време је за паузу</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, батерија телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>

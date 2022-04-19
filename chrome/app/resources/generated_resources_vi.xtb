@@ -596,7 +596,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1578784163189013834">Chọn nền cho trình bảo vệ màn hình</translation>
 <translation id="1580772913177567930">Liên hệ với quản trị viên của bạn</translation>
 <translation id="1581962803218266616">Hiển thị trong Trình tìm kiếm</translation>
-<translation id="1582955169539260415">xóa [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1582955169539260415">xoá [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> được xử lý cục bộ và hoạt động ngoại tuyến</translation>
 <translation id="1584990664401018068">Mạng Wi-Fi bạn đang sử dụng (<ph name="NETWORK_ID" />) có thể yêu cầu xác thực.</translation>
 <translation id="1585717515139318619">Một chương trình khác trên máy tính của bạn đã thêm một chủ đề có thể thay đổi cách Chrome hoạt động.
@@ -4278,7 +4278,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5204967432542742771">Nhập mật khẩu</translation>
 <translation id="5205484256512407285">Không bao giờ dùng dữ liệu di động để chuyển</translation>
 <translation id="520568280985468584">Đã thêm mạng thành công. Có thể mất ít phút để kích hoạt mạng di động của bạn.</translation>
-<translation id="5206215183583316675">Xóa "<ph name="CERTIFICATE_NAME" />"?</translation>
+<translation id="5206215183583316675">Xoá "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Lỗi nhập chứng chỉ</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Đã đổi thành công mật khẩu bị lộ. Bạn còn # mật khẩu bị lộ nữa. Chrome khuyên bạn nên kiểm tra ngay mật khẩu này.}other{Đã đổi thành công mật khẩu bị lộ. Bạn còn # mật khẩu bị lộ nữa. Chrome khuyên bạn nên kiểm tra ngay những mật khẩu này.}}</translation>
 <translation id="5207949376430453814">Đánh dấu điểm chèn văn bản</translation>
@@ -7356,7 +7356,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8259239505248583312">Bắt đầu</translation>
 <translation id="8260864402787962391">Chuột</translation>
 <translation id="8261378640211443080">Tiện ích này không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
-<translation id="8261506727792406068">Xóa</translation>
+<translation id="8261506727792406068">Xoá</translation>
 <translation id="8263336784344783289">Đặt tên cho nhóm này</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> đã tắt con trỏ chuột của bạn.</translation>
 <translation id="8264024885325823677">Quản trị viên của bạn quản lý tùy chọn cài đặt này.</translation>
