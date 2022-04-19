@@ -35,6 +35,8 @@ using pAPerformanceHint_createSession =
                                  const int32_t* threadIds,
                                  size_t size,
                                  int64_t initialTargetWorkDurationNanos);
+using pAPerformanceHint_updateTargetWorkDuration =
+    int (*)(APerformanceHintSession* session, int64_t targetDurationNanos);
 using pAPerformanceHint_reportActualWorkDuration =
     int (*)(APerformanceHintSession* session, int64_t actualDurationNanos);
 using pAPerformanceHint_closeSession =
@@ -74,6 +76,7 @@ struct AdpfMethods {
 
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_getManager);
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_createSession);
+    LOAD_FUNCTION(main_dl_handle, APerformanceHint_updateTargetWorkDuration);
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_reportActualWorkDuration);
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_closeSession);
   }
@@ -83,6 +86,8 @@ struct AdpfMethods {
   bool supported = true;
   pAPerformanceHint_getManager APerformanceHint_getManagerFn;
   pAPerformanceHint_createSession APerformanceHint_createSessionFn;
+  pAPerformanceHint_updateTargetWorkDuration
+      APerformanceHint_updateTargetWorkDurationFn;
   pAPerformanceHint_reportActualWorkDuration
       APerformanceHint_reportActualWorkDurationFn;
   pAPerformanceHint_closeSession APerformanceHint_closeSessionFn;
@@ -95,6 +100,7 @@ class AdpfHintSession : public HintSession {
                   base::TimeDelta target_duration);
   ~AdpfHintSession() override;
 
+  void UpdateTargetDuration(base::TimeDelta target_duration) override;
   void ReportCpuCompletionTime(base::TimeDelta actual_duration) override;
 
   void WakeUp();
@@ -102,7 +108,7 @@ class AdpfHintSession : public HintSession {
  private:
   APerformanceHintSession* const hint_session_;
   HintSessionFactoryImpl* const factory_;
-  const base::TimeDelta target_duration_;
+  base::TimeDelta target_duration_;
 };
 
 class HintSessionFactoryImpl : public HintSessionFactory {
@@ -141,6 +147,15 @@ AdpfHintSession::~AdpfHintSession() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
   factory_->hint_sessions_.erase(this);
   AdpfMethods::Get().APerformanceHint_closeSessionFn(hint_session_);
+}
+
+void AdpfHintSession::UpdateTargetDuration(base::TimeDelta target_duration) {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  if (target_duration_ == target_duration)
+    return;
+  target_duration_ = target_duration;
+  AdpfMethods::Get().APerformanceHint_updateTargetWorkDurationFn(
+      hint_session_, target_duration.InNanoseconds());
 }
 
 void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration) {

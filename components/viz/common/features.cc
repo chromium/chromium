@@ -37,8 +37,9 @@ namespace features {
 const base::Feature kAdpf{"Adpf", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Target duration used for power hint on Android.
+// `0` indicates use hard coded default.
 const base::FeatureParam<int> kAdpfTargetDurationMs{&kAdpf,
-                                                    "AdpfTargetDurationMs", 12};
+                                                    "AdpfTargetDurationMs", 0};
 
 const base::Feature kEnableOverlayPrioritization {
   "EnableOverlayPrioritization",

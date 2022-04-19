@@ -17,6 +17,23 @@
 
 namespace viz {
 
+namespace {
+
+base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
+  int target_ms = features::kAdpfTargetDurationMs.Get();
+  if (target_ms > 0 && target_ms <= 1000) {
+    return base::Milliseconds(target_ms);
+  }
+  if (args.possible_deadlines) {
+    const auto& deadline = args.possible_deadlines->GetPreferredDeadline();
+    // Arbitrarily use 75% of the deadline for CPU work.
+    return deadline.latch_delta * 3 / 4;
+  }
+  return base::Milliseconds(12);
+}
+
+}  // namespace
+
 class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
  public:
   explicit BeginFrameObserver(DisplayScheduler* scheduler)
@@ -160,12 +177,9 @@ void DisplayScheduler::MaybeCreateHintSession(
   if ((!create_session_for_current_thread_ids_failed_ && !hint_session_) ||
       current_thread_ids_ != thread_ids) {
     hint_session_.reset();
-    int target_ms = features::kAdpfTargetDurationMs.Get();
-    if (target_ms <= 0 || target_ms > 1000)
-      target_ms = 12;
     current_thread_ids_ = std::move(thread_ids);
     hint_session_ = hint_session_factory_->CreateSession(
-        current_thread_ids_, base::Milliseconds(target_ms));
+        current_thread_ids_, ComputeAdpfTarget(current_begin_frame_args_));
     create_session_for_current_thread_ids_failed_ = !hint_session_;
   }
 }
@@ -241,6 +255,9 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
 
   // Schedule the deadline.
   current_begin_frame_args_ = save_args;
+  if (hint_session_) {
+    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(save_args));
+  }
 
   base::TimeDelta delta;
   if (client_ && dynamic_scheduler_deadlines_percentile_.has_value() &&

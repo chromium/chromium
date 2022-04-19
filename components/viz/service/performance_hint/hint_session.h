@@ -22,6 +22,8 @@ class VIZ_SERVICE_EXPORT HintSession {
  public:
   virtual ~HintSession() = default;
 
+  virtual void UpdateTargetDuration(base::TimeDelta target_duration) = 0;
+
   // `actual_duration` is compared to `target_duration` in `CreateSession` to
   // determine the performance of a frame.
   virtual void ReportCpuCompletionTime(base::TimeDelta actual_duration) = 0;
