@@ -1137,6 +1137,8 @@ void ArcAppListPrefs::RecordAppIdsUma() {
   const std::vector<std::string> app_ids = GetAppIds();
   for (const auto& app_id : app_ids) {
     std::unique_ptr<AppInfo> app_info = GetApp(app_id);
+    DCHECK(app_info) << app_id;
+    // TODO(yusukes): Remove the path for handling null |app_info| in M104+.
     if (!app_info) {
       LOG(WARNING) << "App ID " << app_id << " is not associated with AppInfo";
       ++num_unknown_apps;
