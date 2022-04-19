@@ -2218,7 +2218,7 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
          MediaStreamDevice device, bool pan_tilt_zoom_allowed) {
         std::move(callback).Run(
             MediaStreamRequestResult::OK,
-            GetOpenDeviceResponse(label, device, pan_tilt_zoom_allowed));
+            GetOpenDeviceResponse::New(label, device, pan_tilt_zoom_allowed));
       },
       label, std::move(request->get_open_device_cb), request->devices[0]);
 
@@ -2310,7 +2310,7 @@ void MediaStreamManager::FinalizeRequestFailed(
     }
     case blink::MEDIA_GET_OPEN_DEVICE: {
       DCHECK(request->get_open_device_cb);
-      std::move(request->get_open_device_cb).Run(result, absl::nullopt);
+      std::move(request->get_open_device_cb).Run(result, nullptr);
       break;
     }
     case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY: {

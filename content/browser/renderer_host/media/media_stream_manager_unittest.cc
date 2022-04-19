@@ -366,9 +366,9 @@ class MediaStreamManagerTest : public ::testing::Test {
       blink::MediaStreamDevice* transferred_device,
       blink::mojom::MediaStreamRequestResult* result_out,
       blink::mojom::MediaStreamRequestResult result,
-      absl::optional<blink::mojom::GetOpenDeviceResponse> response) {
+      blink::mojom::GetOpenDeviceResponsePtr response) {
     *result_out = result;
-    if (response.has_value()) {
+    if (response) {
       *transferred_device = response->device;
     }
   }
@@ -911,7 +911,7 @@ TEST_F(MediaStreamManagerTest, GetOpenDeviceForExistingDeviceReturnsDevice) {
       blink::mojom::StreamSelectionStrategy::FORCE_NEW_STREAM, absl::nullopt);
 
   blink::MediaStreamDevice transferred_device;
-  auto result =
+  blink::mojom::MediaStreamRequestResult result =
       blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
   EXPECT_EQ(original_device.id, "default");
   EXPECT_NE(transferred_device.id, original_device.id);

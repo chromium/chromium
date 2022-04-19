@@ -107,9 +107,13 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                                 CropCallback callback,
                                 bool crop_id_passed_validation);
 #endif
-  void GetOpenDevice(const base::UnguessableToken& session_id,
+  void GetOpenDevice(int32_t page_request_id,
+                     const base::UnguessableToken& session_id,
                      GetOpenDeviceCallback callback) override;
-
+  void DoGetOpenDevice(int32_t page_request_id,
+                       const base::UnguessableToken& session_id,
+                       GetOpenDeviceCallback callback,
+                       MediaDeviceSaltAndOrigin salt_and_origin);
   void DoGenerateStream(
       int32_t request_id,
       const blink::StreamControls& controls,

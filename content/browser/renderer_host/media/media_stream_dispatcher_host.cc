@@ -565,6 +565,7 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
 #endif
 
 void MediaStreamDispatcherHost::GetOpenDevice(
+    int32_t page_request_id,
     const base::UnguessableToken& session_id,
     GetOpenDeviceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -577,17 +578,48 @@ void MediaStreamDispatcherHost::GetOpenDevice(
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
-  // TODO(https://crbug.com/1288839): Implement GetOpenDevice in
-  // MediaStreamManager and call that.
-
   // TODO(https://crbug.com/1288839): Decide whether we need to have another
   // mojo method, called by the first renderer to say "I'm going to be
   // transferring this track, allow the receiving renderer to call GetOpenDevice
   // on it", and whether we can/need to specific the destination renderer/frame
   // in this case.
 
-  std::move(callback).Run(blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
-                          nullptr);
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(salt_and_origin_callback_, render_process_id_,
+                     render_frame_id_),
+      base::BindOnce(&MediaStreamDispatcherHost::DoGetOpenDevice,
+                     weak_factory_.GetWeakPtr(), page_request_id, session_id,
+                     std::move(callback)));
+}
+
+void MediaStreamDispatcherHost::DoGetOpenDevice(
+    int32_t page_request_id,
+    const base::UnguessableToken& session_id,
+    GetOpenDeviceCallback callback,
+    MediaDeviceSaltAndOrigin salt_and_origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
+                                           salt_and_origin.origin)) {
+    std::move(callback).Run(
+        blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
+        nullptr);
+    return;
+  }
+
+  media_stream_manager_->GetOpenDevice(
+      session_id, render_process_id_, render_frame_id_, requester_id_,
+      page_request_id, std::move(salt_and_origin), std::move(callback),
+      base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceStopped,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceChanged,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &MediaStreamDispatcherHost::OnDeviceRequestStateChange,
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
+          weak_factory_.GetWeakPtr()));
 }
 
 void MediaStreamDispatcherHost::ReceivedBadMessage(

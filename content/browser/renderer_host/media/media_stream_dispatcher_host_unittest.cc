@@ -470,9 +470,10 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   }
 
   void GetOpenDevice(
+      int32_t request_id,
       const base::UnguessableToken& session_id,
       MediaStreamDispatcherHost::GetOpenDeviceCallback callback) {
-    host_->GetOpenDevice(session_id, std::move(callback));
+    host_->GetOpenDevice(request_id, session_id, std::move(callback));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1083,7 +1084,8 @@ TEST_F(MediaStreamDispatcherHostTest, GetOpenDeviceWithoutFeatureFails) {
                        bad_message::MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE));
 
   base::RunLoop loop;
-  GetOpenDevice(base::UnguessableToken(),
+  GetOpenDevice(/*request_id=*/0,
+                /*session_id=*/base::UnguessableToken(),
                 base::BindOnce([](blink::mojom::MediaStreamRequestResult result,
                                   blink::mojom::GetOpenDeviceResponsePtr ptr) {
                   EXPECT_EQ(
