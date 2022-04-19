@@ -3431,8 +3431,8 @@
   },
   {
     "name": "google-mobile-services-passwords",
-    "owners": [ "fhorschig", "vasilii" ],
-    "expiry_milestone": 102
+    "owners": [ "fhorschig@chromium.org", "vasilii" ],
+    "expiry_milestone": 105
   },
   {
     "name": "grid-tab-switcher-for-tablets",
