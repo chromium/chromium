@@ -3536,17 +3536,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"dark-light-mode", flag_descriptions::kDarkLightTestName,
      flag_descriptions::kDarkLightTestDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDarkLightMode)},
-    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
-    // kOsCrOS.
     {"deprecate-low-usage-codecs",
      flag_descriptions::kDeprecateLowUsageCodecsName,
      flag_descriptions::kDeprecateLowUsageCodecsDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
-     FEATURE_VALUE_TYPE(media::kDeprecateLowUsageCodecs)},
+     kOsCrOS | kOsLacros, FEATURE_VALUE_TYPE(media::kDeprecateLowUsageCodecs)},
     {"enable-tts-lacros-support",
      flag_descriptions::kEnableTtsLacrosSupportName,
-     flag_descriptions::kEnableTtsLacrosSupportDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kEnableTtsLacrosSupportDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::kLacrosTtsSupport)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -3555,18 +3551,15 @@ const FeatureEntry kFeatureEntries[] = {
         "enable-accelerated-video-decode",
         flag_descriptions::kAcceleratedVideoDecodeName,
         flag_descriptions::kAcceleratedVideoDecodeDescription,
-        kOsLinux | kOsLacros,
+        kOsLinux,
         FEATURE_VALUE_TYPE(media::kVaapiVideoDecodeLinux),
     },
 #else
-    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
-    // kOsCrOS.
     {
         "disable-accelerated-video-decode",
         flag_descriptions::kAcceleratedVideoDecodeName,
         flag_descriptions::kAcceleratedVideoDecodeDescription,
-        kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux | kOsLacros |
-            kOsFuchsia,
+        kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLacros | kOsFuchsia,
         SINGLE_DISABLE_VALUE_TYPE(switches::kDisableAcceleratedVideoDecode),
     },
 #endif  // BUILDFLAG(IS_LINUX)
@@ -4150,20 +4143,19 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX)
     {"ozone-platform-hint", flag_descriptions::kOzonePlatformHintName,
-     flag_descriptions::kOzonePlatformHintDescription, kOsLinux | kOsLacros,
+     flag_descriptions::kOzonePlatformHintDescription, kOsLinux,
      MULTI_VALUE_TYPE(kOzonePlatformHintRuntimeChoices)},
 
     {"clean-undecryptable-passwords",
      flag_descriptions::kCleanUndecryptablePasswordsLinuxName,
-     flag_descriptions::kCleanUndecryptablePasswordsLinuxDescription,
-     kOsLinux | kOsLacros,
+     flag_descriptions::kCleanUndecryptablePasswordsLinuxDescription, kOsLinux,
      FEATURE_VALUE_TYPE(
          password_manager::features::kSyncUndecryptablePasswordsLinux)},
 
     {"force-password-initial-sync-when-decryption-fails",
      flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsName,
      flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsDescription,
-     kOsLinux | kOsLacros,
+     kOsLinux,
      FEATURE_VALUE_TYPE(
          password_manager::features::kForceInitialSyncWhenDecryptionFails)},
 #endif  // BUILDFLAG(IS_LINUX)
@@ -4172,7 +4164,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"skip-undecryptable-passwords",
      flag_descriptions::kSkipUndecryptablePasswordsName,
      flag_descriptions::kSkipUndecryptablePasswordsDescription,
-     kOsLinux | kOsLacros | kOsMac,
+     kOsLinux | kOsMac,
      FEATURE_VALUE_TYPE(
          password_manager::features::kSkipUndecryptablePasswords)},
 
@@ -5722,33 +5714,28 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     {"allow-dsp-based-aec", flag_descriptions::kCrOSDspBasedAecAllowedName,
-     flag_descriptions::kCrOSDspBasedAecAllowedDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kCrOSDspBasedAecAllowedDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedAecAllowed)},
     {"allow-dsp-based-ns", flag_descriptions::kCrOSDspBasedNsAllowedName,
-     flag_descriptions::kCrOSDspBasedNsAllowedDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kCrOSDspBasedNsAllowedDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedNsAllowed)},
     {"allow-dsp-based-agc", flag_descriptions::kCrOSDspBasedAgcAllowedName,
-     flag_descriptions::kCrOSDspBasedAgcAllowedDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kCrOSDspBasedAgcAllowedDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSDspBasedAgcAllowed)},
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
-     flag_descriptions::kCrOSEnforceSystemAecDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAec)},
     {"enforce-system-aec-agc", flag_descriptions::kCrOSEnforceSystemAecAgcName,
      flag_descriptions::kCrOSEnforceSystemAecAgcDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecAgc)},
     {"enforce-system-aec-ns-agc",
      flag_descriptions::kCrOSEnforceSystemAecNsAgcName,
      flag_descriptions::kCrOSEnforceSystemAecNsAgcDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecNsAgc)},
     {"enforce-system-aec-ns", flag_descriptions::kCrOSEnforceSystemAecNsName,
-     flag_descriptions::kCrOSEnforceSystemAecNsDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kCrOSEnforceSystemAecNsDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecNs)},
 #endif
 
@@ -5986,18 +5973,16 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches
-    // to kOsCrOS.
     {"chromeos-direct-video-decoder",
      flag_descriptions::kChromeOSDirectVideoDecoderName,
      flag_descriptions::kChromeOSDirectVideoDecoderDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kUseChromeOSDirectVideoDecoder)},
 #if defined(ARCH_CPU_ARM_FAMILY)
     {"prefer-libyuv-image-processor",
      flag_descriptions::kPreferLibYuvImageProcessorName,
      flag_descriptions::kPreferLibYuvImageProcessorDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kPreferLibYuvImageProcessor)},
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -7385,12 +7370,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
-    // kOsCrOS.
     {"enable-vaapi-av1-decode-acceleration",
      flag_descriptions::kVaapiAV1DecoderName,
-     flag_descriptions::kVaapiAV1DecoderDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kVaapiAV1DecoderDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kVaapiAV1Decoder)},
 
     {"default-chrome-apps-migration",
@@ -7406,12 +7388,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
     // TODO(b/214589754): revisit the need for this flag when the final design
     // for HW encoding is implemented for lacros-chrome.
-    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
-    // kOsCrOS.
     {"enable-vaapi-vp9-kSVC-encode-acceleration",
      flag_descriptions::kVaapiVP9kSVCEncoderName,
-     flag_descriptions::kVaapiVP9kSVCEncoderDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
@@ -8110,11 +8089,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1308294): Replace kOsLinux with Lacros in Link
-    // Capturing/Intent Chip flags.
     {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
-     flag_descriptions::kLinkCapturingUiUpdateDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingUiUpdate)},
 #endif
 
@@ -8133,20 +8109,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(b/180051795): Remove kOsLinux when lacros-chrome switches to
-    // kOsCrOS.
     {"enable-desktop-capture-lacros-v2",
      flag_descriptions::kDesktopCaptureLacrosV2Name,
-     flag_descriptions::kDesktopCaptureLacrosV2Description,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kDesktopCaptureLacrosV2Description, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kDesktopCaptureLacrosV2)},
 
-    // TODO(b/180051795): Remove kOsLinux when lacros-chrome switches to
-    // kOsCrOS.
     {"lacros-merge-icu-data-file",
      flag_descriptions::kLacrosMergeIcuDataFileName,
-     flag_descriptions::kLacrosMergeIcuDataFileDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(base::i18n::kLacrosMergeIcuDataFile)},
 
     {"lacros-non-syncing-profiles",
@@ -8162,7 +8132,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"lacros-screen-coordinates-enabled",
      flag_descriptions::kLacrosScreenCoordinatesEnabledName,
      flag_descriptions::kLacrosScreenCoordinatesEnabledDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kWaylandScreenCoordinatesEnabled)},
 #endif
 
@@ -8314,30 +8284,23 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1308294): Replace kOsLinux with Lacros in Link
-    // Capturing/Intent Chip flags.
     {"link-capturing-infobar", flag_descriptions::kLinkCapturingInfoBarName,
-     flag_descriptions::kLinkCapturingInfoBarDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kLinkCapturingInfoBarDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingInfoBar)},
 
     {"intent-chip-skips-intent-picker",
      flag_descriptions::kIntentChipSkipsPickerName,
-     flag_descriptions::kIntentChipSkipsPickerDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kIntentChipSkipsPickerDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kIntentChipSkipsPicker)},
 
     {"intent-chip-app-icon", flag_descriptions::kIntentChipAppIconName,
-     flag_descriptions::kIntentChipAppIconDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     flag_descriptions::kIntentChipAppIconDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kIntentChipAppIcon)},
 
-    // TODO(crbug.com/1313512): Replace kOsLinux with Lacros for sync custom
-    // passphrase flag.
     {"sync-chromeos-explicit-passphrase-sharing",
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingName,
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingDescription,
-     kOsCrOS | kOsLinux | kOsLacros,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(syncer::kSyncChromeOSExplicitPassphraseSharing)},
 #endif
 
