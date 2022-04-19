@@ -4,6 +4,9 @@
 
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
+#include <vector>
+
+#include "chrome/browser/dips/cookie_access_filter.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -17,10 +20,7 @@ namespace {
 // with respect to WCO::DidRedirectNavigation).
 class BounceDetectionState : public base::SupportsUserData::Data {
  public:
-  // We use a vector rather than a set of URLs because order can matter. If the
-  // same URL appears twice in a redirect chain, we might be able to distinguish
-  // between them.
-  std::vector<GURL> cookie_accessors;
+  CookieAccessFilter filter;
 };
 
 const char kBounceDetectionStateKey[] = "BounceDetectionState";
@@ -49,12 +49,12 @@ void DIPSBounceDetector::OnCookiesAccessed(
   auto* existing_state = static_cast<BounceDetectionState*>(
       navigation_handle->GetUserData(kBounceDetectionStateKey));
   if (existing_state) {
-    existing_state->cookie_accessors.push_back(details.url);
+    existing_state->filter.AddAccess(details.url, details.type);
     return;
   }
 
   auto new_state = std::make_unique<BounceDetectionState>();
-  new_state->cookie_accessors.push_back(details.url);
+  new_state->filter.AddAccess(details.url, details.type);
   navigation_handle->SetUserData(kBounceDetectionStateKey,
                                  std::move(new_state));
 }
@@ -66,20 +66,20 @@ void DIPSBounceDetector::DidFinishNavigation(
   auto* state = static_cast<BounceDetectionState*>(
       navigation_handle->GetUserData(kBounceDetectionStateKey));
   if (state) {
-    // Compare GetRedirectChain() to cookie_accessors to determine which
-    // redirects accessed cookies.
-    //
-    // (Note that GetRedirectChain() is guaranteed not to be empty, and the last
-    // entry is the final URL, not actually a redirect.)
-    for (size_t accessor_idx = 0, redirect_idx = 0;
-         accessor_idx < state->cookie_accessors.size() &&
-         redirect_idx < navigation_handle->GetRedirectChain().size() - 1;
-         redirect_idx++) {
-      const auto& url = navigation_handle->GetRedirectChain()[redirect_idx];
-      if (url == state->cookie_accessors[accessor_idx]) {
-        stateful_redirect_handler_.Run(navigation_handle, redirect_idx);
-        ++accessor_idx;
+    std::vector<size_t> accessor_idxs;
+    if (!state->filter.Filter(navigation_handle->GetRedirectChain(),
+                              &accessor_idxs)) {
+      // We failed to map all the OnCookiesAccessed calls to the redirect chain.
+      // TODO(rtarpine): report metrics to see if this happens in practice
+      return;
+    }
+    for (size_t accessor_idx : accessor_idxs) {
+      if (accessor_idx == navigation_handle->GetRedirectChain().size() - 1) {
+        // the last entry in GetRedirectChain() is the final URL, not actually a
+        // redirect.
+        continue;
       }
+      stateful_redirect_handler_.Run(navigation_handle, accessor_idx);
     }
   }
 }

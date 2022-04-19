@@ -63,8 +63,11 @@ void WCOCallbackLogger::DidStartNavigation(
 void WCOCallbackLogger::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
-  log_.push_back(base::StringPrintf("OnCookiesAccessed(%s)",
-                                    FormatURL(details.url).c_str()));
+  log_.push_back(base::StringPrintf(
+      "OnCookiesAccessed(%s: %s)",
+      details.type == content::CookieAccessDetails::Type::kChange ? "Change"
+                                                                  : "Read",
+      FormatURL(details.url).c_str()));
 }
 
 void WCOCallbackLogger::DidFinishNavigation(
@@ -104,14 +107,20 @@ class DIPSBounceDetectorBrowserTest : public InProcessBrowserTest {
 // judge an HTTP redirect as stateful (accessing cookies) or not. This test
 // tries to verify that OnCookiesAccessed() is always called before
 // DidFinishNavigation(), so that DIPSBounceDetector can safely perform that
-// judgement in DidFinishNavigation(). If the assumption is incorrect, this test
-// will be flaky. On 2022-04-13 I (rtarpine) ran this test 1000 times in 40
-// parallel jobs with no failures, so it seems robust.
+// judgement in DidFinishNavigation().
+//
+// This test also verifies that for redirects that both read and write cookies,
+// OnCookiesAccessed() is called with kRead before it's called with kChange.
+//
+// If either assumption is incorrect, this test will be flaky. On 2022-04-13 I
+// (rtarpine) ran this test 1000 times in 40 parallel jobs with no failures, so
+// it seems robust.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        AllCookieCallbacksBeforeNavigationFinished) {
   GURL redirect_url = embedded_test_server()->GetURL(
       "a.test",
-      "/cross-site/b.test/cross-site/c.test/cross-site/d.test/title1.html");
+      "/cross-site/b.test/cross-site-with-cookie/c.test/cross-site/d.test/"
+      "title1.html");
   GURL final_url = embedded_test_server()->GetURL("d.test", "/title1.html");
   content::WebContents* web_contents = GetActiveWebContents();
 
@@ -138,17 +147,23 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Verify that the 4 OnCookiesAccessed() executions are called in order,
   // and all between DidStartNavigation() and DidFinishNavigation().
-  EXPECT_THAT(logger->log(),
-              testing::ElementsAre(
-                  "DidStartNavigation(a.test/cross-site/b.test/cross-site/"
-                  "c.test/cross-site/d.test/title1.html)",
-                  "OnCookiesAccessed(a.test/cross-site/b.test/cross-site/"
-                  "c.test/cross-site/d.test/title1.html)",
-                  "OnCookiesAccessed(b.test/cross-site/c.test/cross-site/"
-                  "d.test/title1.html)",
-                  "OnCookiesAccessed(c.test/cross-site/d.test/title1.html)",
-                  "OnCookiesAccessed(d.test/title1.html)",
-                  "DidFinishNavigation(d.test/title1.html)"));
+  EXPECT_THAT(
+      logger->log(),
+      testing::ElementsAre(
+          ("DidStartNavigation(a.test/cross-site/b.test/cross-site-with-cookie/"
+           "c.test/cross-site/d.test/title1.html)"),
+          ("OnCookiesAccessed(Read: "
+           "a.test/cross-site/b.test/cross-site-with-cookie/c.test/cross-site/"
+           "d.test/title1.html)"),
+          ("OnCookiesAccessed(Read: "
+           "b.test/cross-site-with-cookie/c.test/cross-site/d.test/"
+           "title1.html)"),
+          ("OnCookiesAccessed(Change: "
+           "b.test/cross-site-with-cookie/c.test/cross-site/d.test/"
+           "title1.html)"),
+          "OnCookiesAccessed(Read: c.test/cross-site/d.test/title1.html)",
+          "OnCookiesAccessed(Read: d.test/title1.html)",
+          "DidFinishNavigation(d.test/title1.html)"));
 }
 
 void AppendRedirectURL(std::vector<std::string>* urls,
@@ -160,7 +175,8 @@ void AppendRedirectURL(std::vector<std::string>* urls,
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest, DetectStatefulBounces) {
   GURL redirect_url = embedded_test_server()->GetURL(
       "a.test",
-      "/cross-site/b.test/cross-site/c.test/cross-site/d.test/title1.html");
+      "/cross-site-with-cookie/b.test/cross-site/c.test/cross-site/d.test/"
+      "title1.html");
   GURL final_url = embedded_test_server()->GetURL("d.test", "/title1.html");
   content::WebContents* web_contents = GetActiveWebContents();
 
@@ -186,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest, DetectStatefulBounces) {
   // was not a redirect.
   EXPECT_THAT(stateful_redirects,
               testing::ElementsAre(
-                  "a.test/cross-site/b.test/cross-site/c.test/cross-site/"
-                  "d.test/title1.html",
+                  ("a.test/cross-site-with-cookie/b.test/cross-site/c.test/"
+                   "cross-site/d.test/title1.html"),
                   "b.test/cross-site/c.test/cross-site/d.test/title1.html"));
 }

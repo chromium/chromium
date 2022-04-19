@@ -4,7 +4,10 @@
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "dips_storage_unittest.cc" ]
+  sources = [
+    "cookie_access_filter_unittest.cc",
+    "dips_storage_unittest.cc",
+  ]
 
   deps = [
     "//base",

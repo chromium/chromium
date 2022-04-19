@@ -384,6 +384,8 @@ static_library("browser") {
     "defaults.cc",
     "defaults.h",
     "device_reauth/chrome_biometric_authenticator_factory.h",
+    "dips/cookie_access_filter.cc",
+    "dips/cookie_access_filter.h",
     "dips/dips_bounce_detector.cc",
     "dips/dips_bounce_detector.h",
     "dips/dips_helper.cc",
