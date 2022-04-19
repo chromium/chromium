@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -48,6 +49,7 @@ class GameProvider : public SearchProvider {
  private:
   void UpdateIndex();
   void OnIndexUpdated(const GameIndex& index, apps::DiscoveryError error);
+  void OnIndexUpdatedBySubscription(const GameIndex& index);
   void OnSearchComplete(
       std::u16string query,
       std::vector<std::pair<const apps::Result*, double>> matches);
@@ -57,6 +59,7 @@ class GameProvider : public SearchProvider {
   apps::AppDiscoveryService* const app_discovery_service_;
 
   GameIndex game_index_;
+  base::CallbackListSubscription subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<GameProvider> weak_factory_{this};

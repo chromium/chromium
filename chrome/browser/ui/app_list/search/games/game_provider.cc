@@ -80,9 +80,15 @@ GameProvider::GameProvider(Profile* profile,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This call will fail if the app discovery service has not finished
-  // initializing. In that case, we will update when notified via the observer.
-  // TODO(crbug.com/1305880): Add observer once implemented.
+  // initializing. In that case, we will update when notified via the
+  // subscription.
   UpdateIndex();
+
+  DCHECK(app_discovery_service_);
+  subscription_ = app_discovery_service_->RegisterForAppUpdates(
+      apps::ResultType::kGameSearchCatalog,
+      base::BindRepeating(&GameProvider::OnIndexUpdatedBySubscription,
+                          weak_factory_.GetWeakPtr()));
 }
 
 GameProvider::~GameProvider() = default;
@@ -92,7 +98,6 @@ ash::AppListSearchResultType GameProvider::ResultType() const {
 }
 
 void GameProvider::UpdateIndex() {
-  // TODO(crbug.com/1305880): Replace with kGames once added.
   app_discovery_service_->GetApps(apps::ResultType::kGameSearchCatalog,
                                   base::BindOnce(&GameProvider::OnIndexUpdated,
                                                  weak_factory_.GetWeakPtr()));
@@ -101,6 +106,11 @@ void GameProvider::UpdateIndex() {
 void GameProvider::OnIndexUpdated(const GameIndex& index,
                                   apps::DiscoveryError error) {
   // TODO(crbug.com/1305880): Report the error to UMA.
+  if (!index.empty())
+    game_index_ = index;
+}
+
+void GameProvider::OnIndexUpdatedBySubscription(const GameIndex& index) {
   if (!index.empty())
     game_index_ = index;
 }
