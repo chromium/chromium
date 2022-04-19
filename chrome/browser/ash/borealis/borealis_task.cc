@@ -26,11 +26,13 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chrome/browser/ash/borealis/borealis_wayland_interface.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/dbus/vm_launch/launch.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace borealis {
@@ -165,22 +167,22 @@ RequestWaylandServer::RequestWaylandServer()
 RequestWaylandServer::~RequestWaylandServer() = default;
 
 void RequestWaylandServer::RunInternal(BorealisContext* context) {
-  borealis::BorealisService::GetForProfile(context->profile())
-      ->WaylandInterface()
-      .GetWaylandServer(base::BindOnce(&RequestWaylandServer::OnServerRequested,
-                                       weak_factory_.GetWeakPtr(), context));
+  guest_os::GuestOsService::GetForProfile(context->profile())
+      ->WaylandServer()
+      ->Get(vm_tools::launch::BOREALIS,
+            base::BindOnce(&RequestWaylandServer::OnServerRequested,
+                           weak_factory_.GetWeakPtr(), context));
 }
 
 void RequestWaylandServer::OnServerRequested(
     BorealisContext* context,
-    BorealisCapabilities* capabilities,
-    const base::FilePath& server_path) {
-  if (!capabilities) {
+    guest_os::GuestOsWaylandServer::Result result) {
+  if (!result) {
     Complete(BorealisStartupResult::kRequestWaylandFailed,
              "Failed to create a wayland server");
     return;
   }
-  context->set_wayland_path(server_path);
+  context->set_wayland_path(result.Value()->server_path());
   Complete(BorealisStartupResult::kSuccess, "");
 }
 

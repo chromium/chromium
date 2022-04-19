@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
-#include "chrome/browser/ash/borealis/borealis_wayland_interface.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 
 namespace borealis {
@@ -35,7 +34,6 @@ class BorealisServiceImpl : public BorealisService {
   BorealisInstaller& Installer() override;
   BorealisLaunchOptions& LaunchOptions() override;
   BorealisShutdownMonitor& ShutdownMonitor() override;
-  BorealisWaylandInterface& WaylandInterface() override;
   BorealisWindowManager& WindowManager() override;
 
   Profile* const profile_;
@@ -48,7 +46,6 @@ class BorealisServiceImpl : public BorealisService {
   BorealisInstallerImpl installer_;
   BorealisLaunchOptions launch_options_;
   BorealisShutdownMonitor shutdown_monitor_;
-  BorealisWaylandInterface wayland_interface_;
   BorealisWindowManager window_manager_;
 };
 

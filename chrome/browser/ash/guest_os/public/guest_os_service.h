@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_SERVICE_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_SERVICE_H_
 
+#include <memory>
+
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 
 namespace guest_os {
+
+class GuestOsWaylandServer;
 
 // A service to hold the subservices that make up the Guest OS API surface.
 // NOTE: We don't start at browser startup, instead being created on-demand. At
@@ -20,7 +24,7 @@ namespace guest_os {
 // machinery.
 class GuestOsService : public KeyedService {
  public:
-  GuestOsService();
+  explicit GuestOsService(Profile* profile);
   ~GuestOsService() override;
 
   // Helper method to get the service instance for the given profile.
@@ -28,8 +32,11 @@ class GuestOsService : public KeyedService {
 
   GuestOsMountProviderRegistry* MountProviderRegistry();
 
+  GuestOsWaylandServer* WaylandServer();
+
  private:
   GuestOsMountProviderRegistry mount_provider_registry_;
+  std::unique_ptr<GuestOsWaylandServer> wayland_server_;
 };
 
 }  // namespace guest_os

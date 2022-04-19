@@ -38,7 +38,10 @@ GuestOsServiceFactory::~GuestOsServiceFactory() = default;
 
 KeyedService* GuestOsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new GuestOsService();
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile)
+    return nullptr;
+  return new GuestOsService(profile);
 }
 
 }  // namespace guest_os

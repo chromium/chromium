@@ -13,12 +13,12 @@
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
 namespace borealis {
 
-class BorealisCapabilities;
 class BorealisContext;
 
 // BorealisTasks are collections of operations that are run by the
@@ -114,8 +114,7 @@ class RequestWaylandServer : public BorealisTask {
 
  private:
   void OnServerRequested(BorealisContext* context,
-                         BorealisCapabilities* capabilities,
-                         const base::FilePath& server_path);
+                         guest_os::GuestOsWaylandServer::Result result);
   base::WeakPtrFactory<RequestWaylandServer> weak_factory_{this};
 };
 
