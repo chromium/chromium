@@ -11159,11 +11159,14 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
     ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
 
-    // Associate the blink::Document source id to the URL. Only URLs on main
-    // frames can be recorded.
-    if (is_main_frame() && document_ukm_source_id != ukm::kInvalidSourceId)
+    // Associate the blink::Document source id to the URL. Only URLs on primary
+    // main frames can be recorded.
+    // TODO(crbug.com/1245014): For prerendering pages, record the source url
+    // after activation.
+    if (frame_tree_node()->GetFrameType() == FrameType::kPrimaryMainFrame &&
+        document_ukm_source_id != ukm::kInvalidSourceId) {
       ukm_recorder->UpdateSourceURL(document_ukm_source_id, params->url);
-
+    }
     RecordDocumentCreatedUkmEvent(params->origin, document_ukm_source_id,
                                   ukm_recorder);
   }
