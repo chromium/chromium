@@ -253,6 +253,11 @@
           }
         ],
       },
+      # This cache dir doesn't actually contain anything. Rather, its presence
+      # merely signals to the fleet that the a CrOS VM test recently ran on the
+      # bot and that its large VM image is likely still present in the bot's
+      # isolated cache. So by optionally targeting bots with that magic dir,
+      # CrOS VM tests can naturally have higher cache hit rates.
       'named_caches': [
         {
           'name': 'cros_vm',
@@ -279,6 +284,8 @@
           }
         ],
       },
+      # See the 'chromeos-amd64-generic' mixin above for the purpose of this
+      # cache.
       'named_caches': [
         {
           'name': 'cros_vm',
@@ -310,6 +317,34 @@
         'os': 'ChromeOS',
         'device_type': 'octopus',
       },
+    },
+  },
+  'chromeos-reven': {
+    'swarming': {
+      'dimension_sets': [
+        {
+          'cpu': 'x86',
+          'kvm': '1',
+          'gce': '1',
+          'os': 'Ubuntu-18.04',
+          'pool': 'chrome.tests',
+        }
+      ],
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'cros_reven_vm',
+          }
+        ],
+      },
+      # See the 'chromeos-amd64-generic' mixin above for the purpose of this
+      # cache.
+      'named_caches': [
+        {
+          'name': 'cros_reven_vm',
+          'path': 'magic_cros_reven_vm_cache',
+        },
+      ],
     },
   },
   'chromeos-zork': {

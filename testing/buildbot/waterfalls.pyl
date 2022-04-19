@@ -189,6 +189,18 @@
         },
         'os_type': 'chromeos'
       },
+      'chromeos-reven-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-reven',
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_browser_integration_tests',
+        },
+      },
       'lacros-amd64-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
