@@ -108,8 +108,14 @@ void NavigatorManagedData::OnServiceConnectionError() {
       !managed_configuration_service_.is_connected()) {
     managed_configuration_service_.reset();
   }
+
+  // Move the set to a local variable to prevent script execution in Reject()
+  // from invalidating the iterator used by the loop.
+  HeapHashSet<Member<ScriptPromiseResolver>> pending_promises;
+  pending_promises_.swap(pending_promises);
+
   // Resolve all pending promises with a failure.
-  for (ScriptPromiseResolver* resolver : pending_promises_) {
+  for (ScriptPromiseResolver* resolver : pending_promises) {
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
                                            kNotHighTrustedAppExceptionMessage));
