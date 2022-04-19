@@ -1636,7 +1636,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           if bot_name in builders_that_dont_exist:
             continue  # pragma: no cover
           if bot_name not in bot_names:
-            if waterfall['name'] in ['client.v8.chromium', 'client.v8.fyi']:
+            if waterfall['name'] in [
+                'client.v8.chromium', 'client.v8.fyi', 'tryserver.v8'
+            ]:
               # TODO(thakis): Remove this once these bots move to luci.
               continue  # pragma: no cover
             if waterfall['name'] in ['tryserver.webrtc',
