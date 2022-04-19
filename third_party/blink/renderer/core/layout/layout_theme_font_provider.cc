@@ -45,7 +45,7 @@ constexpr float kDefaultFontSizeFallback = 16.0;
 // IE uses MS Shell Dlg there, which we render incorrectly at certain pixel
 // sizes (e.g. 15px). So, for now we just use Arial.
 const AtomicString& LayoutThemeFontProvider::DefaultGUIFont() {
-  DEFINE_STATIC_LOCAL(const AtomicString, font_face, ("Arial"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, font_face, ("Arial"));
   return font_face;
 }
 
