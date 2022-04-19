@@ -70,6 +70,15 @@ class ArcAppShortcutsSearchProviderTest
   std::string AddArcAppAndShortcut(const arc::mojom::AppInfo& app_info,
                                    bool launchable) {
     ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
+
+    absl::optional<uint64_t> app_size_in_bytes;
+    absl::optional<uint64_t> data_size_in_bytes;
+
+    if (!app_info.app_storage.is_null()) {
+      app_size_in_bytes = app_info.app_storage->app_size_in_bytes;
+      data_size_in_bytes = app_info.app_storage->data_size_in_bytes;
+    }
+
     // Adding app to the prefs, and check that the app is accessible by id.
     prefs->AddAppAndShortcut(
         app_info.name, app_info.package_name, app_info.activity,
@@ -77,7 +86,7 @@ class ArcAppShortcutsSearchProviderTest
         app_info.version_name, false /* sticky */,
         true /* notifications_enabled */, true /* app_ready */,
         false /* suspended */, false /* shortcut */, launchable,
-        ArcAppListPrefs::WindowLayout());
+        ArcAppListPrefs::WindowLayout(), app_size_in_bytes, data_size_in_bytes);
     const std::string app_id =
         ArcAppListPrefs::GetAppId(app_info.package_name, app_info.activity);
     EXPECT_TRUE(prefs->GetApp(app_id));

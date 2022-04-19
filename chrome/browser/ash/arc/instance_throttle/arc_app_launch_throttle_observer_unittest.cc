@@ -28,7 +28,9 @@ ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
       arc::mojom::ArcResizeLockState::UNDEFINED,
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), true /* ready */, true /* suspended */,
-      true /* show_in_launcher */, true /* shortcut */, true /* launchable */);
+      true /* show_in_launcher */, true /* shortcut */, true /* launchable */,
+      absl::nullopt /* app_size_in_bytes */,
+      absl::nullopt /* data_size_in_bytes */);
 }
 
 class ArcAppLaunchThrottleObserverTest : public testing::Test {

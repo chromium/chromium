@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 52
+// Next MinVersion: 53
 
 module arc.mojom;
 
@@ -16,6 +16,12 @@ import "ui/accessibility/mojom/ax_assistant_structure.mojom";
 struct InstallationResult {
   string package_name;
   bool success;  // true if app was installed successfully.
+};
+
+// Describes application storage.
+struct AppStorage {
+  uint64 app_size_in_bytes;
+  uint64 data_size_in_bytes;
 };
 
 // Describes ARC app.
@@ -33,6 +39,9 @@ struct AppInfo {
   // however there is no guarantee and it could be any string value,
   // see https://developer.android.com/studio/publish/versioning.
   [MinVersion=51] string? version_name;
+
+  // Size of app and associated data in bytes.
+  [MinVersion=52] AppStorage? app_storage;
 };
 
 // Describes the data required to install a web app.

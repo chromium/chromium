@@ -105,7 +105,9 @@ class ArcAppListPrefs : public KeyedService,
             bool suspended,
             bool show_in_launcher,
             bool shortcut,
-            bool launchable);
+            bool launchable,
+            absl::optional<uint64_t> app_size_in_bytes,
+            absl::optional<uint64_t> data_size_in_bytes);
     AppInfo(const AppInfo& other);
     ~AppInfo();
 
@@ -140,6 +142,10 @@ class ArcAppListPrefs : public KeyedService,
     // Whether app can be launched. In some case we cannot launch an app because
     // it requires parameters we might not provide.
     bool launchable;
+
+    // Storage size of app and it's related data.
+    absl::optional<uint64_t> app_size_in_bytes;
+    absl::optional<uint64_t> data_size_in_bytes;
 
     static void SetIgnoreCompareInstallTimeForTesting(bool ignore);
 
@@ -526,7 +532,9 @@ class ArcAppListPrefs : public KeyedService,
                          const bool suspended,
                          const bool shortcut,
                          const bool launchable,
-                         const WindowLayout& initial_window_layout);
+                         const WindowLayout& initial_window_layout,
+                         const absl::optional<uint64_t> app_size_in_bytes,
+                         const absl::optional<uint64_t> data_size_in_bytes);
   // Adds or updates local pref for given package.
   void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package);
   // Removes given package from local pref.

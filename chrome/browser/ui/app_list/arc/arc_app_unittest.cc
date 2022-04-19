@@ -419,7 +419,8 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
       arc::mojom::ArcResizeLockState::UNDEFINED,
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), true /* ready */, false /* suspended */,
-      launchable /* show_in_launcher*/, false /* shortcut */, launchable);
+      launchable /* show_in_launcher*/, false /* shortcut */, launchable,
+      absl::nullopt /* app_size */, absl::nullopt /* data_size */);
 }
 
 MATCHER_P(ArcPackageInfoIs, package, "") {
