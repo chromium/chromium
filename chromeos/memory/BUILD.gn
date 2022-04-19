@@ -53,6 +53,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "memory_unittest.cc",
     "pagemap_unittest.cc",
     "pressure/system_memory_pressure_evaluator_unittest.cc",
   ]
