@@ -21,6 +21,11 @@ namespace {
 
 using QueueItem = std::vector<std::u16string>;
 
+// Maximum length of a hostname whose supplemental hostnames we'll calculate.
+// For hostnames longer than this length, the supplemental hostnames will be
+// empty.
+const size_t kMaxHostnameLengthToComputeSupplementalHostnames = 32;
+
 // Maximum number of supplemental hostname to generate for a given input.
 // If this number is too high, we may end up DOSing the browser process.
 // If it's too low, we may not be able to cover some lookalike URLs.
@@ -234,7 +239,9 @@ base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
     size_t max_alternatives,
     const SkeletonMap& mapping) {
   base::flat_set<std::u16string> output;
-  if (!input.size() || max_alternatives == 0) {
+  if (!input.size() ||
+      input.size() > kMaxHostnameLengthToComputeSupplementalHostnames ||
+      max_alternatives == 0) {
     return output;
   }
   icu::UnicodeString input_unicode =
