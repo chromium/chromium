@@ -102,8 +102,6 @@ class VRUiHostImpl : public content::VrUiHost,
   std::unique_ptr<VRBrowserRendererThreadWin> ui_rendering_thread_;
   device::mojom::VRDisplayInfoPtr info_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  raw_ptr<permissions::PermissionRequestManager> permission_request_manager_ =
-      nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   base::CancelableOnceClosure external_prompt_timeout_task_;
