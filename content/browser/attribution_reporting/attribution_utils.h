@@ -12,7 +12,7 @@
 
 namespace base {
 class Time;
-class Value;
+class ValueView;
 }  // namespace base
 
 namespace content {
@@ -31,7 +31,7 @@ int NumReportWindows(AttributionSourceType source_type);
 // Calculates the report time for a given source and window index.
 base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);
 
-std::string SerializeAttributionJson(const base::Value& body,
+std::string SerializeAttributionJson(base::ValueView body,
                                      bool pretty_print = false);
 
 // Checks whether filters keys within `source` and `trigger` match.

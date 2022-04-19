@@ -14,6 +14,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -22,10 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace content {
 
@@ -132,7 +129,7 @@ class CONTENT_EXPORT AttributionReport {
   // Returns the URL to which the report will be sent.
   GURL ReportURL(bool debug = false) const;
 
-  base::Value ReportBody() const;
+  base::Value::Dict ReportBody() const;
 
   absl::optional<Id> ReportId() const;
 

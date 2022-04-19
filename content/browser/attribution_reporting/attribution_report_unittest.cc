@@ -70,9 +70,7 @@ TEST(AttributionReportTest, AggregatableReportBody_SourceRegistrationTime) {
     aggregatable_data.assembled_report =
         AggregatableReport(std::move(payloads), shared_info.SerializeAsJson());
 
-    base::Value report_body = report.ReportBody();
-    ASSERT_TRUE(report_body.is_dict()) << test_case.description;
-    const base::Value::Dict& dict = report_body.GetDict();
+    base::Value::Dict dict = report.ReportBody();
     const std::string* source_registration_time =
         dict.FindString("source_registration_time");
     ASSERT_TRUE(source_registration_time) << test_case.description;

@@ -121,16 +121,16 @@ class SentReportAccumulator : public AttributionReportSender {
   void SendReport(AttributionReport report,
                   bool is_debug_report,
                   ReportSentCallback sent_callback) override {
-    base::Value report_body = report.ReportBody();
+    base::Value::Dict report_body = report.ReportBody();
     if (remove_report_ids_)
-      report_body.RemoveKey("report_id");
+      report_body.Remove("report_id");
 
     if (remove_assembled_report_ &&
         absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
             report.data())) {
-      report_body.RemoveKey("shared_info");
-      report_body.RemoveKey("aggregation_service_payloads");
-      report_body.RemoveKey("source_registration_time");
+      report_body.Remove("shared_info");
+      report_body.Remove("aggregation_service_payloads");
+      report_body.Remove("source_registration_time");
     }
 
     base::Value::Dict value;

@@ -146,11 +146,11 @@ GURL AttributionReport::ReportURL(bool debug) const {
       .ReplaceComponents(replacements);
 }
 
-base::Value AttributionReport::ReportBody() const {
+base::Value::Dict AttributionReport::ReportBody() const {
   struct Visitor {
     raw_ptr<const AttributionReport> report;
 
-    base::Value operator()(const EventLevelData& data) {
+    base::Value::Dict operator()(const EventLevelData& data) {
       base::Value::Dict dict;
 
       const CommonSourceInfo& common_source_info =
@@ -182,10 +182,10 @@ base::Value AttributionReport::ReportBody() const {
         dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
       }
 
-      return base::Value(std::move(dict));
+      return dict;
     }
 
-    base::Value operator()(const AggregatableAttributionData& data) {
+    base::Value::Dict operator()(const AggregatableAttributionData& data) {
       base::Value::Dict dict;
 
       if (data.assembled_report.has_value()) {
@@ -217,7 +217,7 @@ base::Value AttributionReport::ReportBody() const {
         dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
       }
 
-      return base::Value(std::move(dict));
+      return dict;
     }
   };
 
