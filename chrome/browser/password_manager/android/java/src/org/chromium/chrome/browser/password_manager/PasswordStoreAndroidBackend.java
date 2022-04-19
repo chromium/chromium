@@ -10,6 +10,8 @@ import com.google.common.base.Optional;
 
 import org.chromium.base.Callback;
 
+import java.util.Date;
+
 /**
  * Interface to send backend requests to a downstream implementation to fulfill password store
  * jobs. All methods are expected to respond asynchronously to callbacks.
@@ -56,6 +58,21 @@ public interface PasswordStoreAndroidBackend {
      */
     void getAllLogins(Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback);
+
+    /**
+     * Triggers an async list call to retrieve all logins withing given time frame.
+     *
+     * @param createdAfter Filters for passwords that were created after this date.
+     * @param createdBefore Filters for passwords that were created before this date.
+     * @param syncingAccount Account used to sync passwords. If the syncingAccount is empty local
+     *         account will be used.
+     * @param loginsReply Callback that is called on success with serialized {@link
+     *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     */
+    default void getAllLoginsBetween(Date createdAfter, Date createdBefore,
+            Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback){};
 
     /**
      * Triggers an async list call to retrieve autofillable logins.
