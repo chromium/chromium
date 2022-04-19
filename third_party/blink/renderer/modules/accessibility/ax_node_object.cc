@@ -3938,17 +3938,18 @@ void AXNodeObject::AddImageMapChildren() {
 }
 
 void AXNodeObject::AddPopupChildren() {
-  if (!AXObjectCache().UseAXMenuList()) {
-    auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
-    if (html_select_element && html_select_element->UsesMenuList())
+  auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
+  if (html_select_element) {
+    if (!AXObjectCache().UseAXMenuList() && html_select_element->UsesMenuList())
       AddChildAndCheckIncluded(html_select_element->PopupRootAXObject());
     return;
   }
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(GetNode());
-  if (!html_input_element)
+  if (html_input_element) {
+    AddChildAndCheckIncluded(html_input_element->PopupRootAXObject());
     return;
-  AddChildAndCheckIncluded(html_input_element->PopupRootAXObject());
+  }
 }
 
 bool AXNodeObject::CanAddLayoutChild(LayoutObject& child) {

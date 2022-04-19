@@ -37,6 +37,12 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
   AccessibilityActionBrowserTest() {}
   ~AccessibilityActionBrowserTest() override {}
 
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kDisableAXMenuList);
+    ContentBrowserTest::SetUp();
+  }
+
  protected:
   BrowserAccessibility* FindNode(ax::mojom::Role role,
                                  const std::string& name_or_value) {
@@ -152,7 +158,7 @@ class AccessibilityCanvasActionBrowserTest
  public:
   void SetUp() override {
     EnablePixelOutput();
-    ContentBrowserTest::SetUp();
+    AccessibilityActionBrowserTest::SetUp();
   }
 };
 
@@ -989,14 +995,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-// This test ony makes sense on platforms where the popup menu is implemented
+// These tests only makes sense on platforms where the popup menu is implemented
 // internally as an HTML page in a popup, not where it's a native popup.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(USE_ATK)
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        OpenSelectPopupWithNoAXMenuList) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kDisableAXMenuList);
-
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <head><title>No AXMenuList</title></head>
       <body>
@@ -1031,6 +1034,36 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_TRUE(listbox);
   EXPECT_EQ(3U, listbox->PlatformChildCount());
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
 
+// This test was added after a bug was causing popup's accessible nodes to not
+// be added to the tree when the AXMenuList feature was disabled to prevent a
+// similar regression to occur again.
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       OpenInputColorPopupWithNoAXMenuList) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <body>
+        <input type="color" aria-label="color picker">
+      </body>
+      )HTML");
+
+  BrowserAccessibility* target =
+      FindNode(ax::mojom::Role::kColorWell, "color picker");
+  ASSERT_NE(nullptr, target);
+
+  EXPECT_EQ(0U, target->PlatformChildCount());
+
+  // Call DoDefaultAction.
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  GetManager()->DoDefaultAction(*target);
+  waiter.WaitForNotification();
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Format toggler");
+
+  ASSERT_EQ(1U, target->PlatformChildCount());
+  BrowserAccessibility* popup_web_area = target->PlatformGetChild(0);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, popup_web_area->GetRole());
+}
+#endif  // BUILDFLAG(OS_WIN) || BUILDFLAG(OS_CHROMEOS) || BUILDFLAG(USE_ATK)
 }  // namespace content
