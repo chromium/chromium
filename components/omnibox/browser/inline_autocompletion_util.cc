@@ -8,7 +8,7 @@ size_t FindAtWordbreak(const std::u16string& text,
                        const std::u16string& search,
                        size_t search_start) {
   std::vector<size_t> word_starts;
-  String16VectorFromString16(text, false, &word_starts);
+  String16VectorFromString16(text, &word_starts);
   size_t next_occurrence = std::string::npos;
   for (auto word_start : word_starts) {
     if (word_start < search_start)
@@ -30,8 +30,7 @@ std::vector<std::pair<size_t, size_t>> FindWordsSequentiallyAtWordbreak(
   std::vector<std::pair<size_t, size_t>> occurrences;
   size_t cursor = 0u;
   std::vector<size_t> search_word_starts{};
-  auto search_words =
-      String16VectorFromString16(search, false, &search_word_starts);
+  auto search_words = String16VectorFromString16(search, &search_word_starts);
   for (size_t i = 0; i < search_word_starts.size(); ++i) {
     auto search_word = search_words[i];
     // The non-word characters following |search_word|. Can be empty for the

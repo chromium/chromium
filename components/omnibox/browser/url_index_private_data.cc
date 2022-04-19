@@ -208,7 +208,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     // "colspec=ID%20Mstone Release" we get four 'words': "colspec", "id",
     // "mstone" and "release".
     String16Vector lower_words(
-        String16VectorFromString16(lower_unescaped_string, false, nullptr));
+        String16VectorFromString16(lower_unescaped_string, nullptr));
     if (lower_words.empty())
       continue;
     // If we've already searched for this list of words, don't do it again.
@@ -1246,10 +1246,10 @@ bool URLIndexPrivateData::RestoreWordStartsMap(
       const history::URLRow& row = entry.second.url_row;
       const std::u16string& url =
           bookmarks::CleanUpUrlForMatching(row.url(), nullptr);
-      String16VectorFromString16(url, false, &word_starts.url_word_starts_);
+      String16VectorFromString16(url, &word_starts.url_word_starts_);
       const std::u16string& title =
           bookmarks::CleanUpTitleForMatching(row.title());
-      String16VectorFromString16(title, false, &word_starts.title_word_starts_);
+      String16VectorFromString16(title, &word_starts.title_word_starts_);
       word_starts_map_[entry.first] = std::move(word_starts);
     }
   }

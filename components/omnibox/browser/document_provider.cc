@@ -162,7 +162,7 @@ struct FieldMatches {
               if (string) {
                 const auto string_words =
                     SplitByColon(String16VectorFromString16(
-                        base::UTF8ToUTF16(string->c_str()), false, nullptr));
+                        base::UTF8ToUTF16(string->c_str()), nullptr));
                 word_vec.insert(word_vec.end(), string_words.begin(),
                                 string_words.end());
               }
@@ -243,7 +243,7 @@ int CalculateScore(const std::u16string& input, const base::Value* result) {
                    });
 
   String16Vector input_words =
-      SplitByColon(String16VectorFromString16(input, false, nullptr));
+      SplitByColon(String16VectorFromString16(input, nullptr));
 
   for (const auto& word : input_words) {
     for (auto& field_matches : field_matches_vec) {

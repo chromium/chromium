@@ -30,8 +30,7 @@ TermMatches FindTermMatches(std::u16string find_text,
       base::StartsWith(text, find_text, base::CompareCase::SENSITIVE))
     return {{0, 0, find_text.length()}};
 
-  String16Vector find_terms =
-      String16VectorFromString16(find_text, false, NULL);
+  String16Vector find_terms = String16VectorFromString16(find_text, NULL);
 
   TermMatches matches = MatchTermsInString(find_terms, text);
   matches = SortMatches(matches);
@@ -41,7 +40,7 @@ TermMatches FindTermMatches(std::u16string find_text,
     return matches;
 
   WordStarts word_starts;
-  String16VectorFromString16(text, false, &word_starts);
+  String16VectorFromString16(text, &word_starts);
   return ScoredHistoryMatch::FilterTermMatchesByWordStarts(
       matches, WordStarts(find_terms.size(), 0), word_starts, 0,
       std::string::npos);

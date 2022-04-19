@@ -36,7 +36,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   std::u16string string_a(u"http://www.google.com/ frammy  the brammy");
   WordStarts actual_starts_a;
   String16Vector string_vec =
-      String16VectorFromString16(string_a, false, &actual_starts_a);
+      String16VectorFromString16(string_a, &actual_starts_a);
   ASSERT_EQ(7U, string_vec.size());
   // See if we got the words we expected.
   EXPECT_EQ(u"http", string_vec[0]);
@@ -51,22 +51,10 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_TRUE(IntArraysEqual(expected_starts_a, std::size(expected_starts_a),
                              actual_starts_a));
 
-  WordStarts actual_starts_b;
-  string_vec = String16VectorFromString16(string_a, true, &actual_starts_b);
-  ASSERT_EQ(5U, string_vec.size());
-  EXPECT_EQ(u"http://", string_vec[0]);
-  EXPECT_EQ(u"www.google.com/", string_vec[1]);
-  EXPECT_EQ(u"frammy", string_vec[2]);
-  EXPECT_EQ(u"the", string_vec[3]);
-  EXPECT_EQ(u"brammy", string_vec[4]);
-  size_t expected_starts_b[] = {0, 7, 23, 31, 35};
-  EXPECT_TRUE(IntArraysEqual(expected_starts_b, std::size(expected_starts_b),
-                             actual_starts_b));
-
   std::u16string string_c(
       u" funky%20string-with=@strange   sequences, intended(to exceed)");
   WordStarts actual_starts_c;
-  string_vec = String16VectorFromString16(string_c, false, &actual_starts_c);
+  string_vec = String16VectorFromString16(string_c, &actual_starts_c);
   ASSERT_EQ(8U, string_vec.size());
   // Note that we stop collecting words and word starts at kMaxSignificantChars.
   size_t expected_starts_c[] = {1, 7, 16, 22, 32, 43, 52, 55};
@@ -75,7 +63,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
 
   std::u16string string_d(u"http://www.google.com/frammy_the_brammy");
   WordStarts actual_starts_d;
-  string_vec = String16VectorFromString16(string_d, false, &actual_starts_d);
+  string_vec = String16VectorFromString16(string_d, &actual_starts_d);
   ASSERT_EQ(7U, string_vec.size());
   EXPECT_EQ(u"http", string_vec[0]);
   EXPECT_EQ(u"www", string_vec[1]);
