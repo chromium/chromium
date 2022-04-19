@@ -73,6 +73,13 @@ void InstalledAppProviderImpl::FilterInstalledApps(
 void InstalledAppProviderImpl::Create(
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
+  if (host.GetParentOrOuterDocument()) {
+    // The renderer is supposed to disallow this and we shouldn't end up here.
+    mojo::ReportBadMessage(
+        "InstalledAppProvider only allowed for outermost main frame.");
+    return;
+  }
+
   // The object is bound to the lifetime of |host|'s current document and the
   // mojo connection. See DocumentService for details.
   new InstalledAppProviderImpl(host, std::move(receiver));
