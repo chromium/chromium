@@ -5024,7 +5024,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPrerenderDUIAndDSE_20220412",
+                    "name": "EnabledPrerenderDUIAndDSE_20220414",
                     "enable_features": [
                         "OmniboxTriggerForPrerender2",
                         "SupportSearchSuggestionForPrerender2"
@@ -5034,7 +5034,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrerenderDUI_20220412",
+                    "name": "EnabledPrerenderDUI_20220414",
                     "enable_features": [
                         "OmniboxTriggerForPrerender2"
                     ],
@@ -5044,7 +5044,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrefetchDUIControl_20220412",
+                    "name": "EnabledPrefetchDUIControl_20220414",
                     "enable_features": [
                         "OmniboxTriggerForNoStatePrefetch"
                     ],
@@ -5054,7 +5054,7 @@
                     ]
                 },
                 {
-                    "name": "DisabledDUI_20220412",
+                    "name": "DisabledDUI_20220414",
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch",
                         "OmniboxTriggerForPrerender2",
@@ -5062,12 +5062,30 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrerenderDSE_20220412",
+                    "name": "EnabledPrerenderDSE_20220414",
                     "enable_features": [
                         "SupportSearchSuggestionForPrerender2"
                     ],
                     "disable_features": [
                         "OmniboxTriggerForPrerender2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxPrerenderDogfood": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPrerenderDUI_20220414_Dogfood",
+                    "enable_features": [
+                        "OmniboxTriggerForPrerender2"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch"
                     ]
                 }
             ]
