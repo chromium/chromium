@@ -65,7 +65,10 @@ HttpCache::Writers::TransactionInfo::TransactionInfo(const TransactionInfo&) =
     default;
 
 HttpCache::Writers::Writers(HttpCache* cache, HttpCache::ActiveEntry* entry)
-    : cache_(cache), entry_(entry) {}
+    : cache_(cache), entry_(entry) {
+  DCHECK(cache_);
+  DCHECK(entry_);
+}
 
 HttpCache::Writers::~Writers() = default;
 

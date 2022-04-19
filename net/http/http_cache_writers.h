@@ -236,10 +236,10 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // True if only reading from network and not writing to cache.
   bool network_read_only_ = false;
 
-  raw_ptr<HttpCache> cache_ = nullptr;
+  raw_ptr<HttpCache> const cache_ = nullptr;
 
   // Owner of |this|.
-  raw_ptr<ActiveEntry> entry_ = nullptr;
+  raw_ptr<ActiveEntry> const entry_ = nullptr;
 
   std::unique_ptr<HttpTransaction> network_transaction_;
 
