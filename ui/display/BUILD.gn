@@ -140,6 +140,7 @@ if (is_chromeos_ash) {
       "//build:chromeos_buildflags",
       "//ui/display",
       "//ui/display/types",
+      "//ui/display/util",
     ]
   }
 }

@@ -10,12 +10,12 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/display/display.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 
 namespace display {
 namespace test {
@@ -50,7 +50,7 @@ DisplayInfoList CreateDisplayInfoListFromString(
 bool GetDisplayModeForResolution(const ManagedDisplayInfo& info,
                                  const gfx::Size& resolution,
                                  ManagedDisplayMode* mode) {
-  if (Display::IsInternalDisplayId(info.id()))
+  if (IsInternalDisplayId(info.id()))
     return false;
 
   const ManagedDisplayInfo::ManagedDisplayModeList& modes =
@@ -138,12 +138,12 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
 
 int64_t DisplayManagerTestApi::SetFirstDisplayAsInternalDisplay() {
   const Display& internal = display_manager_->active_display_list_[0];
-  SetInternalDisplayId(internal.id());
+  SetInternalDisplayIds({internal.id()});
   return Display::InternalDisplayId();
 }
 
 void DisplayManagerTestApi::SetInternalDisplayId(int64_t id) {
-  Display::SetInternalDisplayId(id);
+  SetInternalDisplayIds({id});
   display_manager_->UpdateInternalManagedDisplayModeListForTest();
 }
 
@@ -195,7 +195,7 @@ ScopedSetInternalDisplayId::ScopedSetInternalDisplayId(
 }
 
 ScopedSetInternalDisplayId::~ScopedSetInternalDisplayId() {
-  Display::SetInternalDisplayId(kInvalidDisplayId);
+  SetInternalDisplayIds({});
 }
 
 bool SetDisplayResolution(DisplayManager* display_manager,

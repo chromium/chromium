@@ -206,6 +206,7 @@ source_set("app_list") {
     "//ui/compositor_extra",
     "//ui/display",
     "//ui/display/manager",
+    "//ui/display/util",
     "//ui/events",
     "//ui/events/devices",
     "//ui/gfx",

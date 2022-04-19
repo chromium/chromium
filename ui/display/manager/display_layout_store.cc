@@ -15,6 +15,7 @@
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 
 namespace display {
 

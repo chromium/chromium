@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/flat_set.h"
 #include "ui/display/util/display_util_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -49,6 +50,22 @@ DISPLAY_UTIL_EXPORT int64_t GenerateDisplayID(uint16_t manufacturer_id,
 // both gamma and the color primaries were correctly found.
 DISPLAY_UTIL_EXPORT gfx::ColorSpace GetColorSpaceFromEdid(
     const display::EdidParser& edid_parser);
+
+// Returns true if one of following conditions is met.
+// 1) id1 is internal.
+// 2) output index of id1 < output index of id2 and id2 isn't internal.
+DISPLAY_UTIL_EXPORT bool CompareDisplayIds(int64_t id1, int64_t id2);
+
+// Returns true if the `display_id` is internal.
+DISPLAY_UTIL_EXPORT bool IsInternalDisplayId(int64_t display_id);
+
+// Returns true if the system has at least one internal display.
+DISPLAY_UTIL_EXPORT bool HasInternalDisplay();
+
+// Gets/Sets an id of display corresponding to internal panel.
+DISPLAY_UTIL_EXPORT const base::flat_set<int64_t>& GetInternalDisplayIds();
+DISPLAY_UTIL_EXPORT void SetInternalDisplayIds(
+    base::flat_set<int64_t> display_ids);
 
 }  // namespace display
 

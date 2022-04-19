@@ -66,6 +66,7 @@
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_targeter.h"
 #include "ui/events/test/event_generator.h"
@@ -944,7 +945,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   display::Display::SetForceDeviceScaleFactor(scale);
 
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  display::Display::SetInternalDisplayId(display_id);
+  display::SetInternalDisplayIds({display_id});
 
   gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(
@@ -966,7 +967,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 TEST_F(ClientControlledShellSurfaceTest,
        DefaultDeviceScaleFactorFromDisplayManager) {
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  display::Display::SetInternalDisplayId(display_id);
+  display::SetInternalDisplayIds({display_id});
   gfx::Size size(1920, 1080);
 
   display::DisplayManager* display_manager =

@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/touchscreen_device.h"
@@ -93,7 +94,7 @@ DeviceList::const_iterator GuessBestUsbDevice(const ManagedDisplayInfo* display,
 
 // Returns true if |display| is internal.
 bool IsInternalDisplay(const ManagedDisplayInfo* display) {
-  return Display::IsInternalDisplayId(display->id());
+  return IsInternalDisplayId(display->id());
 }
 
 // Returns true if |device| is internal.
@@ -139,7 +140,7 @@ ManagedDisplayInfo* GetBestMatchForDevice(
   // associated with the touch device identified by |identifier|.
   for (auto* display : *displays) {
     // We do not want to match anything to the internal display.
-    if (Display::IsInternalDisplayId(display->id()))
+    if (IsInternalDisplayId(display->id()))
       continue;
     if (!base::Contains(info_map, display->id()))
       continue;

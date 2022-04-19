@@ -22,6 +22,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -41,7 +42,7 @@ const float kDisplayRotationStickyAngleDegrees = 60.0f;
 const float kMinimumAccelerationScreenRotation = 4.2f;
 
 chromeos::OrientationType GetInternalDisplayNaturalOrientation() {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return chromeos::OrientationType::kLandscape;
   return chromeos::GetDisplayNaturalOrientation(
       Shell::Get()->display_manager()->GetDisplayForId(
@@ -212,7 +213,7 @@ ScreenOrientationController::GetCurrentAppRequestedOrientationLock() const {
 }
 
 void ScreenOrientationController::ToggleUserRotationLock() {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   if (user_rotation_locked()) {
@@ -229,7 +230,7 @@ void ScreenOrientationController::ToggleUserRotationLock() {
 
 void ScreenOrientationController::SetLockToRotation(
     display::Display::Rotation rotation) {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   SetLockToOrientation(RotationToOrientation(natural_orientation_, rotation));
@@ -260,7 +261,7 @@ void ScreenOrientationController::OnWindowHierarchyChanged(
   // Window may move to an external display or back to internal (e.g. via
   // shortcut). In this case, we need to undo/redo any orientation lock it
   // applies on the internal display.
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   aura::Window* window = params.receiver;
@@ -318,7 +319,7 @@ void ScreenOrientationController::OnAccelerometerUpdated(
 void ScreenOrientationController::OnDisplayConfigurationChanged() {
   if (ignore_display_configuration_updates_)
     return;
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
   if (!Shell::Get()->display_manager()->IsActiveDisplayId(
           display::Display::InternalDisplayId())) {
@@ -335,14 +336,14 @@ void ScreenOrientationController::OnTabletModeStarted() {
   // mode in which we apply apps' requested orientation locks.
   Shell::Get()->activation_client()->AddObserver(this);
 
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
   ApplyLockForTopMostWindowOnInternalDisplay();
 }
 
 void ScreenOrientationController::OnTabletModeEnded() {
   Shell::Get()->activation_client()->RemoveObserver(this);
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   if (!IsAutoRotationAllowed()) {
@@ -367,7 +368,7 @@ void ScreenOrientationController::OnTabletPhysicalStateChanged() {
     // Do not exit early, as the internal display can be determined after
     // Maximize Mode has started. (chrome-os-partner:38796) Always start
     // observing.
-    if (display::Display::HasInternalDisplay()) {
+    if (display::HasInternalDisplay()) {
       current_rotation_ = user_rotation_ =
           shell->display_configuration_controller()->GetTargetRotation(
               display::Display::InternalDisplayId());
@@ -375,11 +376,11 @@ void ScreenOrientationController::OnTabletPhysicalStateChanged() {
     if (!rotation_locked_)
       LoadDisplayRotationProperties();
 
-    if (!display::Display::HasInternalDisplay())
+    if (!display::HasInternalDisplay())
       return;
     ApplyLockForTopMostWindowOnInternalDisplay();
   } else {
-    if (!display::Display::HasInternalDisplay())
+    if (!display::HasInternalDisplay())
       return;
 
     UnlockAll();
@@ -419,7 +420,7 @@ void ScreenOrientationController::SetDisplayRotation(
     display::Display::Rotation rotation,
     display::Display::RotationSource source,
     DisplayConfigurationController::RotationAnimation mode) {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
   current_rotation_ = rotation;
   base::AutoReset<bool> auto_ignore_display_configuration_updates(
@@ -493,7 +494,7 @@ void ScreenOrientationController::LockRotationToOrientation(
 
 void ScreenOrientationController::LockToRotationMatchingOrientation(
     chromeos::OrientationType lock_orientation) {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   display::Display::Rotation rotation =
@@ -592,7 +593,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
   }
 
   current_app_requested_orientation_lock_ = absl::nullopt;
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   aura::Window* const internal_display_root =

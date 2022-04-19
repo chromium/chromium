@@ -17,7 +17,6 @@
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_observer.h"
-#include "ui/display/util/display_util.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/size.h"
 

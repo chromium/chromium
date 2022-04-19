@@ -31,6 +31,7 @@
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/json_converter.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -636,7 +637,7 @@ void StoreDisplayRotationPrefs(PrefService* pref_service,
 }
 
 void StoreCurrentDisplayRotationLockPrefs(PrefService* pref_service) {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
   display::Display::Rotation rotation =
       GetDisplayManager()

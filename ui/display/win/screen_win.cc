@@ -22,6 +22,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
+#include "ui/display/util/display_util.h"
 #include "ui/display/win/display_info.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/local_process_window_finder_win.h"
@@ -776,13 +777,14 @@ void ScreenWin::UpdateFromDisplayInfos(
   screen_win_displays_ = DisplayInfosToScreenWinDisplays(
       display_infos, color_profile_reader_.get(), hdr_enabled_);
   displays_ = ScreenWinDisplaysToDisplays(screen_win_displays_);
+  std::vector<int64_t> internal_display_ids;
   for (const auto& display_info : display_infos) {
     if (IsInternalOutputTechnology(display_info.output_technology())) {
-      // TODO(crbug.com/1078903): Support multiple internal displays.
-      Display::SetInternalDisplayId(display_info.id());
+      internal_display_ids.push_back(display_info.id());
       break;
     }
   }
+  SetInternalDisplayIds(internal_display_ids);
 }
 
 void ScreenWin::Initialize() {

@@ -45,10 +45,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
-#include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
@@ -108,6 +108,7 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   TabletModeController::SetUseScreenshotForTest(false);
 
   display::ResetDisplayIdForTest();
+  display::SetInternalDisplayIds({});
 
   chromeos::CrasAudioClient::InitializeFake();
   // Create CrasAudioHandler for testing since g_browser_process is not

@@ -23,6 +23,7 @@
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/display/util/display_util.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -272,7 +273,7 @@ aura::client::CaptureClient* WMHelperChromeOS::GetCaptureClient() {
 }
 
 float GetDefaultDeviceScaleFactor() {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return 1.0;
 
   if (display::Display::HasForceDeviceScaleFactor())

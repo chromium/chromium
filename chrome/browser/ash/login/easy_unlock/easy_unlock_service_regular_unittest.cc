@@ -53,6 +53,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/views/test/test_views_delegate.h"
 
 namespace ash {
@@ -191,8 +192,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   void SetUp() override {
     display::Screen::SetScreenInstance(&test_screen_);
-    display::Display::SetInternalDisplayId(
-        test_screen_.GetPrimaryDisplay().id());
+    display::SetInternalDisplayIds({test_screen_.GetPrimaryDisplay().id()});
 
     PowerManagerClient::InitializeFake();
 

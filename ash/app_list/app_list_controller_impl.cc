@@ -73,6 +73,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
@@ -1853,7 +1854,7 @@ void AppListControllerImpl::UpdateAssistantVisibility() {
 
 int64_t AppListControllerImpl::GetDisplayIdToShowAppListOn() {
   if (IsTabletMode() && !Shell::Get()->display_manager()->IsInUnifiedMode()) {
-    return display::Display::HasInternalDisplay()
+    return display::HasInternalDisplay()
                ? display::Display::InternalDisplayId()
                : display::Screen::GetScreen()->GetPrimaryDisplay().id();
   }

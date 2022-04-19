@@ -55,6 +55,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/point.h"
@@ -139,7 +140,7 @@ void AshTestBase::TearDown() {
   event_generator_.reset();
   // Some tests set an internal display id,
   // reset it here, so other tests will continue in a clean environment.
-  display::Display::SetInternalDisplayId(display::kInvalidDisplayId);
+  display::SetInternalDisplayIds({display::kInvalidDisplayId});
 
   // Tests can add devices, so reset the lists for future tests.
   ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();

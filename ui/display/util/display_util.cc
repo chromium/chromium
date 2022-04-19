@@ -9,11 +9,18 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "ui/display/util/edid_parser.h"
 
 namespace display {
 
 namespace {
+
+base::flat_set<int64_t>* internal_display_ids() {
+  static base::NoDestructor<base::flat_set<int64_t>> display_ids;
+  return display_ids.get();
+};
 
 // A list of bogus sizes in mm that should be ignored.
 // See crbug.com/136533. The first element maintains the minimum
@@ -166,6 +173,40 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
       color_space_primaries, gfx::ColorSpace::TransferID::CUSTOM,
       gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
       /*custom_primary_matrix=*/nullptr, &transfer);
+}
+
+bool CompareDisplayIds(int64_t id1, int64_t id2) {
+  if (id1 == id2)
+    return false;
+  // Output index is stored in the first 8 bits. See GetDisplayIdFromEDID
+  // in edid_parser.cc.
+  int index_1 = id1 & 0xFF;
+  int index_2 = id2 & 0xFF;
+  DCHECK_NE(index_1, index_2) << id1 << " and " << id2;
+  bool first_is_internal = IsInternalDisplayId(id1);
+  bool second_is_internal = IsInternalDisplayId(id2);
+  if (first_is_internal && !second_is_internal)
+    return true;
+  if (!first_is_internal && second_is_internal)
+    return false;
+  return index_1 < index_2;
+}
+
+bool IsInternalDisplayId(int64_t display_id) {
+  return base::Contains(*internal_display_ids(), display_id);
+}
+
+const base::flat_set<int64_t>& GetInternalDisplayIds() {
+  return *internal_display_ids();
+}
+
+// static
+bool HasInternalDisplay() {
+  return !GetInternalDisplayIds().empty();
+}
+
+void SetInternalDisplayIds(base::flat_set<int64_t> display_ids) {
+  *internal_display_ids() = std::move(display_ids);
 }
 
 }  // namespace display

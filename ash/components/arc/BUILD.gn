@@ -155,6 +155,7 @@ static_library("arc") {
     "//ui/chromeos/strings",
     "//ui/chromeos/styles:cros_styles_views",
     "//ui/display/manager",
+    "//ui/display/util",
     "//ui/events/ozone",
     "//ui/wm/public",
   ]

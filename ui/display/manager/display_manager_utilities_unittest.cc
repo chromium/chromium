@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 
 namespace display {
 
@@ -19,11 +20,11 @@ class ScopedSetInternalDisplayId {
 };
 
 ScopedSetInternalDisplayId::ScopedSetInternalDisplayId(int64_t id) {
-  Display::SetInternalDisplayId(id);
+  SetInternalDisplayIds({id});
 }
 
 ScopedSetInternalDisplayId::~ScopedSetInternalDisplayId() {
-  Display::SetInternalDisplayId(kInvalidDisplayId);
+  SetInternalDisplayIds({});
 }
 
 }  // namespace

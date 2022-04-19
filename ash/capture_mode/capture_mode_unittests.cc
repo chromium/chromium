@@ -94,6 +94,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -1584,7 +1585,7 @@ TEST_F(CaptureModeTest, CursorUpdatedOnDisplayRotation) {
   UpdateDisplay("600x400");
   const int64_t display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  display::Display::SetInternalDisplayId(display_id);
+  display::SetInternalDisplayIds({display_id});
   ScreenOrientationControllerTestApi orientation_test_api(
       Shell::Get()->screen_orientation_controller());
 

@@ -7,12 +7,14 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -54,8 +56,6 @@ float GetForcedDeviceScaleFactorImpl() {
   }
   return static_cast<float>(scale_in_double);
 }
-
-int64_t internal_display_id_ = -1;
 
 gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
   if (value == "srgb")
@@ -101,18 +101,6 @@ const char* ToRotationString(display::Display::Rotation rotation) {
 }
 
 }  // namespace
-
-bool CompareDisplayIds(int64_t id1, int64_t id2) {
-  if (id1 == id2)
-    return false;
-  // Output index is stored in the first 8 bits. See GetDisplayIdFromEDID
-  // in edid_parser.cc.
-  int index_1 = id1 & 0xFF;
-  int index_2 = id2 & 0xFF;
-  DCHECK_NE(index_1, index_2) << id1 << " and " << id2;
-  return Display::IsInternalDisplayId(id1) ||
-         (index_1 < index_2 && !Display::IsInternalDisplayId(id2));
-}
 
 // static
 float Display::GetForcedDeviceScaleFactor() {
@@ -354,29 +342,14 @@ std::string Display::ToString() const {
 }
 
 bool Display::IsInternal() const {
-  return is_valid() && (id_ == internal_display_id_);
+  return is_valid() && display::IsInternalDisplayId(id_);
 }
 
 // static
 int64_t Display::InternalDisplayId() {
-  DCHECK_NE(kInvalidDisplayId, internal_display_id_);
-  return internal_display_id_;
-}
-
-// static
-void Display::SetInternalDisplayId(int64_t internal_display_id) {
-  internal_display_id_ = internal_display_id;
-}
-
-// static
-bool Display::IsInternalDisplayId(int64_t display_id) {
-  DCHECK_NE(kInvalidDisplayId, display_id);
-  return HasInternalDisplay() && internal_display_id_ == display_id;
-}
-
-// static
-bool Display::HasInternalDisplay() {
-  return internal_display_id_ != kInvalidDisplayId;
+  auto& ids = GetInternalDisplayIds();
+  DCHECK_EQ(1u, ids.size());
+  return ids.size() ? *ids.begin() : kInvalidDisplayId;
 }
 
 bool Display::operator==(const Display& rhs) const {

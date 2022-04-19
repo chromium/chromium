@@ -28,6 +28,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -90,7 +91,7 @@ void OnNotificationClicked(absl::optional<int> button_index) {
 // |external_display_id|. This should not be used when the external display is
 // used for mirroring.
 std::u16string GetExternalDisplayName(int64_t external_display_id) {
-  DCHECK(!display::Display::IsInternalDisplayId(external_display_id));
+  DCHECK(!display::IsInternalDisplayId(external_display_id));
 
   display::DisplayManager* display_manager = GetDisplayManager();
   DCHECK(!display_manager->IsInMirrorMode());
@@ -122,12 +123,11 @@ std::u16string GetExternalDisplayName(int64_t external_display_id) {
 // Returns true if docked mode is currently enabled.
 bool IsDockedModeEnabled() {
   display::DisplayManager* display_manager = GetDisplayManager();
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return false;
 
   for (size_t i = 0; i < display_manager->GetNumDisplays(); ++i) {
-    if (display::Display::IsInternalDisplayId(
-            display_manager->GetDisplayAt(i).id())) {
+    if (display::IsInternalDisplayId(display_manager->GetDisplayAt(i).id())) {
       return false;
     }
   }
@@ -140,7 +140,7 @@ bool IsDockedModeEnabled() {
 // mode is entered.
 std::u16string GetEnterMirrorModeMessage() {
   DCHECK(GetDisplayManager()->IsInMirrorMode());
-  if (display::Display::HasInternalDisplay()) {
+  if (display::HasInternalDisplay()) {
     std::u16string display_names;
     for (auto& id :
          GetDisplayManager()->GetMirroringDestinationDisplayIdList()) {
@@ -178,7 +178,7 @@ std::u16string GetDisplayRemovedMessage(
 
 std::u16string GetDisplayAddedMessage(int64_t added_display_id,
                                       std::u16string* additional_message_out) {
-  DCHECK(!display::Display::IsInternalDisplayId(added_display_id));
+  DCHECK(!display::IsInternalDisplayId(added_display_id));
   return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_ADDED,
                                     GetExternalDisplayName(added_display_id));
 }
@@ -276,7 +276,7 @@ bool ScreenLayoutObserver::GetUnassociatedDisplayMessage(
         continue;
 
       // No notification if the internal display is connected.
-      if (display::Display::IsInternalDisplayId(iter.first)) {
+      if (display::IsInternalDisplayId(iter.first)) {
         return false;
       }
 

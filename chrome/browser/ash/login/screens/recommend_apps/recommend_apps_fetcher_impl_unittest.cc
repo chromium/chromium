@@ -35,6 +35,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -217,8 +218,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
 
   void SetUp() override {
     display::Screen::SetScreenInstance(&test_screen_);
-    display::Display::SetInternalDisplayId(
-        test_screen_.GetPrimaryDisplay().id());
+    display::SetInternalDisplayIds({test_screen_.GetPrimaryDisplay().id()});
 
     mojo::PendingRemote<mojom::CrosDisplayConfigController>
         remote_display_config;

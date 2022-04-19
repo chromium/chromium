@@ -112,6 +112,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -537,7 +538,7 @@ display::Display::Rotation GetNextRotationInTabletMode(
   Shell* shell = Shell::Get();
   DCHECK(shell->tablet_mode_controller()->InTabletMode());
 
-  if (!display::Display::HasInternalDisplay() ||
+  if (!display::HasInternalDisplay() ||
       display_id != display::Display::InternalDisplayId()) {
     return GetNextRotationInClamshell(current);
   }
@@ -587,7 +588,7 @@ display::Display::Rotation GetNextRotationInTabletMode(
 }
 
 bool ShouldLockRotation(int64_t display_id) {
-  return display::Display::HasInternalDisplay() &&
+  return display::HasInternalDisplay() &&
          display_id == display::Display::InternalDisplayId() &&
          Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed();
 }

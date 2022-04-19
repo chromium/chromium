@@ -82,6 +82,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image_skia.h"
@@ -2803,7 +2804,7 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
 }
 
 void WallpaperControllerImpl::GetInternalDisplayCompositorLock() {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   aura::Window* root_window =

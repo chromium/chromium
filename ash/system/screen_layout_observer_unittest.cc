@@ -20,12 +20,12 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/display/display.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/util/display_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -147,7 +147,7 @@ ScreenLayoutObserverTest::GetDisplayNotification() const {
 // This test is flaky. crbug.com/1222612
 TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   UpdateDisplay("500x400");
-  display::Display::SetInternalDisplayId(display_manager()->first_display_id());
+  display::SetInternalDisplayIds({display_manager()->first_display_id()});
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // No-update
@@ -251,10 +251,10 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
 
   // Enters closed lid mode.
   UpdateDisplay("500x400@1.5,300x200");
-  display::Display::SetInternalDisplayId(
-      display::test::DisplayManagerTestApi(display_manager())
-          .GetSecondaryDisplay()
-          .id());
+  display::SetInternalDisplayIds(
+      {display::test::DisplayManagerTestApi(display_manager())
+           .GetSecondaryDisplay()
+           .id()});
   UpdateDisplay("500x400@1.5");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 }
@@ -263,7 +263,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   scoped_feature_list_.Reset();
 
   UpdateDisplay("500x400");
-  display::Display::SetInternalDisplayId(display_manager()->first_display_id());
+  display::SetInternalDisplayIds({display_manager()->first_display_id()});
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // Adding a display.
@@ -325,7 +325,7 @@ TEST_F(ScreenLayoutObserverTest, OverscanDisplay) {
   UpdateDisplay("500x400, 400x300");
   // Close the notification that is shown from initially adding a monitor.
   CloseNotification();
-  display::Display::SetInternalDisplayId(display_manager()->first_display_id());
+  display::SetInternalDisplayIds({display_manager()->first_display_id()});
 
   // /o creates the default overscan.
   UpdateDisplay("500x400, 400x300/o");

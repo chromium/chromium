@@ -52,6 +52,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/tablet_state.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
@@ -148,7 +149,7 @@ TabletModeController::UiMode GetUiMode() {
 
 // Returns true if the device has an active internal display.
 bool HasActiveInternalDisplay() {
-  return display::Display::HasInternalDisplay() &&
+  return display::HasInternalDisplay() &&
          Shell::Get()->display_manager()->IsActiveDisplayId(
              display::Display::InternalDisplayId());
 }

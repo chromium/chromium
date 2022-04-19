@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -160,6 +161,12 @@ DisplayIdList CreateDisplayIdList(const Displays& list) {
   return GenerateDisplayIdList(
       list.begin(), list.end(),
       [](const Display& display) { return display.id(); });
+}
+
+DisplayIdList CreateDisplayIdList(const DisplayInfoList& updated_displays) {
+  return GenerateDisplayIdList(
+      updated_displays.begin(), updated_displays.end(),
+      [](const display::ManagedDisplayInfo& info) { return info.id(); });
 }
 
 void SortDisplayIdList(DisplayIdList* ids) {

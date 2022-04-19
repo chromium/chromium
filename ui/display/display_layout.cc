@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "ui/display/display.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"

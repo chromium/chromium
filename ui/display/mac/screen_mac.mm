@@ -23,6 +23,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/mac/display_link_mac.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
@@ -173,7 +174,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
 
   // TODO(crbug.com/1078903): Support multiple internal displays.
   if (CGDisplayIsBuiltin(display_id))
-    Display::SetInternalDisplayId(display_id);
+    SetInternalDisplayIds({display_id});
 
   return DisplayMac{display, screen};
 }

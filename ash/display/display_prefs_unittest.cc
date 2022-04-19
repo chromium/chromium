@@ -47,6 +47,7 @@
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -967,8 +968,8 @@ TEST_F(DisplayPrefsTest, DontSaveAndRestoreAllOff) {
 // are not saved.
 TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   Shell* shell = Shell::Get();
-  display::Display::SetInternalDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  display::SetInternalDisplayIds(
+      {display::Screen::GetScreen()->GetPrimaryDisplay().id()});
   LoggedInAsUser();
   // Populate the properties.
   display_manager()->SetDisplayRotation(display::Display::InternalDisplayId(),
@@ -1015,8 +1016,8 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
 
 // Tests that the rotation state is saved without a user being logged in.
 TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
-  display::Display::SetInternalDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  display::SetInternalDisplayIds(
+      {display::Screen::GetScreen()->GetPrimaryDisplay().id()});
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
   bool current_rotation_lock = IsRotationLocked();
@@ -1037,8 +1038,8 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
 
 // Tests that the rotation state is saved when a guest is logged in.
 TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
-  display::Display::SetInternalDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  display::SetInternalDisplayIds(
+      {display::Screen::GetScreen()->GetPrimaryDisplay().id()});
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
   LoggedInAsGuest();
 
@@ -1060,8 +1061,8 @@ TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
 
 // Tests that the rotation state is saved when a normal user is logged in.
 TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
-  display::Display::SetInternalDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  display::SetInternalDisplayIds(
+      {display::Screen::GetScreen()->GetPrimaryDisplay().id()});
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
   LoggedInAsGuest();
 
@@ -1084,8 +1085,8 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
 // Tests that rotation state is loaded without a user being logged in, and that
 // entering tablet mode applies the state.
 TEST_F(DisplayPrefsTest, LoadRotationNoLogin) {
-  display::Display::SetInternalDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  display::SetInternalDisplayIds(
+      {display::Screen::GetScreen()->GetPrimaryDisplay().id()});
   ASSERT_FALSE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
   bool initial_rotation_lock = IsRotationLocked();
@@ -1135,8 +1136,8 @@ TEST_F(DisplayPrefsTest, LoadRotationNoLogin) {
 
 // Tests that rotation lock being set causes the rotation state to be saved.
 TEST_F(DisplayPrefsTest, RotationLockTriggersStore) {
-  display::Display::SetInternalDisplayId(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  display::SetInternalDisplayIds(
+      {display::Screen::GetScreen()->GetPrimaryDisplay().id()});
   ASSERT_FALSE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
   Shell::Get()->screen_orientation_controller()->ToggleUserRotationLock();

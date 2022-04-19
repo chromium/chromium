@@ -287,7 +287,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
 
     const std::string name(output_info->name.begin(), output_info->name.end());
     if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS"))
-      display::Display::SetInternalDisplayId(display_id);
+      display::SetInternalDisplayIds({display_id});
 
     auto monitor_iter =
         output_to_monitor.find(static_cast<x11::RandR::Output>(output_id));

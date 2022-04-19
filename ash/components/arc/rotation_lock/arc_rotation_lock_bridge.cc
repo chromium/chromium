@@ -11,6 +11,7 @@
 #include "base/memory/singleton.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 
 namespace arc {
 
@@ -93,7 +94,7 @@ void ArcRotationLockBridge::SendRotationLockState() {
     return;
 
   display::Display current_display;
-  if (display::Display::HasInternalDisplay()) {
+  if (display::HasInternalDisplay()) {
     bool found = display::Screen::GetScreen()->GetDisplayWithDisplayId(
         display::Display::InternalDisplayId(), &current_display);
     DCHECK(found);

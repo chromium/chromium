@@ -17,10 +17,10 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/util/display_util.h"
 
 namespace ash {
 
@@ -84,7 +84,7 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
   display::DisplayManager* const display_manager =
       Shell::Get()->display_manager();
   if (source == mojom::DisplayConfigSource::kPolicy ||
-      display::Display::IsInternalDisplayId(display_id)) {
+      display::IsInternalDisplayId(display_id)) {
     // We don't show notifications to confirm/revert the resolution change in
     // the case of an internal display or policy-forced changes.
     return display_manager->SetDisplayMode(display_id, new_resolution);

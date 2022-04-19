@@ -11,6 +11,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/util/display_util.h"
 
 namespace ash {
 
@@ -23,7 +24,7 @@ HpsOrientationController::HpsOrientationController() {
   tablet_mode_observation_.Observe(tablet_mode_controller);
 
   // Only care about rotation of the actual device.
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return;
 
   display::DisplayManager* display_manager = Shell::Get()->display_manager();

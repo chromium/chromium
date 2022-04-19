@@ -53,6 +53,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -128,7 +129,7 @@ void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
 
   // Record the UMA only when this is an active user session and the
   // internal display is present.
-  if (display::Display::HasInternalDisplay() &&
+  if (display::HasInternalDisplay() &&
       display::Screen::GetScreen()->GetDisplayWithDisplayId(
           display::Display::InternalDisplayId(), &internal_display) &&
       session_controller->IsActiveUserSessionStarted() &&

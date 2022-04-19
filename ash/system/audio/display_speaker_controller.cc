@@ -9,6 +9,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/util/display_util.h"
 
 inline cras::DisplayRotation ToCRASDisplayRotation(
     display::Display::Rotation rotation) {
@@ -85,7 +86,7 @@ void DisplaySpeakerController::SuspendDone(base::TimeDelta sleep_duration) {
 void DisplaySpeakerController::UpdateInternalSpeakerForDisplayRotation() {
   // Swap left/right channel only if it is in Yoga mode.
   bool swap = false;
-  if (display::Display::HasInternalDisplay()) {
+  if (display::HasInternalDisplay()) {
     const display::ManagedDisplayInfo& display_info =
         Shell::Get()->display_manager()->GetDisplayInfo(
             display::Display::InternalDisplayId());

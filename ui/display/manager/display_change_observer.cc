@@ -316,11 +316,10 @@ void DisplayChangeObserver::UpdateInternalDisplay(
   for (auto* state : display_states) {
     if (state->type() == DISPLAY_CONNECTION_TYPE_INTERNAL ||
         (force_first_display_internal &&
-         (!Display::HasInternalDisplay() ||
-          state->display_id() == Display::InternalDisplayId()))) {
-      if (Display::HasInternalDisplay())
+         (!HasInternalDisplay() || IsInternalDisplayId(state->display_id())))) {
+      if (HasInternalDisplay())
         DCHECK_EQ(Display::InternalDisplayId(), state->display_id());
-      Display::SetInternalDisplayId(state->display_id());
+      SetInternalDisplayIds({state->display_id()});
 
       if (state->native_mode() &&
           (!display_manager_->IsDisplayIdValid(state->display_id()) ||

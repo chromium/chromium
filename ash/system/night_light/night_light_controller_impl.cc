@@ -40,6 +40,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -273,7 +274,7 @@ void ApplyTemperatureToHost(aura::WindowTreeHost* host, float temperature) {
   // Only apply ambient EQ to internal displays.
   const bool apply_ambient_temperature =
       night_light_controller->GetAmbientColorEnabled() &&
-      display::Display::IsInternalDisplayId(display_id);
+      display::IsInternalDisplayId(display_id);
 
   const SkM44 linear_gamma_space_matrix =
       MatrixFromTemperature(temperature, true, apply_ambient_temperature);

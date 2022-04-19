@@ -23,6 +23,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace chromeos {
@@ -80,7 +81,7 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
   // TODO(https://crbug.com/1035060): It could be possible that a Chromebox is
   // hooked up to a low-resolution monitor. It might be a good idea to check
   // that display's resolution as well.
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return preferred_size;
 
   display::Display internal_display;

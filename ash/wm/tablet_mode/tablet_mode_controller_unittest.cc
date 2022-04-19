@@ -55,6 +55,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -1040,7 +1041,7 @@ TEST_F(TabletModeControllerTest, InternalKeyboardMouseInDockedModeTest) {
   EXPECT_FALSE(IsTabletModeStarted());
   // Input devices events are unblocked.
   EXPECT_FALSE(AreEventsBlocked());
-  EXPECT_TRUE(display::Display::HasInternalDisplay());
+  EXPECT_TRUE(display::HasInternalDisplay());
   EXPECT_TRUE(
       Shell::Get()->display_manager()->IsActiveDisplayId(internal_display_id));
 

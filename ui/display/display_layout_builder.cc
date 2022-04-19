@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ui/display/display.h"
+#include "ui/display/util/display_util.h"
 
 namespace display {
 
