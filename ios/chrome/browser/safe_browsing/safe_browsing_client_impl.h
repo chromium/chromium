@@ -23,9 +23,9 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
   bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const override;
   void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
-                                              const GURL& url) const override;
+                                              const GURL& url) override;
   bool OnSubFrameUrlQueryCancellationDecided(web::WebState* web_state,
-                                             const GURL& url) const override;
+                                             const GURL& url) override;
 
  private:
   safe_browsing::RealTimeUrlLookupService* lookup_service_;

@@ -36,9 +36,10 @@ bool SafeBrowsingClientImpl::ShouldBlockUnsafeResource(
   return prerender_service_ &&
          prerender_service_->IsWebStatePrerendered(web_state);
 }
+
 void SafeBrowsingClientImpl::OnMainFrameUrlQueryCancellationDecided(
     web::WebState* web_state,
-    const GURL& url) const {
+    const GURL& url) {
   // When a prendered page is unsafe, cancel the prerender.
   if (prerender_service_ &&
       prerender_service_->IsWebStatePrerendered(web_state)) {
@@ -48,7 +49,7 @@ void SafeBrowsingClientImpl::OnMainFrameUrlQueryCancellationDecided(
 
 bool SafeBrowsingClientImpl::OnSubFrameUrlQueryCancellationDecided(
     web::WebState* web_state,
-    const GURL& url) const {
+    const GURL& url) {
   // When a subframe in a prerendered page is unsafe, cancel the prerender.
   if (prerender_service_ &&
       prerender_service_->IsWebStatePrerendered(web_state)) {

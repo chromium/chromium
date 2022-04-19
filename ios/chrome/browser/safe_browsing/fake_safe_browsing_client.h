@@ -27,6 +27,16 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
     lookup_service_ = lookup_service;
   }
 
+  // Whether |OnMainFrameUrlQueryCancellationDecided| was called.
+  bool main_frame_cancellation_decided_called() {
+    return main_frame_cancellation_decided_called_;
+  }
+
+  // Whether |OnSubFrameUrlQueryCancellationDecided| was called.
+  bool sub_frame_cancellation_decided_called() {
+    return sub_frame_cancellation_decided_called_;
+  }
+
  private:
   // SafeBrowsingClient implementation.
   SafeBrowsingService* GetSafeBrowsingService() override;
@@ -35,13 +45,15 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const override;
   void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
-                                              const GURL& url) const override;
+                                              const GURL& url) override;
   bool OnSubFrameUrlQueryCancellationDecided(web::WebState* web_state,
-                                             const GURL& url) const override;
+                                             const GURL& url) override;
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   bool should_block_unsafe_resource_ = false;
   safe_browsing::RealTimeUrlLookupService* lookup_service_ = nullptr;
+  bool main_frame_cancellation_decided_called_ = false;
+  bool sub_frame_cancellation_decided_called_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_

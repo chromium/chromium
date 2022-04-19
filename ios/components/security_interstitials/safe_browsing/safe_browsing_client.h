@@ -36,15 +36,14 @@ class SafeBrowsingClient : public KeyedService {
   // Called when safe browsing decided to cancel loading in the main frame.
   // |web_state| The associated web state.
   // |url| The url which was cancelled.
-  virtual void OnMainFrameUrlQueryCancellationDecided(
-      web::WebState* web_state,
-      const GURL& url) const = 0;
+  virtual void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
+                                                      const GURL& url) = 0;
   // Called when safe browsing decided to cancel loading in a sub frame.
   // |web_state| The associated web state.
   // |url| The url which was cancelled.
   // Returns whether or not a blocking page should be displayed.
   virtual bool OnSubFrameUrlQueryCancellationDecided(web::WebState* web_state,
-                                                     const GURL& url) const = 0;
+                                                     const GURL& url) = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_
