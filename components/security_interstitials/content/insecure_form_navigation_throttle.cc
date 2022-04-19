@@ -65,8 +65,10 @@ InsecureFormNavigationThrottle::WillProcessResponse() {
   // the IsProceeding flag.
   InsecureFormTabStorage* tab_storage = InsecureFormTabStorage::FromWebContents(
       navigation_handle()->GetWebContents());
-  if (tab_storage)
+  if (tab_storage) {
     tab_storage->SetIsProceeding(false);
+    tab_storage->SetInterstitialShown(false);
+  }
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -90,9 +92,22 @@ content::NavigationThrottle::ThrottleCheckResult
 InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
     bool is_redirect) {
   content::NavigationHandle* handle = navigation_handle();
-  if (!handle->IsFormSubmission())
-    return content::NavigationThrottle::PROCEED;
   content::WebContents* contents = handle->GetWebContents();
+  InsecureFormTabStorage* tab_storage =
+      InsecureFormTabStorage::FromWebContents(contents);
+
+  // We only show insecure form interstitials for form submissions. However GET
+  // submissions are not marked as form submissions on reloads, so we check if
+  // this navigation is coming from another mixed form interstitial.
+  if (!handle->IsFormSubmission() &&
+      (!tab_storage || !tab_storage->InterstitialShown())) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  // If user has just chosen to proceed on an interstitial, we don't show
+  // another one.
+  if (tab_storage && tab_storage->IsProceeding())
+    return content::NavigationThrottle::PROCEED;
 
   // Do not set special error page HTML for insecure forms in subframes; those
   // are already hard blocked.
@@ -106,13 +121,6 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
     // Currently we only warn for insecure forms in secure pages.
     return content::NavigationThrottle::PROCEED;
   }
-
-  // If user has just chosen to proceed on an interstitial, we don't show
-  // another one.
-  InsecureFormTabStorage* tab_storage =
-      InsecureFormTabStorage::GetOrCreate(contents);
-  if (tab_storage->IsProceeding())
-    return content::NavigationThrottle::PROCEED;
 
   InterstitialTriggeredState log_state =
       InterstitialTriggeredState::kMixedFormDirect;
@@ -151,6 +159,9 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
   std::string interstitial_html = blocking_page->GetHTMLContents();
   SecurityInterstitialTabHelper::AssociateBlockingPage(
       handle, std::move(blocking_page));
+  if (!tab_storage)
+    tab_storage = InsecureFormTabStorage::GetOrCreate(contents);
+  tab_storage->SetInterstitialShown(true);
   return content::NavigationThrottle::ThrottleCheckResult(
       CANCEL, net::ERR_BLOCKED_BY_CLIENT, interstitial_html);
 }

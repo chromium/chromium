@@ -6280,7 +6280,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
 }
 
-// Checks reloading the interstitial is not treated as proceeding.
+// Checks reloading the interstitial is not treated as proceeding on a POST
+// form.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        TestReloadInsecureFormSubmissionWarningIsNotProceed) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -6291,6 +6292,46 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
       embedded_test_server()->host_port_pair());
 
   // Navigate to an insecure form, make sure we get a warning.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL(replacement_path)));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+  // Reload the interstitial.
+  content::TestNavigationObserver reload_observer(tab, 1);
+  tab->GetController().Reload(content::ReloadType::NORMAL, false);
+  reload_observer.Wait();
+  // Check we get another interstitial.
+  helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+}
+
+// Checks reloading the interstitial is not treated as proceeding on a GET form.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITest,
+    TestReloadInsecureFormSubmissionWarningIsNotProceedGetForm) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_insecure_form_get.html",
+      embedded_test_server()->host_port_pair());
+
+  // Navigate to an insecure form that uses the GET method, make sure we get a
+  // warning.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(replacement_path)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
