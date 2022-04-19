@@ -210,6 +210,7 @@ def _run_tests(work_dir, skia_util, *args):
     # DOM based testing to verify that rendering is working properly.
     for t in _TEST_CASES:
       driver.get(t['url'])
+      driver.set_window_size(1280, 1024)
       element = driver.find_element_by_id(t['expected_id'])
       if not element.is_displayed() or t['expected_text'] != element.text:
         logging.error(
