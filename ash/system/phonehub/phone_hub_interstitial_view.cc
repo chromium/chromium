@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -39,6 +40,7 @@ namespace {
 constexpr gfx::Size kImageSizeDip = {216, 216};
 constexpr int kImageRowHeightDip = 256;
 constexpr int kButtonSpacingDip = 8;
+constexpr auto kButtonContainerPaddingDip = gfx::Insets::TLBR(16, 0, 25, 0);
 constexpr int kButtonContainerTopPaddingDip = 16;
 constexpr int kProgressBarHeightDip = 2;
 constexpr double kInfiniteLoadingProgressValue = -1.0;
@@ -126,8 +128,10 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
   description_->SetLineHeight(kDescriptionLabelLineHeightDip);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                        kButtonContainerTopPaddingDip);
+  if (!features::IsDarkLightModeEnabled()) {
+    layout->AddPaddingRow(views::GridLayout::kFixedSize,
+                          kButtonContainerTopPaddingDip);
+  }
 
   // Set up the layout row for the button container view, which should be
   // right-aligned.
@@ -137,7 +141,9 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
       layout->AddView(std::make_unique<views::View>(), 1, 1,
                       views::GridLayout::TRAILING, views::GridLayout::CENTER);
   button_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      views::BoxLayout::Orientation::kHorizontal,
+      features::IsDarkLightModeEnabled() ? kButtonContainerPaddingDip
+                                         : gfx::Insets(),
       kButtonSpacingDip));
 }
 
