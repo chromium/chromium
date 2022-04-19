@@ -89325,6 +89325,43 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Renegotiation patched"/>
 </enum>
 
+<enum name="ToastCatalogName">
+  <int value="0" label="Virtual Desks Limit Max"/>
+  <int value="1" label="Virtual Desks Limit Min"/>
+  <int value="2" label="Assistant Error"/>
+  <int value="3" label="Debug Command"/>
+  <int value="4" label="Assistant Unbound Service"/>
+  <int value="5" label="Stylus Prompt"/>
+  <int value="6" label="App Resizable"/>
+  <int value="7" label="Kiosk App Error"/>
+  <int value="8" label="Bluetooth Device Paired"/>
+  <int value="9" label="Bluetooth Device Disconnected"/>
+  <int value="10" label="Bluetooth Device Connected"/>
+  <int value="11" label="Bluetooth Adapter Discoverable"/>
+  <int value="12" label="Encourage Unlock"/>
+  <int value="13" label="Network Auto Connect"/>
+  <int value="14" label="Assistant Loading"/>
+  <int value="15" label="Toast Manager Unittest"/>
+  <int value="16" label="Maximum Desk Launch Template"/>
+  <int value="17" label="Enter Overview Gesture"/>
+  <int value="18" label="Exit Overview Gesture"/>
+  <int value="19" label="Next Desk Gesture"/>
+  <int value="20" label="Previous Desk Gesture"/>
+  <int value="21" label="Move Visible On All Desks Window"/>
+  <int value="22" label="App Cannot Snap"/>
+  <int value="23" label="Crostini Unsupported Virtual Keyboard"/>
+  <int value="24" label="Crostini Unsupported IME"/>
+  <int value="25" label="Copy To Clipboard Share Action"/>
+  <int value="26" label="Clipboard Blocked Action"/>
+  <int value="27" label="Clipboard Warn On Paste"/>
+  <int value="28" label="App Not Available"/>
+  <int value="29" label="Camera Privacy Switch Off"/>
+  <int value="30" label="Camera Privacy Switch On"/>
+  <int value="31" label="Extension Install Success"/>
+  <int value="32" label="Account Removed"/>
+  <int value="33" label="Desk Template Too Large"/>
+</enum>
+
 <enum name="TokenBinding.KeyMatch">
   <obsolete>
     Deprecated 3/2019 in crbug.com/856433.

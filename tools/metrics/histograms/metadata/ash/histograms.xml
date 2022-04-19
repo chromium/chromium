@@ -2806,6 +2806,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.NotifierFramework.Toast.ShownCount"
+    enum="ToastCatalogName" expires_after="2022-10-01">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the number of times a specific toast is shown to users. This metric
+    is recorded every time a new toast is shown.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NotifierFramework.Toast.TimeInQueue" units="seconds"
+    expires_after="2022-10-01">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the time a toast spends in queue before it's shown on screen.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
     expires_after="2023-04-10">
 <!-- Name completed by histogram_suffixes

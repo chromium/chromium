@@ -38,7 +38,8 @@ ToastData::ToastData(std::string id,
       text(text),
       duration(std::max(duration, kMinimumDuration)),
       visible_on_lock_screen(visible_on_lock_screen),
-      dismiss_text(GetDismissText(custom_dismiss_text, has_dismiss_button)) {}
+      dismiss_text(GetDismissText(custom_dismiss_text, has_dismiss_button)),
+      time_created(base::TimeTicks::Now()) {}
 
 ToastData::ToastData(const ToastData& other) = default;
 

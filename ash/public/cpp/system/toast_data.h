@@ -54,6 +54,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   std::u16string dismiss_text;
   bool is_managed = false;
   base::RepeatingClosure dismiss_callback;
+  base::TimeTicks time_created;
 };
 
 }  // namespace ash

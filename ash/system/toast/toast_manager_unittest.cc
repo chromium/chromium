@@ -22,6 +22,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -103,11 +105,12 @@ class ToastManagerImplTest : public AshTestBase {
 
   std::string ShowToast(const std::string& text,
                         base::TimeDelta duration,
-                        bool visible_on_lock_screen = false) {
+                        bool visible_on_lock_screen = false,
+                        const ToastCatalogName catalog_name =
+                            ToastCatalogName::kToastManagerUnittest) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
-    manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
-                              base::ASCIIToUTF16(text), duration,
-                              visible_on_lock_screen));
+    manager()->Show(ToastData(id, catalog_name, base::ASCIIToUTF16(text),
+                              duration, visible_on_lock_screen));
     return id;
   }
 
@@ -128,10 +131,11 @@ class ToastManagerImplTest : public AshTestBase {
   void ReplaceToast(const std::string& id,
                     const std::string& text,
                     base::TimeDelta duration,
-                    bool visible_on_lock_screen = false) {
-    manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
-                              base::ASCIIToUTF16(text), duration,
-                              visible_on_lock_screen));
+                    bool visible_on_lock_screen = false,
+                    const ToastCatalogName catalog_name =
+                        ToastCatalogName::kToastManagerUnittest) {
+    manager()->Show(ToastData(id, catalog_name, base::ASCIIToUTF16(text),
+                              duration, visible_on_lock_screen));
   }
 
   void ChangeLockState(bool lock) {
@@ -659,6 +663,62 @@ TEST_F(ToastManagerImplTest, DismissButton) {
   // Expect toast to have a dismiss button with default text.
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON),
             GetCurrentDismissText());
+}
+
+TEST_F(ToastManagerImplTest, NotifierFrameworkMetrics) {
+  base::HistogramTester histogram_tester;
+
+  const ToastCatalogName catalog_name_1 = static_cast<ToastCatalogName>(1);
+  const ToastCatalogName catalog_name_2 = static_cast<ToastCatalogName>(2);
+  const base::TimeDelta duration = base::Seconds(3);
+
+  // Show Toast with catalog_name_1.
+  std::string id1 = ShowToast("TEXT1", duration,
+                              /*visible_on_lock_screen=*/false, catalog_name_1);
+
+  // Expect shown count.
+  histogram_tester.ExpectBucketCount("NotifierFramework.Toast.ShownCount",
+                                     catalog_name_1, /*expected_count=*/1);
+
+  // Expect "TimeInQueue" metric to record zero since there were no toasts in
+  // the queue.
+  histogram_tester.ExpectTimeBucketCount("NotifierFramework.Toast.TimeInQueue",
+                                         base::Seconds(0),
+                                         /*expected_count=*/1);
+
+  // Replace existing toast a couple of times.
+  ReplaceToast(id1, "TEXT1_UPDATED", duration,
+               /*visible_on_lock_screen=*/false, catalog_name_1);
+  ReplaceToast(id1, "TEXT1_UPDATED", duration,
+               /*visible_on_lock_screen=*/false, catalog_name_1);
+
+  // Expect shown count.
+  histogram_tester.ExpectBucketCount("NotifierFramework.Toast.ShownCount",
+                                     catalog_name_1,
+                                     /*expected_count=*/3);
+
+  // Expect "TimeInQueue" metric to record zero since the same toast was shown,
+  // so it wasn't queued.
+  histogram_tester.ExpectTimeBucketCount("NotifierFramework.Toast.TimeInQueue",
+                                         base::Seconds(0),
+                                         /*expected_count=*/3);
+
+  // Try to show toast with catalog_name_2 right after last toast was shown.
+  ShowToast("TEXT2", duration, /*visible_on_lock_screen=*/false,
+            catalog_name_2);
+
+  // Fast forward the toast's duration so the queued toast is shown.
+  task_environment()->FastForwardBy(duration);
+
+  // Expect shown count.
+  histogram_tester.ExpectBucketCount("NotifierFramework.Toast.ShownCount",
+                                     catalog_name_2,
+                                     /*expected_count=*/1);
+
+  // Expect "TimeInQueue" metric to record the toast's duration since the second
+  // toast was queued right after the first one was shown.
+  histogram_tester.ExpectTimeBucketCount("NotifierFramework.Toast.TimeInQueue",
+                                         duration, /*expected_count=*/1);
 }
 
 }  // namespace ash
