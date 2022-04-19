@@ -14,4 +14,10 @@ interface EchoPrivate {
   // pass.
   CheckRedeemOffersAllowed@0(
       string window_id, string service_name, string origin) => (bool allowed);
+
+  // Returns the contents of the oobe timestamp file in string format. The
+  // result should be considered an opaque value that is directly passed to the
+  // extension. Failure is reported as empty string.
+  [MinVersion=1]
+  GetOobeTimestamp@1() => (string timestamp);
 };

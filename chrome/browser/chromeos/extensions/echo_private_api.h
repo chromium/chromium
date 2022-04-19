@@ -46,8 +46,7 @@ class EchoPrivateGetOobeTimestampFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  std::unique_ptr<base::Value> GetOobeTimestampOnFileSequence();
-  void RespondWithResult(std::unique_ptr<base::Value> result);
+  void RespondWithResult(const std::string& timestamp);
 
   DECLARE_EXTENSION_FUNCTION("echoPrivate.getOobeTimestamp",
                              ECHOPRIVATE_GETOOBETIMESTAMP)

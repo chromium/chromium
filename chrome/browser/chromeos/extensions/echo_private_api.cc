@@ -146,42 +146,31 @@ EchoPrivateGetOobeTimestampFunction::~EchoPrivateGetOobeTimestampFunction() {
 }
 
 ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
-  base::PostTaskAndReplyWithResult(
-      extensions::GetExtensionFileTaskRunner().get(), FROM_HERE,
-      base::BindOnce(
-          &EchoPrivateGetOobeTimestampFunction::GetOobeTimestampOnFileSequence,
-          this),
-      base::BindOnce(&EchoPrivateGetOobeTimestampFunction::RespondWithResult,
-                     this));
+  auto callback = base::BindOnce(
+      &EchoPrivateGetOobeTimestampFunction::RespondWithResult, this);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->echo_private_ash()
+      ->GetOobeTimestamp(std::move(callback));
+#else
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
+      static_cast<uint32_t>(lacros_service->GetInterfaceVersion(
+          crosapi::mojom::EchoPrivate::Uuid_)) >=
+          crosapi::mojom::EchoPrivate::kGetOobeTimestampMinVersion) {
+    lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()->GetOobeTimestamp(
+        std::move(callback));
+  } else {
+    return RespondNow(Error("EchoPrivate unavailable."));
+  }
+#endif
   return RespondLater();
 }
 
-// Get the OOBE timestamp from file /home/chronos/.oobe_completed.
-// The timestamp is used to determine when the user first activates the device.
-// If we can get the timestamp info, return it as yyyy-mm-dd, otherwise, return
-// an empty string.
-std::unique_ptr<base::Value>
-EchoPrivateGetOobeTimestampFunction::GetOobeTimestampOnFileSequence() {
-  DCHECK(
-      extensions::GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
-
-  const char kOobeTimestampFile[] = "/home/chronos/.oobe_completed";
-  std::string timestamp;
-  base::File::Info fileInfo;
-  if (base::GetFileInfo(base::FilePath(kOobeTimestampFile), &fileInfo)) {
-    base::Time::Exploded ctime;
-    fileInfo.creation_time.UTCExplode(&ctime);
-    timestamp += base::StringPrintf("%u-%u-%u",
-                                    ctime.year,
-                                    ctime.month,
-                                    ctime.day_of_month);
-  }
-  return std::make_unique<base::Value>(timestamp);
-}
-
 void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
-    std::unique_ptr<base::Value> result) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+    const std::string& timestamp) {
+  Respond(OneArgument(base::Value(timestamp)));
 }
 
 EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction() =
