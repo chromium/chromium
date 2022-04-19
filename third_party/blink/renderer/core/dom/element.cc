@@ -111,6 +111,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -2594,6 +2595,9 @@ void Element::HandlePopupLightDismiss(const Event& event) {
       // Escape key just pops the topmost <popup> off the stack.
       document.HideTopmostPopupElement();
     }
+  } else if (event_type == event_type_names::kFocusin) {
+    // If we focus an element, hide all popups that don't contain that element.
+    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node));
   }
 }
 
