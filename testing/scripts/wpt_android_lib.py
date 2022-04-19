@@ -111,6 +111,8 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
   def parse_args(self, args=None):
     super(WPTAndroidAdapter, self).parse_args(args)
+    if not hasattr(self.options, 'wpt_args'):
+        self.options.wpt_args = []
     logging.basicConfig(
         level=self.log_level,
         # Align level name for easier reading.
