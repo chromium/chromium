@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_vertical_position_type.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
+#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -87,9 +88,10 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 
   const FontPlatformData& PlatformData() const { return platform_data_; }
 
-  scoped_refptr<SimpleFontData> SmallCapsFontData(const FontDescription&) const;
+  scoped_refptr<SimpleFontData> SmallCapsFontData(const FontDescription&) const
+      LOCKS_EXCLUDED(derived_font_data_lock_);
   scoped_refptr<SimpleFontData> EmphasisMarkFontData(
-      const FontDescription&) const;
+      const FontDescription&) const LOCKS_EXCLUDED(derived_font_data_lock_);
   scoped_refptr<SimpleFontData> MetricsOverriddenFontData(
       const FontMetricsOverride&) const;
 
@@ -207,7 +209,9 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
     scoped_refptr<SimpleFontData> emphasis_mark;
   };
 
-  mutable std::unique_ptr<DerivedFontData> derived_font_data_;
+  mutable std::unique_ptr<DerivedFontData> derived_font_data_
+      GUARDED_BY(derived_font_data_lock_);
+  mutable LockForParallelTextShaping derived_font_data_lock_;
 
   const scoped_refptr<CustomFontData> custom_font_data_;
 

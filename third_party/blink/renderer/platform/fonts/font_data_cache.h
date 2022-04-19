@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_CACHE_H_
 
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
@@ -67,7 +68,7 @@ struct FontDataCacheKeyHash {
   static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
-class FontDataCache {
+class FontDataCache final {
   USING_FAST_MALLOC(FontDataCache);
 
  public:
@@ -77,23 +78,27 @@ class FontDataCache {
 
   scoped_refptr<SimpleFontData> Get(const FontPlatformData*,
                                     ShouldRetain = kRetain,
-                                    bool subpixel_ascent_descent = false);
-  bool Contains(const FontPlatformData*) const;
-  void Release(const SimpleFontData*);
+                                    bool subpixel_ascent_descent = false)
+      LOCKS_EXCLUDED(lock_);
+  bool Contains(const FontPlatformData*) const LOCKS_EXCLUDED(lock_);
+  void Release(const SimpleFontData*) LOCKS_EXCLUDED(lock_);
 
   // Purges items in FontDataCache according to provided severity.
   // Returns true if any removal of cache items actually occurred.
-  bool Purge(PurgeSeverity);
+  bool Purge(PurgeSeverity) LOCKS_EXCLUDED(lock_);
 
  private:
-  bool PurgeLeastRecentlyUsed(int count);
+  bool PurgeLeastRecentlyUsed(int count) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   typedef HashMap<const FontPlatformData*,
                   std::pair<scoped_refptr<SimpleFontData>, unsigned>,
                   FontDataCacheKeyHash>
       Cache;
-  Cache cache_;
-  LinkedHashSet<scoped_refptr<SimpleFontData>> inactive_font_data_;
+
+  mutable LockForParallelTextShaping lock_;
+  Cache cache_ GUARDED_BY(lock_);
+  LinkedHashSet<scoped_refptr<SimpleFontData>> inactive_font_data_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace blink
