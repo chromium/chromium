@@ -3293,6 +3293,8 @@ source_set("chromeos") {
     "../ash/system_logs/system_logs_writer.h",
     "../ash/system_logs/touch_log_source.cc",
     "../ash/system_logs/touch_log_source.h",
+    "../ash/system_logs/traffic_counters_log_source.cc",
+    "../ash/system_logs/traffic_counters_log_source.h",
     "../ash/system_logs/ui_hierarchy_log_source.cc",
     "../ash/system_logs/ui_hierarchy_log_source.h",
     "../ash/system_token_cert_db_initializer.cc",
