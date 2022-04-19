@@ -4353,7 +4353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
-    expires_after="2022-08-11">
+    expires_after="2022-10-16">
   <owner>cattalyya@chromium.org</owner>
   <owner>afakhry@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>

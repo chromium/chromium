@@ -2165,7 +2165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPolicies" enum="EnterprisePolicies"
-    expires_after="2022-08-08">
+    expires_after="2022-10-16">
   <owner>pastarmovj@chromium.org</owner>
   <summary>
     A set of policy rules that were ignored due to integrity violations while
@@ -2175,7 +2175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPoliciesDetected"
-    units="disabled policies" expires_after="2022-08-08">
+    units="disabled policies" expires_after="2022-10-16">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chomium.org</owner>
   <summary>

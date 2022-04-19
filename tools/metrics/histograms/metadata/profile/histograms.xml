@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.ColorsUniqueness" enum="ProfileColorsUniqueness"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.DeleteProfileContext" enum="ProfileDeleteContext"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.KeepAliveLeakAtShutdown" enum="ProfileKeepAliveOrigin"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -382,7 +382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfAccountsPerProfile" units="units"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfSignedInProfiles" units="profiles"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>droger@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -512,7 +512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Profile.State.LastUsed" units="days"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -587,7 +587,7 @@ chromium-metrics-reviews@google.com.
   <summary>Total size of all history databases.</summary>
 </histogram>
 
-<histogram name="Profile.TotalSize" units="MB" expires_after="2022-08-14">
+<histogram name="Profile.TotalSize" units="MB" expires_after="2022-10-16">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Total size of the profile data (excluding sub-folders).</summary>
@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.AskOnStartupChanged" enum="BooleanEnabled"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.UiVisited" enum="ProfilePickerPages"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

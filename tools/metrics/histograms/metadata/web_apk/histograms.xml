@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.PathToInstall" enum="PwaInstallPath"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>

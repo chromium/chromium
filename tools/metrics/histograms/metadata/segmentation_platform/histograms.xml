@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2022-10-09">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2022-10-16">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSwitched"
-    enum="AdaptiveToolbarSegmentSwitch" expires_after="2022-08-14">
+    enum="AdaptiveToolbarSegmentSwitch" expires_after="2022-10-16">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.ModelDelivery.Received"
-    enum="SegmentationPlatformSegmentationModel" expires_after="2022-08-14">
+    enum="SegmentationPlatformSegmentationModel" expires_after="2022-10-16">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -429,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.SelectionFailedReason"
-    enum="SegmentationSelectionFailureReason" expires_after="2022-09-11">
+    enum="SegmentationSelectionFailureReason" expires_after="2022-10-16">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

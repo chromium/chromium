@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>rohitrao@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CaptivePortal.SecureConnectionFailed"
-    enum="CaptivePortalStatus" expires_after="2022-08-14">
+    enum="CaptivePortalStatus" expires_after="2022-10-16">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromoRemindMe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-08-14">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-10-16">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -655,7 +655,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2022-07-31">
+<histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2022-10-16">
   <owner>olivierrobin@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -734,7 +734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.LinkToText.ShouldOfferResult"
-    enum="LinkToTextShouldOfferResult" expires_after="2022-07-31">
+    enum="LinkToTextShouldOfferResult" expires_after="2022-10-16">
   <owner>tmartino@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
@@ -983,7 +983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NTP.Impression" enum="IOSNTPImpression"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>gambard@chromium.org</owner>
   <summary>
     The type of NTP impressions on iOS, split by type of suggestions shown
@@ -1024,7 +1024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageLoadCount.Counts"
-    enum="IOSPageLoadCountNavigationType" expires_after="2022-08-14">
+    enum="IOSPageLoadCountNavigationType" expires_after="2022-10-16">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>The number of navigation started events by navigation type.</summary>
@@ -1450,7 +1450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.CloseTabs" units="Tabs"
-    expires_after="2022-06-26">
+    expires_after="2022-10-16">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -1527,7 +1527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WidgetKit.Action" enum="IOSWidgetKitAction"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>rkgibson@google.com</owner>
   <owner>muradyan@google.com</owner>
   <summary>

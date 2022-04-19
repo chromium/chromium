@@ -998,7 +998,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.PoweredState" enum="BooleanEnabled"
-    expires_after="2022-10-09">
+    expires_after="2022-10-16">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1246,7 +1246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2022-06-26">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2022-10-16">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1292,7 +1292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
-    enum="WebBluetoothConnectGATTOutcome" expires_after="2022-08-14">
+    enum="WebBluetoothConnectGATTOutcome" expires_after="2022-10-16">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1389,7 +1389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrength" units="dBm"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1402,7 +1402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrengthLevel"
-    enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2022-08-14">
+    enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2022-10-16">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

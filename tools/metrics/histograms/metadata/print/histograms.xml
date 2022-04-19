@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.Local"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-08-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-10-16">
   <owner>gavinwill@chromium.org</owner>
   <owner>chrome-print@google.com</owner>
   <owner>cros-peripherals@google.com</owner>

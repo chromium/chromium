@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2022-08-14">
+    enum="AndroidProcessedMinidumps" expires_after="2022-10-16">
   <owner>mheikal@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.BatteryCharge" units="%"
-    expires_after="2022-07-03">
+    expires_after="2022-10-16">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.DeviceThermalState"
-    enum="IOSDeviceThermalState" expires_after="2022-07-03">
+    enum="IOSDeviceThermalState" expires_after="2022-10-16">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.HasPossibleExplanation"
-    enum="BooleanHasPossibleExplanation" expires_after="2022-06-26">
+    enum="BooleanHasPossibleExplanation" expires_after="2022-10-16">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -498,7 +498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.OSRestartedAfterPreviousSession"
-    enum="BooleanRebooted" expires_after="2022-07-03">
+    enum="BooleanRebooted" expires_after="2022-10-16">
   <owner>olivierrobin@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType"
-    enum="MobileSessionShutdownType" expires_after="2022-07-03">
+    enum="MobileSessionShutdownType" expires_after="2022-10-16">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DownloadDangerPrompt"
-    enum="SBClientDownloadExtensions" expires_after="2022-08-14">
+    enum="SBClientDownloadExtensions" expires_after="2022-10-16">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileInBackground"
-    enum="DownloadFileInBackground" expires_after="2022-08-07">
+    enum="DownloadFileInBackground" expires_after="2022-10-16">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileResult" enum="DownloadFileResult"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
-    enum="DownloadFileUIGoogleDrive" expires_after="2022-08-07">
+    enum="DownloadFileUIGoogleDrive" expires_after="2022-10-16">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -404,7 +404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Later.UI.Events" enum="DownloadLaterUiEvent"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -675,7 +675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Progress.InfoBar.CloseButtonClicked"
-    enum="DownloadInfoBarState" expires_after="2022-08-14">
+    enum="DownloadInfoBarState" expires_after="2022-10-16">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -685,7 +685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Progress.InfoBar.Shown"
-    enum="DownloadInfoBar.ShownState" expires_after="2022-08-14">
+    enum="DownloadInfoBar.ShownState" expires_after="2022-10-16">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -919,7 +919,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Service.Finish.Type"
-    enum="Download.Service.CompletionType" expires_after="2022-08-14">
+    enum="Download.Service.CompletionType" expires_after="2022-10-16">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The completion type for downloads in download service.</summary>

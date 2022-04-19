@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped"
-    units="count" expires_after="2022-10-09">
+    units="count" expires_after="2022-10-16">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.PercentageDropped" units="%"
-    expires_after="2022-10-09">
+    expires_after="2022-10-16">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1032,7 +1032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2022-07-30">
+    expires_after="2022-10-16">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -1360,7 +1360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.Tree.Unserialize" units="ms"
-    expires_after="2022-06-26">
+    expires_after="2022-10-16">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1662,7 +1662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>mdjones@chromium.org</owner>
   <summary>
     &quot;Used&quot; is recorded when the user clicks the infobar to enter

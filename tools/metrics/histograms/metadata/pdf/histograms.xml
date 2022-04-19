@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2022-08-15">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2022-10-16">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageCount" units="pages" expires_after="2022-08-14">
+<histogram name="PDF.PageCount" units="pages" expires_after="2022-10-16">
   <owner>hnakashima@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -190,7 +190,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AccountType.SigninConsent" enum="SigninAccountType"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@chromium.org</owner>
   <summary>
@@ -200,7 +200,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AccountType.SyncConsent" enum="SigninAccountType"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@chromium.org</owner>
   <summary>
@@ -249,7 +249,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <summary>
@@ -559,7 +559,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreSentinelError"
-    enum="SigninIOSDeviceRestoreSentinelError" expires_after="2022-06-26">
+    enum="SigninIOSDeviceRestoreSentinelError" expires_after="2022-10-16">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -569,7 +569,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreSentinelPathGenerated"
-    enum="BooleanSuccess" expires_after="2022-06-26">
+    enum="BooleanSuccess" expires_after="2022-10-16">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -622,7 +622,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -675,7 +675,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Count" units="identities"
-    expires_after="2022-08-07">
+    expires_after="2022-10-16">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -739,7 +739,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.OAuth2MintToken.ApiCallResult"
-    enum="OAuth2MintTokenApiCallResult" expires_after="2022-08-14">
+    enum="OAuth2MintTokenApiCallResult" expires_after="2022-10-16">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.Requests"
-    enum="OmniboxDocumentSuggestRequests" expires_after="2022-08-14">
+    enum="OmniboxDocumentSuggestRequests" expires_after="2022-10-16">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.ResultCount" units="count"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.FocusResultedInNavigation" enum="BooleanNavigated"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.InputType" enum="OmniboxInputType"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.JustDeletedText" enum="Boolean"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -575,7 +575,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.AsyncDeleteTime" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <summary>
@@ -586,7 +586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount"
-    units="count" expires_after="2022-08-14">
+    units="count" expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <summary>
@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime"
-    units="ms" expires_after="2022-08-14">
+    units="ms" expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <summary>
@@ -609,7 +609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SyncDeleteTime" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>mahmadi@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <summary>
@@ -1099,7 +1099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.URL.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2022-08-14">
+    units="ms" expires_after="2022-10-16">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

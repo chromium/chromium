@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.SelectedItem" units="ms"
-    expires_after="2022-07-03">
+    expires_after="2022-10-16">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2022-07-31">
+    expires_after="2022-10-16">
   <owner>seblalancette@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -230,7 +230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
-    expires_after="2022-07-11">
+    expires_after="2022-10-16">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Confirm.Accept.Time" units="ms"
-    expires_after="2022-07-27">
+    expires_after="2022-10-16">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Confirm.Event"
-    enum="MobileMessagesConfirmInfobarEvents" expires_after="2022-07-27">
+    enum="MobileMessagesConfirmInfobarEvents" expires_after="2022-10-16">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Dismiss"
-    enum="MobileMessagesPasswordsModalDismiss" expires_after="2022-07-03">
+    enum="MobileMessagesPasswordsModalDismiss" expires_after="2022-10-16">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Event"
-    enum="MobileMessagesPasswordsModalEvent" expires_after="2022-07-31">
+    enum="MobileMessagesPasswordsModalEvent" expires_after="2022-10-16">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Save.Card.Modal.Event"
-    enum="MobileMessagesSaveCardModalEvent" expires_after="2022-06-26">
+    enum="MobileMessagesSaveCardModalEvent" expires_after="2022-10-16">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records Save Card specific Infobar Modal events.</summary>
@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Event"
-    enum="MobileMessagesTranslateModalEvent" expires_after="2022-08-07">
+    enum="MobileMessagesTranslateModalEvent" expires_after="2022-10-16">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -363,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
-    expires_after="2022-07-31">
+    expires_after="2022-10-16">
   <owner>seblalancette@chromium.org</owner>
   <owner>chrome-sharing-core@google.com</owner>
   <summary>
@@ -758,7 +758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.ChildAccountStatusDuration" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -843,7 +843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.NativeInitialized" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -1086,7 +1086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="2022-08-14">
+    units="impressions" expires_after="2022-10-16">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

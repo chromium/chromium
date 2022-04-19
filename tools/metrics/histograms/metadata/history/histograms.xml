@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.DidMakeQuery" enum="BooleanQueried"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
@@ -1225,7 +1225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryDBItemCount" units="typed URLs"
-    expires_after="2022-07-30">
+    expires_after="2022-10-16">
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -1326,7 +1326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MonthlyHostCount" units="hosts"
-    expires_after="2022-08-14">
+    expires_after="2022-10-16">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>

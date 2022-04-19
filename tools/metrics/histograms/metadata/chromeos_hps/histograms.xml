@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="ChromeOS.HPS.Image.Invalidity" units="per1000"
-    expires_after="2022-07-01">
+    expires_after="2022-10-16">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.QuickDim.Enabled" enum="BooleanEnabled"
-    expires_after="2022-07-01">
+    expires_after="2022-10-16">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.SnoopingProtection.Enabled" enum="BooleanEnabled"
-    expires_after="2022-07-01">
+    expires_after="2022-10-16">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.TurnOn.Result" enum="HpsTurnOnResult"
-    expires_after="2022-07-01">
+    expires_after="2022-10-16">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
