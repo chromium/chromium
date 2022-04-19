@@ -462,7 +462,7 @@ ci.builder(
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-cronet-x86-dbg-lollipop-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -473,7 +473,7 @@ ci.builder(
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-cronet-x86-dbg-marshmallow-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -484,7 +484,7 @@ ci.builder(
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-cronet-x86-dbg-oreo-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -495,7 +495,7 @@ ci.builder(
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-cronet-x86-dbg-pie-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -506,7 +506,7 @@ ci.builder(
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-cronet-x86-dbg-10-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -517,7 +517,7 @@ ci.builder(
     triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-cronet-x86-dbg-11-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -541,7 +541,7 @@ ci.builder(
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-cronet-x86-rel-kitkat-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -671,7 +671,7 @@ ci.builder(
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-weblayer-10-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
@@ -681,7 +681,7 @@ ci.builder(
     notifies = ["weblayer-sheriff"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-weblayer-marshmallow-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
@@ -691,7 +691,7 @@ ci.builder(
     notifies = ["weblayer-sheriff"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-weblayer-oreo-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
@@ -701,7 +701,7 @@ ci.builder(
     notifies = ["weblayer-sheriff"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-weblayer-pie-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",

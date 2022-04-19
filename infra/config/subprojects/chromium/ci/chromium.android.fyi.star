@@ -62,7 +62,7 @@ ci.builder(
     reclient_instance = rbe_instance.DEFAULT,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-weblayer-11-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
@@ -174,7 +174,7 @@ ci.builder(
     triggered_by = [],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-10-x86-fyi-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|10",
@@ -232,7 +232,7 @@ ci.builder(
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
-ci.builder(
+ci.thin_tester(
     name = "android-webview-12-x64-dbg-tests",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -261,7 +261,7 @@ ci.builder(
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
-ci.builder(
+ci.thin_tester(
     name = "android-12-x64-dbg-tests",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
