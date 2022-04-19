@@ -47,7 +47,7 @@ namespace {
 // or why we aren't.
 enum class AttemptingMultipleOverlays {
   kYes = 0,
-  kNoTooFewMaxOverlaysConsidered = 1,
+  kNoFeatureDisabled = 1,
   kNoRequiredOverlay = 2,
   kNoUnsupportedStrategy = 3,
   kMaxValue = kNoUnsupportedStrategy,
@@ -678,10 +678,9 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
 
 bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
     const std::vector<OverlayProposedCandidate>& sorted_candidates) {
-  if (max_overlays_considered_ <= 1) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kShouldAttemptMultipleOverlaysHistogramName,
-        AttemptingMultipleOverlays::kNoTooFewMaxOverlaysConsidered);
+  if (max_overlays_config_ <= 1) {
+    UMA_HISTOGRAM_ENUMERATION(kShouldAttemptMultipleOverlaysHistogramName,
+                              AttemptingMultipleOverlays::kNoFeatureDisabled);
     return false;
   }
 

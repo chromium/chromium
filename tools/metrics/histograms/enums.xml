@@ -5082,7 +5082,7 @@ others/histograms.xml -->
 
 <enum name="AttemptingMultipleOverlays">
   <int value="0" label="Yes"/>
-  <int value="1" label="No, Feature disabled, or hardware doesn't support it"/>
+  <int value="1" label="No, feature is disabled"/>
   <int value="2" label="No, candidate requires an overlay"/>
   <int value="3" label="No, candidate uses an unsupported strategy"/>
 </enum>
