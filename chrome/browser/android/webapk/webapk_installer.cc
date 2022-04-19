@@ -54,6 +54,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -67,6 +68,10 @@ constexpr char kProtoMimeType[] = "application/x-protobuf";
 // The default number of milliseconds to wait for the WebAPK download URL from
 // the WebAPK server.
 constexpr int kWebApkDownloadUrlTimeoutMs = 60000;
+
+// Console message template for WebAPK installation failures.
+constexpr char kWebApkFailureMessageTemplate[] =
+    "Failed to install WebAPK for '%s'";
 
 class CacheClearer : public content::BrowsingDataRemover::Observer {
  public:
@@ -275,6 +280,12 @@ void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
     } else {
       DVLOG(1) << "The WebAPK installation failed.";
       webapk::TrackInstallEvent(webapk::INSTALL_FAILED);
+      if (web_contents_ && !web_contents_->IsBeingDestroyed()) {
+        web_contents_->GetMainFrame()->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kError,
+            base::StringPrintf(kWebApkFailureMessageTemplate,
+                               manifest_url_.spec().c_str()));
+      }
     }
     webapk::TrackInstallResult(result);
   }
