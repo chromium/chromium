@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
+#include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -29,7 +30,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router_metrics.h"
@@ -284,8 +285,8 @@ void CastDialogView::ShowAccessCodeCastDialog() {
       break;
   }
 
-  AccessCodeCastDialog::Show(cast_mode_set, controller_->GetInitiator(),
-      controller_->TakeStartPresentationContext(),
+  AccessCodeCastDialog::Show(
+      cast_mode_set, controller_->TakeMediaRouteStarter(),
       AccessCodeCastDialogOpenLocation::kBrowserCastMenu);
 }
 

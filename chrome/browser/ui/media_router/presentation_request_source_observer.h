@@ -13,7 +13,7 @@ class PresentationRequestSourceObserver {
  public:
   virtual ~PresentationRequestSourceObserver() = default;
 
-  virtual void OnSourceUpdated(std::u16string source_name) = 0;
+  virtual void OnSourceUpdated(std::u16string& source_name) = 0;
 };
 
 }  // namespace media_router

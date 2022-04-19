@@ -12,6 +12,7 @@
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
+#include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
@@ -28,11 +29,6 @@ using ::media_router::AccessCodeCastDiscoveryInterface;
 using ::media_router::CreateCastMediaSinkResult;
 using ::media_router::MediaSinkInternal;
 
-namespace content {
-struct PresentationRequest;
-class WebContents;
-}  // namespace content
-
 namespace media_router {
 class MediaRouter;
 }
@@ -42,30 +38,15 @@ class MediaRouter;
 namespace media_router {
 
 class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
-                              public MediaSinkWithCastModesObserver,
-                              public WebContentsPresentationManager::Observer {
+                              public MediaSinkWithCastModesObserver {
  public:
   using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 
   AccessCodeCastHandler(
       mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
       mojo::PendingRemote<access_code_cast::mojom::Page> page,
-      Profile* profile,
-      media_router::MediaRouter* media_router,
       const media_router::CastModeSet& cast_mode_set,
-      content::WebContents* web_contents,
-      std::unique_ptr<StartPresentationContext> start_presentation_context);
-
-  // Constructor that is used for testing.
-  AccessCodeCastHandler(
-      mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
-      mojo::PendingRemote<access_code_cast::mojom::Page> page,
-      Profile* profile,
-      media_router::MediaRouter* media_router,
-      const media_router::CastModeSet& cast_mode_set,
-      content::WebContents* web_contents,
-      std::unique_ptr<StartPresentationContext> start_presentation_context,
-      AccessCodeCastSinkService* access_code_sink_service);
+      std::unique_ptr<MediaRouteStarter> media_route_starter);
 
   ~AccessCodeCastHandler() override;
 
@@ -85,19 +66,21 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, DesktopMirroringError);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, OnSinkAddedResult);
 
+  // Constructor that is used for testing.
+  AccessCodeCastHandler(
+      mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
+      mojo::PendingRemote<access_code_cast::mojom::Page> page,
+      const media_router::CastModeSet& cast_mode_set,
+      AccessCodeCastSinkService* access_code_sink_service,
+      std::unique_ptr<MediaRouteStarter> media_route_starter);
+
   // Returns true if the specified cast mode is among the cast modes specified
   // for the dialog to use when it was initialized.
   bool IsCastModeAvailable(MediaCastMode mode) const;
 
-  // Initialize the query manager with the various potential media sources based
-  // on the suggested available cast modes.
-  void InitMediaSources();
-  // Add the various presentation sources to the QueryResultManager if
-  // presentation mode is available.
-  void InitPresentationSources();
-  // Add the various mirroring sources to the QueryResultManager if the
-  // requisite mirroring casting mode is available.
-  void InitMirroringSources();
+  MediaRouter* GetMediaRouter() const {
+    return media_route_starter_->GetMediaRouter();
+  }
 
   void OnSinkAddedResult(
       access_code_cast::mojom::AddSinkResultCode add_sink_result,
@@ -107,25 +90,13 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   void OnSinksUpdated(
       const std::vector<MediaSinkWithCastModes>& sinks) override;
 
-  // WebContentsPresentationManager::Observer
-  void OnDefaultPresentationChanged(
-      const content::PresentationRequest* presentation_request) override;
-
-  // Method to remove presentation sources from the QueryResultManager
-  void OnDefaultPresentationRemoved();
-
   // Callback passed to MediaRouter to receive response to route creation
   // requests.
   void OnRouteResponse(MediaCastMode cast_mode,
                        int route_request_id,
                        const MediaSink::Id& sink_id,
-                       MediaRouteResponseCallback presentation_callback,
                        CastToSinkCallback dialog_callback,
-                       mojom::RoutePresentationConnectionPtr connection,
                        const RouteRequestResult& result);
-
-  // Populates common route-related parameters for calls to MediaRouter.
-  absl::optional<RouteParameters> GetRouteParameters(MediaCastMode cast_mode);
 
   void SetSinkCallbackForTesting(AddSinkCallback callback);
 
@@ -140,37 +111,20 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   mojo::Remote<access_code_cast::mojom::Page> page_;
   mojo::Receiver<access_code_cast::mojom::PageHandler> receiver_;
 
-  // Used to fetch OAuth2 access tokens.
-  raw_ptr<Profile> const profile_;
-
-  const raw_ptr<media_router::MediaRouter> media_router_;
   const media_router::CastModeSet cast_mode_set_;
-  const raw_ptr<content::WebContents> web_contents_;
+
+  raw_ptr<AccessCodeCastSinkService> const access_code_sink_service_;
+
+  // Contains the info necessary to start a media route.
+  std::unique_ptr<MediaRouteStarter> media_route_starter_;
 
   AddSinkCallback add_sink_callback_;
 
   // The id of the media sink discovered from the access code;
   absl::optional<MediaSink::Id> sink_id_;
 
-  // Monitors and reports sink availability.
-  std::unique_ptr<QueryResultManager> query_result_manager_;
-
-  // Set to the presentation request corresponding to the presentation cast
-  // mode, if supported. Otherwise set to nullopt.
-  absl::optional<content::PresentationRequest> presentation_request_;
-
-  // If set, then the result of the next presentation route request will
-  // be handled by this object instead of |presentation_manager_|
-  std::unique_ptr<StartPresentationContext> start_presentation_context_;
-
-  // |presentation_manager_| notifies |this| whenever there is an update to the
-  // default PresentationRequest or MediaRoutes associated with |web_contents_|.
-  base::WeakPtr<WebContentsPresentationManager> presentation_manager_;
-
   // This contains a value only when tracking a pending route request.
-  absl::optional<MediaRouterUI::RouteRequest> current_route_request_;
-
-  raw_ptr<AccessCodeCastSinkService> const access_code_sink_service_;
+  absl::optional<RouteRequest> current_route_request_;
 
   base::WeakPtrFactory<AccessCodeCastHandler> weak_ptr_factory_{this};
 };

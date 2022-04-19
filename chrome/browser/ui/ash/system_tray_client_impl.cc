@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -658,7 +658,7 @@ void SystemTrayClientImpl::SetLocaleAndExit(
 
 void SystemTrayClientImpl::ShowAccessCodeCastingDialog(
     AccessCodeCastDialogOpenLocation open_location) {
-  AccessCodeCastDialog::ShowForDesktopMirroring(open_location);
+  media_router::AccessCodeCastDialog::ShowForDesktopMirroring(open_location);
 }
 
 void SystemTrayClientImpl::ShowCalendarEvent(

@@ -19,6 +19,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
+#include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -89,8 +90,7 @@ class MockCastDialogController : public CastDialogController {
   MOCK_METHOD1(StopCasting, void(const std::string& route_id));
   MOCK_METHOD1(ClearIssue, void(const Issue::Id& issue_id));
   MOCK_METHOD0(GetInitiator, content::WebContents*());
-  MOCK_METHOD0(TakeStartPresentationContext,
-               std::unique_ptr<StartPresentationContext>());
+  MOCK_METHOD0(TakeMediaRouteStarter, std::unique_ptr<MediaRouteStarter>());
 };
 
 class CastDialogViewTest : public ChromeViewsTestBase {

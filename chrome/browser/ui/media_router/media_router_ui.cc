@@ -91,67 +91,84 @@ void MaybeReportCastingSource(MediaCastMode cast_mode,
     base::UmaHistogramSparse("MediaRouter.Source.CastingSource", cast_mode);
 }
 
-void RunRouteResponseCallbacks(
-    MediaRouteResponseCallback presentation_callback,
-    std::vector<MediaRouteResultCallback> route_result_callbacks,
-    mojom::RoutePresentationConnectionPtr connection,
-    const RouteRequestResult& result) {
-  if (presentation_callback)
-    std::move(presentation_callback).Run(std::move(connection), result);
-  DCHECK(!connection);
-  for (auto& callback : route_result_callbacks)
-    std::move(callback).Run(result);
-}
-
 }  // namespace
 
-MediaRouterUI::MediaRouterUI(content::WebContents* initiator)
-    : presentation_manager_(WebContentsPresentationManager::Get(initiator)),
-      initiator_(initiator),
-      logger_(GetMediaRouter()->GetLogger()) {
-  CHECK(initiator_);
-  if (presentation_manager_)
-    presentation_manager_->AddObserver(this);
+MediaRouterUI::MediaRouterUI(
+    std::unique_ptr<MediaRouteStarter> media_route_starter)
+    : media_route_starter_(std::move(media_route_starter)),
+      router_(media_route_starter_->GetMediaRouter()),
+      logger_(router_->GetLogger()) {
+  DCHECK(media_route_starter_) << "Must have a media_route_starter!";
+  media_route_starter_->SetLoggerComponent(kLoggerComponent);
+  Init();
 }
 
 MediaRouterUI::~MediaRouterUI() {
+  if (media_route_starter_)
+    DetachFromMediaRouteStarter();
+}
+
+// static
+std::unique_ptr<MediaRouterUI> MediaRouterUI::CreateMediaRouterUI(
+    const CastModeSet& initial_modes,
+    content::WebContents* initiator,
+    std::unique_ptr<StartPresentationContext> start_presentation_context) {
+  DCHECK(initiator) << "Must have an initiator!";
+  auto media_route_starter = std::make_unique<MediaRouteStarter>(
+      initial_modes, initiator, std::move(start_presentation_context));
+  return std::make_unique<MediaRouterUI>(std::move(media_route_starter));
+}
+
+std::unique_ptr<MediaRouterUI> MediaRouterUI::CreateWithDefaultMediaSource(
+    content::WebContents* initiator) {
+  return CreateMediaRouterUI({MediaCastMode::PRESENTATION}, initiator,
+                             /* start_presentation_context */ nullptr);
+}
+
+// static
+std::unique_ptr<MediaRouterUI>
+MediaRouterUI::CreateWithDefaultMediaSourceAndMirroring(
+    content::WebContents* initiator) {
+  return CreateMediaRouterUI(
+      {MediaCastMode::PRESENTATION, MediaCastMode::TAB_MIRROR,
+       MediaCastMode::DESKTOP_MIRROR},
+      initiator, /* start_presentation_context */ nullptr);
+}
+
+// static
+std::unique_ptr<MediaRouterUI>
+MediaRouterUI::CreateWithStartPresentationContext(
+    content::WebContents* initiator,
+    std::unique_ptr<StartPresentationContext> context) {
+  DCHECK(context) << "context must not be null!";
+  return CreateMediaRouterUI({MediaCastMode::PRESENTATION}, initiator,
+                             std::move(context));
+}
+
+// static
+std::unique_ptr<MediaRouterUI>
+MediaRouterUI::CreateWithStartPresentationContextAndMirroring(
+    content::WebContents* initiator,
+    std::unique_ptr<StartPresentationContext> context) {
+  DCHECK(context) << "context must not be null!";
+  return CreateMediaRouterUI(
+      {MediaCastMode::PRESENTATION, MediaCastMode::TAB_MIRROR,
+       MediaCastMode::DESKTOP_MIRROR},
+      initiator, std::move(context));
+}
+
+void MediaRouterUI::DetachFromMediaRouteStarter() {
   for (CastDialogController::Observer& observer : observers_)
     observer.OnControllerInvalidated();
 
-  if (query_result_manager_.get())
-    query_result_manager_->RemoveObserver(this);
-  if (presentation_manager_)
-    presentation_manager_->RemoveObserver(this);
-
-  // If |start_presentation_context_| still exists, then it means presentation
-  // route request was never attempted.
-  if (start_presentation_context_) {
-    std::vector<MediaSinkWithCastModes> sinks;
-    if (query_result_manager_.get()) {
-      sinks = query_result_manager_->GetSinksWithCastModes();
-    }
-    bool presentation_sinks_available = std::any_of(
-        sinks.begin(), sinks.end(), [](const MediaSinkWithCastModes& sink) {
-          return base::Contains(sink.cast_modes, MediaCastMode::PRESENTATION);
-        });
-    if (presentation_sinks_available) {
-      start_presentation_context_->InvokeErrorCallback(
-          blink::mojom::PresentationError(blink::mojom::PresentationErrorType::
-                                              PRESENTATION_REQUEST_CANCELLED,
-                                          "Dialog closed."));
-    } else {
-      start_presentation_context_->InvokeErrorCallback(
-          blink::mojom::PresentationError(
-              blink::mojom::PresentationErrorType::NO_AVAILABLE_SCREENS,
-              "No screens found."));
-    }
-  }
+  media_route_starter()->RemovePresentationRequestSourceObserver(this);
+  media_route_starter()->RemoveMediaSinkWithCastModesObserver(this);
 }
 
 void MediaRouterUI::AddObserver(CastDialogController::Observer* observer) {
   observers_.AddObserver(observer);
   // TODO(takumif): Update the header when this object is initialized instead.
-  UpdateModelHeader();
+  UpdateModelHeader(media_route_starter()->GetPresentationRequestSourceName());
 }
 
 void MediaRouterUI::RemoveObserver(CastDialogController::Observer* observer) {
@@ -179,44 +196,10 @@ content::WebContents* MediaRouterUI::GetInitiator() {
   return initiator();
 }
 
-std::unique_ptr<StartPresentationContext>
-MediaRouterUI::TakeStartPresentationContext() {
-  return std::move(start_presentation_context_);
-}
-
-void MediaRouterUI::InitWithDefaultMediaSource() {
-  DCHECK(!query_result_manager_);
-  InitCommon();
-
-  if (presentation_manager_ &&
-      presentation_manager_->HasDefaultPresentationRequest()) {
-    OnDefaultPresentationChanged(
-        &presentation_manager_->GetDefaultPresentationRequest());
-  }
-}
-
-void MediaRouterUI::InitWithDefaultMediaSourceAndMirroring() {
-  InitWithDefaultMediaSource();
-  InitMirroring();
-}
-
-void MediaRouterUI::InitWithStartPresentationContext(
-    std::unique_ptr<StartPresentationContext> context) {
-  DCHECK(context);
-  DCHECK(!start_presentation_context_);
-  DCHECK(!query_result_manager_);
-
-  start_presentation_context_ = std::move(context);
-
-  InitCommon();
-  OnDefaultPresentationChanged(
-      &start_presentation_context_->presentation_request());
-}
-
-void MediaRouterUI::InitWithStartPresentationContextAndMirroring(
-    std::unique_ptr<StartPresentationContext> context) {
-  InitWithStartPresentationContext(std::move(context));
-  InitMirroring();
+std::unique_ptr<MediaRouteStarter> MediaRouterUI::TakeMediaRouteStarter() {
+  DCHECK(media_route_starter_) << "MediaRouteStarter already taken!";
+  DetachFromMediaRouteStarter();
+  return std::move(media_route_starter_);
 }
 
 bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
@@ -224,31 +207,32 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
   logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                    "CreateRoute requested by MediaRouterViewsUI.", sink_id, "",
                    "");
-  if (RequiresScreenCapturePermission(cast_mode)) {
-    const bool screen_capture_allowed = GetScreenCapturePermission();
-    if (!screen_capture_allowed) {
-      SendIssueForScreenPermission(sink_id);
-      return false;
-    }
-  }
 
-  // Default the tab casting the content to the initiator, and change if
-  // necessary.
-  content::WebContents* tab_contents = initiator_;
-
-  absl::optional<RouteParameters> params =
-      GetRouteParameters(sink_id, cast_mode);
+  auto params =
+      media_route_starter()->CreateRouteParameters(sink_id, cast_mode);
   if (!params) {
     SendIssueForUnableToCast(cast_mode, sink_id);
     return false;
   }
+
+  if (!MediaRouteStarter::GetScreenCapturePermission(cast_mode)) {
+    SendIssueForScreenPermission(sink_id);
+    return false;
+  }
+
   GetIssueManager()->ClearNonBlockingIssues();
-  GetMediaRouter()->CreateRoute(
-      params->source_id, sink_id, params->origin, tab_contents,
-      base::BindOnce(&RunRouteResponseCallbacks,
-                     std::move(params->presentation_callback),
-                     std::move(params->route_result_callbacks)),
-      params->timeout, params->off_the_record);
+
+  current_route_request_ = absl::make_optional(*params->request);
+
+  params->route_result_callbacks.push_back(
+      base::BindOnce(&MaybeReportCastingSource, cast_mode));
+
+  params->route_result_callbacks.push_back(base::BindOnce(
+      &MediaRouterUI::OnRouteResponseReceived, weak_factory_.GetWeakPtr(),
+      current_route_request_->id, sink_id, cast_mode,
+      media_route_starter()->GetPresentationRequestSourceName()));
+
+  media_route_starter()->StartRoute(std::move(params));
 
   // TODO(crbug.com/1015203): This call to UpdateSinks() was originally in
   // StartCasting(), but it causes Chrome to crash when the desktop picker
@@ -288,19 +272,6 @@ std::vector<MediaSinkWithCastModes> MediaRouterUI::GetEnabledSinks() const {
                 });
 
   return enabled_sinks;
-}
-
-std::u16string MediaRouterUI::GetPresentationRequestSourceName() const {
-  const url::Origin frame_origin = GetFrameOrigin();
-  // Presentation URLs are only possible on https: and other secure contexts,
-  // so we can omit http/https schemes here.
-  return frame_origin.scheme() == extensions::kExtensionScheme
-             ? base::UTF8ToUTF16(GetExtensionName(
-                   frame_origin.GetURL(), extensions::ExtensionRegistry::Get(
-                                              initiator_->GetBrowserContext())))
-             : url_formatter::FormatOriginForSecurityDisplay(
-                   frame_origin,
-                   url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 }
 
 void MediaRouterUI::AddIssue(const IssueInfo& issue) {
@@ -350,14 +321,6 @@ void MediaRouterUI::LogMediaSinkStatus() {
       "", "", "");
 }
 
-MediaRouterUI::RouteRequest::RouteRequest(const MediaSink::Id& sink_id)
-    : sink_id(sink_id) {
-  static base::AtomicSequenceNumber g_next_request_id;
-  id = g_next_request_id.GetNext();
-}
-
-MediaRouterUI::RouteRequest::~RouteRequest() = default;
-
 MediaRouterUI::UiIssuesObserver::UiIssuesObserver(IssueManager* issue_manager,
                                                   MediaRouterUI* ui)
     : IssuesObserver(issue_manager), ui_(ui) {
@@ -388,21 +351,14 @@ void MediaRouterUI::UIMediaRoutesObserver::OnRoutesUpdated(
   callback_.Run(routes);
 }
 
-std::vector<MediaSource> MediaRouterUI::GetSourcesForCastMode(
-    MediaCastMode cast_mode) const {
-  return query_result_manager_->GetSourcesForCastMode(cast_mode);
-}
+void MediaRouterUI::Init() {
+  DCHECK(!collator_) << "Init should only be called once!";
 
-void MediaRouterUI::HandleCreateSessionRequestRouteResponse(
-    const RouteRequestResult&) {
-  // TODO(crbug.com/868186): Close the dialog.
-}
+  media_route_starter()->AddMediaSinkWithCastModesObserver(this);
+  media_route_starter()->AddPresentationRequestSourceObserver(this);
 
-void MediaRouterUI::InitCommon() {
   GetMediaRouter()->OnUserGesture();
 
-  // Create |collator_| before |query_result_manager_| so that |collator_| is
-  // already set up when we get a callback from |query_result_manager_|.
   UErrorCode error = U_ZERO_ERROR;
   const std::string& locale = g_browser_process->GetApplicationLocale();
   collator_.reset(
@@ -412,15 +368,11 @@ void MediaRouterUI::InitCommon() {
     collator_.reset();
   }
 
-  query_result_manager_ =
-      std::make_unique<QueryResultManager>(GetMediaRouter());
-  query_result_manager_->AddObserver(this);
-
   // Get the current list of media routes, so that the WebUI will have routes
   // information at initialization.
   OnRoutesUpdated(GetMediaRouter()->GetCurrentRoutes());
   display_observer_ = WebContentsDisplayObserver::Create(
-      initiator_,
+      initiator(),
       base::BindRepeating(&MediaRouterUI::UpdateSinks, base::Unretained(this)));
 
   routes_observer_ = std::make_unique<UIMediaRoutesObserver>(
@@ -430,47 +382,8 @@ void MediaRouterUI::InitCommon() {
   StartObservingIssues();
 }
 
-void MediaRouterUI::InitMirroring() {
-  // Use a placeholder URL as origin for mirroring.
-  url::Origin origin = url::Origin::Create(GURL());
-
-  // Desktop mirror mode is always available.
-  query_result_manager_->SetSourcesForCastMode(
-      MediaCastMode::DESKTOP_MIRROR, {MediaSource::ForUnchosenDesktop()},
-      origin);
-
-  SessionID::id_type tab_id =
-      sessions::SessionTabHelper::IdForTab(initiator_).id();
-  if (tab_id != -1) {
-    MediaSource mirroring_source(MediaSource::ForTab(tab_id));
-    query_result_manager_->SetSourcesForCastMode(MediaCastMode::TAB_MIRROR,
-                                                 {mirroring_source}, origin);
-  }
-}
-
-void MediaRouterUI::OnDefaultPresentationChanged(
-    const content::PresentationRequest* presentation_request) {
-  if (!presentation_request) {
-    OnDefaultPresentationRemoved();
-    return;
-  }
-
-  std::vector<MediaSource> sources;
-  for (const auto& url : presentation_request->presentation_urls) {
-    sources.push_back(MediaSource::ForPresentationUrl(url));
-  }
-  presentation_request_ = *presentation_request;
-  query_result_manager_->SetSourcesForCastMode(
-      MediaCastMode::PRESENTATION, sources,
-      presentation_request_->frame_origin);
-  UpdateModelHeader();
-}
-
-void MediaRouterUI::OnDefaultPresentationRemoved() {
-  presentation_request_.reset();
-  query_result_manager_->RemoveSourcesForCastMode(MediaCastMode::PRESENTATION);
-
-  UpdateModelHeader();
+void MediaRouterUI::OnSourceUpdated(std::u16string& source_name) {
+  UpdateModelHeader(source_name);
 }
 
 void MediaRouterUI::UpdateSinks() {
@@ -486,93 +399,6 @@ void MediaRouterUI::UpdateSinks() {
   model_.set_media_sinks(std::move(media_sinks));
   for (CastDialogController::Observer& observer : observers_)
     observer.OnModelUpdated(model_);
-}
-
-absl::optional<RouteParameters> MediaRouterUI::GetRouteParameters(
-    const MediaSink::Id& sink_id,
-    MediaCastMode cast_mode) {
-  DCHECK(query_result_manager_);
-  RouteParameters params;
-
-  // Note that there is a rarely-encountered bug, where the MediaCastMode to
-  // MediaSource mapping could have been updated, between when the user clicked
-  // on the UI to start a create route request, and when this function is
-  // called. However, since the user does not have visibility into the
-  // MediaSource, and that it occurs very rarely in practice, we leave it as-is
-  // for now.
-  std::unique_ptr<MediaSource> source =
-      query_result_manager_->GetSourceForCastModeAndSink(cast_mode, sink_id);
-
-  if (!source) {
-    logger_->LogError(
-        mojom::LogCategory::kUi, kLoggerComponent,
-        base::StringPrintf("No corresponding MediaSource for cast mode %d.",
-                           static_cast<int>(cast_mode)),
-        sink_id, "", "");
-    return absl::nullopt;
-  }
-  params.source_id = source->id();
-
-  bool for_presentation_source = cast_mode == MediaCastMode::PRESENTATION;
-  if (for_presentation_source && !presentation_request_) {
-    logger_->LogError(mojom::LogCategory::kUi, kLoggerComponent,
-                      "Requested to create a route for presentation, but "
-                      "presentation request is missing.",
-                      sink_id, source->id(), "");
-    return absl::nullopt;
-  }
-
-  current_route_request_ = absl::make_optional<RouteRequest>(sink_id);
-  params.origin = for_presentation_source ? presentation_request_->frame_origin
-                                          : url::Origin::Create(GURL());
-
-  // This callback must be invoked before
-  // HandleCreateSessionRequestRouteResponse(), which closes the dialog and
-  // destroys |this|.
-  params.route_result_callbacks.push_back(
-      base::BindOnce(&MaybeReportCastingSource, cast_mode));
-
-  // There are 3 cases. In cases (1) and (3) the MediaRouterViewsUI will need to
-  // be notified via OnRouteResponseReceived(). In case (2) the dialog will be
-  // closed before that via HandleCreateSessionRequestRouteResponse().
-  // (1) Non-presentation route request (e.g., mirroring). No additional
-  //     notification necessary.
-  // (2) Presentation route request for a PresentationRequest.start() call.
-  //     The StartPresentationContext will need to be answered with the route
-  //     response.
-  // (3) Browser-initiated presentation route request. If successful,
-  //     WebContentsPresentationManager will have to be notified. Note that we
-  //     treat subsequent route requests from a Presentation API-initiated
-  //     dialogs as browser-initiated.
-  // TODO(https://crbug.com/868186): Close the Views dialog in case (2).
-  params.route_result_callbacks.push_back(
-      base::BindOnce(&MediaRouterUI::OnRouteResponseReceived,
-                     weak_factory_.GetWeakPtr(), current_route_request_->id,
-                     sink_id, cast_mode, GetPresentationRequestSourceName()));
-  if (for_presentation_source) {
-    if (start_presentation_context_) {
-      params.presentation_callback =
-          base::BindOnce(&StartPresentationContext::HandleRouteResponse,
-                         std::move(start_presentation_context_));
-      params.route_result_callbacks.push_back(base::BindOnce(
-          &MediaRouterUI::HandleCreateSessionRequestRouteResponse,
-          weak_factory_.GetWeakPtr()));
-    } else if (presentation_manager_) {
-      params.presentation_callback = base::BindOnce(
-          &WebContentsPresentationManager::OnPresentationResponse,
-          presentation_manager_, *presentation_request_);
-    }
-  }
-
-  params.timeout = GetRouteRequestTimeout(cast_mode);
-  params.off_the_record = initiator_->GetBrowserContext()->IsOffTheRecord();
-
-  return absl::make_optional(std::move(params));
-}
-
-url::Origin MediaRouterUI::GetFrameOrigin() const {
-  return presentation_request_ ? presentation_request_->frame_origin
-                               : url::Origin();
 }
 
 void MediaRouterUI::SendIssueForRouteTimeout(
@@ -732,8 +558,7 @@ void MediaRouterUI::OnRouteResponseReceived(
   }
 }
 
-void MediaRouterUI::UpdateModelHeader() {
-  const std::u16string source_name = GetPresentationRequestSourceName();
+void MediaRouterUI::UpdateModelHeader(const std::u16string& source_name) {
   const std::u16string header_text =
       source_name.empty()
           ? l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_TAB_MIRROR_CAST_MODE)
@@ -776,12 +601,11 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
 }
 
 MediaRouter* MediaRouterUI::GetMediaRouter() const {
-  return MediaRouterFactory::GetApiForBrowserContext(
-      initiator_->GetBrowserContext());
+  return router_;
 }
 
 Browser* MediaRouterUI::GetBrowser() {
-  return chrome::FindBrowserWithWebContents(initiator_);
+  return chrome::FindBrowserWithWebContents(initiator());
 }
 
 void MediaRouterUI::SimulateDocumentAvailableForTest() {

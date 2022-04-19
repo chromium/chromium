@@ -176,8 +176,6 @@ bool MediaRouteStarter::GetScreenCapturePermission(MediaCastMode cast_mode) {
 void MediaRouteStarter::StartRoute(std::unique_ptr<RouteParameters> params) {
   DCHECK(params) << "Must have params!";
   DCHECK(params->request) << "Must have params->request!";
-  DCHECK(!params->presentation_callback)
-      << "params->presentation_callback is not used!";
 
   MediaRouteResponseCallback presentation_callback;
 
@@ -215,6 +213,13 @@ std::u16string MediaRouteStarter::GetPresentationRequestSourceName() const {
              : url_formatter::FormatOriginForSecurityDisplay(
                    frame_origin,
                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+}
+
+bool MediaRouteStarter::SinkSupportsCastMode(const MediaSink::Id& sink_id,
+                                             MediaCastMode cast_mode) const {
+  return GetQueryResultManager()
+      ->GetSourceForCastModeAndSink(cast_mode, sink_id)
+      .get();
 }
 
 void MediaRouteStarter::OnDefaultPresentationChanged(

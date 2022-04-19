@@ -144,13 +144,11 @@ void MediaRouterDialogControllerViews::OnServiceDisabled() {
 }
 
 void MediaRouterDialogControllerViews::InitializeMediaRouterUI() {
-  ui_ = std::make_unique<MediaRouterUI>(initiator());
-  if (start_presentation_context_) {
-    ui_->InitWithStartPresentationContextAndMirroring(
-        std::move(start_presentation_context_));
-  } else {
-    ui_->InitWithDefaultMediaSourceAndMirroring();
-  }
+  ui_ = start_presentation_context_
+            ? MediaRouterUI::CreateWithStartPresentationContextAndMirroring(
+                  initiator(), std::move(start_presentation_context_))
+            : MediaRouterUI::CreateWithDefaultMediaSourceAndMirroring(
+                  initiator());
 }
 
 void MediaRouterDialogControllerViews::ShowGlobalMeidaControlsDialog(

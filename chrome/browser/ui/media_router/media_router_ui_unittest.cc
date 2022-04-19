@@ -149,8 +149,8 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*mock_router_, GetLogger()).WillByDefault(Return(logger_.get()));
 
     CreateSessionServiceTabHelper(web_contents());
-    ui_ = std::make_unique<MediaRouterUI>(web_contents());
-    ui_->InitWithDefaultMediaSourceAndMirroring();
+    ui_ =
+        MediaRouterUI::CreateWithDefaultMediaSourceAndMirroring(web_contents());
   }
 
   void TearDown() override {
@@ -172,8 +172,8 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     content::RenderFrameHostTester::CommitPendingLoad(
         &web_contents()->GetController());
     CreateSessionServiceTabHelper(web_contents());
-    ui_ = std::make_unique<MediaRouterUI>(web_contents());
-    ui_->InitWithDefaultMediaSourceAndMirroring();
+    ui_ =
+        MediaRouterUI::CreateWithDefaultMediaSourceAndMirroring(web_contents());
   }
 
   // These methods are used so that we don't have to friend each test case that
@@ -240,9 +240,10 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
         base::BindOnce(&PresentationRequestCallbacks::Error,
                        base::Unretained(request_callbacks.get())));
     StartPresentationContext* context_ptr = start_presentation_context_.get();
-    ui_->set_start_presentation_context_for_test(
+    ui_->media_route_starter()->set_start_presentation_context_for_test(
         std::move(start_presentation_context_));
-    ui_->OnDefaultPresentationChanged(&context_ptr->presentation_request());
+    ui_->media_route_starter()->OnDefaultPresentationChanged(
+        &context_ptr->presentation_request());
     return request_callbacks;
   }
 
@@ -341,7 +342,8 @@ TEST_F(MediaRouterViewsUITest, SetDialogHeader) {
   // An https origin is included in the dialog header without the scheme.
   content::PresentationRequest presentation_request(
       content::GlobalRenderFrameHostId(), {presentation_url}, https_origin);
-  ui_->OnDefaultPresentationChanged(&presentation_request);
+  ui_->media_route_starter()->OnDefaultPresentationChanged(
+      &presentation_request);
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,
                                        base::UTF8ToUTF16(https_origin.host())),
             current_header);
@@ -350,7 +352,8 @@ TEST_F(MediaRouterViewsUITest, SetDialogHeader) {
   // mirroring header.
   presentation_request = content::PresentationRequest(
       content::GlobalRenderFrameHostId(), {presentation_url}, url::Origin());
-  ui_->OnDefaultPresentationChanged(&presentation_request);
+  ui_->media_route_starter()->OnDefaultPresentationChanged(
+      &presentation_request);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_TAB_MIRROR_CAST_MODE),
             current_header);
 
@@ -369,7 +372,8 @@ TEST_F(MediaRouterViewsUITest, SetDialogHeader) {
 
   presentation_request = content::PresentationRequest(
       content::GlobalRenderFrameHostId(), {presentation_url}, extension_origin);
-  ui_->OnDefaultPresentationChanged(&presentation_request);
+  ui_->media_route_starter()->OnDefaultPresentationChanged(
+      &presentation_request);
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,
                                        std::u16string(u"Test Extension")),
             current_header);
@@ -503,7 +507,8 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForPresentation) {
   content::PresentationRequest presentation_request(
       {0, 0}, {GURL("https://presentationurl.com")},
       url::Origin::Create(GURL("https://frameurl.fakeurl")));
-  ui_->OnDefaultPresentationChanged(&presentation_request);
+  ui_->media_route_starter()->OnDefaultPresentationChanged(
+      &presentation_request);
   StartCastingAndExpectTimeout(
       MediaCastMode::PRESENTATION,
       l10n_util::GetStringFUTF8(IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT,

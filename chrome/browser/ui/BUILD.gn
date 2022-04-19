@@ -1447,6 +1447,8 @@ static_library("ui") {
       "views/eye_dropper/eye_dropper_view.h",
       "views/eye_dropper/eye_dropper_view_mac.h",
       "views/eye_dropper/eye_dropper_view_mac.mm",
+      "webui/access_code_cast/access_code_cast_dialog.cc",
+      "webui/access_code_cast/access_code_cast_dialog.h",
       "webui/access_code_cast/access_code_cast_handler.cc",
       "webui/access_code_cast/access_code_cast_handler.h",
       "webui/access_code_cast/access_code_cast_ui.cc",

@@ -35,14 +35,6 @@ class QueryResultManager;
 // UI controllers
 class MediaRouteStarter : public WebContentsPresentationManager::Observer {
  public:
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    virtual void OnPresentationRequestSourceUpdated(
-        std::u16string presentation_request_source_name) = 0;
-  };
-
   MediaRouteStarter(
       const CastModeSet& initial_modes,
       content::WebContents* web_contents,
@@ -67,7 +59,7 @@ class MediaRouteStarter : public WebContentsPresentationManager::Observer {
   content::WebContents* GetWebContents() const { return web_contents_; }
 
   // Returns the profile associated with this casting attempt. Will either be
-  // the profile associated with the browser containing the contentg being
+  // the profile associated with the browser containing the content being
   // cast, or the active user profile in the case of desktop mirroring.
   virtual Profile* GetProfile() const;
 
@@ -95,6 +87,10 @@ class MediaRouteStarter : public WebContentsPresentationManager::Observer {
   // Returns a PresentationRequest source name that can be shown in the dialog.
   std::u16string GetPresentationRequestSourceName() const;
 
+  // Returns true if the specified sink supports the specified cast mode.
+  bool SinkSupportsCastMode(const MediaSink::Id& sink_id,
+                            MediaCastMode cast_mode) const;
+
   // Determines if the given cast mode requires user permission, and if so,
   // obtains it. Will only be false if permission is required and user does not
   // provide.
@@ -102,11 +98,15 @@ class MediaRouteStarter : public WebContentsPresentationManager::Observer {
 
  private:
   friend class MediaRouteStarterTest;
+  friend class MediaRouterViewsUITest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouteStarterTest,
                            OnPresentationRequestSourceRemoved);
   FRIEND_TEST_ALL_PREFIXES(MediaRouteStarterTest,
                            OnPresentationRequestSourceUpdated);
   FRIEND_TEST_ALL_PREFIXES(MediaRouteStarterTest, GetScreenCapturePermission);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, SetDialogHeader);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest,
+                           RouteCreationTimeoutForPresentation);
 
   void InitPresentationSources(const CastModeSet& initial_modes);
   void InitMirroringSources(const CastModeSet& initial_modes);
@@ -129,6 +129,11 @@ class MediaRouteStarter : public WebContentsPresentationManager::Observer {
   // WebContentsPresentationManager::Observer
   void OnDefaultPresentationChanged(
       const content::PresentationRequest* presentation_request) override;
+
+  void set_start_presentation_context_for_test(
+      std::unique_ptr<StartPresentationContext> start_presentation_context) {
+    start_presentation_context_ = std::move(start_presentation_context);
+  }
 
   // Component name used for media router logging.
   std::string component_ = "MediaRouteStarter";

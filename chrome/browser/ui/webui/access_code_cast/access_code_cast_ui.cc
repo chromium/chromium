@@ -4,230 +4,22 @@
 
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 
-#include "base/containers/span.h"
-#include "base/json/json_writer.h"
-#include "base/memory/ptr_util.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
-#include "chrome/browser/ui/views/chrome_web_dialog_view.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/access_code_cast_resources.h"
 #include "chrome/grit/access_code_cast_resources_map.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
-#include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/bindings_policy.h"
-#include "ui/base/webui/web_ui_util.h"
-#include "ui/views/widget/widget.h"
 
-using media_router::AccessCodeCastHandler;
+// TODO(b/223434114): Add tests for AccessCodeCastUI
 
-// Creates default params for showing AccessCodeCastDialog
-views::Widget::InitParams CreateParams() {
-  views::Widget::InitParams params;
-  params.remove_standard_frame = true;
-  params.corner_radius = 12;
-  params.type = views::Widget::InitParams::Type::TYPE_BUBBLE;
-  // Make sure the dialog border is rendered correctly
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+namespace media_router {
 
-  return params;
-}
-
-// TODO(b/223434114): Add tests for AccessCodeCastDialog and AccessCodeCastUI
-
-///////////////////////////////////////////////////////////////////////////////
-//  AccessCodeCast dialog:
-///////////////////////////////////////////////////////////////////////////////
-
-AccessCodeCastDialog::AccessCodeCastDialog(
-    content::BrowserContext* context,
-    const media_router::CastModeSet& cast_mode_set,
-    content::WebContents* web_contents,
-    std::unique_ptr<media_router::StartPresentationContext>
-        start_presentation_context)
-    : context_(context),
-      cast_mode_set_(cast_mode_set),
-      web_contents_(web_contents),
-      start_presentation_context_(std::move(start_presentation_context)) {
-  DCHECK(context_) << "Must have a context!";
-  DCHECK(!cast_mode_set_.empty())
-      << "Must have at least one available casting mode!";
-  DCHECK(*cast_mode_set_.begin() ==
-             media_router::MediaCastMode::DESKTOP_MIRROR ||
-         web_contents_)
-      << "Web contents must be set for non desktop-mode casting!";
-  set_can_resize(false);
-}
-
-AccessCodeCastDialog::~AccessCodeCastDialog() {
-  if (dialog_widget_)
-    dialog_widget_->RemoveObserver(this);
-}
-
-void AccessCodeCastDialog::Show(
-    const media_router::CastModeSet& cast_mode_set,
-    content::WebContents* web_contents,
-    std::unique_ptr<media_router::StartPresentationContext>
-        start_presentation_context,
-    AccessCodeCastDialogOpenLocation open_location) {
-  gfx::NativeView parent = nullptr;
-  if (web_contents) {
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-        web_contents->GetTopLevelNativeWindow());
-    DCHECK(widget) << "Could not find a parent widget!";
-    if (widget)
-      parent = widget->GetNativeView();
-  }
-  AccessCodeCastDialog::Show(
-      parent,
-      web_contents ? web_contents->GetBrowserContext()
-                   : ProfileManager::GetActiveUserProfile(),
-      cast_mode_set, web_contents, std::move(start_presentation_context),
-      open_location);
-}
-
-void AccessCodeCastDialog::ShowForDesktopMirroring(
-    AccessCodeCastDialogOpenLocation open_location) {
-  Show({media_router::MediaCastMode::DESKTOP_MIRROR}, nullptr, nullptr,
-      open_location);
-}
-
-// views::WidgetObserver:
-void AccessCodeCastDialog::OnWidgetActivationChanged(views::Widget* widget,
-                                                     bool active) {
-  DCHECK(dialog_widget_)
-      << "dialog_widget_ must be set exactly once during dialog setup";
-  if (dialog_widget_ && !active) {
-    dialog_widget_->Close();
-  }
-}
-
-void AccessCodeCastDialog::Show(
-    gfx::NativeView parent,
-    content::BrowserContext* context,
-    const media_router::CastModeSet& cast_mode_set,
-    content::WebContents* web_contents,
-    std::unique_ptr<media_router::StartPresentationContext>
-        start_presentation_context,
-    AccessCodeCastDialogOpenLocation open_location) {
-  views::Widget::InitParams extra_params = CreateParams();
-  auto* dialog = new AccessCodeCastDialog(context, cast_mode_set, web_contents,
-      std::move(start_presentation_context));
-  gfx::NativeWindow dialog_window = chrome::ShowWebDialogWithParams(
-      parent, context, dialog,
-      absl::make_optional<views::Widget::InitParams>(
-          std::move(extra_params)));
-  views::Widget* dialog_widget = views::Widget::GetWidgetForNativeWindow(
-    dialog_window);
-  dialog->ObserveWidget(dialog_widget);
-  AccessCodeCastMetrics::RecordDialogOpenLocation(open_location);
-  if (web_contents) {
-    constrained_window::UpdateWidgetModalDialogPosition(dialog_widget,
-      CreateChromeConstrainedWindowViewsClient()->GetModalDialogHost(
-        web_contents->GetTopLevelNativeWindow()));
-  }
-}
-
-ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
-  // If there are no web_contents_, that means that the dialog was launched
-  // from the system tray, so therefore it shuold be a system dialog.
-  return web_contents_ ? ui::MODAL_TYPE_NONE : ui::MODAL_TYPE_SYSTEM;
-}
-
-std::u16string AccessCodeCastDialog::GetDialogTitle() const {
-  return std::u16string();
-}
-
-GURL AccessCodeCastDialog::GetDialogContentURL() const {
-  return GURL(chrome::kChromeUIAccessCodeCastURL);
-}
-
-void AccessCodeCastDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
-  const int kDefaultWidth = 448;
-  const int kDefaultHeight = 271;
-  size->SetSize(kDefaultWidth, kDefaultHeight);
-}
-
-std::string AccessCodeCastDialog::GetDialogArgs() const {
-  base::DictionaryValue args;
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
-}
-
-void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
-  webui_ = webui;
-  AccessCodeCastUI* controller =
-      webui_->GetController()->GetAs<AccessCodeCastUI>();
-  controller->SetCastModeSet(cast_mode_set_);
-  controller->SetBrowserContext(context_);
-  controller->SetWebContents(web_contents_);
-}
-
-void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {
-  delete this;
-}
-
-void AccessCodeCastDialog::OnCloseContents(content::WebContents* source,
-                                           bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool AccessCodeCastDialog::ShouldShowDialogTitle() const {
-  return false;
-}
-
-bool AccessCodeCastDialog::ShouldShowCloseButton() const {
-  return false;
-}
-
-AccessCodeCastDialog::FrameKind
-AccessCodeCastDialog::GetWebDialogFrameKind() const {
-  return FrameKind::kDialog;
-}
-
-// Ensure the WebUI dialog has camera access
-void AccessCodeCastDialog::RequestMediaAccessPermission(
-    content::WebContents* web_contents,
-    const content::MediaStreamRequest& request,
-    content::MediaResponseCallback callback) {
-  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(callback), nullptr /* extension */);
-}
-
-bool AccessCodeCastDialog::CheckMediaAccessPermission(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
-    blink::mojom::MediaStreamType type) {
-  return true;
-}
-
-void AccessCodeCastDialog::ObserveWidget(views::Widget* widget) {
-  DCHECK(widget) << "Observed dialog widget must not be null";
-  dialog_widget_ = widget;
-  dialog_widget_->AddObserver(this);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//  AccessCodeCast UI controller:
-///////////////////////////////////////////////////////////////////////////////
 AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
     : MojoWebDialogUI(web_ui) {
   auto source = base::WrapUnique(
@@ -266,23 +58,13 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
 
 AccessCodeCastUI::~AccessCodeCastUI() = default;
 
-void AccessCodeCastUI::SetCastModeSet(
-    const media_router::CastModeSet& cast_mode_set) {
+void AccessCodeCastUI::SetCastModeSet(const CastModeSet& cast_mode_set) {
   cast_mode_set_ = cast_mode_set;
 }
 
-void AccessCodeCastUI::SetBrowserContext(content::BrowserContext* context) {
-  context_ = context;
-}
-
-void AccessCodeCastUI::SetWebContents(content::WebContents* web_contents) {
-  web_contents_ = web_contents;
-}
-
-void AccessCodeCastUI::SetStartPresentationContext(
-    std::unique_ptr<media_router::StartPresentationContext>
-        start_presentation_context) {
-  start_presentation_context_ = std::move(start_presentation_context);
+void AccessCodeCastUI::SetMediaRouteStarter(
+    std::unique_ptr<MediaRouteStarter> media_route_starter) {
+  media_route_starter_ = std::move(media_route_starter);
 }
 
 void AccessCodeCastUI::BindInterface(
@@ -297,19 +79,11 @@ void AccessCodeCastUI::CreatePageHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> receiver) {
   DCHECK(page);
 
-  // We only get a MediaRouter if the browser context is present. This is to
-  // prevent our js unit tests from failing.
-  media_router::MediaRouter* router =
-      context_
-          ? media_router::MediaRouterFactory::GetApiForBrowserContext(context_)
-          : nullptr;
-
   page_handler_ = std::make_unique<AccessCodeCastHandler>(
-      std::move(receiver), std::move(page),
-      context_ ? Profile::FromBrowserContext(context_)
-               : Profile::FromWebUI(web_ui()),
-      router, cast_mode_set_, web_contents_,
-      std::move(start_presentation_context_));
+      std::move(receiver), std::move(page), cast_mode_set_,
+      std::move(media_route_starter_));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AccessCodeCastUI)
+
+}  // namespace media_router

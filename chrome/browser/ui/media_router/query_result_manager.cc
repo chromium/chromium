@@ -94,6 +94,8 @@ void QueryResultManager::AddObserver(MediaSinkWithCastModesObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(observer);
   observers_.AddObserver(observer);
+  // Make sure observer knows about any pre-existing sinks
+  NotifyOnResultsUpdated();
 }
 
 void QueryResultManager::RemoveObserver(

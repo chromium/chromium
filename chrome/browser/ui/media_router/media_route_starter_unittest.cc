@@ -76,7 +76,7 @@ class MockPresentationRequestSourceObserver
       starter_->RemovePresentationRequestSourceObserver(this);
   }
 
-  MOCK_METHOD(void, OnSourceUpdated, (std::u16string));
+  MOCK_METHOD(void, OnSourceUpdated, (std::u16string&));
 
  private:
   raw_ptr<MediaRouteStarter> starter_ = nullptr;

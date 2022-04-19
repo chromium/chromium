@@ -339,13 +339,13 @@ MediaNotificationService::CreateCastDialogControllerForSession(
   if (!web_contents)
     return nullptr;
 
-  auto ui = std::make_unique<media_router::MediaRouterUI>(web_contents);
   if (context_) {
-    ui->InitWithStartPresentationContext(std::move(context_));
-  } else {
-    ui->InitWithDefaultMediaSource();
+    return media_router::MediaRouterUI::CreateWithStartPresentationContext(
+        web_contents, std::move(context_));
   }
-  return ui;
+
+  return media_router::MediaRouterUI::CreateWithDefaultMediaSource(
+      web_contents);
 }
 
 std::unique_ptr<media_router::CastDialogController>
@@ -355,16 +355,15 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
   if (!web_contents)
     return nullptr;
 
-  auto ui = std::make_unique<media_router::MediaRouterUI>(web_contents);
   if (!presentation_request_notification_producer_->GetNotificationItem()
            ->is_default_presentation_request()) {
-    ui->InitWithStartPresentationContext(
+    return media_router::MediaRouterUI::CreateWithStartPresentationContext(
+        web_contents,
         presentation_request_notification_producer_->GetNotificationItem()
             ->PassContext());
-  } else {
-    ui->InitWithDefaultMediaSource();
   }
-  return ui;
+  return media_router::MediaRouterUI::CreateWithDefaultMediaSource(
+      web_contents);
 }
 
 void MediaNotificationService::set_device_provider_for_testing(

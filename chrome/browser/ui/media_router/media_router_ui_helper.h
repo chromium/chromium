@@ -79,11 +79,6 @@ struct RouteParameters {
   // The origin of the page requesting the route.
   url::Origin origin;
 
-  // This callback will be null if the route request is not for a presentation
-  // (e.g. it is for tab mirroring).
-  // TODO(b/213324920): Remove this field after MRS refactor is complete.
-  MediaRouteResponseCallback presentation_callback;
-
   // Callbacks which should be invoked on both success and failure of the route
   // creation.
   std::vector<MediaRouteResultCallback> route_result_callbacks;

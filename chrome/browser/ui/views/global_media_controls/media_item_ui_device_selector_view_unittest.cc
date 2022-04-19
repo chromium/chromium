@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
+#include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -150,8 +151,8 @@ class MockCastDialogController : public CastDialogController {
   MOCK_METHOD1(StopCasting, void(const std::string& route_id));
   MOCK_METHOD1(ClearIssue, void(const media_router::Issue::Id& issue_id));
   MOCK_METHOD0(GetInitiator, content::WebContents*());
-  MOCK_METHOD0(TakeStartPresentationContext,
-               std::unique_ptr<media_router::StartPresentationContext>());
+  MOCK_METHOD0(TakeMediaRouteStarter,
+               std::unique_ptr<media_router::MediaRouteStarter>());
 };
 
 }  // anonymous namespace

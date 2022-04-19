@@ -898,7 +898,8 @@ void PopulateChromeWebUIFrameBinders(
       AppServiceInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      access_code_cast::mojom::PageHandlerFactory, AccessCodeCastUI>(map);
+      access_code_cast::mojom::PageHandlerFactory,
+      media_router::AccessCodeCastUI>(map);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

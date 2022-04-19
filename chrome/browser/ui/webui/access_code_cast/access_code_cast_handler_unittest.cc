@@ -10,6 +10,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
+#include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -118,7 +120,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     WebContentsPresentationManager::SetTestInstance(
         presentation_manager_.get());
 
-    InitializeMockMediaRouter();
+    SetMediaRouterFactory();
 
     cast_sink_1_ = CreateCastSink(1);
     cast_sink_2_ = CreateCastSink(2);
@@ -140,6 +142,17 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  virtual void SetMediaRouterFactory() {
+    router_ = static_cast<MockMediaRouter*>(
+        MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
+            web_contents()->GetBrowserContext(),
+            base::BindRepeating(&MockMediaRouter::Create)));
+    ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+        profile_, base::BindRepeating(&MockMediaRouter::Create));
+
+    InitializeMockMediaRouter();
+  }
+
   base::TestMockTimeTaskRunner* mock_time_task_runner() {
     return mock_time_task_runner_.get();
   }
@@ -156,14 +169,21 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     access_code_cast_sink_service_->SetTaskRunnerForTest(
         mock_time_task_runner_);
 
-    handler_ = std::make_unique<AccessCodeCastHandler>(
+    std::unique_ptr<MediaRouteStarter> starter =
+        std::make_unique<MediaRouteStarter>(
+            cast_modes, web_contents(), std::move(start_presentation_context));
+
+    handler_ = base::WrapUnique(new AccessCodeCastHandler(
         mojo::PendingReceiver<access_code_cast::mojom::PageHandler>(),
-        page_->BindAndGetRemote(), profile_, router_, cast_modes,
-        web_contents(), std::move(start_presentation_context),
-        access_code_cast_sink_service_.get());
+        page_->BindAndGetRemote(), cast_modes,
+        access_code_cast_sink_service_.get(), std::move(starter)));
   }
 
   AccessCodeCastHandler* handler() { return handler_.get(); }
+
+  MediaRouteStarter* media_route_starter() {
+    return handler_->media_route_starter_.get();
+  }
 
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
 
@@ -252,22 +272,18 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   void InitializeMockMediaRouter() {
-    router_ = static_cast<MockMediaRouter*>(
-        MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-            web_contents()->GetBrowserContext(),
-            base::BindRepeating(&MockMediaRouter::Create)));
     logger_ = std::make_unique<LoggerImpl>();
 
-    ON_CALL(*router_, GetLogger()).WillByDefault(Return(logger_.get()));
+    ON_CALL(*router(), GetLogger()).WillByDefault(Return(logger_.get()));
     // Store sink observers so that they can be notified in tests.
-    ON_CALL(*router_, RegisterMediaSinksObserver(_))
+    ON_CALL(*router(), RegisterMediaSinksObserver(_))
         .WillByDefault([this](MediaSinksObserver* observer) {
           media_sinks_observers_.push_back(observer);
           return true;
         });
     // Remove sink observers as appropriate (destructing handlers will cause
     // this to occur).
-    ON_CALL(*router_, UnregisterMediaSinksObserver(_))
+    ON_CALL(*router(), UnregisterMediaSinksObserver(_))
         .WillByDefault([this](MediaSinksObserver* observer) {
           auto it = std::find(media_sinks_observers_.begin(),
                               media_sinks_observers_.end(), observer);
@@ -276,13 +292,13 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
           }
         });
 
-    ON_CALL(*router_, GetCurrentRoutes())
+    ON_CALL(*router(), GetCurrentRoutes())
         .WillByDefault(Return(std::vector<MediaRoute>()));
 
     // Handler so MockMediaRouter will respond to requests to create a route.
     // Will construct a RouteRequestResult based on the set result code and
     // then call the handler's callback, which should call the page's callback.
-    ON_CALL(*router_, CreateRouteInternal(_, _, _, _, _, _, _))
+    ON_CALL(*router(), CreateRouteInternal(_, _, _, _, _, _, _))
         .WillByDefault([this](const MediaSource::Id& source_id,
                               const MediaSink::Id& sink_id,
                               const url::Origin& origin,
@@ -330,7 +346,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   NiceMock<cast_channel::MockCastMessageHandler> message_handler_;
   std::unique_ptr<StrictMock<MockPage>> page_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<MockCastMediaSinkServiceImpl>
       mock_cast_media_sink_service_impl_;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;

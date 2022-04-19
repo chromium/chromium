@@ -893,7 +893,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (!media_router::GetAccessCodeCastEnabledPref(profile->GetPrefs())) {
       return nullptr;
     }
-    return &NewWebUI<AccessCodeCastUI>;
+    return &NewWebUI<media_router::AccessCodeCastUI>;
   }
   if (base::FeatureList::IsEnabled(features::kSupportTool) &&
       url.host_piece() == chrome::kChromeUISupportToolHost)
