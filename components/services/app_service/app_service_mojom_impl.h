@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/files/file_path.h"
-#include "components/services/app_service/public/cpp/preferred_apps.h"
+#include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,7 +24,7 @@ class PreferredAppsList;
 //
 // See components/services/app_service/README.md.
 class AppServiceMojomImpl : public apps::mojom::AppService,
-                            public PreferredApps::Host {
+                            public PreferredAppsImpl::Host {
  public:
   AppServiceMojomImpl(
       const base::FilePath& profile_dir,
@@ -160,7 +160,7 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
   // destroyed first, closing the connection to avoid dangling callbacks.
   mojo::ReceiverSet<apps::mojom::AppService> receivers_;
 
-  PreferredApps preferred_apps_;
+  PreferredAppsImpl preferred_apps_;
 };
 
 }  // namespace apps

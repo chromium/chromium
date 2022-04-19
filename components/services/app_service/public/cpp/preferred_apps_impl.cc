@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/app_service/public/cpp/preferred_apps.h"
+#include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 
 #include <iterator>
 #include <utility>
@@ -77,10 +77,11 @@ std::string ReadDataBlocking(const base::FilePath& preferred_apps_file) {
 
 namespace apps {
 
-PreferredApps::PreferredApps(Host* host,
-                             const base::FilePath& profile_dir,
-                             base::OnceClosure read_completed_for_testing,
-                             base::OnceClosure write_completed_for_testing)
+PreferredAppsImpl::PreferredAppsImpl(
+    Host* host,
+    const base::FilePath& profile_dir,
+    base::OnceClosure read_completed_for_testing,
+    base::OnceClosure write_completed_for_testing)
     : host_(host),
       profile_dir_(profile_dir),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -92,60 +93,62 @@ PreferredApps::PreferredApps(Host* host,
   InitializePreferredApps();
 }
 
-PreferredApps::~PreferredApps() = default;
+PreferredAppsImpl::~PreferredAppsImpl() = default;
 
-void PreferredApps::AddPreferredApp(apps::mojom::AppType app_type,
-                                    const std::string& app_id,
-                                    apps::mojom::IntentFilterPtr intent_filter,
-                                    apps::mojom::IntentPtr intent,
-                                    bool from_publisher) {
+void PreferredAppsImpl::AddPreferredApp(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::IntentFilterPtr intent_filter,
+    apps::mojom::IntentPtr intent,
+    bool from_publisher) {
   RunAfterPreferredAppsReady(base::BindOnce(
-      &PreferredApps::AddPreferredAppImpl, weak_ptr_factory_.GetWeakPtr(),
+      &PreferredAppsImpl::AddPreferredAppImpl, weak_ptr_factory_.GetWeakPtr(),
       app_type, app_id, std::move(intent_filter), std::move(intent),
       from_publisher));
 }
 
-void PreferredApps::RemovePreferredApp(apps::mojom::AppType app_type,
-                                       const std::string& app_id) {
+void PreferredAppsImpl::RemovePreferredApp(apps::mojom::AppType app_type,
+                                           const std::string& app_id) {
   RunAfterPreferredAppsReady(
-      base::BindOnce(&PreferredApps::RemovePreferredAppImpl,
+      base::BindOnce(&PreferredAppsImpl::RemovePreferredAppImpl,
                      weak_ptr_factory_.GetWeakPtr(), app_type, app_id));
 }
 
-void PreferredApps::RemovePreferredAppForFilter(
+void PreferredAppsImpl::RemovePreferredAppForFilter(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::IntentFilterPtr intent_filter) {
   RunAfterPreferredAppsReady(
-      base::BindOnce(&PreferredApps::RemovePreferredAppForFilterImpl,
+      base::BindOnce(&PreferredAppsImpl::RemovePreferredAppForFilterImpl,
                      weak_ptr_factory_.GetWeakPtr(), app_type, app_id,
                      std::move(intent_filter)));
 }
 
-void PreferredApps::SetSupportedLinksPreference(
+void PreferredAppsImpl::SetSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
   RunAfterPreferredAppsReady(
-      base::BindOnce(&PreferredApps::SetSupportedLinksPreferenceImpl,
+      base::BindOnce(&PreferredAppsImpl::SetSupportedLinksPreferenceImpl,
                      weak_ptr_factory_.GetWeakPtr(), app_type, app_id,
                      std::move(all_link_filters)));
 }
 
-void PreferredApps::RemoveSupportedLinksPreference(
+void PreferredAppsImpl::RemoveSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id) {
   RunAfterPreferredAppsReady(
-      base::BindOnce(&PreferredApps::RemoveSupportedLinksPreferenceImpl,
+      base::BindOnce(&PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl,
                      weak_ptr_factory_.GetWeakPtr(), app_type, app_id));
 }
 
-void PreferredApps::InitializePreferredApps() {
+void PreferredAppsImpl::InitializePreferredApps() {
   ReadFromJSON(profile_dir_);
 }
 
-void PreferredApps::WriteToJSON(const base::FilePath& profile_dir,
-                                const apps::PreferredAppsList& preferred_apps) {
+void PreferredAppsImpl::WriteToJSON(
+    const base::FilePath& profile_dir,
+    const apps::PreferredAppsList& preferred_apps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // If currently is writing preferred apps to file, set a flag to write after
   // the current write completed.
@@ -167,11 +170,11 @@ void PreferredApps::WriteToJSON(const base::FilePath& profile_dir,
       FROM_HERE,
       base::BindOnce(&WriteDataBlocking,
                      profile_dir.Append(kPreferredAppsDirname), json_string),
-      base::BindOnce(&PreferredApps::WriteCompleted,
+      base::BindOnce(&PreferredAppsImpl::WriteCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PreferredApps::WriteCompleted() {
+void PreferredAppsImpl::WriteCompleted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   writing_preferred_apps_ = false;
   if (!should_write_preferred_apps_to_file_) {
@@ -187,17 +190,17 @@ void PreferredApps::WriteCompleted() {
   WriteToJSON(profile_dir_, preferred_apps_list_);
 }
 
-void PreferredApps::ReadFromJSON(const base::FilePath& profile_dir) {
+void PreferredAppsImpl::ReadFromJSON(const base::FilePath& profile_dir) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadDataBlocking,
                      profile_dir.Append(kPreferredAppsDirname)),
-      base::BindOnce(&PreferredApps::ReadCompleted,
+      base::BindOnce(&PreferredAppsImpl::ReadCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PreferredApps::ReadCompleted(std::string preferred_apps_string) {
+void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool preferred_apps_upgraded = false;
   if (preferred_apps_string.empty()) {
@@ -242,7 +245,7 @@ void PreferredApps::ReadCompleted(std::string preferred_apps_string) {
   }
 }
 
-void PreferredApps::RunAfterPreferredAppsReady(base::OnceClosure task) {
+void PreferredAppsImpl::RunAfterPreferredAppsReady(base::OnceClosure task) {
   if (preferred_apps_list_.IsInitialized()) {
     std::move(task).Run();
   } else {
@@ -250,7 +253,7 @@ void PreferredApps::RunAfterPreferredAppsReady(base::OnceClosure task) {
   }
 }
 
-void PreferredApps::AddPreferredAppImpl(
+void PreferredAppsImpl::AddPreferredAppImpl(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::IntentFilterPtr intent_filter,
@@ -288,8 +291,8 @@ void PreferredApps::AddPreferredAppImpl(
                            std::move(replaced_apps));
 }
 
-void PreferredApps::RemovePreferredAppImpl(apps::mojom::AppType app_type,
-                                           const std::string& app_id) {
+void PreferredAppsImpl::RemovePreferredAppImpl(apps::mojom::AppType app_type,
+                                               const std::string& app_id) {
   std::vector<apps::mojom::IntentFilterPtr> removed_filters =
       preferred_apps_list_.DeleteAppId(app_id);
   if (!removed_filters.empty()) {
@@ -301,7 +304,7 @@ void PreferredApps::RemovePreferredAppImpl(apps::mojom::AppType app_type,
   }
 }
 
-void PreferredApps::RemovePreferredAppForFilterImpl(
+void PreferredAppsImpl::RemovePreferredAppForFilterImpl(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::IntentFilterPtr intent_filter) {
@@ -317,7 +320,7 @@ void PreferredApps::RemovePreferredAppForFilterImpl(
   }
 }
 
-void PreferredApps::SetSupportedLinksPreferenceImpl(
+void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
@@ -381,7 +384,7 @@ void PreferredApps::SetSupportedLinksPreferenceImpl(
                                              /*open_in_app=*/false);
   }
 }
-void PreferredApps::RemoveSupportedLinksPreferenceImpl(
+void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
     apps::mojom::AppType app_type,
     const std::string& app_id) {
   auto* publisher = host_->GetPublisher(app_type);

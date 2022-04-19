@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_H_
-#define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_H_
+#ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_IMPL_H_
+#define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_IMPL_H_
 
 #include <map>
 
@@ -23,7 +23,7 @@ namespace apps {
 class AppServiceMojomImpl;
 
 // The implementation of the preferred apps to manage the PreferredAppsList.
-class PreferredApps {
+class PreferredAppsImpl {
  public:
   class Host {
    public:
@@ -52,16 +52,16 @@ class PreferredApps {
         apps::mojom::AppType app_type) = 0;
   };
 
-  PreferredApps(
+  PreferredAppsImpl(
       Host* host,
       const base::FilePath& profile_dir,
       base::OnceClosure read_completed_for_testing = base::OnceClosure(),
       base::OnceClosure write_completed_for_testing = base::OnceClosure());
 
-  PreferredApps(const PreferredApps&) = delete;
-  PreferredApps& operator=(const PreferredApps&) = delete;
+  PreferredAppsImpl(const PreferredAppsImpl&) = delete;
+  PreferredAppsImpl& operator=(const PreferredAppsImpl&) = delete;
 
-  ~PreferredApps();
+  ~PreferredAppsImpl();
 
   void AddPreferredApp(apps::mojom::AppType app_type,
                        const std::string& app_id,
@@ -142,9 +142,9 @@ class PreferredApps {
 
   base::queue<base::OnceClosure> pending_preferred_apps_tasks_;
 
-  base::WeakPtrFactory<PreferredApps> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PreferredAppsImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace apps
 
-#endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_H_
+#endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_IMPL_H_
