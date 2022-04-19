@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -30,6 +31,8 @@ class DumpDatabaseHandler : public content::WebUIMessageHandler {
   void DidGetDatabaseDump(std::string callback_id, const base::ListValue& list);
 
   Profile* profile_;
+
+  base::WeakPtrFactory<DumpDatabaseHandler> weak_factory_{this};
 };
 
 }  // namespace syncfs_internals
