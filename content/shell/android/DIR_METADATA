@@ -1,4 +1,5 @@
 monorail {
   component: "Content>Core"
 }
+os: ANDROID
 team_email: "chromium-reviews@chromium.org"
