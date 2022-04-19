@@ -140,12 +140,15 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
   // startup.
   if (!did_previous_session_exit_cleanly) {
     ++num_crashes;
-    // Schedule only a Local State write. If the client is in the Extended
-    // Variations Safe Mode experiment's enabled group, the crash streak is
-    // written synchronously to disk later on in startup. See
-    // MaybeExtendVariationsSafeMode().
     local_state->SetInteger(kVariationsCrashStreak, num_crashes);
+#if BUILDFLAG(IS_ANDROID)
+    // Schedule a Local State write on Android Chrome, WebLayer, and WebView
+    // only as this write is expensive, and other platforms use the beacon file
+    // as the source of truth. For other platforms, the crask streak is written
+    // synchronously to disk later on in startup. See
+    // MaybeExtendVariationsSafeMode() and WriteBeaconValue().
     local_state->CommitPendingWrite();
+#endif
   }
   base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
                            base::clamp(num_crashes, 0, 100));
@@ -392,7 +395,12 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     WriteBeaconFile(exited_cleanly, BeaconMonitoringStage::kExtended);
   } else {
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
-    local_state_->CommitPendingWrite();  // Schedule a write.
+#if BUILDFLAG(IS_ANDROID)
+    // Schedule a Local State write on Android Chrome, WebLayer, and WebView
+    // only as this write is expensive, and other platforms use the beacon file
+    // as the source of truth.
+    local_state_->CommitPendingWrite();
+#endif
     if (group_name == kEnabledGroup) {
       // Clients in this group write to the Variations Safe Mode file whenever
       // |kStabilityExitedCleanly| is updated. The file is kept in sync with the
