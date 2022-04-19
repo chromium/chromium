@@ -134,12 +134,42 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
       (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
       (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
 
-  is_selected_ = calendar_utils::IsTheSameDay(
-      date_, calendar_view_controller_->selected_date());
+  if (views::View::HasFocus()) {
+    cc::PaintFlags highlight_border;
+    highlight_border.setColor(border_color);
+    highlight_border.setAntiAlias(true);
+    highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
+    highlight_border.setStrokeWidth(kBorderLineThickness);
 
-  // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
-  // date] is currently selected.
-  if (is_selected_) {
+    canvas->DrawCircle(center, kBorderRadius, highlight_border);
+  }
+
+  if (calendar_utils::IsToday(date_)) {
+    cc::PaintFlags highlight_background;
+    highlight_background.setColor(bg_color);
+    highlight_background.setStyle(cc::PaintFlags::kFill_Style);
+    highlight_background.setAntiAlias(true);
+
+    canvas->DrawCircle(center,
+                       views::View::HasFocus() ? kTodayFocusedRoundedRadius
+                                               : kTodayRoundedRadius,
+                       highlight_background);
+  }
+}
+
+void CalendarDateCellView::OnSelectedDateUpdated() {
+  bool is_selected = calendar_utils::IsTheSameDay(
+      date_, calendar_view_controller_->selected_date());
+  // If the selected day changes, repaint the background.
+  if (is_selected_ != is_selected) {
+    is_selected_ = is_selected;
+    SchedulePaint();
+    if (!is_selected_) {
+      SetAccessibleName(tool_tip_);
+      return;
+    }
+    // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
+    // date] is currently selected.
     base::Time local_date =
         date_ +
         base::Minutes(calendar_view_controller_->time_difference_minutes());
@@ -152,53 +182,6 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
         IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION,
         calendar_utils::GetMonthDayYear(first_day_of_week),
         calendar_utils::GetDayOfMonth(date_)));
-  }
-
-  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
-                                   : calendar_utils::GetPrimaryTextColor());
-
-  if (views::View::HasFocus()) {
-    cc::PaintFlags highlight_border;
-    highlight_border.setColor(border_color);
-    highlight_border.setAntiAlias(true);
-    highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
-    highlight_border.setStrokeWidth(kBorderLineThickness);
-
-    canvas->DrawCircle(center, kBorderRadius, highlight_border);
-  }
-
-  if (calendar_utils::IsToday(date_)) {
-    const SkColor text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
-    SetEnabledTextColors(text_color);
-
-    cc::PaintFlags highlight_background;
-    highlight_background.setColor(bg_color);
-    highlight_background.setStyle(cc::PaintFlags::kFill_Style);
-    highlight_background.setAntiAlias(true);
-
-    canvas->DrawCircle(center,
-                       views::View::HasFocus() ? kTodayFocusedRoundedRadius
-                                               : kTodayRoundedRadius,
-                       highlight_background);
-
-    return;
-  }
-
-  if (is_selected_) {
-    const SkColor text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorProminent);
-    SetEnabledTextColors(text_color);
-  }
-}
-
-void CalendarDateCellView::OnSelectedDateUpdated() {
-  bool is_selected = calendar_utils::IsTheSameDay(
-      date_, calendar_view_controller_->selected_date());
-  // If the selected day changes, repaint the background.
-  if (is_selected_ != is_selected) {
-    is_selected_ = is_selected;
-    SchedulePaint();
   }
 }
 
@@ -281,10 +264,11 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
     return;
 
   const SkColor indicator_color =
-      is_selected_ ? AshColorProvider::Get()->GetBaseLayerColor(
-                         AshColorProvider::BaseLayerType::kTransparent90)
-                   : AshColorProvider::Get()->GetControlsLayerColor(
-                         AshColorProvider::ControlsLayerType::kFocusRingColor);
+      calendar_utils::IsToday(date_)
+          ? AshColorProvider::Get()->GetBaseLayerColor(
+                AshColorProvider::BaseLayerType::kTransparent90)
+          : AshColorProvider::Get()->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   const float indicator_radius = is_selected_ ? kEventsPresentRoundedRadius * 2
                                               : kEventsPresentRoundedRadius;
@@ -305,6 +289,19 @@ int CalendarDateCellView::GetEventNumber() {
 
 void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
   views::LabelButton::PaintButtonContents(canvas);
+  const AshColorProvider* color_provider = AshColorProvider::Get();
+  if (calendar_utils::IsToday(date_)) {
+    const SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
+    SetEnabledTextColors(text_color);
+  } else if (is_selected_) {
+    const SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorProminent);
+    SetEnabledTextColors(text_color);
+  } else {
+    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+                                     : calendar_utils::GetPrimaryTextColor());
+  }
   MaybeDrawEventsIndicator(canvas);
 }
 
