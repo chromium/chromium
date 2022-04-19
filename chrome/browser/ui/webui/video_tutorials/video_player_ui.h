@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_VIDEO_TUTORIALS_VIDEO_PLAYER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_VIDEO_TUTORIALS_VIDEO_PLAYER_UI_H_
 
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
-#include "ui/webui/webui_config.h"
 
 namespace content {
 class WebUI;
@@ -14,7 +14,7 @@ class WebUI;
 
 namespace video_tutorials {
 
-class VideoPlayerUIConfig : public ui::WebUIConfig {
+class VideoPlayerUIConfig : public content::WebUIConfig {
  public:
   VideoPlayerUIConfig();
   ~VideoPlayerUIConfig() override;

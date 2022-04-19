@@ -5,12 +5,12 @@
 #ifndef ASH_WEBUI_HELP_APP_UI_HELP_APP_KIDS_MAGAZINE_UNTRUSTED_UI_H_
 #define ASH_WEBUI_HELP_APP_UI_HELP_APP_KIDS_MAGAZINE_UNTRUSTED_UI_H_
 
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
-#include "ui/webui/webui_config.h"
 
 namespace ash {
 
-class HelpAppKidsMagazineUntrustedUIConfig : public ui::WebUIConfig {
+class HelpAppKidsMagazineUntrustedUIConfig : public content::WebUIConfig {
  public:
   HelpAppKidsMagazineUntrustedUIConfig();
   ~HelpAppKidsMagazineUntrustedUIConfig() override;

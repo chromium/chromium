@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_CAMERA_APP_CAMERA_APP_UNTRUSTED_UI_CONFIG_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CAMERA_APP_CAMERA_APP_UNTRUSTED_UI_CONFIG_H_
 
-#include "ui/webui/webui_config.h"
+#include "content/public/browser/webui_config.h"
 
 namespace ash {
 
-class CameraAppUntrustedUIConfig : public ui::WebUIConfig {
+class CameraAppUntrustedUIConfig : public content::WebUIConfig {
  public:
   CameraAppUntrustedUIConfig();
   CameraAppUntrustedUIConfig(const CameraAppUntrustedUIConfig& other) = delete;

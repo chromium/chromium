@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_WEBUI_CONFIG_H_
 
 #include "chrome/browser/ash/system_extensions/system_extension.h"
-#include "ui/webui/webui_config.h"
+#include "content/public/browser/webui_config.h"
 
 // Generic config for System Extensions. Each installed System Extension
 // register a WebUIConfig to load its resources.
-class SystemExtensionsWebUIConfig : public ui::WebUIConfig {
+class SystemExtensionsWebUIConfig : public content::WebUIConfig {
  public:
   explicit SystemExtensionsWebUIConfig(const SystemExtension& system_extension);
   ~SystemExtensionsWebUIConfig() override;
 
-  // ui::WebUIConfig
+  // content::WebUIConfig
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui) override;
   void RegisterURLDataSource(content::BrowserContext* browser_context) override;

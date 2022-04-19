@@ -5,10 +5,10 @@
 #ifndef UI_WEBUI_UNTRUSTED_WEB_UI_BROWSERTEST_UTIL_H_
 #define UI_WEBUI_UNTRUSTED_WEB_UI_BROWSERTEST_UTIL_H_
 
+#include "content/public/browser/webui_config.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "ui/webui/untrusted_web_ui_controller_factory.h"
-#include "ui/webui/webui_config.h"
 
 namespace ui {
 
@@ -18,7 +18,7 @@ class TestUntrustedWebUIControllerFactory
   TestUntrustedWebUIControllerFactory();
   ~TestUntrustedWebUIControllerFactory() override;
 
-  void add_web_ui_config(std::unique_ptr<ui::WebUIConfig> config) {
+  void add_web_ui_config(std::unique_ptr<content::WebUIConfig> config) {
     const std::string host = config->host();
     configs_.insert(std::make_pair(host, std::move(config)));
   }
@@ -30,7 +30,7 @@ class TestUntrustedWebUIControllerFactory
   WebUIConfigMap configs_;
 };
 
-class TestUntrustedWebUIConfig : public ui::WebUIConfig {
+class TestUntrustedWebUIConfig : public content::WebUIConfig {
  public:
   explicit TestUntrustedWebUIConfig(base::StringPiece host);
   TestUntrustedWebUIConfig(

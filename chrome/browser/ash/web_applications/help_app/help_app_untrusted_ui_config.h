@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UNTRUSTED_UI_CONFIG_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UNTRUSTED_UI_CONFIG_H_
 
-#include "ui/webui/webui_config.h"
+#include "content/public/browser/webui_config.h"
 
 namespace ash {
 
-class HelpAppUntrustedUIConfig : public ui::WebUIConfig {
+class HelpAppUntrustedUIConfig : public content::WebUIConfig {
  public:
   HelpAppUntrustedUIConfig();
   HelpAppUntrustedUIConfig(const HelpAppUntrustedUIConfig& other) = delete;

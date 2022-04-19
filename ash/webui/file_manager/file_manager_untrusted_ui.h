@@ -5,8 +5,8 @@
 #ifndef ASH_WEBUI_FILE_MANAGER_FILE_MANAGER_UNTRUSTED_UI_H_
 #define ASH_WEBUI_FILE_MANAGER_FILE_MANAGER_UNTRUSTED_UI_H_
 
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
-#include "ui/webui/webui_config.h"
 
 namespace content {
 class WebUI;
@@ -16,7 +16,7 @@ namespace ash {
 namespace file_manager {
 
 // Class that stores properties for the chrome-untrusted://file-manager WebUI.
-class FileManagerUntrustedUIConfig : public ui::WebUIConfig {
+class FileManagerUntrustedUIConfig : public content::WebUIConfig {
  public:
   FileManagerUntrustedUIConfig();
   ~FileManagerUntrustedUIConfig() override;

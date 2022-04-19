@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
-#include "ui/webui/webui_config.h"
 
 namespace content {
 class WebUI;
@@ -18,7 +18,7 @@ namespace ash {
 namespace feedback {
 
 // Class that stores properties for the chrome-untrusted://os-feedback WebUI.
-class OsFeedbackUntrustedUIConfig : public ui::WebUIConfig {
+class OsFeedbackUntrustedUIConfig : public content::WebUIConfig {
  public:
   OsFeedbackUntrustedUIConfig();
   ~OsFeedbackUntrustedUIConfig() override;

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PROJECTOR_APP_UNTRUSTED_PROJECTOR_ANNOTATOR_UI_CONFIG_H_
 
 #include "ash/webui/projector_app/untrusted_projector_annotator_ui.h"
-#include "ui/webui/webui_config.h"
+#include "content/public/browser/webui_config.h"
 
 namespace content {
 class WebUIDataSource;
@@ -30,7 +30,7 @@ class ChromeUntrustedProjectorAnnotatorUIDelegate
 };
 
 // A webui config for the chrome-untrusted:// part of Projector annotator.
-class UntrustedProjectorAnnotatorUIConfig : public ui::WebUIConfig {
+class UntrustedProjectorAnnotatorUIConfig : public content::WebUIConfig {
  public:
   UntrustedProjectorAnnotatorUIConfig();
   UntrustedProjectorAnnotatorUIConfig(
@@ -39,7 +39,7 @@ class UntrustedProjectorAnnotatorUIConfig : public ui::WebUIConfig {
       const UntrustedProjectorAnnotatorUIConfig&) = delete;
   ~UntrustedProjectorAnnotatorUIConfig() override;
 
-  // ui::WebUIConfig:
+  // content::WebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(

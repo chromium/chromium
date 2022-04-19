@@ -6,8 +6,8 @@
 #define ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
 
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_untrusted_ui.mojom.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
-#include "ui/webui/webui_config.h"
 
 #if defined(OFFICIAL_BUILD)
 #error Sample System Web App should only be included in unofficial builds.
@@ -19,7 +19,7 @@ class WebUI;
 
 namespace ash {
 
-class UntrustedSampleSystemWebAppUIConfig : public ui::WebUIConfig {
+class UntrustedSampleSystemWebAppUIConfig : public content::WebUIConfig {
  public:
   UntrustedSampleSystemWebAppUIConfig();
   ~UntrustedSampleSystemWebAppUIConfig() override;

@@ -16,7 +16,6 @@ static_library("webui") {
     "webui_allowlist.h",
     "webui_allowlist_provider.cc",
     "webui_allowlist_provider.h",
-    "webui_config.h",
   ]
 
   deps = [
