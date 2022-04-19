@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,7 +61,6 @@ class MockUserCloudSigninRestrictionPolicyFetcherChromeOS
       const MockUserCloudSigninRestrictionPolicyFetcherChromeOS&) = delete;
 
   // TODO(b/224747082): Remove overrides.
-  void OnGetTokenFailure(const GoogleServiceAuthError& error);
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error);
 
   MOCK_METHOD(void, FetchAccessToken, ());
@@ -69,11 +69,6 @@ class MockUserCloudSigninRestrictionPolicyFetcherChromeOS
   std::unique_ptr<base::DictionaryValue> user_info_response_dictionary_ =
       std::make_unique<base::DictionaryValue>();
 };
-
-void MockUserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetTokenFailure(
-    const GoogleServiceAuthError& error) {
-  UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetTokenFailure(error);
-}
 
 void MockUserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetUserInfoFailure(
     const GoogleServiceAuthError& error) {
@@ -103,8 +98,7 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOSTest
  protected:
   // Get policy value for SecondaryGoogleAccountUsage.
   void GetSecondaryGoogleAccountUsageBlocking(
-      MockUserCloudSigninRestrictionPolicyFetcherChromeOS* const
-          restriction_fetcher,
+      UserCloudSigninRestrictionPolicyFetcherChromeOS* restriction_fetcher,
       std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher) {
     base::RunLoop run_loop;
     restriction_fetcher->GetSecondaryGoogleAccountUsage(
@@ -202,20 +196,14 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
 TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
        FetchingAccessTokenFailsForNetworkConnectionErrors) {
   // Create policy fetcher.
-  MockUserCloudSigninRestrictionPolicyFetcherChromeOS restriction_fetcher(
+  UserCloudSigninRestrictionPolicyFetcherChromeOS restriction_fetcher(
       kFakeEnterpriseAccount, GetSharedURLLoaderFactory());
 
-  // Create access token fetcher.
+  // Create an access token fetcher that simulates a network connection error.
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      CreateAccessTokenFetcher(&restriction_fetcher);
-
-  // TODO(b/224754860): Use mocked dependency injection and remove this.
-  // Fake a failed AccessToken fetch.
-  EXPECT_CALL(restriction_fetcher, FetchAccessToken())
-      .WillOnce([&restriction_fetcher]() {
-        return restriction_fetcher.OnGetTokenFailure(
-            GoogleServiceAuthError::FromConnectionError(0));
-      });
+      std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
+          &restriction_fetcher,
+          GoogleServiceAuthError::FromConnectionError(/*error=*/0));
 
   // Try to fetch policy value.
   GetSecondaryGoogleAccountUsageBlocking(&restriction_fetcher,
