@@ -398696,6 +398696,22 @@
        }
       ]
      ],
+     "user-select-none-in-editable.html": [
+      "c8718dd14bb18d56f4c914221f8c19128369332c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "user-select-none-on-input.html": [
+      "42186dd62058fdffd355db7f089e833787fa97f3",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "webkit-appearance-parsing.html": [
       "0f08eab222493a123fd5a44afce3689385a42390",
       [
@@ -475348,7 +475364,7 @@
        ]
       ],
       "popup-light-dismiss.tentative.html": [
-       "d6d9793ff5e202b94324ccc0af0a1ec4b9184b3d",
+       "10ff78883d80a72fefb490239d2207f809a69778",
        [
         null,
         {
@@ -543829,7 +543845,7 @@
      ]
     ],
     "partitioned-web-locks.tentative.https.html": [
-     "a506a3ef4011cfe20f8aaece9b0923d6cfaf5aba",
+     "0eb0820b450418428b82725bf39dedb6970fe506",
      [
       null,
       {}
