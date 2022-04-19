@@ -100,7 +100,8 @@ public class AutofillServerCardEditorTest {
             /* issuerIconDrawableId= */ 0, /* billingAddressId= */ "", /* serverId= */ "",
             /* instrumentId= */ 123, /* cardLabel= */ "", /* nickname= */ "",
             /* cardArtUrl= */ null,
-            /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED);
+            /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
+            /* productDescription= */ "");
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD =
             new CreditCard(/* guid= */ "2", /* origin= */ "", /* isLocal= */ false,
@@ -110,7 +111,8 @@ public class AutofillServerCardEditorTest {
                     /* billingAddressId= */ "", /* serverId= */ "", /* instrumentId= */ 234,
                     /* cardLabel= */ "", /* nickname= */ "", /* cardArtUrl= */ null,
                     /* virtualCardEnrollmentState= */
-                    VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE);
+                    VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE,
+                    /* productDescription= */ "");
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_NOT_ELIGIBLE_CARD =
             new CreditCard(/* guid= */ "3", /* origin= */ "", /* isLocal= */ false,
@@ -120,7 +122,8 @@ public class AutofillServerCardEditorTest {
                     /* billingAddressId= */ "", /* serverId= */ "", /* instrumentId= */ 345,
                     /* cardLabel= */ "", /* nickname= */ "", /* cardArtUrl= */ null,
                     /* virtualCardEnrollmentState= */
-                    VirtualCardEnrollmentState.UNENROLLED_AND_NOT_ELIGIBLE);
+                    VirtualCardEnrollmentState.UNENROLLED_AND_NOT_ELIGIBLE,
+                    /* productDescription= */ "");
 
     @Mock
     private AutofillPaymentMethodsDelegate.Natives mNativeMock;

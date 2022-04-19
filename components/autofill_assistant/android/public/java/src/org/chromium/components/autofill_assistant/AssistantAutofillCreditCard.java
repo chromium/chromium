@@ -64,13 +64,15 @@ public class AssistantAutofillCreditCard {
     private final String mNickname;
     private final GURL mCardArtUrl;
     private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
+    private final String mProductDescription;
 
     @CalledByNative
     public AssistantAutofillCreditCard(String guid, String origin, boolean isLocal,
             boolean isCached, String name, String number, String obfuscatedNumber, String month,
             String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
             String billingAddressId, String serverId, long instrumentId, String nickname,
-            GURL cardArtUrl, @VirtualCardEnrollmentState int virtualCardEnrollmentState) {
+            GURL cardArtUrl, @VirtualCardEnrollmentState int virtualCardEnrollmentState,
+            String productDescription) {
         mGUID = guid;
         mOrigin = origin;
         mIsLocal = isLocal;
@@ -88,6 +90,7 @@ public class AssistantAutofillCreditCard {
         mNickname = nickname;
         mCardArtUrl = cardArtUrl;
         mVirtualCardEnrollmentState = virtualCardEnrollmentState;
+        mProductDescription = productDescription;
     }
 
     @CalledByNative
@@ -177,5 +180,10 @@ public class AssistantAutofillCreditCard {
     @CalledByNative
     public @VirtualCardEnrollmentState int getVirtualCardEnrollmentState() {
         return mVirtualCardEnrollmentState;
+    }
+
+    @CalledByNative
+    public String getProductDescription() {
+        return mProductDescription;
     }
 }

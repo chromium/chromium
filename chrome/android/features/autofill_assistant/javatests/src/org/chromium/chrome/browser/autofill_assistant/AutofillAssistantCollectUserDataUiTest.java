@@ -1192,7 +1192,8 @@ public class AutofillAssistantCollectUserDataUiTest {
                 creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
                 creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
                 creditCard.getServerId(), creditCard.getInstrumentId(), creditCard.getNickname(),
-                creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState());
+                creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState(),
+                creditCard.getProductDescription());
     }
 
     private AddressModel createAddressModel(PersonalDataManager.AutofillProfile profile) {

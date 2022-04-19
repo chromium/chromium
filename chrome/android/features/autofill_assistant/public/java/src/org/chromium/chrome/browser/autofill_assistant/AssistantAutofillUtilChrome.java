@@ -97,8 +97,9 @@ public class AssistantAutofillUtilChrome {
                 creditCard.getObfuscatedNumber(), creditCard.getMonth(), creditCard.getYear(),
                 creditCard.getBasicCardIssuerNetwork(), creditCard.getIssuerIconDrawableId(),
                 creditCard.getBillingAddressId(), creditCard.getServerId(),
-                creditCard.getInstrumentId(), /* cardLabel= */ "", creditCard.getNickname(),
-                creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState());
+                creditCard.getInstrumentId(),
+                /* cardLabel= */ "", creditCard.getNickname(), creditCard.getCardArtUrl(),
+                creditCard.getVirtualCardEnrollmentState(), creditCard.getProductDescription());
     }
 
     /**
@@ -128,7 +129,8 @@ public class AssistantAutofillUtilChrome {
                 creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
                 creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
                 creditCard.getServerId(), creditCard.getInstrumentId(), creditCard.getNickname(),
-                creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState());
+                creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState(),
+                creditCard.getProductDescription());
     }
 
     /**

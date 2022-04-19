@@ -724,7 +724,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillCreditCard(
       credit_card.instrument_id(),
       ConvertUTF16ToJavaString(env, credit_card.nickname()),
       url::GURLAndroid::FromNativeGURL(env, credit_card.card_art_url()),
-      static_cast<jint>(credit_card.virtual_card_enrollment_state()));
+      static_cast<jint>(credit_card.virtual_card_enrollment_state()),
+      ConvertUTF16ToJavaString(env, credit_card.product_description()));
 }
 
 void PopulateAutofillCreditCardFromJava(
@@ -792,6 +793,9 @@ void PopulateAutofillCreditCardFromJava(
       static_cast<autofill::CreditCard::VirtualCardEnrollmentState>(
           Java_AssistantAutofillCreditCard_getVirtualCardEnrollmentState(
               env, jcredit_card)));
+  credit_card->set_product_description(ConvertJavaStringToUTF16(
+      Java_AssistantAutofillCreditCard_getProductDescription(env,
+                                                             jcredit_card)));
 }
 
 }  // namespace ui_controller_android_utils
