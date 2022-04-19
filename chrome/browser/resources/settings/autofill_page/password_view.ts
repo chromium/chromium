@@ -10,11 +10,13 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../controls/settings_textarea.js';
+import '../i18n_setup.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import '../controls/password_prompt_dialog.js';
 // </if>
 import '../settings_shared_css.js';
 import './password_edit_dialog.js';
+import './password_remove_dialog.js';
 import './passwords_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -33,17 +35,24 @@ import {BlockingRequestManager} from './blocking_request_manager.js';
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {SavedPasswordEditedEvent} from './password_edit_dialog.js';
+import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
+import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {getTemplate} from './password_view.html.js';
 
 const PasswordViewElementBase =
-    PasswordRequestorMixin(MergePasswordsStoreCopiesMixin(
-        RouteObserverMixin(I18nMixin(PolymerElement)))) as {
+    PasswordRemovalMixin(PasswordRequestorMixin(MergePasswordsStoreCopiesMixin(
+        RouteObserverMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
           RouteObserverMixinInterface &
           MergePasswordsStoreCopiesMixinInterface &
-          PasswordRequestorMixinInterface,
+          PasswordRequestorMixinInterface & PasswordRemovalMixinInterface,
     };
+
+export const PasswordRemovalUrlParams = {
+  removedFromAccount: 'removedFromAccount',
+  removedFromDevice: 'removedFromDevice',
+};
 
 export class PasswordViewElement extends PasswordViewElementBase {
   static get is() {
@@ -138,6 +147,19 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.username = username;
   }
 
+  override onPasswordRemoveDialogPasswordsRemoved(
+      event: PasswordRemoveDialogPasswordsRemovedEvent) {
+    super.onPasswordRemoveDialogPasswordsRemoved(event);
+    this.rerouteAndShowRemovalNotification_(
+        event.detail.removedFromAccount, event.detail.removedFromDevice);
+  }
+
+  /** Gets the title text for the show/hide icon. */
+  private getPasswordButtonTitle_(): string {
+    assert(!this.isFederated_());
+    return this.i18n(this.isPasswordVisible_ ? 'hidePassword' : 'showPassword');
+  }
+
   /** Get the right icon to display when hiding/showing a password. */
   private getIconClass_(): string {
     assert(!this.isFederated_());
@@ -168,10 +190,15 @@ export class PasswordViewElement extends PasswordViewElementBase {
     navigator.clipboard.writeText(this.credential!.username);
   }
 
-  /** Handler to delete the password from the manager. */
+  /** Handler for the remove button. */
   private onDeleteButtonClick_() {
-    // TODO(https://crbug.com/1298027): Delete the password from the manager and
-    // return to password manager main page.
+    assert(this.credential);
+    if (!this.removePassword(this.credential)) {
+      return;
+    }
+    this.rerouteAndShowRemovalNotification_(
+        this.credential.isPresentInAccount(),
+        this.credential.isPresentOnDevice());
   }
 
   /** Handler to open edit dialog for the password. */
@@ -243,6 +270,21 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.isPasswordVisible_ = !this.isPasswordVisible_;
   }
 
+  /** Reroutes to PASSWORDS page and shows the removal notification */
+  private rerouteAndShowRemovalNotification_(
+      removedFromAccount: boolean, removedFromDevice: boolean): void {
+    // TODO(https://crbug.com/1298027): find a way to reroute to
+    // DEVICE_PASSWORDS if view is opened from there.
+    const params = new URLSearchParams();
+    params.set(
+        PasswordRemovalUrlParams.removedFromAccount,
+        removedFromAccount.toString());
+    params.set(
+        PasswordRemovalUrlParams.removedFromDevice,
+        removedFromDevice.toString());
+    Router.getInstance().navigateTo(routes.PASSWORDS, params);
+  }
+
   private savedPasswordsChanged_() {
     this.credential = null;
     this.password_ = '';
@@ -270,12 +312,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
             this.credential = item;
           });
     }
-  }
-
-  /** Gets the title text for the show/hide icon. */
-  private getPasswordButtonTitle_(): string {
-    assert(!this.isFederated_());
-    return this.i18n(this.isPasswordVisible_ ? 'hidePassword' : 'showPassword');
   }
 }
 

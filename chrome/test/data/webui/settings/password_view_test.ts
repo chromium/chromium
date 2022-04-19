@@ -12,10 +12,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PasswordViewElement} from 'chrome://settings/lazy_load.js';
 import {buildRouter, PasswordManagerImpl, Router, routes} from 'chrome://settings/settings.js';
 import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createPasswordEntry} from './passwords_and_autofill_fake_data.js';
+import {createMultiStorePasswordEntry, createPasswordEntry} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
@@ -323,5 +323,92 @@ suite('PasswordViewTest', function() {
         const urlParams = Router.getInstance().getQueryParameters();
         assertEquals(urlParams.get('site'), SITE);
         assertEquals(urlParams.get('username'), NEW_USERNAME);
+      });
+
+  test(
+      'When delete button is clicked for a password on device, ' +
+          'it is deleted and routed to parent page',
+      async function() {
+        const entry = createPasswordEntry(
+            {url: SITE, username: USERNAME, id: ID, fromAccountStore: false});
+
+        passwordManager.setPlaintextPassword(PASSWORD);
+        passwordManager.data.passwords = [entry];
+        const page = document.createElement('password-view');
+        document.body.appendChild(page);
+        const params = new URLSearchParams({
+          username: USERNAME,
+          site: SITE,
+        });
+        Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+
+        await passwordManager.whenCalled('requestPlaintextPassword');
+        await flushTasks();
+
+        page.shadowRoot!.querySelector<HTMLButtonElement>(
+                            '#deleteButton')!.click();
+        const id = await passwordManager.whenCalled('removeSavedPassword');
+        assertEquals(ID, id);
+        await flushTasks();
+
+        assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
+        const newParams = Router.getInstance().getQueryParameters();
+        assertEquals('false', newParams.get('removedFromAccount'));
+        assertEquals('true', newParams.get('removedFromDevice'));
+      });
+
+  test(
+      'When delete button is clicked for a password on device and account, ' +
+          'remove dialog is opened',
+      async function() {
+        passwordManager.setPlaintextPassword(PASSWORD);
+        passwordManager.data.passwords = [
+          createPasswordEntry({
+            url: SITE,
+            username: USERNAME,
+            id: 0,
+            frontendId: ID,
+            fromAccountStore: false
+          }),
+          createPasswordEntry({
+            url: SITE,
+            username: USERNAME,
+            id: 1,
+            frontendId: ID,
+            fromAccountStore: true
+          })
+        ];
+        const page = document.createElement('password-view');
+        document.body.appendChild(page);
+        const params = new URLSearchParams({
+          username: USERNAME,
+          site: SITE,
+        });
+        Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+
+        await passwordManager.whenCalled('requestPlaintextPassword');
+        await flushTasks();
+
+        page.shadowRoot!.querySelector<HTMLButtonElement>(
+                            '#deleteButton')!.click();
+        flush();
+
+        const dialog = page.shadowRoot!.querySelector('password-remove-dialog');
+        assertTrue(!!dialog);
+        assertDeepEquals(
+            createMultiStorePasswordEntry(
+                {url: SITE, username: USERNAME, deviceId: 0, accountId: 1}),
+            dialog.duplicatedPassword);
+
+        // click delete on the dialog.
+        dialog.$.removeButton.click();
+        await passwordManager.whenCalled('removeSavedPasswords');
+        await flushTasks();
+
+        assertEquals(
+            routes.PASSWORDS.path, Router.getInstance().getCurrentRoute().path);
+        const pageParams = Router.getInstance().getQueryParameters();
+        assertEquals('true', pageParams.get('removedFromAccount'));
+        assertEquals('true', pageParams.get('removedFromDevice'));
       });
 });

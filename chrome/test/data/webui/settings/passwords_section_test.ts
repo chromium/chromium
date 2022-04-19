@@ -1968,4 +1968,26 @@ suite('PasswordsSection', function() {
         passwordsSection.i18n('trustedVaultBannerSubLabelOptedIn'),
         passwordsSection.$.trustedVaultBanner.subLabel);
   });
+
+  test('routingWithRemovalParamsShowsNotification', function() {
+    const passwordEntry =
+        createPasswordEntry({url: 'goo.gl', username: 'bart'});
+    const passwordsSection = elementFactory.createPasswordsSection(
+        passwordManager, [passwordEntry], []);
+    const toastManager = passwordsSection.$.passwordsListHandler.$.removalToast;
+
+    const params = new URLSearchParams();
+    params.set('removedFromAccount', 'true');
+    params.set('removedFromDevice', 'false');
+    Router.getInstance().navigateTo(routes.PASSWORDS, params);
+
+    flush();
+    assertTrue(toastManager.open);
+
+    // Remove the passwords section from the DOM and check that this closes
+    // the undo toast.
+    document.body.removeChild(passwordsSection);
+    flush();
+    assertFalse(toastManager.open);
+  });
 });

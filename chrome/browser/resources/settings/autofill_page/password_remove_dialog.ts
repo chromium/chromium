@@ -31,6 +31,13 @@ import {getTemplate} from './password_remove_dialog.html.js';
 export type PasswordRemoveDialogPasswordsRemovedEvent =
     CustomEvent<{removedFromAccount: boolean, removedFromDevice: boolean}>;
 
+declare global {
+  interface HTMLElementEventMap {
+    'password-remove-dialog-passwords-removed':
+        PasswordRemoveDialogPasswordsRemovedEvent;
+  }
+}
+
 export interface PasswordRemoveDialogElement {
   $: {
     dialog: CrDialogElement,
