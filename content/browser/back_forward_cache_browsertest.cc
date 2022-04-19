@@ -528,6 +528,22 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     return rfh;
   }
 
+  void NavigateAndBlock(GURL url, int history_offset) {
+    // Block the navigation with an error.
+    std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+        URLLoaderInterceptor::SetupRequestFailForURL(
+            url, net::ERR_BLOCKED_BY_CLIENT);
+    TestNavigationManager manager(web_contents(), url);
+    if (history_offset) {
+      shell()->GoBackOrForward(history_offset);
+    } else {
+      shell()->LoadURL(url);
+    }
+    manager.WaitForNavigationFinished();
+    ASSERT_EQ(current_frame_host()->GetLastCommittedURL(), url);
+    ASSERT_TRUE(current_frame_host()->IsErrorDocument());
+  }
+
   base::HistogramTester histogram_tester_;
 
   bool same_site_back_forward_cache_enabled_ = true;
@@ -3444,7 +3460,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK,
-       BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead},
+       BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead,
+       BackForwardCacheMetrics::NotRestoredReason::kErrorDocument},
       {}, {}, {}, {}, FROM_HERE);
 }
 
@@ -13296,6 +13313,75 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make sure the grandchild is live.
   EXPECT_TRUE(ExecuteScript(rfh_a->child_at(0)->child_at(0), "true"));
+}
+
+// Test that when we navigate away from an error page and back with no error
+// that we don't serve the error page from BFCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       ErrorDocumentNotCachedWithSecondError) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to a.com.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_a));
+
+  // Navigate to b.com and block due to an error.
+  NavigateAndBlock(url_b, /*history_offset=*/0);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // Navigate back to a.com.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+  rfh_b.WaitUntilRenderFrameDeleted();
+
+  // Navigate forward to b.com again and block with an error again.
+  NavigateAndBlock(url_b, /*history_offset=*/1);
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK,
+       BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead,
+       BackForwardCacheMetrics::NotRestoredReason::kErrorDocument},
+      {}, {}, {}, {}, FROM_HERE);
+}
+
+// Test that when we navigate away from an error page and back with no error
+// that we don't serve the error page from BFCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       ErrorDocumentNotCachedWithoutSecondError) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to a.com.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_a));
+
+  // Navigate to b.com and block due to an error.
+  NavigateAndBlock(url_b, /*history_offset=*/0);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  int history_entry_id =
+      web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID();
+
+  // Navigate back to a.com.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  rfh_b.WaitUntilRenderFrameDeleted();
+
+  // Navigate forward to b.com again with no error.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // We would normally confirm that the blocking reasons are correct, however,
+  // when performing a history navigations back to an error document, a new
+  // entry is created and the reasons in the old entry are not recorded.
+  //
+  // Check that we indeed got a new history entry.
+  ASSERT_NE(
+      history_entry_id,
+      web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID());
 }
 
 }  // namespace content

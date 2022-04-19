@@ -269,6 +269,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Activation navigations are disallowed to avoid bypassing "
              "PasswordProtectionService as a workaround for "
              "https://crbug.com/1234857.";
+    case Reason::kErrorDocument:
+      return "Error documents cannot be stored in bfcache";
   }
 }
 
