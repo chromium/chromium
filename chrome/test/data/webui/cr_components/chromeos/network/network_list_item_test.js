@@ -391,7 +391,7 @@ suite('NetworkListItemTest', function() {
     assertTrue(!!listItem.$$('#activatingPSimSpinner'));
 
     // Arrow button should also be visible.
-    let arrow = listItem.$$('#subpageButton');
+    const arrow = listItem.$$('#subpageButton');
     assertTrue(!!arrow);
 
     // Selecting the row should fire the show-detail event.
@@ -420,13 +420,13 @@ suite('NetworkListItemTest', function() {
         };
         await flushAsync();
 
-        let title = listItem.$$('#itemTitle');
+        const title = listItem.$$('#itemTitle');
         assertTrue(!!title);
         assertEquals(
             listItem.i18n('networkListItemTitle', itemName, itemSubtitle),
             title.textContent.trim());
 
-        let installButton = listItem.$$('#installButton');
+        const installButton = listItem.$$('#installButton');
         assertTrue(!!installButton);
 
         let installProfileEventIccid = null;
@@ -462,13 +462,13 @@ suite('NetworkListItemTest', function() {
         };
         await flushAsync();
 
-        let title = listItem.$$('#itemTitle');
+        const title = listItem.$$('#itemTitle');
         assertTrue(!!title);
         assertEquals(
             listItem.i18n('networkListItemTitle', itemName, itemSubtitle),
             title.textContent.trim());
 
-        let spinner = listItem.$$('#installingESimSpinner');
+        const spinner = listItem.$$('#installingESimSpinner');
         assertTrue(!!spinner);
       });
 
@@ -539,7 +539,7 @@ suite('NetworkListItemTest', function() {
 
     await flushAsync();
 
-    let unlockBtn = listItem.$$('#unlockButton');
+    const unlockBtn = listItem.$$('#unlockButton');
     assertTrue(!!unlockBtn.disabled);
   });
 
@@ -568,7 +568,7 @@ suite('NetworkListItemTest', function() {
     listItem.deviceState.inhibitedReason =
         mojom.InhibitReason.kInstallingProfile;
 
-    let installButton = listItem.$$('#installButton');
+    const installButton = listItem.$$('#installButton');
     assertTrue(!!installButton);
     assertTrue(installButton.disabled);
 
@@ -601,7 +601,7 @@ suite('NetworkListItemTest', function() {
         };
         await flushAsync();
 
-        let arrow = listItem.$$('#subpageButton');
+        const arrow = listItem.$$('#subpageButton');
         assertFalse(!!arrow);
 
         listItem.$$('#divOuter').click();
@@ -622,7 +622,7 @@ suite('NetworkListItemTest', function() {
         listItem.disableItem = true;
         await flushAsync();
 
-        let arrow = listItem.$$('#subpageButton');
+        const arrow = listItem.$$('#subpageButton');
         assertFalse(!!arrow);
 
         listItem.$$('#divOuter').click();

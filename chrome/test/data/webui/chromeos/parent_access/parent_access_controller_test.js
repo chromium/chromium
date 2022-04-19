@@ -39,7 +39,7 @@ suite(parent_access_controller_tests.suiteName, function() {
         parentAccessController = new ParentAccessController(
             element, 'chrome://test', 'chrome://test');
 
-        let parentAccessResult = await Promise.race([
+        const parentAccessResult = await Promise.race([
           parentAccessController.whenParentAccessResult(),
           parentAccessController.whenInitializationError()
         ]);

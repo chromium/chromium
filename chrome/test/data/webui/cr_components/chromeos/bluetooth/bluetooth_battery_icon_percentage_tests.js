@@ -197,7 +197,7 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
     bluetoothBatteryIconPercentage.device = device.deviceProperties;
     bluetoothBatteryIconPercentage.isTypeLabeled = true;
 
-    let batteryPercentage = 100;
+    const batteryPercentage = 100;
 
     // Left bud percentage text
     await setBatteryTypePercentage(BatteryType.LEFT_BUD, batteryPercentage);
@@ -232,7 +232,7 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
     bluetoothBatteryIconPercentage.device = device.deviceProperties;
     bluetoothBatteryIconPercentage.isTypeLabeled = false;
 
-    let batteryPercentage = 100;
+    const batteryPercentage = 100;
 
     // Left bud with default percentage text
     await setBatteryTypePercentage(BatteryType.LEFT_BUD, batteryPercentage);

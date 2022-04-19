@@ -78,10 +78,10 @@ suite('DiscoveryPageTest', function() {
    * @return {!Array<string>}
    */
   function getDeviceNames() {
-    let names = [];
-    let shareTargets = getShareTargetElements();
+    const names = [];
+    const shareTargets = getShareTargetElements();
 
-    for (let shareTarget of shareTargets) {
+    for (const shareTarget of shareTargets) {
       names.push(shareTarget.name);
     }
 

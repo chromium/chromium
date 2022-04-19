@@ -21,7 +21,7 @@ suite('NetworkConfigToggleTest', function() {
   test('Policy on left', function() {
     assertFalse(configToggle.policyOnLeft);
 
-    let rightIndicator = configToggle.$$('cr-policy-network-indicator-mojo');
+    const rightIndicator = configToggle.$$('cr-policy-network-indicator-mojo');
     assertFalse(rightIndicator.classList.contains('left'));
 
     // Use sibling selector to assert correct position (on the right).
@@ -31,7 +31,7 @@ suite('NetworkConfigToggleTest', function() {
     configToggle.policyOnLeft = true;
     Polymer.dom.flush();
 
-    let leftIndicator = configToggle.$$('cr-policy-network-indicator-mojo');
+    const leftIndicator = configToggle.$$('cr-policy-network-indicator-mojo');
     assertTrue(leftIndicator.classList.contains('left'));
 
     // Use general sibling selector to assert the indicator is to the left of

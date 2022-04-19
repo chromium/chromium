@@ -97,7 +97,7 @@ suite('network-config', function() {
    * @param {string} elementId
    */
   function simulateEnterPressedInElement(elementId) {
-    let element = networkConfig.$$(`#${elementId}`);
+    const element = networkConfig.$$(`#${elementId}`);
     networkConfig.connectOnEnter = true;
     assertTrue(!!element);
     element.fire('enter', {path: [element]});
@@ -173,7 +173,7 @@ suite('network-config', function() {
     test('Remove error text when input key is pressed', function() {
       return flushAsync().then(() => {
         networkConfig.error = 'bad-passphrase';
-        let passwordInput = networkConfig.$$('#wifi-passphrase');
+        const passwordInput = networkConfig.$$('#wifi-passphrase');
         assertTrue(!!passwordInput);
         assertTrue(!!networkConfig.error);
 
@@ -1019,7 +1019,7 @@ suite('network-config', function() {
       setLoginOrGuest();
       initNetworkConfig();
       return flushAsync().then(() => {
-        let share = networkConfig.$$('#share');
+        const share = networkConfig.$$('#share');
         assertTrue(!!share);
         assertTrue(share.disabled);
         assertTrue(share.checked);
@@ -1034,7 +1034,7 @@ suite('network-config', function() {
       setKiosk();
       initNetworkConfig();
       return flushAsync().then(() => {
-        let share = networkConfig.$$('#share');
+        const share = networkConfig.$$('#share');
         assertTrue(!!share);
         assertTrue(share.disabled);
         assertFalse(share.checked);
@@ -1046,7 +1046,7 @@ suite('network-config', function() {
       setAuthenticated();
       initNetworkConfig();
       return flushAsync().then(() => {
-        let share = networkConfig.$$('#share');
+        const share = networkConfig.$$('#share');
         assertTrue(!!share);
         assertTrue(share.disabled);
         assertTrue(share.checked);
@@ -1060,7 +1060,7 @@ suite('network-config', function() {
       setAuthenticated();
       initNetworkConfig();
       return flushAsync().then(() => {
-        let share = networkConfig.$$('#share');
+        const share = networkConfig.$$('#share');
         assertTrue(!!share);
         assertFalse(share.disabled);
         assertFalse(share.checked);
@@ -1073,7 +1073,7 @@ suite('network-config', function() {
       setAuthenticated();
       initNetworkConfig();
       await flushAsync();
-      let share = networkConfig.$$('#share');
+      const share = networkConfig.$$('#share');
       assertTrue(!!share);
       assertTrue(share.disabled);
       assertTrue(share.checked);
@@ -1115,7 +1115,7 @@ suite('network-config', function() {
         assertEquals(
             chromeos.networkConfig.mojom.SecurityType.kNone,
             networkConfig.securityType_);
-        let outer = networkConfig.$$('#outer');
+        const outer = networkConfig.$$('#outer');
         assertFalse(!!outer);
       });
     });
@@ -1143,7 +1143,7 @@ suite('network-config', function() {
             'PEAP',
             networkConfig.configProperties_.typeConfig.ethernet.eap.outer);
         assertEquals('PEAP', networkConfig.eapProperties_.outer);
-        let outer = networkConfig.$$('#outer');
+        const outer = networkConfig.$$('#outer');
         assertTrue(!!outer);
         assertTrue(!outer.disabled);
         assertEquals('PEAP', outer.value);
@@ -1194,7 +1194,7 @@ suite('network-config', function() {
       networkConfig.set('eapProperties_.outer', 'EAP-TLS');
       return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
         return flushAsync().then(() => {
-          let outer = networkConfig.$$('#outer');
+          const outer = networkConfig.$$('#outer');
           assertEquals('EAP-TLS', outer.value);
           // Check that with no certificates, 'default' and 'no-certs' are
           // selected.

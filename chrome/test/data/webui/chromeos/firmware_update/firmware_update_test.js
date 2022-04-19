@@ -113,7 +113,7 @@ export function firmwareUpdateAppTest() {
 
   test('SettingGettingTestProvider', () => {
     initializePage();
-    let fake_provider =
+    const fake_provider =
         /** @type {!UpdateProviderInterface} */ (new FakeUpdateProvider());
     setUpdateProviderForTesting(fake_provider);
     assertEquals(fake_provider, getUpdateProvider());

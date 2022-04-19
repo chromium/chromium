@@ -202,7 +202,7 @@ suite('NetworkSimLockDialogsTest', function() {
   test('Change pin', async function() {
     // Set sim to unlocked with multiple retries left
     const mojom = chromeos.networkConfig.mojom;
-    let deviceState = {
+    const deviceState = {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
@@ -211,7 +211,7 @@ suite('NetworkSimLockDialogsTest', function() {
     networkConfigRemote_.setDeviceStateForTest(deviceState);
     simLockDialog.showChangePin = true;
 
-    let changePinDialog = simLockDialog.$$('#changePinDialog');
+    const changePinDialog = simLockDialog.$$('#changePinDialog');
 
     assertTrue(!!changePinDialog);
     assertFalse(changePinDialog.open);
@@ -246,7 +246,7 @@ suite('NetworkSimLockDialogsTest', function() {
 
     const enterPinDialog = simLockDialog.$$('#enterPinDialog');
 
-    let pinInput = enterPinDialog.querySelector('#enterPin');
+    const pinInput = enterPinDialog.querySelector('#enterPin');
     pinInput.value = '1111111';
     pinInput.fire('enter', {path: [pinInput]});
     await flushAsync();
@@ -292,7 +292,7 @@ suite('NetworkSimLockDialogsTest', function() {
 
     const enterPinDialog = simLockDialog.$$('#enterPinDialog');
     const enterPin = async function(pin) {
-      let pinInput = enterPinDialog.querySelector('#enterPin');
+      const pinInput = enterPinDialog.querySelector('#enterPin');
       pinInput.value = pin;
       pinInput.fire('enter', {path: [pinInput]});
       await flushAsync();

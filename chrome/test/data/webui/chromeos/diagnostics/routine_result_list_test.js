@@ -67,7 +67,7 @@ export function routineResultListTestSuite() {
   test('ElementRendered', () => {
     return initializeRoutineResultList([]).then(() => {
       // Verify the element rendered.
-      let div = routineResultListElement.$$('#resultListContainer');
+      const div = routineResultListElement.$$('#resultListContainer');
       assertTrue(!!div);
     });
   });
@@ -105,7 +105,7 @@ export function routineResultListTestSuite() {
       assertEquals(routines.length, getEntries().length);
       getEntries().forEach((entry, index) => {
         // Routines are initialized in the unstarted state.
-        let status = new ResultStatusItem(routines[index]);
+        const status = new ResultStatusItem(routines[index]);
         assertDeepEquals(status, entry.item);
       });
     });
@@ -141,7 +141,7 @@ export function routineResultListTestSuite() {
       assertEquals(routines.length, getEntries().length);
       getEntries().forEach((entry, index) => {
         // Routines are initialized in the unstarted state.
-        let status = new ResultStatusItem(routines[index]);
+        const status = new ResultStatusItem(routines[index]);
         assertDeepEquals(status, entry.item);
       });
 

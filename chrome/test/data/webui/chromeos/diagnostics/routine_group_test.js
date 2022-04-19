@@ -22,7 +22,7 @@ function getRoutineRunningStatusItem(routineType) {
  * @return {!ResultStatusItem}
  */
 function getRoutinedPassedStatusItem(routineType) {
-  let item = new ResultStatusItem(routineType, ExecutionProgress.kCompleted);
+  const item = new ResultStatusItem(routineType, ExecutionProgress.kCompleted);
   item.result = /** @type {!RoutineResult} */ (
       {simpleResult: StandardRoutineResult.kTestPassed});
   return item;
@@ -33,7 +33,7 @@ function getRoutinedPassedStatusItem(routineType) {
  * @return {!ResultStatusItem}
  */
 function getRoutinedFailedStatusItem(routineType) {
-  let item = new ResultStatusItem(routineType, ExecutionProgress.kCompleted);
+  const item = new ResultStatusItem(routineType, ExecutionProgress.kCompleted);
   item.result = /** @type {!RoutineResult} */ (
       {simpleResult: StandardRoutineResult.kTestFailed});
   return item;
@@ -53,15 +53,16 @@ export function routineGroupTestSuite() {
   const {kSignalStrength, kHasSecureWiFiConnection, kCaptivePortal} =
       RoutineType;
   test('GroupStatusSetCorrectly', () => {
-    let routineGroup = new RoutineGroup(
+    const routineGroup = new RoutineGroup(
         [
           createRoutine(kSignalStrength, false),
           createRoutine(kHasSecureWiFiConnection, false),
         ],
         'wifiGroupText');
 
-    let signalStrengthRunning = getRoutineRunningStatusItem(kSignalStrength);
-    let signalStrengthCompleted = getRoutinedPassedStatusItem(kSignalStrength);
+    const signalStrengthRunning = getRoutineRunningStatusItem(kSignalStrength);
+    const signalStrengthCompleted =
+        getRoutinedPassedStatusItem(kSignalStrength);
 
     // Progress is initially "Not started".
     assertEquals(routineGroup.progress, ExecutionProgress.kNotStarted);
@@ -76,9 +77,9 @@ export function routineGroupTestSuite() {
     routineGroup.setStatus(signalStrengthCompleted);
     assertEquals(routineGroup.progress, ExecutionProgress.kRunning);
 
-    let hasSecureWiFiConnectionRunning =
+    const hasSecureWiFiConnectionRunning =
         getRoutineRunningStatusItem(kHasSecureWiFiConnection);
-    let hasSecureWiFiConnectionCompleted =
+    const hasSecureWiFiConnectionCompleted =
         getRoutinedPassedStatusItem(kHasSecureWiFiConnection);
 
     // Progress should still be running.
@@ -92,20 +93,20 @@ export function routineGroupTestSuite() {
   });
 
   test('TestFailureHandledCorrectly', () => {
-    let routineGroup = new RoutineGroup(
+    const routineGroup = new RoutineGroup(
         [
           createRoutine(kSignalStrength, false),
           createRoutine(kHasSecureWiFiConnection, false),
         ],
         'wifiGroupText');
 
-    let signalStrengthFailed = getRoutinedFailedStatusItem(kSignalStrength);
+    const signalStrengthFailed = getRoutinedFailedStatusItem(kSignalStrength);
 
     routineGroup.setStatus(signalStrengthFailed);
     assertEquals(routineGroup.failedTest, kSignalStrength);
     assertTrue(routineGroup.inWarningState);
 
-    let hasSecureWiFiConnectionFailed =
+    const hasSecureWiFiConnectionFailed =
         getRoutinedFailedStatusItem(kHasSecureWiFiConnection);
     routineGroup.setStatus(hasSecureWiFiConnectionFailed);
 
@@ -115,14 +116,14 @@ export function routineGroupTestSuite() {
   });
 
   test('NonBlockingRoutinesSetInitializedCorrectly', () => {
-    let routineGroup = new RoutineGroup(
+    const routineGroup = new RoutineGroup(
         [
           createRoutine(kSignalStrength, false),
           createRoutine(kHasSecureWiFiConnection, false),
           createRoutine(kCaptivePortal, true),
         ],
         'wifiGroupText');
-    let nonBlockingRoutines = getNonBlockingRoutines(routineGroup);
+    const nonBlockingRoutines = getNonBlockingRoutines(routineGroup);
     assertTrue(nonBlockingRoutines.has(kSignalStrength));
     assertTrue(nonBlockingRoutines.has(kHasSecureWiFiConnection));
     assertFalse(nonBlockingRoutines.has(kCaptivePortal));

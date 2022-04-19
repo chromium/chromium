@@ -983,17 +983,17 @@ export function routineSectionTestSuite() {
 
 
   test('StopAfterFirstBlockingFailureInRoutineGroup', () => {
-    let localNetworkGroup = new RoutineGroup(
+    const localNetworkGroup = new RoutineGroup(
         [
           createRoutine(RoutineType.kGatewayCanBePinged, true),
           createRoutine(RoutineType.kLanConnectivity, true)
         ],
         'localNetworkGroupLabel');
 
-    let nameResolutionGroup = new RoutineGroup(
+    const nameResolutionGroup = new RoutineGroup(
         [createRoutine(RoutineType.kDnsResolverPresent, true)],
         'nameResolutionGroupLabel');
-    let groups = [localNetworkGroup, nameResolutionGroup];
+    const groups = [localNetworkGroup, nameResolutionGroup];
     routineController.setFakeStandardRoutineResult(
         RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestPassed);
     routineController.setFakeStandardRoutineResult(
@@ -1066,17 +1066,17 @@ export function routineSectionTestSuite() {
   });
 
   test('NonBlockingRoutineFailureHandledCorrectly', () => {
-    let localNetworkGroup = new RoutineGroup(
+    const localNetworkGroup = new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, false),
           createRoutine(RoutineType.kCaptivePortal, false),
         ],
         'wifiGroupLabel');
 
-    let nameResolutionGroup = new RoutineGroup(
+    const nameResolutionGroup = new RoutineGroup(
         [createRoutine(RoutineType.kDnsResolverPresent, true)],
         'nameResolutionGroupLabel');
-    let groups = [localNetworkGroup, nameResolutionGroup];
+    const groups = [localNetworkGroup, nameResolutionGroup];
     routineController.setFakeStandardRoutineResult(
         RoutineType.kSignalStrength, StandardRoutineResult.kTestFailed);
     routineController.setFakeStandardRoutineResult(
@@ -1151,7 +1151,7 @@ export function routineSectionTestSuite() {
   });
 
   test('MultipleNonBlockingTestsFail', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, false),
           createRoutine(RoutineType.kCaptivePortal, false),
@@ -1205,7 +1205,7 @@ export function routineSectionTestSuite() {
   });
 
   test('LastNonBlockingRoutineInGroupFails', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, false),
           createRoutine(RoutineType.kCaptivePortal, false),
@@ -1260,7 +1260,7 @@ export function routineSectionTestSuite() {
   });
 
   test('AnnounceOnAllTestPassed', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, /* blocking */ false),
         ],
@@ -1325,7 +1325,7 @@ export function routineSectionTestSuite() {
   });
 
   test('AnnounceOnBlockingTestFailed', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, /* blocking */ true),
         ],
@@ -1350,7 +1350,7 @@ export function routineSectionTestSuite() {
   });
 
   test('NoAnnounceOnBlockingTestCancelled', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, /* blocking */ true),
         ],

@@ -246,7 +246,7 @@ suite('AccessCodeCastAppTest', () => {
   test(
       'addSinkAndCast hides errors when user removes all access code',
       async () => {
-        let testProxy = createTestProxy(
+        const testProxy = createTestProxy(
             AddSinkResultCode.UNKNOWN_ERROR, RouteRequestResultCode.OK,
             () => {});
         BrowserProxy.setInstance(testProxy);
@@ -283,27 +283,21 @@ suite('AccessCodeCastAppTest', () => {
   test('submit button disabled during cast attempt', () => {
     app.setAccessCodeForTest('foobar');
     assertFalse(app.$.castButton.disabled);
-    let testProxy = createTestProxy(
-      AddSinkResultCode.OK,
-      RouteRequestResultCode.OK,
-      () => {
-        assertTrue(app.$.castButton.disabled);
-      }
-    );
+    const testProxy =
+        createTestProxy(AddSinkResultCode.OK, RouteRequestResultCode.OK, () => {
+          assertTrue(app.$.castButton.disabled);
+        });
     BrowserProxy.setInstance(testProxy);
     app.addSinkAndCast();
   });
 
   test('input is refocused after unsuccessful cast attempts', async () => {
-    let testProxy = createTestProxy(
-      AddSinkResultCode.OK,
-      RouteRequestResultCode.UNKNOWN_ERROR,
-      () => {
-        // Unfocus the code input during execution of addSinkAndCast.
-        app.$.castButton.focus();
-        assertFalse(app.$.codeInput.focused);
-      }
-    );
+    const testProxy = createTestProxy(
+        AddSinkResultCode.OK, RouteRequestResultCode.UNKNOWN_ERROR, () => {
+          // Unfocus the code input during execution of addSinkAndCast.
+          app.$.castButton.focus();
+          assertFalse(app.$.codeInput.focused);
+        });
     BrowserProxy.setInstance(testProxy);
     app.setAccessCodeForTest('foobar');
     // Code input must be focused in order for addSinkAndCast to execute.

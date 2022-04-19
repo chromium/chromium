@@ -106,8 +106,8 @@ suite('CrComponentsBluetoothBasePageTest', function() {
 
     setStateForAllButtons(ButtonState.ENABLED);
 
-    let cancelEventPromise = eventToPromise('cancel', bluetoothBasePage);
-    let pairEventPromise = eventToPromise('pair', bluetoothBasePage);
+    const cancelEventPromise = eventToPromise('cancel', bluetoothBasePage);
+    const pairEventPromise = eventToPromise('pair', bluetoothBasePage);
 
     getCancelButton().click();
     await cancelEventPromise;

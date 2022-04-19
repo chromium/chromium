@@ -27,14 +27,14 @@ suite('NetworkConfigSelectTest', function() {
     // enabled.
     configSelect.certList = false;
 
-    let selectEl = configSelect.$$('select');
+    const selectEl = configSelect.$$('select');
     assertTrue(!!selectEl);
 
     // Add a non-cert item.
     configSelect.items = ['Activated'];
     Polymer.dom.flush();
 
-    let optionEl = configSelect.$$('option');
+    const optionEl = configSelect.$$('option');
     assertTrue(!!optionEl);
 
     // Any non-cert item is enabled.

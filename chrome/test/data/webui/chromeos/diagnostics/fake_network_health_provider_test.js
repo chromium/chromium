@@ -28,8 +28,8 @@ export function fakeNetworkHealthProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
     const networkListObserverRemote =
         /** @type {!NetworkListObserverRemote} */ ({
@@ -66,7 +66,7 @@ export function fakeNetworkHealthProviderTestSuite() {
   test('ObserveNetwork', () => {
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
     provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
 
     const networkStateObserverRemote =
         /** @type {!NetworkStateObserverRemote} */ ({
@@ -85,8 +85,8 @@ export function fakeNetworkHealthProviderTestSuite() {
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
     provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
     provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
-    let wifiResolver = new PromiseResolver();
-    let ethernetResolver = new PromiseResolver();
+    const wifiResolver = new PromiseResolver();
+    const ethernetResolver = new PromiseResolver();
 
     const wifiNetworkStateObserverRemote =
         /** @type {!NetworkStateObserverRemote} */ ({

@@ -72,7 +72,7 @@ export function routineResultEntryTestSuite() {
    * @return {!ResultStatusItem}
    */
   function createCompletedStatus(routine, result) {
-    let status = new ResultStatusItem(routine, ExecutionProgress.kCompleted);
+    const status = new ResultStatusItem(routine, ExecutionProgress.kCompleted);
     status.result = result;
     return status;
   }
@@ -122,7 +122,7 @@ export function routineResultEntryTestSuite() {
   test('ElementRendered', () => {
     return initializeRoutineResultEntry().then(() => {
       // Verify the element rendered.
-      let div = routineResultEntryElement.$$('.entryRow');
+      const div = routineResultEntryElement.$$('.entryRow');
       assertTrue(!!div);
     });
   });

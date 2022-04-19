@@ -26,7 +26,7 @@ suite('NetworkProxyTest', function() {
   });
 
   test('Proxy select option change fires proxy-change event', function(done) {
-    let proxyType = netProxy.$.proxyType;
+    const proxyType = netProxy.$.proxyType;
 
     // Verify that changing the proxy type select option fires the proxy-change
     // event with the new proxy type.
@@ -43,8 +43,8 @@ suite('NetworkProxyTest', function() {
   test(
       'Add exception button only enabled when value in input',
       async function() {
-        let button = netProxy.$.proxyExclusionButton;
-        let input = netProxy.$.proxyExclusion;
+        const button = netProxy.$.proxyExclusionButton;
+        const input = netProxy.$.proxyExclusion;
         assertTrue(!!button);
         assertTrue(!!input);
         assertTrue(button.disabled);

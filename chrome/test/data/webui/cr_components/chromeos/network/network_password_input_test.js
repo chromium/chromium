@@ -20,12 +20,12 @@ suite('CrComponentsNetworkPasswordInputTest', function() {
   });
 
   test('Show password button', function() {
-    let passwordInput = networkPassword.$$('#input');
+    const passwordInput = networkPassword.$$('#input');
     assertTrue(!!passwordInput);
     assertFalse(networkPassword.showPassword);
     assertEquals('password', passwordInput.type);
 
-    let showPassword = networkPassword.$$('#icon');
+    const showPassword = networkPassword.$$('#icon');
     showPassword.click();
 
     assertTrue(networkPassword.showPassword);

@@ -114,7 +114,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * Test using one running routine.
    */
   test('RunningOne', () => {
-    let routines = createRoutines();
+    const routines = createRoutines();
     routines[0].running = true;
     routines[0].result = null;
     routines[0].resultMsg = '';
@@ -128,8 +128,8 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * Test when all routines are running.
    */
   test('RunningAll', () => {
-    let routines = createRoutines();
-    for (let routine of routines) {
+    const routines = createRoutines();
+    for (const routine of routines) {
       routine.running = true;
       routine.result = null;
       routine.resultMsg = '';
@@ -154,7 +154,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * Test when all routines are complete and one has failed.
    */
   test('FailedOne', () => {
-    let routines = createRoutines();
+    const routines = createRoutines();
     routines[0].resultMsg = 'Failed';
     routines[0].result =
         createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem);
@@ -167,7 +167,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * Test when routines are complete and one did not run.
    */
   test('NotRunOne', () => {
-    let routines = createRoutines();
+    const routines = createRoutines();
     routines[0].resultMsg = 'Not Run';
     routines[0].result =
         createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun);
@@ -180,7 +180,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * Test when routines are complete. One routine failed and one did not run.
    */
   test('NotRunAndFailed', () => {
-    let routines = createRoutines();
+    const routines = createRoutines();
     routines[0].resultMsg = 'Not Run';
     routines[0].result =
         createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun);

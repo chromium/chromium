@@ -70,15 +70,15 @@ suite('cfm-network-settings', () => {
 
     mojoApi.resetForTest();
 
-    let connectedWiFi =
+    const connectedWiFi =
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, wiFiId);
     connectedWiFi.connectable = true;
     connectedWiFi.connectionState = mojom.ConnectionStateType.kConnected;
 
-    let disconnectedWiFi = OncMojo.getDefaultNetworkState(
+    const disconnectedWiFi = OncMojo.getDefaultNetworkState(
         mojom.NetworkType.kWiFi, disconnectedWiFiId);
 
-    let configuredWiFi = OncMojo.getDefaultNetworkState(
+    const configuredWiFi = OncMojo.getDefaultNetworkState(
         mojom.NetworkType.kWiFi, configuredWiFiId);
     configuredWiFi.connectable = true;
 
@@ -94,45 +94,48 @@ suite('cfm-network-settings', () => {
     networkSettings.style.height = '100%';
     networkSettings.style.width = '100%';
     document.body.appendChild(networkSettings);
-    let networkSelect = networkSettings.$['network-select'];
+    const networkSelect = networkSettings.$['network-select'];
     networkSelect.refreshNetworks();
 
     await flushAsync();
   });
 
   test('Show add wifi', () => {
-    let customItemList = networkSettings.$['custom-items'];
+    const customItemList = networkSettings.$['custom-items'];
     // While the network list items do have the correct ARIA role, clicking them
     // directly does nothing; we have to click a specific element within them.
-    let items = customItemList.shadowRoot.querySelectorAll('*[role="button"]');
-    let clickable = items[0].shadowRoot.querySelectorAll('*[role="button"]');
+    const items =
+        customItemList.shadowRoot.querySelectorAll('*[role="button"]');
+    const clickable = items[0].shadowRoot.querySelectorAll('*[role="button"]');
     clickable[0].click();
     assertEquals(1, browserProxy.getCallCount('showAddWifi'));
   });
 
   test('Show proxy settings', () => {
-    let customItemList = networkSettings.$['custom-items'];
+    const customItemList = networkSettings.$['custom-items'];
     // While the network list items do have the correct ARIA role, clicking them
     // directly does nothing; we have to click a specific element within them.
-    let items = customItemList.shadowRoot.querySelectorAll('*[role="button"]');
-    let clickable = items[1].shadowRoot.querySelectorAll('*[role="button"]');
+    const items =
+        customItemList.shadowRoot.querySelectorAll('*[role="button"]');
+    const clickable = items[1].shadowRoot.querySelectorAll('*[role="button"]');
     clickable[0].click();
     assertDeepEquals([''], browserProxy.getArgs('showNetworkDetails'));
   });
 
   test('Show manage certs', () => {
-    let customItemList = networkSettings.$['custom-items'];
+    const customItemList = networkSettings.$['custom-items'];
     // While the network list items do have the correct ARIA role, clicking them
     // directly does nothing; we have to click a specific element within them.
-    let items = customItemList.shadowRoot.querySelectorAll('*[role="button"]');
-    let clickable = items[2].shadowRoot.querySelectorAll('*[role="button"]');
+    const items =
+        customItemList.shadowRoot.querySelectorAll('*[role="button"]');
+    const clickable = items[2].shadowRoot.querySelectorAll('*[role="button"]');
     clickable[0].click();
     assertEquals(1, browserProxy.getCallCount('showManageCerts'));
   });
 
   test('Click unconnected network', () => {
-    let networkSelect = networkSettings.$['network-select'];
-    let item =
+    const networkSelect = networkSettings.$['network-select'];
+    const item =
         networkSelect.getNetworkListItemByNameForTest(disconnectedWiFiId);
     item.click();
     assertDeepEquals(
@@ -141,8 +144,8 @@ suite('cfm-network-settings', () => {
   });
 
   test('Click connected network', () => {
-    let networkSelect = networkSettings.$['network-select'];
-    let item = networkSelect.getNetworkListItemByNameForTest(wiFiId);
+    const networkSelect = networkSettings.$['network-select'];
+    const item = networkSelect.getNetworkListItemByNameForTest(wiFiId);
     item.click();
     assertDeepEquals(
         [wiFiId + '_guid'], browserProxy.getArgs('showNetworkDetails'));
@@ -155,8 +158,9 @@ suite('cfm-network-settings', () => {
     let connectTried = false;
     mojoApi.whenCalled('startConnect').then(() => connectTried = true);
 
-    let networkSelect = networkSettings.$['network-select'];
-    let item = networkSelect.getNetworkListItemByNameForTest(configuredWiFiId);
+    const networkSelect = networkSettings.$['network-select'];
+    const item =
+        networkSelect.getNetworkListItemByNameForTest(configuredWiFiId);
     item.click();
 
     await flushAsync();

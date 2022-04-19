@@ -147,15 +147,15 @@ suite('ListPropertyUpdateMixin', function() {
   test(
       'notifySplices() is not called when a simple array has not been changed',
       function() {
-        let unchangedSimpleArray = testElement.simpleArray.slice();
+        const unchangedSimpleArray = testElement.simpleArray.slice();
         assertFalse(testElement.updateSimpleArray(unchangedSimpleArray));
       });
 
   test(
       'notifySplices() is not called when a complex array has not been changed',
       function() {
-        let unchangedComplexArray = testElement.complexArray.slice();
-        let result = testElement.updateComplexArray(unchangedComplexArray);
+        const unchangedComplexArray = testElement.complexArray.slice();
+        const result = testElement.updateComplexArray(unchangedComplexArray);
         assertFalse(result.topArrayChanged);
         assertFalse(result.wordsArrayChanged);
       });
@@ -197,7 +197,7 @@ suite('ListPropertyUpdateMixin', function() {
 
         // Ensure that the array is updated when the entire array is different.
         testElement.resetSimpleArray();
-        let newArray = [{id: 10}, {id: 11}, {id: 12}, {id: 13}];
+        const newArray = [{id: 10}, {id: 11}, {id: 12}, {id: 13}];
 
         assertTrue(testElement.updateSimpleArray(newArray));
         assertSimpleArrayEquals(testElement.simpleArray, newArray);
@@ -249,7 +249,7 @@ suite('ListPropertyUpdateMixin', function() {
 
         // Ensure that the array is updated when the entire array is different.
         testElement.resetComplexArray();
-        let newArray = [
+        const newArray = [
           {letter: 'w', words: ['water', 'woods']},
           {letter: 'x', words: ['xylophone']}, {letter: 'y', words: ['yo-yo']},
           {letter: 'z', words: ['zebra', 'zephyr']}

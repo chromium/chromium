@@ -22,7 +22,6 @@ module.exports = {
       }
     ],
     'no-var': 'off',
-    'prefer-const': 'off',
     'eqeqeq': ['error', 'always', {'null': 'ignore'}],
   },
 };

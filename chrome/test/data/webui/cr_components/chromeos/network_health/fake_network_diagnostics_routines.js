@@ -61,7 +61,7 @@ export class FakeNetworkDiagnostics {
    * @returns {!Promise<!RunRoutineResponse>}
    */
   wrapResult_(problemField) {
-    let result = createResult(this.verdict_);
+    const result = createResult(this.verdict_);
     result.problems[problemField] =
         this.problem_ !== null ? [this.problem_] : [];
     const response = {

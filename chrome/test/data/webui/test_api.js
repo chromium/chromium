@@ -69,10 +69,10 @@ function Test() {}
  * will break. animationend events should still work.
  */
 Test.disableAnimationsAndTransitions = function() {
-  let all = document.body.querySelectorAll('*');
+  const all = document.body.querySelectorAll('*');
   const ZERO_MS_IMPORTANT = '0ms !important';
   for (let i = 0, l = all.length; i < l; ++i) {
-    let style = all[i].style;
+    const style = all[i].style;
     style.animationDelay = ZERO_MS_IMPORTANT;
     style.animationDuration = ZERO_MS_IMPORTANT;
     style.transitionDelay = ZERO_MS_IMPORTANT;

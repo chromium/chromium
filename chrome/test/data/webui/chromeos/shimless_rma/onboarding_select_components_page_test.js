@@ -129,7 +129,7 @@ export function onboardingSelectComponentsPageTest() {
     await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
     await clickComponentCameraToggle();
 
-    let components = getComponentRepairStateList();
+    const components = getComponentRepairStateList();
     assertNotEquals(fakeComponentsForRepairStateTest, components);
     fakeComponentsForRepairStateTest[0].state = ComponentRepairStatus.kReplaced;
     assertDeepEquals(fakeComponentsForRepairStateTest, components);
@@ -159,7 +159,7 @@ export function onboardingSelectComponentsPageTest() {
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
+    const expectedResult = {foo: 'bar'};
     let savedResult;
     component.onNextButtonClick().then((result) => savedResult = result);
     // Resolve to a distinct result to confirm it was not modified.

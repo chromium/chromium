@@ -51,7 +51,7 @@ export function shortcutCustomizationAppTest() {
    */
   async function openDialogForAcceleratorInSubsection_(subsectionIndex) {
     // The edit dialog should not be stamped and visible.
-    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertFalse(!!editDialog);
 
     const subSections = getSubsections_('chromeos-page-id');
@@ -72,7 +72,7 @@ export function shortcutCustomizationAppTest() {
     // Two subsections for ChromeOS (Window Management + Virtual Desks).
     assertEquals(expectedLayouts.size, subSections.length);
 
-    let keyIterator = expectedLayouts.keys();
+    const keyIterator = expectedLayouts.keys();
     // Assert subsection title (Window management) matches expected value from
     // fake lookup.
     const windowManagementValue = keyIterator.next().value;
@@ -183,7 +183,7 @@ export function shortcutCustomizationAppTest() {
 
     // Open dialog for first accelerator in View Desk subsection.
     await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
-    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertTrue(!!editDialog);
 
     // Grab the first accelerator from Virtual Desks subsection.
@@ -247,7 +247,7 @@ export function shortcutCustomizationAppTest() {
 
     // Open dialog for first accelerator in View Desk subsection.
     await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
-    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertTrue(!!editDialog);
 
     // Grab the first accelerator from Virtual Desks subsection.
@@ -319,7 +319,7 @@ export function shortcutCustomizationAppTest() {
 
     // Open dialog for first accelerator in View Desk subsection.
     await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
-    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    const editDialog = page.shadowRoot.querySelector('#editDialog');
     assertTrue(!!editDialog);
 
     // Grab the first accelerator from Virtual Desks subsection.
@@ -370,7 +370,7 @@ export function shortcutCustomizationAppTest() {
   suite('FakeMojoProviderTest', () => {
     test('SettingGettingTestProvider', () => {
       // TODO(zentaro): Replace with fake when built.
-      let fake_provider =
+      const fake_provider =
           /** @type {!ShortcutProviderInterface} */ (new Object());
       setShortcutProviderForTesting(fake_provider);
       assertEquals(fake_provider, getShortcutProvider());

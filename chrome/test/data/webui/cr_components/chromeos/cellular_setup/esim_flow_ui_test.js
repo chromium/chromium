@@ -35,7 +35,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
   let networkConfigRemote;
 
   let focusDefaultButtonEventFired = false;
-  let wifiGuidPrefix = 'wifi';
+  const wifiGuidPrefix = 'wifi';
 
   async function flushAsync() {
     Polymer.dom.flush();

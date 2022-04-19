@@ -40,7 +40,7 @@ suite('ShareAppTest', function() {
     fakeSettings.setEnabled(enabled);
     setNearbyShareSettingsForTesting(fakeSettings);
 
-    let fakeContactManager = new FakeContactManager();
+    const fakeContactManager = new FakeContactManager();
     setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
 

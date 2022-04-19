@@ -11,7 +11,7 @@ import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 export function fakeMojoProviderTestSuite() {
   test('SettingGettingTestHelpContentProvider', () => {
-    let fake_provider =
+    const fake_provider =
         /** @type {HelpContentProviderInterface} */ (
             new FakeHelpContentProvider());
     setHelpContentProviderForTesting(fake_provider);
@@ -24,7 +24,7 @@ export function fakeMojoProviderTestSuite() {
   });
 
   test('SettingGettingTestFeedbackServiceProvider', () => {
-    let fake_provider =
+    const fake_provider =
         /** @type {FeedbackServiceProviderInterface} */ (
             new FakeFeedbackServiceProvider());
     setFeedbackServiceProviderForTesting(fake_provider);

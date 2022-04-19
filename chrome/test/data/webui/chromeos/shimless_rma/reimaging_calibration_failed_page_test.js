@@ -165,7 +165,7 @@ export function reimagingCalibrationFailedPageTest() {
     };
     await flushTasks();
 
-    let expectedResult = {foo: 'bar'};
+    const expectedResult = {foo: 'bar'};
     let savedResult;
     component.onNextButtonClick().then((result) => savedResult = result);
     // Resolve to a distinct result to confirm it was not modified.

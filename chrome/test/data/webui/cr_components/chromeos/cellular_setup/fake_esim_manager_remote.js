@@ -117,8 +117,8 @@ cr.define('cellular_setup', function() {
      * @private
      */
     deferredPromise_() {
-      let deferred = {};
-      let promise = new Promise(function(resolve, reject) {
+      const deferred = {};
+      const promise = new Promise(function(resolve, reject) {
         deferred.resolve = resolve;
         deferred.reject = reject;
       });
@@ -276,7 +276,7 @@ cr.define('cellular_setup', function() {
     async removeProfileForTest(iccid) {
       const result = [];
       let profileRemoved = false;
-      for (let profile of this.profiles_) {
+      for (const profile of this.profiles_) {
         const property = await profile.getProperties();
         if (property.properties.iccid === iccid) {
           profileRemoved = true;

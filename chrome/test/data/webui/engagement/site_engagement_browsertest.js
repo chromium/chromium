@@ -90,7 +90,7 @@ TEST_F('SiteEngagementBrowserTest', 'All', function() {
     firstRow.scoreInput.value = 50;
     firstRow.scoreInput.dispatchEvent(new Event('change'));
 
-    let {info} = await engagementDetailsProvider.getSiteEngagementDetails();
+    const {info} = await engagementDetailsProvider.getSiteEngagementDetails();
     assertEquals(firstRow.origin.textContent, info[0].origin.url);
     assertEquals(50, info[0].baseScore);
   });

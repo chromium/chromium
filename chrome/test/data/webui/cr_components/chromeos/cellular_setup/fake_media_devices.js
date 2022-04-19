@@ -76,7 +76,7 @@ cr.define('cellular_setup', function() {
      * Adds a video input device to the list of media devices.
      */
     addDevice() {
-      let device = {
+      const device = {
         deviceId: '',
         kind: 'videoinput',
         label: '',

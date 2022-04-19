@@ -162,8 +162,8 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
     /** @type {!CpuUsageObserverRemote} */
     const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
@@ -202,8 +202,8 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
     const memoryObserverRemote = /** @type {!MemoryUsageObserverRemote} */ ({
       onMemoryUsageUpdated: (memoryUsage) => {
@@ -241,8 +241,8 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
     const batteryHealthObserverRemote =
         /** @type {!BatteryHealthObserverRemote} */ ({
@@ -281,8 +281,8 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which observation we should get.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
     const batteryChargeStatusObserverRemote =
         /** @type {!BatteryChargeStatusObserverRemote} */ ({
@@ -322,8 +322,8 @@ export function fakeSystemDataProviderTestSuite() {
 
     // Keep track of which call to the callback.
     let whichSample = 0;
-    let firstResolver = new PromiseResolver();
-    let completeResolver = new PromiseResolver();
+    const firstResolver = new PromiseResolver();
+    const completeResolver = new PromiseResolver();
 
     /** @type {!CpuUsageObserverRemote} */
     const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({

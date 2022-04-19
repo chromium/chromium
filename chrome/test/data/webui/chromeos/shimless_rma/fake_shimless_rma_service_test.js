@@ -29,7 +29,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('GetCurrentStateWelcomeOk', () => {
-    let states = [
+    const states = [
       {
         state: State.kWelcomeScreen,
         canCancel: true,
@@ -48,7 +48,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('GetCurrentStateWelcomeError', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kMissingComponent},
     ];
     service.setStates(states);
@@ -60,7 +60,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('TransitionPreviousStateWelcomeOk', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -77,7 +77,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('TransitionPreviousStateWelcomeTransitionFailed', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
@@ -131,7 +131,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('UpdateOsSkippedOk', () => {
-    let states = [
+    const states = [
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -151,7 +151,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('UpdateOsSkippedWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -164,7 +164,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetSameOwnerOk', () => {
-    let states = [
+    const states = [
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -184,7 +184,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetSameOwnerWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -197,7 +197,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetDifferentOwnerOk', () => {
-    let states = [
+    const states = [
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -210,7 +210,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetDifferentOwnerWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -223,7 +223,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ChooseManuallyDisableWriteProtectOk', () => {
-    let states = [
+    const states = [
       {state: State.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
       {state: State.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
       {state: State.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
@@ -237,7 +237,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ChooseManuallyDisableWriteProtectWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -250,7 +250,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ChooseRsuDisableWriteProtectOk', () => {
-    let states = [
+    const states = [
       {state: State.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -263,7 +263,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ChooseRsuDisableWriteProtectWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -282,7 +282,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetRsuDisableWriteProtectChallengeResultUpdatesResult', () => {
-    let expectedChallenge = '9876543210';
+    const expectedChallenge = '9876543210';
     service.setGetRsuDisableWriteProtectChallengeResult(expectedChallenge);
     return service.getRsuDisableWriteProtectChallenge().then((challenge) => {
       assertEquals(challenge.challenge, expectedChallenge);
@@ -290,7 +290,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetRsuDisableWriteProtectCodeOk', () => {
-    let states = [
+    const states = [
       {state: State.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -303,7 +303,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetRsuDisableWriteProtectCodeWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -322,7 +322,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetComponentListResultUpdatesResult', () => {
-    let expectedComponents = [
+    const expectedComponents = [
       {
         component: ComponentType.kKeyboard,
         state: ComponentRepairStatus.kOriginal
@@ -339,13 +339,13 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetComponentListOk', () => {
-    let components = [
+    const components = [
       {
         component: ComponentType.kKeyboard,
         state: ComponentRepairStatus.kOriginal
       },
     ];
-    let states = [
+    const states = [
       {state: State.kSelectComponents, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -358,13 +358,13 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetComponentListWrongStateFails', () => {
-    let components = [
+    const components = [
       {
         component: ComponentType.kKeyboard,
         state: ComponentRepairStatus.kOriginal
       },
     ];
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -377,7 +377,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ReworkMainboardOk', () => {
-    let states = [
+    const states = [
       {state: State.kSelectComponents, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -390,7 +390,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ReworkMainboardWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -419,7 +419,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ReimageRoFirmwareUpdateCompleteOk', () => {
-    let states = [
+    const states = [
       {state: State.kUpdateRoFirmware, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -432,7 +432,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ReimageRoFirmwareUpdateCompleteWrongStateFails', () => {
-    let states = [
+    const states = [
       {state: State.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: State.kUpdateOs, error: RmadErrorCode.kOk},
     ];
@@ -451,7 +451,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetRegionListResultUpdatesResult', () => {
-    let regionList = ['America', 'Asia', 'Europe'];
+    const regionList = ['America', 'Asia', 'Europe'];
     service.setGetRegionListResult(regionList);
     return service.getRegionList().then((regions) => {
       assertDeepEquals(regions.regions, regionList);
@@ -465,7 +465,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetSkuListResultUpdatesResult', () => {
-    let skuList = [1, 202, 33];
+    const skuList = [1, 202, 33];
     service.setGetSkuListResult(skuList);
     return service.getSkuList().then((skus) => {
       assertDeepEquals(skus.skus, skuList);
@@ -494,7 +494,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetOriginalSerialNumberResultUpdatesResult', () => {
-    let expectedSerialNumber = '123456789';
+    const expectedSerialNumber = '123456789';
     service.setGetOriginalSerialNumberResult(expectedSerialNumber);
     return service.getOriginalSerialNumber().then((serialNumber) => {
       assertEquals(serialNumber.serialNumber, expectedSerialNumber);
@@ -508,7 +508,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetOriginalRegionResultUpdatesResult', () => {
-    let expectedRegion = 1;
+    const expectedRegion = 1;
     service.setGetOriginalRegionResult(expectedRegion);
     return service.getOriginalRegion().then((region) => {
       assertEquals(region.regionIndex, expectedRegion);
@@ -522,7 +522,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetGetOriginalSkuResultUpdatesResult', () => {
-    let expectedSku = 1;
+    const expectedSku = 1;
     service.setGetOriginalSkuResult(expectedSku);
     return service.getOriginalSku().then((sku) => {
       assertEquals(sku.skuIndex, expectedSku);
@@ -558,7 +558,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('SetDeviceInformationOk', () => {
-    let states = [
+    const states = [
       {state: State.kUpdateDeviceInformation, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -572,12 +572,12 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('GetCalibrationComponentList', () => {
-    let states = [
+    const states = [
       {state: State.kCheckCalibration, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
-    let expectedCalibrationComponents = [
+    const expectedCalibrationComponents = [
       /** @type {!CalibrationComponentStatus} */
       ({
         component: ComponentType.kLidAccelerometer,
@@ -599,7 +599,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('GetCalibrationInstructions', () => {
-    let states = [
+    const states = [
       {state: State.kCheckCalibration, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -617,7 +617,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('StartCalibrationOk', () => {
-    let states = [
+    const states = [
       {state: State.kCheckCalibration, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -634,7 +634,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('RunCalibrationStepOk', () => {
-    let states = [
+    const states = [
       {state: State.kSetupCalibration, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -647,7 +647,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('ContinueCalibrationOk', () => {
-    let states = [
+    const states = [
       {state: State.kRunCalibration, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -660,7 +660,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('CalibrationCompleteOk', () => {
-    let states = [
+    const states = [
       {state: State.kRunCalibration, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];
@@ -673,7 +673,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('GetLog', () => {
-    let states = [{state: State.kRepairComplete, error: RmadErrorCode.kOk}];
+    const states = [{state: State.kRepairComplete, error: RmadErrorCode.kOk}];
     service.setStates(states);
     const expectedLog = 'fake log';
     service.setGetLogResult(expectedLog);
@@ -699,7 +699,7 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('EndRma', () => {
-    let states = [
+    const states = [
       {state: State.kRepairComplete, error: RmadErrorCode.kOk},
       {state: State.kChooseDestination, error: RmadErrorCode.kOk},
     ];

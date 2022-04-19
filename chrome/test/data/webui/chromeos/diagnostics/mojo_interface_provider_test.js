@@ -12,19 +12,19 @@ import {assertEquals} from '../../chai_assert.js';
 
 export function fakeMojoProviderTestSuite() {
   test('SettingGettingTestProvider', () => {
-    let fake_provider = new FakeSystemDataProvider();
+    const fake_provider = new FakeSystemDataProvider();
     setSystemDataProviderForTesting(fake_provider);
     assertEquals(fake_provider, getSystemDataProvider());
   });
 
   test('SettingGettingTestController', () => {
-    let fake_controller = new FakeSystemRoutineController();
+    const fake_controller = new FakeSystemRoutineController();
     setSystemRoutineControllerForTesting(fake_controller);
     assertEquals(fake_controller, getSystemRoutineController());
   });
 
   test('SettingGettingTestNetworkHealthProvider', () => {
-    let fake_provider = new FakeNetworkHealthProvider();
+    const fake_provider = new FakeNetworkHealthProvider();
     setNetworkHealthProviderForTesting(fake_provider);
     assertEquals(fake_provider, getNetworkHealthProvider());
   });

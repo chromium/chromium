@@ -87,7 +87,7 @@ export function connectivityCardTestSuite() {
   function getRoutines() {
     assertTrue(!!connectivityCardElement);
     let routines = [];
-    for (let routineGroup of connectivityCardElement.routineGroups_) {
+    for (const routineGroup of connectivityCardElement.routineGroups_) {
       routines = [...routines, ...routineGroup.routines];
     }
 

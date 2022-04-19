@@ -17,7 +17,7 @@
  * @param {!HTMLSelectElement} Dropdown menu to endow with emulated
  *     behavior.
  */
-let emulateDropdownBehavior = function(dropdown) {
+const emulateDropdownBehavior = function(dropdown) {
   for (let i = 0; i < dropdown.length; i++) {
     dropdown.options[i].addEventListener('click', function() {
       dropdown.selectedIndex = i;
@@ -77,7 +77,7 @@ suite('MultiDeviceSetup', () => {
     emulateDropdownBehavior(startSetupPageElement.$.deviceDropdown);
   });
 
-  let selectOptionByTextContent = function(optionText) {
+  const selectOptionByTextContent = function(optionText) {
     const optionNodeList =
         startSetupPageElement.$.deviceDropdown.querySelectorAll('option');
     for (const option of optionNodeList.values()) {

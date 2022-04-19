@@ -24,7 +24,7 @@ export function fakeObservablesTestSuite() {
     const expected = ['bar'];
     observables.setObservableData('ObserveFoo_OnFooUpdated', expected);
 
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     observables.observe('ObserveFoo_OnFooUpdated', (foo) => {
       assertEquals(expected[0], foo);
       resolver.resolve();
@@ -41,7 +41,7 @@ export function fakeObservablesTestSuite() {
     observables.setObservableData('ObserveFoo_OnFooUpdated', expected);
 
     // The first call will get 'bar1', and the second 'bar2'.
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     const expectedCallCount = 2;
     let callCount = 0;
     observables.observe('ObserveFoo_OnFooUpdated', (foo) => {
@@ -66,7 +66,7 @@ export function fakeObservablesTestSuite() {
 
     // With 3 calls and 2 observable values the response should cycle
     // 'bar1', 'bar2', 'bar1'
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     const expectedCallCount = 3;
     let callCount = 0;
     observables.observe('ObserveFoo_OnFooUpdated', (foo) => {
@@ -91,7 +91,7 @@ export function fakeObservablesTestSuite() {
     observables.setObservableDataForArg(
         'ObserveFoo_OnFooUpdated', 'foo', expected);
 
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     observables.observeWithArg('ObserveFoo_OnFooUpdated', 'foo', (foo) => {
       assertEquals(expected[0], foo);
       resolver.resolve();
@@ -112,7 +112,7 @@ export function fakeObservablesTestSuite() {
 
     // With 3 calls and 2 observable values the response should cycle
     // 'bar1', 'bar2', 'bar1'
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     const expectedCallCount = 3;
     let callCount = 0;
     observables.observeWithArg('ObserveFoo_OnFooUpdated', 'bar', (foo) => {
@@ -139,7 +139,7 @@ export function fakeObservablesTestSuite() {
 
     // With 4 calls and 4 observable values the response should cycle
     // 'bar1', 'bar2', 'bar3', 'bar4'
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     const expectedCallCount = 4;
     let callCount = 0;
     observables.observeWithArg('ObserveFoo_OnFooUpdated', 'bar', (foo) => {
@@ -172,7 +172,7 @@ export function fakeObservablesTestSuite() {
     observables.setObservableDataForArg(
         'ObserveFoo_OnFooUpdated', 'foo', expected);
 
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     observables.observeWithArg('ObserveFoo_OnFooUpdated', 'foo', (foo, bar) => {
       assertEquals(expected[0][0], foo);
       assertEquals(expected[0][1], bar);
@@ -189,7 +189,7 @@ export function fakeObservablesTestSuite() {
     const expected = ['bar'];
     observables.setObservableData('ObserveFoo_OnFooUpdated', expected);
 
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     observables.observe('ObserveFoo_OnFooUpdated', (foo) => {
       assertEquals(expected[0], foo);
       resolver.resolve();
@@ -206,7 +206,7 @@ export function fakeObservablesTestSuite() {
     observables.setObservableDataForArg(
         'ObserveFoo_OnFooUpdated', 'foo', expected);
 
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
     observables.observeWithArg('ObserveFoo_OnFooUpdated', 'foo', (foo) => {
       assertEquals(expected[0], foo);
       resolver.resolve();

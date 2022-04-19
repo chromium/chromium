@@ -74,8 +74,8 @@ suite('CrComponentsCellularSetupTest', function() {
   test('Show eSIM flow ui', async function() {
     init();
     await flushAsync();
-    let eSimFlow = cellularSetupPage.$$('esim-flow-ui');
-    let pSimFlow = cellularSetupPage.$$('psim-flow-ui');
+    const eSimFlow = cellularSetupPage.$$('esim-flow-ui');
+    const pSimFlow = cellularSetupPage.$$('psim-flow-ui');
 
     // By default eSIM flow is always shown
     assertTrue(!!eSimFlow);

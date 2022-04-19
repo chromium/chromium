@@ -17,7 +17,7 @@ parent_access_ui_handler_tests.TestNames = {
 };
 
 suite(parent_access_ui_handler_tests.suiteName, function() {
-  let parentAccessUIHandler =
+  const parentAccessUIHandler =
       parentAccessUi.mojom.ParentAccessUIHandler.getRemote();
   test(
       parent_access_ui_handler_tests.TestNames.TestOnParentAccessResult,
@@ -30,7 +30,7 @@ suite(parent_access_ui_handler_tests.suiteName, function() {
             result.status);
 
         // Decodes to a valid parent_access_callback with OnParentVerified.
-        let on_verified_parent_access_callback =
+        const on_verified_parent_access_callback =
             'ChwKGgoSVkFMSURfQUNDRVNTX1RPS0VOEgQIPBA8';
 
         result = await parentAccessUIHandler.onParentAccessResult(
@@ -41,7 +41,7 @@ suite(parent_access_ui_handler_tests.suiteName, function() {
             result.status);
 
         // Decodes to a valid parent_access_callback with OnConsentDeclined.
-        let on_consent_declined_parent_access_callback = 'EgA=';
+        const on_consent_declined_parent_access_callback = 'EgA=';
 
         result = await parentAccessUIHandler.onParentAccessResult(
             on_consent_declined_parent_access_callback);

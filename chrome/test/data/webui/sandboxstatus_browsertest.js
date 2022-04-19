@@ -104,17 +104,17 @@ TEST_F('GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled', function() {
   const gpuyesstring = 'Sandboxed\ttrue';
   const gpunostring = 'Sandboxed\tfalse';
 
-  let observer = new MutationObserver(function(mutations) {
+  const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       for (var i = 0; i < mutation.addedNodes.length; i++) {
         // Here we can inspect each of the added nodes. We expect
         // to find one that contains one of the GPU status strings.
-        let addedNode = mutation.addedNodes[i];
+        const addedNode = mutation.addedNodes[i];
         // Check for both. If it contains neither, it's an unrelated
         // mutation event we don't care about. But if it contains one,
         // pass or fail accordingly.
-        let gpuyes = addedNode.innerText.match(gpuyesstring);
-        let gpuno = addedNode.innerText.match(gpunostring);
+        const gpuyes = addedNode.innerText.match(gpuyesstring);
+        const gpuno = addedNode.innerText.match(gpunostring);
         if (gpuyes || gpuno) {
           assertEquals(null, gpuno);
           assertTrue(gpuyes && (gpuyes[0] === gpuyesstring));

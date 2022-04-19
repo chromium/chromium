@@ -22,11 +22,11 @@ suite('bluetooth_internals', function() {
   let adapterFieldSet = null;
   let deviceTable = null;
   let sidebarNode = null;
-  let pageNames = ['adapter', 'devices'];
+  const pageNames = ['adapter', 'devices'];
   const EXPECTED_DEVICES = 2;
 
   suiteSetup(async function() {
-    let internalsHandlerInterceptor =
+    const internalsHandlerInterceptor =
         new MojoInterfaceInterceptor(BluetoothInternalsHandler.$interfaceName);
     internalsHandlerInterceptor.oninterfacerequest = (e) => {
       internalsHandler = new TestBluetoothInternalsHandler(e.handle);

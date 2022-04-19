@@ -94,7 +94,7 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
   test(
       'request-code-entered is fired when pair button is clicked',
       async function() {
-        let requestCodePromise = eventToPromise(
+        const requestCodePromise = eventToPromise(
             'request-code-entered', bluetoothPairingRequestCodePage);
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789',

@@ -120,8 +120,8 @@ AccessibilityTest.define('CrExtensionsA11yTest', {
   /** @override */
   tests: {
     'Accessible with No Extensions': function() {
-      let list = document.querySelector('extensions-manager')
-                     .shadowRoot.querySelector('#items-list');
+      const list = document.querySelector('extensions-manager')
+                       .shadowRoot.querySelector('#items-list');
       assertEquals(list.extensions.length, 0);
       assertEquals(list.apps.length, 0);
     }
@@ -151,8 +151,8 @@ AccessibilityTest.define('CrExtensionsA11yTestWithMultipleExensions', {
   /** @override */
   tests: {
     'Accessible with Extensions and Apps': function() {
-      let list = document.querySelector('extensions-manager')
-                     .shadowRoot.querySelector('#items-list');
+      const list = document.querySelector('extensions-manager')
+                       .shadowRoot.querySelector('#items-list');
       assertEquals(list.extensions.length, 1);
       assertEquals(list.apps.length, 3);
     },
@@ -180,8 +180,9 @@ AccessibilityTest.define('CrExtensionsShortcutA11yTestWithNoExtensions', {
   /** @override */
   tests: {
     'Accessible with No Extensions or Apps': function() {
-      let list = document.querySelector('extensions-manager')
-                     .shadowRoot.querySelector('extensions-keyboard-shortcuts');
+      const list =
+          document.querySelector('extensions-manager')
+              .shadowRoot.querySelector('extensions-keyboard-shortcuts');
       assertEquals(list.items.length, 0);
     },
   },
@@ -208,8 +209,9 @@ AccessibilityTest.define('CrExtensionsShortcutA11yTestWithExtensions', {
   /** @override */
   tests: {
     'Accessible with Extensions': function() {
-      let list = document.querySelector('extensions-manager')
-                     .shadowRoot.querySelector('extensions-keyboard-shortcuts');
+      const list =
+          document.querySelector('extensions-manager')
+              .shadowRoot.querySelector('extensions-keyboard-shortcuts');
       assertEquals(list.items.length, 1);
     },
   },

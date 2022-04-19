@@ -91,7 +91,7 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
       async () => {
         const resolver = new PromiseResolver();
         await initializeEnterRsuWpDisableCodePage('', '');
-        let expectedCode = 'rsu code';
+        const expectedCode = 'rsu code';
         let savedCode = '';
         service.setRsuDisableWriteProtectCode = (code) => {
           savedCode = code;
@@ -100,7 +100,7 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
         const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
         rsuCodeComponent.value = expectedCode;
 
-        let expectedResult = {foo: 'bar'};
+        const expectedResult = {foo: 'bar'};
         let savedResult;
         component.onNextButtonClick().then((result) => savedResult = result);
         // Resolve to a distinct result to confirm it was not modified.

@@ -28,20 +28,22 @@ suite('TrafficCountersTest', function() {
    * Fake last reset time. Corresponds to a time on September 10, 2021.
    * @type {bigint}
    */
-  let FAKE_TIME_IN_MICROSECONDS = BigInt(13275778457938000);
+  const FAKE_TIME_IN_MICROSECONDS = BigInt(13275778457938000);
   /** @type {!mojoBase.mojom.Time} */
-  let FAKE_INITIAL_LAST_RESET_TIME = {internalValue: FAKE_TIME_IN_MICROSECONDS};
+  const FAKE_INITIAL_LAST_RESET_TIME = {
+    internalValue: FAKE_TIME_IN_MICROSECONDS
+  };
   /**
    * @type {string} human readable string representing
    * the FAKE_INITIAL_LAST_RESET_TIME.
    */
-  let FAKE_INITIAL_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 2:14:17 PM';
+  const FAKE_INITIAL_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 2:14:17 PM';
   /**
    * Note that the hour here has been adjusted to test for locale.
    * @type {string} human readable string representing
    * the FAKE_POST_RESET_LAST_RESET_TIME_LOCALE_STRING.
    */
-  let FAKE_POST_RESET_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 1:14:18 PM';
+  const FAKE_POST_RESET_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 1:14:18 PM';
 
   async function flushAsync() {
     flush();
@@ -70,7 +72,7 @@ suite('TrafficCountersTest', function() {
 
   /** @return {!NetworkHealthContainerElement} container element */
   function getContainer() {
-    let container =
+    const container =
         trafficCounters.shadowRoot.querySelector('network-health-container');
     assertTrue(!!container);
     return /** @type {!NetworkHealthContainerElement} */ (container);
@@ -86,7 +88,7 @@ suite('TrafficCountersTest', function() {
    * @return {Element|null} service div
    */
   function getServiceDiv(id) {
-    let serviceDiv = getContainer().querySelector('#' + id);
+    const serviceDiv = getContainer().querySelector('#' + id);
     assertTrue(!!serviceDiv);
     return serviceDiv;
   }

@@ -11,7 +11,7 @@ import {compareTabDiscardsInfos} from 'chrome://discards/discards_tab.js';
 
 suite('discards', function() {
   test('CompareTabDiscardsInfo', function() {
-    let dummy1 = {
+    const dummy1 = {
       title: 'title 1',
       tabUrl: 'http://urlone.com',
       visibility: 0,  // hidden
@@ -21,7 +21,7 @@ suite('discards', function() {
       utilityRank: 0,
       lastActiveSeconds: 0
     };
-    let dummy2 = {
+    const dummy2 = {
       title: 'title 2',
       tabUrl: 'http://urltwo.com',
       visibility: 1,  // occluded

@@ -30,7 +30,7 @@ export function navigationSelectorTestSuite() {
    * @return {!SelectorItem}
    */
   function createSelectorItem(name, pageIs, icon) {
-    let item = /** @type{SelectorItem} */ (
+    const item = /** @type{SelectorItem} */ (
         {'name': name, 'pageIs': pageIs, 'icon': icon});
     return item;
   }

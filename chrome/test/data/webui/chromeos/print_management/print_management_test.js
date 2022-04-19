@@ -46,7 +46,7 @@ const PrinterErrorCode = {
  * @return {!object}
  */
 function strToMojoString16(str) {
-  let arr = [];
+  const arr = [];
   for (var i = 0; i < str.length; i++) {
     arr[i] = str.charCodeAt(i);
   }
@@ -90,7 +90,7 @@ function createJobEntry(
   // Assert that only one of either |completedInfo| or |activeInfo| is non-null.
   assertTrue(completedInfo ? !activeInfo : !!activeInfo);
 
-  let jobEntry = {
+  const jobEntry = {
     'id': id,
     'title': strToMojoString16(title),
     'creationTime': {internalValue: date},
@@ -114,7 +114,7 @@ function createJobEntry(
  * @return {!ash.printing.printingManager.mojom.CompletedPrintJobInfo}
  */
 function createCompletedPrintJobInfo(completionStatus) {
-  let completedInfo = {'completionStatus': completionStatus};
+  const completedInfo = {'completionStatus': completionStatus};
   return completedInfo;
 }
 
@@ -126,7 +126,7 @@ function createCompletedPrintJobInfo(completionStatus) {
  * @return {!ash.printing.printingManager.mojom.ActivePrintJobInfo}
  */
 function createOngoingPrintJobInfo(printedPages, activeState) {
-  let activeInfo = {
+  const activeInfo = {
     'printedPages': printedPages,
     'activeState': activeState,
   };
@@ -240,7 +240,7 @@ class FakePrintingMetadataProvider {
    * @private
    */
   getResolver_(methodName) {
-    let method = this.resolverMap_.get(methodName);
+    const method = this.resolverMap_.get(methodName);
     assertTrue(!!method, `Method '${methodName}' not found.`);
     return method;
   }
@@ -318,7 +318,7 @@ class FakePrintingMetadataProvider {
     if (job.activePrintJobInfo.activeState ===
         ActivePrintJobState.kDocumentDone) {
       // Create copy of |job| to modify.
-      let updatedJob = Object.assign({}, job);
+      const updatedJob = Object.assign({}, job);
       updatedJob.activePrintJobInfo = null;
       updatedJob.completedInfo =
           createCompletedPrintJobInfo(CompletionStatus.PRINTED);
@@ -454,7 +454,7 @@ suite('PrintManagementTest', () => {
     cancelButton.click();
     return mojoApi.whenCalled('cancelPrintJob').then(() => {
       // Create copy of |jobEntryElement.jobEntry| to modify.
-      let updatedJob = Object.assign({}, jobEntryElement.jobEntry);
+      const updatedJob = Object.assign({}, jobEntryElement.jobEntry);
       updatedJob.activePrintJobInfo = createOngoingPrintJobInfo(
           /*printedPages=*/ 0, ActivePrintJobState.kDocumentDone,
           PrinterErrorCode.NO_ERROR);
@@ -940,7 +940,7 @@ suite('PrintManagementTest', () => {
         })
         .then(() => {
           flush();
-          let jobEntries = getOngoingPrintJobEntries(page);
+          const jobEntries = getOngoingPrintJobEntries(page);
           verifyPrintJobs(expectedArr, jobEntries);
 
           return simulateCancelPrintJob(
@@ -980,7 +980,7 @@ suite('PrintManagementTest', () => {
         })
         .then(() => {
           flush();
-          let jobEntries = getOngoingPrintJobEntries(page);
+          const jobEntries = getOngoingPrintJobEntries(page);
           verifyPrintJobs(expectedArr, jobEntries);
 
           return simulateCancelPrintJob(

@@ -32,8 +32,8 @@ export function fakeRoutineListExecutorTestSuite() {
    * @param {!Array<!RoutineResultInfo>} routines
    */
   function runRoutinesAndAssertResults(routines) {
-    let expectedCallbacks = [];
-    let routineTypes = [];
+    const expectedCallbacks = [];
+    const routineTypes = [];
     routines.forEach((routine) => {
       // Set the result into the fake.
       assertNotEquals(undefined, routine);
@@ -75,7 +75,7 @@ export function fakeRoutineListExecutorTestSuite() {
     let upto = 0;
 
     /** @type {!function(!ResultStatusItem)} */
-    let statusCallback = (status) => {
+    const statusCallback = (status) => {
       assertTrue(upto < expectedCallbacks.length);
       assertEquals(expectedCallbacks[upto].routine, status.routine);
       assertEquals(expectedCallbacks[upto].progress, status.progress);

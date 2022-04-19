@@ -53,7 +53,7 @@ TEST_F('MediaHistoryStatsWebUIBrowserTest', 'MAYBE_All', async function() {
   });
 
   test('check stats table is loaded', () => {
-    let statsRows =
+    const statsRows =
         Array.from(document.getElementById('stats-table-body').children);
 
     assertDeepEquals(
@@ -92,7 +92,7 @@ TEST_F('MediaHistoryOriginsWebUIBrowserTest', 'MAYBE_All', async function() {
   });
 
   test('check data table is loaded', () => {
-    let dataHeaderRows =
+    const dataHeaderRows =
         Array.from(document.querySelector('#origins-table thead tr').children);
 
     assertDeepEquals(
@@ -126,7 +126,7 @@ TEST_F('MediaHistoryPlaybacksWebUIBrowserTest', 'MAYBE_All', async function() {
   });
 
   test('check data table is loaded', () => {
-    let dataHeaderRows = Array.from(
+    const dataHeaderRows = Array.from(
         document.querySelector('#playbacks-table thead tr').children);
 
     assertDeepEquals(
@@ -157,7 +157,7 @@ TEST_F('MediaHistorySessionsWebUIBrowserTest', 'MAYBE_All', async function() {
   });
 
   test('check data table is loaded', () => {
-    let dataHeaderRows =
+    const dataHeaderRows =
         Array.from(document.querySelector('#sessions-table thead tr').children);
 
     assertDeepEquals(

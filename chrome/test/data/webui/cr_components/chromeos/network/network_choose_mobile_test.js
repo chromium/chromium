@@ -47,7 +47,7 @@ suite('NetworkChooseMobileTest', function() {
     Polymer.dom.flush();
 
     // Scan button is enabled.
-    let isScanEnabled = !scanButton.disabled;
+    const isScanEnabled = !scanButton.disabled;
     assertTrue(isScanEnabled);
 
     // Set the device state to scanning.

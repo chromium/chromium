@@ -67,7 +67,7 @@ export class FakeDevicePairingHandler {
   pairDevice(deviceId, delegate) {
     this.pairDeviceCalledCount_++;
     this.devicePairingDelegate_ = delegate;
-    let promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       this.pairDeviceCallback_ = resolve;
       this.pairDeviceRejectCallback_ = reject;
     });

@@ -54,8 +54,8 @@ AccessibilityTest.Definition;
 AccessibilityTest.runAudit_ = function(testDef) {
   // Ignore iron-iconset-svg elements that have duplicate ids and result in
   // false postives from the audit.
-  let context = {exclude: ['iron-iconset-svg']};
-  let options = testDef.axeOptions || {};
+  const context = {exclude: ['iron-iconset-svg']};
+  const options = testDef.axeOptions || {};
   // Element references needed for filtering audit results.
   options.elementRef = true;
 
@@ -65,10 +65,10 @@ AccessibilityTest.runAudit_ = function(testDef) {
         reject(err);
       }
 
-      let filteredViolations = AccessibilityTest.filterViolations_(
+      const filteredViolations = AccessibilityTest.filterViolations_(
           results.violations, testDef.violationFilter || {});
 
-      let violationCount = filteredViolations.length;
+      const violationCount = filteredViolations.length;
       if (violationCount) {
         AccessibilityTest.print_(filteredViolations);
         reject('Found ' + violationCount + ' accessibility violations.');
@@ -91,11 +91,11 @@ AccessibilityTest.filterViolations_ = function(violations, filter) {
     return violations;
   }
 
-  let filteredViolations = [];
+  const filteredViolations = [];
   // Check for and remove any nodes specified by filter.
-  for (let violation of violations) {
+  for (const violation of violations) {
     if (violation.id in filter) {
-      let exclusionRule = filter[violation.id];
+      const exclusionRule = filter[violation.id];
       violation.nodes = violation.nodes.filter((node) => !exclusionRule(node));
     }
 
@@ -116,12 +116,12 @@ AccessibilityTest.define = function(testFixture, testDef) {
   // Disable in debug mode because of timeouts.
   GEN('#if defined(NDEBUG)');
 
-  let axeOptions = testDef.axeOptions || {};
+  const axeOptions = testDef.axeOptions || {};
   testDef.setup = testDef.setup || (() => {});
 
   // Define a test for each audit rule separately.
-  let rules = axeOptions.runOnly ? axeOptions.runOnly.values :
-                                   AccessibilityTest.ruleIds;
+  const rules = axeOptions.runOnly ? axeOptions.runOnly.values :
+                                     AccessibilityTest.ruleIds;
   rules.forEach((ruleId) => {
     // Skip rules disabled in axeOptions.
     if (axeOptions.rules && ruleId in axeOptions.rules &&
@@ -129,7 +129,7 @@ AccessibilityTest.define = function(testFixture, testDef) {
       return;
     }
 
-    let newTestDef = Object.assign({}, testDef);
+    const newTestDef = Object.assign({}, testDef);
     newTestDef.name += '_' + ruleId;
     // Replace hyphens, which break the build.
     newTestDef.name = newTestDef.name.replace(new RegExp('-', 'g'), '_');
@@ -140,7 +140,7 @@ AccessibilityTest.define = function(testFixture, testDef) {
       // Define the mocha tests
       suite(newTestDef.name, () => {
         setup(newTestDef.setup.bind(newTestDef));
-        for (let testMember in newTestDef.tests) {
+        for (const testMember in newTestDef.tests) {
           test(
               testMember,
               AccessibilityTest.getMochaTest_(testMember, newTestDef));
@@ -166,7 +166,7 @@ AccessibilityTest.getMochaTest_ = function(testMember, testDef) {
   return () => {
     // Run commands specified by the test definition followed by the
     // accessibility audit.
-    let promise = testDef.tests[testMember].call(testDef);
+    const promise = testDef.tests[testMember].call(testDef);
     if (promise) {
       return promise.then(() => AccessibilityTest.runAudit_(testDef));
     } else {
@@ -182,12 +182,12 @@ AccessibilityTest.getMochaTest_ = function(testMember, testDef) {
  */
 AccessibilityTest.print_ = function(violations) {
   // Elements have circular references and must be removed before printing.
-  for (let violation of violations) {
-    for (let node of violation.nodes) {
+  for (const violation of violations) {
+    for (const node of violation.nodes) {
       delete node['element'];
       ['all', 'any', 'none'].forEach((attribute) => {
-        for (let checkResult of node[attribute]) {
-          for (let relatedNode of checkResult.relatedNodes) {
+        for (const checkResult of node[attribute]) {
+          for (const relatedNode of checkResult.relatedNodes) {
             delete relatedNode['element'];
           }
         }
