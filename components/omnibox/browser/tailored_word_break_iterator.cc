@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 
+#include "base/strings/string_piece.h"
+
 namespace {
 constexpr char16_t kUnderscore = '_';
 }  // namespace
@@ -20,8 +22,7 @@ TailoredWordBreakIterator::TailoredWordBreakIterator(
 TailoredWordBreakIterator::~TailoredWordBreakIterator() {}
 
 bool TailoredWordBreakIterator::Advance() {
-  if (HasUnderscoreWord()) {
-    AdvanceInUnderscoreWord();
+  if (HasUnderscoreWord() && AdvanceInUnderscoreWord()) {
     return true;
   }
   if (!BreakIterator::Advance())
@@ -67,15 +68,25 @@ size_t TailoredWordBreakIterator::pos() const {
 }
 
 bool TailoredWordBreakIterator::HasUnderscoreWord() const {
-  return pos_ != underscore_word_.size();
+  return !underscore_word_.empty();
 }
 
-void TailoredWordBreakIterator::AdvanceInUnderscoreWord() {
+bool TailoredWordBreakIterator::AdvanceInUnderscoreWord() {
+  DCHECK(HasUnderscoreWord());
+  // If we've finished with the underscore word we're processing, return false
+  // and let the caller call advance on the outer BreakIterator.
+  if (pos_ == underscore_word_.size()) {
+    prev_ = 0;
+    pos_ = 0;
+    underscore_word_ = base::StringPiece16();
+    return false;
+  }
+
   std::size_t next_pos = underscore_word_.find(kUnderscore, pos_);
   prev_ = pos_;
   if (next_pos == base::StringPiece16::npos) {
     pos_ = underscore_word_.size();
-    return;
+    return true;
   }
   // If an underscore is found at the current position, index moves to next
   // char.
@@ -83,4 +94,6 @@ void TailoredWordBreakIterator::AdvanceInUnderscoreWord() {
     pos_ += 1;
   else
     pos_ = next_pos;
+
+  return true;
 }

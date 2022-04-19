@@ -51,19 +51,19 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_TRUE(IntArraysEqual(expected_starts_a, std::size(expected_starts_a),
                              actual_starts_a));
 
-  std::u16string string_c(
+  std::u16string string_b(
       u" funky%20string-with=@strange   sequences, intended(to exceed)");
-  WordStarts actual_starts_c;
-  string_vec = String16VectorFromString16(string_c, &actual_starts_c);
+  WordStarts actual_starts_b;
+  string_vec = String16VectorFromString16(string_b, &actual_starts_b);
   ASSERT_EQ(8U, string_vec.size());
   // Note that we stop collecting words and word starts at kMaxSignificantChars.
-  size_t expected_starts_c[] = {1, 7, 16, 22, 32, 43, 52, 55};
-  EXPECT_TRUE(IntArraysEqual(expected_starts_c, std::size(expected_starts_c),
-                             actual_starts_c));
+  size_t expected_starts_b[] = {1, 7, 16, 22, 32, 43, 52, 55};
+  EXPECT_TRUE(IntArraysEqual(expected_starts_b, std::size(expected_starts_b),
+                             actual_starts_b));
 
-  std::u16string string_d(u"http://www.google.com/frammy_the_brammy");
-  WordStarts actual_starts_d;
-  string_vec = String16VectorFromString16(string_d, &actual_starts_d);
+  std::u16string string_c(u"http://www.google.com/frammy_the_brammy");
+  WordStarts actual_starts_c;
+  string_vec = String16VectorFromString16(string_c, &actual_starts_c);
   ASSERT_EQ(7U, string_vec.size());
   EXPECT_EQ(u"http", string_vec[0]);
   EXPECT_EQ(u"www", string_vec[1]);
@@ -72,7 +72,21 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_EQ(u"frammy", string_vec[4]);
   EXPECT_EQ(u"the", string_vec[5]);
   EXPECT_EQ(u"brammy", string_vec[6]);
-  size_t expected_starts_d[] = {0, 7, 11, 18, 22, 29, 33};
+  size_t expected_starts_c[] = {0, 7, 11, 18, 22, 29, 33};
+  EXPECT_TRUE(IntArraysEqual(expected_starts_c, std::size(expected_starts_c),
+                             actual_starts_c));
+
+  // Test trailing underscore case. https://crbug.com/1071216
+  std::u16string string_d(u"http://www.google.com/frammy_");
+  WordStarts actual_starts_d;
+  string_vec = String16VectorFromString16(string_d, &actual_starts_d);
+  ASSERT_EQ(5U, string_vec.size());
+  EXPECT_EQ(u"http", string_vec[0]);
+  EXPECT_EQ(u"www", string_vec[1]);
+  EXPECT_EQ(u"google", string_vec[2]);
+  EXPECT_EQ(u"com", string_vec[3]);
+  EXPECT_EQ(u"frammy", string_vec[4]);
+  size_t expected_starts_d[] = {0, 7, 11, 18, 22};
   EXPECT_TRUE(IntArraysEqual(expected_starts_d, std::size(expected_starts_d),
                              actual_starts_d));
 
