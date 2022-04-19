@@ -275,7 +275,10 @@ std::unique_ptr<CupsPrintersHandler> CupsPrintersHandler::CreateForTesting(
       profile, ppd_provider, std::move(printer_configurer), printers_manager));
 }
 
-CupsPrintersHandler::~CupsPrintersHandler() = default;
+CupsPrintersHandler::~CupsPrintersHandler() {
+  if (select_file_dialog_)
+    select_file_dialog_->ListenerDestroyed();
+}
 
 void CupsPrintersHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -876,6 +879,10 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
 }
 
 void CupsPrintersHandler::HandleSelectPPDFile(const base::Value::List& args) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   CHECK_EQ(1U, args.size());
   webui_callback_id_ = args[0].GetString();
 
@@ -940,7 +947,9 @@ void CupsPrintersHandler::FileSelected(const base::FilePath& path,
                                        void* params) {
   DCHECK(!webui_callback_id_.empty());
 
-  // Load the beggining contents of the file located at |path| and callback into
+  select_file_dialog_ = nullptr;
+
+  // Load the beginning contents of the file located at |path| and callback into
   // VerifyPpdContents() in order to determine whether the file appears to be a
   // PPD file. The task's priority is USER_BLOCKING because the this task
   // updates the UI as a result of a direct user action.
@@ -949,6 +958,10 @@ void CupsPrintersHandler::FileSelected(const base::FilePath& path,
       base::BindOnce(&ReadFileToStringWithMaxSize, path, kPpdMaxLineLength),
       base::BindOnce(&CupsPrintersHandler::VerifyPpdContents,
                      weak_factory_.GetWeakPtr(), path));
+}
+
+void CupsPrintersHandler::FileSelectionCanceled(void* params) {
+  select_file_dialog_ = nullptr;
 }
 
 void CupsPrintersHandler::VerifyPpdContents(const base::FilePath& path,
