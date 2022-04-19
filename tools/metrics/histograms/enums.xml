@@ -84011,6 +84011,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="16" label="User clicked Turn off sync">
     User clicked the 'Turn off sync' option within settings. Android only.
   </int>
+  <int value="17" label="User Clicked Signout From Profile Menu">
+    User Clicked Signout in the profile menu.
+  </int>
 </enum>
 
 <enum name="SigninSource">

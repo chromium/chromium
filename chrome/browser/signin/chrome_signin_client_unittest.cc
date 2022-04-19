@@ -289,6 +289,8 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::
         USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS:
       return false;
+    case signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_PROFILE_MENU:
+      return false;
     case signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS:
       NOTREACHED();
       return false;
@@ -426,6 +428,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::
         IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE,
     signin_metrics::ProfileSignout::USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
+    signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_PROFILE_MENU,
 
 };
 static_assert(std::size(kSignoutSources) ==

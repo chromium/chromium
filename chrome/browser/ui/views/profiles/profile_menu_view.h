@@ -65,7 +65,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnSyncErrorButtonClicked(AvatarSyncErrorType error);
   void OnSigninAccountButtonClicked(AccountInfo account);
   void OnCookiesClearedOnExitLinkClicked();
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnSignoutButtonClicked();
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

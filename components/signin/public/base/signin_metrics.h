@@ -63,6 +63,8 @@ enum ProfileSignout : int {
   // User clicked to 'Turn off sync' from the settings page.
   // Currently only available for Android Unicorn users.
   USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS = 16,
+  // User clicked to signout from the settings page.
+  USER_CLICKED_SIGNOUT_PROFILE_MENU = 17,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

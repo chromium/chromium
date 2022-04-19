@@ -54,6 +54,7 @@
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -342,18 +343,26 @@ void ProfileMenuView::OnSigninAccountButtonClicked(AccountInfo account) {
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfileMenuView::OnSignoutButtonClicked() {
   RecordClick(ActionableItem::kSignoutButton);
   if (!perform_menu_actions())
     return;
   Hide();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Sign out from all accounts.
   browser()->signin_view_controller()->ShowGaiaLogoutTab(
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
-}
+#else
+  CHECK(!browser()->profile()->IsMainProfile());
+  IdentityManagerFactory::GetForProfile(browser()->profile())
+      ->GetPrimaryAccountMutator()
+      ->ClearPrimaryAccount(signin_metrics::USER_CLICKED_SIGNOUT_PROFILE_MENU,
+                            signin_metrics::SignoutDelete::kIgnoreMetric);
 #endif
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileMenuView::OnSigninButtonClicked() {
@@ -622,19 +631,27 @@ void ProfileMenuView::BuildFeatureButtons() {
     }
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool has_primary_account =
       !profile->IsGuestSession() &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+
+  bool add_sign_out_button = has_unconsented_account && !has_primary_account;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Clearing the primary account is not allowed in the main profile.
+  add_sign_out_button &=
+      (!profile->IsMainProfile() &&
+       base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // The sign-out button is always at the bottom.
-  if (has_unconsented_account && !has_primary_account) {
+  if (add_sign_out_button) {
     AddFeatureButton(
         l10n_util::GetStringUTF16(IDS_SCREEN_LOCK_SIGN_OUT),
         base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
                             base::Unretained(this)),
         kSignOutIcon);
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
