@@ -30,8 +30,7 @@ class WebInstanceHostIntegrationTest : public testing::Test {
  public:
   WebInstanceHostIntegrationTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        filtered_service_directory_(
-            base::ComponentContextForProcess()->svc().get()) {
+        filtered_service_directory_(base::ComponentContextForProcess()->svc()) {
     // Push all services from /svc to the filtered service directory.
     base::FileEnumerator file_enum(base::FilePath("/svc"), false,
                                    base::FileEnumerator::FILES);

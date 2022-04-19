@@ -10,6 +10,7 @@
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <lib/zx/channel.h>
+#include <memory>
 
 #include "base/base_export.h"
 #include "base/strings/string_piece.h"
@@ -30,7 +31,8 @@ class BASE_EXPORT FilteredServiceDirectory {
  public:
   // Creates a directory that proxies requests to the specified service
   // |directory|.
-  explicit FilteredServiceDirectory(sys::ServiceDirectory* directory);
+  explicit FilteredServiceDirectory(
+      std::shared_ptr<sys::ServiceDirectory> directory);
 
   FilteredServiceDirectory(const FilteredServiceDirectory&) = delete;
   FilteredServiceDirectory& operator=(const FilteredServiceDirectory&) = delete;
@@ -50,7 +52,7 @@ class BASE_EXPORT FilteredServiceDirectory {
   sys::OutgoingDirectory* outgoing_directory() { return &outgoing_directory_; }
 
  private:
-  const sys::ServiceDirectory* const directory_;
+  const std::shared_ptr<sys::ServiceDirectory> directory_;
   sys::OutgoingDirectory outgoing_directory_;
 };
 

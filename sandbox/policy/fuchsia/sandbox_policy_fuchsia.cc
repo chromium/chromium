@@ -185,7 +185,7 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(sandbox::mojom::Sandbox type) {
   if (config) {
     service_directory_task_runner_ = base::ThreadTaskRunnerHandle::Get();
     service_directory_ = std::make_unique<base::FilteredServiceDirectory>(
-        base::ComponentContextForProcess()->svc().get());
+        base::ComponentContextForProcess()->svc());
     for (const char* service_name : kMinimalServices) {
       zx_status_t status = service_directory_->AddService(service_name);
       ZX_CHECK(status == ZX_OK, status)

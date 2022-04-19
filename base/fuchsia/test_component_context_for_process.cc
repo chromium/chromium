@@ -26,7 +26,7 @@ TestComponentContextForProcess::TestComponentContextForProcess(
   // Set up |incoming_services_| to use the ServiceDirectory from the current
   // default ComponentContext to fetch services from.
   context_services_ = std::make_unique<FilteredServiceDirectory>(
-      base::ComponentContextForProcess()->svc().get());
+      base::ComponentContextForProcess()->svc());
 
   // Push all services from /svc to the test context if requested.
   if (initial_state == InitialState::kCloneAll) {

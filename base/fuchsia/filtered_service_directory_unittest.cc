@@ -15,8 +15,8 @@ namespace base {
 class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
  public:
   FilteredServiceDirectoryTest() {
-    filtered_service_directory_ = std::make_unique<FilteredServiceDirectory>(
-        public_service_directory_.get());
+    filtered_service_directory_ =
+        std::make_unique<FilteredServiceDirectory>(public_service_directory_);
     fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
     EXPECT_EQ(
         filtered_service_directory_->ConnectClient(directory.NewRequest()),

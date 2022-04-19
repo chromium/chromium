@@ -313,13 +313,13 @@ CastRunner::CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
     : web_instance_host_(web_instance_host),
       is_headless_(is_headless),
       main_services_(std::make_unique<base::FilteredServiceDirectory>(
-          base::ComponentContextForProcess()->svc().get())),
+          base::ComponentContextForProcess()->svc())),
       main_context_(std::make_unique<WebContentRunner>(
           web_instance_host_,
           base::BindRepeating(&CastRunner::GetMainContextParams,
                               base::Unretained(this)))),
       isolated_services_(std::make_unique<base::FilteredServiceDirectory>(
-          base::ComponentContextForProcess()->svc().get())) {
+          base::ComponentContextForProcess()->svc())) {
   // Delete persisted data staged for deletion during the previous run.
   DeleteStagedForDeletionDirectoryIfExists();
 

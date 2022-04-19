@@ -42,7 +42,7 @@ class ServiceDirectoryTestBase : public testing::Test {
   std::unique_ptr<ScopedServiceBinding<testfidl::TestInterface>>
       service_binding_;
 
-  std::unique_ptr<sys::ServiceDirectory> public_service_directory_;
+  std::shared_ptr<sys::ServiceDirectory> public_service_directory_;
   std::unique_ptr<sys::ServiceDirectory> debug_service_directory_;
   std::unique_ptr<sys::ServiceDirectory> root_service_directory_;
 };

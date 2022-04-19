@@ -14,10 +14,10 @@
 namespace base {
 
 FilteredServiceDirectory::FilteredServiceDirectory(
-    sys::ServiceDirectory* directory)
-    : directory_(std::move(directory)) {}
+    std::shared_ptr<sys::ServiceDirectory> directory)
+    : directory_(directory) {}
 
-FilteredServiceDirectory::~FilteredServiceDirectory() {}
+FilteredServiceDirectory::~FilteredServiceDirectory() = default;
 
 zx_status_t FilteredServiceDirectory::AddService(
     base::StringPiece service_name) {
