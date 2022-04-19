@@ -46,6 +46,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
 
   // Set letter-spacing and word-spacing.
   bool SetSpacing(const FontDescription&);
+  bool SetSpacing(float letter_spacing, float word_spacing);
 
   // Set the expansion for the justification.
   void SetExpansion(float expansion,

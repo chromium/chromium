@@ -13,13 +13,20 @@ namespace blink {
 template <typename TextContainerType>
 bool ShapeResultSpacing<TextContainerType>::SetSpacing(
     const FontDescription& font_description) {
-  if (!font_description.LetterSpacing() && !font_description.WordSpacing()) {
+  return SetSpacing(font_description.LetterSpacing(),
+                    font_description.WordSpacing());
+}
+
+template <typename TextContainerType>
+bool ShapeResultSpacing<TextContainerType>::SetSpacing(float letter_spacing,
+                                                       float word_spacing) {
+  if (!letter_spacing && !word_spacing) {
     has_spacing_ = false;
     return false;
   }
 
-  letter_spacing_ = font_description.LetterSpacing();
-  word_spacing_ = font_description.WordSpacing();
+  letter_spacing_ = letter_spacing;
+  word_spacing_ = word_spacing;
   DCHECK(!normalize_space_);
   allow_tabs_ = true;
   has_spacing_ = true;
