@@ -57,6 +57,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -140,6 +141,8 @@ public class SigninFirstRunFragmentTest {
     @Mock
     private PolicyLoadListener mPolicyLoadListenerMock;
     @Mock
+    private OneshotSupplierImpl<Boolean> mChildAccountStatusListenerMock;
+    @Mock
     private SigninManager mSigninManagerMock;
     @Mock
     private IdentityManager mIdentityManagerMock;
@@ -170,6 +173,9 @@ public class SigninFirstRunFragmentTest {
                 VariationsGroup.DEFAULT);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
+        when(mChildAccountStatusListenerMock.get()).thenReturn(false);
+        when(mFirstRunPageDelegateMock.getChildAccountStatusListener())
+                .thenReturn(mChildAccountStatusListenerMock);
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(false);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mFragment = new CustomSigninFirstRunFragment();
@@ -699,7 +705,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    public void testFragmentWhenPolicyIsLoadedAfterNative() {
+    public void testFragmentWhenPolicyIsLoadedAfterNativeAndChildStatus() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         when(mPolicyLoadListenerMock.get()).thenReturn(null);
@@ -719,13 +725,33 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    public void testFragmentWhenNativeIsLoadedAfterPolicy() {
+    public void testFragmentWhenNativeIsLoadedAfterPolicyAndChildStatus() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
         checkFragmentWhenLoadingNativeAndPolicy();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
 
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWhenChildStatusIsLoadedAfterNativeAndPolicy() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        when(mChildAccountStatusListenerMock.get()).thenReturn(null);
+        launchActivityWithFragment();
+        checkFragmentWhenLoadingNativeAndPolicy();
+
+        when(mChildAccountStatusListenerMock.get()).thenReturn(false);
+        verify(mChildAccountStatusListenerMock, atLeastOnce())
+                .onAvailable(mCallbackCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            for (Callback<Boolean> callback : mCallbackCaptor.getAllValues()) {
+                callback.onResult(false);
+            }
+        });
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
     }
 

@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -144,7 +145,13 @@ public class SigninFirstRunFragmentRenderTest {
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mFragment = new CustomSigninFirstRunFragment();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mFragment.onNativeInitialized();
+            OneshotSupplierImpl<Boolean> childAccountStatusListener = new OneshotSupplierImpl<>();
+            childAccountStatusListener.set(false);
+            when(mFirstRunPageDelegateMock.getChildAccountStatusListener())
+                    .thenReturn(childAccountStatusListener);
+        });
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
     }
 

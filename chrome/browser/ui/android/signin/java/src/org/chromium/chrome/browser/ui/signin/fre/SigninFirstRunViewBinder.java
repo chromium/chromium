@@ -8,6 +8,7 @@ import android.text.method.LinkMovementMethod;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 
@@ -48,8 +49,18 @@ class SigninFirstRunViewBinder {
             view.getSelectedAccountView().setEnabled(!isSelectedAccountSupervised);
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED) {
-            // Add a transition animation between the view changes.
-            TransitionManager.beginDelayedTransition(view);
+            final boolean areNativeAndPolicyLoaded =
+                    model.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED);
+            final ProgressBar initialLoadProgressSpinner = view.getInitialLoadProgressSpinnerView();
+            if (areNativeAndPolicyLoaded) {
+                TransitionManager.beginDelayedTransition(view);
+                initialLoadProgressSpinner.setVisibility(View.GONE);
+            } else {
+                // The progress spinner is shown at the beginning when layout inflation may not be
+                // complete. So it is not possible to use TransitionManager with a startDelay in
+                // this case.
+                initialLoadProgressSpinner.animate().alpha(1.0f).setStartDelay(500);
+            }
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.FRE_POLICY) {
             view.getBrowserManagedHeaderView().setVisibility(
@@ -89,8 +100,6 @@ class SigninFirstRunViewBinder {
     private static void updateVisibility(SigninFirstRunView view, PropertyModel model) {
         final boolean areNativeAndPolicyLoaded =
                 model.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED);
-        view.getInitialLoadProgressSpinnerView().setVisibility(
-                areNativeAndPolicyLoaded ? View.GONE : View.VISIBLE);
         if (areNativeAndPolicyLoaded) view.onNativeAndPoliciesLoaded();
 
         final int selectedAccountVisibility = areNativeAndPolicyLoaded
