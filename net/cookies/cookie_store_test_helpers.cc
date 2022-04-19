@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_store_test_helpers.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -11,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
@@ -270,5 +272,10 @@ int CallbackCounter::callback_count() {
 }
 
 CallbackCounter::~CallbackCounter() = default;
+
+std::string FutureCookieExpirationString() {
+  return "; expires=" +
+         base::TimeFormatHTTP(base::Time::Now() + base::Days(365));
+}
 
 }  // namespace net

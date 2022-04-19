@@ -1061,7 +1061,7 @@ class DeferredCookieTaskTest : public CookieMonsterTest {
 
 TEST_F(DeferredCookieTaskTest, DeferredGetCookieList) {
   DeclareLoadedCookie(http_www_foo_.url(),
-                      "X=1; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                      "X=1; path=/" + FutureCookieExpirationString(),
                       Time::Now() + base::Days(3));
 
   GetCookieListCallback call1;
@@ -1151,7 +1151,7 @@ TEST_F(DeferredCookieTaskTest, DeferredSetAllCookies) {
 
 TEST_F(DeferredCookieTaskTest, DeferredGetAllCookies) {
   DeclareLoadedCookie(http_www_foo_.url(),
-                      "X=1; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                      "X=1; path=/" + FutureCookieExpirationString(),
                       Time::Now() + base::Days(3));
 
   GetAllCookiesCallback call1;
@@ -1173,7 +1173,7 @@ TEST_F(DeferredCookieTaskTest, DeferredGetAllCookies) {
 
 TEST_F(DeferredCookieTaskTest, DeferredGetAllForUrlCookies) {
   DeclareLoadedCookie(http_www_foo_.url(),
-                      "X=1; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                      "X=1; path=/" + FutureCookieExpirationString(),
                       Time::Now() + base::Days(3));
 
   GetCookieListCallback call1;
@@ -1199,7 +1199,7 @@ TEST_F(DeferredCookieTaskTest, DeferredGetAllForUrlCookies) {
 
 TEST_F(DeferredCookieTaskTest, DeferredGetAllForUrlWithOptionsCookies) {
   DeclareLoadedCookie(http_www_foo_.url(),
-                      "X=1; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                      "X=1; path=/" + FutureCookieExpirationString(),
                       Time::Now() + base::Days(3));
 
   GetCookieListCallback call1;
@@ -1225,7 +1225,7 @@ TEST_F(DeferredCookieTaskTest, DeferredGetAllForUrlWithOptionsCookies) {
 
 TEST_F(DeferredCookieTaskTest, DeferredDeleteAllCookies) {
   DeclareLoadedCookie(http_www_foo_.url(),
-                      "X=1; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                      "X=1; path=/" + FutureCookieExpirationString(),
                       Time::Now() + base::Days(3));
 
   ResultSavingCookieCallback<uint32_t> call1;
@@ -1362,7 +1362,7 @@ TEST_F(DeferredCookieTaskTest, DeferredDeleteSessionCookies) {
 TEST_F(DeferredCookieTaskTest, DeferredTaskOrder) {
   cookie_monster_->SetPersistSessionCookies(true);
   DeclareLoadedCookie(http_www_foo_.url(),
-                      "X=1; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                      "X=1; path=/" + FutureCookieExpirationString(),
                       Time::Now() + base::Days(3));
 
   bool get_cookie_list_callback_was_run = false;
@@ -1437,9 +1437,8 @@ TEST_F(CookieMonsterTest, TestCookieDeleteAll) {
   EXPECT_EQ(0u, store->commands().size());
 
   // Create a persistent cookie.
-  EXPECT_TRUE(SetCookie(
-      cm.get(), http_www_foo_.url(),
-      std::string(kValidCookieLine) + "; expires=Mon, 18-Apr-62 22:50:13 GMT"));
+  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(),
+                        kValidCookieLine + FutureCookieExpirationString()));
   ASSERT_EQ(1u, store->commands().size());
   EXPECT_EQ(CookieStoreCommand::ADD, store->commands()[0].type);
 
@@ -2239,37 +2238,37 @@ TEST_F(CookieMonsterTest, DontImportDuplicateCookies) {
   // the import.
 
   AddCookieToList(GURL("http://www.foo.com"),
-                  "X=1; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                  "X=1; path=/" + FutureCookieExpirationString(),
                   Time::Now() + base::Days(3), &initial_cookies);
 
   AddCookieToList(GURL("http://www.foo.com"),
-                  "X=2; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                  "X=2; path=/" + FutureCookieExpirationString(),
                   Time::Now() + base::Days(1), &initial_cookies);
 
   // ===> This one is the WINNER (biggest creation time).  <====
   AddCookieToList(GURL("http://www.foo.com"),
-                  "X=3; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                  "X=3; path=/" + FutureCookieExpirationString(),
                   Time::Now() + base::Days(4), &initial_cookies);
 
   AddCookieToList(GURL("http://www.foo.com"),
-                  "X=4; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
-                  Time::Now(), &initial_cookies);
+                  "X=4; path=/" + FutureCookieExpirationString(), Time::Now(),
+                  &initial_cookies);
 
   // Insert 2 cookies with name "X" on path "/2", with varying creation
   // dates. We expect only the most recent one to be preserved the import.
 
   // ===> This one is the WINNER (biggest creation time).  <====
   AddCookieToList(GURL("http://www.foo.com"),
-                  "X=a1; path=/2; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                  "X=a1; path=/2" + FutureCookieExpirationString(),
                   Time::Now() + base::Days(9), &initial_cookies);
 
   AddCookieToList(GURL("http://www.foo.com"),
-                  "X=a2; path=/2; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                  "X=a2; path=/2" + FutureCookieExpirationString(),
                   Time::Now() + base::Days(2), &initial_cookies);
 
   // Insert 1 cookie with name "Y" on path "/".
   AddCookieToList(GURL("http://www.foo.com"),
-                  "Y=a; path=/; expires=Mon, 18-Apr-62 22:50:14 GMT",
+                  "Y=a; path=/" + FutureCookieExpirationString(),
                   Time::Now() + base::Days(10), &initial_cookies);
 
   // Inject our initial cookies into the mock PersistentCookieStore.
@@ -3176,7 +3175,7 @@ TEST_F(CookieMonsterTest, PersisentCookieStorageTest) {
 
   // Add a cookie.
   EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(),
-                        "A=B; expires=Mon, 18-Apr-62 22:50:13 GMT"));
+                        "A=B" + FutureCookieExpirationString()));
   this->MatchCookieLines("A=B", GetCookies(cm.get(), http_www_foo_.url()));
   ASSERT_EQ(1u, store->commands().size());
   EXPECT_EQ(CookieStoreCommand::ADD, store->commands()[0].type);
@@ -3189,13 +3188,13 @@ TEST_F(CookieMonsterTest, PersisentCookieStorageTest) {
 
   // Add a cookie.
   EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(),
-                        "A=B; expires=Mon, 18-Apr-62 22:50:13 GMT"));
+                        "A=B" + FutureCookieExpirationString()));
   this->MatchCookieLines("A=B", GetCookies(cm.get(), http_www_foo_.url()));
   ASSERT_EQ(3u, store->commands().size());
   EXPECT_EQ(CookieStoreCommand::ADD, store->commands()[2].type);
   // Overwrite it.
   EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(),
-                        "A=Foo; expires=Mon, 18-Apr-62 22:50:14 GMT"));
+                        "A=Foo" + FutureCookieExpirationString()));
   this->MatchCookieLines("A=Foo", GetCookies(cm.get(), http_www_foo_.url()));
   ASSERT_EQ(5u, store->commands().size());
   EXPECT_EQ(CookieStoreCommand::REMOVE, store->commands()[3].type);

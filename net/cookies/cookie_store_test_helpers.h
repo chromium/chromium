@@ -188,6 +188,11 @@ class CallbackCounter : public base::RefCountedThreadSafe<CallbackCounter> {
   base::Lock callback_count_lock_;  // Protects |callback_count_|.
 };
 
+// Returns a cookie expiration string in the form of "; expires=<date>", where
+// date is an RFC 7231 date a year in the future, which can be appended to
+// cookie lines.
+std::string FutureCookieExpirationString();
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_STORE_TEST_HELPERS_H_
