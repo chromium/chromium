@@ -72416,6 +72416,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Serialization error"/>
 </enum>
 
+<enum name="PersonalizationThemeColorMode">
+  <int value="0" label="Light mode"/>
+  <int value="1" label="Dark mode"/>
+  <int value="2" label="Auto mode"/>
+</enum>
+
 <enum name="PerUserDaemonStoreFail">
   <int value="0" label="Failed disabling consent"/>
   <int value="1" label="Failed enabling consent"/>

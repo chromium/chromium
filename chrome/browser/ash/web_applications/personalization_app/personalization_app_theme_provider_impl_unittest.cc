@@ -10,7 +10,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -138,6 +140,8 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
     return test_theme_observer_.is_color_mode_auto_schedule_enabled();
   }
 
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -149,6 +153,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
       theme_provider_remote_;
   TestThemeObserver test_theme_observer_;
   std::unique_ptr<PersonalizationAppThemeProviderImpl> theme_provider_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PersonalizationAppThemeProviderImplTest, SetColorModePref) {
@@ -158,6 +163,8 @@ TEST_F(PersonalizationAppThemeProviderImplTest, SetColorModePref) {
 
   theme_provider()->SetColorModePref(/*dark_mode_enabled=*/true);
   EXPECT_TRUE(is_dark_mode_enabled().value());
+  histogram_tester().ExpectBucketCount(
+      kPersonalizationThemeColorModeHistogramName, ColorMode::kDark, 1);
 }
 
 TEST_F(PersonalizationAppThemeProviderImplTest, OnColorModeChanged) {
@@ -177,9 +184,13 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
   theme_provider_remote()->FlushForTesting();
   theme_provider()->SetColorModeAutoScheduleEnabled(/*enabled=*/false);
   EXPECT_FALSE(is_color_mode_auto_schedule_enabled());
+  histogram_tester().ExpectBucketCount(
+      kPersonalizationThemeColorModeHistogramName, ColorMode::kAuto, 0);
 
   theme_provider()->SetColorModeAutoScheduleEnabled(/*enabled=*/true);
   EXPECT_TRUE(is_color_mode_auto_schedule_enabled());
+  histogram_tester().ExpectBucketCount(
+      kPersonalizationThemeColorModeHistogramName, ColorMode::kAuto, 1);
 }
 
 }  // namespace personalization_app

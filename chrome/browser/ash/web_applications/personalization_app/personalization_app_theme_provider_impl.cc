@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
@@ -51,14 +52,19 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
 void PersonalizationAppThemeProviderImpl::SetColorModePref(
     bool dark_mode_enabled) {
   auto* color_provider = ash::AshColorProvider::Get();
-  if (color_provider->IsDarkModeEnabled() != dark_mode_enabled)
+  if (color_provider->IsDarkModeEnabled() != dark_mode_enabled) {
+    LogPersonalizationTheme(dark_mode_enabled ? ColorMode::kDark
+                                              : ColorMode::kLight);
     color_provider->ToggleColorMode();
+  }
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorModeAutoScheduleEnabled(
     bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
+  if (enabled)
+    LogPersonalizationTheme(ColorMode::kAuto);
   ash::ScheduledFeature::ScheduleType schedule_type =
       enabled ? ash::ScheduledFeature::ScheduleType::kSunsetToSunrise
               : ash::ScheduledFeature::ScheduleType::kNone;
