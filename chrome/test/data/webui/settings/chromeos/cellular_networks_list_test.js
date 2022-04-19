@@ -284,6 +284,27 @@ suite('CellularNetworksList', function() {
     assertFalse(!!cellularNetworkList.$$('#pSimNoNetworkFound'));
   });
 
+  test(
+      'Show pSIM section when no pSIM slots but pSIM networks available',
+      async () => {
+        eSimManagerRemote.addEuiccForTest(2);
+        init();
+
+        setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+          OncMojo.getDefaultManagedProperties(
+              mojom.NetworkType.kCellular, 'pSimCellular1'),
+          OncMojo.getDefaultManagedProperties(
+              mojom.NetworkType.kCellular, 'pSimcellular2'),
+        ]);
+
+        await flushAsync();
+
+        const pSimNetworkList = cellularNetworkList.$$('#psimNetworkList');
+        assertTrue(!!pSimNetworkList);
+
+        assertEquals(2, pSimNetworkList.networks.length);
+      });
+
   test('Hide instant tethering section when not enabled', async () => {
     init();
     assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));

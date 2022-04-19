@@ -416,9 +416,16 @@ Polymer({
    * @returns {boolean}
    * @private
    */
-  shouldShowPSimSection_(cellularDeviceState) {
+  shouldShowPSimSection_(pSimNetworks, cellularDeviceState) {
     const {pSimSlots} = getSimSlotCount(cellularDeviceState);
-    return pSimSlots > 0;
+    if (pSimSlots > 0) {
+      return true;
+    }
+    // Dual MBIM currently doesn't support eSIM hotswap (b/229619768), which
+    // leads Hermes to always show two Eids after swap with pSIM. So, we should
+    // also check if there's pSimNetworks available to work around this
+    // limitation.
+    return this.shouldShowNetworkSublist_(pSimNetworks);
   },
 
   /**
