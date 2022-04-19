@@ -540,14 +540,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url);
 
-  // Returns whether or not subframes of |main_frame| should try to
-  // aggressively reuse existing processes, even when below process limit.
-  // This gets called when navigating a subframe to a URL that requires a
-  // dedicated process and defaults to true, which minimizes the process count.
-  // The embedder can choose to override this if there is a reason to avoid the
-  // reuse.
-  virtual bool ShouldSubframesTryToReuseExistingProcess(
-      RenderFrameHost* main_frame);
+  // Returns whether or not embedded frames (subframes or embedded main frames)
+  // of |outermost_main_frame| should try to aggressively reuse existing
+  // processes, even when below process limit.  This gets called when navigating
+  // a subframe to a URL that requires a dedicated process and defaults to true,
+  // which minimizes the process count.  The embedder can choose to override
+  // this if there is a reason to avoid the reuse.
+  virtual bool ShouldEmbeddedFramesTryToReuseExistingProcess(
+      RenderFrameHost* outermost_main_frame);
 
   // Returns whether a process that no longer has active RenderFrameHosts (or
   // other reasons to be kept alive) can safely exit. This should return true,

@@ -272,18 +272,22 @@ bool ChromeContentBrowserClientExtensionsPart::
     ShouldCompareEffectiveURLsForSiteInstanceSelection(
         content::BrowserContext* browser_context,
         content::SiteInstance* candidate_site_instance,
-        bool is_main_frame,
+        bool is_outermost_main_frame,
         const GURL& candidate_url,
         const GURL& destination_url) {
-  // Don't compare effective URLs for any subframe navigations, since we don't
-  // want to create OOPIFs based on that mechanism (e.g., for hosted apps). For
-  // main frames, don't compare effective URLs when transitioning from app to
-  // non-app URLs if there exists another app WebContents that might script
-  // this one.  These navigations should stay in the app process to not break
-  // scripting when a hosted app opens a same-site popup. See
-  // https://crbug.com/718516 and https://crbug.com/828720 and
+  // Don't compare effective URLs for navigations involving embedded frames,
+  // since we don't want to create OOPIFs based on that mechanism (e.g., for
+  // hosted apps). For outermost main frames, don't compare effective URLs when
+  // transitioning from app to non-app URLs if there exists another app
+  // WebContents that might script this one.  These navigations should stay in
+  // the app process to not break scripting when a hosted app opens a same-site
+  // popup. See https://crbug.com/718516 and https://crbug.com/828720 and
   // https://crbug.com/859062.
-  if (!is_main_frame)
+  // TODO(crbug.com/3577897): Follow up to confirm correctness for fenced
+  // frames. This code has comprehensive tests in HostedAppProcessModelTest and
+  // coveraged should be added to ensure that fenced frames cannot jump into/out
+  // of the app.
+  if (!is_outermost_main_frame)
     return false;
   size_t candidate_active_contents_count =
       candidate_site_instance->GetRelatedActiveContentsCount();
@@ -458,14 +462,14 @@ ChromeContentBrowserClientExtensionsPart::GetProcessCountToIgnoreForLimit() {
 
 // static
 bool ChromeContentBrowserClientExtensionsPart::
-    ShouldSubframesTryToReuseExistingProcess(
-        content::RenderFrameHost* main_frame) {
-  DCHECK(!main_frame->GetParent());
+    ShouldEmbeddedFramesTryToReuseExistingProcess(
+        content::RenderFrameHost* outermost_main_frame) {
+  DCHECK(!outermost_main_frame->GetParentOrOuterDocument());
 
-  // Most out-of-process iframes aggressively look for a random same-site
-  // process to reuse if possible, to keep the process count low. Skip this for
-  // web iframes inside extensions (not including hosted apps), since the
-  // workload here tends to be different and we want to avoid slowing down
+  // Most out-of-process embedded frames aggressively look for a random
+  // same-site process to reuse if possible, to keep the process count low. Skip
+  // this for web frames inside extensions (not including hosted apps), since
+  // the workload here tends to be different and we want to avoid slowing down
   // normal web pages with misbehaving extension-related content.
   //
   // Note that this does not prevent process sharing with tabs when over the
@@ -476,9 +480,11 @@ bool ChromeContentBrowserClientExtensionsPart::
   // extension in Chrome's task manager for blame purposes. See
   // https://crbug.com/899418.
   const Extension* extension =
-      ExtensionRegistry::Get(main_frame->GetSiteInstance()->GetBrowserContext())
+      ExtensionRegistry::Get(
+          outermost_main_frame->GetSiteInstance()->GetBrowserContext())
           ->enabled_extensions()
-          .GetExtensionOrAppByURL(main_frame->GetSiteInstance()->GetSiteURL());
+          .GetExtensionOrAppByURL(
+              outermost_main_frame->GetSiteInstance()->GetSiteURL());
   return !extension || !extension->is_extension();
 }
 

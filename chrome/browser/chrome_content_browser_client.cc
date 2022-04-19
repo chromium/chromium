@@ -1984,11 +1984,11 @@ bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
   return false;
 }
 
-bool ChromeContentBrowserClient::ShouldSubframesTryToReuseExistingProcess(
-    content::RenderFrameHost* main_frame) {
+bool ChromeContentBrowserClient::ShouldEmbeddedFramesTryToReuseExistingProcess(
+    content::RenderFrameHost* outermost_main_frame) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return ChromeContentBrowserClientExtensionsPart::
-      ShouldSubframesTryToReuseExistingProcess(main_frame);
+      ShouldEmbeddedFramesTryToReuseExistingProcess(outermost_main_frame);
 #else
   return true;
 #endif

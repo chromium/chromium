@@ -57,7 +57,7 @@ class ChromeContentBrowserClientExtensionsPart
   static bool ShouldCompareEffectiveURLsForSiteInstanceSelection(
       content::BrowserContext* browser_context,
       content::SiteInstance* candidate_site_instance,
-      bool is_main_frame,
+      bool is_outermost_main_frame,
       const GURL& candidate_url,
       const GURL& destination_url);
   static bool ShouldUseProcessPerSite(Profile* profile, const GURL& site_url);
@@ -72,8 +72,8 @@ class ChromeContentBrowserClientExtensionsPart
                              content::RenderProcessHost* process_host,
                              const GURL& site_url);
   static size_t GetProcessCountToIgnoreForLimit();
-  static bool ShouldSubframesTryToReuseExistingProcess(
-      content::RenderFrameHost* main_frame);
+  static bool ShouldEmbeddedFramesTryToReuseExistingProcess(
+      content::RenderFrameHost* outermost_main_frame);
   static bool ShouldSwapBrowsingInstancesForNavigation(
       content::SiteInstance* site_instance,
       const GURL& current_effective_url,

@@ -260,8 +260,8 @@ bool ContentBrowserClient::ShouldTryToUseExistingProcessHost(
   return false;
 }
 
-bool ContentBrowserClient::ShouldSubframesTryToReuseExistingProcess(
-    RenderFrameHost* main_frame) {
+bool ContentBrowserClient::ShouldEmbeddedFramesTryToReuseExistingProcess(
+    RenderFrameHost* outermost_main_frame) {
   return true;
 }
 

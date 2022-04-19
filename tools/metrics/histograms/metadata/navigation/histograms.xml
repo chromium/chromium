@@ -529,36 +529,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </token>
 </histogram>
 
-<histogram name="Navigation.CommitTimeout.ErrorCode" enum="NetErrorCodes"
-    expires_after="M82">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Logs the error code for each navigation commit timeout. This will be used to
-    debug http://crbug.com/934317.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CommitTimeout.IsMainFrame" enum="BooleanMainFrame"
-    expires_after="M82">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Logs whether this was a main frame navigation for each navigation commit
-    timeout. This will be used to debug http://crbug.com/934317.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CommitTimeout.IsRendererProcessReady"
-    enum="BooleanReady" expires_after="M82">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Logged with the status of the renderer process for each navigation commit
-    timeout. This will be used to debug http://crbug.com/934317.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.CommitTimeout.NetworkServiceAvailability"
     enum="NetworkServiceAvailability" expires_after="M82">
   <owner>cduvall@chromium.org</owner>

@@ -221,26 +221,6 @@ enum class UserAgentStringType {
   kMaxValue = kOverriden
 };
 
-NavigationURLScheme GetScheme(const GURL& url) {
-  static const base::NoDestructor<std::map<std::string, NavigationURLScheme>>
-      kSchemeMap({
-          {url::kAboutScheme, NavigationURLScheme::ABOUT},
-          {url::kBlobScheme, NavigationURLScheme::BLOB},
-          {url::kContentScheme, NavigationURLScheme::CONTENT},
-          {url::kContentIDScheme, NavigationURLScheme::CONTENT_ID},
-          {url::kDataScheme, NavigationURLScheme::DATA},
-          {url::kFileScheme, NavigationURLScheme::FILE},
-          {url::kFileSystemScheme, NavigationURLScheme::FILE_SYSTEM},
-          {url::kFtpScheme, NavigationURLScheme::FTP},
-          {url::kHttpScheme, NavigationURLScheme::HTTP},
-          {url::kHttpsScheme, NavigationURLScheme::HTTPS},
-      });
-  auto it = kSchemeMap->find(url.scheme());
-  if (it != kSchemeMap->end())
-    return it->second;
-  return NavigationURLScheme::UNKNOWN;
-}
-
 // Returns the net load flags to use based on the navigation type.
 // TODO(clamy): Remove the blink code that sets the caching flags.
 void UpdateLoadFlagsWithCacheFlags(int* load_flags,
@@ -6347,12 +6327,6 @@ void NavigationRequest::OnCommitTimeout() {
         "Navigation.CommitTimeout.NetworkServiceLastCrashTime",
         last_crash_time);
   }
-  UMA_HISTOGRAM_BOOLEAN("Navigation.CommitTimeout.IsRendererProcessReady",
-                        GetRenderFrameHost()->GetProcess()->IsReady());
-  UMA_HISTOGRAM_ENUMERATION("Navigation.CommitTimeout.Scheme",
-                            GetScheme(common_params_->url));
-  UMA_HISTOGRAM_BOOLEAN("Navigation.CommitTimeout.IsMainFrame",
-                        frame_tree_node_->IsMainFrame());
   base::UmaHistogramSparse("Navigation.CommitTimeout.ErrorCode", -net_error_);
   render_process_blocked_state_changed_subscription_ = {};
   GetRenderFrameHost()->GetRenderWidgetHost()->RendererIsUnresponsive(

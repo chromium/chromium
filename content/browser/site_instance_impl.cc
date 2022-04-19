@@ -46,13 +46,13 @@ constexpr bool kCreateForURLAllowsDefaultSiteInstance = true;
 // This is used to keep same-site scripting working for hosted apps.
 bool ShouldCompareEffectiveURLs(BrowserContext* browser_context,
                                 SiteInstanceImpl* site_instance,
-                                bool for_main_frame,
+                                bool for_outermost_main_frame,
                                 const GURL& dest_url) {
   return site_instance->IsDefaultSiteInstance() ||
          GetContentClient()
              ->browser()
              ->ShouldCompareEffectiveURLsForSiteInstanceSelection(
-                 browser_context, site_instance, for_main_frame,
+                 browser_context, site_instance, for_outermost_main_frame,
                  site_instance->original_url(), dest_url);
 }
 
@@ -906,7 +906,7 @@ bool SiteInstanceImpl::IsOriginalUrlSameSite(
 bool SiteInstanceImpl::IsNavigationSameSite(
     const GURL& last_successful_url,
     const url::Origin last_committed_origin,
-    bool for_main_frame,
+    bool for_outermost_main_frame,
     const UrlInfo& dest_url_info) {
   if (GetSiteInfo().is_sandboxed() != dest_url_info.is_sandboxed)
     return false;
@@ -915,7 +915,7 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   BrowserContext* browser_context = GetBrowserContext();
 
   bool should_compare_effective_urls = ShouldCompareEffectiveURLs(
-      browser_context, this, for_main_frame, dest_url);
+      browser_context, this, for_outermost_main_frame, dest_url);
 
   // If IsSuitableForUrlInfo finds a process type mismatch, return false
   // even if |dest_url| is same-site.  (The URL may have been installed as an
@@ -927,7 +927,7 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   // a process privilege level mismatch.
   bool should_check_for_wrong_process =
       !IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
-          browser_context, for_main_frame, dest_url);
+          browser_context, for_outermost_main_frame, dest_url);
   if (should_check_for_wrong_process && !IsSuitableForUrlInfo(dest_url_info))
     return false;
 
@@ -981,10 +981,10 @@ bool SiteInstanceImpl::IsNavigationSameSite(
 
 bool SiteInstanceImpl::IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
     BrowserContext* browser_context,
-    bool for_main_frame,
+    bool for_outermost_main_frame,
     const GURL& dest_url) {
-  if (ShouldCompareEffectiveURLs(browser_context, this, for_main_frame,
-                                 dest_url)) {
+  if (ShouldCompareEffectiveURLs(browser_context, this,
+                                 for_outermost_main_frame, dest_url)) {
     return false;
   }
 

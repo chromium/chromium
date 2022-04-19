@@ -1924,7 +1924,14 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // If |new_instance| is a new SiteInstance for a subframe that requires a
   // dedicated process, set its process reuse policy so that such subframes are
   // consolidated into existing processes for that site.
-  if (!frame_tree_node_->IsMainFrame() &&
+  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
+  // so IsMainFrame should not be used to identify subframes. Follow up to
+  // confirm correctness. Using IsOutermostMainFrame here will cause same-site
+  // fenced frames to share a process, even across tabs, aligning with Shadow
+  // DOM behavior. Determining correctness here will also involve resolving on
+  // the FF process model plan (see https://github.com/WICG/fenced-
+  // frame/blob/master/explainer/process_isolation.md).
+  if (!frame_tree_node_->IsOutermostMainFrame() &&
       !new_instance_impl->HasProcess() &&
       new_instance_impl->RequiresDedicatedProcess()) {
     // Also give the embedder and user-specifiable feature a chance to override
@@ -1932,8 +1939,12 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     // it's better to avoid placing a subframe into an existing process for
     // better performance isolation.  See https://crbug.com/899418.
     if (!base::FeatureList::IsEnabled(features::kDisableProcessReuse) &&
-        GetContentClient()->browser()->ShouldSubframesTryToReuseExistingProcess(
-            frame_tree_node_->frame_tree()->GetMainFrame())) {
+        GetContentClient()
+            ->browser()
+            ->ShouldEmbeddedFramesTryToReuseExistingProcess(
+                frame_tree_node_->frame_tree()
+                    ->GetMainFrame()
+                    ->GetOutermostMainFrame())) {
       new_instance_impl->set_process_reuse_policy(
           SiteInstanceImpl::ProcessReusePolicy::
               REUSE_PENDING_OR_COMMITTED_SITE);
@@ -2517,13 +2528,16 @@ bool RenderFrameHostManager::IsCandidateSameSite(RenderFrameHostImpl* candidate,
     return false;
   }
 
-  // Note: We are mixing the frame_tree_node_->IsMainFrame() status of this
-  // object with the URL & origin of `candidate`. This is to determine if
+  // Note: We are mixing the frame_tree_node_->IsOutermostMainFrame() status of
+  // this object with the URL & origin of `candidate`. This is to determine if
   // `dest_url_info` would be considered "same site" if `candidate` occupied the
   // position of this object in the frame tree.
+  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
+  // so IsMainFrame should not be used to identify subframes. Follow up to
+  // confirm correctness.
   return candidate->GetSiteInstance()->IsNavigationSameSite(
       candidate->last_successful_url(), candidate->GetLastCommittedOrigin(),
-      frame_tree_node_->IsMainFrame(), dest_url_info);
+      frame_tree_node_->IsOutermostMainFrame(), dest_url_info);
 }
 
 void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(

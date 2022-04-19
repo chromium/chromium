@@ -205,13 +205,14 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // SiteInstance to preserve scripting relationships. |dest_url_info| carries
   // additional state, e.g. if the destination url requests origin isolation.
   //
-  // |for_main_frame| is set to true if the caller is interested in an
-  // answer for a main frame. This is set to false for subframe navigations.
-  // Note: In some circumstances, like hosted apps, different answers can be
-  // returned if we are navigating a main frame instead of a subframe.
+  // |for_outermost_main_frame| is set to true if the caller is interested in an
+  // answer for a outermost main frame. This is set to false for subframe or
+  // embedded main frame (eg fenced frame) navigations.  Note: In some
+  // circumstances, like hosted apps, different answers can be returned if we
+  // are navigating an outermost main frame instead of an embedded frame.
   bool IsNavigationSameSite(const GURL& last_successful_url,
                             const url::Origin last_committed_origin,
-                            bool for_main_frame,
+                            bool for_outermost_main_frame,
                             const UrlInfo& dest_url_info);
 
   // Returns true if a navigation to |dest_url| should be allowed to stay in
