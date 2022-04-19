@@ -99,6 +99,9 @@ AppPtr App::Clone() const {
 
   app->shortcuts = CloneShortcuts(shortcuts);
 
+  app->app_size_in_bytes = app_size_in_bytes;
+  app->data_size_in_bytes = data_size_in_bytes;
+
   return app;
 }
 

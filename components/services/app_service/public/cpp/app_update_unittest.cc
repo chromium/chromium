@@ -139,6 +139,12 @@ class AppUpdateTest : public testing::Test {
 
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
+  absl::optional<uint64_t> expect_app_size_in_bytes_;
+  bool expect_app_size_in_bytes_changed_;
+
+  absl::optional<uint64_t> expect_data_size_in_bytes_;
+  bool expect_data_size_in_bytes_changed_;
+
   void ExpectNoChange() {
     expect_readiness_changed_ = false;
     expect_name_changed_ = false;
@@ -170,6 +176,8 @@ class AppUpdateTest : public testing::Test {
     expect_window_mode_changed_ = false;
     expect_run_on_os_login_changed_ = false;
     expect_shortcuts_changed_ = false;
+    expect_app_size_in_bytes_changed_ = false;
+    expect_data_size_in_bytes_changed_ = false;
   }
 
   void CheckExpects(const AppUpdate& u) {
@@ -266,6 +274,12 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_shortcuts_changed_, u.ShortcutsChanged());
 
     EXPECT_EQ(account_id_, u.AccountId());
+
+    EXPECT_EQ(expect_app_size_in_bytes_, u.AppSizeInBytes());
+    EXPECT_EQ(expect_app_size_in_bytes_changed_, u.AppSizeInBytesChanged());
+
+    EXPECT_EQ(expect_data_size_in_bytes_, u.DataSizeInBytes());
+    EXPECT_EQ(expect_data_size_in_bytes_changed_, u.DataSizeInBytesChanged());
   }
 
   void TestAppUpdate(App* state, App* delta) {
@@ -303,6 +317,8 @@ class AppUpdateTest : public testing::Test {
     expect_resize_locked_ = absl::nullopt;
     expect_window_mode_ = WindowMode::kUnknown;
     expect_run_on_os_login_ = absl::nullopt;
+    expect_app_size_in_bytes_ = absl::nullopt;
+    expect_data_size_in_bytes_ = absl::nullopt;
     expect_shortcuts_.clear();
     ExpectNoChange();
     CheckExpects(u);
@@ -1069,6 +1085,52 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_TRUE(IsEqual(expect_shortcuts_, state->shortcuts));
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // App size in bytes tests.
+
+    if (state) {
+      state->app_size_in_bytes = 17;
+      expect_app_size_in_bytes_ = 17;
+      expect_app_size_in_bytes_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->app_size_in_bytes = 42;
+      expect_app_size_in_bytes_ = 42;
+      expect_app_size_in_bytes_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_app_size_in_bytes_, state->app_size_in_bytes);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // Data size in bytes tests.
+
+    if (state) {
+      state->data_size_in_bytes = 17;
+      expect_data_size_in_bytes_ = 17;
+      expect_data_size_in_bytes_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->data_size_in_bytes = 42;
+      expect_data_size_in_bytes_ = 42;
+      expect_data_size_in_bytes_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_data_size_in_bytes_, state->data_size_in_bytes);
       ExpectNoChange();
       CheckExpects(u);
     }

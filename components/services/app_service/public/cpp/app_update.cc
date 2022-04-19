@@ -255,6 +255,9 @@ void AppUpdate::Merge(App* state, const App* delta) {
     state->shortcuts = CloneShortcuts(delta->shortcuts);
   }
 
+  SET_OPTIONAL_VALUE(app_size_in_bytes);
+  SET_OPTIONAL_VALUE(data_size_in_bytes);
+
   // When adding new fields to the App type, this function should also be
   // updated.
 }
@@ -1003,6 +1006,34 @@ const ::AccountId& AppUpdate::AccountId() const {
   return account_id_;
 }
 
+absl::optional<uint64_t> AppUpdate::AppSizeInBytes() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(app_size_in_bytes, absl::nullopt);
+  }
+
+  return absl::nullopt;
+}
+
+bool AppUpdate::AppSizeInBytesChanged() const {
+  MAYBE_RETURN_OPTIONAL_VALUE_CHANGED(app_size_in_bytes);
+
+  return false;
+}
+
+absl::optional<uint64_t> AppUpdate::DataSizeInBytes() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(data_size_in_bytes, absl::nullopt);
+  }
+
+  return absl::nullopt;
+}
+
+bool AppUpdate::DataSizeInBytesChanged() const {
+  MAYBE_RETURN_OPTIONAL_VALUE_CHANGED(data_size_in_bytes);
+
+  return false;
+}
+
 bool AppUpdate::ShouldUseNonMojom() const {
   // `state_` or `delta_` being non-null means exclusively non-mojom updates are
   // being sent.
@@ -1069,6 +1100,9 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   for (const auto& shortcut : app.Shortcuts()) {
     out << shortcut->ToString() << std::endl;
   }
+
+  out << "App Size: " << app.AppSizeInBytes().value_or(-1) << std::endl;
+  out << "Data Size: " << app.DataSizeInBytes().value_or(-1) << std::endl;
 
   return out;
 }

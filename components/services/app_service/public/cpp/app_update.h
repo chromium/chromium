@@ -181,6 +181,12 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
 
   const ::AccountId& AccountId() const;
 
+  absl::optional<uint64_t> AppSizeInBytes() const;
+  bool AppSizeInBytesChanged() const;
+
+  absl::optional<uint64_t> DataSizeInBytes() const;
+  bool DataSizeInBytesChanged() const;
+
  private:
   friend class AppRegistryCacheTest;
 

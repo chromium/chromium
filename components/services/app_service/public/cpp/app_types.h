@@ -200,6 +200,10 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // There is no guarantee that this is sorted by any criteria.
   Shortcuts shortcuts;
 
+  // Storage space size for app and associated data.
+  absl::optional<uint64_t> app_size_in_bytes;
+  absl::optional<uint64_t> data_size_in_bytes;
+
   // When adding new fields to the App type, the `Clone` function and the
   // `AppUpdate` class should also be updated.
 };
