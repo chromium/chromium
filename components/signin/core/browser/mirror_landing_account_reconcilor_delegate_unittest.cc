@@ -27,31 +27,6 @@ gaia::ListedAccount BuildListedAccount(const std::string& gaia_id) {
 }  // namespace
 
 TEST(MirrorLandingAccountReconcilorDelegateTest,
-     GetFirstGaiaAccountForReconcile) {
-  gaia::ListedAccount gaia_account = BuildListedAccount("gaia");
-  CoreAccountId kPrimaryAccountId = CoreAccountId::FromGaiaId("primary");
-  CoreAccountId kOtherAccountId = CoreAccountId::FromGaiaId("other");
-  MirrorLandingAccountReconcilorDelegate delegate;
-  // No primary account.
-  EXPECT_TRUE(delegate
-                  .GetFirstGaiaAccountForReconcile(
-                      /*chrome_accounts=*/{},
-                      /*gaia_accounts=*/{gaia_account},
-                      /*primary_account=*/CoreAccountId(),
-                      /*first_execution=*/true,
-                      /*will_logout=*/false)
-                  .empty());
-  // With primary account.
-  EXPECT_EQ(delegate.GetFirstGaiaAccountForReconcile(
-                /*chrome_accounts=*/{{kOtherAccountId, kPrimaryAccountId}},
-                /*gaia_accounts=*/{gaia_account},
-                /*primary_account=*/kPrimaryAccountId,
-                /*first_execution=*/true,
-                /*will_logout=*/false),
-            kPrimaryAccountId);
-}
-
-TEST(MirrorLandingAccountReconcilorDelegateTest,
      GetChromeAccountsForReconcile) {
   CoreAccountId kPrimaryAccountId = CoreAccountId::FromGaiaId("primary");
   CoreAccountId kOtherAccountId1 = CoreAccountId::FromGaiaId("1");

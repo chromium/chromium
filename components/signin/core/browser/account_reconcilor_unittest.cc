@@ -71,15 +71,6 @@ class SpyReconcilorDelegate : public signin::AccountReconcilorDelegate {
 
   bool ShouldAbortReconcileIfPrimaryHasError() const override { return true; }
 
-  CoreAccountId GetFirstGaiaAccountForReconcile(
-      const std::vector<CoreAccountId>& chrome_accounts,
-      const std::vector<gaia::ListedAccount>& gaia_accounts,
-      const CoreAccountId& primary_account,
-      bool first_execution,
-      bool will_logout) const override {
-    return primary_account;
-  }
-
   std::vector<CoreAccountId> GetChromeAccountsForReconcile(
       const std::vector<CoreAccountId>& chrome_accounts,
       const CoreAccountId& primary_account,

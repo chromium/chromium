@@ -51,20 +51,6 @@ class AccountReconcilorDelegate {
   // account. Defaults to ConsentLevel::kSync.
   virtual ConsentLevel GetConsentLevelForPrimaryAccount() const;
 
-  // Returns the first account to add in the Gaia cookie.
-  // If this returns an empty string, the user must be logged out of all
-  // accounts.
-  // |first_execution| is true for the first reconciliation after startup.
-  // |will_logout| is true if the reconcilor will perform a logout no matter
-  // what is returned by this function.
-  // Only used with MergeSession.
-  virtual CoreAccountId GetFirstGaiaAccountForReconcile(
-      const std::vector<CoreAccountId>& chrome_accounts,
-      const std::vector<gaia::ListedAccount>& gaia_accounts,
-      const CoreAccountId& primary_account,
-      bool first_execution,
-      bool will_logout) const;
-
   // Returns a pair of mode and accounts to send to Mutilogin endpoint.
   MultiloginParameters CalculateParametersForMultilogin(
       const std::vector<CoreAccountId>& chrome_accounts,

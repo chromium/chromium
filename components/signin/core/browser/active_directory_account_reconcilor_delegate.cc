@@ -27,16 +27,6 @@ bool ActiveDirectoryAccountReconcilorDelegate::IsReconcileEnabled() const {
   return true;
 }
 
-CoreAccountId
-ActiveDirectoryAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
-    const std::vector<CoreAccountId>& chrome_accounts,
-    const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const CoreAccountId& primary_account,
-    bool first_execution,
-    bool will_logout) const {
-  return GetFirstAccount(chrome_accounts, gaia_accounts);
-}
-
 std::vector<CoreAccountId>
 ActiveDirectoryAccountReconcilorDelegate::GetChromeAccountsForReconcile(
     const std::vector<CoreAccountId>& chrome_accounts,

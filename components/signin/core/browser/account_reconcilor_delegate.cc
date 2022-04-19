@@ -34,15 +34,6 @@ ConsentLevel AccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   return ConsentLevel::kSync;
 }
 
-CoreAccountId AccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
-    const std::vector<CoreAccountId>& chrome_accounts,
-    const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const CoreAccountId& primary_account,
-    bool first_execution,
-    bool will_logout) const {
-  return CoreAccountId();
-}
-
 MultiloginParameters
 AccountReconcilorDelegate::CalculateParametersForMultilogin(
     const std::vector<CoreAccountId>& chrome_accounts,

@@ -24,12 +24,6 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
   // AccountReconcilorDelegate:
   bool IsReconcileEnabled() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
-  CoreAccountId GetFirstGaiaAccountForReconcile(
-      const std::vector<CoreAccountId>& chrome_accounts,
-      const std::vector<gaia::ListedAccount>& gaia_accounts,
-      const CoreAccountId& primary_account,
-      bool first_execution,
-      bool will_logout) const override;
   RevokeTokenOption ShouldRevokeSecondaryTokensBeforeReconcile(
       const std::vector<gaia::ListedAccount>& gaia_accounts) override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;

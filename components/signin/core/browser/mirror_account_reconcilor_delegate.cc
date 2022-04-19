@@ -52,18 +52,6 @@ ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
 #endif
 }
 
-CoreAccountId MirrorAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
-    const std::vector<CoreAccountId>& chrome_accounts,
-    const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const CoreAccountId& primary_account,
-    bool first_execution,
-    bool will_logout) const {
-  // Mirror only uses the primary account, and it is never empty.
-  DCHECK(!primary_account.empty());
-  DCHECK(base::Contains(chrome_accounts, primary_account));
-  return primary_account;
-}
-
 std::vector<CoreAccountId>
 MirrorAccountReconcilorDelegate::GetChromeAccountsForReconcile(
     const std::vector<CoreAccountId>& chrome_accounts,
