@@ -5680,39 +5680,6 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentClipPixelSnapped) {
             second_clip->PaintClipRect());
 }
 
-TEST_P(PaintPropertyTreeBuilderTest,
-       UpdateUnderChangedEffectUnderCompositedLayer) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      #opacity {
-        isolation: isolate;
-        width: 100px;
-        height: 100px;
-      }
-      #target {
-        will-change: opacity;
-        width: 100px;
-        height: 100px;
-      }
-    </style>
-    <div id="opacity">
-      <div id="target">
-      </div>
-    </div>
-  )HTML");
-
-  Element* opacity_element = GetDocument().getElementById("opacity");
-  const auto* target = GetLayoutObjectByElementId("target");
-
-  EXPECT_FALSE(To<LayoutBoxModelObject>(target)->Layer()->SelfNeedsRepaint());
-
-  opacity_element->setAttribute(html_names::kStyleAttr, "opacity: 0.5");
-  UpdateAllLifecyclePhasesExceptPaint();
-
-  EXPECT_TRUE(opacity_element->GetLayoutBox()->Layer()->SelfNeedsRepaint());
-  EXPECT_FALSE(To<LayoutBoxModelObject>(target)->Layer()->SelfNeedsRepaint());
-}
-
 TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithMask) {
   SetBodyInnerHTML(R"HTML(
     <svg id="svg" width="16" height="16" mask="url(#test)">

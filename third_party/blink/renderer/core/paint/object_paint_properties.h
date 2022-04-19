@@ -125,6 +125,12 @@ class CORE_EXPORT ObjectPaintProperties {
   //
   // This hierarchy is related to the order of transform operations in
   // https://drafts.csswg.org/css-transforms-2/#accumulated-3d-transformation-matrix-computation
+ public:
+  bool HasTransformNode() const {
+    return paint_offset_translation_ || sticky_translation_ || transform_ ||
+           perspective_ || replaced_content_transform_ || scroll_translation_ ||
+           transform_isolation_node_;
+  }
   ADD_TRANSFORM(PaintOffsetTranslation, paint_offset_translation_);
   ADD_TRANSFORM(StickyTranslation, sticky_translation_);
   ADD_TRANSFORM(Transform, transform_);
@@ -160,6 +166,12 @@ class CORE_EXPORT ObjectPaintProperties {
   //       This serves as a parent to subtree effects on an element with paint
   //       containment, It is the deepest child of any effect tree on the
   //       contain: paint element.
+ public:
+  bool HasEffectNode() const {
+    return effect_ || filter_ || vertical_scrollbar_effect_ ||
+           horizontal_scrollbar_effect_ || mask_ || clip_path_mask_ ||
+           effect_isolation_node_;
+  }
   ADD_EFFECT(Effect, effect_);
   ADD_EFFECT(Filter, filter_);
   ADD_EFFECT(VerticalScrollbarEffect, vertical_scrollbar_effect_);
@@ -205,6 +217,12 @@ class CORE_EXPORT ObjectPaintProperties {
   //       This serves as a parent to subtree clips on an element with paint
   //       containment. It is the deepest child of any clip tree on the contain:
   //       paint element.
+ public:
+  bool HasClipNode() const {
+    return fragment_clip_ || clip_path_clip_ || mask_clip_ || css_clip_ ||
+           overflow_controls_clip_ || inner_border_radius_clip_ ||
+           overflow_clip_ || clip_isolation_node_;
+  }
   ADD_CLIP(FragmentClip, fragment_clip_);
   ADD_CLIP(ClipPathClip, clip_path_clip_);
   ADD_CLIP(MaskClip, mask_clip_);

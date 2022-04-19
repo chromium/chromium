@@ -293,6 +293,26 @@ struct NGPrePaintInfo {
   bool is_inside_fragment_child;
 };
 
+struct PaintPropertiesChangeInfo {
+  PaintPropertyChangeType transform_changed =
+      PaintPropertyChangeType::kUnchanged;
+  PaintPropertyChangeType clip_changed = PaintPropertyChangeType::kUnchanged;
+  PaintPropertyChangeType effect_changed = PaintPropertyChangeType::kUnchanged;
+  PaintPropertyChangeType scroll_changed = PaintPropertyChangeType::kUnchanged;
+
+  void Merge(const PaintPropertiesChangeInfo& other) {
+    transform_changed = std::max(transform_changed, other.transform_changed);
+    clip_changed = std::max(clip_changed, other.clip_changed);
+    effect_changed = std::max(effect_changed, other.effect_changed);
+    scroll_changed = std::max(scroll_changed, other.scroll_changed);
+  }
+
+  PaintPropertyChangeType Max() const {
+    return std::max(
+        {transform_changed, clip_changed, effect_changed, scroll_changed});
+  }
+};
+
 // Creates paint property tree nodes for non-local effects in the layout tree.
 // Non-local effects include but are not limited to: overflow clip, transform,
 // fixed-pos, animation, mask, filters, etc. It expects to be invoked for each
@@ -321,7 +341,7 @@ class PaintPropertyTreeBuilder {
   void IssueInvalidationsAfterUpdate();
 
   bool PropertiesChanged() const {
-    return property_changed_ > PaintPropertyChangeType::kUnchanged;
+    return properties_changed_.Max() > PaintPropertyChangeType::kUnchanged;
   }
 
  private:
@@ -352,8 +372,7 @@ class PaintPropertyTreeBuilder {
   CreateFragmentContextsForRepeatingTableSectionInPagedMedia();
   ALWAYS_INLINE void CreateFragmentDataForRepeatingInPagedMedia(
       bool needs_paint_properties);
-  // Returns whether ObjectPaintProperties were allocated or deleted.
-  ALWAYS_INLINE bool UpdateFragments();
+  ALWAYS_INLINE void UpdateFragments();
   ALWAYS_INLINE void UpdatePaintingLayer();
   ALWAYS_INLINE void UpdateRepeatingTableSectionPaintOffsetAdjustment();
   ALWAYS_INLINE void UpdateRepeatingTableHeaderPaintOffsetAdjustment();
@@ -364,10 +383,8 @@ class PaintPropertyTreeBuilder {
 
   const LayoutObject& object_;
   NGPrePaintInfo* pre_paint_info_;
-  PaintPropertyChangeType property_changed_ =
-      PaintPropertyChangeType::kUnchanged;
-
   PaintPropertyTreeBuilderContext& context_;
+  PaintPropertiesChangeInfo properties_changed_;
 };
 
 }  // namespace blink
