@@ -169,6 +169,10 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   combined_enabled_features.push_back(media::kVaapiVp8TemporalLayerHWEncoding);
 #endif
 
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
+  combined_enabled_features.push_back(media::kVaapiVideoEncodeLinux);
+#endif
+
   const uint32_t bitrate = encode_bitrate.value_or(
       GetDefaultTargetBitrate(video->Resolution(), video->FrameRate()));
   return new VideoEncoderTestEnvironment(
