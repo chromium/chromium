@@ -17,6 +17,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -52,6 +53,15 @@ const char kEnrollmentMandatoryOption[] = "Mandatory";
 // app's bundle ID actually is. All channels of Chrome should obey the same
 // policies.
 const CFStringRef kBundleId = CFSTR("com.google.Chrome");
+
+constexpr char kEnrollmentTokenMetricsName[] =
+    "Enterprise.CloudManagementEnrollmentTokenLocation.Mac";
+
+enum EnrollmentTokenLocation {
+  kFromPolicy = 0,
+  kFromFile = 1,
+  kMaxValue = kFromFile,
+};
 
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
                         const std::string& client_id,
@@ -161,11 +171,17 @@ std::string BrowserDMTokenStorageMac::InitClientId() {
 
 std::string BrowserDMTokenStorageMac::InitEnrollmentToken() {
   std::string enrollment_token;
-  if (GetEnrollmentTokenFromPolicy(&enrollment_token))
+  if (GetEnrollmentTokenFromPolicy(&enrollment_token)) {
+    base::UmaHistogramEnumeration(kEnrollmentTokenMetricsName,
+                                  EnrollmentTokenLocation::kFromPolicy);
     return enrollment_token;
+  }
 
-  if (GetEnrollmentTokenFromFile(&enrollment_token))
+  if (GetEnrollmentTokenFromFile(&enrollment_token)) {
+    base::UmaHistogramEnumeration(kEnrollmentTokenMetricsName,
+                                  EnrollmentTokenLocation::kFromFile);
     return enrollment_token;
+  }
 
   return std::string();
 }

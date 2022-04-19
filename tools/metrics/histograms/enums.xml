@@ -27865,6 +27865,12 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Existing request removed"/>
 </enum>
 
+<enum name="EnterpriseCloudManagementEnrollmentTokenLocation">
+  <summary>CBCM enrollment token location on Mac.</summary>
+  <int value="0" label="Load token from policy"/>
+  <int value="1" label="Load token from file"/>
+</enum>
+
 <enum name="EnterpriseCloudReportingResponse">
   <summary>Result of uploading an enterprise report.</summary>
   <int value="0" label="Success"/>

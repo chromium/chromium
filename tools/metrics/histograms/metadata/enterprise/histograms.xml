@@ -417,6 +417,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CloudManagementEnrollmentTokenLocation.Mac"
+    enum="EnterpriseCloudManagementEnrollmentTokenLocation"
+    expires_after="2023-04-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>igorruvinov@chromium.org</owner>
+  <summary>
+    Records the enrollment token location when the token is loaded.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CloudReportingBasicRequestSize" units="KB"
     expires_after="2022-08-21">
   <owner>zmin@chromium.org</owner>
