@@ -12,6 +12,7 @@ def _RunTests(input_api, output_api):
       output_api,
       '.',
       files_to_check=[r'.+_test.py$'],
+      run_on_python2=False,
       skip_shebang_check=True))
 
 
