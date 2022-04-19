@@ -21,7 +21,7 @@ namespace autofill {
 
 namespace {
 
-const char kScriptName[] = "suggestion_controller_js";
+const char kScriptName[] = "suggestion_controller";
 
 // The timeout for any JavaScript call in this file.
 const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;

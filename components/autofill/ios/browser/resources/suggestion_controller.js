@@ -9,10 +9,6 @@
  * TODO(crbug.com/647084): Enable checkTypes error for this file.
  * @suppress {checkTypes}
  */
-goog.provide('__crWeb.suggestion');
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -367,5 +363,3 @@ __gCrWeb.suggestion['hasPreviousNextElements'] = function(formName, fieldName) {
 __gCrWeb.suggestion['blurActiveElement'] = function() {
   document.activeElement.blur();
 };
-
-}());  // End of anonymous object

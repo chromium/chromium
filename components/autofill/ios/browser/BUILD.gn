@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -77,13 +77,13 @@ source_set("util") {
   ]
 }
 
-js_compile_bundle("autofill_js") {
-  closure_entry_point = "__crWeb.autofill"
+optimize_js("autofill_js") {
+  primary_script = "resources/autofill_controller.js"
   sources = [ "resources/autofill_controller.js" ]
 }
 
-js_compile_bundle("suggestion_controller_js") {
-  closure_entry_point = "__crWeb.suggestion"
+optimize_js("suggestion_controller_js") {
+  primary_script = "resources/suggestion_controller.js"
   sources = [ "resources/suggestion_controller.js" ]
 }
 
