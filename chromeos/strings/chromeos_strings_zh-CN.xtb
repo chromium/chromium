@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">UDP 请求失败</translation>
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1951012854035635156">智能助理</translation>
+<translation id="1977994649430373166">Google 个人资料照片</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="1999615961760456652">强制门户</translation>
 <translation id="2006864819935886708">连接</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
 <translation id="2230005943220647148">摄氏度</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">键盘背光切换开关</translation>
 <translation id="2240366984605217732">布局切换</translation>
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
@@ -626,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">启用自动颜色模式</translation>
 <translation id="8041089156583427627">发送反馈</translation>
+<translation id="8045012663542226664">麦克风静音</translation>
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="808894953321890993">更改密码</translation>
@@ -711,6 +714,7 @@
 <translation id="894617464444543719">设备类型是手机。</translation>
 <translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
+<translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{扫描}=1{扫描 {NUMBER_OF_PAGES} 个页面}other{扫描 {NUMBER_OF_PAGES} 个页面}}</translation>
 <translation id="8997710128084572139">设备电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>

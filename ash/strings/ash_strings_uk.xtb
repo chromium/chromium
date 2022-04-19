@@ -61,7 +61,6 @@
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Виберіть подію, щоб переглянути відомості про неї в Google Календарі.</translation>
-<translation id="1266097335951928626">Увімкнути камеру для селфі</translation>
 <translation id="1267032506238418139">Зміна комбінацій клавіш</translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">Меню налаштувань відкрито</translation>
 <translation id="4581047786858252841">Мікрофон увімкнено</translation>
 <translation id="4585337515783392668">Зупинити трансляцію на невідомий пристрій</translation>
-<translation id="4586483766170476230">Вимкнути камеру для селфі</translation>
 <translation id="4587299710837179226">Мікрофон вимкнено</translation>
 <translation id="4596144739579517758">Темну тему вимкнено</translation>
 <translation id="4611292653554630842">Увійти</translation>

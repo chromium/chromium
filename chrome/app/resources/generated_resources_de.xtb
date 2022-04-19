@@ -2235,7 +2235,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="315116470104423982">Mobile Daten</translation>
 <translation id="3151539355209957474">Startzeit</translation>
 <translation id="3151562827395986343">Cache leeren sowie Verlauf, Cookies und andere Daten löschen</translation>
-<translation id="3151616662954589507">Selfiekamera</translation>
 <translation id="3151786313568798007">Ausrichtung</translation>
 <translation id="3152356229013609796">Smartphone-Benachrichtigungen abrufen, schließen und beantworten</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
@@ -3152,7 +3151,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4061374428807229313">Wenn du einen Ordner freigeben möchtest, rechtsklicke in der App „Dateien“ darauf und wähle dann „Teilen mit Parallels Desktop“ aus.</translation>
 <translation id="406213378265872299">Benutzerdefinierte Einstellungen</translation>
 <translation id="4062561150282203854">Apps, Einstellungen und mehr auf <ph name="DEVICE_TYPE" /> synchronisieren</translation>
-<translation id="4064575710864784237">1x</translation>
 <translation id="4065876735068446555">Eventuell musst du die Anmeldeseite des verwendeten Netzwerks (<ph name="NETWORK_ID" />) aufrufen.</translation>
 <translation id="4066207411788646768">Stelle eine Internetverbindung her, damit du verfügbare Drucker im Netzwerk sehen kannst</translation>
 <translation id="4068776064906523561">Gespeicherte Fingerabdrücke</translation>

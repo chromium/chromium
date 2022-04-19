@@ -61,7 +61,6 @@
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
         <ph name="EVENT_SUMMARY" />. За още подробности в Google Календар изберете събитието.</translation>
-<translation id="1266097335951928626">Стартиране на камерата за селфи</translation>
 <translation id="1267032506238418139">Промяна на клавишната комбинация</translation>
 <translation id="1269405891096105529">Периферното устройство не се поддържа в режим на гост</translation>
 <translation id="1270290102613614947">Екранната клавиатура е деактивирана</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">Менюто за настройки е отворено</translation>
 <translation id="4581047786858252841">Микрофонът е включен</translation>
 <translation id="4585337515783392668">Спиране на предаването към неизвестен приемник</translation>
-<translation id="4586483766170476230">Спиране на камерата за селфи</translation>
 <translation id="4587299710837179226">Микрофонът е изключен</translation>
 <translation id="4596144739579517758">Тъмната тема е изключена</translation>
 <translation id="4611292653554630842">Вход</translation>

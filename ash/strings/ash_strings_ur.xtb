@@ -61,7 +61,6 @@
         <ph name="END_TIME" />، 
         <ph name="TIME_ZONE" />، 
         <ph name="EVENT_SUMMARY" />۔ Google کیلنڈر میں مزید تفصیلات کے لیے منتخب کریں۔</translation>
-<translation id="1266097335951928626">سیلفی کیمرا شروع کریں</translation>
 <translation id="1267032506238418139">شارکٹ میں تبدیلی</translation>
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
 <translation id="1270290102613614947">آن اسکرین کی بورڈ غیر فعال کر دیا گیا</translation>
@@ -201,6 +200,7 @@
 <translation id="2107914222138020205">‏آپ کی USB-C کیبل Thunderbolt کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
 <translation id="211328683600082144">مائیکروفون آن کریں</translation>
+<translation id="2123115117533398272">‏ChromeOS نیا مواد دریافت کرنے کیلئے تجاویز دکھاتا ہے۔ یہ کوالٹی کو بہتر بنانے کے لیے اعداد و شمار صرف تب بھیجتا ہے جب آپ نے استعمال کے ڈیٹا کا اشتراک کرنے کو منتخب کیا ہو۔ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
 <translation id="2127372758936585790">کم پاور والا چارجر</translation>
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
@@ -271,6 +271,7 @@
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
 <translation id="263399434338050016">"تمام منتخب کریں"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ونڈو کیپچر</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2658778018866295321">کلک کریں اور گھسیٹیں</translation>
@@ -396,6 +397,7 @@
 <translation id="3375634426936648815">منسلک ہے</translation>
 <translation id="3378442621503952303">پروفائل سے منسلک ہو رہا ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="3386978599540877378">پوری اسکرین کا مکبّر</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">اضافی ترتیبات</translation>
 <translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
@@ -614,7 +616,6 @@
 <translation id="4578906031062871102">ترتیبات کا مینو کھولا گیا</translation>
 <translation id="4581047786858252841">مائیکروفون آن ہے</translation>
 <translation id="4585337515783392668">کسی نامعلوم موصول کنندہ پر کاسٹ کرنا بند کریں</translation>
-<translation id="4586483766170476230">سیلفی کیمرا بند کریں</translation>
 <translation id="4587299710837179226">مائیکروفون آف ہے</translation>
 <translation id="4596144739579517758">گہری تھیم آف ہے</translation>
 <translation id="4611292653554630842">لاگ ان کریں</translation>

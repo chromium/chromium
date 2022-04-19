@@ -857,6 +857,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3295444047715739395">Consulta e xestiona os teus contrasinais na configuración de Chrome</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
 <translation id="3304073249511302126">busca de dispositivos Bluetooth</translation>
+<translation id="33073482541490531">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
 <translation id="3308738399950580893">anuncios</translation>
 <translation id="3320021301628644560">Engade un enderezo de facturación</translation>
@@ -991,6 +992,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3667704023705708645">Capital de risco</translation>
+<translation id="367108335512738711">Marcadores de Chrome</translation>
 <translation id="3671540257457995106">Queres permitir que a aplicación cambie de tamaño?</translation>
 <translation id="3675563144891642599">Terceiro rolo</translation>
 <translation id="3676592649209844519">Código de identificación do dispositivo:</translation>
@@ -1487,6 +1489,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Ligazón que copiaches</translation>
+<translation id="5044545992476246592">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O teu Asistente de Google pode cambiarche o contrasinal de forma automática.</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="5051305769747448211">Comedia en directo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
@@ -1499,6 +1502,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Comprobar o enderezo do proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Décimo rolo</translation>
 <translation id="507130231501693183">Caixa de correo 4</translation>
+<translation id="5078060223219502807">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais recomenda que o cambies de inmediato e que despois comprobes os contrasinais gardados.</translation>
 <translation id="5086225927071063542">Informática en nube e distribuída</translation>
 <translation id="5087286274860437796">O certificado do servidor non é válido neste momento.</translation>
 <translation id="5087580092889165836">Engadir tarxeta</translation>
@@ -2015,6 +2019,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6579630537141957243">Queres conectar o dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583674473685352014">B6 (sobre)</translation>
+<translation id="6585526963651937128">Historial de Chrome</translation>
 <translation id="6587182488465657433">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Para protexer as túas contas, recomendámosche que o cambies de inmediato e que logo revises os contrasinais que tes gardados.</translation>
 <translation id="6587923378399804057">Ligazón que copiaches</translation>
 <translation id="6591833882275308647">O teu <ph name="DEVICE_TYPE" /> non está xestionado</translation>
@@ -2123,6 +2128,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="691024665142758461">Descargar varios ficheiros</translation>
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6916954549222464607">Xestión e planificación financeira</translation>
+<translation id="6917795328362592458">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais recomenda que comprobes os contrasinais gardados.</translation>
 <translation id="6934672428414710184">Este nome procede da túa Conta de Google</translation>
 <translation id="6939469646605424232">Series dramáticas</translation>
 <translation id="6944692733090228304">Introduciches o teu contrasinal nun sitio que non está xestionado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protexer a túa conta, non reutilices o contrasinal noutros sitios nin aplicacións.</translation>
@@ -2799,6 +2805,7 @@ Detalles adicionais:
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": ignorouse a entrada debido a que tamén está incluída na política SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Produtos para o baño e o corpo</translation>
 <translation id="8807160976559152894">Recorte despois de cada páxina</translation>
+<translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="882338992931677877">Oco manual</translation>

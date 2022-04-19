@@ -61,7 +61,6 @@
         <ph name="END_TIME" /> तक, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. ज़्यादा जानकारी के लिए, Google Calendar में जाकर चुनें.</translation>
-<translation id="1266097335951928626">सेल्फ़ी कैमरा चालू करें</translation>
 <translation id="1267032506238418139">शॉर्टकट में बदलाव</translation>
 <translation id="1269405891096105529">मेहमान मोड चालू होने पर, सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते.</translation>
 <translation id="1270290102613614947">ऑन-स्‍क्रीन कीबोर्ड अक्षम है</translation>
@@ -615,7 +614,6 @@
 <translation id="4578906031062871102">सेटिंग मेन्यू खोला गया</translation>
 <translation id="4581047786858252841">माइक्रोफ़ोन चालू है</translation>
 <translation id="4585337515783392668">ऐसे रिसीवर पर कास्ट करना बंद करें जिसकी जानकारी नहीं है</translation>
-<translation id="4586483766170476230">सेल्फ़ी कैमरा बंद करें</translation>
 <translation id="4587299710837179226">माइक्रोफ़ोन बंद है</translation>
 <translation id="4596144739579517758">गहरे रंग वाली थीम बंद है</translation>
 <translation id="4611292653554630842">लॉग इन करें</translation>

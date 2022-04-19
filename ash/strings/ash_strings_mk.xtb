@@ -61,7 +61,6 @@
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Изберете за повеќе детали во „Календарот на Google“.</translation>
-<translation id="1266097335951928626">Стартувај ја камерата за селфи</translation>
 <translation id="1267032506238418139">Промена на кратенка</translation>
 <translation id="1269405891096105529">Периферниот уред не е поддржан во режим на гостин</translation>
 <translation id="1270290102613614947">Тастатурата на екранот е оневозможена</translation>
@@ -615,7 +614,6 @@
 <translation id="4578906031062871102">Менито со поставки е отворено</translation>
 <translation id="4581047786858252841">Микрофонот е вклучен</translation>
 <translation id="4585337515783392668">Престани со емитување на непознат приемник</translation>
-<translation id="4586483766170476230">Сопри ја камерата за селфи</translation>
 <translation id="4587299710837179226">Микрофонот е исклучен</translation>
 <translation id="4596144739579517758">Темната тема е исклучена</translation>
 <translation id="4611292653554630842">Најави се</translation>

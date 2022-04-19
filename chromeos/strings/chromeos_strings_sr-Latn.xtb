@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Tip uređaja je nepoznat.</translation>
 <translation id="3966286471246132217">Da biste dobili tačnije rezultate, zatvorite sve aplikacije dok se test ne dovrši.</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
+<translation id="3969602104473960991">Chrome OS lozinka je ažurirana</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
 <translation id="39823212440917567">Zadaci štampanja stariji od <ph name="NUMBER_OF_DAYS" /> dana se uklanjaju</translation>
 <translation id="3993704782688964914">Uređaj <ph name="DEVICE_NAME" /> je ažuriran</translation>
@@ -462,6 +463,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6113701710518389813">Strelica nagore</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, još <ph name="NUMBER" /> albuma</translation>
 <translation id="6122191549521593678">Onlajn</translation>
+<translation id="6122277663991249694">Usluga metoda unosa za Chrome OS</translation>
 <translation id="6137767437444130246">Korisnički sertifikat</translation>
 <translation id="6146993107019042706">Da biste završili, unesite novu lozinku</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8398927464629426868">Stopa po kojoj se uređaj trenutno puni ili prazni</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interna tastatura</translation>
+<translation id="8431300646573772016">Novosti u Chrome OS-u</translation>
 <translation id="843568408673868420">Povezivanje na internet</translation>
 <translation id="844521431886043384">DNS nije podešen</translation>
 <translation id="8461329675984532579">Naziv dobavljača za Home</translation>
@@ -714,6 +717,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
+<translation id="8970887620466824814">Došlo je do greške.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skeniraj}=1{Skeniraj {NUMBER_OF_PAGES}. stranicu}one{Skeniraj {NUMBER_OF_PAGES}. stranicu}few{Skeniraj {NUMBER_OF_PAGES}. stranicu}other{Skeniraj {NUMBER_OF_PAGES}. stranicu}}</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>

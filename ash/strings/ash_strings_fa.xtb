@@ -61,7 +61,6 @@
         <ph name="END_TIME" />، 
         <ph name="TIME_ZONE" />، 
         <ph name="EVENT_SUMMARY" />. برای جزئیات بیشتر در «تقویم Google» انتخاب کنید.</translation>
-<translation id="1266097335951928626">اجرای دوربین خودگرفت</translation>
 <translation id="1267032506238418139">تغییر میان‌بر</translation>
 <translation id="1269405891096105529">دستگاه جانبی در «حالت مهمان» پشتیبانی نمی‌شود</translation>
 <translation id="1270290102613614947">صفحه‌کلید مجازی غیرفعال شد</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">منوی تنظیمات باز شد</translation>
 <translation id="4581047786858252841">میکروفون روشن است</translation>
 <translation id="4585337515783392668">توقف ارسال محتوا به گیرنده ناشناس</translation>
-<translation id="4586483766170476230">توقف دوربین خودگرفت</translation>
 <translation id="4587299710837179226">میکروفون خاموش است</translation>
 <translation id="4596144739579517758">زمینه تیره خاموش است</translation>
 <translation id="4611292653554630842">ورود به سیستم</translation>

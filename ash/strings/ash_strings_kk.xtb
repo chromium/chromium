@@ -61,7 +61,6 @@
         <ph name="END_TIME" /> дейін, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Google Calendar қызметінде іс-шара туралы толығырақ мәлімет алу үшін оны таңдаңыз.</translation>
-<translation id="1266097335951928626">Алдыңғы камераны қосу</translation>
 <translation id="1267032506238418139">Таңбаша өзгерісі</translation>
 <translation id="1269405891096105529">Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="1270290102613614947">Экрандағы пернетақта өшірілді</translation>
@@ -136,7 +135,7 @@
 <translation id="1708345662127501511">Жұмыс үстелі: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Желі параметрлері</translation>
 <translation id="1715293566947629045">Профиль өшіріліп жатыр. Бірнеше минут күтіңіз.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Жм</translation>
 <translation id="1719094688023114093">Live Caption қосулы.</translation>
 <translation id="1720011244392820496">Wi-Fi деректерін синхрондауды қосу</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth құрылғыларына көрінеді.</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">Параметрлер мәзірі ашық.</translation>
 <translation id="4581047786858252841">Микрофон қосулы.</translation>
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
-<translation id="4586483766170476230">Алдыңғы камераны өшіру</translation>
 <translation id="4587299710837179226">Микрофон өшірулі.</translation>
 <translation id="4596144739579517758">Қараңғы режим өшірулі.</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>

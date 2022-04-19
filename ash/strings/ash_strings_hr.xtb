@@ -61,7 +61,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Odaberite za više pojedinosti u Google kalendaru.</translation>
-<translation id="1266097335951928626">Pokreni fotoaparat za selfie</translation>
 <translation id="1267032506238418139">Promjena prečaca</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u načinu rada za goste</translation>
 <translation id="1270290102613614947">Tipkovnica na zaslonu onemogućena je</translation>
@@ -136,7 +135,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1708345662127501511">Radna površina: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Postavke mreže</translation>
 <translation id="1715293566947629045">Profil se onemogućuje. Pričekajte nekoliko minuta.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">P</translation>
 <translation id="1719094688023114093">Uključeni su automatski titlovi.</translation>
 <translation id="1720011244392820496">Uključivanje Wi-Fi sinkronizacije</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" je vidljiv Bluetooth uređajima.</translation>
@@ -614,7 +613,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4578906031062871102">Otvoren je izbornik postavki</translation>
 <translation id="4581047786858252841">Mikrofon je uključen</translation>
 <translation id="4585337515783392668">Zaustavite emitiranje na nepoznatom prijamniku</translation>
-<translation id="4586483766170476230">Zaustavi fotoaparat za selfie</translation>
 <translation id="4587299710837179226">Mikrofon je isključen</translation>
 <translation id="4596144739579517758">Tamna je tema isključena</translation>
 <translation id="4611292653554630842">Prijava</translation>

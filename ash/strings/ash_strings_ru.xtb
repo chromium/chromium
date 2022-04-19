@@ -61,7 +61,6 @@
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Выберите мероприятие, чтобы посмотреть сведения о нем в Google Календаре.</translation>
-<translation id="1266097335951928626">Включить фронтальную камеру</translation>
 <translation id="1267032506238418139">Изменение сочетания клавиш</translation>
 <translation id="1269405891096105529">Периферийные устройства в гостевом режиме не поддерживаются.</translation>
 <translation id="1270290102613614947">Экранная клавиатура отключена</translation>
@@ -136,7 +135,7 @@
 <translation id="1708345662127501511">Рабочий стол "<ph name="DESK_NAME" />"</translation>
 <translation id="1709762881904163296">Настройки сети</translation>
 <translation id="1715293566947629045">Отключение профиля… Подождите несколько минут.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">П</translation>
 <translation id="1719094688023114093">Автоматические субтитры включены</translation>
 <translation id="1720011244392820496">Включить синхронизацию Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />": видно устройствам Bluetooth.</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">Меню настроек открыто</translation>
 <translation id="4581047786858252841">Микрофон включен.</translation>
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
-<translation id="4586483766170476230">Выключить фронтальную камеру</translation>
 <translation id="4587299710837179226">Микрофон отключен.</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4611292653554630842">Войти</translation>

@@ -58,7 +58,6 @@
 <translation id="1252999807265626933">กำลังชาร์จจาก<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">วันนี้อากาศเป็นยังไงบ้าง</translation>
 <translation id="1262870540683925850"><ph name="START_TIME" /> ถึง <ph name="END_TIME" />, <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" /> เลือกกิจกรรมเพื่อดูรายละเอียดเพิ่มเติมใน Google ปฏิทิน</translation>
-<translation id="1266097335951928626">เริ่มกล้องเซลฟี</translation>
 <translation id="1267032506238418139">มีการเปลี่ยนแปลงทางลัด</translation>
 <translation id="1269405891096105529">ไม่รองรับอุปกรณ์ต่อพ่วงในโหมดผู้มาเยือน</translation>
 <translation id="1270290102613614947">ปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
@@ -611,7 +610,6 @@
 <translation id="4578906031062871102">เมนูการตั้งค่าเปิดอยู่</translation>
 <translation id="4581047786858252841">ไมโครโฟนเปิดอยู่</translation>
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
-<translation id="4586483766170476230">หยุดกล้องเซลฟี</translation>
 <translation id="4587299710837179226">ไมโครโฟนปิดอยู่</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>

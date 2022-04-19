@@ -58,7 +58,6 @@
 <translation id="1252999807265626933">正在通过“<ph name="POWER_SOURCE" />”充电</translation>
 <translation id="1255033239764210633">天气怎么样？</translation>
 <translation id="1262870540683925850"><ph name="START_TIME" /> 至<ph name="END_TIME" />，<ph name="TIME_ZONE" />，<ph name="EVENT_SUMMARY" />。选择相应条目即可在 Google 日历中了解详情。</translation>
-<translation id="1266097335951928626">启用自拍摄像头</translation>
 <translation id="1267032506238418139">该快捷键发生了变化</translation>
 <translation id="1269405891096105529">在访客模式下，无法使用外围设备</translation>
 <translation id="1270290102613614947">屏幕键盘已停用</translation>
@@ -611,7 +610,6 @@
 <translation id="4578906031062871102">已打开“设置”菜单</translation>
 <translation id="4581047786858252841">麦克风已开启</translation>
 <translation id="4585337515783392668">停止投射至不明接收器</translation>
-<translation id="4586483766170476230">停用自拍摄像头</translation>
 <translation id="4587299710837179226">麦克风已关闭</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4611292653554630842">登录</translation>

@@ -60,7 +60,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Chọn để xem thêm thông tin chi tiết trong Lịch Google.</translation>
-<translation id="1266097335951928626">Bắt đầu máy ảnh ở chế độ tự chụp ảnh chân dung</translation>
 <translation id="1267032506238418139">Thay đổi phím tắt</translation>
 <translation id="1269405891096105529">Chế độ khách không hỗ trợ thiết bị ngoại vi</translation>
 <translation id="1270290102613614947">Đã tắt bàn phím ảo</translation>
@@ -86,6 +85,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1351937230027495976">Thu gọn menu</translation>
 <translation id="1364382257761975320">Hãy dùng vân tay của bạn để mở khóa Chromebook</translation>
 <translation id="1364618750746929654">Không tạo được bản chép lời</translation>
+<translation id="1372545819342940910">Lưu không gian làm việc để dùng sau</translation>
 <translation id="1383597849754832576">Không thể tải tệp mã chuyển lời nói thành văn bản xuống. Hãy thử lại sau.</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1391102559483454063">Đang bật</translation>
@@ -611,7 +611,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4578906031062871102">Đã mở trình đơn Cài đặt</translation>
 <translation id="4581047786858252841">Micrô đang bật</translation>
 <translation id="4585337515783392668">Dừng truyền trên bộ thu không xác định</translation>
-<translation id="4586483766170476230">Dừng máy ảnh ở chế độ tự chụp ảnh chân dung</translation>
 <translation id="4587299710837179226">Micrô đang tắt</translation>
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
 <translation id="4611292653554630842">Đăng nhập</translation>
@@ -1191,7 +1190,7 @@ Mới cài đặt</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ứng dụng</translation>
 <translation id="8255234195843591763">Hãy đặt lại để cập nhật</translation>
 <translation id="826107067893790409">Nhấn Enter để mở khóa cho <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8261506727792406068">Xóa</translation>
+<translation id="8261506727792406068">Xoá</translation>
 <translation id="8270450402312105425">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
 <translation id="8284362522226889623">Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước</translation>
 <translation id="828708037801473432">Đang tắt</translation>

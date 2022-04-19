@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Тип уређаја је непознат.</translation>
 <translation id="3966286471246132217">Да бисте добили тачније резултате, затворите све апликације док се тест не доврши.</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
+<translation id="3969602104473960991">Chrome OS лозинка је ажурирана</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
 <translation id="3993704782688964914">Уређај <ph name="DEVICE_NAME" /> је ажуриран</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">Стрелица нагоре</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, још <ph name="NUMBER" /> албума</translation>
 <translation id="6122191549521593678">Онлајн</translation>
+<translation id="6122277663991249694">Услуга метода уноса за Chrome ОС</translation>
 <translation id="6137767437444130246">Кориснички сертификат</translation>
 <translation id="6146993107019042706">Да бисте завршили, унесите нову лозинку</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Интерна тастатура</translation>
+<translation id="8431300646573772016">Новости у Chrome ОС-у</translation>
 <translation id="843568408673868420">Повезивање на интернет</translation>
 <translation id="844521431886043384">DNS није подешен</translation>
 <translation id="8461329675984532579">Назив добављача за Home</translation>
@@ -714,6 +717,7 @@
 <translation id="894617464444543719">Уређај је телефон.</translation>
 <translation id="8968751544471797276">Брзина пуњења</translation>
 <translation id="8970109610781093811">Поново покрени</translation>
+<translation id="8970887620466824814">Дошло је до грешке.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES}. страницу}one{Скенирај {NUMBER_OF_PAGES}. страницу}few{Скенирај {NUMBER_OF_PAGES}. страницу}other{Скенирај {NUMBER_OF_PAGES}. страницу}}</translation>
 <translation id="8997710128084572139">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије.</translation>

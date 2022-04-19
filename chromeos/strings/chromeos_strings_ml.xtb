@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google പ്രൊഫൈൽ ഫോട്ടോ</translation>
 <translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
 <translation id="1999615961760456652">ക്യാപ്‌റ്റീവ് പോർട്ടൽ</translation>
 <translation id="2006864819935886708">കണക്റ്റിവിറ്റി</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">കുറഞ്ഞത് ഒരു ആർട്ട് ഗാലറി ആൽബമെങ്കിലും തിരഞ്ഞെടുക്കേണ്ടതുണ്ട്</translation>
 <translation id="2230005943220647148">സെൽഷ്യസ്</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് ടോഗിൾ ചെയ്യൽ</translation>
 <translation id="2240366984605217732">ലേഔട്ട് സ്വിച്ച്</translation>
 <translation id="225692081236532131">സജീവമാക്കല്‍ സ്റ്റാറ്റസ്</translation>
 <translation id="2287186687001756809">ചിത്രമൊന്നും ലഭ്യമല്ല. ഫോട്ടോകൾ ചേർക്കാൻ <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
@@ -625,6 +627,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">സ്വയം നിറം ക്രമീകരിക്കൽ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
+<translation id="8045012663542226664">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ</translation>
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
@@ -710,6 +713,7 @@
 <translation id="894617464444543719">ഉപകരണം ഒരു ഫോണാണ്.</translation>
 <translation id="8968751544471797276">ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
 <translation id="8970109610781093811">വീണ്ടും പ്രവർത്തിപ്പിക്കുക</translation>
+<translation id="8970887620466824814">എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{സ്‌കാൻ ചെയ്യുക}=1{{NUMBER_OF_PAGES} പേജ് സ്‌കാൻ ചെയ്യുക}other{{NUMBER_OF_PAGES} പേജ് സ്‌കാൻ ചെയ്യുക}}</translation>
 <translation id="8997710128084572139">ഉപകരണത്തിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>

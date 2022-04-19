@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">অজ্ঞাত প্ৰকাৰৰ ডিভাইচ।</translation>
 <translation id="3966286471246132217">অধিক সঠিক ফলাফলৰ বাবে, পৰীক্ষাটো সম্পূৰ্ণ নোহোৱালৈকে আটাইবোৰ এপ্ বন্ধ কৰক।</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
+<translation id="3969602104473960991">ChromeOSৰ পাছৱৰ্ড আপডে’ট কৰা হৈছে</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনতকৈ পুৰণি প্ৰিণ্টৰ কামসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="3993704782688964914">আপোনাৰ <ph name="DEVICE_NAME" />টো এতিয়া আপ টু ডে’ট হৈ আছে</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">আপ এৰ’</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, আৰু +<ph name="NUMBER" /> টা এলবাম</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
+<translation id="6122277663991249694">ChromeOSৰ ইনপুট পদ্ধতি সেৱা</translation>
 <translation id="6137767437444130246">ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">বৰ্তমান ডিভাইচটো চাৰ্জ অথবা ডিছচাৰ্জ হৈ থকাৰ হাৰ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">অভ্যন্তৰীণ কীব’ৰ্ড</translation>
+<translation id="8431300646573772016">ChromeOSত নতুন কি আছে</translation>
 <translation id="843568408673868420">ইণ্টাৰনেট সংযোগ</translation>
 <translation id="844521431886043384">DNS ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="8461329675984532579">গৃহ প্ৰদানকাৰীৰ নাম</translation>
@@ -714,6 +717,7 @@
 <translation id="894617464444543719">ডিভাইচটো এটা ফ’ন।</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
+<translation id="8970887620466824814">কিবা ভুল হ’ল।</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্কেন কৰক}=1{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}one{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}other{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}}</translation>
 <translation id="8997710128084572139">ডিভাইচটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>

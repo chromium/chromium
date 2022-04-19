@@ -58,7 +58,6 @@
 <translation id="1252999807265626933">正在使用「<ph name="POWER_SOURCE" />」充電</translation>
 <translation id="1255033239764210633">天氣如何？</translation>
 <translation id="1262870540683925850"><ph name="START_TIME" /> 至<ph name="END_TIME" /> (<ph name="TIME_ZONE" />)，<ph name="EVENT_SUMMARY" />。選取活動即可在 Google 日曆中查看詳情。</translation>
-<translation id="1266097335951928626">啟用自拍鏡頭</translation>
 <translation id="1267032506238418139">快速鍵異動</translation>
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
 <translation id="1270290102613614947">螢幕小鍵盤已停用</translation>
@@ -611,7 +610,6 @@
 <translation id="4578906031062871102">已開啟設定選單</translation>
 <translation id="4581047786858252841">麥克風已開啟</translation>
 <translation id="4585337515783392668">停止透過不明接收器投放</translation>
-<translation id="4586483766170476230">停用自拍鏡頭</translation>
 <translation id="4587299710837179226">麥克風已關閉</translation>
 <translation id="4596144739579517758">深色主題已關閉</translation>
 <translation id="4611292653554630842">登入</translation>

@@ -61,7 +61,6 @@
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Выберыце падзею, каб азнаёміцца з падрабязнымі звесткамі пра яе ў Календары Google.</translation>
-<translation id="1266097335951928626">Уключыць франтальную камеру</translation>
 <translation id="1267032506238418139">Змяненне спалучэння клавіш</translation>
 <translation id="1269405891096105529">Перыферыйная прылада не падтрымліваецца ў гасцявым рэжыме</translation>
 <translation id="1270290102613614947">Экранная клавіятура выключана</translation>
@@ -136,7 +135,7 @@
 <translation id="1708345662127501511">Працоўны стол: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Налады сеткі</translation>
 <translation id="1715293566947629045">Ідзе адключэнне профілю. Пачакайце некалькі хвілін.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Пт</translation>
 <translation id="1719094688023114093">Імгненныя субцітры ўключаны.</translation>
 <translation id="1720011244392820496">Уключыце сінхранізацыю Wi-Fi</translation>
 <translation id="1736898441010944794">Прылада "<ph name="NAME" />" бачная прыладам з Bluetooth.</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">Меню налад адкрыта</translation>
 <translation id="4581047786858252841">Мікрафон уключаны</translation>
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
-<translation id="4586483766170476230">Выключыць франтальную камеру</translation>
 <translation id="4587299710837179226">Мікрафон выключаны</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
 <translation id="4611292653554630842">Увайсці</translation>

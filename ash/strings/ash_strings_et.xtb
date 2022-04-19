@@ -61,7 +61,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Valige, et Google'i kalendris lisateavet näha.</translation>
-<translation id="1266097335951928626">Ava selfikaamera</translation>
 <translation id="1267032506238418139">Otsetee on muutunud</translation>
 <translation id="1269405891096105529">Välisseadet külalisrežiimis ei toetata</translation>
 <translation id="1270290102613614947">Ekraanil kuvatav klaviatuur on keelatud</translation>
@@ -615,7 +614,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4578906031062871102">Seadete menüü on avatud</translation>
 <translation id="4581047786858252841">Mikrofon on sisse lülitatud</translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
-<translation id="4586483766170476230">Sulge selfikaamera</translation>
 <translation id="4587299710837179226">Mikrofon on välja lülitatud</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4611292653554630842">Logi sisse</translation>

@@ -856,6 +856,7 @@
 <translation id="3295444047715739395">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="3304073249511302126">Bluetooth സ്‌കാനിംഗ്</translation>
+<translation id="33073482541490531">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. ഈ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ മാറ്റാൻ Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="3308006649705061278">ഓര്‍‌ഗനൈസേഷണല്‍‌ യൂണിറ്റ് (OU)</translation>
 <translation id="3308738399950580893">പരസ്യങ്ങൾ</translation>
 <translation id="3320021301628644560">ബില്ലിംഗ് വിലാസം ചേർക്കുക</translation>
@@ -990,6 +991,7 @@
 <translation id="3658742229777143148">പുനരവലോകനം</translation>
 <translation id="3664782872746246217">കീവേഡുകൾ:</translation>
 <translation id="3667704023705708645">വെഞ്ച്വർ കാപ്പിറ്റൽ</translation>
+<translation id="367108335512738711">Chrome ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="3671540257457995106">വലുപ്പം മാറ്റാൻ അനുവദിക്കണോ?</translation>
 <translation id="3675563144891642599">മൂന്നാമത്തെ റോൾ</translation>
 <translation id="3676592649209844519">ഉപകരണ ഐഡി:</translation>
@@ -1484,6 +1486,7 @@
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5040262127954254034">സ്വകാര്യത</translation>
 <translation id="5043480802608081735">നിങ്ങൾ പകർത്തിയ ലിങ്ക്</translation>
+<translation id="5044545992476246592">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. Google Assistant-ന് നിങ്ങളുടെ പാസ്‌വേഡ് സ്വയമേവ മാറ്റാനാകും.</translation>
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
 <translation id="5051305769747448211">തൽസമയ ഹാസ്യം</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയൽ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}other{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയലുകൾ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}}</translation>
@@ -1496,6 +1499,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />പ്രോക്‌സി വിലാസം പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">പത്താമത്തെ റോൾ</translation>
 <translation id="507130231501693183">മെയിൽബോക്സ് 4</translation>
+<translation id="5078060223219502807">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, ഇപ്പോൾ തന്നെ അവ മാറ്റാനും സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാനും Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="5086225927071063542">ഡിസ്‌ട്രിബ്യൂട്ടഡ്, ക്ലൗഡ് കമ്പ്യൂട്ടിംഗ്</translation>
 <translation id="5087286274860437796">സെർവറിന്റെ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയില്ല.</translation>
 <translation id="5087580092889165836">കാർഡ് ചേർക്കുക</translation>
@@ -2012,6 +2016,7 @@
 <translation id="6579630537141957243">MIDI ഉപകരണം കണക്റ്റ് ചെയ്യണോ?</translation>
 <translation id="6579990219486187401">ഇളം പിങ്ക്</translation>
 <translation id="6583674473685352014">B6 (എൻവലപ്പ്)</translation>
+<translation id="6585526963651937128">Chrome ചരിത്രം</translation>
 <translation id="6587182488465657433">Chrome, നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ ഇപ്പോൾ തന്നെ ഈ പാസ്‌വേഡ് മാറ്റി, സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ ഞങ്ങൾ നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="6587923378399804057">നിങ്ങൾ പകർത്തിയ ലിങ്ക്</translation>
 <translation id="6591833882275308647">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യപ്പെടുന്നില്ല</translation>
@@ -2120,6 +2125,7 @@
 <translation id="691024665142758461">ഒന്നിലധികം ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6915804003454593391">ഉപയോക്താവ്:</translation>
 <translation id="6916954549222464607">സാമ്പത്തിക ആസൂത്രണം, മാനേജ്മെന്റ്</translation>
+<translation id="6917795328362592458">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ Google Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="6934672428414710184">ഈ പേര് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്നുള്ളതാണ്</translation>
 <translation id="6939469646605424232">ടിവി നാടകങ്ങൾ</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> മാനേജ് ചെയ്യാത്ത ഒരു സൈറ്റിൽ നിങ്ങൾ പാസ്‌വേഡ് നൽകി. നിങ്ങളുടെ അക്കൗണ്ട് പരിരക്ഷിക്കുന്നതിന്, മറ്റ് ആപ്പുകളിലും സൈറ്റുകളിലും നിങ്ങളുടെ പാസ്‌വേഡ് വീണ്ടും ഉപയോഗിക്കരുത്.</translation>
@@ -2794,6 +2800,7 @@
 <translation id="8805819170075074995">ലിസ്‌റ്റ് എൻട്രി "<ph name="LANGUAGE_ID" />": SpellcheckLanguage നയത്തിലും ഉൾപ്പെടുത്തിയിരിക്കുന്നതിനാൽ എൻട്രി അവഗണിച്ചു.</translation>
 <translation id="8806285662264631610">കുളിക്കാനും ശരീര സംരക്ഷണത്തിനുമുള്ള ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="8807160976559152894">ഓരോ പേജിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
+<translation id="8808828119384186784">Chrome ക്രമീകരണം</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">മാനുവൽ സ്ലോട്ട്</translation>

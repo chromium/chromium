@@ -61,9 +61,8 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Selecciónalo para ver más detalles en Google Calendar.</translation>
-<translation id="1266097335951928626">Iniciar cámara frontal</translation>
 <translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
-<translation id="1269405891096105529">No se puede usar el periférico en el modo invitados</translation>
+<translation id="1269405891096105529">No se puede usar el periférico en el modo Invitados</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1275285675049378717">Alimentando a <ph name="POWER_SOURCE" /></translation>
@@ -210,7 +209,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2170530631236737939">Desliza tres dedos hacia abajo para salir de la vista general</translation>
 <translation id="219905428774326614">Menú de aplicaciones, todas las aplicaciones</translation>
 <translation id="2201071101391734388">Foto reciente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
-<translation id="2208323208084708176">Modo de escritorio unificado</translation>
+<translation id="2208323208084708176">Modo Escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
 <translation id="2224075387478458881">La grabación de pantalla no está permitida cuando se muestra contenido protegido</translation>
@@ -615,7 +614,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4578906031062871102">Menú Ajustes abierto</translation>
 <translation id="4581047786858252841">El micrófono está activado</translation>
 <translation id="4585337515783392668">Dejar de enviar contenido a un receptor desconocido</translation>
-<translation id="4586483766170476230">Detener cámara frontal</translation>
 <translation id="4587299710837179226">El micrófono está desactivado</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
@@ -829,7 +827,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="598882571027504733">Para recibir la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="5992218262414051481">Se ha habilitado el modo de contraste alto. Pulsa Ctrl + Tecla de búsqueda + H de nuevo para desactivarlo.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
-<translation id="6018164090099858612">Saliendo del modo de proyección</translation>
+<translation id="6018164090099858612">Saliendo del modo Espejo</translation>
 <translation id="602001110135236999">Desplazar a la izquierda</translation>
 <translation id="6022924867608035986">Borrar el texto del cuadro de búsqueda</translation>
 <translation id="602472752137106327">Mostrar ventanas de todos los escritorios, botón seleccionado</translation>
@@ -1209,7 +1207,7 @@ Nueva instalación</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8364673525741149932">Activa o desactiva Grupo de estanterías. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Avanzar por carácter</translation>
-<translation id="8371991222807690464">Es posible que el rendimiento de los periféricos esté limitado en el Modo invitados</translation>
+<translation id="8371991222807690464">Es posible que el rendimiento de los periféricos esté limitado en el Modo Invitados</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> y tu teléfono se conectarán automáticamente</translation>
 <translation id="8380784334203145311">Buenas noches,</translation>
 <translation id="8382715499079447151">Protección frente a visualizaciones</translation>
@@ -1347,7 +1345,7 @@ Nueva instalación</translation>
 <translation id="9198992156681343238">La resolución de <ph name="DISPLAY_NAME" /> se ha cambiado a <ph name="RESOLUTION" />. Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Conecta <ph name="NAME" /> a este Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestionada por el administrador</translation>
-<translation id="9210037371811586452">Saliendo del modo de escritorio unificado</translation>
+<translation id="9210037371811586452">Saliendo del modo Escritorio unificado</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="9211681782751733685">Tiempo restante para que se cargue totalmente la batería: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Fondo de pantalla</translation>

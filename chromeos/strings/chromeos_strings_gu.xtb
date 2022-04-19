@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">ડિવાઇસનો પ્રકાર અજાણ્યો છે.</translation>
 <translation id="3966286471246132217">વધુ ચોક્કસ પરિણામો માટે, પરીક્ષણ પૂરું થાય ત્યાં સુધી બધી ઍપ બંધ રાખો.</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
+<translation id="3969602104473960991">ChromeOSનો પાસવર્ડ અપડેટ કરવામાં આવ્યો</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3993704782688964914">તમારું <ph name="DEVICE_NAME" /> હવે અપ ટૂ ડેટ છે</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">ઉપરની ઍરો કી</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + વધુ <ph name="NUMBER" /> આલ્બમ</translation>
 <translation id="6122191549521593678">ઓનલાઇન</translation>
+<translation id="6122277663991249694">ChromeOSની ઇનપુટ પદ્ધતિની સેવા</translation>
 <translation id="6137767437444130246">વપરાશકર્તા પ્રમાણપત્ર</translation>
 <translation id="6146993107019042706">સમાપ્ત કરવા માટે, તમારો નવો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">ડિવાઇસ હાલમાં જે ઝડપથી ચાર્જ કે ડિસ્ચાર્જ થઈ રહ્યું છે તે ઝડપ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">આંતરિક કીબોર્ડ</translation>
+<translation id="8431300646573772016">ChromeOSમાં નવું શું છે</translation>
 <translation id="843568408673868420">ઇન્ટરનેટ કનેક્ટિવિટી</translation>
 <translation id="844521431886043384">DNSનું સેટઅપ કર્યું</translation>
 <translation id="8461329675984532579">હોમ પ્રદાતાનું નામ</translation>
@@ -713,6 +716,7 @@
 <translation id="894617464444543719">ડિવાઇસ એક ફોન છે.</translation>
 <translation id="8968751544471797276">ચાર્જ થવાની ટકાવારી</translation>
 <translation id="8970109610781093811">ફરીથી ચલાવો</translation>
+<translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{સ્કૅન કરો}=1{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}one{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}other{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}}</translation>
 <translation id="8997710128084572139">ડિવાઇસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>

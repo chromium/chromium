@@ -2253,7 +2253,6 @@
 <translation id="315116470104423982">모바일 데이터</translation>
 <translation id="3151539355209957474">시작 시간</translation>
 <translation id="3151562827395986343">방문 기록, 쿠키, 캐시 등을 삭제합니다.</translation>
-<translation id="3151616662954589507">셀카 카메라</translation>
 <translation id="3151786313568798007">방향</translation>
 <translation id="3152356229013609796">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
@@ -3170,7 +3169,6 @@
 <translation id="4061374428807229313">공유하려면 Files 앱에서 마우스 오른쪽 버튼으로 폴더를 클릭한 다음 'Parallels Desktop과 공유'를 선택하세요.</translation>
 <translation id="406213378265872299">맞춤설정된 동작</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> 앱, 설정 등을 동기화</translation>
-<translation id="4064575710864784237">1x</translation>
 <translation id="4065876735068446555">사용 중인 네트워크(<ph name="NETWORK_ID" />)에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="4066207411788646768">네트워크 내 사용 가능한 프린터를 보려면 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="4068776064906523561">저장된 지문</translation>
@@ -4579,6 +4577,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5511379779384092781">아주 작게</translation>
 <translation id="5511823366942919280">이 기기를 'Shark'로 설정하시겠습니까?</translation>
 <translation id="5512739112435045339">기기에서 여유 공간을 확보한 다음 다시 다운로드해 보세요</translation>
+<translation id="5514315914873062345">탭</translation>
 <translation id="5517304475148761050">Play 스토어 액세스가 필요한 앱입니다</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">사이트에서 클립보드에 복사된 텍스트 및 이미지를 보려는 경우 확인</translation>
@@ -7810,6 +7809,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8749863574775030885">알 수 없는 공급업체의 USB 기기에 액세스</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" />에서 시리얼 포트에 연결하려고 합니다.</translation>
 <translation id="8750346984209549530">셀룰러 APN</translation>
+<translation id="8751419011949619279">기기에 설치된 앱에서 웹사이트 열기</translation>
 <translation id="8752451679755290210">항목 간 자동 이동</translation>
 <translation id="8753868764580670305">기기에 저장된 비밀번호 확인 및 관리</translation>
 <translation id="8753948258138515839">파일 앱을 사용하면 Google 드라이브, 외부 저장소, ChromeOS Flex 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>

@@ -1596,6 +1596,11 @@
 <translation id="2724313944474873275">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_OS_NAME" />裝置將可使用遠端認證 (已驗證存取權)，取得由 <ph name="PRODUCT_OS_NAME" />憑證授權單位核發的憑證，聲明該裝置有資格播放受保護的內容。在這項程序中，必須將可準確識別裝置的硬體簽署資訊傳送給 <ph name="PRODUCT_OS_NAME" />憑證授權單位。
 
       如果將這項政策設為停用，則裝置不會使用遠端認證來保護內容，也無法播放受保護的內容。</translation>
+<translation id="2724868837491558133">你可以設定網站網址模式清單，指定哪些網站可以自動授予本機字型權限。這會允許網站查看本機字型相關資訊。
+
+      如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。你也可以使用萬用字元 (<ph name="WILDCARD_VALUE" />)。這項政策只會根據來源進行比對，因此會忽略網址模式中的路徑。
+
+      如果尚未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 已設定的政策；如果已針對某個網站設定這項政策，則網站會依照瀏覽器的預設權限設定，使用者可依網站選擇這項權限。</translation>
 <translation id="2725855586003209701">如果將這項政策設為啟用或不設定，已註冊的裝置會回報近期登入的裝置使用者清單。
 
       如果將這項政策設為停用，已註冊的裝置不會回報使用者清單。</translation>
@@ -2437,6 +2442,7 @@
       如果不設定這項政策，系統會使用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
 <translation id="3695204334462456702">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地 (已淘汰)</translation>
 <translation id="3695706037816556327">在 <ph name="PRODUCT_OS_NAME" />上移除安全性權杖 (例如智慧型卡片) 時，系統要執行的動作。</translation>
+<translation id="3699986274986041335">每當網站要取得本機字型權限時詢問我</translation>
 <translation id="3700193037252896716">重新啟動的頻率。</translation>
 <translation id="3700318587977845664">進行週期性更新檢查的頻率。</translation>
 <translation id="3701121231485832347">控管 <ph name="MS_AD_NAME" /> 管理的 <ph name="PRODUCT_OS_NAME" /> 裝置專屬設定。</translation>
@@ -3239,6 +3245,7 @@
       如果某項政策不在清單中，且發生來源、範圍或層級衝突，系統就會套用優先順序最高的政策。</translation>
 <translation id="4646739075621507361">回報列印工作</translation>
 <translation id="4649395978608361979">本機印表機目的地</translation>
+<translation id="4650044303940238102">本機字型設定</translation>
 <translation id="4650759511838826572">停用網址通訊協定機制</translation>
 <translation id="465099050592230505">企業線上應用程式商店網址 (已不適用)</translation>
 <translation id="4653465451589191309">如果將這項政策設為啟用或不設定，使用者將可管理 (中斷或修改) VPN 連線。如果是使用 VPN 應用程式建立的 VPN 連線，則應用程式內的使用者介面不會受到影響。因此使用者仍可使用應用程式修改 VPN 連線。這項政策可搭配「永久連線的 VPN」功能使用，該功能可讓管理員決定是否在裝置啟動時建立 VPN 連線。
@@ -3332,6 +3339,7 @@
 <translation id="4820432864264617413">禁止使用者執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="4821987881803903281">禁止這些網站取得視窗放置權限</translation>
 <translation id="4826326557828204741">使用電池電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
+<translation id="4827727182370777723">預設的本機字型權限設定</translation>
 <translation id="482803100714220060">顯示完整網址</translation>
 <translation id="4832852360828533362">使用者與裝置回報功能</translation>
 <translation id="4834526953114077364">移除近期登入次數最少的使用者 (3 個月都未曾登入)，直到有足夠的可用空間</translation>
@@ -4495,9 +4503,24 @@
 <translation id="6198947200418556248">這項政策已淘汰；如果仍需要舊版 Cookie 行為，請改用 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />。這項政策可以將所有 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站的網址是否相同時，略過網路通訊協定的比較。如需完整說明，請參閱 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
 
           如果不設定這項政策，系統對 Cookie 採取的預設 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為會取決於使用者對於 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />、<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 和 <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> 功能的個人配置。使用者可以透過公開實驗，或是分別啟用或停用 <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />、<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 或 <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> 旗標，來設定這些功能的個人配置。</translation>
+<translation id="6200225675236107198">如果將這項政策設為 <ph name="BLOCK_LOCAL_FONTS_POLICY_NAME" /> (值 2)，系統預設會自動拒絕網站的本機字型權限。這會限制網站查看本機字型相關資訊。
+
+      如果將這項政策設為 <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (值 3)，系統預設會在網站要求本機字型權限時向使用者顯示提示訊息。如果使用者授予權限，網站就能查看本機字型相關資訊。
+
+      如果不設定這項政策，系統就會套用向使用者顯示訊息的預設行為，但使用者可以變更這項設定。</translation>
 <translation id="6207607210601267301">針對遠端存取主機停用無 PIN 碼驗證機制</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
+<translation id="6210422374261465354">這項政策可讓你在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中指定驗證網址的設定。
+
+      <ph name="WEBVIEW_PRODUCT_NAME" /> 會將這些驗證網址視為特殊網址，因此在驗證過程中，當 <ph name="WEBVIEW_PRODUCT_NAME" /> 中的網頁導向至驗證網址時，系統就會啟動可處理這個驗證網址的識別資訊提供者驗證器應用程式。
+
+      透過這項啟動識別資訊提供者驗證器應用程式的流程，識別資訊提供者可以啟用其他用途，例如提供多個應用程式適用的單一登入 (SSO)，或是收集零信任的裝置信號來瞭解裝置在驗證過程中的狀態，藉此提供更完善的安全防護能力。
+
+      如果裝置上未安裝可處理驗證網址的有效應用程式，系統會繼續在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中導向網頁。
+
+      有效的驗證網址應採用 <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> 架構，且不得包含萬用字元。
+      </translation>
 <translation id="6212868225782276239">顯示所有印表機 (黑名單中的印表機除外)。</translation>
 <translation id="6220835555850906733">如果將這項政策設為啟用或不設定，系統會在使用者的裝置上允許所有支援的音訊輸出。
 
@@ -4672,6 +4695,11 @@
 <translation id="6378393933102834628">如果將這項政策設為 True，系統會顯示應用程式捷徑。如果將這項政策設為 False，系統一律不會顯示應用程式捷徑。
 
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可以從書籤列內容選單中設定要顯示或隱藏應用程式捷徑。</translation>
+<translation id="6382351416269252693">你可以設定網站網址模式清單，指定哪些網站可以自動拒絕本機字型權限。這會限制網站查看本機字型相關資訊。
+
+      如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。你也可以使用萬用字元 (<ph name="WILDCARD_VALUE" />)。這項政策只會根據來源進行比對，因此會忽略網址模式中的路徑。
+
+      如果尚未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 已設定的政策；如果已針對某個網站設定這項政策，則網站會依照瀏覽器的預設權限設定，使用者可依網站選擇這項權限。</translation>
 <translation id="6384542789059421431">允許在瀏覽器側邊面板中顯示預設搜尋引擎的搜尋結果頁面。</translation>
 <translation id="6394350458541421998">我們已於 <ph name="PRODUCT_OS_NAME" />版本 29 中移除這項政策。請改用 PresentationScreenDimDelayScale 政策。</translation>
 <translation id="6397588391180665797">回報已註冊裝置上的使用者網路設定。
@@ -5503,6 +5531,7 @@
       <ph name="MS_WIN_NAME" /> 一律遵循 KDC 政策。</translation>
 <translation id="7274077256421167535">啟用 USB 電力共享功能</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
+<translation id="7275689301063927473">預設拒絕對所有網站授予本機字型權限</translation>
 <translation id="7278854311116092134">要從封鎖清單中排除的內建訊息傳遞主機名稱</translation>
 <translation id="7291084543582732020">如果啟用這項設定，只要滿足 Smart Lock 的使用條件，使用者即可使用這項功能。
 
@@ -6453,6 +6482,7 @@
 <translation id="8369602308428138533">在 AC 供電環境下執行時的螢幕關閉延遲時間</translation>
 <translation id="8371178326720637170">啟用受管理擴充功能以使用 Enterprise Hardware Platform API</translation>
 <translation id="8375817202037102567">禁止這些網站對檔案和目錄的寫入權限</translation>
+<translation id="8378266419596669629">封鎖這些網站上的本機字型權限</translation>
 <translation id="8379317372795444261">允許透過 HTTP 連線使用<ph name="BASIC_AUTH" />驗證</translation>
 <translation id="8381678031726288574">對 U2F API 汰除作業套用預設設定。</translation>
 <translation id="8382184662529825177">啟用可用於保護裝置內容的遠端認證機制</translation>
@@ -7134,6 +7164,7 @@
 
       注意：消費者專用裝置與企業專用裝置的預設行為有所不同；受管理的裝置預設會啟用 P2P，未受管理的裝置則不會。</translation>
 <translation id="9164656078867027374">定義可存取 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 的網域</translation>
+<translation id="9165128017344777105">允許這些網站上的本機字型權限</translation>
 <translation id="9166670902476893480">這項政策用於控管當 <ph name="PRODUCT_NAME" /> 提出不安全的 DNS 要求時，是否能夠查詢其他 DNS 記錄類型。這項政策不會影響透過安全 DNS 提出的 DNS 查詢；換句話說，透過安全 DNS 依然一律可以查詢其他 DNS 類型。
 
       如未設定這項政策，或將這項政策設為「啟用」，則除了 <ph name="DNS_TYPE_A" /> (DNS 類型 1) 與 <ph name="DNS_TYPE_AAAA" /> (DNS 類型 28) 以外，還可查詢 <ph name="DNS_TYPE_HTTPS" /> (DNS 類型 65) 等其他 DNS 類型。

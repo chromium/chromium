@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">Збоі запытаў UDP</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
 <translation id="1951012854035635156">Памочнік</translation>
+<translation id="1977994649430373166">Відарыс профілю Google</translation>
 <translation id="1979103255016296513">Пратэрмінавана змена пароля</translation>
 <translation id="1999615961760456652">Партал узаемадзеяння</translation>
 <translation id="2006864819935886708">Магчымасць падключэння</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">Неабходна выбраць у мастацкай галерэі як мінімум адзін альбом</translation>
 <translation id="2230005943220647148">Шкала Цэльсія</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Уключэнне і выключэнне падсветкі клавіятуры</translation>
 <translation id="2240366984605217732">Пераключэнне раскладкі</translation>
 <translation id="225692081236532131">Стан актывацыі</translation>
 <translation id="2287186687001756809">Відарыс недаступны. Дадаць фота можна з сайта <ph name="LINK" /></translation>
@@ -626,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
+<translation id="8045012663542226664">Выключэнне гуку мікрафона</translation>
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
@@ -711,6 +714,7 @@
 <translation id="894617464444543719">Гэта тэлефон.</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
 <translation id="8970109610781093811">Выканаць яшчэ раз</translation>
+<translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Адсканіраваць}=1{Адсканіраваць старонку {NUMBER_OF_PAGES}}one{Адсканіраваць старонку {NUMBER_OF_PAGES}}few{Адсканіраваць старонку {NUMBER_OF_PAGES}}many{Адсканіраваць старонку {NUMBER_OF_PAGES}}other{Адсканіраваць старонку {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Узровень зараду акумулятара прылады: <ph name="BATTERY_PERCENTAGE" />%.</translation>

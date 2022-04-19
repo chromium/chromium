@@ -246,7 +246,6 @@
 <translation id="2353636109065292463">檢查你的網際網路連線</translation>
 <translation id="235789365079050412">Google 隱私權政策</translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2369533728426058518">開啟的分頁</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="2394602618534698961">你下載的檔案會顯示在這裡</translation>
@@ -775,7 +774,6 @@
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
 <translation id="5368227114232678694">如果想在這部裝置上進行私密瀏覽，請使用無痕模式</translation>
-<translation id="5368958499335451666">{OPEN_TABS,plural, =1{已開啟 <ph name="OPEN_TABS_ONE" /> 個分頁，輕觸即可切換分頁}other{已開啟 <ph name="OPEN_TABS_MANY" /> 個分頁，輕觸即可切換分頁}}</translation>
 <translation id="5375577065097716013">使用 Google 智慧鏡頭搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">已變更回應</translation>
 <translation id="5403644198645076998">只允許特定網站</translation>

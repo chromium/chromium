@@ -75,7 +75,7 @@
 <translation id="107278043869924952">使用 PIN 碼和密碼</translation>
 <translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />當貴子女 Google 帳戶的「網路和應用程式活動」設定為開啟時，系統可能會將其資料儲存到他們的 Google 帳戶。如要進一步瞭解這些設定及其調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />當貴子女 Google 帳戶的「網路和應用程式活動」設定為開啟時，系統可能會將其資料儲存到他們的 Google 帳戶。如要進一步瞭解這些設定及其調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" />
     <ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設定為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">使用文字游標瀏覽頁面</translation>
 <translation id="1076382954055048850">顯示其他投放工作階段</translation>
@@ -1028,7 +1028,7 @@
 <translation id="1976928778492259496">指紋感應器位於「<ph name="DEVICE_TYPE" />」的左側。請單指輕觸這個按鍵。</translation>
 <translation id="1977965994116744507">讓你的手機靠近 <ph name="DEVICE_TYPE" />，即可將其解鎖。</translation>
 <translation id="1978057560491495741">移除地址</translation>
-<translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
+<translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
 <translation id="1979280758666859181">你即將變更為較舊版本的 <ph name="PRODUCT_NAME" />。該版本的版本號與你電腦上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
 <translation id="1981434377190976112">讀取你在所有網站上的所有資料</translation>
@@ -2237,7 +2237,6 @@
 <translation id="315116470104423982">行動數據</translation>
 <translation id="3151539355209957474">開始時間</translation>
 <translation id="3151562827395986343">清除歷史記錄、Cookie、快取等資料</translation>
-<translation id="3151616662954589507">自拍鏡頭</translation>
 <translation id="3151786313568798007">方向</translation>
 <translation id="3152356229013609796">查看、關閉及回覆手機上的通知</translation>
 <translation id="3157387275655328056">加入閱讀清單</translation>
@@ -2693,7 +2692,7 @@
 <translation id="3630995161997703415">請將這個網站加入檔案櫃，以便隨時使用</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可在 Chrome 裝置的設定中啟用或停用傳送報告功能。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3634652306074934350">權限要求已到期</translation>
 <translation id="3635199270495525546">偵測到可信任平台模組 (TPM)</translation>
 <translation id="3635353578505343390">提供意見給 Google</translation>
@@ -2717,7 +2716,7 @@
 <translation id="3653160965917900914">網路檔案共用</translation>
 <translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">繼續允許 <ph name="HOST" /> 存取你的麥克風</translation>
 <translation id="3654045516529121250">讀取你的無障礙設定</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{應用程式可永久存取 1 個檔案。}other{應用程式可永久存取 # 個檔案。}}</translation>
@@ -3087,7 +3086,7 @@
 <translation id="3984862166739904574">快速解答功能的定義</translation>
 <translation id="3986164906089840270"><ph name="BEGIN_PARAGRAPH1" />您可以讓 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在 Chrome 裝置的設定中啟用或停用傳送報告功能。如果您是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉了這項功能，您的裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉了這項功能，您的裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3987544746655539083">繼續禁止這個網站存取你的位置資訊</translation>
 <translation id="3987938432087324095">很抱歉，系統無法辨識你的語音指令。</translation>
 <translation id="3987993985790029246">複製連結</translation>
@@ -3152,7 +3151,6 @@
 <translation id="4061374428807229313">如要共用資料夾，請在「檔案」應用程式中的資料夾上按一下滑鼠右鍵，然後選取 [與 Parallels Desktop 共用]。</translation>
 <translation id="406213378265872299">自訂設定</translation>
 <translation id="4062561150282203854">同步處理 <ph name="DEVICE_TYPE" /> 的應用程式和設定等資料</translation>
-<translation id="4064575710864784237">1x</translation>
 <translation id="4065876735068446555">目前使用的網路 (<ph name="NETWORK_ID" />) 可能會要求您造訪登入網頁。</translation>
 <translation id="4066207411788646768">如要查看網路中的可用印表機，請檢查你的連線狀態</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
@@ -3374,7 +3372,7 @@
 <translation id="4299022904780065004">新增無痕式視窗(&amp;I)</translation>
 <translation id="4301011537467809690"><ph name="BEGIN_PARAGRAPH1" />您可以讓 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果您是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">這個頁面具有檔案編輯權限</translation>
 <translation id="4302577930366020750">請重新啟動裝置以使用 Steam</translation>
 <translation id="4303079906735388947">為安全金鑰設定新的 PIN 碼</translation>
@@ -4562,6 +4560,7 @@
 <translation id="5511379779384092781">特小</translation>
 <translation id="5511823366942919280">你確定要將這個裝置設為「Shark」嗎？</translation>
 <translation id="5512739112435045339">請先釋出裝置空間，然後再下載一次</translation>
+<translation id="5514315914873062345">Tab 鍵</translation>
 <translation id="5517304475148761050">這個應用程式需要存取 Play 商店才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">當網站要讀取已複製到剪貼簿的文字和圖片時，必須先詢問你</translation>
@@ -5077,7 +5076,7 @@
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這個裝置。</translation>
 <translation id="6051638103735819069"><ph name="BEGIN_PARAGRAPH1" />您可以讓 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果您是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />當貴子女 Google 帳戶的「網路和應用程式活動」設定為開啟時，系統可能會將其資料儲存到他們的 Google 帳戶。如要進一步瞭解這些設定及其調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">這個檔案不符合安全性政策，因此遭到貴機構封鎖</translation>
 <translation id="6052284303005792909">•</translation>
@@ -5418,7 +5417,7 @@
 <translation id="6385543213911723544">網站可以儲存及讀取 Cookie 資料</translation>
 <translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可在 Chrome 裝置的設定中啟用或停用傳送報告功能。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">警告：詳細記錄功能已啟用；以下記錄可能包含網址或其他機密資訊，請檢閱並確認你同意提交這些資訊。</translation>
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜尋語言</translation>
@@ -7788,6 +7787,7 @@
 <translation id="8749863574775030885">存取製造商不明的 USB 裝置</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 要求與序列埠連線</translation>
 <translation id="8750346984209549530">行動數據 APN</translation>
+<translation id="8751419011949619279">在裝置上安裝的應用程式中開啟網站</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
 <translation id="8753868764580670305">查看及管理這部裝置上儲存的密碼</translation>
 <translation id="8753948258138515839">「檔案」應用程式可以讓你快速存取自己存放在 Google 雲端硬碟、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
@@ -8062,7 +8062,7 @@
 <translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或抬頭顯示導航等 AR 功能</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" />目前已在這部電腦上使用這個帳戶。</translation>
 <translation id="9023015617655685412">將此分頁加入書籤...</translation>
-<translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
+<translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
 <translation id="9024127637873500333">在新分頁中開啟(&amp;O)</translation>
 <translation id="9024158959543687197">掛接共用裝置時發生錯誤。請檢查檔案共用網址，然後再試一次。</translation>
 <translation id="9024692527554990034">只要在網址列中輸入快捷字詞，即可快速搜尋特定網站，或使用其他搜尋引擎</translation>

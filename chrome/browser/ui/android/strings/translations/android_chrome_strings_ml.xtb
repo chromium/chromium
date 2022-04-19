@@ -247,7 +247,6 @@
 <translation id="2353636109065292463">നിങ്ങളുടെ ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുന്നു</translation>
 <translation id="235789365079050412">Google സ്വകാര്യതാ നയം</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
-<translation id="2369533728426058518">തുറന്നിരിക്കുന്ന ടാബുകൾ</translation>
 <translation id="2386938421315164605">വിഷയങ്ങൾ മറയ്‌ക്കുകയും മറച്ചത് പഴയപടിയാക്കുകയും ചെയ്യുക</translation>
 <translation id="2390510615457643724">നിങ്ങൾക്ക് <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> വീണ്ടും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="2394602618534698961">നിങ്ങൾ ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -776,7 +775,6 @@
 <translation id="5342314432463739672">അനുമതി അഭ്യർത്ഥനകൾ</translation>
 <translation id="5355191726083956201">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
 <translation id="5368227114232678694">ഈ ഉപകരണത്തിൽ സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ, അദൃശ്യ മോഡ് പരീക്ഷിക്കൂ</translation>
-<translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ടാബ് തുറന്നിരിക്കുന്നു, ടാബുകൾ മാറാനായി ടാപ്പ് ചെയ്യുക}other{<ph name="OPEN_TABS_MANY" /> ടാബുകൾ തുറന്നിരിക്കുന്നു, മാറാനായി ടാപ്പ് ചെയ്യുക}}</translation>
 <translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">പ്രതികരണം മാറ്റി</translation>
 <translation id="5403644198645076998">ചില സൈറ്റുകളെ മാത്രം അനുവദിക്കുക</translation>

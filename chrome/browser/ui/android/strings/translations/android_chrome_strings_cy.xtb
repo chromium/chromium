@@ -247,7 +247,6 @@ Tapiwch unrhyw air i chwilio. I fireinio'ch chwiliad, cyffyrddwch a daliwch i dd
 <translation id="2353636109065292463">Yn gwirio eich cysylltiad â'r we</translation>
 <translation id="235789365079050412">Polisi Preifatrwydd Google</translation>
 <translation id="2359808026110333948">Parhau</translation>
-<translation id="2369533728426058518">tabiau sydd ar agor</translation>
 <translation id="2386938421315164605">Cuddio a datguddio pynciau</translation>
 <translation id="2390510615457643724">Ydych chi am lawrlwytho <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> eto?</translation>
 <translation id="2394602618534698961">Mae'r ffeiliau rydych yn eu lawrlwytho yn ymddangos yma</translation>
@@ -776,7 +775,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5342314432463739672">Ceisiadau am ganiatâd</translation>
 <translation id="5355191726083956201">Mae Gwell Amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="5368227114232678694">I bori'n breifat ar y ddyfais hon, rhowch gynnig ar Anhysbys</translation>
-<translation id="5368958499335451666">{OPEN_TABS,plural, =1{Mae <ph name="OPEN_TABS_ONE" /> tab ar agor, tapiwch i newid tabiau}zero{Mae <ph name="OPEN_TABS_MANY" /> tab ar agor, tapiwch i newid tabiau}two{Mae <ph name="OPEN_TABS_MANY" /> dab ar agor, tapiwch i newid tabiau}few{Mae <ph name="OPEN_TABS_MANY" /> thab ar agor, tapiwch i newid tabiau}many{Mae <ph name="OPEN_TABS_MANY" /> thab ar agor, tapiwch i newid tabiau}other{Mae <ph name="OPEN_TABS_MANY" /> tab ar agor, tapiwch i newid tabiau}}</translation>
 <translation id="5375577065097716013">Chwilio â Google Lens <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Wedi newid yr ymateb</translation>
 <translation id="5403644198645076998">Caniatáu rhai gwefannau yn unig</translation>

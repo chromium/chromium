@@ -61,7 +61,6 @@
         <ph name="END_TIME" />، 
          بتوقيت <ph name="TIME_ZONE" />، 
         <ph name="EVENT_SUMMARY" />. اختَر حدثًا لعرض مزيد من التفاصيل في "تقويم Google".</translation>
-<translation id="1266097335951928626">تفعيل كاميرا الصور الذاتية</translation>
 <translation id="1267032506238418139">تغيير الاختصار</translation>
 <translation id="1269405891096105529">الأجهزة الملحقة غير متاحة للاستخدام في وضع الضيف.</translation>
 <translation id="1270290102613614947">تم إيقاف لوحة المفاتيح على الشاشة</translation>
@@ -615,7 +614,6 @@
 <translation id="4578906031062871102">تم فتح قائمة الإعدادات.</translation>
 <translation id="4581047786858252841">الميكروفون مفعّل.</translation>
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
-<translation id="4586483766170476230">إيقاف كاميرا الصور الذاتية</translation>
 <translation id="4587299710837179226">الميكروفون غير مفعّل.</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
 <translation id="4611292653554630842">تسجيل الدخول</translation>

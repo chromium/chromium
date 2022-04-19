@@ -61,7 +61,6 @@ Veja o que você pode fazer para começar.</translation>
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Selecione para ver mais detalhes no Google Agenda.</translation>
-<translation id="1266097335951928626">Iniciar câmera para selfies</translation>
 <translation id="1267032506238418139">Mudança de atalho</translation>
 <translation id="1269405891096105529">O periférico não é compatível com o modo visitante</translation>
 <translation id="1270290102613614947">Teclado na tela desativado</translation>
@@ -136,7 +135,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configurações de rede</translation>
 <translation id="1715293566947629045">Desativando perfil. Aguarde alguns minutos.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">S</translation>
 <translation id="1719094688023114093">O recurso Legenda instantânea está ativado.</translation>
 <translation id="1720011244392820496">Ativar o Sincronizar Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
@@ -614,7 +613,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4578906031062871102">Menu de configurações aberto</translation>
 <translation id="4581047786858252841">Microfone ativado</translation>
 <translation id="4585337515783392668">Parar de transmitir para um destinatário desconhecido</translation>
-<translation id="4586483766170476230">Interromper câmera para selfies</translation>
 <translation id="4587299710837179226">O microfone está desativado</translation>
 <translation id="4596144739579517758">O tema escuro está desativado</translation>
 <translation id="4611292653554630842">Fazer login</translation>

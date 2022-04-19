@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">यूडीपी अनुरोध पूरे नहीं हो पाए</translation>
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Google खाते पर प्रोफ़ाइल फ़ोटो</translation>
 <translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
 <translation id="1999615961760456652">कैप्टिव पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिविटी</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">कम से कम एक आर्ट गैलरी एल्बम को चुनना ज़रूरी है</translation>
 <translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">कीबोर्ड की बैकलाइट के लिए टॉगल बटन</translation>
 <translation id="2240366984605217732">लेआउट स्विच करने वाला बटन</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
@@ -626,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">अपने-आप रंग तय करने वाला मोड चालू करें</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
+<translation id="8045012663542226664">माइक्रोफ़ोन को म्यूट करने का बटन</translation>
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="8082366717211101304">Android ऐप्लिकेशन से डीएनएस की समस्या ठीक नहीं की जा सकती</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
@@ -711,6 +714,7 @@
 <translation id="894617464444543719">डिवाइस एक फ़ोन है.</translation>
 <translation id="8968751544471797276">चार्ज होने की दर</translation>
 <translation id="8970109610781093811">फिर से चलाएं</translation>
+<translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्कैन करें}=1{{NUMBER_OF_PAGES} स्कैन करें}one{{NUMBER_OF_PAGES} स्कैन करें}other{{NUMBER_OF_PAGES} स्कैन करें}}</translation>
 <translation id="8997710128084572139">डिवाइस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>

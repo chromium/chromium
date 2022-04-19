@@ -247,7 +247,6 @@
 <translation id="2353636109065292463">உங்கள் இணைய இணைப்பைச் சரிபார்க்கிறது</translation>
 <translation id="235789365079050412">Google தனியுரிமைக் கொள்கை</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
-<translation id="2369533728426058518">திறக்கப்பட்டுள்ள தாவல்கள்</translation>
 <translation id="2386938421315164605">தலைப்புகளை மறைக்கும் &amp; காட்டும்</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" /> ஃபைலை மீண்டும் பதிவிறக்க வேண்டுமா?</translation>
 <translation id="2394602618534698961">நீங்கள் பதிவிறக்கிய கோப்புகளை இங்கே பார்க்கலாம்</translation>
@@ -776,7 +775,6 @@
 <translation id="5342314432463739672">அனுமதிக் கோரிக்கைகள்</translation>
 <translation id="5355191726083956201">மேம்படுத்தப்பட்ட பாதுகாப்பு இயக்கப்பட்டுள்ளது</translation>
 <translation id="5368227114232678694">இந்தச் சாதனத்தில் தனிப்பட்ட முறையில் உலாவ, மறைநிலைப் பயன்முறையைப் பயன்படுத்திப் பாருங்கள்</translation>
-<translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> திறந்துள்ள தாவல், தாவல்களை மாற்ற, தட்டவும்}other{<ph name="OPEN_TABS_MANY" /> திறந்துள்ள தாவல்கள், தாவல்களை மாற்ற, தட்டவும்}}</translation>
 <translation id="5375577065097716013">Google Lens மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">உணர்வு வெளிப்பாடு மாற்றப்பட்டது</translation>
 <translation id="5403644198645076998">குறிப்பிட்ட தளங்களை மட்டும் அனுமதி</translation>

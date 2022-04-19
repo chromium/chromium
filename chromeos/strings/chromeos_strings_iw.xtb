@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">‏תמונת הפרופיל ב-Google</translation>
 <translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
 <translation id="1999615961760456652">פורטל שבוי</translation>
 <translation id="2006864819935886708">קישוריות</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">יש לבחור לפחות אלבום של גלריית אומנות אחד</translation>
 <translation id="2230005943220647148">צלזיוס</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">החלפת המצב של התאורה האחורית של המקלדת</translation>
 <translation id="2240366984605217732">מתג הפריסה</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
 <translation id="2287186687001756809">אין תמונה זמינה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
@@ -626,6 +628,7 @@
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">הפעלה של מצב צבע אוטומטי</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
+<translation id="8045012663542226664">השתקת המיקרופון</translation>
 <translation id="8075838845814659848">אחוז הסוללה שנותר לטעון</translation>
 <translation id="8082366717211101304">‏לא ניתן ליצור רזולוציית DNS לאפליקציות ל-Android</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
@@ -711,6 +714,7 @@
 <translation id="894617464444543719">המכשיר הוא טלפון.</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
+<translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{סריקה}=1{סריקת דף {NUMBER_OF_PAGES}}two{סריקת דף {NUMBER_OF_PAGES}}many{סריקת דף {NUMBER_OF_PAGES}}other{סריקת דף {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">רמת הטעינה של הסוללה במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>

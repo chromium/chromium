@@ -61,7 +61,6 @@ Here are some things that you can try to get started.</translation>
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Select for more details in Google Calendar.</translation>
-<translation id="1266097335951928626">Start selfie camera</translation>
 <translation id="1267032506238418139">Shortcut change</translation>
 <translation id="1269405891096105529">Peripheral not supported in Guest Mode</translation>
 <translation id="1270290102613614947">On-screen keyboard disabled</translation>
@@ -617,7 +616,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4578906031062871102">Settings menu opened</translation>
 <translation id="4581047786858252841">Microphone is on</translation>
 <translation id="4585337515783392668">Stop casting on an unknown receiver</translation>
-<translation id="4586483766170476230">Stop selfie camera</translation>
 <translation id="4587299710837179226">Microphone is off</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4611292653554630842">Log in</translation>

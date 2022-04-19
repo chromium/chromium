@@ -61,7 +61,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Zgjidh për më shumë detaje në "Kalendarin e Google".</translation>
-<translation id="1266097335951928626">Fillo kamerën për selfi</translation>
 <translation id="1267032506238418139">Ndryshim në shkurtore</translation>
 <translation id="1269405891096105529">Pajisja periferike nuk mbështetet në modalitetin "vizitor"</translation>
 <translation id="1270290102613614947">Tastiera në ekran u çaktivizua</translation>
@@ -136,7 +135,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1708345662127501511">Tavolina e punës: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Cilësimet e rrjetit</translation>
 <translation id="1715293566947629045">Profili po çaktivizohet. Prit disa minuta.</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">P</translation>
 <translation id="1719094688023114093">"Titrat në çast" janë aktivë.</translation>
 <translation id="1720011244392820496">Aktivizo "Sinkronizimin e Wi-Fi"</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" i dukshëm për pajisjet me Bluetooth.</translation>
@@ -614,7 +613,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4578906031062871102">Menyja e "Cilësimeve" u hap</translation>
 <translation id="4581047786858252841">Mikrofoni është aktiv</translation>
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
-<translation id="4586483766170476230">Ndalo kamerën për selfi</translation>
 <translation id="4587299710837179226">Mikrofoni është joaktiv</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4611292653554630842">Identifikohu</translation>

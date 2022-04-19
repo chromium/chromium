@@ -61,7 +61,6 @@
         <ph name="END_TIME" /> まで、
         <ph name="TIME_ZONE" />、
         <ph name="EVENT_SUMMARY" />。選択すると、Google カレンダーで詳細を確認できます。</translation>
-<translation id="1266097335951928626">自撮りカメラを開始</translation>
 <translation id="1267032506238418139">ショートカットの変更</translation>
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">設定メニューが開いています</translation>
 <translation id="4581047786858252841">マイクをオンにしました</translation>
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
-<translation id="4586483766170476230">自撮りカメラを停止</translation>
 <translation id="4587299710837179226">マイクをオフにしました</translation>
 <translation id="4596144739579517758">ダークモードはオフになっています</translation>
 <translation id="4611292653554630842">ログイン</translation>

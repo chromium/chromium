@@ -61,7 +61,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" /> : 
         <ph name="EVENT_SUMMARY" />. Sélectionnez cet événement pour voir davantage d'information dans Google Agenda.</translation>
-<translation id="1266097335951928626">Démarrer l'appareil photo pour égoportrait</translation>
 <translation id="1267032506238418139">Modification du raccourci</translation>
 <translation id="1269405891096105529">Le mode Invité ne prend pas en charge votre périphérique</translation>
 <translation id="1270290102613614947">Clavier à l'écran désactivé</translation>
@@ -614,7 +613,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4578906031062871102">Menu Paramètres ouvert</translation>
 <translation id="4581047786858252841">Le microphone est activé</translation>
 <translation id="4585337515783392668">Arrêter la diffusion sur un récepteur inconnu</translation>
-<translation id="4586483766170476230">Fermer l'appareil photo pour égoportrait</translation>
 <translation id="4587299710837179226">Le microphone est désactivé</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé</translation>
 <translation id="4611292653554630842">Connexion</translation>

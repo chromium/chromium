@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">ڈیوائس کی قسم نامعلوم ہے۔</translation>
 <translation id="3966286471246132217">مزید درست نتائج کیلئے، ٹیسٹ مکمل ہونے تک تمام ایپس کو بند کریں۔</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
+<translation id="3969602104473960991">‏ChromeOS پاس ورڈ اپ ڈیٹ کیا گيا</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3993704782688964914">آپ کا <ph name="DEVICE_NAME" /> اب اپ ٹو ڈیٹ ہے</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">اوپر تیر کا نشان</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />، +<ph name="NUMBER" /> مزید البمز</translation>
 <translation id="6122191549521593678">آن لائن</translation>
+<translation id="6122277663991249694">‏ChromeOS اندراج کے طریقہ کی سروس</translation>
 <translation id="6137767437444130246">صارف کا سرٹیفیکیٹ</translation>
 <translation id="6146993107019042706">مکمل کرنے کے لئے اپنا نیا پاس ورڈ درج کریں</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">پہلے سے شامل کی بورڈ</translation>
+<translation id="8431300646573772016">‏ChromeOS میں نیا کیا ہے</translation>
 <translation id="843568408673868420">انٹرنیٹ کنیکٹویٹی</translation>
 <translation id="844521431886043384">‏DNS سیٹ اپ نہیں ہے</translation>
 <translation id="8461329675984532579">گھر فراہم کرنے والے کا نام</translation>
@@ -713,6 +716,7 @@
 <translation id="894617464444543719">آلہ ایک فون ہے۔</translation>
 <translation id="8968751544471797276">چارج ہونے کی شرح</translation>
 <translation id="8970109610781093811">دوبارہ چلائيں</translation>
+<translation id="8970887620466824814">کچھ غلط ہو گیا۔</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکین کریں}=1{{NUMBER_OF_PAGES} صفحہ اسکین کریں}other{{NUMBER_OF_PAGES} صفحہ اسکین کریں}}</translation>
 <translation id="8997710128084572139">آلے میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>

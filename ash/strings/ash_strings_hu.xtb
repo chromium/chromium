@@ -61,7 +61,6 @@
         <ph name="END_TIME" /> között, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />. Válassza ki a Google Naptárban található további részletek megtekintéséhez.</translation>
-<translation id="1266097335951928626">Szelfikamera indítása</translation>
 <translation id="1267032506238418139">Billentyűparancsot érintő módosítás</translation>
 <translation id="1269405891096105529">A periféria nem támogatott vendég módban</translation>
 <translation id="1270290102613614947">Képernyő-billentyűzet kikapcsolva</translation>
@@ -615,7 +614,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4578906031062871102">Beállítások menü megnyitva</translation>
 <translation id="4581047786858252841">A mikrofon be van kapcsolva</translation>
 <translation id="4585337515783392668">Ismeretlen fogadó eszközre történő átküldés leállítása</translation>
-<translation id="4586483766170476230">Szelfikamera leállítása</translation>
 <translation id="4587299710837179226">A mikrofon ki van kapcsolva</translation>
 <translation id="4596144739579517758">Sötét téma kikapcsolva.</translation>
 <translation id="4611292653554630842">Bejelentkezés</translation>

@@ -247,7 +247,6 @@
 <translation id="2353636109065292463">Έλεγχος της σύνδεσής σας στο διαδίκτυο</translation>
 <translation id="235789365079050412">Πολιτική απορρήτου της Google</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
-<translation id="2369533728426058518">ανοικτές καρτέλες</translation>
 <translation id="2386938421315164605">Απόκρυψη και κατάργηση απόκρυψης θεμάτων</translation>
 <translation id="2390510615457643724">Θέλετε να κατεβάσετε ξανά το αρχείο <ph name="FILE_NAME" /><ph name="FILE_SIZE" />;</translation>
 <translation id="2394602618534698961">Εδώ εμφανίζονται τα αρχεία που κατεβάζετε</translation>
@@ -776,7 +775,6 @@
 <translation id="5342314432463739672">Αιτήματα για άδειες</translation>
 <translation id="5355191726083956201">Η Βελτιωμένη προστασία είναι ενεργή</translation>
 <translation id="5368227114232678694">Για ιδιωτική περιήγηση σε αυτήν τη συσκευή, δοκιμάστε την Ανώνυμη περιήγηση.</translation>
-<translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ανοιχτή καρτέλα, πατήστε για εναλλαγή καρτελών}other{<ph name="OPEN_TABS_MANY" /> ανοιχτές καρτέλες, πατήστε για εναλλαγή καρτελών}}</translation>
 <translation id="5375577065097716013">Αναζήτ. εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Η αντίδραση άλλαξε</translation>
 <translation id="5403644198645076998">Να επιτρέπονται μόνο συγκεκριμένοι ιστότοποι</translation>

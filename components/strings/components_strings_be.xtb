@@ -302,7 +302,7 @@
 <translation id="1711528724596764268">Машыннае навучанне і штучны інтэлект</translation>
 <translation id="1712552549805331520">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на лакальным камп'ютары</translation>
 <translation id="1713628304598226412">Латок 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">Пт</translation>
 <translation id="1717218214683051432">Датчыкі руху</translation>
 <translation id="1717494416764505390">Паштовая скрынка 3</translation>
 <translation id="1718029547804390981">Занадта вялікі дакумент для анатацый</translation>
@@ -858,6 +858,7 @@
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3304073249511302126">пошук прылад Bluetooth</translation>
+<translation id="33073482541490531">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
 <translation id="3308738399950580893">рэклама</translation>
 <translation id="3320021301628644560">Дадаць адрас для выстаўлення рахункаў</translation>
@@ -991,6 +992,7 @@
 <translation id="3658742229777143148">Рэдакцыя</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
 <translation id="3667704023705708645">Венчурны капітал</translation>
+<translation id="367108335512738711">Закладкі Chrome</translation>
 <translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
 <translation id="3675563144891642599">Трэці рулон</translation>
 <translation id="3676592649209844519">Ідэнтыфікатар прылады:</translation>
@@ -1487,6 +1489,7 @@
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="5043480802608081735">Скапіраваная вамі спасылка</translation>
+<translation id="5044545992476246592">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Памочнік Google можа аўтаматычна змяніць ваш пароль.</translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
 <translation id="5051305769747448211">Імправізацыйная камедыя</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Каб адправіць гэты файл з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}one{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}few{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}many{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}other{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1499,6 +1502,7 @@
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Праверыць адрас проксі-сервера<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Дзясяты рулон</translation>
 <translation id="507130231501693183">Паштовая скрынка 4</translation>
+<translation id="5078060223219502807">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Каб абараніць свае ўліковыя запісы, зараз жа змяніце яго, а затым праверце захаваныя паролі ў Менеджары пароляў.</translation>
 <translation id="5086225927071063542">Размеркаваныя і воблачныя вылічэнні</translation>
 <translation id="5087286274860437796">На гэты момант сертыфікат сервера несапраўдны.</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
@@ -2015,6 +2019,7 @@
 <translation id="6579630537141957243">Падключыць прыладу MIDI?</translation>
 <translation id="6579990219486187401">Светла-ружовы</translation>
 <translation id="6583674473685352014">B6 (канверт)</translation>
+<translation id="6585526963651937128">Гісторыя Chrome</translation>
 <translation id="6587182488465657433">Браўзер Chrome выявіў, што пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Мы рэкамендуем вам абараніць свае ўліковыя запісы, змяніўшы гэты пароль і праверыўшы тыя, якія вы захавалі.</translation>
 <translation id="6587923378399804057">Скапіраваная вамі спасылка</translation>
 <translation id="6591833882275308647">Прылада <ph name="DEVICE_TYPE" /> не знаходзіцца пад кіраваннем</translation>
@@ -2123,6 +2128,7 @@
 <translation id="691024665142758461">Спампаваць некалькі файлаў</translation>
 <translation id="6915804003454593391">Карыстальнік:</translation>
 <translation id="6916954549222464607">Фінансавае планаванне і менеджмент</translation>
+<translation id="6917795328362592458">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Каб абараніць свае ўліковыя запісы, праверце захаваныя паролі ў Менеджары пароляў.</translation>
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
 <translation id="6939469646605424232">Тэлевізійныя драмы</translation>
 <translation id="6944692733090228304">Вы ўвялі пароль на сайце, які не знаходзіцца пад кіраваннем арганізацыі <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Каб абараніць свой уліковы запіс, не выкарыстоўвайце пароль на іншых прыладах і сайтах.</translation>
@@ -2800,6 +2806,7 @@
 <translation id="8805819170075074995">Элемент спіса "<ph name="LANGUAGE_ID" />": запіс ігнаруецца, бо ён уключаны і ў палітыку "SpellcheckLanguage".</translation>
 <translation id="8806285662264631610">Тавары для ванны і цела</translation>
 <translation id="8807160976559152894">Абрэзка пасля кожнай старонкі</translation>
+<translation id="8808828119384186784">Налады Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="882338992931677877">Слот ручной падачы</translation>

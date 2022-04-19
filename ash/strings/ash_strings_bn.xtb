@@ -61,7 +61,6 @@
         <ph name="END_TIME" />, 
         <ph name="TIME_ZONE" />, 
         <ph name="EVENT_SUMMARY" />। Google Calendar-এ আরও বিবরণ দেখতে বেছে নিন।</translation>
-<translation id="1266097335951928626">সেলফি ক্যামেরা চালু করুন</translation>
 <translation id="1267032506238418139">শর্টকাটে পরিবর্তন</translation>
 <translation id="1269405891096105529">গেস্ট মোডে পেরিফেরাল কাজ করে না</translation>
 <translation id="1270290102613614947">অন-স্ক্রিন কীবোর্ড অক্ষম করা রয়েছে</translation>
@@ -614,7 +613,6 @@
 <translation id="4578906031062871102">'সেটিংস' মেনু খোলা হয়েছে</translation>
 <translation id="4581047786858252841">মাইক্রোফোন চালু করা হয়েছে</translation>
 <translation id="4585337515783392668">অজানা ডিভাইসে কাস্ট করা বন্ধ করুন</translation>
-<translation id="4586483766170476230">সেলফি ক্যামেরা বন্ধ করুন</translation>
 <translation id="4587299710837179226">মাইক্রোফোন বন্ধ করা আছে</translation>
 <translation id="4596144739579517758">ডার্ক থিম বন্ধ আছে</translation>
 <translation id="4611292653554630842">লগ-ইন করুন</translation>
