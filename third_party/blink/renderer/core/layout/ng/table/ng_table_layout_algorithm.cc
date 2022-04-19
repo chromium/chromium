@@ -893,10 +893,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   // Generate section fragments, and also caption fragments, if we need to
   // regenerate them (block fragmentation).
-  LogicalOffset section_offset;
-  section_offset.inline_offset =
-      border_padding.inline_start + border_spacing.inline_size;
-  section_offset.block_offset = child_block_offset + border_padding.block_start;
+  LogicalOffset section_offset = {
+      border_padding.inline_start + border_spacing.inline_size,
+      border_padding.block_start + child_block_offset};
 
   absl::optional<LayoutUnit> table_baseline;
 
@@ -909,6 +908,17 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   for (auto entry = child_iterator.NextChild();
        NGBlockNode child = entry.GetNode();
        entry = child_iterator.NextChild()) {
+    const NGEarlyBreak* early_break_in_child = nullptr;
+    if (UNLIKELY(early_break_)) {
+      if (IsEarlyBreakTarget(*early_break_, container_builder_, child)) {
+        container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
+                                               /* is_forced_break */ false);
+        broke_inside = true;
+        break;
+      }
+      early_break_in_child = EnterEarlyBreakInChild(child, *early_break_);
+    }
+
     const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
     const NGLayoutResult* child_result;
     LayoutUnit child_inline_offset;
@@ -957,7 +967,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
       NGConstraintSpace child_space = CreateSectionConstraintSpace(
           child, child_block_offset, entry.GetSectionIndex());
-      child_result = child.Layout(child_space, child_break_token);
+      child_result =
+          child.Layout(child_space, child_break_token, early_break_in_child);
       child_inline_offset = section_offset.inline_offset;
     }
     if (ConstraintSpace().HasBlockFragmentation()) {
@@ -966,10 +977,15 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), child, *child_result, fragmentainer_block_offset,
           has_processed_first_child, &container_builder_);
-      if (break_status != NGBreakStatus::kContinue) {
+      if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
+        return RelayoutAndBreakEarlier<NGTableLayoutAlgorithm>(
+            container_builder_.EarlyBreak());
+      }
+      if (break_status == NGBreakStatus::kBrokeBefore) {
         broke_inside = true;
         break;
       }
+      DCHECK_EQ(break_status, NGBreakStatus::kContinue);
     }
 
     const auto& physical_fragment =
@@ -1012,8 +1028,17 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   if (!child_iterator.NextChild())
     container_builder_.SetHasSeenAllChildren();
-  if (broke_inside)
+
+  // If we had (any) break inside, we don't need end border-spacing, and should
+  // be at-least the fragmentainer size (if definite).
+  if (broke_inside) {
+    if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+      section_offset.block_offset =
+          std::max(section_offset.block_offset,
+                   FragmentainerSpaceAtBfcStart(ConstraintSpace()));
+    }
     needs_end_border_spacing = false;
+  }
 
   if (needs_end_border_spacing)
     section_offset.block_offset += border_spacing.block_size;
