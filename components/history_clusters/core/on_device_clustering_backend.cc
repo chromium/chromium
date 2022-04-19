@@ -34,6 +34,7 @@
 #include "components/history_clusters/core/url_deduper_cluster_finalizer.h"
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "components/url_formatter/url_formatter.h"
 
@@ -50,7 +51,8 @@ void RecordBatchUpdateProcessingTime(base::TimeDelta time_delta) {
 
 OnDeviceClusteringBackend::OnDeviceClusteringBackend(
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
-    site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
+    site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
+    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
     : entity_metadata_provider_(entity_metadata_provider),
       engagement_score_provider_(engagement_score_provider),
       user_visible_task_traits_(
@@ -77,7 +79,14 @@ OnDeviceClusteringBackend::OnDeviceClusteringBackend(
       engagement_score_cache_(
           GetFieldTrialParamByFeatureAsInt(features::kUseEngagementScoreCache,
                                            "engagement_score_cache_size",
-                                           100)) {}
+                                           100)) {
+  if (GetConfig().should_check_hosts_to_skip_clustering_for &&
+      optimization_guide_decider) {
+    optimization_guide_decider_ = optimization_guide_decider;
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::HISTORY_CLUSTERS});
+  }
+}
 
 OnDeviceClusteringBackend::~OnDeviceClusteringBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -231,6 +240,17 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
     history::ClusterVisit cluster_visit;
     cluster_visit.annotated_visit = visit;
     const std::string& visit_host = visit.url_row.url().host();
+
+    // Skip visits that should not be clustered.
+    if (optimization_guide_decider_) {
+      optimization_guide::OptimizationGuideDecision decision =
+          optimization_guide_decider_->CanApplyOptimization(
+              visit.url_row.url(), optimization_guide::proto::HISTORY_CLUSTERS,
+              /*optimization_metadata=*/nullptr);
+      if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+        continue;
+      }
+    }
 
     if (visit.content_annotations.search_normalized_url.is_empty()) {
       cluster_visit.normalized_url = visit.url_row.url();

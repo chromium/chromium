@@ -102,8 +102,9 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
         "en-US", history_service_.get(),
         /*entity_metadata_provider=*/nullptr,
+        /*url_loader_factory=*/nullptr,
         /*engagement_score_provider=*/nullptr,
-        /*url_loader_factory=*/nullptr);
+        /*optimization_guide_decider=*/nullptr);
 
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(

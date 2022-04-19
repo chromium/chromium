@@ -12,6 +12,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,6 +83,39 @@ class TestEntityMetadataProvider
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
+class TestOptimizationGuideDecider
+    : public optimization_guide::NewOptimizationGuideDecider {
+ public:
+  TestOptimizationGuideDecider() = default;
+  ~TestOptimizationGuideDecider() override = default;
+
+  void RegisterOptimizationTypes(
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types) override {
+    ASSERT_EQ(optimization_types.size(), 1u);
+    ASSERT_EQ(optimization_guide::proto::HISTORY_CLUSTERS,
+              optimization_types[0]);
+  }
+
+  void CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecisionCallback callback) override {
+    NOTREACHED();
+  }
+
+  optimization_guide::OptimizationGuideDecision CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationMetadata* optimization_metadata)
+      override {
+    DCHECK_EQ(optimization_guide::proto::HISTORY_CLUSTERS, optimization_type);
+    return url.host() == "shouldskip.com"
+               ? optimization_guide::OptimizationGuideDecision::kFalse
+               : optimization_guide::OptimizationGuideDecision::kTrue;
+  }
+};
+
 class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
  public:
   OnDeviceClusteringWithoutContentBackendTest() {
@@ -92,12 +126,14 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     config_.split_clusters_at_search_visits = false;
     config_.should_label_clusters = false;
     config_.entity_relevance_threshold = 60;
+    config_.should_check_hosts_to_skip_clustering_for = true;
     SetConfigForTesting(config_);
   }
 
   void SetUp() override {
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        /*entity_metadata_provider=*/nullptr, &test_site_engagement_provider_);
+        /*entity_metadata_provider=*/nullptr, &test_site_engagement_provider_,
+        /*optimization_guide_decider_=*/nullptr);
   }
 
   void TearDown() override { clustering_backend_.reset(); }
@@ -324,8 +360,10 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, MultipleClusters) {
   visit5.referring_visit_of_redirect_chain_start = 6;
   visits.push_back(visit5);
 
-  history::AnnotatedVisit visit3 =
-      testing::CreateDefaultAnnotatedVisit(3, GURL("https://whatever.com/"));
+  // Although it says shouldskip, it should not be skipped since there is no
+  // optimization guide decider.
+  history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
+      3, GURL("https://shouldskip.com/butnotsincenodecider"));
   visits.push_back(visit3);
 
   std::vector<history::Cluster> result_clusters =
@@ -396,6 +434,7 @@ class OnDeviceClusteringWithContentBackendTest
     config_.should_dedupe_similar_visits = false;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
+    config_.should_check_hosts_to_skip_clustering_for = false;
     SetConfigForTesting(config_);
   }
 
@@ -438,7 +477,8 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   // visit, visit2, and visit4 but all of the visits have the same entities
   // and categories so they will be clustered in the content pass.
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
-      10, GURL("https://nonexistentreferrer.com/"));
+      10, GURL("https://shouldskip.com/butnotsincehostcheckingisfalse/"
+               "andhasnonexistentreferrer"));
   visit5.content_annotations.model_annotations.entities = {{"github", 100}};
   visit5.content_annotations.model_annotations.categories = {
       {"category", 100}, {"category2", 100}};
@@ -519,13 +559,18 @@ class OnDeviceClusteringWithAllTheBackendsTest
     entity_metadata_provider_ = std::make_unique<TestEntityMetadataProvider>(
         task_environment_.GetMainThreadTaskRunner());
 
+    optimization_guide_decider_ =
+        std::make_unique<TestOptimizationGuideDecider>();
+
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
         entity_metadata_provider_.get(),
-        /*engagement_score_provider=*/nullptr);
+        /*engagement_score_provider=*/nullptr,
+        optimization_guide_decider_.get());
   }
 
  private:
   std::unique_ptr<TestEntityMetadataProvider> entity_metadata_provider_;
+  std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
 };
 
 TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
@@ -568,6 +613,10 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
       GURL("http://non-default-engine.com/?q=nometadata");
   visit3.content_annotations.model_annotations.visibility_score = 0.5;
   visits.push_back(visit3);
+
+  history::AnnotatedVisit should_skip = testing::CreateDefaultAnnotatedVisit(
+      11, GURL("https://shouldskip.com/whatever"));
+  visits.push_back(should_skip);
 
   std::vector<history::Cluster> result_clusters =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);

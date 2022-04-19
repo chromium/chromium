@@ -37,6 +37,7 @@
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
@@ -191,7 +192,8 @@ HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
+    site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
+    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
     : is_journeys_enabled_(
           GetConfig().is_journeys_enabled_no_locale_check &&
           IsApplicationLocaleSupportedByJourneys(application_locale)),
@@ -203,7 +205,8 @@ HistoryClustersService::HistoryClustersService(
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   backend_ = std::make_unique<OnDeviceClusteringBackend>(
-      entity_metadata_provider, engagement_score_provider);
+      entity_metadata_provider, engagement_score_provider,
+      optimization_guide_decider);
 #endif
 }
 

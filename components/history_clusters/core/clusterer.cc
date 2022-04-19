@@ -43,12 +43,6 @@ bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
   return true;
 }
 
-// Returns whether a visit should be omitted from all clusters.
-bool ShouldSkipVisit(const history::ClusterVisit& visit) {
-  return GetConfig().hosts_to_skip_clustering_for.contains(
-      visit.normalized_url.host());
-}
-
 }  // namespace
 
 Clusterer::Clusterer() = default;
@@ -67,10 +61,6 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
   base::flat_map<history::VisitID, size_t> visit_id_to_cluster_map;
   std::vector<history::Cluster> clusters;
   for (const auto& visit : *visits) {
-    if (ShouldSkipVisit(visit)) {
-      continue;
-    }
-
     const auto& visit_url = visit.normalized_url;
     absl::optional<size_t> cluster_idx;
     history::VisitID previous_visit_id =

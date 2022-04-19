@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 
 namespace history_clusters {
@@ -211,9 +210,8 @@ struct Config {
   // Does nothing if `should_label_clusters` is false.
   bool labels_from_entities = false;
 
-  // The set of hosts for which all visits belonging to that host will not be in
-  // any cluster.
-  base::flat_set<std::string> hosts_to_skip_clustering_for;
+  // Whether to check if all visits for a host should be in resulting clusters.
+  bool should_check_hosts_to_skip_clustering_for = false;
 
   // True if the task runner should use trait CONTINUE_ON_SHUTDOWN.
   bool use_continue_on_shutdown = true;
