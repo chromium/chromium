@@ -298,14 +298,19 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
 // Default and non-shared resource definition for kOobeDisplay display type.
 // chrome://oobe/oobe
 void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
-  if (switches::IsOsInstallAllowed()) {
-    source->SetDefaultResource(IDR_OS_INSTALL_OOBE_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_HTML);
+  if (features::IsOobePolymer3Enabled()) {
+    // TODO(crbug.com/1279339): Separate ChromeOS Flex screens resources.
+    source->SetDefaultResource(IDR_OOBE_POLY3_HTML);
   } else {
-    source->SetDefaultResource(IDR_OOBE_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_OOBE_HTML);
+    if (switches::IsOsInstallAllowed()) {
+      source->SetDefaultResource(IDR_OS_INSTALL_OOBE_HTML);
+      source->AddResourcePath(kCustomElementsHTMLPath,
+                              IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_HTML);
+    } else {
+      source->SetDefaultResource(IDR_OOBE_HTML);
+      source->AddResourcePath(kCustomElementsHTMLPath,
+                              IDR_CUSTOM_ELEMENTS_OOBE_HTML);
+    }
   }
   source->AddResourcePath(kOobeJSPath, IDR_OOBE_JS);
 }
@@ -313,15 +318,21 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
 // Default and non-shared resource definition for kLoginDisplay display type.
 // chrome://oobe/login
 void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
-  if (switches::IsOsInstallAllowed()) {
-    source->SetDefaultResource(IDR_OS_INSTALL_LOGIN_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_HTML);
+  if (features::IsOobePolymer3Enabled()) {
+    // TODO(crbug.com/1279339): Separate ChromeOS Flex screens resources.
+    source->SetDefaultResource(IDR_MD_LOGIN_POLY3_HTML);
   } else {
-    source->SetDefaultResource(IDR_MD_LOGIN_HTML);
-    source->AddResourcePath(kCustomElementsHTMLPath,
-                            IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
+    if (switches::IsOsInstallAllowed()) {
+      source->SetDefaultResource(IDR_OS_INSTALL_LOGIN_HTML);
+      source->AddResourcePath(kCustomElementsHTMLPath,
+                              IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_HTML);
+    } else {
+      source->SetDefaultResource(IDR_MD_LOGIN_HTML);
+      source->AddResourcePath(kCustomElementsHTMLPath,
+                              IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
+    }
   }
+
   source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);
 }
 
@@ -329,11 +340,6 @@ void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
 content::WebUIDataSource* CreateOobeUIDataSource(
     const base::Value::Dict& localized_strings,
     const std::string& display_type) {
-  // Cannot exist for the lock screen.
-  if (display_type == OobeUI::kLockDisplay) {
-    NOTREACHED();
-  }
-
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   content::WebUIDataSource* source =
@@ -345,18 +351,12 @@ content::WebUIDataSource* CreateOobeUIDataSource(
 
   // First, configure default and non-shared resources for the current display
   // type.
-  if (features::IsOobePolymer3Enabled()) {
-    source->SetDefaultResource(IDR_OOBE_POLY3_HTML);
-    // Add boolean variables that are used by Polymer3 to add screens
-    // dynamically.
-    source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
-    source->AddBoolean("isOobeFlow", display_type == OobeUI::kOobeDisplay);
+  if (display_type == OobeUI::kOobeDisplay) {
+    AddOobeDisplayTypeDefaultResources(source);
+  } else if (display_type == OobeUI::kLockDisplay) {
+    NOTREACHED();
   } else {
-    if (display_type == OobeUI::kOobeDisplay) {
-      AddOobeDisplayTypeDefaultResources(source);
-    } else {
-      AddLoginDisplayTypeDefaultResources(source);
-    }
+    AddLoginDisplayTypeDefaultResources(source);
   }
 
   // Configure shared resources

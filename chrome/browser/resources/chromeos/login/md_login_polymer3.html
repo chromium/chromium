@@ -52,6 +52,8 @@
           <os-trial-element id="os-trial" class="step hidden" hidden></os-trial-element>
           <parental-handoff-element id="parental-handoff" class="step hidden" hidden></parental-handoff-element>
           <pin-setup-element id="pin-setup" class="step hidden" hidden></pin-setup-element>
+          <oobe-eula-element id="oobe-eula-md" class="step hidden" hidden></oobe-eula-element>
+
           <!-- TODO(crbug.com/1261902): Remove. -->
           <recommend-apps-old-element id="recommend-apps-old" class="step hidden" hidden></recommend-apps-old-element>
           <recommend-apps-element id="recommend-apps" class="step hidden" hidden></recommend-apps-element>
@@ -63,20 +65,15 @@
           <tpm-error-message-element id="tpm-error-message" class="step hidden" hidden></tpm-error-message-element>
           <user-creation-element id="user-creation" class="step hidden" hidden></user-creation-element>
           <wrong-hwid-element id="wrong-hwid" class="step hidden" hidden></wrong-hwid-element>
-          <oobe-eula-element id="oobe-eula-md" class="step hidden" hidden></oobe-eula-element>
 
-          <!-- OOBE FLOW SCREENS -->
-          <auto-enrollment-check-element id="auto-enrollment-check" class="step hidden" hidden></auto-enrollment-check-element>
-          <demo-preferences-element id="demo-preferences" class="step hidden" hidden></demo-preferences-element>
-          <demo-setup-element id="demo-setup" class="step hidden" hidden></demo-setup-element>
-          <enable-debugging-element id="debugging" class="step hidden" hidden></enable-debugging-element>
-          <enterprise-enrollment-element id="enterprise-enrollment" class="step hidden" hidden></enterprise-enrollment-element>
-          <hid-detection-element id="hid-detection" class="step hidden" hidden></hid-detection-element>
-          <oobe-network-element id="network-selection" class="step hidden" hidden></oobe-network-element>
-          <packaged-license-element id="packaged-license" class="step hidden" hidden></packaged-license-element>
-          <quick-start-element id="quick-start" class="step hidden" hidden></quick-start-element>
-          <update-element id="oobe-update" class="step hidden" hidden></update-element>
-          <oobe-welcome-element id="connect" class="step hidden" hidden></oobe-welcome-element>
+          <!-- LOGIN FLOW SCREENS -->
+          <active-directory-password-change-element id="ad-password-change" class="step hidden migrate" hidden></active-directory-password-change-element>
+          <encryption-migration-element id="encryption-migration" class="step hidden" hidden></encryption-migration-element>
+          <gaia-password-changed-element id="gaia-password-changed" class="step hidden" hidden></gaia-password-changed-element>
+          <lacros-data-migration-element id="lacros-data-migration" class="step hidden migrate" hidden></lacros-data-migration-element>
+          <management-transition-element id="management-transition" class="step hidden migrate" hidden></management-transition-element>
+          <offline-login-element id="offline-login" class="step hidden" hidden></offline-login-element>
+          <update-required-card-element id="update-required" class="step hidden" hidden></update-required-card-element>
         </div>
       </div>
       <div class="oobe-vertical-margin"></div>
