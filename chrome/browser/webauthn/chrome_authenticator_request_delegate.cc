@@ -553,6 +553,15 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
 
+  if (g_observer) {
+    for (const auto& pairing : pairings_from_extension) {
+      if (pairing.version == device::CableDiscoveryData::Version::V2) {
+        g_observer->CableV2ExtensionSeen(pairing.v2->server_link_data,
+                                         pairing.v2->experiments);
+      }
+    }
+  }
+
   // TODO(crbug.com/1052397): Revisit the macro expression once build flag
   // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)

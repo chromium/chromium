@@ -95,7 +95,17 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
 
   // For caBLEv2, the payload is the server-link data provided in the extension
   // as the "sessionPreKey".
-  absl::optional<std::vector<uint8_t>> v2;
+  struct COMPONENT_EXPORT(DEVICE_FIDO) V2Data {
+    V2Data(std::vector<uint8_t> server_link_data,
+           std::vector<uint8_t> experiments);
+    V2Data(const V2Data&);
+    ~V2Data();
+    bool operator==(const V2Data&) const;
+
+    std::vector<uint8_t> server_link_data;
+    std::vector<uint8_t> experiments;
+  };
+  absl::optional<V2Data> v2;
 };
 
 namespace cablev2 {

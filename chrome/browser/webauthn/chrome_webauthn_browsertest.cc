@@ -140,6 +140,95 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   EXPECT_EQ("webauthn: OK", result);
 }
 
+// WebAuthnCableExtension exercises code paths where a server sends a caBLEv2
+// extension in a get() request.
+class WebAuthnCableExtension : public WebAuthnBrowserTest {
+ public:
+  WebAuthnCableExtension() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthCableExtensionAnywhere}, {});
+  }
+
+ protected:
+  class ExtensionObserver
+      : public ChromeAuthenticatorRequestDelegate::TestObserver {
+   public:
+    void Created(ChromeAuthenticatorRequestDelegate* delegate) override{};
+
+    std::vector<std::unique_ptr<device::cablev2::Pairing>>
+    GetCablePairingsFromSyncedDevices() override {
+      return {};
+    };
+
+    void OnTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate,
+        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
+        override{};
+
+    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override{};
+
+    void CableV2ExtensionSeen(base::span<const uint8_t> server_link_data,
+                              base::span<const uint8_t> experiments) override {
+      extensions_.emplace_back(base::HexEncode(server_link_data) + ":" +
+                               base::HexEncode(experiments));
+    }
+
+    std::vector<std::string> extensions_;
+  };
+
+  ExtensionObserver observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAuthnCableExtension, ServerLink) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  auto virtual_device_factory =
+      std::make_unique<device::test::VirtualFidoDeviceFactory>();
+  static const uint8_t kCredentialID[] = {1, 2, 3, 4};
+  virtual_device_factory->mutable_state()->InjectRegistration(
+      kCredentialID, "www.example.com");
+  content::AuthenticatorEnvironment::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::move(virtual_device_factory));
+
+  ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer_);
+
+  constexpr char kRequest[] = R"((() => {
+    navigator.credentials.get({
+      publicKey: {
+        timeout: 1000,
+        challenge: new Uint8Array([
+            0x79, 0x50, 0x68, 0x71, 0xDA, 0xEE, 0xEE, 0xB9, 0x94, 0xC3, 0xC2, 0x15, 0x67, 0x65, 0x26, 0x22,
+            0xE3, 0xF3, 0xAB, 0x3B, 0x78, 0x2E, 0xD5, 0x6F, 0x81, 0x26, 0xE2, 0xA6, 0x01, 0x7D, 0x74, 0x50
+        ]).buffer,
+        allowCredentials: [{type: 'public-key', id: new Uint8Array([1, 2, 3, 4]).buffer}],
+        userVerification: 'discouraged',
+
+        extensions: {
+          "cableAuthentication": [{
+            version: 2,
+            sessionPreKey: new Uint8Array([1, 2, 3, 4]).buffer,
+            clientEid: new Uint8Array([5, 6, 7, 8]),
+            authenticatorEid: new Uint8Array(),
+          }],
+        },
+      },
+    }).then(c => window.domAutomationController.send('webauthn: OK'),
+            e => window.domAutomationController.send('error ' + e));
+  })())";
+
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      browser()->tab_strip_model()->GetActiveWebContents(), kRequest, &result));
+
+  EXPECT_EQ("webauthn: OK", result);
+
+  ASSERT_EQ(observer_.extensions_.size(), 1u);
+  EXPECT_EQ(observer_.extensions_[0], "01020304:05060708");
+}
+
 // WebAuthnCableSecondFactor primarily exercises
 // ChromeAuthenticatorRequestDelegate and AuthenticatorRequestDialogModel. It
 // mocks out the discovery process and thus allows the caBLE UI to be tested.
@@ -147,12 +236,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
 // trace which is then compared against the expected trace at the end.
 class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
  public:
-  void SetUp() override {
+  WebAuthnCableSecondFactor() {
     scoped_feature_list_.InitWithFeatures({features::kWebAuthCable}, {});
     // This makes it a little easier to compare against.
     trace_ << std::endl;
-
-    WebAuthnBrowserTest::SetUp();
   }
 
   std::ostringstream& trace() { return trace_; }
@@ -369,6 +456,9 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       // Simulate a click on the transport selection sheet.
       parent_->model()->ContactPhoneForTesting("name2");
     }
+
+    void CableV2ExtensionSeen(base::span<const uint8_t> server_link_data,
+                              base::span<const uint8_t> experiments) override {}
 
    private:
     std::unique_ptr<device::cablev2::Pairing> TestPhone(const char* name,

@@ -72,6 +72,20 @@ bool CableDiscoveryData::MatchV1(const CableEidArray& eid) const {
   return eid == v1->authenticator_eid;
 }
 
+CableDiscoveryData::V2Data::V2Data(std::vector<uint8_t> server_link_data_in,
+                                   std::vector<uint8_t> experiments_in)
+    : server_link_data(std::move(server_link_data_in)),
+      experiments(std::move(experiments_in)) {}
+
+CableDiscoveryData::V2Data::V2Data(const V2Data&) = default;
+
+CableDiscoveryData::V2Data::~V2Data() = default;
+
+bool CableDiscoveryData::V2Data::operator==(const V2Data& other) const {
+  return server_link_data == other.server_link_data &&
+         experiments == other.experiments;
+}
+
 namespace cablev2 {
 
 Pairing::NameComparator::NameComparator(const icu::Locale* locale) {

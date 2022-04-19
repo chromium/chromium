@@ -272,6 +272,10 @@ struct CableAuthentication {
   // device.
   // (Present iff version == 2.)
   array<uint8>? server_link_data;
+
+  // caBLEv2 experiment numbers.
+  // (Present iff version == 2.)
+  array<uint8>? experiments;
 };
 
 // Cloud-assisted BLE extension data for makeCredential.

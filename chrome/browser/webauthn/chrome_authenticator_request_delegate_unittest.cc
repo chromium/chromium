@@ -171,7 +171,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
 
   device::CableDiscoveryData v2_extension;
   v2_extension.version = device::CableDiscoveryData::Version::V2;
-  v2_extension.v2.emplace(prekey.begin(), prekey.end());
+  v2_extension.v2.emplace(std::vector<uint8_t>(prekey.begin(), prekey.end()),
+                          std::vector<uint8_t>());
 
   enum class Result {
     kNone,

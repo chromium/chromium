@@ -8494,9 +8494,10 @@ static ServerLinkValues CreateServerLink() {
                               ret.peer_identity.size(), /*ctx=*/nullptr));
 
   ret.desktop_side.version = device::CableDiscoveryData::Version::V2;
-  ret.desktop_side.v2 = seed;
-  ret.desktop_side.v2->insert(ret.desktop_side.v2->end(), ret.secret.begin(),
-                              ret.secret.end());
+  ret.desktop_side.v2.emplace(seed, std::vector<uint8_t>());
+  ret.desktop_side.v2->server_link_data.insert(
+      ret.desktop_side.v2->server_link_data.end(), ret.secret.begin(),
+      ret.secret.end());
 
   return ret;
 }

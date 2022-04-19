@@ -331,12 +331,14 @@ bool StructTraits<blink::mojom::CableAuthenticationDataView,
 
     case 2: {
       absl::optional<std::vector<uint8_t>> server_link_data;
-      if (!data.ReadServerLinkData(&server_link_data) || !server_link_data) {
+      absl::optional<std::vector<uint8_t>> experiments;
+      if (!data.ReadServerLinkData(&server_link_data) || !server_link_data ||
+          !data.ReadExperiments(&experiments) || !experiments) {
         return false;
       }
 
       out->version = device::CableDiscoveryData::Version::V2;
-      out->v2.emplace(std::move(*server_link_data));
+      out->v2.emplace(std::move(*server_link_data), std::move(*experiments));
 
       break;
     }

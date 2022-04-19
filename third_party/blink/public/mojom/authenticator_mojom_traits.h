@@ -240,7 +240,15 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<std::vector<uint8_t>> server_link_data(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V2) {
-      return *in.v2;
+      return in.v2->server_link_data;
+    }
+    return absl::nullopt;
+  }
+
+  static const absl::optional<std::vector<uint8_t>> experiments(
+      const device::CableDiscoveryData& in) {
+    if (in.version == device::CableDiscoveryData::Version::V2) {
+      return in.v2->experiments;
     }
     return absl::nullopt;
   }

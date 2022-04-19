@@ -576,6 +576,7 @@ TypeConverter<CableAuthenticationPtr, blink::CableAuthenticationData>::Convert(
       if (entity->server_link_data->IsEmpty()) {
         return nullptr;
       }
+      entity->experiments = ConvertTo<Vector<uint8_t>>(data.clientEid());
       break;
 
     default:

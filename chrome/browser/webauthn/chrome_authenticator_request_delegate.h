@@ -110,6 +110,10 @@ class ChromeAuthenticatorRequestDelegate
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) = 0;
 
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) = 0;
+
+    virtual void CableV2ExtensionSeen(
+        base::span<const uint8_t> server_link_data,
+        base::span<const uint8_t> experiments) = 0;
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
