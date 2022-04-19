@@ -27,8 +27,8 @@ git pull
 headOfMain=`git whatchanged --grep="Updating trunk VERSION" --format="%H" -1 | head -n 1`
 
 # M vs. M-1
-pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health
+pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
 # Main
-pinpoint experiment-telemetry-start --base-commit=$pinnedMain --exp-commit=$headOfMain --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health
+pinpoint experiment-telemetry-start --base-commit=$pinnedMain --exp-commit=$headOfMain --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
 # A/A
-pinpoint experiment-telemetry-start --base-commit=$headOfMain --exp-commit=$headOfMain --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health
+pinpoint experiment-telemetry-start --base-commit=$headOfMain --exp-commit=$headOfMain --presets-file tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
