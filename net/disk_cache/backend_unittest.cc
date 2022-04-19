@@ -3876,9 +3876,15 @@ TEST_F(DiskCacheBackendTest, TotalBuffersSize2) {
   EXPECT_FALSE(cache_impl_->IsAllocAllowed(0, kOneMB));
 }
 
+// TODO(crbug.com/1317648): Revive this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FileSharing DISABLED_FileSharing
+#else
+#define MAYBE_FileSharing FileSharing
+#endif
 // Tests that sharing of external files works and we are able to delete the
 // files when we need to.
-TEST_F(DiskCacheBackendTest, FileSharing) {
+TEST_F(DiskCacheBackendTest, MAYBE_FileSharing) {
   InitCache();
 
   disk_cache::Addr address(0x80000001);
