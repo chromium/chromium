@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
+import os
 import pathlib
 import sys
 
@@ -20,7 +22,11 @@ _BAD_FILES = [
 def is_bad_gn_file(filepath: str) -> bool:
     for bad_filepath in _BAD_FILES:
         if bad_filepath.endswith(filepath) or filepath.endswith(bad_filepath):
+            logging.warning(f'Skipping {filepath}: found in _BAD_FILES list.')
             return True
+    if not os.access(filepath, os.R_OK | os.W_OK):
+        logging.warning(f'Skipping {filepath}: Cannot read and write to it.')
+        return True
     return False
 
 

@@ -6,12 +6,16 @@
 
 from __future__ import annotations
 
+import contextlib
 import copy
 import json
+import logging
 import os
 import pathlib
+import subprocess
 import sys
-from typing import Dict, List, Optional
+
+from typing import List
 
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
@@ -25,6 +29,29 @@ from python_utils import subprocess_utils
 NODE_CHILD = 'child'
 NODE_TYPE = 'type'
 NODE_VALUE = 'value'
+BEFORE_COMMENT = 'before_comment'
+SUFFIX_COMMENT = 'suffix_comment'
+AFTER_COMMENT = 'after_comment'
+
+
+@contextlib.contextmanager
+def _restore_original_file_contents(path):
+    with open(path) as f:
+        original_content = f.read()
+    try:
+        yield
+    finally:
+        with open(path, 'w') as f:
+            f.write(original_content)
+
+
+def _build_targets(out_dir: str,
+                   targets: List[str]) -> subprocess.CompletedProcess:
+    logging.debug('Running build...')
+    return subprocess.run(['autoninja', '-C', out_dir] + targets,
+                          capture_output=True,
+                          check=True,
+                          text=True)
 
 
 class BuildFile:
@@ -68,10 +95,74 @@ class BuildFile:
         recursive_find(self._content)
         return results
 
-    def split_dep(self, original_dep_name: str, new_dep_name: str) -> bool:
+    def _normalize(self, name: str):
+        """Returns the absolute GN path to the target with |name|.
+
+        This method normalizes target names, assuming that relative targets are
+        referenced based on the current file, allowing targets to be compared
+        by name to determine whether they are the same or not.
+
+        Given the current file is chrome/android/BUILD.gn:
+
+        # Removes surrounding quotation marks.
+        "//chrome/android:chrome_java" -> //chrome/android:chrome_java
+
+        # Makes relative paths absolute.
+        :chrome_java -> //chrome/android:chrome_java
+
+        # Spells out GN shorthands for basenames.
+        //chrome/android -> //chrome/android:android
+        """
+        if not name:
+            return ''
+        if name.startswith('"'):
+            name = name[1:-1]
+        if not name.startswith('//'):
+            name = self._gn_rel_path + name
+        if not ':' in name:
+            name += ':' + os.path.basename(name)
+        return name
+
+    def _find_all_list_assignments(self):
+        def match_list_assignments(node):
+            r"""Matches and returns the list being assigned.
+
+            Binary node
+             /       \
+            /         \
+            name      list of nodes
+
+            Returns the pair (name, list of nodes)
+            """
+            if node.get(NODE_TYPE) != 'BINARY':
+                return None
+            children = node.get(NODE_CHILD)
+            assert len(children) == 2, (
+                'Binary nodes should have two child nodes, but the node is: '
+                f'{node}')
+            left_child, right_child = children
+            if left_child.get(NODE_TYPE) != 'IDENTIFIER':
+                return None
+            name = left_child.get(NODE_VALUE)
+            if right_child.get(NODE_TYPE) != 'LIST':
+                return None
+            list_of_nodes = right_child.get(NODE_CHILD)
+            return name, list_of_nodes
+
+        return self._find_all(match_list_assignments)
+
+    def split_deps(self, original_dep_name: str,
+                   new_dep_names: List[str]) -> bool:
+        split = False
+        for new_dep_name in new_dep_names:
+            if self._split_dep(original_dep_name, new_dep_name):
+                split = True
+        return split
+
+    def _split_dep(self, original_dep_name: str, new_dep_name: str) -> bool:
         """Add |new_dep_name| to GN deps that contains |original_dep_name|.
 
-        Supports deps and public_deps.
+        Supports deps, public_deps, and other variables named *_deps.
 
         Works for explicitly assigning a list to deps:
         deps = [ ..., "original_dep", ...]
@@ -91,74 +182,150 @@ class BuildFile:
 
         Returns whether the new dep was added one or more times.
         """
-        assert original_dep_name.startswith('//'), (
-            f'Absolute GN path required, starting with //: {original_dep_name}'
-        )
-        assert new_dep_name.startswith('//'), (
-            f'Absolute GN path required, starting with //: {new_dep_name}')
+        for dep_name in (original_dep_name, new_dep_name):
+            assert dep_name.startswith('//'), (
+                f'Absolute GN path required, starting with //: {dep_name}')
 
-        def match_deps_list(node):
-            r"""Matches and returns the list for a deps assignment.
-
-            Binary node
-             /       \
-            /         \
-            deps      list of nodes
-
-            Returns the list of nodes.
-            """
-            if node.get(NODE_TYPE) != 'BINARY':
-                return None
-            children = node.get(NODE_CHILD)
-            assert len(children) == 2, (
-                'Binary nodes should have two child nodes, but the node is: '
-                f'{node}')
-            left_child, right_child = children
-            if left_child.get(NODE_TYPE) != 'IDENTIFIER':
-                return None
-            if left_child.get(NODE_VALUE) not in ('deps', 'public_deps'):
-                return None
-            if right_child.get(NODE_TYPE) != 'LIST':
-                return None
-            return right_child.get(NODE_CHILD)
-
-        all_deps_lists = self._find_all(match_deps_list)
-
-        def normalize(name: str):
-            if not name:
-                return ''
-            if name.startswith('"'):
-                name = name[1:-1]
-            if not name.startswith('//'):
-                name = self._gn_rel_path + name
-            if not ':' in name:
-                name += ':' + os.path.basename(name)
-            return name
-
-        def add_quotes(name: str):
-            if name.startswith('"'):
-                return name
-            return f'"{name}"'
+        name_list_tuples = self._find_all_list_assignments()
+        all_deps_lists = [
+            node_list for name, node_list in name_list_tuples
+            if name == 'deps' or name.endswith('_deps')
+        ]
 
         added_new_dep = False
-        normalized_original_dep_name = normalize(original_dep_name)
-        normalized_new_dep_name = normalize(new_dep_name)
+        normalized_original_dep_name = self._normalize(original_dep_name)
+        normalized_new_dep_name = self._normalize(new_dep_name)
         for deps_list in all_deps_lists:
-            original_dep = None
+            original_dep_idx = None
             new_dep_already_exists = False
-            for child in deps_list:
-                dep_name = normalize(child.get(NODE_VALUE))
+            for idx, child in enumerate(deps_list):
+                dep_name = self._normalize(child.get(NODE_VALUE))
                 if dep_name == normalized_original_dep_name:
-                    original_dep = child
+                    original_dep_idx = idx
                 if dep_name == normalized_new_dep_name:
                     new_dep_already_exists = True
-            if original_dep and not new_dep_already_exists:
-                new_dep = copy.deepcopy(original_dep)
-                new_dep[NODE_VALUE] = add_quotes(new_dep_name)
-                deps_list.append(new_dep)
+            if original_dep_idx is not None and not new_dep_already_exists:
+                new_dep = copy.deepcopy(deps_list[original_dep_idx])
+                # Any comments associated with the previous dep would not apply.
+                for comment_key in (BEFORE_COMMENT, AFTER_COMMENT,
+                                    SUFFIX_COMMENT):
+                    new_dep.pop(comment_key, None)  # Remove if exists.
+                new_dep[NODE_VALUE] = f'"{new_dep_name}"'
+                # Add the new dep after the existing dep to preserve comments
+                # before the existing dep.
+                deps_list.insert(original_dep_idx + 1, new_dep)
                 added_new_dep = True
 
         return added_new_dep
+
+    def remove_deps(self,
+                    dep_names: List[str],
+                    out_dir: str,
+                    targets: List[str],
+                    inline_mode: bool = False) -> bool:
+        removed = False
+        for dep_name in dep_names:
+            if self._remove_dep(dep_name, out_dir, targets):
+                removed = True
+            # If the first dep cannot be removed (or is not found) then in the
+            # case of inlining we can skip this file for the rest of the
+            # targets.
+            if inline_mode and not removed:
+                break
+        return removed
+
+    def _remove_dep(self, dep_name: str, out_dir: str,
+                    targets: List[str]) -> bool:
+        """Remove |dep_name| if the target can still be built in |out_dir|.
+
+        Supports deps only since public_dep affects other dependent deps.
+
+        Works for explicitly assigning a list to deps:
+        deps = [ ..., "original_dep", ...]
+        # Becomes
+        deps = [ ..., ...]
+
+        Does not work with parameter expansion, i.e. $variables.
+
+        Returns whether the dep was removed.
+        """
+        assert dep_name.startswith('//'), (
+            f'Absolute GN path required, starting with //: {dep_name}')
+
+        name_list_tuples = self._find_all_list_assignments()
+        all_deps_lists = [
+            node_list for name, node_list in name_list_tuples if name == 'deps'
+        ]
+
+        removed_dep = False
+        normalized_dep_name = self._normalize(dep_name)
+        for deps_list in all_deps_lists:
+            child_deps = [
+                self._normalize(c.get(NODE_VALUE)) for c in deps_list
+            ]
+            idx_to_remove = None
+            for idx, child in enumerate(deps_list):
+                child_dep_name = self._normalize(child.get(NODE_VALUE))
+                if child_dep_name == normalized_dep_name:
+                    idx_to_remove = idx
+                    break
+            if idx_to_remove is not None:
+                logging.info(f'Found {normalized_dep_name} in {child_deps}')
+                child_to_remove = deps_list[idx_to_remove]
+                can_remove_dep = False
+                with _restore_original_file_contents(self._full_path):
+                    logging.debug('Ensuring clean build...')
+                    # In order to properly detect whether the current build
+                    # change resulted in work for ninja or not, we need to start
+                    # from a clean, successful build. Otherwise prior changes to
+                    # build files may make the build dirty and a target would
+                    # get incorrectly removed.
+                    _build_targets(out_dir, targets)
+                    # This removal must come after the previous build so that if
+                    # the build is interrupted, deps_list is in a correct state.
+                    deps_list.remove(child_to_remove)
+                    self.write_content_to_file()
+                    # Immediately restore deps_list's original value in case the
+                    # following build is interrupted. We don't want the
+                    # intermediate untested value to be written as the final
+                    # build file.
+                    deps_list.insert(idx_to_remove, child_to_remove)
+                    if self._can_still_build_everything(out_dir, targets):
+                        can_remove_dep = True
+                if can_remove_dep:
+                    deps_list.remove(child_to_remove)
+                    # Comments before a target can apply to the targets after.
+                    if (BEFORE_COMMENT in child_to_remove
+                            and idx_to_remove < len(deps_list)):
+                        child_after = deps_list[idx_to_remove]
+                        if BEFORE_COMMENT not in child_after:
+                            child_after[BEFORE_COMMENT] = []
+                        child_after[BEFORE_COMMENT][:] = (
+                            child_to_remove[BEFORE_COMMENT] +
+                            child_after[BEFORE_COMMENT])
+                    # Comments after or behind a target don't make sense to re-
+                    # position, simply ignore AFTER_COMMENT and SUFFIX_COMMENT.
+                    removed_dep = True
+        return removed_dep
+
+    def _can_still_build_everything(self, out_dir: str,
+                                    targets: List[str]) -> bool:
+        try:
+            completed_process = _build_targets(out_dir, targets)
+        except subprocess.CalledProcessError as e:
+            logging.debug(e.stdout)
+            logging.debug(e.stderr)
+            logging.info('Ninja failed to build all targets')
+            return False
+        # If ninja did not re-build anything, then the target changed is not
+        # among the targets being built. Avoid this change as it's not been
+        # tested/used.
+        if 'ninja: no work to do.' in completed_process.stdout:
+            logging.debug(completed_process.stdout)
+            logging.debug(completed_process.stderr)
+            logging.info('Ninja did not find any targets to build')
+            return False
+        return True
 
     def write_content_to_file(self) -> None:
         current_content = json.dumps(self._content)
