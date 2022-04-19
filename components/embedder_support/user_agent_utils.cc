@@ -540,7 +540,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
       enable_updated_grease_by_policy, ua_options.force_major_to_minor);
   metadata.full_version = GetVersionNumber(ua_options);
   metadata.platform = GetPlatformForUAMetadata();
-  metadata.architecture = content::GetLowEntropyCpuArchitecture();
+  metadata.architecture = content::GetCpuArchitecture();
   metadata.model = content::BuildModelInfo();
   metadata.mobile = false;
 #if BUILDFLAG(IS_ANDROID)
@@ -556,12 +556,8 @@ blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
   metadata.platform_version =
       base::StringPrintf("%d.%d.%d", major, minor, bugfix);
 #endif
-
-  // These methods use the same information as the User-Agent string, but are
-  // "low entropy" in that they reduce the number of options for output to a
-  // set number. For more information, see the respective headers.
-  metadata.architecture = content::GetLowEntropyCpuArchitecture();
-  metadata.bitness = content::GetLowEntropyCpuBitness();
+  metadata.architecture = content::GetCpuArchitecture();
+  metadata.bitness = content::GetCpuBitness();
   metadata.wow64 = content::IsWoW64();
 
   return metadata;

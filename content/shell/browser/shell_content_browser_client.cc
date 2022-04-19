@@ -232,7 +232,7 @@ blink::UserAgentMetadata GetShellUserAgentMetadata() {
   metadata.architecture = BuildCpuInfo();
   metadata.model = BuildModelInfo();
 
-  metadata.bitness = GetLowEntropyCpuBitness();
+  metadata.bitness = GetCpuBitness();
   metadata.wow64 = content::IsWoW64();
 
   return metadata;

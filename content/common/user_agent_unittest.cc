@@ -126,8 +126,8 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
   }
 }
 
-TEST(UserAgentStringTest, LowEntropyCpuArchitecture) {
-  std::string arch = GetLowEntropyCpuArchitecture();
+TEST(UserAgentStringTest, GetCpuArchitecture) {
+  std::string arch = GetCpuArchitecture();
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("", arch);
@@ -138,8 +138,8 @@ TEST(UserAgentStringTest, LowEntropyCpuArchitecture) {
 #endif
 }
 
-TEST(UserAgentStringTest, LowEntropyCpuBitness) {
-  std::string bitness = GetLowEntropyCpuBitness();
+TEST(UserAgentStringTest, GetCpuBitness) {
+  std::string bitness = GetCpuBitness();
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("", bitness);

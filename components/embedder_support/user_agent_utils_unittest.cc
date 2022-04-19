@@ -610,9 +610,9 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
 #else
   EXPECT_EQ(metadata.platform, version_info::GetOSType());
 #endif
-  EXPECT_EQ(metadata.architecture, content::GetLowEntropyCpuArchitecture());
+  EXPECT_EQ(metadata.architecture, content::GetCpuArchitecture());
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
-  EXPECT_EQ(metadata.bitness, content::GetLowEntropyCpuBitness());
+  EXPECT_EQ(metadata.bitness, content::GetCpuBitness());
   EXPECT_EQ(metadata.wow64, content::IsWoW64());
 }
 

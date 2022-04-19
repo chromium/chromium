@@ -45,11 +45,11 @@ CONTENT_EXPORT std::string BuildCpuInfo();
 
 // Takes the cpu info (see BuildCpuInfo()) and extracts the architecture for
 // most common cases.
-CONTENT_EXPORT std::string GetLowEntropyCpuArchitecture();
+CONTENT_EXPORT std::string GetCpuArchitecture();
 
 // Takes the cpu info (see BuildCpuInfo()) and extracts the CPU bitness for
 // most common cases.
-CONTENT_EXPORT std::string GetLowEntropyCpuBitness();
+CONTENT_EXPORT std::string GetCpuBitness();
 
 // Builds a User-agent compatible string that describes the OS and CPU type.
 // On Android, the string will only include the build number and model if
