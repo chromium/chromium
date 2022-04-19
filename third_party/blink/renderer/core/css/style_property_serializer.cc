@@ -599,7 +599,21 @@ String StylePropertySerializer::SerializeShorthand(
       return PageBreakPropertyValue(pageBreakBeforeShorthand());
     case CSSPropertyID::kPageBreakInside:
       return PageBreakPropertyValue(pageBreakInsideShorthand());
+    case CSSPropertyID::kGridColumnGap:
+    case CSSPropertyID::kGridGap:
+    case CSSPropertyID::kGridRowGap:
+    case CSSPropertyID::kWebkitColumnBreakAfter:
+    case CSSPropertyID::kWebkitColumnBreakBefore:
+    case CSSPropertyID::kWebkitColumnBreakInside:
+    case CSSPropertyID::kWebkitMaskBoxImage:
+      // Temporary exceptions to the NOTREACHED() below.
+      // TODO(crbug.com/1316689): Write something real here.
+      return String();
     default:
+      NOTREACHED()
+          << "Shorthand property "
+          << CSSPropertyName(property_id).ToAtomicString()
+          << " must be handled in StylePropertySerializer::SerializeShorthand.";
       return String();
   }
 }
