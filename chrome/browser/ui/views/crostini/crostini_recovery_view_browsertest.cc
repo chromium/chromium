@@ -62,8 +62,10 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
   }
 
   void SetUncleanStartup() {
-    crostini::CrostiniManager::GetForProfile(browser()->profile())
-        ->SetUncleanStartupForTesting(true);
+    auto* crostini_manager =
+        crostini::CrostiniManager::GetForProfile(browser()->profile());
+    crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+    crostini_manager->SetUncleanStartupForTesting(true);
   }
 
   CrostiniRecoveryView* ActiveView() {

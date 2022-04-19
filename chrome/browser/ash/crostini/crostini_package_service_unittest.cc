@@ -1116,14 +1116,15 @@ TEST_F(CrostiniPackageServiceTest, UninstallNotificationFailsOnVmShutdown) {
   service_->QueueUninstallApplication(kDefaultAppId);
   service_->QueueUninstallApplication(kSecondAppId);
 
+  auto* crostini_manager = CrostiniManager::GetForProfile(profile_.get());
+  crostini_manager->AddRunningVmForTesting(kCrostiniDefaultVmName);
+
   base::RunLoop run_loop;
-  CrostiniManager::GetForProfile(profile_.get())
-      ->StopVm(kCrostiniDefaultVmName,
-               base::BindOnce(
-                   [](base::OnceClosure quit, crostini::CrostiniResult) {
-                     std::move(quit).Run();
-                   },
-                   run_loop.QuitClosure()));
+  crostini_manager->StopVm(
+      kCrostiniDefaultVmName,
+      base::BindOnce([](base::OnceClosure quit,
+                        crostini::CrostiniResult) { std::move(quit).Run(); },
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_THAT(
@@ -1883,14 +1884,15 @@ TEST_F(CrostiniPackageServiceTest, InstallNotificationFailsOnVmShutdown) {
 
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::INSTALLING);
 
+  auto* crostini_manager = CrostiniManager::GetForProfile(profile_.get());
+  crostini_manager->AddRunningVmForTesting(kCrostiniDefaultVmName);
+
   base::RunLoop run_loop;
-  CrostiniManager::GetForProfile(profile_.get())
-      ->StopVm(kCrostiniDefaultVmName,
-               base::BindOnce(
-                   [](base::OnceClosure quit, crostini::CrostiniResult) {
-                     std::move(quit).Run();
-                   },
-                   run_loop.QuitClosure()));
+  crostini_manager->StopVm(
+      kCrostiniDefaultVmName,
+      base::BindOnce([](base::OnceClosure quit,
+                        crostini::CrostiniResult) { std::move(quit).Run(); },
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_THAT(

@@ -390,6 +390,8 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
                            registration->ContainerName());
 
   if (crostini_manager->IsUncleanStartup()) {
+    VLOG(1) << "Unclean startup for " << container_id
+            << " - showing recovery view";
     // Prompt for user-restart.
     return ShowCrostiniRecoveryView(
         profile, crostini::CrostiniUISurface::kAppList, app_id, display_id,

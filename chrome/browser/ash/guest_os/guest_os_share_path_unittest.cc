@@ -1067,6 +1067,8 @@ TEST_F(GuestOsSharePathTest, RegisterPathThenUnshare) {
 
 TEST_F(GuestOsSharePathTest, IsPathShared) {
   SetUpVolume();
+  crostini::CrostiniManager::GetForProfile(profile())->AddRunningVmForTesting(
+      crostini::kCrostiniDefaultVmName);
   // shared_path_ and children paths are shared for 'termina'.
   for (auto& path : {shared_path_, shared_path_.Append("a.txt"),
                      shared_path_.Append("a"), shared_path_.Append("a/b")}) {

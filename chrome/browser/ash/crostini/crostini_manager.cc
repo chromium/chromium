@@ -2597,6 +2597,10 @@ void CrostiniManager::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
   if (signal.owner_id() != owner_id_)
     return;
+  if (running_vms_.find(signal.name()) == running_vms_.end()) {
+    LOG(ERROR) << "Ignoring VmStopped for " << signal.name();
+    return;
+  }
   OnVmStoppedCleanup(signal.name());
 }
 
