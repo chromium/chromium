@@ -4,7 +4,6 @@
 
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 
-#include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 

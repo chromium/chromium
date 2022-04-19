@@ -7,8 +7,6 @@
 #include <string.h>
 #include <utility>
 
-#include "base/check_op.h"
-
 namespace cc {
 
 ClientRawMemoryTransferCacheEntry::ClientRawMemoryTransferCacheEntry(

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/check.h"
 #include "build/build_config.h"
 
 namespace cc {

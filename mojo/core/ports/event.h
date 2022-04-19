@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/core/ports/name.h"

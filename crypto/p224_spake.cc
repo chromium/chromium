@@ -11,7 +11,6 @@
 
 #include <algorithm>
 
-#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "crypto/random.h"

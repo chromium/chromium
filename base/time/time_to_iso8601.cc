@@ -4,7 +4,6 @@
 
 #include "base/time/time_to_iso8601.h"
 
-#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 

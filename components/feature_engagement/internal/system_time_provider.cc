@@ -4,7 +4,6 @@
 
 #include "components/feature_engagement/internal/system_time_provider.h"
 
-#include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 
 namespace feature_engagement {

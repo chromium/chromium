@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"

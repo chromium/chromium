@@ -4,7 +4,6 @@
 
 #include "components/cast_streaming/public/rpc_call_message_handler.h"
 
-#include "base/check.h"
 #include "base/logging.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 

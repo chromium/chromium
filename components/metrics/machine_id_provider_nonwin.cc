@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/check.h"
 #include "base/system/sys_info.h"
 
 namespace metrics {

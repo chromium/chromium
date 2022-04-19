@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/files/file_util.h"
-#include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

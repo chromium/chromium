@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/check.h"
-
 namespace {
 
 // These constants are defined based on UX experiment.

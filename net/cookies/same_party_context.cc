@@ -4,7 +4,6 @@
 
 #include "net/cookies/same_party_context.h"
 
-#include <sstream>
 #include <tuple>
 
 #include "net/cookies/cookie_constants.h"

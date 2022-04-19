@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/check.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"

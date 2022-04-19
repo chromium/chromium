@@ -4,8 +4,6 @@
 
 #include "components/policy/core/common/cloud/dm_token.h"
 
-#include "base/check.h"
-
 namespace policy {
 
 // static

@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 

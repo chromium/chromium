@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
 
-#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 
 namespace blink {

@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/check.h"
 #include "base/strings/stringprintf.h"
 
 namespace service_manager {

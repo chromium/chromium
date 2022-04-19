@@ -4,8 +4,6 @@
 
 #include "components/history/core/browser/keyword_search_term.h"
 
-#include <cmath>
-
 namespace history {
 
 NormalizedKeywordSearchTermVisit::~NormalizedKeywordSearchTermVisit() = default;

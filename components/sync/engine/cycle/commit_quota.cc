@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/check_op.h"
 #include "base/time/time.h"
 
 namespace syncer {

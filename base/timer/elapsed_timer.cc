@@ -4,8 +4,6 @@
 
 #include "base/timer/elapsed_timer.h"
 
-#include "base/check.h"
-
 namespace base {
 
 namespace {

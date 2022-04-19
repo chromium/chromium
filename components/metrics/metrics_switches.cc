@@ -4,8 +4,6 @@
 
 #include "components/metrics/metrics_switches.h"
 
-#include "base/check.h"
-
 namespace metrics {
 namespace switches {
 

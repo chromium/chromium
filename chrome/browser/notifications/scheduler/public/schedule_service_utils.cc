@@ -4,8 +4,6 @@
 
 #include "chrome/browser/notifications/scheduler/public/schedule_service_utils.h"
 
-#include "base/check_op.h"
-
 namespace notifications {
 namespace {
 

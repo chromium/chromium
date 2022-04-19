@@ -4,8 +4,6 @@
 
 #include "media/base/audio_timestamp_helper.h"
 
-#include <cmath>
-
 #include "base/check_op.h"
 #include "media/base/timestamp_constants.h"
 

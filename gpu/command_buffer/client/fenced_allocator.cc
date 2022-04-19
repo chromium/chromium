@@ -10,7 +10,6 @@
 
 #include <algorithm>
 
-#include "base/numerics/clamped_math.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
 namespace gpu {
