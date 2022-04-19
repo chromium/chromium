@@ -28,6 +28,7 @@
     <color name="baseline_neutral_0_with_neutral_600_alpha_12_with_primary_600_2" tools:ignore="UnusedResources">#E8E9EB</color>
     <color name="baseline_neutral_0_with_neutral_600_alpha_14_with_primary_600_2" tools:ignore="UnusedResources">#E4E5E8</color>
     <color name="baseline_neutral_0_with_neutral_600_alpha_20_with_primary_600_2" tools:ignore="UnusedResources">#DADBDE</color>
+    <color name="baseline_neutral_10">#FDFCFB</color>
     <color name="baseline_neutral_50">#F2F2F2</color>
     <color name="baseline_neutral_100">#E3E3E3</color>
     <color name="baseline_neutral_100_alpha_10">#19E3E3E3</color>
@@ -75,6 +76,10 @@
     <color name="baseline_tertiary_200">#6DD58C</color>
     <color name="baseline_tertiary_600">#146C2E</color>
     <color name="baseline_tertiary_700">#0F5223</color>
+
+    <!-- System colors that point to the baseline palette for below Android S.-->
+    <color name="system_neutral1_10">@color/baseline_neutral_10</color>
+    <color name="system_neutral1_900">@color/baseline_neutral_900</color>
 
     <!-- Remapped to 2021 color palette. Do not add new references to these. -->
     <color name="modern_white">@color/baseline_neutral_0</color>

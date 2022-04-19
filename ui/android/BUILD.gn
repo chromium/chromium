@@ -184,6 +184,7 @@ android_resources("ui_java_resources") {
     "java/res/values-sw720dp-v17/values.xml",
     "java/res/values-v17/styles.xml",
     "java/res/values-v21/styles.xml",
+    "java/res/values-v31/colors.xml",
     "java/res/values/attrs.xml",
     "java/res/values/color_palette.xml",
     "java/res/values/dimens.xml",

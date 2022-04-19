@@ -6,7 +6,9 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/values-night/colors.xml",
     "java/res/values-night/themes.xml",
+    "java/res/values/colors.xml",
     "java/res/values/themes.xml",
   ]
   deps = [
