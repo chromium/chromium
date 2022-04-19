@@ -224,8 +224,6 @@ def _run_tests(work_dir, skia_util, *args):
         force_dryrun = False
         if skia_util.IsTryjobRun and skia_util.IsRetryWithoutPatch:
           force_dryrun = True
-        logging.warning('IsTryjobRun: %r, IsRetryWithoutPatch: %r',
-                        skia_util.IsTryjobRun, skia_util.IsRetryWithoutPatch)
         status, error = skia_gold_session.RunComparison(
             name=image_name, png_file=sc_file, force_dryrun=force_dryrun)
         if status:
