@@ -125,43 +125,6 @@ PaintLayerClipper::PaintLayerClipper(const PaintLayer* layer,
                                      bool usegeometry_mapper)
     : layer_(layer), use_geometry_mapper_(usegeometry_mapper) {}
 
-PhysicalRect PaintLayerClipper::LocalClipRect(
-    const PaintLayer& clipping_root_layer) const {
-  DCHECK(use_geometry_mapper_);
-  ClipRectsContext context(
-      &clipping_root_layer,
-      &clipping_root_layer.GetLayoutObject().FirstFragment());
-
-  ClipRect clip_rect;
-  CalculateBackgroundClipRectWithGeometryMapper(
-      context, layer_->GetLayoutObject().FirstFragment(), kRespectOverflowClip,
-      clip_rect);
-
-  if (clip_rect.IsInfinite())
-    return clip_rect.Rect();
-
-  PhysicalRect premapped_rect = clip_rect.Rect();
-  // The rect now needs to be transformed to the local space of this
-  // PaintLayer.
-  // TODO(chrishtr): not correct for fragmentation.
-  premapped_rect.Move(context.root_fragment->PaintOffset());
-
-  const auto& clip_root_layer_transform =
-      context.root_fragment->LocalBorderBoxProperties().Transform();
-  const auto& layer_transform = layer_->GetLayoutObject()
-                                    .FirstFragment()
-                                    .LocalBorderBoxProperties()
-                                    .Transform();
-  gfx::RectF clipped_rect_in_local_space(premapped_rect);
-  GeometryMapper::SourceToDestinationRect(
-      clip_root_layer_transform, layer_transform, clipped_rect_in_local_space);
-  // TODO(chrishtr): not correct for fragmentation.
-  clipped_rect_in_local_space.Offset(
-      -gfx::Vector2dF(layer_->GetLayoutObject().FirstFragment().PaintOffset()));
-
-  return PhysicalRect::FastAndLossyFromRectF(clipped_rect_in_local_space);
-}
-
 void PaintLayerClipper::CalculateRectsWithGeometryMapper(
     const ClipRectsContext& context,
     const FragmentData& fragment_data,

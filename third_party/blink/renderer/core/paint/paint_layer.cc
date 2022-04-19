@@ -2219,13 +2219,6 @@ PhysicalRect PaintLayer::LocalBoundingBox() const {
   return rect;
 }
 
-PhysicalRect PaintLayer::ClippedLocalBoundingBox(
-    const PaintLayer& ancestor_layer) const {
-  return Intersection(LocalBoundingBox(),
-                      Clipper(GeometryMapperOption::kUseGeometryMapper)
-                          .LocalClipRect(ancestor_layer));
-}
-
 PhysicalRect PaintLayer::PhysicalBoundingBox(
     const PaintLayer* ancestor_layer) const {
   PhysicalOffset offset_from_root;

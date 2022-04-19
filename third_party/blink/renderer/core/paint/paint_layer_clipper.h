@@ -166,10 +166,6 @@ class CORE_EXPORT PaintLayerClipper {
  public:
   explicit PaintLayerClipper(const PaintLayer*, bool use_geometry_mapper);
 
-  // Returns the background clip rect of the layer in the local coordinate
-  // space. Only looks for clips up to the given ancestor.
-  PhysicalRect LocalClipRect(const PaintLayer& ancestor_layer) const;
-
   // Computes the same thing as |background_rect| in CalculateRects(), but
   // skips applying CSS clip and the VisualOverflowRect() of |layer_|.
   void CalculateBackgroundClipRect(const ClipRectsContext&,

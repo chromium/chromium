@@ -658,7 +658,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Bounding box in the coordinates of this layer.
   PhysicalRect LocalBoundingBox() const;
-  PhysicalRect ClippedLocalBoundingBox(const PaintLayer& ancestor_layer) const;
 
   void UpdateLayerPositionRecursive(const PaintLayer* enclosing_scroller);
 
