@@ -5,7 +5,6 @@
 #ifndef ASH_STYLE_DARK_MODE_CONTROLLER_H_
 #define ASH_STYLE_DARK_MODE_CONTROLLER_H_
 
-#include "ash/ash_export.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -16,7 +15,7 @@ namespace ash {
 // DarkModeController handles automatic scheduling of dark mode to turn it on
 // at sunset and off at sunrise. However, it does not support custom start
 // and end times for scheduling.
-class ASH_EXPORT DarkModeController : public ScheduledFeature {
+class DarkModeController : public ScheduledFeature {
  public:
   DarkModeController();
   DarkModeController(const DarkModeController&) = delete;
