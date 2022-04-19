@@ -94,6 +94,8 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -461,7 +463,27 @@ public class MainSettingsFragmentTest {
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testPasswordsItemTitleUpdatedWithUPM() throws InterruptedException {
         launchSettingsActivity();
-        Assert.assertEquals(mMainSettings.getString(R.string.password_settings_title_gpm),
+        // TODO(crbug.com/1217070): Remove the New label checks once the feature is stable.
+        String prefTitleWithoutNewLabel =
+                SpanApplier
+                        .removeSpanText(
+                                mMainSettings.getString(R.string.password_settings_title_gpm),
+                                new SpanInfo("<new>", "</new>"))
+                        .toString()
+                        .trim();
+        Assert.assertEquals(prefTitleWithoutNewLabel,
+                mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());
+
+        // Turn on sync to check if the "New" label is shown for sync users.
+        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        SyncTestUtil.waitForSyncFeatureActive();
+
+        String prefTitleWithNewLabel =
+                SpanApplier
+                        .applySpans(mMainSettings.getString(R.string.password_settings_title_gpm),
+                                new SpanInfo("<new>", "</new>"))
+                        .toString();
+        Assert.assertEquals(prefTitleWithNewLabel,
                 mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());
     }
 

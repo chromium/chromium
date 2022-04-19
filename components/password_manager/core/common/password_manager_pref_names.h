@@ -60,6 +60,12 @@ extern const char kTimeOfLastMigrationAttempt[];
 // Boolean value that indicated the need of data migration between the two
 // backends due to sync settings change.
 extern const char kRequiresMigrationAfterSyncStatusChange[];
+
+// Boolean value indicating if the user has clicked on the "Password Manager"
+// item in settings after switching to the Unified Password Manager. A "New"
+// label is shown for the users who have not clicked on this item yet.
+// TODO(crbug.com/1217070): Remove this once the feature is rolled out.
+extern const char kPasswordsPrefWithNewLabelUsed[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

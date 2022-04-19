@@ -24,6 +24,9 @@ const char kTimeOfLastMigrationAttempt[] = "time_of_last_migration_attempt";
 
 const char kRequiresMigrationAfterSyncStatusChange[] =
     "requires_migration_after_sync_status_change";
+
+const char kPasswordsPrefWithNewLabelUsed[] =
+    "passwords_pref_with_new_label_used";
 #endif
 
 #if BUILDFLAG(IS_WIN)
