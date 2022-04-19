@@ -32,16 +32,24 @@ NGTableSectionLayoutAlgorithm::NGTableSectionLayoutAlgorithm(
 // +--------------------------+
 const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
-  wtf_size_t section_index = ConstraintSpace().TableSectionIndex();
-
-  absl::optional<LayoutUnit> section_baseline;
-
+  const auto& section =
+      table_data.sections[ConstraintSpace().TableSectionIndex()];
+  const wtf_size_t start_row_index = section.start_row_index;
   const LogicalSize available_size = {container_builder_.InlineSize(),
                                       kIndefiniteSize};
+
+  absl::optional<LayoutUnit> section_baseline;
   LogicalOffset offset;
   bool is_first_non_collapsed_row = true;
-  const wtf_size_t start_row_index =
-      table_data.sections[section_index].start_row_index;
+
+  auto ConsumeRemainingFragmentainerSpace = [&]() {
+    if (!ConstraintSpace().HasKnownFragmentainerBlockSize())
+      return;
+
+    offset.block_offset = std::max(
+        offset.block_offset, FragmentainerSpaceAtBfcStart(ConstraintSpace()));
+  };
+
   NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
                                       /* calculate_child_idx */ true);
   for (auto entry = child_iterator.NextChild();
@@ -49,9 +57,16 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
        entry = child_iterator.NextChild()) {
     const auto* row_break_token = To<NGBlockBreakToken>(entry.token);
     wtf_size_t row_index = start_row_index + *entry.index;
-    DCHECK_LT(row_index, table_data.sections[section_index].start_row_index +
-                             table_data.sections[section_index].row_count);
+    DCHECK_LT(row_index, start_row_index + section.row_count);
     bool is_row_collapsed = table_data.rows[row_index].is_collapsed;
+
+    if (UNLIKELY(early_break_ &&
+                 IsEarlyBreakTarget(*early_break_, container_builder_, row))) {
+      container_builder_.AddBreakBeforeChild(row, kBreakAppealPerfect,
+                                             /* is_forced_break */ false);
+      ConsumeRemainingFragmentainerSpace();
+      break;
+    }
 
     if (!is_first_non_collapsed_row && !is_row_collapsed)
       offset.block_offset += table_data.table_border_spacing.block_size;
@@ -81,8 +96,15 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), row, *row_result, fragmentainer_block_offset,
           !is_first_non_collapsed_row, &container_builder_);
-      if (break_status != NGBreakStatus::kContinue)
+      if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
+        return RelayoutAndBreakEarlier<NGTableSectionLayoutAlgorithm>(
+            container_builder_.EarlyBreak());
+      }
+      if (break_status == NGBreakStatus::kBrokeBefore) {
+        ConsumeRemainingFragmentainerSpace();
         break;
+      }
+      DCHECK_EQ(break_status, NGBreakStatus::kContinue);
     }
 
     const NGBoxFragment fragment(
@@ -107,7 +129,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   LayoutUnit block_size;
   if (ConstraintSpace().IsFixedBlockSize()) {
     // A fixed block-size should only occur for a section without children.
-    DCHECK_EQ(table_data.sections[section_index].row_count, 0u);
+    DCHECK_EQ(section.row_count, 0u);
     block_size = ConstraintSpace().AvailableSize().block_size;
   } else {
     block_size = offset.block_offset;
@@ -124,7 +146,6 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     NGBreakStatus status = FinishFragmentation(
         Node(), ConstraintSpace(), BorderPadding().block_end,
         FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
-    // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, NGBreakStatus::kContinue);
   }
 
