@@ -28,7 +28,8 @@ NSArray<NSArray<NSString*>*>* alert_text_button_pairs = @[
   @[
     @"would like to find and connect to devices on your local network.", @"OK"
   ],
-  @[ @"Unable to activate Touch ID on this iPhone.", @"OK" ]
+  @[ @"Unable to activate Touch ID on this iPhone.", @"OK" ],
+  @[ @"Like to Access the Microphone", @"OK" ],
 ];
 
 BOOL ElementStaticTextContainsText(XCUIElement* element, NSString* text) {
