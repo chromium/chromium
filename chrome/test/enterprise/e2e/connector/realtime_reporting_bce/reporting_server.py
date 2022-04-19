@@ -27,7 +27,7 @@ class RealTimeReportingServer():
     credentials = service_account.Credentials.from_service_account_file(
         filePath, scopes=self.SCOPES)
 
-    delegatedCreds = credentials.create_delegated(user_email)
+    delegatedCreds = credentials.with_subject(user_email)
 
     return build('admin', 'reports_v1', credentials=delegatedCreds)
 

@@ -19,7 +19,8 @@ class RealTimeBCEReportingPipelineTest(ChromeEnterpriseTestCase):
   def getServiceAccountKey(self):
     path = "gs://%s/secrets/ServiceAccountKey.json" % self.gsbucket
     cmd = r'gsutil cat ' + path
-    serviceAccountKey = self.RunCommand(self.win_config['dc'], cmd).rstrip()
+    serviceAccountKey = self.RunCommand(self.win_config['dc'],
+                                        cmd).rstrip().decode()
     localDir = os.path.dirname(os.path.abspath(__file__))
     filePath = os.path.join(localDir, 'service_accountkey.json')
     with open(filePath, 'w', encoding="utf-8") as f:
