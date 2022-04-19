@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -30,13 +31,24 @@ PersonalizationAppManagerFactory::GetInstance() {
 PersonalizationAppManagerFactory::PersonalizationAppManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "PersonalizationAppManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(::chromeos::local_search_service::LocalSearchServiceProxyFactory::
+                GetInstance());
+}
 
 PersonalizationAppManagerFactory::~PersonalizationAppManagerFactory() = default;
 
 KeyedService* PersonalizationAppManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return PersonalizationAppManager::Create(context).release();
+  DCHECK(context && !context->IsOffTheRecord())
+      << "PersonalizationAppManager requires a real browser context";
+
+  auto* local_search_service_proxy = ::chromeos::local_search_service::
+      LocalSearchServiceProxyFactory::GetForBrowserContext(context);
+  DCHECK(local_search_service_proxy);
+
+  return PersonalizationAppManager::Create(context, *local_search_service_proxy)
+      .release();
 }
 
 bool PersonalizationAppManagerFactory::ServiceIsNULLWhileTesting() const {

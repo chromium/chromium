@@ -11,12 +11,14 @@
 namespace chromeos {
 namespace local_search_service {
 
-// This should be kept in sync with histogram_suffixes_list.xml.
+// This should be kept in sync with
+// //tools/metrics/histograms/metadata/local/histograms.xml.
 enum class IndexId {
   kCrosSettings = 0,
   kHelpApp = 1,
   kHelpAppLauncher = 2,
-  kMaxValue = kHelpAppLauncher
+  kPersonalization = 3,
+  kMaxValue = kPersonalization,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

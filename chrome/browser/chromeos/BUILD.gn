@@ -157,7 +157,6 @@ source_set("chromeos") {
     "//ash/webui/os_feedback_ui",
     "//ash/webui/os_feedback_ui/backend",
     "//ash/webui/personalization_app",
-    "//ash/webui/personalization_app",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//ash/webui/print_management",

@@ -36,6 +36,7 @@ namespace app_list {
 namespace {
 
 inline constexpr size_t kMinQueryLength = 3u;
+inline constexpr size_t kNumRequestedResults = 3u;
 
 }  // namespace
 
@@ -104,7 +105,7 @@ void PersonalizationProvider::Start(const std::u16string& query) {
 
   current_query_ = query;
   weak_ptr_factory_.InvalidateWeakPtrs();
-  search_handler_->Search(query,
+  search_handler_->Search(query, kNumRequestedResults,
                           base::BindOnce(&PersonalizationProvider::OnSearchDone,
                                          weak_ptr_factory_.GetWeakPtr()));
 }

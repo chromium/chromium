@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CrosSettings." summary="Cros Settings"/>
   <variant name="HelpApp." summary="Help App"/>
   <variant name="HelpAppLauncher." summary="Help App Launcher"/>
+  <variant name="Personalization." summary="Personalization App"/>
 </variants>
 
 <variants name="LocalStorageSizes">

@@ -18,6 +18,8 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -38,8 +40,13 @@ const HatsConfig& GetHatsConfig(HatsSurveyType hats_survey_type) {
 
 class PersonalizationAppManagerImpl : public PersonalizationAppManager {
  public:
-  explicit PersonalizationAppManagerImpl(content::BrowserContext* context)
-      : context_(context), search_handler_(std::make_unique<SearchHandler>()) {}
+  PersonalizationAppManagerImpl(
+      content::BrowserContext* context,
+      ::chromeos::local_search_service::LocalSearchServiceProxy&
+          local_search_service_proxy)
+      : context_(context),
+        search_handler_(
+            std::make_unique<SearchHandler>(local_search_service_proxy)) {}
 
   ~PersonalizationAppManagerImpl() override = default;
 
@@ -84,6 +91,7 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
   base::OneShotTimer hats_timer_;
   scoped_refptr<HatsNotificationController> hats_notification_controller_;
 
+  // Handles running search queries for Personalization App features.
   std::unique_ptr<SearchHandler> search_handler_;
 };
 
@@ -91,8 +99,11 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
 
 // static
 std::unique_ptr<PersonalizationAppManager> PersonalizationAppManager::Create(
-    content::BrowserContext* context) {
-  return std::make_unique<PersonalizationAppManagerImpl>(context);
+    content::BrowserContext* context,
+    ::chromeos::local_search_service::LocalSearchServiceProxy&
+        local_search_service_proxy) {
+  return std::make_unique<PersonalizationAppManagerImpl>(
+      context, local_search_service_proxy);
 }
 
 }  // namespace personalization_app

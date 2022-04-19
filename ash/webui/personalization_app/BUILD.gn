@@ -17,8 +17,11 @@ static_library("personalization_app") {
     "personalization_app_url_constants.h",
     "personalization_app_user_provider.h",
     "personalization_app_wallpaper_provider.h",
+    "search/search_concept.h",
     "search/search_handler.cc",
     "search/search_handler.h",
+    "search/search_tag_registry.cc",
+    "search/search_tag_registry.h",
   ]
 
   deps = [
@@ -28,6 +31,9 @@ static_library("personalization_app") {
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//ash/webui/resources:personalization_app_resources",
+    "//chromeos/components/local_search_service:local_search_service",
+    "//chromeos/components/local_search_service/public/cpp",
+    "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/strings",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
@@ -85,6 +91,7 @@ source_set("unit_tests") {
     "search:mojo_bindings",
     "//ash/constants:constants",
     "//base/test:test_support",
+    "//chromeos/components/local_search_service/public/cpp:cpp",
     "//chromeos/strings:strings_grit",
     "//mojo/public/cpp/bindings:bindings",
     "//testing/gtest",

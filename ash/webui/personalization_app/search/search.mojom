@@ -24,5 +24,6 @@ struct SearchResult {
 interface SearchHandler {
     // Run a search from user input and reply with a list of results. Returns
     // empty list on error or no relevant results.
-    Search(mojo_base.mojom.String16 query) => (array<SearchResult> results);
+    Search(mojo_base.mojom.String16 query, uint32 max_num_results) => (
+        array<SearchResult> results);
 };

@@ -24,6 +24,7 @@ constexpr std::array<const char*, SearchMetricsReporter::kNumberIndexIds>
         prefs::kLocalSearchServiceMetricsCrosSettingsCount,
         prefs::kLocalSearchServiceMetricsHelpAppCount,
         prefs::kLocalSearchServiceMetricsHelpAppLauncherCount,
+        prefs::kLocalSearchServiceMetricsPersonalizationCount,
 };
 
 // Histograms corresponding to IndexId values.
@@ -32,6 +33,7 @@ constexpr std::array<const char*, SearchMetricsReporter::kNumberIndexIds>
         SearchMetricsReporter::kCrosSettingsName,
         SearchMetricsReporter::kHelpAppName,
         SearchMetricsReporter::kHelpAppLauncherName,
+        SearchMetricsReporter::kPersonalizationName,
 };
 
 }  // namespace
@@ -44,6 +46,8 @@ const char SearchMetricsReporter::kHelpAppName[] =
     "LocalSearchService.HelpApp.DailySearch";
 const char SearchMetricsReporter::kHelpAppLauncherName[] =
     "LocalSearchService.HelpAppLauncher.DailySearch";
+const char SearchMetricsReporter::kPersonalizationName[] =
+    "LocalSearchService.Personalization.DailySearch";
 
 constexpr int SearchMetricsReporter::kNumberIndexIds;
 
