@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/command_line.h"
@@ -75,8 +76,14 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
+  // TODO(b/227674947): When Sign in with Smart Lock is deprecated, remove the
+  // check for ProfileHelper::IsSigninProfile() and do not instantiate
+  // EasyUnlockServiceSignin here.
   // The SigninProfile is a special Profile used at the login screen.
   if (ProfileHelper::IsSigninProfile(profile)) {
+    if (base::FeatureList::IsEnabled(ash::features::kSmartLockSignInRemoved))
+      return nullptr;
+
     if (!context->IsOffTheRecord())
       return nullptr;
 
