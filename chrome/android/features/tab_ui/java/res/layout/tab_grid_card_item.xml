@@ -46,9 +46,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tab_title"
                 android:gravity="center_horizontal"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
                 android:src="@color/thumbnail_placeholder_on_primary_bg"
                 style="?attr/tabGridThumbnailStyle"/>
+
             <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
                 android:id="@+id/price_info_box_outer"
                 android:layout_below="@id/tab_title"
