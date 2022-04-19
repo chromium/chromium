@@ -110,12 +110,12 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
 // Prod extension ID
 const base::FilePath::CharType
     RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId[] =
-        FILE_PATH_LITERAL("inomeogfingihgjfjlpeplalcfajhgai");
+        FILE_PATH_LITERAL("djjmngfglakhkhmgcfdmjalogilepkhd");
 #else
 // Dev extension ID
 const base::FilePath::CharType
     RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId[] =
-        FILE_PATH_LITERAL("hpodccmdligbeohchckkeajbfohibipg");
+        FILE_PATH_LITERAL("hfmpidnhglhndeamkbopljnclamhmnaj");
 #endif
 
 // Core class for writing wakeup files on the IO sequence. Must be used and
