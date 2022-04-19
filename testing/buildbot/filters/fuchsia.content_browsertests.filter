@@ -30,22 +30,6 @@
 -WebContentsViewAuraTest.RepeatedQuickOverscrollGestures
 -WebRtcVideoCaptureServiceBrowserTest.FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
 
-# crbug.com/1212491: WebSQL is being deprecated, these are low priority
--BackForwardCacheBrowserTest.DoesNotCacheIfWebDatabase
--DatabaseTest.DatabaseOperations
--DatabaseTest.DatabasePersistsAfterRelaunch
--DatabaseTest.DeleteNonexistentRow
--DatabaseTest.DeleteRecord
--DatabaseTest.InsertRecord
--DatabaseTest.ModificationPersistInSecondTab
--DatabaseTest.ModificationsPersistAfterRendererCrash
--DatabaseTest.OffTheRecordCannotReadRegularDatabase
--DatabaseTest.OffTheRecordDBPersistentAcrossWindows
--DatabaseTest.OffTheRecordDatabaseNotPersistent
--DatabaseTest.RegularCannotReadOffTheRecordDatabase
--DatabaseTest.ReloadPage
--DatabaseTest.UpdateRecord
-
 # TODO(crbug.com/1306610): crbug.com/1306610: Enable once PDF rendering can be
 # enabled without PPAPI.
 -All/BlockedSchemeNavigationBrowserTest.PDF_BrowserInitiatedNavigation_Allow/*

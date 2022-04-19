@@ -2118,7 +2118,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AppBannerBackForwardCacheBrowserTest,
                          testing::Bool());
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebDatabase) {
+// https://crbug.com/1317431: WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_DoesNotCacheIfWebDatabase DISABLED_DoesNotCacheIfWebDatabase
+#else
+#define MAYBE_DoesNotCacheIfWebDatabase DoesNotCacheIfWebDatabase
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MAYBE_DoesNotCacheIfWebDatabase) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with WebDatabase usage.
