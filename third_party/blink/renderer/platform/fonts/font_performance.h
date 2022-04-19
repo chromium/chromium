@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PERFORMANCE_H_
 
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -54,6 +55,13 @@ class PLATFORM_EXPORT FontPerformance {
 
   static void MarkFirstContentfulPaint();
   static void MarkDomContentLoaded();
+
+  struct ShapeTextTimingScope final {
+    ~ShapeTextTimingScope() {
+      FontPerformance::AddShapingTime(shaping_timer.Elapsed());
+    }
+    base::ElapsedTimer shaping_timer;
+  };
 
   class StyleScope {
    public:

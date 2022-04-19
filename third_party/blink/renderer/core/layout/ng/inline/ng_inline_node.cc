@@ -1590,14 +1590,7 @@ void NGInlineNode::ShapeTextIncludingFirstLine(
   // Because |ElapsedTimer| causes notable speed regression on Android and
   // ChromeOS, we don't use it. See http://crbug.com/1261519
 #else
-  struct ShapeTextTimingScope final {
-    ~ShapeTextTimingScope() {
-      FontPerformance::AddShapingTime(shaping_timer.Elapsed());
-    }
-    base::ElapsedTimer shaping_timer;
-  };
-
-  ShapeTextTimingScope shape_text_timing_scope;
+  FontPerformance::ShapeTextTimingScope shape_text_timing_scope;
 #endif
 
   ShapeText(data, previous_text, previous_items);
