@@ -47,10 +47,6 @@ extern const char kAutofillIOSDelayBetweenFieldsDescription[];
 extern const char kAutofillParseMerchantPromoCodeFieldsName[];
 extern const char kAutofillParseMerchantPromoCodeFieldsDescription[];
 
-// Title and description for the flag to enable autofill password rich iph.
-extern const char kAutofillPasswordRichIPHName[];
-extern const char kAutofillPasswordRichIPHDescription[];
-
 // Title and description for the flag that controls whether the maximum number
 // of Autofill suggestions shown is pruned.
 extern const char kAutofillPruneSuggestionsName[];

@@ -68,8 +68,7 @@
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/sessions/session_features.h"
 #include "ios/chrome/browser/system_flags.h"
-#import "ios/chrome/browser/ui/autofill/features.h"
-#import "ios/chrome/browser/ui/bubble/bubble_features.h"
+#include "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
@@ -834,10 +833,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContentSuggestionsUIViewControllerMigrationDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kContentSuggestionsUIViewControllerMigration)},
-    {"autofill-password-rich-iph",
-     flag_descriptions::kAutofillPasswordRichIPHName,
-     flag_descriptions::kAutofillPasswordRichIPHDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAutofillPasswordRichIPH)},
     {"bubble-rich-iph", flag_descriptions::kBubbleRichIPHName,
      flag_descriptions::kBubbleRichIPHDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBubbleRichIPH,

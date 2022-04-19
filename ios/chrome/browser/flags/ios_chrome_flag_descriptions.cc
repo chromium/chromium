@@ -57,11 +57,6 @@ const char kAutofillParseMerchantPromoCodeFieldsDescription[] =
     "When enabled, Autofill will attempt to find merchant promo/coupon/gift "
     "code fields when parsing forms.";
 
-const char kAutofillPasswordRichIPHName[] = "Autofill password rich IPH";
-const char kAutofillPasswordRichIPHDescription[] =
-    "When enabled, display rich in-product help for autofill password "
-    "suggestions.";
-
 const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";

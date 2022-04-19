@@ -19,9 +19,9 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
-#import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
+#include "ios/chrome/browser/ui/bubble/bubble_features.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -502,7 +502,7 @@ TEST_F(FormSuggestionControllerTest, SuggestionHighlightNoFlag) {
 TEST_F(FormSuggestionControllerTest, PasswordSuggestionHighlight) {
   // Enable the feature flag for password suggestion highlight.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kAutofillPasswordRichIPH);
+  scoped_feature_list.InitAndEnableFeature(kBubbleRichIPH);
 
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
@@ -533,7 +533,7 @@ TEST_F(FormSuggestionControllerTest, PasswordSuggestionHighlight) {
 TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoHighlight) {
   // Enable the feature flag for password suggestion highlight.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kAutofillPasswordRichIPH);
+  scoped_feature_list.InitAndEnableFeature(kBubbleRichIPH);
 
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
