@@ -39,6 +39,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   StreamingSearchPrefetchURLLoader(
       StreamingSearchPrefetchRequest* streaming_prefetch_request,
       Profile* profile,
+      bool navigation_prefetch,
       std::unique_ptr<network::ResourceRequest> resource_request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       base::OnceCallback<void(bool)> report_error_callback);
@@ -49,6 +50,10 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // this is cleared, the class is self managed and needs to delete itself based
   // on mojo channels closing or other errors occurring.
   void ClearOwnerPointer();
+
+  // Record whether the navigation url and the |prefetch_url_| match. Only
+  // recorded when |navigation_prefetch_| is true.
+  void RecordNavigationURLHistogram(const GURL& navigation_url);
 
  private:
   // mojo::DataPipeDrainer::Client:
@@ -207,6 +212,13 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   raw_ptr<Profile> profile_;
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
+
+  // Whether this loader is created specifically for a navigation prefetch.
+  bool navigation_prefetch_;
+
+  // The prefetch URL, used to record whether the prefetch and navigation URLs
+  // match when this is a navigation prefetch.
+  GURL prefetch_url_;
 
   base::WeakPtrFactory<StreamingSearchPrefetchURLLoader> weak_factory_{this};
 };

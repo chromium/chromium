@@ -28,7 +28,8 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
       "" /* image_url_post_params */, "" /* side_search_param */,
       "" /* favicon_url */, "UTF-8",
       base::ListValue() /* alternate_urls_list */,
-      false /* preconnect_to_search_url */, prepopulate_id);
+      false /* preconnect_to_search_url */,
+      false /* prefetch_likely_navigations */, prepopulate_id);
 }
 
 // Creates a TemplateURL with default values except for the prepopulate ID,

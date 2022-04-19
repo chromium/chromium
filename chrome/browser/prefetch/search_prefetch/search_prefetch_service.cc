@@ -53,14 +53,23 @@ GURL GetPrefetchURLFromMatch(const AutocompleteMatch& match,
 
 struct SearchPrefetchEligibilityReasonRecorder {
  public:
-  SearchPrefetchEligibilityReasonRecorder() = default;
+  explicit SearchPrefetchEligibilityReasonRecorder(bool navigation_prefetch)
+      : navigation_prefetch_(navigation_prefetch) {}
   ~SearchPrefetchEligibilityReasonRecorder() {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Omnibox.SearchPrefetch.PrefetchEligibilityReason", reason_);
+    if (navigation_prefetch_) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Omnibox.SearchPrefetch.PrefetchEligibilityReason.NavigationPrefetch",
+          reason_);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+          reason_);
+    }
   }
 
   SearchPrefetchEligibilityReason reason_ =
       SearchPrefetchEligibilityReason::kPrefetchStarted;
+  bool navigation_prefetch_;
 };
 
 struct SearchPrefetchServingReasonRecorder {
@@ -74,9 +83,16 @@ struct SearchPrefetchServingReasonRecorder {
   SearchPrefetchServingReason reason_ = SearchPrefetchServingReason::kServed;
 };
 
-void RecordFinalStatus(SearchPrefetchStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchPrefetch.PrefetchFinalStatus",
-                            status);
+void RecordFinalStatus(SearchPrefetchStatus status, bool navigation_prefetch) {
+  if (navigation_prefetch) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Omnibox.SearchPrefetch.PrefetchFinalStatus.NavigationPrefetch",
+        status);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
+        status);
+  }
 }
 
 }  // namespace
@@ -104,10 +120,15 @@ void SearchPrefetchService::Shutdown() {
 }
 
 bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
+  return MaybePrefetchURL(url, /*navigation_prefetch=*/false);
+}
+
+bool SearchPrefetchService::MaybePrefetchURL(const GURL& url,
+                                             bool navigation_prefetch) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
 
-  SearchPrefetchEligibilityReasonRecorder recorder;
+  SearchPrefetchEligibilityReasonRecorder recorder(navigation_prefetch);
 
   if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
@@ -138,19 +159,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   }
 
   // Lazily observe Template URL Service.
-  if (!observer_.IsObserving()) {
-    observer_.Observe(template_url_service);
-    const TemplateURL* template_url =
-        template_url_service->GetDefaultSearchProvider();
-    if (template_url) {
-      template_url_service_data_ = template_url->data();
-    }
-
-    omnibox_subscription_ =
-        OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-            base::BindRepeating(&SearchPrefetchService::OnURLOpenedFromOmnibox,
-                                base::Unretained(this)));
-  }
+  ObserveTemplateURLService(template_url_service);
 
   std::u16string search_terms;
 
@@ -165,16 +174,29 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
     return false;
   }
 
-  if (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
-      base::TimeTicks::Now()) {
+  if (!navigation_prefetch &&
+      (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
+       base::TimeTicks::Now())) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kErrorBackoff;
     return false;
   }
 
   // Don't prefetch the same search terms twice within the expiry duration.
   if (prefetches_.find(search_terms) != prefetches_.end()) {
-    recorder.reason_ = SearchPrefetchEligibilityReason::kAttemptedQueryRecently;
-    return false;
+    auto status = prefetches_[search_terms]->current_status();
+
+    // If the prefetch is for navigation it can replace unservable statuses.
+    if (!navigation_prefetch || status == SearchPrefetchStatus::kCanBeServed ||
+        status == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
+        status == SearchPrefetchStatus::kComplete) {
+      recorder.reason_ =
+          SearchPrefetchEligibilityReason::kAttemptedQueryRecently;
+      return false;
+    }
+
+    // The navigation prefetch should replace the existing prefetch.
+    if (navigation_prefetch)
+      prefetches_.erase(search_terms);
   }
 
   if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration()) {
@@ -184,8 +206,9 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
 
   std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request =
       std::make_unique<StreamingSearchPrefetchRequest>(
-          url, base::BindOnce(&SearchPrefetchService::ReportFetchResult,
-                              base::Unretained(this)));
+          url, navigation_prefetch,
+          base::BindOnce(&SearchPrefetchService::ReportFetchResult,
+                         base::Unretained(this)));
 
   DCHECK(prefetch_request);
   if (!prefetch_request->StartPrefetchRequest(profile_)) {
@@ -206,8 +229,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
 void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!log)
     return;
-  const AutocompleteMatch& match = log->result.match_at(log->selected_index);
-  const GURL& opened_url = match.destination_url;
+  const GURL& opened_url = log->final_destination_url;
 
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -221,6 +243,22 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   default_search->ExtractSearchTermsFromURL(
       opened_url, template_url_service->search_terms_data(),
       &match_search_terms);
+
+  if (match_search_terms.size() == 0)
+    return;
+
+  if (IsSearchNavigationPrefetchEnabled() &&
+      default_search->data().prefetch_likely_navigations) {
+    auto start = base::TimeTicks::Now();
+    bool started_prefetch = MaybePrefetchURL(opened_url,
+                                             /*navigation_prefetch=*/true);
+
+    // Record the overhead of starting the prefetch earlier.
+    if (started_prefetch) {
+      UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.StartTime.NavigationPrefetch",
+                          (base::TimeTicks::Now() - start));
+    }
+  }
 
   if (prefetches_.find(match_search_terms) == prefetches_.end() ||
       prefetches_[match_search_terms]->current_status() !=
@@ -352,7 +390,10 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
   std::unique_ptr<SearchPrefetchURLLoader> response =
       iter->second->TakeSearchPrefetchURLLoader();
 
-  AddCacheEntry(navigation_url, iter->second->prefetch_url());
+  iter->second->MarkPrefetchAsServed();
+
+  if (navigation_url != iter->second->prefetch_url())
+    AddCacheEntry(navigation_url, iter->second->prefetch_url());
 
   DeletePrefetch(search_terms);
 
@@ -383,14 +424,16 @@ void SearchPrefetchService::DeletePrefetch(std::u16string search_terms) {
   DCHECK(prefetch_expiry_timers_.find(search_terms) !=
          prefetch_expiry_timers_.end());
 
-  RecordFinalStatus(prefetches_[search_terms]->current_status());
+  RecordFinalStatus(prefetches_[search_terms]->current_status(),
+                    prefetches_[search_terms]->navigation_prefetch());
 
   prefetches_.erase(search_terms);
   prefetch_expiry_timers_.erase(search_terms);
 }
 
 void SearchPrefetchService::ReportFetchResult(bool error) {
-  UMA_HISTOGRAM_BOOLEAN("Omnibox.SearchPrefetch.FetchResult", !error);
+  UMA_HISTOGRAM_BOOLEAN("Omnibox.SearchPrefetch.FetchResult.SuggestionPrefetch",
+                        !error);
   if (!error)
     return;
   last_error_time_ticks_ = base::TimeTicks::Now();
@@ -403,6 +446,9 @@ void SearchPrefetchService::OnResultChanged(const AutocompleteResult& result) {
   auto* default_search = template_url_service->GetDefaultSearchProvider();
   if (!default_search)
     return;
+
+  // Lazily observe Template URL Service.
+  ObserveTemplateURLService(template_url_service);
 
   // Cancel Unneeded prefetch requests. Since we limit the number of prefetches
   // in the map, this should be fast despite the two loops.
@@ -601,4 +647,19 @@ void SearchPrefetchService::SaveToPrefs() const {
 
 bool SearchPrefetchService::LoadFromPrefsForTesting() {
   return LoadFromPrefs();
+}
+
+void SearchPrefetchService::ObserveTemplateURLService(
+    TemplateURLService* template_url_service) {
+  if (!observer_.IsObserving()) {
+    observer_.Observe(template_url_service);
+
+    template_url_service_data_ =
+        template_url_service->GetDefaultSearchProvider()->data();
+
+    omnibox_subscription_ =
+        OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
+            base::BindRepeating(&SearchPrefetchService::OnURLOpenedFromOmnibox,
+                                base::Unretained(this)));
+  }
 }

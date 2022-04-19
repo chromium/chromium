@@ -55,3 +55,10 @@ base::TimeDelta SearchPrefetchBlockHeadStart() {
   return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchBlockBeforeHeaders, "block_head_start_ms", 0));
 }
+
+const base::Feature kSearchNavigationPrefetch{
+    "SearchNavigationPrefetch", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsSearchNavigationPrefetchEnabled() {
+  return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);
+}

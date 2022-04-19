@@ -44,6 +44,7 @@ struct TemplateURLData {
                   base::StringPiece encoding,
                   const base::Value& alternate_urls_list,
                   bool preconnect_to_search_url,
+                  bool prefetch_likely_navigations,
                   int prepopulate_id);
 
   ~TemplateURLData();
@@ -159,6 +160,11 @@ struct TemplateURLData {
   // Whether a connection to |url_| should regularly be established when this is
   // set as the "default search engine".
   bool preconnect_to_search_url = false;
+
+  // Whether the client is allowed to prefetch Search queries that are likely
+  // (in addition to queries that are recommended via suggestion server). This
+  // is experimental.
+  bool prefetch_likely_navigations = false;
 
   enum class ActiveStatus {
     kUnspecified = 0,  // The default value when a search engine is auto-added.

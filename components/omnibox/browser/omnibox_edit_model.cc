@@ -876,7 +876,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
       match.allowed_to_be_default_match ? match.inline_autocompletion.length()
                                         : std::u16string::npos,
       elapsed_time_since_last_change_to_default_match,
-      dropdown_ignored ? fake_single_entry_result : result());
+      dropdown_ignored ? fake_single_entry_result : result(),
+      match.destination_url);
   DCHECK(dropdown_ignored ||
          (log.elapsed_time_since_user_first_modified_omnibox >=
           log.elapsed_time_since_last_change_to_default_match))

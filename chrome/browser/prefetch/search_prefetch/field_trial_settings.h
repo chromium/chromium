@@ -38,4 +38,10 @@ size_t SearchPrefetchMaxCacheEntries();
 // eligible to be served.
 base::TimeDelta SearchPrefetchBlockHeadStart();
 
+extern const base::Feature kSearchNavigationPrefetch;
+
+// An experimental feature to measure if starting search prefetches at
+// navigation start provides benefit over the typical navigation flow.
+bool IsSearchNavigationPrefetchEnabled();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

@@ -34,13 +34,15 @@ enum class SearchPrefetchStatus {
   // |kRequestFailed|.
   kCanBeServedAndUserClicked = 3,
   // The request can be served to the navigation stack, and has fully streamed
-  // the response with no errors. This is a terminal state.
+  // the response with no errors.
   kComplete = 4,
-  // The request hit an error and cannot be served. This is a terminal state.
+  // The request hit an error and cannot be served.
   kRequestFailed = 5,
   // The request was cancelled before completion. This is terminal state.
   kRequestCancelled = 6,
-  kMaxValue = kRequestCancelled,
+  // The request was served to the navigation stack. This is terminal state.
+  kServed = 7,
+  kMaxValue = kServed,
 };
 
 // A class representing a prefetch used by the Search Prefetch Service.
@@ -50,6 +52,7 @@ class BaseSearchPrefetchRequest {
  public:
   BaseSearchPrefetchRequest(
       const GURL& prefetch_url,
+      bool navigation_prefetch,
       base::OnceCallback<void(bool)> report_error_callback);
   virtual ~BaseSearchPrefetchRequest();
 
@@ -84,8 +87,13 @@ class BaseSearchPrefetchRequest {
   // Update the status when the relevant search item is clicked in omnibox.
   void MarkPrefetchAsClicked();
 
-  // The URL for the prefetch request.
-  const GURL& prefetch_url() { return prefetch_url_; }
+  // Update the status when the request is actually served to the navigation
+  // stack.
+  void MarkPrefetchAsServed();
+
+  // Whether the request was started as a navigation prefetch (as opposed to a
+  // suggestion prefetch).
+  bool navigation_prefetch() const { return navigation_prefetch_; }
 
   // Starts and begins processing |resource_request|.
   virtual void StartPrefetchRequestInternal(
@@ -111,6 +119,9 @@ class BaseSearchPrefetchRequest {
 
   // The URL to prefetch the search terms from.
   GURL prefetch_url_;
+
+  // Whether this is for a navigation-time prefetch.
+  bool navigation_prefetch_;
 
   // Called when there is a network/server error on the prefetch request.
   base::OnceCallback<void(bool)> report_error_callback_;

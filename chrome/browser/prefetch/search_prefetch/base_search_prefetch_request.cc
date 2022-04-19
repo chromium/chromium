@@ -105,8 +105,10 @@ std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
 
 BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
     const GURL& prefetch_url,
+    bool navigation_prefetch,
     base::OnceCallback<void(bool)> report_error_callback)
     : prefetch_url_(prefetch_url),
+      navigation_prefetch_(navigation_prefetch),
       report_error_callback_(std::move(report_error_callback)) {}
 
 BaseSearchPrefetchRequest::~BaseSearchPrefetchRequest() = default;
@@ -159,7 +161,8 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   // This prefetch is not as high priority as navigation, but due to its
   // navigation speeding and relatively high likelihood of being served to a
   // navigation, the request is relatively high priority.
-  resource_request->priority = net::MEDIUM;
+  resource_request->priority =
+      navigation_prefetch_ ? net::HIGHEST : net::MEDIUM;
   resource_request->url = prefetch_url_;
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
@@ -298,4 +301,10 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
 void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed);
   current_status_ = SearchPrefetchStatus::kCanBeServedAndUserClicked;
+}
+
+void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
+  DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
+         current_status_ == SearchPrefetchStatus::kComplete);
+  current_status_ = SearchPrefetchStatus::kServed;
 }

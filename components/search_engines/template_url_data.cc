@@ -70,6 +70,7 @@ TemplateURLData::TemplateURLData(const std::u16string& name,
                                  base::StringPiece encoding,
                                  const base::Value& alternate_urls_list,
                                  bool preconnect_to_search_url,
+                                 bool prefetch_likely_navigations,
                                  int prepopulate_id)
     : suggestions_url(suggest_url),
       image_url(image_url),
@@ -91,7 +92,8 @@ TemplateURLData::TemplateURLData(const std::u16string& name,
       usage_count(0),
       prepopulate_id(prepopulate_id),
       sync_guid(GenerateGUID(prepopulate_id)),
-      preconnect_to_search_url(preconnect_to_search_url) {
+      preconnect_to_search_url(preconnect_to_search_url),
+      prefetch_likely_navigations(prefetch_likely_navigations) {
   SetShortName(name);
   SetKeyword(keyword);
   SetURL(std::string(search_url));

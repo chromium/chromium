@@ -28,7 +28,7 @@
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 128
+    "kCurrentDataVersion": 129
   },
 
   // The following engines are included in country lists and are added to the
@@ -131,6 +131,7 @@
       ],
       "type": "SEARCH_ENGINE_GOOGLE",
       "preconnect_to_search_url" : "ALLOWED",
+      "prefetch_likely_navigations" : "ALLOWED",
       "id": 1
     },
 

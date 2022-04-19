@@ -63,6 +63,7 @@ class DefaultSearchManager {
   static const char kDisabledByPolicy[];
   static const char kCreatedFromPlayAPI[];
   static const char kPreconnectToSearchUrl[];
+  static const char kPrefetchLikelyNavigations[];
   static const char kIsActive[];
   static const char kStarterPackId[];
 

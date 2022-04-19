@@ -834,35 +834,146 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SearchPrefetch.FetchResult" enum="BooleanSuccess"
-    expires_after="2022-10-09">
+<histogram name="Omnibox.SearchPrefetch.FetchResult.SuggestionPrefetch"
+    enum="BooleanSuccess" expires_after="2022-08-07">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    Whether a prefetch request finished with a success status or a status that
-    could not be served. Recorded whenever a prefetch request receives headers.
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. Whether a search prefetch request
+    finished with a success status or a status that could be served. Recorded
+    when prefetch requests receive headers. Recorded for omnibox search
+    prefetches that are started when an omnibox suggestion from the suggestion
+    server recommends a prefetch of a suggestion results page.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SearchPrefetch.PrefetchEligibilityReason"
-    enum="SearchPrefetchEligibilityReason" expires_after="2022-10-09">
+<histogram
+    name="Omnibox.SearchPrefetch.NavigationURLMatches.NavigationPrefetch"
+    enum="Boolean" expires_after="2022-08-07">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The reason that a search prefetch request from the autocomplete/omnibox
-    suggest pipeline was not eligible to be prefetched (or 'Prefetched' if it
-    was prefetched). Recorded when a prefetch is requested from suggest if the
-    prefetch match type (default match) is allowed by feature policy.
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. Whether the prefetch URL and the
+    navigation URL are an exact match including query params in the URL.
+    Recorded upon navigation to a matching search term. Only recorded when the
+    prefetch was issued when Chrome is relatively confident an omnibox
+    navigation is about to occur (i.e. the user selected a search suggestion).
+    These prefetches allow Chrome to kickstart the request without waiting until
+    before unload handlers or other navigation pre-processing mechanisms in
+    Chrome.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SearchPrefetch.PrefetchFinalStatus"
-    enum="SearchPrefetchFinalStatus" expires_after="2022-10-09">
+<histogram
+    name="Omnibox.SearchPrefetch.PrefetchEligibilityReason.NavigationPrefetch"
+    enum="SearchPrefetchEligibilityReason" expires_after="2022-08-07">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The status of a Search Prefetch request when it is deleted by expiration or
-    by serving the request.
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. The reason that a search prefetch
+    request issued when a user navigates to a suggestion was not eligible to be
+    prefetched (or 'Prefetched' if it was prefetched). Only recorded when the
+    prefetch was issued when Chrome is relatively confident an omnibox
+    navigation is about to occur (i.e. the user selected a search suggestion).
+    These prefetches allow Chrome to kickstart the request without waiting until
+    before unload handlers or other navigation pre-processing mechanisms in
+    Chrome. in Chrome.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch"
+    enum="SearchPrefetchEligibilityReason" expires_after="2022-08-07">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. The reason that a search prefetch
+    request from the autocomplete/omnibox suggest pipeline was not eligible to
+    be prefetched (or 'Prefetched' if it was prefetched). Recorded for omnibox
+    search prefetches that are started when an omnibox suggestion from the
+    suggestion server recommends a prefetch of a suggestion results page.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SearchPrefetch.PrefetchFinalStatus.NavigationPrefetch"
+    enum="SearchPrefetchFinalStatus" expires_after="2022-08-07">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. The status of a Search Prefetch
+    request when it is deleted by expiration or by serving the request. Only
+    recorded when the prefetch was issued when Chrome is relatively confident an
+    omnibox navigation is about to occur (i.e. the user selected a search
+    suggestion). These prefetches allow Chrome to kickstart the request without
+    waiting until before unload handlers or other navigation pre-processing
+    mechanisms in Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch"
+    enum="SearchPrefetchFinalStatus" expires_after="2022-08-07">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. The status of a Search Prefetch
+    request when it is deleted by expiration or by serving the request. Recorded
+    for omnibox search prefetches that are started when an omnibox suggestion
+    from the suggestion server recommends a prefetch of a suggestion results
+    page.
   </summary>
 </histogram>
 
@@ -871,8 +982,41 @@ chromium-metrics-reviews@google.com.
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The reason that a navigation request could or could not serve a prefetch
-    request. Recorded for all main frame navigations.
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. The reason that a navigation
+    request could or could not serve a search prefetch request. Recorded for all
+    main frame navigations.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SearchPrefetch.StartTime.NavigationPrefetch"
+    units="ms" expires_after="2022-08-07">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. The amount of time it takes to
+    start a prefetch request. Only recorded when the prefetch was issued when
+    Chrome is relatively confident an omnibox navigation is about to occur (i.e.
+    the user selected a search suggestion). These prefetches allow Chrome to
+    kickstart the request without waiting until before unload handlers or other
+    navigation pre-processing mechanisms in Chrome.
   </summary>
 </histogram>
 

@@ -27,6 +27,7 @@ class StreamingSearchPrefetchRequest : public BaseSearchPrefetchRequest {
  public:
   StreamingSearchPrefetchRequest(
       const GURL& prefetch_url,
+      bool navigation_prefetch,
       base::OnceCallback<void(bool)> report_error_callback);
   ~StreamingSearchPrefetchRequest() override;
 

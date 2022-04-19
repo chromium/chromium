@@ -9,8 +9,10 @@
 
 StreamingSearchPrefetchRequest::StreamingSearchPrefetchRequest(
     const GURL& prefetch_url,
+    bool navigation_prefetch,
     base::OnceCallback<void(bool)> report_error_callback)
     : BaseSearchPrefetchRequest(prefetch_url,
+                                navigation_prefetch,
                                 std::move(report_error_callback)) {}
 
 StreamingSearchPrefetchRequest::~StreamingSearchPrefetchRequest() = default;
@@ -21,8 +23,8 @@ void StreamingSearchPrefetchRequest::StartPrefetchRequestInternal(
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::OnceCallback<void(bool)> report_error_callback) {
   streaming_url_loader_ = std::make_unique<StreamingSearchPrefetchURLLoader>(
-      this, profile, std::move(resource_request), network_traffic_annotation,
-      std::move(report_error_callback));
+      this, profile, navigation_prefetch_, std::move(resource_request),
+      network_traffic_annotation, std::move(report_error_callback));
 }
 
 std::unique_ptr<SearchPrefetchURLLoader>

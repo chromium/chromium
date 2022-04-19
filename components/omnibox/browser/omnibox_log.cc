@@ -21,7 +21,8 @@ OmniboxLog::OmniboxLog(
     base::TimeDelta elapsed_time_since_user_first_modified_omnibox,
     size_t completed_length,
     base::TimeDelta elapsed_time_since_last_change_to_default_match,
-    const AutocompleteResult& result)
+    const AutocompleteResult& result,
+    const GURL& final_destination_url)
     : text(text),
       just_deleted_text(just_deleted_text),
       input_type(input_type),
@@ -38,7 +39,8 @@ OmniboxLog::OmniboxLog(
       completed_length(completed_length),
       elapsed_time_since_last_change_to_default_match(
           elapsed_time_since_last_change_to_default_match),
-      result(result) {
+      result(result),
+      final_destination_url(final_destination_url) {
   DCHECK(selected_index < result.size())
       << "The selected index should always be valid. See comments on "
          "OmniboxLog::selected_index.";
