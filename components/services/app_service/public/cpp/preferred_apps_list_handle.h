@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,7 +49,7 @@ class PreferredAppsListHandle {
 
   // Find preferred app id for an |intent|.
   virtual absl::optional<std::string> FindPreferredAppForIntent(
-      const apps::mojom::IntentPtr& intent) const = 0;
+      const IntentPtr& intent) const = 0;
 
   // Returns a list of app IDs that are set as preferred app to an intent
   // filter in the |intent_filters| list.

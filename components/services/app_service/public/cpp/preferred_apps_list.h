@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -73,7 +74,7 @@ class PreferredAppsList : public PreferredAppsListHandle {
   absl::optional<std::string> FindPreferredAppForUrl(
       const GURL& url) const override;
   absl::optional<std::string> FindPreferredAppForIntent(
-      const apps::mojom::IntentPtr& intent) const override;
+      const IntentPtr& intent) const override;
   base::flat_set<std::string> FindPreferredAppsForFilters(
       const std::vector<apps::mojom::IntentFilterPtr>& intent_filters)
       const override;

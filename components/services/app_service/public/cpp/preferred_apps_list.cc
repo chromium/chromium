@@ -250,15 +250,13 @@ bool PreferredAppsList::IsPreferredAppForSupportedLinks(
 
 absl::optional<std::string> PreferredAppsList::FindPreferredAppForUrl(
     const GURL& url) const {
-  auto intent = apps_util::CreateIntentFromUrl(url);
-  return FindPreferredAppForIntent(intent);
+  return FindPreferredAppForIntent(std::make_unique<Intent>(url));
 }
 
 absl::optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
-    const apps::mojom::IntentPtr& mojom_intent) const {
+    const IntentPtr& intent) const {
   absl::optional<std::string> best_match_app_id = absl::nullopt;
   int best_match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
-  IntentPtr intent = ConvertMojomIntentToIntent(mojom_intent);
   DCHECK(intent);
   for (auto& preferred_app : preferred_apps_) {
     if (intent->MatchFilter(preferred_app->intent_filter)) {

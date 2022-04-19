@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
@@ -402,9 +403,8 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
   ASSERT_EQ(kTestAppId1,
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
-  apps::mojom::IntentPtr mime_intent = apps::mojom::Intent::New();
+  auto mime_intent = std::make_unique<Intent>(apps_util::kIntentActionSend);
   mime_intent->mime_type = "image/png";
-  mime_intent->action = apps_util::kIntentActionSend;
   ASSERT_EQ(
       absl::nullopt,
       proxy()->PreferredAppsList().FindPreferredAppForIntent(mime_intent));
