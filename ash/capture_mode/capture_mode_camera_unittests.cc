@@ -2048,6 +2048,42 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
 }
 
+// Tests that when switching capture source from `kRegion` to `kFullscreen`,
+// camera preview should be shown.
+// Regression test for https://crbug.com/1316911.
+TEST_F(CaptureModeCameraTest, CameraPreviewVisibilityOnCaptureSourceChanged) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  CaptureModeTestApi().SelectCameraAtIndex(0);
+  auto* camera_preview_widget = GetCameraController()->camera_preview_widget();
+  auto* preview_window = camera_preview_widget->GetNativeWindow();
+
+  // Verify that camera preview is visible.
+  EXPECT_EQ(preview_window->parent(),
+            preview_window->GetRootWindow()->GetChildById(
+                kShellWindowId_MenuContainer));
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_TRUE(preview_window->TargetVisibility());
+
+  // Click on the region source button, verify that camera preview is parented
+  // to UnparentedContainer and becomes invisible.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetRegionToggleButton(), event_generator);
+  EXPECT_EQ(preview_window->parent(),
+            preview_window->GetRootWindow()->GetChildById(
+                kShellWindowId_UnparentedContainer));
+  EXPECT_FALSE(camera_preview_widget->IsVisible());
+
+  // Now switch capture source to `kFullscreen`, verify that camera preview is
+  // parented to MenuContainer and becomes visible again.
+  ClickOnView(GetFullscreenToggleButton(), event_generator);
+  EXPECT_EQ(preview_window->parent(),
+            preview_window->GetRootWindow()->GetChildById(
+                kShellWindowId_MenuContainer));
+  EXPECT_TRUE(preview_window->TargetVisibility());
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+}
+
 // Tests that the recording starts with camera metrics are recorded correctly
 // both in clamshell and tablet mode.
 TEST_F(CaptureModeCameraTest, RecordingStartsWithCameraHistogramTest) {

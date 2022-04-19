@@ -242,12 +242,6 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeTest& operator=(const CaptureModeTest&) = delete;
   ~CaptureModeTest() override = default;
 
-  CaptureModeBarView* GetCaptureModeBarView() const {
-    auto* session = CaptureModeController::Get()->capture_mode_session();
-    DCHECK(session);
-    return CaptureModeSessionTestApi(session).GetCaptureModeBarView();
-  }
-
   views::Widget* GetCaptureModeBarWidget() const {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
@@ -294,22 +288,6 @@ class CaptureModeTest : public AshTestBase {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     return GetCaptureModeBarView()->capture_type_view()->video_toggle_button();
-  }
-
-  CaptureModeToggleButton* GetFullscreenToggleButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()
-        ->capture_source_view()
-        ->fullscreen_toggle_button();
-  }
-
-  CaptureModeToggleButton* GetRegionToggleButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()
-        ->capture_source_view()
-        ->region_toggle_button();
   }
 
   CaptureModeToggleButton* GetWindowToggleButton() const {

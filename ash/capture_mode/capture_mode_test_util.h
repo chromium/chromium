@@ -35,6 +35,8 @@ class View;
 namespace ash {
 
 class CaptureModeController;
+class CaptureModeBarView;
+class CaptureModeToggleButton;
 
 // Starts the capture mode session with given `source` and `type`.
 CaptureModeController* StartCaptureSession(CaptureModeSource source,
@@ -90,6 +92,12 @@ void TouchOnView(const views::View* view,
 void ClickOrTapView(const views::View* view,
                     bool in_table_mode,
                     ui::test::EventGenerator* event_generator);
+
+CaptureModeBarView* GetCaptureModeBarView();
+
+CaptureModeToggleButton* GetFullscreenToggleButton();
+
+CaptureModeToggleButton* GetRegionToggleButton();
 
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
