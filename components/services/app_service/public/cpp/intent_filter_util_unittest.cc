@@ -75,6 +75,15 @@ class IntentFilterUtilTest : public testing::Test {
     return intent_filter;
   }
 
+  apps::IntentFilterPtr MakeHostOnlyFilter(std::string host,
+                                           apps::PatternMatchType pattern) {
+    auto intent_filter = std::make_unique<apps::IntentFilter>();
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, host,
+                                           pattern);
+
+    return intent_filter;
+  }
+
   apps::mojom::IntentFilterPtr MakeHostOnlyFilter(
       std::string host,
       apps::mojom::PatternMatchType pattern) {
@@ -385,7 +394,8 @@ TEST_F(IntentFilterUtilTest, NotSupportedLink) {
   ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
 }
 
-TEST_F(IntentFilterUtilTest, HostMatchOverlapLiteralAndNone) {
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentFilterUtilTest, HostMatchOverlapLiteralAndNoneMojom) {
   auto google_domain_filter = MakeFilter(
       "https", "www.google.com", "/", apps::mojom::PatternMatchType::kLiteral);
 
@@ -403,7 +413,26 @@ TEST_F(IntentFilterUtilTest, HostMatchOverlapLiteralAndNone) {
       apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
 }
 
-TEST_F(IntentFilterUtilTest, HostMatchOverlapSuffix) {
+TEST_F(IntentFilterUtilTest, HostMatchOverlapLiteralAndNone) {
+  auto google_domain_filter = MakeFilter("https", "www.google.com", "/",
+                                         apps::PatternMatchType::kLiteral);
+
+  auto maps_domain_filter = MakeFilter("https", "maps.google.com", "/",
+                                       apps::PatternMatchType::kLiteral);
+
+  ASSERT_FALSE(
+      apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
+
+  apps_util::AddConditionValue(apps::ConditionType::kHost, "www.google.com",
+                               apps::PatternMatchType::kNone,
+                               maps_domain_filter);
+
+  ASSERT_TRUE(
+      apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentFilterUtilTest, HostMatchOverlapSuffixMojom) {
   // Wildcard host filter
   auto wikipedia_wildcard_filter = MakeHostOnlyFilter(
       ".wikipedia.org", apps::mojom::PatternMatchType::kSuffix);
@@ -443,7 +472,48 @@ TEST_F(IntentFilterUtilTest, HostMatchOverlapSuffix) {
                                             wikipedia_subsubdomain_filter));
 }
 
-TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {
+TEST_F(IntentFilterUtilTest, HostMatchOverlapSuffix) {
+  // Wildcard host filter
+  auto wikipedia_wildcard_filter =
+      MakeHostOnlyFilter(".wikipedia.org", apps::PatternMatchType::kSuffix);
+
+  // Filters that shouldn't overlap
+  auto wikipedia_com_filter =
+      MakeHostOnlyFilter(".wikipedia.com", apps::PatternMatchType::kNone);
+  auto wikipedia_no_subdomain_filter =
+      MakeHostOnlyFilter("wikipedia.org", apps::PatternMatchType::kNone);
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                             wikipedia_com_filter));
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                             wikipedia_no_subdomain_filter));
+
+  // Filters that should overlap
+  auto wikipedia_subdomain_filter =
+      MakeHostOnlyFilter("es.wikipedia.org", apps::PatternMatchType::kNone);
+  auto wikipedia_empty_subdomain_filter =
+      MakeHostOnlyFilter(".wikipedia.org", apps::PatternMatchType::kNone);
+  auto wikipedia_literal_filter =
+      MakeHostOnlyFilter("fr.wikipedia.org", apps::PatternMatchType::kLiteral);
+  auto wikipedia_other_wildcard_filter =
+      MakeHostOnlyFilter(".wikipedia.org", apps::PatternMatchType::kSuffix);
+  auto wikipedia_subsubdomain_filter =
+      MakeHostOnlyFilter(".es.wikipedia.org", apps::PatternMatchType::kSuffix);
+
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_subdomain_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_empty_subdomain_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_literal_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_other_wildcard_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
+                                            wikipedia_subsubdomain_filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentFilterUtilTest, PatternMatchOverlapMojom) {
   auto literal_pattern_filter1 = MakeFilter(
       "https", "www.example.com", "/", apps::mojom::PatternMatchType::kLiteral);
   apps_util::AddConditionValue(apps::mojom::ConditionType::kPattern, "/foo",
@@ -482,7 +552,46 @@ TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {
       apps_util::FiltersHaveOverlap(foo_prefix_filter, bar_prefix_filter));
 }
 
-TEST_F(IntentFilterUtilTest, PatternGlobAndLiteralOverlap) {
+TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {
+  auto literal_pattern_filter1 = MakeFilter("https", "www.example.com", "/",
+                                            apps::PatternMatchType::kLiteral);
+  apps_util::AddConditionValue(apps::ConditionType::kPattern, "/foo",
+                               apps::PatternMatchType::kLiteral,
+                               literal_pattern_filter1);
+
+  auto literal_pattern_filter2 = MakeFilter(
+      "https", "www.example.com", "/foo/bar", apps::PatternMatchType::kLiteral);
+  apps_util::AddConditionValue(apps::ConditionType::kPattern, "/bar",
+                               apps::PatternMatchType::kLiteral,
+                               literal_pattern_filter2);
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(literal_pattern_filter1,
+                                             literal_pattern_filter2));
+
+  auto root_prefix_filter = MakeFilter("https", "www.example.com", "/",
+                                       apps::PatternMatchType::kPrefix);
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(root_prefix_filter,
+                                            literal_pattern_filter1));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(root_prefix_filter,
+                                            literal_pattern_filter2));
+
+  auto bar_prefix_filter = MakeFilter("https", "www.example.com", "/bar",
+                                      apps::PatternMatchType::kPrefix);
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(bar_prefix_filter,
+                                             literal_pattern_filter1));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(bar_prefix_filter,
+                                            literal_pattern_filter2));
+  ASSERT_TRUE(
+      apps_util::FiltersHaveOverlap(bar_prefix_filter, root_prefix_filter));
+
+  auto foo_prefix_filter = MakeFilter("https", "www.example.com", "/foo",
+                                      apps::PatternMatchType::kPrefix);
+  ASSERT_FALSE(
+      apps_util::FiltersHaveOverlap(foo_prefix_filter, bar_prefix_filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentFilterUtilTest, PatternGlobAndLiteralOverlapMojom) {
   auto literal_pattern_filter1 =
       MakeFilter("https", "maps.google.com", "/u/0/maps",
                  apps::mojom::PatternMatchType::kLiteral);
@@ -493,6 +602,25 @@ TEST_F(IntentFilterUtilTest, PatternGlobAndLiteralOverlap) {
   auto glob_pattern_filter =
       MakeFilter("https", "maps.google.com", "/u/.*/maps",
                  apps::mojom::PatternMatchType::kGlob);
+
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(literal_pattern_filter1,
+                                            glob_pattern_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(glob_pattern_filter,
+                                            literal_pattern_filter1));
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(literal_pattern_filter2,
+                                             glob_pattern_filter));
+}
+
+TEST_F(IntentFilterUtilTest, PatternGlobAndLiteralOverlap) {
+  auto literal_pattern_filter1 =
+      MakeFilter("https", "maps.google.com", "/u/0/maps",
+                 apps::PatternMatchType::kLiteral);
+  auto literal_pattern_filter2 = MakeFilter("https", "maps.google.com", "/maps",
+                                            apps::PatternMatchType::kLiteral);
+
+  auto glob_pattern_filter = MakeFilter(
+      "https", "maps.google.com", "/u/.*/maps", apps::PatternMatchType::kGlob);
 
   ASSERT_TRUE(apps_util::FiltersHaveOverlap(literal_pattern_filter1,
                                             glob_pattern_filter));

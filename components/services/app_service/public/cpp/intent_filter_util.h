@@ -55,10 +55,15 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url);
 // match compare with filter with only scheme. Each condition type has a
 // matching level value, and this function will return the sum of the matching
 // level values of all existing condition types.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 int GetFilterMatchLevel(const apps::mojom::IntentFilterPtr& intent_filter);
 
 // Check if the two intent filters have overlap. i.e. they can handle same
 // intent with same match level.
+bool FiltersHaveOverlap(const apps::IntentFilterPtr& filter1,
+                        const apps::IntentFilterPtr& filter2);
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 bool FiltersHaveOverlap(const apps::mojom::IntentFilterPtr& filter1,
                         const apps::mojom::IntentFilterPtr& filter2);
 
