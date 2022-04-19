@@ -6,7 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_CONVERTER_H_
 
 #include "base/values.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 
 namespace apps {
 
@@ -45,15 +45,14 @@ extern const char kVersionKey[];
 //    } ]
 // } ],
 // "version": 0}
-base::Value ConvertPreferredAppsToValue(
-    const PreferredAppsList::PreferredApps& preferred_apps);
+base::Value ConvertPreferredAppsToValue(const PreferredApps& preferred_apps);
 
 // Parse the base::Value read from JSON file back to preferred apps struct.
-PreferredAppsList::PreferredApps ParseValueToPreferredApps(
+PreferredApps ParseValueToPreferredApps(
     const base::Value& preferred_apps_value);
 
 // Upgrade the preferred apps struct to contain action in the filters.
-void UpgradePreferredApps(PreferredAppsList::PreferredApps& preferred_apps);
+void UpgradePreferredApps(PreferredApps& preferred_apps);
 
 // Check if the preferred apps file already upgraded for supporting sharing.
 bool IsUpgradedForSharing(const base::Value& preferred_apps_value);

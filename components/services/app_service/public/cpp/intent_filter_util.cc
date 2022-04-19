@@ -198,6 +198,15 @@ bool FilterNeedsUpgrade(const apps::mojom::IntentFilterPtr& filter) {
   return true;
 }
 
+void UpgradeFilter(apps::IntentFilterPtr& filter) {
+  std::vector<apps::ConditionValuePtr> condition_values;
+  condition_values.push_back(std::make_unique<apps::ConditionValue>(
+      apps_util::kIntentActionView, apps::PatternMatchType::kNone));
+  auto condition = std::make_unique<apps::Condition>(
+      apps::ConditionType::kAction, std::move(condition_values));
+  filter->conditions.insert(filter->conditions.begin(), std::move(condition));
+}
+
 void UpgradeFilter(apps::mojom::IntentFilterPtr& filter) {
   std::vector<apps::mojom::ConditionValuePtr> condition_values;
   condition_values.push_back(apps_util::MakeConditionValue(

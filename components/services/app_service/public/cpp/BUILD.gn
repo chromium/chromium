@@ -255,6 +255,7 @@ source_set("preferred_apps") {
   deps = [
     ":app_types",
     ":intents",
+    ":preferred_app",
     "//base",
     "//components/services/app_service/public/mojom",
     "//content/public/browser",
@@ -338,6 +339,7 @@ source_set("unit_tests") {
     ":icon_loader",
     ":icon_types",
     ":intents",
+    ":preferred_app",
     ":preferred_apps",
     ":publisher",
     ":run_on_os_login",

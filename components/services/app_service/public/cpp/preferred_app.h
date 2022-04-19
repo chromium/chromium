@@ -19,11 +19,15 @@ struct PreferredApp {
   PreferredApp& operator=(const PreferredApp&) = delete;
   ~PreferredApp();
 
+  bool operator==(const PreferredApp& other) const;
+  bool operator!=(const PreferredApp& other) const;
+
   IntentFilterPtr intent_filter;
   std::string app_id;
 };
 
 using PreferredAppPtr = std::unique_ptr<PreferredApp>;
+using PreferredApps = std::vector<PreferredAppPtr>;
 
 // Represents changes which have been made to the preferred apps list, both
 // adding new filters and removing existing filters.
@@ -39,6 +43,8 @@ struct PreferredAppChanges {
 
 using PreferredAppChangesPtr = std::unique_ptr<PreferredAppChanges>;
 
+bool IsEqual(const PreferredApps& source, const PreferredApps& target);
+
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
 PreferredAppPtr ConvertMojomPreferredAppToPreferredApp(
@@ -53,6 +59,12 @@ PreferredAppChangesPtr ConvertMojomPreferredAppChangesToPreferredAppChanges(
 apps::mojom::PreferredAppChangesPtr
 ConvertPreferredAppChangesToMojomPreferredAppChanges(
     const PreferredAppChangesPtr& preferred_app_changes);
+
+PreferredApps ConvertMojomPreferredAppsToPreferredApps(
+    const std::vector<apps::mojom::PreferredAppPtr>& mojom_preferred_apps);
+
+std::vector<apps::mojom::PreferredAppPtr>
+ConvertPreferredAppsToMojomPreferredApps(const PreferredApps& preferred_apps);
 
 }  // namespace apps
 

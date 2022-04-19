@@ -12,9 +12,30 @@ PreferredApp::PreferredApp(IntentFilterPtr intent_filter,
 
 PreferredApp::~PreferredApp() = default;
 
+bool PreferredApp::operator==(const PreferredApp& other) const {
+  return *intent_filter == *other.intent_filter && app_id == other.app_id;
+}
+
+bool PreferredApp::operator!=(const PreferredApp& other) const {
+  return !(*this == other);
+}
+
 PreferredAppChanges::PreferredAppChanges() = default;
 
 PreferredAppChanges::~PreferredAppChanges() = default;
+
+bool IsEqual(const PreferredApps& source, const PreferredApps& target) {
+  if (source.size() != target.size()) {
+    return false;
+  }
+
+  for (int i = 0; i < static_cast<int>(source.size()); i++) {
+    if (*source[i] != *target[i]) {
+      return false;
+    }
+  }
+  return true;
+}
 
 PreferredAppPtr ConvertMojomPreferredAppToPreferredApp(
     const apps::mojom::PreferredAppPtr& mojom_preferred_app) {
@@ -95,6 +116,26 @@ ConvertPreferredAppChangesToMojomPreferredAppChanges(
         std::move(mojom_filters);
   }
   return mojom_preferred_app_changes;
+}
+
+PreferredApps ConvertMojomPreferredAppsToPreferredApps(
+    const std::vector<apps::mojom::PreferredAppPtr>& mojom_preferred_apps) {
+  PreferredApps ret;
+  ret.reserve(mojom_preferred_apps.size());
+  for (const auto& mojom_preferred_app : mojom_preferred_apps) {
+    ret.push_back(ConvertMojomPreferredAppToPreferredApp(mojom_preferred_app));
+  }
+  return ret;
+}
+
+std::vector<apps::mojom::PreferredAppPtr>
+ConvertPreferredAppsToMojomPreferredApps(const PreferredApps& preferred_apps) {
+  std::vector<apps::mojom::PreferredAppPtr> ret;
+  ret.reserve(preferred_apps.size());
+  for (const auto& preferred_app : preferred_apps) {
+    ret.push_back(ConvertPreferredAppToMojomPreferredApp(preferred_app));
+  }
+  return ret;
 }
 
 }  // namespace apps

@@ -215,6 +215,15 @@ bool IntentFilter::IsFileExtensionsFilter() {
   return true;
 }
 
+bool IntentFilter::FilterNeedsUpgrade() {
+  for (const auto& condition : conditions) {
+    if (condition->condition_type == ConditionType::kAction) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::string IntentFilter::ToString() const {
   std::stringstream out;
   if (activity_name.has_value()) {

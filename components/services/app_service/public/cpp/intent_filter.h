@@ -168,6 +168,9 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   // Returns true if the filter only contains file extension pattern matches.
   bool IsFileExtensionsFilter();
 
+  // Checks if the filter is the older version that doesn't contain action.
+  bool FilterNeedsUpgrade();
+
   std::string ToString() const;
 
   // A list of Conditions which Intents must match.

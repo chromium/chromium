@@ -63,13 +63,18 @@ bool FiltersHaveOverlap(const apps::mojom::IntentFilterPtr& filter1,
                         const apps::mojom::IntentFilterPtr& filter2);
 
 // Check if the filter is the older version that doesn't contain action.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 bool FilterNeedsUpgrade(const apps::mojom::IntentFilterPtr& filter);
 
 // Upgrade the filter to contain action view.
+void UpgradeFilter(apps::IntentFilterPtr& filter);
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 void UpgradeFilter(apps::mojom::IntentFilterPtr& filter);
 
 // Check if the filter is a browser filter, i.e. can handle all https
 // or http scheme.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
 
 // Convert an intent filter to a list of its supported links.
