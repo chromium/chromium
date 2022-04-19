@@ -1164,7 +1164,7 @@ void MediaCodecVideoDecoder::EnterTerminalState(State state,
   target_surface_bundle_ = nullptr;
   texture_owner_bundle_ = nullptr;
   if (state == State::kError)
-    CancelPendingDecodes(DecoderStatus::Codes::kFailed);
+    CancelPendingDecodes({DecoderStatus::Codes::kFailed, reason});
   if (drain_type_)
     OnCodecDrained();
 }
