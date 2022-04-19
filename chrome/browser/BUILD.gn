@@ -7819,8 +7819,6 @@ static_library("test_support") {
       "hid/mock_hid_device_observer.h",
       "notifications/notification_test_util.cc",
       "notifications/notification_test_util.h",
-      "privacy_sandbox/mock_privacy_sandbox_service.cc",
-      "privacy_sandbox/mock_privacy_sandbox_service.h",
       "profile_resetter/profile_resetter_test_base.cc",
       "profile_resetter/profile_resetter_test_base.h",
       "sessions/app_session_service_test_helper.cc",
