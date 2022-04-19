@@ -4364,6 +4364,24 @@
             ]
         }
     ],
+    "LensAndroidIntentStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledUseLensIntentStartActivity_20220418",
+                    "params": {
+                        "useLensIntentStartActivity": "true"
+                    },
+                    "enable_features": [
+                        "GoogleLensSdkIntent"
+                    ]
+                }
+            ]
+        }
+    ],
     "LightweightReactions": [
         {
             "platforms": [
