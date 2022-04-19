@@ -583,8 +583,8 @@ def builder(
 
     if builder_spec and mirrors:
         fail("Only one of builder_spec or mirrors can be set")
-    if try_settings and not mirrors:
-        fail("try_settings can only be set if mirrors is set")
+    if try_settings and not (builder_spec or mirrors):
+        fail("try_settings can only be set if builder_spec or mirrors is set")
 
     dimensions = {}
 
