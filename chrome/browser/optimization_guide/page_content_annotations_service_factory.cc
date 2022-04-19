@@ -22,6 +22,21 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/features.h"
 
+namespace {
+
+bool ShouldEnablePageContentAnnotations() {
+  // Allow for the validation experiment and/or the Topics experiment to enable
+  // the PCAService without need to enable both features.
+  if (!optimization_guide::features::IsPageContentAnnotationEnabled() &&
+      !optimization_guide::features::BatchAnnotationsValidationEnabled() &&
+      !base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
 // static
 optimization_guide::PageContentAnnotationsService*
 PageContentAnnotationsServiceFactory::GetForProfile(Profile* profile) {
@@ -49,13 +64,8 @@ PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
 
 KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  // Allow for the validation experiment and/or the Topics experiment to enable
-  // the PCAService without need to enable both features.
-  if (!optimization_guide::features::IsPageContentAnnotationEnabled() &&
-      !optimization_guide::features::BatchAnnotationsValidationEnabled() &&
-      !base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+  if (!ShouldEnablePageContentAnnotations())
     return nullptr;
-  }
 
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -84,7 +94,7 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
 
 bool PageContentAnnotationsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return optimization_guide::features::IsPageContentAnnotationEnabled();
+  return ShouldEnablePageContentAnnotations();
 }
 
 bool PageContentAnnotationsServiceFactory::ServiceIsNULLWhileTesting() const {
