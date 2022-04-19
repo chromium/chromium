@@ -372,16 +372,17 @@ class Target(object):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         pkgctl_out, pkgctl_err = pkgctl.communicate()
+        pkgctl_out = pkgctl_out.strip()
 
         # Read the expected version from the meta.far Merkel hash file alongside
         # the package's FAR.
         meta_far_path = os.path.join(os.path.dirname(package_path), 'meta.far')
-        meta_far_merkel = subprocess.check_output(
+        meta_far_merkle = subprocess.check_output(
             [common.GetHostToolPathFromPlatform('merkleroot'),
              meta_far_path]).split()[0]
-        if pkgctl_out != meta_far_merkel:
+        if pkgctl_out != meta_far_merkle:
           raise Exception('Hash mismatch for %s after resolve (%s vs %s).' %
-                          (package_name, pkgctl_out, meta_far_merkel))
+                          (package_name, pkgctl_out, meta_far_merkle))
 
   def RunFFXCommand(self, ffx_args):
     """Automatically gets the FFX path and runs FFX based on the
