@@ -344,12 +344,12 @@
     <DisplayString>{computed_size_}px {family_list_}</DisplayString>
   </Type>
   <Type Name="blink::FontFamily">
-    <DisplayString Condition="next_.ptr_ == 0">{family_,view(bare)}</DisplayString>
-    <DisplayString>{family_,view(bare)}, {next_}</DisplayString>
+    <DisplayString Condition="next_.ptr_ == 0">{family_name_,view(bare)}</DisplayString>
+    <DisplayString>{family_name_,view(bare)}, {next_}</DisplayString>
   </Type>
   <Type Name="blink::SharedFontFamily">
-    <DisplayString Condition="next_.ptr_ == 0">{family_,view(bare)}</DisplayString>
-    <DisplayString>{family_,view(bare)}, {next_}</DisplayString>
+    <DisplayString Condition="next_.ptr_ == 0">{family_name_,view(bare)}</DisplayString>
+    <DisplayString>{family_name_,view(bare)}, {next_}</DisplayString>
     <Expand>
       <LinkedListItems>
         <HeadPointer>this</HeadPointer>
