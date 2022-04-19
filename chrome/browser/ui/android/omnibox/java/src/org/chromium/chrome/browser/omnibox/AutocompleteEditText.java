@@ -80,7 +80,7 @@ public class AutocompleteEditText
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (wasLastEditPaste()) {
+                if (wasLastEditPaste() && !mIgnoreTextChangesForAutocomplete) {
                     mOnSanitizing = true;
                     String text = editable.toString();
                     String sanitizedText = sanitizeTextForPaste(text);
@@ -243,7 +243,8 @@ public class AutocompleteEditText
         // If AutocompleteEditText receives a series of keystrokes(more than 1) from the beginning,
         // the input will be considered as paste. We do this because some IME may paste the text as
         // a series of keystrokes, not from the system copy/paste method.
-        mLastEditWasPaste = (start == 0 && (lengthAfter - lengthBefore) > 1 && !mOnSanitizing);
+        mLastEditWasPaste = (start == 0 && (lengthAfter - lengthBefore) > 1 && !mOnSanitizing
+                && !mIgnoreTextChangesForAutocomplete);
 
         if (mModel != null) mModel.onTextChanged(text, start, lengthBefore, lengthAfter);
     }
