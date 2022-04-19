@@ -825,6 +825,47 @@ TEST_F(ScriptExecutorTest, StopClearsUnexecutedActions) {
   EXPECT_EQ(processed_actions_capture[0].action(), actions_response.actions(0));
 }
 
+TEST_F(ScriptExecutorTest, StopActionGetsExecutedAfterEmptyResponse) {
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_stop();
+
+  EXPECT_CALL(mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response),
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  ActionsResponseProto second_actions_response;
+  second_actions_response.add_actions()->mutable_tell()->set_message(
+      "tell message");
+  std::vector<ProcessedActionProto> second_response_processed_actions_capture;
+  std::vector<ProcessedActionProto> third_response_processed_actions_capture;
+  EXPECT_CALL(mock_service_, GetNextActions)
+      // Second response.
+      .WillOnce(DoAll(
+          SaveArg<3>(&second_response_processed_actions_capture),
+          RunOnceCallback<6>(net::HTTP_OK, Serialize(second_actions_response),
+                             ServiceRequestSender::ResponseInfo{})))
+      // Third response - empty. We only expect the execution to stop after this
+      // response.
+      .WillOnce(
+          DoAll(SaveArg<3>(&third_response_processed_actions_capture),
+                RunOnceCallback<6>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{})));
+  EXPECT_CALL(executor_callback_,
+              Run(AllOf(Field(&ScriptExecutor::Result::success, true),
+                        Field(&ScriptExecutor::Result::at_end,
+                              ScriptExecutor::SHUTDOWN))));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  // We expect the actions from the second response to have been executed.
+  EXPECT_EQ(ui_delegate_.GetStatusMessage(), "tell message");
+  ASSERT_EQ(second_response_processed_actions_capture.size(), 1u);
+  EXPECT_EQ(second_response_processed_actions_capture[0].action(),
+            actions_response.actions(0));
+  ASSERT_EQ(third_response_processed_actions_capture.size(), 1u);
+  EXPECT_EQ(third_response_processed_actions_capture[0].action(),
+            second_actions_response.actions(0));
+}
+
 TEST_F(ScriptExecutorTest, InterruptActionListOnError) {
   ActionsResponseProto initial_actions_response;
   initial_actions_response.add_actions()->mutable_tell()->set_message(
