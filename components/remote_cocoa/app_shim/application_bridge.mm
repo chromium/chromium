@@ -150,11 +150,12 @@ void ApplicationBridge::CreateNativeWidgetNSWindow(
 }
 
 void ApplicationBridge::CreateRenderWidgetHostNSView(
+    uint64_t view_id,
     mojo::PendingAssociatedRemote<mojom::StubInterface> host,
     mojo::PendingAssociatedReceiver<mojom::StubInterface> view_receiver) {
   if (!render_widget_host_create_callback_)
     return;
-  render_widget_host_create_callback_.Run(host.PassHandle(),
+  render_widget_host_create_callback_.Run(view_id, host.PassHandle(),
                                           view_receiver.PassHandle());
 }
 

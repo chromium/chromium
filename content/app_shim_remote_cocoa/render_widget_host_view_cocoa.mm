@@ -15,6 +15,7 @@
 #include "base/debug/crash_logging.h"
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #import "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
@@ -1657,16 +1658,33 @@ void ExtractUnderlines(NSAttributedString* string,
   _accessibilityParent.reset(accessibilityParent, base::scoped_policy::RETAIN);
 }
 
+- (void)setPopupParentNSViewId:(uint64_t)view_id {
+  popup_parent_ns_view_id_ = view_id;
+}
+
 - (id)accessibilityHitTest:(NSPoint)point {
   id root_element = _hostHelper->GetRootBrowserAccessibilityElement();
   if (!root_element)
     return self;
-  NSPoint pointInWindow =
-      ui::ConvertPointFromScreenToWindow([self window], point);
-  NSPoint localPoint = [self convertPoint:pointInWindow fromView:nil];
-  localPoint.y = NSHeight([self bounds]) - localPoint.y;
-  id obj = [root_element accessibilityHitTest:localPoint];
-  return obj;
+
+  // Calling accessibilityHitTest on the BrowserAccessibility element will
+  // redirect the hit test request to the render side, in
+  // RenderAccessibilityImpl::HitTest. This function expects the point passed by
+  // parameter to be relative to the main document, not relative to the popup
+  // window. In order to satisfy this requirement, we need to keep a reference
+  // to the parent NSView of the popup NSView and transform the |point| using
+  // that view.
+  NSView* popup_parent_ns_view =
+      remote_cocoa::GetNSViewFromId(popup_parent_ns_view_id_);
+
+  NSView* view = popup_parent_ns_view ? popup_parent_ns_view : self;
+
+  NSPoint point_in_window =
+      ui::ConvertPointFromScreenToWindow([view window], point);
+  NSPoint local_point = [view convertPoint:point_in_window fromView:nil];
+  local_point.y = NSHeight([view bounds]) - local_point.y;
+
+  return [root_element accessibilityHitTest:local_point];
 }
 
 - (id)accessibilityFocusedUIElement {

@@ -22,8 +22,8 @@ namespace remote_cocoa {
 
 RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
     mojom::RenderWidgetHostNSViewHost* host,
-    RenderWidgetHostNSViewHostHelper* host_helper) {
-
+    RenderWidgetHostNSViewHostHelper* host_helper,
+    uint64_t ns_view_id) {
   cocoa_view_.reset([[RenderWidgetHostViewCocoa alloc]
         initWithHost:host
       withHostHelper:host_helper]);
@@ -33,6 +33,9 @@ RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
       std::make_unique<ui::DisplayCALayerTree>(background_layer_.get());
   [cocoa_view_ setLayer:background_layer_];
   [cocoa_view_ setWantsLayer:YES];
+
+  view_id_ = std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(ns_view_id,
+                                                                   cocoa_view_);
 }
 
 RenderWidgetHostNSViewBridge::~RenderWidgetHostNSViewBridge() {
@@ -59,8 +62,12 @@ RenderWidgetHostViewCocoa* RenderWidgetHostNSViewBridge::GetNSView() {
   return cocoa_view_;
 }
 
-void RenderWidgetHostNSViewBridge::InitAsPopup(const gfx::Rect& content_rect) {
+void RenderWidgetHostNSViewBridge::InitAsPopup(
+    const gfx::Rect& content_rect,
+    uint64_t popup_parent_ns_view_id) {
   popup_window_ = std::make_unique<PopupWindowMac>(content_rect, cocoa_view_);
+
+  [cocoa_view_ setPopupParentNSViewId:popup_parent_ns_view_id];
 }
 
 void RenderWidgetHostNSViewBridge::SetParentWebContentsNSView(

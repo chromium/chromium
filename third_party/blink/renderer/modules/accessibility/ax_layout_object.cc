@@ -1172,8 +1172,8 @@ String AXLayoutObject::TextAlternative(
 //
 
 AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
-  // Must be called for the document.
-  if (!IsRoot() || !layout_object_)
+  // Must be called for the document's root or a popup's root.
+  if (RoleValue() != ax::mojom::blink::Role::kRootWebArea || !layout_object_)
     return nullptr;
 
   // Must be called with lifecycle >= pre-paint clean

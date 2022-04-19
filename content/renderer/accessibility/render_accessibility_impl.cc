@@ -51,6 +51,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 using blink::WebAXContext;
 using blink::WebAXObject;
@@ -242,17 +243,38 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   }
 }
 
+// This function expects the |point| passed by parameter to be relative to the
+// page viewport, always. This means that when the position is within a popup,
+// the |point| should still be relative to the web page's viewport.
 void RenderAccessibilityImpl::HitTest(
     const gfx::Point& point,
     ax::mojom::Event event_to_fire,
     int request_id,
     mojom::RenderAccessibility::HitTestCallback callback) {
   WebAXObject ax_object;
+
   const WebDocument& document = GetMainDocument();
   if (!document.IsNull()) {
     auto root_obj = WebAXObject::FromWebDocument(document);
-    if (root_obj.MaybeUpdateLayoutAndCheckValidity())
-      ax_object = root_obj.HitTest(point);
+    if (root_obj.MaybeUpdateLayoutAndCheckValidity()) {
+      // 1. Now that layout has been updated for the entire document, try to run
+      // the hit test operation on the popup root element, if there's a popup
+      // opened. This is needed to allow hit testing within web content popups.
+      absl::optional<gfx::RectF> popup_bounds = GetPopupBounds();
+      if (popup_bounds.has_value()) {
+        auto popup_root_obj = WebAXObject::FromWebDocument(GetPopupDocument());
+        // WebAXObject::HitTest expects the point passed by parameter to be
+        // relative to the instance we call it from.
+        ax_object = popup_root_obj.HitTest(
+            point - ToRoundedVector2d(popup_bounds->OffsetFromOrigin()));
+      }
+
+      // 2. If running the hit test operation on the popup didn't returned any
+      // result (or if there was no popup), run the hit test operation from the
+      // main element.
+      if (ax_object.IsNull())
+        ax_object = root_obj.HitTest(point);
+    }
   }
 
   // Return if no attached accessibility object was found for the main document.
@@ -1399,6 +1421,25 @@ blink::WebDocument RenderAccessibilityImpl::GetPopupDocument() {
   if (popup)
     return popup->GetDocument();
   return WebDocument();
+}
+
+absl::optional<gfx::RectF> RenderAccessibilityImpl::GetPopupBounds() {
+  const WebDocument& popup_document = GetPopupDocument();
+  if (popup_document.IsNull())
+    return absl::nullopt;
+
+  auto obj = WebAXObject::FromWebDocument(popup_document);
+
+  gfx::RectF popup_bounds;
+  WebAXObject popup_container;
+  gfx::Transform transform;
+  obj.GetRelativeBounds(popup_container, popup_bounds, transform);
+
+  // The |popup_container| will never be set for a popup element. See
+  // `AXObject::GetRelativeBounds`.
+  DCHECK(popup_container.IsNull());
+
+  return popup_bounds;
 }
 
 WebAXObject RenderAccessibilityImpl::GetPluginRoot() {

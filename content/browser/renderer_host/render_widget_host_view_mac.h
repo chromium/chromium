@@ -684,6 +684,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // details.
   absl::optional<DisplayFeature> display_feature_;
 
+  const uint64_t ns_view_id_;
+
   // Factory used to safely scope delayed calls to ShutdownHost().
   base::WeakPtrFactory<RenderWidgetHostViewMac> weak_factory_;
 };

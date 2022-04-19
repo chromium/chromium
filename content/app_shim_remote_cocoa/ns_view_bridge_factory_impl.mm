@@ -33,12 +33,13 @@ class RenderWidgetHostNSViewBridgeOwner
     : public RenderWidgetHostNSViewHostHelper {
  public:
   explicit RenderWidgetHostNSViewBridgeOwner(
+      uint64_t view_id,
       mojo::PendingAssociatedRemote<mojom::RenderWidgetHostNSViewHost> client,
       mojo::PendingAssociatedReceiver<mojom::RenderWidgetHostNSView>
           bridge_receiver)
       : host_(std::move(client)) {
     bridge_ = std::make_unique<remote_cocoa::RenderWidgetHostNSViewBridge>(
-        host_.get(), this);
+        host_.get(), this, view_id);
     bridge_->BindReceiver(std::move(bridge_receiver));
     host_.set_disconnect_handler(
         base::BindOnce(&RenderWidgetHostNSViewBridgeOwner::OnMojoDisconnect,
@@ -142,6 +143,7 @@ class RenderWidgetHostNSViewBridgeOwner
 }
 
 void CreateRenderWidgetHostNSView(
+    uint64_t view_id,
     mojo::ScopedInterfaceEndpointHandle host_handle,
     mojo::ScopedInterfaceEndpointHandle view_receiver_handle) {
   // Cast from the stub interface to the mojom::RenderWidgetHostNSViewHost
@@ -154,7 +156,7 @@ void CreateRenderWidgetHostNSView(
   // Create a RenderWidgetHostNSViewBridgeOwner. The resulting object will be
   // destroyed when its underlying pipe is closed.
   std::ignore = new RenderWidgetHostNSViewBridgeOwner(
-      std::move(host),
+      view_id, std::move(host),
       mojo::PendingAssociatedReceiver<mojom::RenderWidgetHostNSView>(
           std::move(view_receiver_handle)));
 }

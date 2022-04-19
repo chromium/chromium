@@ -23,7 +23,7 @@ import "ui/gfx/range/mojom/range.mojom";
 interface RenderWidgetHostNSView {
   // Specify that the NSView will a popup (e.g, date/time picker) that will
   // create its own NSWindow.
-  InitAsPopup(gfx.mojom.Rect content_rect);
+  InitAsPopup(gfx.mojom.Rect content_rect, uint64 popup_parent_ns_view_id);
 
   // Set this to be a child NSView of the NSView mapped to by
   // |parent_ns_view_id|.

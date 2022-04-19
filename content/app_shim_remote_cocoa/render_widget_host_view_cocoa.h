@@ -202,6 +202,8 @@ struct DidOverscrollParams;
 
   // The parent accessibility element. This is set only in the browser process.
   base::scoped_nsobject<id> _accessibilityParent;
+
+  uint64_t popup_parent_ns_view_id_;
 }
 
 @property(nonatomic, assign) NSRange markedRange;
@@ -268,6 +270,10 @@ struct DidOverscrollParams;
 // TODO(lgrey/ellyjones): Remove this in favor of setAccessibilityParent:
 // when we switch to the new accessibility API.
 - (void)setAccessibilityParentElement:(id)accessibilityParent;
+
+// Stores a reference to the popup parent's NSView id, which we can use to
+// retrieve the associated NSView.
+- (void)setPopupParentNSViewId:(uint64_t)view_id;
 
 // Methods previously marked as private.
 - (instancetype)

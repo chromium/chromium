@@ -231,6 +231,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Returns the document for the active popup if any.
   blink::WebDocument GetPopupDocument();
 
+  // Returns the bounds of the popup (if there's one) relative to the main
+  // document.
+  absl::optional<gfx::RectF> GetPopupBounds();
+
   // Searches the accessibility tree for plugin's root object and returns it.
   // Returns an empty WebAXObject if no root object is present.
   blink::WebAXObject GetPluginRoot();

@@ -191,10 +191,12 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
                             ui::GestureProviderConfigType::CURRENT_PLATFORM),
                         this),
       accessibility_focus_overrider_(this),
+      ns_view_id_(remote_cocoa::GetNewNSViewId()),
       weak_factory_(this) {
   // The NSView is on the other side of |ns_view_|.
   in_process_ns_view_bridge_ =
-      std::make_unique<remote_cocoa::RenderWidgetHostNSViewBridge>(this, this);
+      std::make_unique<remote_cocoa::RenderWidgetHostNSViewBridge>(this, this,
+                                                                   ns_view_id_);
   ns_view_ = in_process_ns_view_bridge_.get();
 
   // Guess that the initial screen we will be on is the screen of the current
@@ -297,7 +299,7 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
   mojo::PendingAssociatedReceiver<remote_cocoa::mojom::StubInterface>
       stub_bridge_receiver(view_receiver.PassHandle());
   remote_cocoa_application->CreateRenderWidgetHostNSView(
-      std::move(stub_client), std::move(stub_bridge_receiver));
+      ns_view_id_, std::move(stub_client), std::move(stub_bridge_receiver));
 
   ns_view_ = remote_ns_view_.get();
 
@@ -399,7 +401,7 @@ void RenderWidgetHostViewMac::InitAsPopup(
   SetContentBackgroundColor(SK_ColorTRANSPARENT);
 
   // This path is used by the time/date picker.
-  ns_view_->InitAsPopup(pos);
+  ns_view_->InitAsPopup(pos, popup_parent_host_view_->ns_view_id_);
 }
 
 RenderWidgetHostViewBase*

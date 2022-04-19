@@ -27,6 +27,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/ax_clipping_behavior.h"
+#include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -418,6 +420,51 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
     EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(rect_b_point, expected_node, hit_node);
   }
 }
+
+// Web popups don't exist on Android, so this test doesn't have to be run on
+// this platform.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, HitTestInPopup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  GURL url(embedded_test_server()->GetURL(
+      "/accessibility/hit_testing/input-color-with-popup-open.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "color picker");
+
+  AccessibilityNotificationWaiter click_waiter(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  auto* input = FindNode(ax::mojom::Role::kColorWell, "color picker");
+  ASSERT_TRUE(input);
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+  input->AccessibilityPerformAction(action_data);
+
+  click_waiter.WaitForNotification();
+
+  auto* popup_root = GetRootBrowserAccessibilityManager()->GetPopupRoot();
+  ASSERT_NE(nullptr, popup_root);
+
+  auto* format_toggler =
+      FindNode(ax::mojom::Role::kSpinButton, "Format toggler");
+  ASSERT_TRUE(format_toggler);
+
+  gfx::Rect bounds = format_toggler->GetBoundsRect(
+      ui::AXCoordinateSystem::kFrame, ui::AXClippingBehavior::kUnclipped);
+  auto* hit_node =
+      HitTestAndWaitForResult(FrameToCSSPoint(bounds.CenterPoint()));
+
+  ASSERT_EQ(hit_node, format_toggler);
+}
+#endif
 
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
                        HitTestOutsideDocumentBoundsReturnsRoot) {

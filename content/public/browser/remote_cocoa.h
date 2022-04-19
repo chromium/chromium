@@ -16,6 +16,7 @@ namespace remote_cocoa {
 // content.
 // https://crbug.com/888290
 void CONTENT_EXPORT CreateRenderWidgetHostNSView(
+    uint64_t view_id,
     mojo::ScopedInterfaceEndpointHandle host_handle,
     mojo::ScopedInterfaceEndpointHandle view_request_handle);
 
