@@ -32,7 +32,6 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   model_neutral.num_updates_downloaded_total = 100;
   model_neutral.num_tombstone_updates_downloaded_total = 200;
   model_neutral.num_reflected_updates_downloaded_total = 50;
-  model_neutral.num_local_overwrites = 15;
   model_neutral.num_server_overwrites = 18;
 
   ProgressMarkerMap download_progress_markers;
@@ -58,7 +57,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
-  EXPECT_EQ(21u, value->DictSize());
+  EXPECT_EQ(20u, value->DictSize());
   ExpectDictStringValue(kBirthday, *value, "birthday");
   // Base64-encoded version of |kBagOfChips|.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", *value, "bagOfChips");
@@ -72,8 +71,6 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
                          *value, "numTombstoneUpdatesDownloadedTotal");
   ExpectDictIntegerValue(model_neutral.num_reflected_updates_downloaded_total,
                          *value, "numReflectedUpdatesDownloadedTotal");
-  ExpectDictIntegerValue(model_neutral.num_local_overwrites, *value,
-                         "numLocalOverwrites");
   ExpectDictIntegerValue(model_neutral.num_server_overwrites, *value,
                          "numServerOverwrites");
   ExpectDictValue(*expected_download_progress_markers_value, *value,

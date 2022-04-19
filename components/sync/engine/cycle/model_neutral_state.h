@@ -42,7 +42,6 @@ struct ModelNeutralState {
   int num_hierarchy_conflicts;
 
   // Overwrites due to conflict resolution counters.
-  int num_local_overwrites;
   int num_server_overwrites;
 
   // Records the most recent results of GetKey, PostCommit and GetUpdates

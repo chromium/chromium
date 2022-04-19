@@ -96,8 +96,6 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
                    model_neutral_state_.num_tombstone_updates_downloaded_total);
   value->SetIntKey("numReflectedUpdatesDownloadedTotal",
                    model_neutral_state_.num_reflected_updates_downloaded_total);
-  value->SetIntKey("numLocalOverwrites",
-                   model_neutral_state_.num_local_overwrites);
   value->SetIntKey("numServerOverwrites",
                    model_neutral_state_.num_server_overwrites);
   value->SetKey("downloadProgressMarkers",

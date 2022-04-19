@@ -15,7 +15,6 @@ ModelNeutralState::ModelNeutralState()
       num_encryption_conflicts(0),
       num_server_conflicts(0),
       num_hierarchy_conflicts(0),
-      num_local_overwrites(0),
       num_server_overwrites(0),
       items_committed(false) {}
 

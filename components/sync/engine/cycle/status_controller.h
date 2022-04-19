@@ -49,7 +49,6 @@ class StatusController {
   int TotalNumConflictingItems() const;
 
   int num_server_overwrites() const;
-  int num_local_overwrites() const;
 
   // The time at which we started the most recent sync cycle.
   base::Time sync_start_time() const { return sync_start_time_; }
@@ -73,7 +72,6 @@ class StatusController {
   void increment_num_encryption_conflicts_by(int value);
   void increment_num_hierarchy_conflicts_by(int value);
   void increment_num_server_conflicts();
-  void increment_num_local_overwrites();
   void increment_num_server_overwrites();
 
   // Commit counters.

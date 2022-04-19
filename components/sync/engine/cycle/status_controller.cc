@@ -75,10 +75,6 @@ void StatusController::increment_num_server_conflicts() {
   model_neutral_.num_server_conflicts++;
 }
 
-void StatusController::increment_num_local_overwrites() {
-  model_neutral_.num_local_overwrites++;
-}
-
 void StatusController::increment_num_server_overwrites() {
   model_neutral_.num_server_overwrites++;
 }
@@ -102,10 +98,6 @@ SyncerError StatusController::last_get_key_result() const {
 
 int StatusController::num_server_overwrites() const {
   return model_neutral_.num_server_overwrites;
-}
-
-int StatusController::num_local_overwrites() const {
-  return model_neutral_.num_local_overwrites;
 }
 
 int StatusController::num_encryption_conflicts() const {
