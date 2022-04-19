@@ -13,6 +13,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -53,6 +54,8 @@ class VersionUpdater {
   typedef base::OnceCallback<void(const std::string&)> ChannelCallback;
   using EolInfoCallback =
       base::OnceCallback<void(chromeos::UpdateEngineClient::EolInfo eol_info)>;
+  using IsFeatureEnabledCallback =
+      base::OnceCallback<void(absl::optional<bool>)>;
 #endif
 
   // Used to update the client of status changes.
@@ -105,6 +108,11 @@ class VersionUpdater {
                           ChannelCallback callback) = 0;
   // Get the End of Life (Auto Update Expiration) Date.
   virtual void GetEolInfo(EolInfoCallback callback) = 0;
+
+  virtual void ToggleFeature(const std::string& feature, bool enable) = 0;
+  virtual void IsFeatureEnabled(const std::string& feature,
+                                IsFeatureEnabledCallback callback) = 0;
+  virtual bool IsManagedAutoUpdateEnabled() = 0;
 
   // Sets a one time permission on a certain update in Update Engine.
   // - update_version: the Chrome OS version we want to update to.

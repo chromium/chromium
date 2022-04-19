@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -25,6 +26,10 @@ class VersionUpdaterCros : public VersionUpdater,
                   bool is_powerwash_allowed) override;
   void GetChannel(bool get_current_channel, ChannelCallback callback) override;
   void GetEolInfo(EolInfoCallback callback) override;
+  void ToggleFeature(const std::string& feature, bool enable) override;
+  void IsFeatureEnabled(const std::string& feature,
+                        IsFeatureEnabledCallback callback) override;
+  bool IsManagedAutoUpdateEnabled() override;
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override;
@@ -55,6 +60,10 @@ class VersionUpdaterCros : public VersionUpdater,
   // Callback from UpdateEngineClient::GetEolInfo().
   void OnGetEolInfo(EolInfoCallback cb,
                     chromeos::UpdateEngineClient::EolInfo eol_info);
+
+  // Callback from UpdateEngineClient::IsFeatureEnabled().
+  void OnIsFeatureEnabled(IsFeatureEnabledCallback callback,
+                          absl::optional<bool> enabled);
 
   // BrowserContext in which the class was instantiated.
   content::BrowserContext* context_;

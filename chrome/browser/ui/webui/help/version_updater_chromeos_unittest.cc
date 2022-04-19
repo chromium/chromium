@@ -21,6 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -218,6 +219,26 @@ TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_CallbackDuringUpdates) {
   StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
   EXPECT_CALL(mock_callback, Run(_, _, _, _, _, _, _)).Times(1);
   version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
+}
+
+TEST_F(VersionUpdaterCrosTest, ToggleFeature) {
+  EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
+  version_updater_->ToggleFeature("feature-foo", true);
+  EXPECT_EQ(1, fake_update_engine_client_->toggle_feature_count());
+  version_updater_->ToggleFeature("feature-foo", false);
+  EXPECT_EQ(2, fake_update_engine_client_->toggle_feature_count());
+}
+
+TEST_F(VersionUpdaterCrosTest, IsFeatureEnabled) {
+  EXPECT_EQ(0, fake_update_engine_client_->is_feature_enabled_count());
+
+  StrictMock<base::MockCallback<VersionUpdater::IsFeatureEnabledCallback>>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(_)).Times(1);
+  version_updater_cros_ptr_->IsFeatureEnabled("feature-foo",
+                                              mock_callback.Get());
+
+  EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
 }
 
 }  // namespace chromeos

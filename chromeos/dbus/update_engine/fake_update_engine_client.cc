@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -108,11 +109,14 @@ void FakeUpdateEngineClient::SetUpdateOverCellularOneTimePermission(
 }
 
 void FakeUpdateEngineClient::ToggleFeature(const std::string& feature,
-                                           bool enable) {}
+                                           bool enable) {
+  toggle_feature_count_++;
+}
 
 void FakeUpdateEngineClient::IsFeatureEnabled(
     const std::string& feature,
     IsFeatureEnabledCallback callback) {
+  is_feature_enabled_count_++;
   std::move(callback).Run(features_.count(feature) ? features_[feature]
                                                    : absl::nullopt);
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 
 #include <cmath>
+#include <optional>
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
@@ -27,6 +28,7 @@
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -255,6 +257,34 @@ void VersionUpdaterCros::OnGetEolInfo(
     EolInfoCallback cb,
     chromeos::UpdateEngineClient::EolInfo eol_info) {
   std::move(cb).Run(std::move(eol_info));
+}
+
+void VersionUpdaterCros::ToggleFeature(const std::string& feature,
+                                       bool enable) {
+  UpdateEngineClient* update_engine_client =
+      DBusThreadManager::Get()->GetUpdateEngineClient();
+
+  update_engine_client->ToggleFeature(feature, enable);
+}
+
+void VersionUpdaterCros::IsFeatureEnabled(const std::string& feature,
+                                          IsFeatureEnabledCallback callback) {
+  UpdateEngineClient* update_engine_client =
+      DBusThreadManager::Get()->GetUpdateEngineClient();
+
+  update_engine_client->IsFeatureEnabled(
+      feature,
+      base::BindOnce(&VersionUpdaterCros::OnIsFeatureEnabled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void VersionUpdaterCros::OnIsFeatureEnabled(IsFeatureEnabledCallback callback,
+                                            absl::optional<bool> enabled) {
+  std::move(callback).Run(std::move(enabled));
+}
+
+bool VersionUpdaterCros::IsManagedAutoUpdateEnabled() {
+  return !IsAutoUpdateDisabled();
 }
 
 VersionUpdaterCros::VersionUpdaterCros(content::WebContents* web_contents)

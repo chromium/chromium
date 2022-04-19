@@ -121,6 +121,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
     return update_over_cellular_one_time_permission_count_;
   }
 
+  // Returns how many times |ToggleFeature()| is called.
+  int toggle_feature_count() const { return toggle_feature_count_; }
+
+  // Returns how many times |IsFeatureEnabled()| is called.
+  int is_feature_enabled_count() const { return is_feature_enabled_count_; }
+
   void SetToggleFeature(const std::string& feature,
                         absl::optional<bool> opt_enabled);
 
@@ -138,6 +144,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   int can_rollback_call_count_ = 0;
   int update_over_cellular_permission_count_ = 0;
   int update_over_cellular_one_time_permission_count_ = 0;
+  int toggle_feature_count_ = 0;
+  int is_feature_enabled_count_ = 0;
   std::map<std::string, absl::optional<bool>> features_;
   base::Time eol_date_;
 };
