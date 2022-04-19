@@ -76,13 +76,19 @@ void TouchExplorationManager::OnAccessibilityControllerShutdown() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
 }
 
-void TouchExplorationManager::OnWindowPropertyChanged(aura::Window* winodw,
+void TouchExplorationManager::OnWindowPropertyChanged(aura::Window* window,
                                                       const void* key,
                                                       intptr_t old) {
   if (key != aura::client::kAccessibilityTouchExplorationPassThrough)
     return;
 
   UpdateTouchExplorationState();
+}
+
+void TouchExplorationManager::OnWindowDestroying(aura::Window* window) {
+  DCHECK(observing_window_ == window);
+  observing_window_->RemoveObserver(this);
+  observing_window_ = nullptr;
 }
 
 void TouchExplorationManager::SetOutputLevel(int volume) {

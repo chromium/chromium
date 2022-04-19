@@ -54,6 +54,7 @@ class ASH_EXPORT TouchExplorationManager
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // TouchExplorationControllerDelegate overrides:
   void SetOutputLevel(int volume) override;
