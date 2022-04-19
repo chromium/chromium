@@ -75,6 +75,18 @@ export const HelpContentProvider = ash.osFeedbackUi.mojom.HelpContentProvider;
 export const FeedbackContext = ash.osFeedbackUi.mojom.FeedbackContext;
 
 /**
+ * Type alias for SendReportStatus.
+ * @typedef {ash.osFeedbackUi.mojom.SendReportStatus}
+ */
+export const SendReportStatus = ash.osFeedbackUi.mojom.SendReportStatus;
+
+/**
+ * Type alias for Report.
+ * @typedef {ash.osFeedbackUi.mojom.Report}
+ */
+export const Report = ash.osFeedbackUi.mojom.Report;
+
+/**
  * Type alias for the FeedbackServiceProviderInterface.
  * @typedef {ash.osFeedbackUi.mojom.FeedbackServiceProviderInterface}
  */

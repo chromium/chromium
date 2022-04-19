@@ -27,6 +27,9 @@ constexpr char kSignedInUserEmail[] = "test_user_email@test.com";
 using ::ash::os_feedback_ui::mojom::FeedbackContext;
 using ::ash::os_feedback_ui::mojom::FeedbackContextPtr;
 using ::ash::os_feedback_ui::mojom::FeedbackServiceProviderAsyncWaiter;
+using ::ash::os_feedback_ui::mojom::Report;
+using ::ash::os_feedback_ui::mojom::ReportPtr;
+using ::ash::os_feedback_ui::mojom::SendReportStatus;
 
 class TestOsFeedbackDelegate : public OsFeedbackDelegate {
  public:
@@ -65,6 +68,15 @@ class FeedbackServiceProviderTest : public testing::Test {
     return out_feedback_context;
   }
 
+  // Call the SendReport of the remote provider async and return the
+  // response.
+  SendReportStatus SendReportAndWait(ReportPtr report) {
+    SendReportStatus out_status;
+    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
+        .SendReport(std::move(report), &out_status);
+    return out_status;
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   FeedbackServiceProvider provider_;
@@ -78,6 +90,14 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
 
   EXPECT_EQ(kSignedInUserEmail, feedback_context->email.value());
   EXPECT_EQ(kPageUrl, feedback_context->page_url.value().spec());
+}
+
+// Test that SendReport returns a response with correct status.
+TEST_F(FeedbackServiceProviderTest, SendReportSuccess) {
+  ReportPtr report = Report::New();
+  report->feedback_context = FeedbackContext::New();
+  auto status = SendReportAndWait(std::move(report));
+  EXPECT_EQ(status, SendReportStatus::kSuccess);
 }
 
 }  // namespace feedback

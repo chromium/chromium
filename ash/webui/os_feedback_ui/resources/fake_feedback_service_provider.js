@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {FeedbackContext, FeedbackServiceProviderInterface} from './feedback_types.js';
+import {FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -18,6 +18,7 @@ export class FakeFeedbackServiceProvider {
 
     // Setup method resolvers.
     this.methods_.register('getFeedbackContext');
+    this.methods_.register('sendReport');
 
     /**
      * Use to track how many times getFeedbackContext has been called.
@@ -27,7 +28,7 @@ export class FakeFeedbackServiceProvider {
   }
 
   /**
-   * @returns {number}
+   * @return {number}
    */
   getFeedbackContextCallCount() {
     return this.getFeedbackContextCallCount_;
@@ -44,11 +45,28 @@ export class FakeFeedbackServiceProvider {
   }
 
   /**
+   * @param {!Report} report
+   * @return {!Promise<{
+   *    status: !SendReportStatus,
+   *  }>}
+   */
+  sendReport(report) {
+    return this.methods_.resolveMethod('sendReport');
+  }
+
+  /**
    * Sets the value that will be returned when calling getFeedbackContext().
    * @param {!FeedbackContext} feedbackContext
    */
   setFakeFeedbackContext(feedbackContext) {
     this.methods_.setResult(
         'getFeedbackContext', {feedbackContext: feedbackContext});
+  }
+  /**
+   * Sets the value that will be returned when calling sendReport().
+   * @param {!SendReportStatus} status
+   */
+  setFakeSendFeedbackStatus(status) {
+    this.methods_.setResult('sendReport', {status: status});
   }
 }
