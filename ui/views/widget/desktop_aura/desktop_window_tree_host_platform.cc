@@ -359,8 +359,7 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
       if (!restore_bounds.IsEmpty()) {
         // Enforce |restored_bounds_in_pixels_| since calling Maximize() could
         // have reset it.
-        platform_window()->SetRestoredBoundsInPixels(
-            ToPixelRect(restore_bounds));
+        platform_window()->SetRestoredBoundsInDIP(restore_bounds);
       }
       break;
     case ui::SHOW_STATE_MINIMIZED:
@@ -467,12 +466,12 @@ gfx::Rect DesktopWindowTreeHostPlatform::GetRestoredBounds() const {
   // the 90% case down. When *chrome* is the process that requests maximizing
   // or restoring bounds, we can record the current bounds before we request
   // maximization, and clear it when we detect a state change.
-  gfx::Rect restored_bounds = platform_window()->GetRestoredBoundsInPixels();
+  gfx::Rect restored_bounds = platform_window()->GetRestoredBoundsInDIP();
 
   // When window is resized, |restored bounds| is not set and empty.
   // If |restored bounds| is empty, it returns the current window size.
   if (!restored_bounds.IsEmpty())
-    return ToDIPRect(restored_bounds);
+    return restored_bounds;
 
   return GetWindowBoundsInScreen();
 }
@@ -837,6 +836,16 @@ DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInPx() {
   // Anchor rect must be translated from DIP to px.
   window_anchor.anchor_rect = ToPixelRect(window_anchor.anchor_rect);
   return window_anchor;
+}
+
+gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToPixels(
+    const gfx::Rect& rect_in_dip) const {
+  return ToPixelRect(rect_in_dip);
+}
+
+gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToDIP(
+    const gfx::Rect& rect_in_pixels) const {
+  return ToDIPRect(rect_in_pixels);
 }
 
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {

@@ -371,12 +371,12 @@ void WaylandWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {
   NOTIMPLEMENTED();
 }
 
-void WaylandWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds_px) {
-  restored_bounds_px_ = bounds_px;
+void WaylandWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
+  restored_size_in_dip_ = bounds.size();
 }
 
-gfx::Rect WaylandWindow::GetRestoredBoundsInPixels() const {
-  return restored_bounds_px_;
+gfx::Rect WaylandWindow::GetRestoredBoundsInDIP() const {
+  return gfx::Rect(restored_size_in_dip_);
 }
 
 bool WaylandWindow::ShouldWindowContentsBeTransparent() const {

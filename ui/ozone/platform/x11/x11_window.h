@@ -97,8 +97,8 @@ class X11Window : public PlatformWindow,
   void SetCursor(scoped_refptr<PlatformCursor> cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
-  void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
-  gfx::Rect GetRestoredBoundsInPixels() const override;
+  void SetRestoredBoundsInDIP(const gfx::Rect& bounds) final;
+  gfx::Rect GetRestoredBoundsInDIP() const final;
   bool ShouldWindowContentsBeTransparent() const override;
   void SetZOrderLevel(ZOrderLevel order) override;
   ZOrderLevel GetZOrderLevel() const override;

@@ -247,11 +247,11 @@ void FlatlandWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {
   NOTIMPLEMENTED();
 }
 
-void FlatlandWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {
+void FlatlandWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
   NOTIMPLEMENTED();
 }
 
-gfx::Rect FlatlandWindow::GetRestoredBoundsInPixels() const {
+gfx::Rect FlatlandWindow::GetRestoredBoundsInDIP() const {
   NOTIMPLEMENTED();
   return gfx::Rect();
 }

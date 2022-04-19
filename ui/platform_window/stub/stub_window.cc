@@ -107,9 +107,9 @@ void StubWindow::MoveCursorTo(const gfx::Point& location) {}
 
 void StubWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {}
 
-void StubWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {}
+void StubWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {}
 
-gfx::Rect StubWindow::GetRestoredBoundsInPixels() const {
+gfx::Rect StubWindow::GetRestoredBoundsInDIP() const {
   return gfx::Rect();
 }
 

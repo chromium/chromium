@@ -988,7 +988,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximize) {
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
 
-  gfx::Rect restored_bounds = window_->GetRestoredBoundsInPixels();
+  gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_TRUE(restored_bounds.IsEmpty());
   gfx::Rect bounds = window_->GetBounds();
 
@@ -999,7 +999,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximize) {
   SendConfigureEvent(xdg_surface_, maximized_bounds.width(),
                      maximized_bounds.height(), 1, states.get());
   Sync();
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(bounds, restored_bounds);
 
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(current_bounds)));
@@ -1015,7 +1015,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximize) {
   Sync();
   bounds = window_->GetBounds();
   EXPECT_EQ(bounds, restored_bounds);
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
@@ -1026,7 +1026,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
   SendConfigureEvent(xdg_surface_, 0, 0, 1, states.get());
   Sync();
 
-  gfx::Rect restored_bounds = window_->GetRestoredBoundsInPixels();
+  gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
   gfx::Rect bounds = window_->GetBounds();
 
@@ -1037,7 +1037,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
   SendConfigureEvent(xdg_surface_, fullscreen_bounds.width(),
                      fullscreen_bounds.height(), 2, states.get());
   Sync();
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(bounds, restored_bounds);
 
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(current_bounds)));
@@ -1053,7 +1053,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
   Sync();
   bounds = window_->GetBounds();
   EXPECT_EQ(bounds, restored_bounds);
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
@@ -1062,7 +1062,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
 
-  gfx::Rect restored_bounds = window_->GetRestoredBoundsInPixels();
+  gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
   gfx::Rect bounds = window_->GetBounds();
 
@@ -1073,7 +1073,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
   SendConfigureEvent(xdg_surface_, maximized_bounds.width(),
                      maximized_bounds.height(), 1, states.get());
   Sync();
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(bounds, restored_bounds);
 
   const gfx::Rect fullscreen_bounds = gfx::Rect(0, 0, 1280, 720);
@@ -1083,7 +1083,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
   SendConfigureEvent(xdg_surface_, fullscreen_bounds.width(),
                      fullscreen_bounds.height(), 2, states.get());
   Sync();
-  gfx::Rect fullscreen_restore_bounds = window_->GetRestoredBoundsInPixels();
+  gfx::Rect fullscreen_restore_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, fullscreen_restore_bounds);
 
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(maximized_bounds)));
@@ -1094,7 +1094,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
   SendConfigureEvent(xdg_surface_, maximized_bounds.width(),
                      maximized_bounds.height(), 3, states.get());
   Sync();
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, fullscreen_restore_bounds);
 
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(current_bounds)));
@@ -1110,7 +1110,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
   Sync();
   bounds = window_->GetBounds();
   EXPECT_EQ(bounds, restored_bounds);
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
@@ -1133,7 +1133,7 @@ TEST_P(WaylandWindowTest, SendsBoundsOnRequest) {
   Sync();
 
   // Restored bounds should keep empty value.
-  gfx::Rect restored_bounds = window_->GetRestoredBoundsInPixels();
+  gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 
   // Second case is when Wayland sends a configure event with 1, 1 height and
@@ -1143,7 +1143,7 @@ TEST_P(WaylandWindowTest, SendsBoundsOnRequest) {
   Sync();
 
   // Restored bounds should keep empty value.
-  restored_bounds = window_->GetRestoredBoundsInPixels();
+  restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
@@ -1178,7 +1178,7 @@ TEST_P(WaylandWindowTest, UpdateWindowRegion) {
   EXPECT_EQ(mock_surface->input_region(), maximized_bounds);
 
   // Restore.
-  const gfx::Rect restored_bounds = window_->GetRestoredBoundsInPixels();
+  const gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(1);
   EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(1);
   window_->Restore();

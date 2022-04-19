@@ -869,7 +869,7 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   SendConfigureEvent(surface_->xdg_surface(), maximized_bounds.width(),
                      maximized_bounds.height(), 1, states.get());
   Sync();
-  auto restored_bounds = window_->GetRestoredBoundsInPixels();
+  auto restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(original_bounds, restored_bounds);
 
   // Start a window drag session.

@@ -166,9 +166,9 @@ void WinWindow::MoveCursorTo(const gfx::Point& location) {
 
 void WinWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {}
 
-void WinWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {}
+void WinWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {}
 
-gfx::Rect WinWindow::GetRestoredBoundsInPixels() const {
+gfx::Rect WinWindow::GetRestoredBoundsInDIP() const {
   return gfx::Rect();
 }
 

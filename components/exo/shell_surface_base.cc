@@ -1018,6 +1018,10 @@ ShellSurfaceBase::CreateNonClientFrameView(views::Widget* widget) {
   return CreateNonClientFrameViewInternal(widget);
 }
 
+bool ShellSurfaceBase::ShouldSaveWindowPlacement() const {
+  return !is_popup_ && !movement_disabled_;
+}
+
 bool ShellSurfaceBase::WidgetHasHitTestMask() const {
   return true;
 }

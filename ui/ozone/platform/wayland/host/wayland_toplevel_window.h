@@ -186,7 +186,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetSizeConstraints();
 
   // If current state is not PlatformWindowState::kNormal, stores the current
-  // bounds into restored_bounds_px_ so that they can be restored when the
+  // size into restored_bounds_dip_ so that they can be restored when the
   // window gets back to normal state.  Otherwise, resets the restored bounds.
   void SetOrResetRestoredBounds();
 

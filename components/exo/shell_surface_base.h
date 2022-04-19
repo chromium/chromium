@@ -244,6 +244,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   views::View* GetContentsView() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
+  bool ShouldSaveWindowPlacement() const override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
 

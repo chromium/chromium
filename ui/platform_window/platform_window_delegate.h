@@ -138,6 +138,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
   // Enables or disables frame rate throttling.
   virtual void SetFrameRateThrottleEnabled(bool enabled);
+
+  virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;
+  virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixells) const;
 };
 
 }  // namespace ui

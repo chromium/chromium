@@ -144,11 +144,11 @@ void DrmWindowHost::ConfineCursorToBounds(const gfx::Rect& bounds) {
   cursor_->CommitBoundsChange(widget_, bounds_, bounds);
 }
 
-void DrmWindowHost::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {
+void DrmWindowHost::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
   NOTREACHED();
 }
 
-gfx::Rect DrmWindowHost::GetRestoredBoundsInPixels() const {
+gfx::Rect DrmWindowHost::GetRestoredBoundsInDIP() const {
   NOTREACHED();
   return gfx::Rect();
 }

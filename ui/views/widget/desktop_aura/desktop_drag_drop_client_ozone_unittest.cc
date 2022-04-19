@@ -88,8 +88,8 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   void SetCursor(scoped_refptr<ui::PlatformCursor> cursor) override {}
   void MoveCursorTo(const gfx::Point& location) override {}
   void ConfineCursorToBounds(const gfx::Rect& bounds) override {}
-  void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override {}
-  gfx::Rect GetRestoredBoundsInPixels() const override { return gfx::Rect(); }
+  void SetRestoredBoundsInDIP(const gfx::Rect& bounds) override {}
+  gfx::Rect GetRestoredBoundsInDIP() const override { return gfx::Rect(); }
   void SetUseNativeFrame(bool use_native_frame) override {}
   bool ShouldUseNativeFrame() const override { return false; }
   void SetWindowIcons(const gfx::ImageSkia& window_icon,

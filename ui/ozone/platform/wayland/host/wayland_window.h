@@ -189,8 +189,8 @@ class WaylandWindow : public PlatformWindow,
   void SetCursor(scoped_refptr<PlatformCursor> cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
-  void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
-  gfx::Rect GetRestoredBoundsInPixels() const override;
+  void SetRestoredBoundsInDIP(const gfx::Rect& bounds) override;
+  gfx::Rect GetRestoredBoundsInDIP() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   bool IsTranslucentWindowOpacitySupported() const override;
@@ -354,6 +354,10 @@ class WaylandWindow : public PlatformWindow,
   // handler that receives DIP from Wayland.
   gfx::Rect pending_bounds_dip_;
 
+  // The size of the platform window before it went maximized or fullscreen in
+  // dip.
+  gfx::Size restored_size_in_dip_;
+
   // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
   // ack_configure with |serial| will be sent to the Wayland compositor.
   struct PendingConfigure {
@@ -442,8 +446,7 @@ class WaylandWindow : public PlatformWindow,
   // Viz. However, it is not guaranteed that the next arriving frame will match
   // |bounds_px_|.
   gfx::Rect bounds_px_;
-  // The bounds of the platform window before it went maximized or fullscreen.
-  gfx::Rect restored_bounds_px_;
+
   // The size presented by the gpu process. This is the visible size of the
   // window, which can be different from |bounds_px_| due to renderers taking
   // time to produce a compositor frame.

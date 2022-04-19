@@ -615,7 +615,7 @@ void X11Window::ToggleFullscreen() {
   // See https://crbug.com/361408
   gfx::Rect new_bounds_px = GetBounds();
   if (fullscreen) {
-    SetRestoredBoundsInPixels(new_bounds_px);
+    restored_bounds_in_pixels_ = new_bounds_px;
     if (x11_extension_delegate_)
       new_bounds_px = x11_extension_delegate_->GetGuessedFullScreenSizeInPx();
   } else {
@@ -625,9 +625,9 @@ void X11Window::ToggleFullscreen() {
     // before trying to restore its bounds (saved before entering in browser
     // fullscreen mode).
     if (was_fullscreen)
-      new_bounds_px = GetRestoredBoundsInPixels();
+      new_bounds_px = restored_bounds_in_pixels_;
     else
-      SetRestoredBoundsInPixels({});
+      restored_bounds_in_pixels_ = gfx::Rect();
   }
 
   // Do not go through SetBounds as long as it adjusts bounds and sets them to X
@@ -668,7 +668,7 @@ void X11Window::Maximize() {
   // When we are in the process of requesting to maximize a window, we can
   // accurately keep track of our restored bounds instead of relying on the
   // heuristics that are in the PropertyNotify and ConfigureNotify handlers.
-  SetRestoredBoundsInPixels(GetBounds());
+  restored_bounds_in_pixels_ = GetBounds();
 
   // Some WMs do not respect maximization hints on unmapped windows, so we
   // save this one for later too.
@@ -840,12 +840,14 @@ void X11Window::ConfineCursorToBounds(const gfx::Rect& bounds) {
   has_pointer_barriers_ = true;
 }
 
-void X11Window::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {
-  restored_bounds_in_pixels_ = bounds;
+void X11Window::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
+  restored_bounds_in_pixels_ =
+      platform_window_delegate_->ConvertRectToPixels(bounds);
 }
 
-gfx::Rect X11Window::GetRestoredBoundsInPixels() const {
-  return restored_bounds_in_pixels_;
+gfx::Rect X11Window::GetRestoredBoundsInDIP() const {
+  return platform_window_delegate_->ConvertRectToDIP(
+      restored_bounds_in_pixels_);
 }
 
 bool X11Window::ShouldWindowContentsBeTransparent() const {
@@ -1335,19 +1337,19 @@ void X11Window::OnXWindowStateChanged() {
   if (window_fullscreen_mode != browser_fullscreen_mode)
     return;
 
-  if (GetRestoredBoundsInPixels().IsEmpty()) {
+  if (restored_bounds_in_pixels_.IsEmpty()) {
     if (IsMaximized()) {
       // The request that we become maximized originated from a different
       // process. |bounds_in_pixels_| already contains our maximized bounds. Do
       // a best effort attempt to get restored bounds by setting it to our
       // previously set bounds (and if we get this wrong, we aren't any worse
       // off since we'd otherwise be returning our maximized bounds).
-      SetRestoredBoundsInPixels(previous_bounds_in_pixels_);
+      restored_bounds_in_pixels_ = previous_bounds_in_pixels_;
     }
   } else if (!IsMaximized() && !IsFullscreen()) {
     // If we have restored bounds, but WM_STATE no longer claims to be
     // maximized or fullscreen, we should clear our restored bounds.
-    SetRestoredBoundsInPixels(gfx::Rect());
+    restored_bounds_in_pixels_ = gfx::Rect();
   }
 
   if (new_state != state_) {

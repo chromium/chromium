@@ -241,11 +241,11 @@ void ScenicWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void ScenicWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {
+void ScenicWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-gfx::Rect ScenicWindow::GetRestoredBoundsInPixels() const {
+gfx::Rect ScenicWindow::GetRestoredBoundsInDIP() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }

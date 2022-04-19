@@ -1841,7 +1841,6 @@ void Widget::SaveWindowPlacement() {
   // bail.
   if (!widget_delegate_ || !widget_delegate_->ShouldSaveWindowPlacement())
     return;
-
   ui::WindowShowState show_state = ui::SHOW_STATE_NORMAL;
   gfx::Rect bounds;
   native_widget_->GetWindowPlacement(&bounds, &show_state);
