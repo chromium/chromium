@@ -10,8 +10,6 @@
  * @suppress {checkTypes}
  */
 
-goog.provide('__crWeb.languageDetection');
-
 __gCrWeb.languageDetection = {};
 
 // Store languageDetection namespace object in a global __gCrWeb object
@@ -19,7 +17,6 @@ __gCrWeb.languageDetection = {};
 // the minification.
 __gCrWeb['languageDetection'] = __gCrWeb.languageDetection;
 
-(function() {
 /**
  * The cache of the text content that was extracted from the page
  */
@@ -170,4 +167,3 @@ __gCrWeb.languageDetection['retrieveBufferedTextContent'] = function() {
   }
   return textContent;
 };
-}());  // End of anonymous function.

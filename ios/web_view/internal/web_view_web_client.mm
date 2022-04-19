@@ -120,7 +120,7 @@ NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
       WebViewEarlyPageScriptProvider::FromBrowserState(browser_state);
   [scripts addObject:provider.GetScript()];
 
-  [scripts addObject:GetPageScript(@"web_view_main_frame")];
+  [scripts addObject:GetPageScript(@"language_detection")];
 
   return [scripts componentsJoinedByString:@";"];
 }

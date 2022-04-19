@@ -312,7 +312,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 NSString* ChromeWebClient::GetDocumentStartScriptForMainFrame(
     web::BrowserState* browser_state) const {
   NSMutableArray* scripts = [NSMutableArray array];
-  [scripts addObject:GetPageScript(@"chrome_bundle_main_frame")];
+  [scripts addObject:GetPageScript(@"language_detection")];
 
   return [scripts componentsJoinedByString:@";"];
 }

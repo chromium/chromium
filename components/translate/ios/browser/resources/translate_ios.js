@@ -10,7 +10,7 @@
  * @suppress {checkTypes, checkVars}
  */
 
-// Requires __crWeb.base
+// Requires functions from base.js
 
 /**
  * Namespace for this module.
@@ -21,9 +21,6 @@ __gCrWeb.translate = {};
 // string, so it does not get renamed by closure compiler during the
 // minification.
 __gCrWeb['translate'] = __gCrWeb.translate;
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * Defines function to install callbacks on cr.googleTranslate.
@@ -120,40 +117,23 @@ if (typeof XMLHttpRequest.prototype.realSend === 'undefined') {
  * @param {string} responseURL The url which the response was returned from.
  * @param {string} responseText The text received from the server.
  */
-__gCrWeb.translate['handleResponse'] = function(url, requestID, status,
-                                                statusText, responseURL,
-                                                responseText) {
+__gCrWeb.translate['handleResponse'] = function(
+    url, requestID, status, statusText, responseURL, responseText) {
   // Retrive xhr object that's waiting for the response.
   xhr = __gCrWeb.translate['xhrs'][requestID];
 
   // Configure xhr as it would have been if it was sent.
   Object.defineProperties(xhr, {
-    responseText: {
-      value: responseText
-    },
-    response: {
-      value: responseText
-    },
-    readyState: {
-      value: XMLHttpRequest.DONE
-    },
-    status: {
-      value: status
-    },
-    statusText : {
-      value: statusText
-    },
-    responseType: {
-      value: "text"
-    },
-    responseURL: {
-      value: responseURL
-    },
+    responseText: {value: responseText},
+    response: {value: responseText},
+    readyState: {value: XMLHttpRequest.DONE},
+    status: {value: status},
+    statusText: {value: statusText},
+    responseType: {value: 'text'},
+    responseURL: {value: responseURL},
   });
   xhr.onreadystatechange();
 
   // Clean it up
   delete __gCrWeb.translate['xhrs'][requestID];
 };
-
-}());  // End of anonymous function.

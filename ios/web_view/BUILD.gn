@@ -9,7 +9,7 @@ import("//build/config/locales.gni")
 import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//ios/web_view/features.gni")
 import("//ios/web_view/repack.gni")
 import("//testing/test.gni")
@@ -517,12 +517,11 @@ test("ios_web_view_inttests") {
   assert_no_deps = ios_assert_no_deps
 }
 
-js_compile_bundle("web_view_main_frame") {
-  closure_entry_point = "__crWeb.webViewMainFrame"
-  sources = [
-    "//components/translate/ios/browser/resources/language_detection.js",
-    "resources/web_view_main_frame.js",
-  ]
+optimize_js("web_view_main_frame") {
+  primary_script =
+      "//components/translate/ios/browser/resources/language_detection.js"
+  sources =
+      [ "//components/translate/ios/browser/resources/language_detection.js" ]
 }
 
 repack_locales("repack_locales") {

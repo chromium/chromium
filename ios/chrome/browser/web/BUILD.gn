@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("web") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -195,14 +195,11 @@ source_set("unit_tests") {
   ]
 }
 
-js_compile_bundle("chrome_bundle_main_frame") {
-  closure_entry_point = "__crWeb.chromeBundleMainFrame"
-  sources = [
-    "//components/translate/ios/browser/resources/language_detection.js",
-    "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
-    "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
-    "resources/chrome_bundle_main_frame.js",
-  ]
+optimize_js("chrome_bundle_main_frame") {
+  primary_script =
+      "//components/translate/ios/browser/resources/language_detection.js"
+  sources =
+      [ "//components/translate/ios/browser/resources/language_detection.js" ]
 }
 
 source_set("web_internal") {
