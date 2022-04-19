@@ -1530,7 +1530,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Power.Mac" units="mW" expires_after="2022-10-09">
+<histogram base="true" name="Power.Mac" units="mW" expires_after="2022-10-16">
   <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
