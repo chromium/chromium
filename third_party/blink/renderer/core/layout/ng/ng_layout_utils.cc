@@ -282,11 +282,13 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (node.IsFieldsetContainer())
       return NGLayoutCacheStatus::kNeedsLayout;
 
-    // Textfields are block-flow, but we can't apply simplified layout due to
-    // -internal-align-self-block.
+    // We can't apply simplified layout if |-internal-align-self-block:center|
+    // is specified to a child.
+    // Checking only the first child is enough for the current usages of
+    // |-internal-align-self-block:center|.
     // TODO(tkent): We could store a bit on the |NGLayoutResult| which
     // indicates if we have a child with "-internal-align-self-block:center".
-    if (node.IsTextField())
+    if (node.FirstChild() && node.FirstChild().Style().AlignSelfBlockCenter())
       return NGLayoutCacheStatus::kNeedsLayout;
 
     // If we are the document or body element in quirks mode, changing our size
