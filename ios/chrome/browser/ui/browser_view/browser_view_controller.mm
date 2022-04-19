@@ -3912,6 +3912,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   urlLoadingBrowserAgent->Load(urlLoadParams);
 }
 
+- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
+  // TODO(crbug.com/1277974): Implement this when downstream lands.
+}
+
 #pragma mark - WebStateListObserving methods
 
 // Observer method, active WebState changed.

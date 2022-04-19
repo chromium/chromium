@@ -15,6 +15,10 @@
 // Opens a new tab page scrolled into the feed with a given |feedType| selected.
 - (void)openNTPScrolledIntoFeedType:(FeedType)feedType;
 
+// Notifies the new tab page if there is new unseen content in the Following
+// feed.
+- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_NEW_TAB_PAGE_COMMANDS_H_
