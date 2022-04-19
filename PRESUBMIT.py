@@ -5079,9 +5079,6 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(
         input_api.canned_checks.CheckChangeHasNoUnwantedTags(
             input_api, output_api))
-    results.extend(
-        input_api.canned_checks.CheckChangeHasDescription(
-            input_api, output_api))
     return results
 
 

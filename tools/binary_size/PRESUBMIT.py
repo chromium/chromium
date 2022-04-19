@@ -34,11 +34,6 @@ def CommonChecks(input_api, output_api):
       input_api.canned_checks.CheckPatchFormatted(input_api,
                                                   output_api,
                                                   check_js=True))
-
-  if input_api.is_committing:
-    output.extend(input_api.canned_checks.PanProjectChecks(input_api,
-                                                           output_api,
-                                                           owners_check=False))
   return output
 
 

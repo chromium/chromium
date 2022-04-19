@@ -34,11 +34,6 @@ def CommonChecks(input_api, output_api):
           input_api.os_path.join(input_api.PresubmitLocalPath(), 'tests'),
           files_to_check=[r'.+_test\.py$'],
           skip_shebang_check=True))
-
-  if input_api.is_committing:
-    output.extend(input_api.canned_checks.PanProjectChecks(input_api,
-                                                           output_api,
-                                                           owners_check=False))
   return output
 
 
