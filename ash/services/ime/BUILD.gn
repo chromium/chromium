@@ -35,8 +35,6 @@ source_set("decoder") {
 
 source_set("lib") {
   sources = [
-    "associated_rule_based_engine.cc",
-    "associated_rule_based_engine.h",
     "connection_factory.cc",
     "connection_factory.h",
     "decoder/decoder_engine.cc",
@@ -97,7 +95,6 @@ source_set("services_unittests") {
   ]
   sources = [
     "decoder/system_engine_unittest.cc",
-    "ime_service_associated_unittest.cc",
     "ime_service_unittest.cc",
   ]
 }

@@ -48,10 +48,6 @@ std::string ResolveDownloadPath(const base::FilePath& file) {
   return target.MaybeAsASCII();
 }
 
-bool IsRuleBasedInputMethod(const std::string& engine_id) {
-  return base::StartsWith(engine_id, "m17n:", base::CompareCase::SENSITIVE);
-}
-
 }  // namespace
 
 std::string FieldTrialParamsRetrieverImpl::GetFieldTrialParamValueByFeature(
@@ -84,7 +80,6 @@ void ImeService::BindInputEngineManager(
 void ImeService::ResetAllBackendConnections() {
   decoder_engine_.reset();
   system_engine_.reset();
-  rule_based_engine_.reset();
   connection_factory_.reset();
 }
 
@@ -104,8 +99,7 @@ void ImeService::ConnectToImeEngine(
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
   if ((connection_factory_ && connection_factory_->IsConnected()) ||
-      (system_engine_ && system_engine_->IsConnected()) ||
-      (rule_based_engine_ && rule_based_engine_->IsConnected())) {
+      (system_engine_ && system_engine_->IsConnected())) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
@@ -124,19 +118,9 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingReceiver<mojom::InputMethod> input_method,
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
-  ResetAllBackendConnections();
-
-  if (IsRuleBasedInputMethod(ime_spec)) {
-    rule_based_engine_ = RuleBasedEngine::Create(
-        ime_spec, std::move(input_method), std::move(input_method_host));
-    std::move(callback).Run(/*bound=*/rule_based_engine_ != nullptr);
-  } else {
-    system_engine_ = std::make_unique<SystemEngine>(
-        this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
-    bool bound = system_engine_->BindRequest(ime_spec, std::move(input_method),
-                                             std::move(input_method_host));
-    std::move(callback).Run(bound);
-  }
+  // This method is now deprecated and should not be used to connect to an
+  // input method.
+  std::move(callback).Run(/*bound=*/false);
 }
 
 void ImeService::InitializeConnectionFactory(

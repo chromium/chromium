@@ -127,7 +127,6 @@ class ImeService : public mojom::ImeService,
   //     connection_factory_ --> rule_based_engine_mojo_connection_factory_
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<SystemEngine> system_engine_;
-  std::unique_ptr<RuleBasedEngine> rule_based_engine_;
   std::unique_ptr<ConnectionFactory> connection_factory_;
 
   // Platform delegate for access to privilege resources.

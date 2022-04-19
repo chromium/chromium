@@ -45,7 +45,7 @@ uint8_t GenerateModifierValue(const mojom::ModifierStatePtr& modifier_state,
 
 mojom::KeyEventResult HandleEngineResult(
     const rulebased::ProcessKeyResult& result,
-    mojo::Remote<mojom::InputMethodHost>& host) {
+    mojo::AssociatedRemote<mojom::InputMethodHost>& host) {
   if (!result.commit_text.empty()) {
     host->CommitText(ConvertToUtf16AndNormalize(result.commit_text),
                      mojom::CommitTextCursorBehavior::kMoveCursorAfterText);
@@ -92,8 +92,8 @@ bool IsImeSupportedByRulebased(const std::string& ime_spec) {
 
 std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<mojom::InputMethodHost> host) {
+    mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+    mojo::PendingAssociatedRemote<mojom::InputMethodHost> host) {
   // RuleBasedEngine constructor is private, so have to use WrapUnique here.
   return IsImeSupportedByRulebased(ime_spec)
              ? base::WrapUnique(new RuleBasedEngine(
@@ -162,15 +162,15 @@ void RuleBasedEngine::OnCandidateSelected(uint32_t selected_candidate_index) {
 
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<mojom::InputMethodHost> host)
+    mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+    mojo::PendingAssociatedRemote<mojom::InputMethodHost> host)
     : receiver_(this, std::move(receiver)), host_(std::move(host)) {
   DCHECK(IsImeSupportedByRulebased(ime_spec));
 
   engine_.Activate(GetIdFromImeSpec(ime_spec));
 
   receiver_.set_disconnect_handler(
-      base::BindOnce(&mojo::Receiver<mojom::InputMethod>::reset,
+      base::BindOnce(&mojo::AssociatedReceiver<mojom::InputMethod>::reset,
                      base::Unretained(&receiver_)));
 }
 
