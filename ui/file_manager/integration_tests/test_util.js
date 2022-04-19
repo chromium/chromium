@@ -1511,6 +1511,19 @@ export async function getHistogramSum(name) {
 }
 
 /**
+ * Checks the expected total count for the histogram |name|.
+ * @param {string} name The histogram to be queried.
+ * @param {number} count The expected sample count.
+ */
+export async function expectHistogramTotalCount(name, count) {
+  await sendTestMessage({
+    'name': 'expectHistogramTotalCount',
+    'histogramName': name,
+    'count': count,
+  });
+}
+
+/**
  * Returns the count for the user action |name|.
  * @param {string} name The user action to be queried.
  * @return {!Promise<number>} A promise fulfilled with the count.

@@ -833,6 +833,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.ZipTask.Time" units="ms" expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time for the execution of a zipping task. Times are only reported on
+    success.
+  </summary>
+</histogram>
+
 <histogram name="FileReaderSync.WorkerType" enum="FileReaderSyncWorkerType"
     expires_after="M85">
   <owner>mek@chromium.org</owner>

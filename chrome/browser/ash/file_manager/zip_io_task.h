@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/speedometer.h"
 #include "chrome/services/file_util/public/cpp/zip_file_creator.h"
@@ -59,6 +60,9 @@ class ZipIOTask : public IOTask {
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
+
+  // A member used to track the time for the zipping task to complete.
+  base::TimeTicks start_time_;
 
   base::WeakPtrFactory<ZipIOTask> weak_ptr_factory_{this};
 };

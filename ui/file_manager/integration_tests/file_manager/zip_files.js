@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, wait, waitForAppWindow} from '../test_util.js';
+import {addEntries, ENTRIES, expectHistogramTotalCount, getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_ZIP_ENTRY_SET} from './test_data.js';
+
+/**
+ * The name of the UMA to track the zip creation time.
+ * @const {string}
+ */
+const ZipCreationTimeHistogramName = 'FileBrowser.ZipTask.Time';
 
 /**
  * Returns the expected file list row entries after opening (mounting) the
@@ -198,6 +204,11 @@ testcase.zipCreateFileDownloads = async () => {
   // Check: a zip file should be created.
   const files = getZipSelectionFileListRowEntries();
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Check: In Files SWA, a zip time histogram value should have been recorded.
+  const expectedHistogramCount = remoteCall.isSwaMode() ? 1 : 0;
+  await expectHistogramTotalCount(
+      ZipCreationTimeHistogramName, expectedHistogramCount);
 };
 
 /**
@@ -231,6 +242,11 @@ testcase.zipCreateFileDrive = async () => {
   // Check: a zip file should be created.
   const files = getZipSelectionFileListRowEntries();
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Check: In Files SWA, a zip time histogram value should have been recorded.
+  const expectedHistogramCount = remoteCall.isSwaMode() ? 1 : 0;
+  await expectHistogramTotalCount(
+      ZipCreationTimeHistogramName, expectedHistogramCount);
 };
 
 /**
@@ -283,6 +299,11 @@ testcase.zipCreateFileUsb = async () => {
   // Check: a zip file should be created.
   const files = getZipSelectionFileListRowEntries();
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Check: In Files SWA, a zip time histogram value should have been recorded.
+  const expectedHistogramCount = remoteCall.isSwaMode() ? 1 : 0;
+  await expectHistogramTotalCount(
+      ZipCreationTimeHistogramName, expectedHistogramCount);
 };
 
 /**

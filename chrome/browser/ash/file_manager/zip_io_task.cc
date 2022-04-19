@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -78,6 +79,8 @@ void ZipIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
+  start_time_ = base::TimeTicks::Now();
+
   if (progress_.sources.size() == 0) {
     Complete(State::kSuccess);
     return;
@@ -130,6 +133,10 @@ void ZipIOTask::Cancel() {
 // accessed after calling this.
 void ZipIOTask::Complete(State state) {
   progress_.state = state;
+  if (state == State::kSuccess) {
+    base::UmaHistogramTimes("FileBrowser.ZipTask.Time",
+                            base::TimeTicks::Now() - start_time_);
+  }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));

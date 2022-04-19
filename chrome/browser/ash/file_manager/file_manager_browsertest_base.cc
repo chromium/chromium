@@ -738,6 +738,25 @@ struct GetTotalHistogramSum {
   std::string histogram_name;
 };
 
+struct ExpectHistogramTotalCountMessage {
+  static bool ConvertJSONValue(const base::DictionaryValue& value,
+                               ExpectHistogramTotalCountMessage* message) {
+    base::JSONValueConverter<ExpectHistogramTotalCountMessage> converter;
+    return converter.Convert(value, message);
+  }
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<ExpectHistogramTotalCountMessage>* converter) {
+    converter->RegisterStringField(
+        "histogramName", &ExpectHistogramTotalCountMessage::histogram_name);
+    converter->RegisterIntField("count",
+                                &ExpectHistogramTotalCountMessage::count);
+  }
+
+  std::string histogram_name;
+  int count = 0;
+};
+
 struct GetUserActionCountMessage {
   static bool ConvertJSONValue(const base::DictionaryValue& value,
                                GetUserActionCountMessage* message) {
@@ -3009,6 +3028,15 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         base::Value(base::NumberToString(
             histograms_.GetTotalSum(message.histogram_name))),
         output);
+    return;
+  }
+
+  if (name == "expectHistogramTotalCount") {
+    ExpectHistogramTotalCountMessage message;
+    ASSERT_TRUE(
+        ExpectHistogramTotalCountMessage::ConvertJSONValue(value, &message));
+    histograms_.ExpectTotalCount(message.histogram_name, message.count);
+
     return;
   }
 
