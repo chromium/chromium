@@ -47,6 +47,7 @@ js_library("feedback_flow_test") {
     "../..:chai_assert",
     "//ash/webui/os_feedback_ui/resources:confirmation_page",
     "//ash/webui/os_feedback_ui/resources:feedback_flow",
+    "//ash/webui/os_feedback_ui/resources:feedback_types",
     "//ash/webui/os_feedback_ui/resources:search_page",
     "//ash/webui/os_feedback_ui/resources:share_data_page",
   ]

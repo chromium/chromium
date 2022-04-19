@@ -235,7 +235,7 @@ export class SearchPageElement extends PolymerElement {
       this.dispatchEvent(new CustomEvent('continue-click', {
         composed: true,
         bubbles: true,
-        detail: {currentState: FeedbackFlowState.SEARCH}
+        detail: {currentState: FeedbackFlowState.SEARCH, description: textInput}
       }));
     }
   }

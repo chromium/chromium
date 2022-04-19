@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeedbackFlowState} from './feedback_flow.js';
-import {FeedbackContext} from './feedback_types.js';
+import {FeedbackContext, Report} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -59,6 +59,51 @@ export class ShareDataPageElement extends PolymerElement {
       bubbles: true,
       detail: {currentState: FeedbackFlowState.SHARE_DATA}
     }));
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleSendButtonClicked_(e) {
+    e.stopPropagation();
+    // TODO(xiangdongkong): Disable the button to prevent sending the same
+    // report again.
+    this.dispatchEvent(new CustomEvent('continue-click', {
+      composed: true,
+      bubbles: true,
+      detail: {
+        currentState: FeedbackFlowState.SHARE_DATA,
+        report: this.createReport_()
+      }
+    }));
+  }
+
+  /**
+   * @return {!{
+   *  feedbackContext: FeedbackContext,
+   *  includeSystemLogsAndHistograms: boolean,
+   * }}
+   * @private
+   */
+  createReport_() {
+    const report = {
+      feedbackContext: {},
+      includeSystemLogsAndHistograms:
+          this.shadowRoot.querySelector('#sysInfoCheckbox').checked
+    };
+
+    const email = this.shadowRoot.querySelector('#userEmailDropDown').value;
+    if (email) {
+      report.feedbackContext.email = email;
+    }
+
+    if (this.shadowRoot.querySelector('#pageUrlCheckbox').checked) {
+      report.feedbackContext.pageUrl = {
+        url: this.shadowRoot.querySelector('#pageUrlText').value
+      };
+    }
+    return report;
   }
 }
 
