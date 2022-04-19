@@ -541,7 +541,7 @@
          * on the global object. that was set by the test harness when it
          * created the ShadowRealm.
          */
-        if (global_scope.GLOBAL.isShadowRealm()) {
+        if (global_scope.GLOBAL && global_scope.GLOBAL.isShadowRealm()) {
             return new ShadowRealmTestEnvironment();
         }
 
