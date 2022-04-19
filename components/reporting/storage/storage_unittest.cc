@@ -732,13 +732,6 @@ class StorageTest
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
               /*renew_encryption_key_period=*/base::Minutes(30))) {
-    ASSERT_FALSE(storage_) << "TestStorage already assigned";
-    StatusOr<scoped_refptr<Storage>> storage_result =
-        CreateTestStorage(options, encryption_module);
-    ASSERT_OK(storage_result)
-        << "Failed to create TestStorage, error=" << storage_result.status();
-    storage_ = std::move(storage_result.ValueOrDie());
-
     if (expect_to_need_key_) {
       // Set uploader expectations for any queue; expect no records and need
       // key. Make sure no uploads happen, and key is requested.
@@ -749,6 +742,13 @@ class StorageTest
           }))
           .RetiresOnSaturation();
     }
+
+    ASSERT_FALSE(storage_) << "TestStorage already assigned";
+    StatusOr<scoped_refptr<Storage>> storage_result =
+        CreateTestStorage(options, encryption_module);
+    ASSERT_OK(storage_result)
+        << "Failed to create TestStorage, error=" << storage_result.status();
+    storage_ = std::move(storage_result.ValueOrDie());
   }
 
   void ResetTestStorage() {
