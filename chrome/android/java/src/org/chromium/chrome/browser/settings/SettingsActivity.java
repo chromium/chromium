@@ -48,6 +48,9 @@ import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactor
 import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
@@ -363,9 +366,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     HelpAndFeedbackLauncherImpl.getInstance());
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
+            PasswordCheckupClientHelper checkupHelper = null;
+            if (PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
+                checkupHelper = PasswordCheckupClientHelperFactory.getInstance().createHelper();
+            }
             SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,
                     new SafetyCheckUpdatesDelegateImpl(this), mSettingsLauncher,
-                    SyncConsentActivityLauncherImpl.get());
+                    SyncConsentActivityLauncherImpl.get(), checkupHelper);
         }
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment,
