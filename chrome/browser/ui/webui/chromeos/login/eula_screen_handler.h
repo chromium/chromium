@@ -36,8 +36,6 @@ class EulaView {
   virtual void ShowStatsUsageLearnMore() = 0;
   virtual void ShowAdditionalTosDialog() = 0;
   virtual void ShowSecuritySettingsDialog() = 0;
-  virtual void HideSecuritySettingsInfo() = 0;
-  virtual void HideBackButton() = 0;
 };
 
 // WebUI implementation of EulaScreenView. It is used to interact
@@ -61,8 +59,6 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   void ShowStatsUsageLearnMore() override;
   void ShowAdditionalTosDialog() override;
   void ShowSecuritySettingsDialog() override;
-  void HideSecuritySettingsInfo() override;
-  void HideBackButton() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
@@ -81,10 +77,6 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  // Booleans to control parts of UI for different flows.
-  bool security_settings_hidden_ = false;
-  bool back_button_hidden_ = false;
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;

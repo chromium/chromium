@@ -304,20 +304,6 @@ class EulaScreen extends EulaScreenBase {
       initialized_: {
         type: Boolean,
       },
-
-      /**
-       * Flag that enabled security settings button to be shown.
-       */
-      securitySettingsInfoHidden_: {
-        type: Boolean,
-      },
-
-      /**
-       * Flag that hides back button.
-       */
-      backButtonHidden_: {
-        type: Boolean,
-      }
     };
   }
 
@@ -328,8 +314,6 @@ class EulaScreen extends EulaScreenBase {
     this.usageStatsChecked = false;
     this.tpmDescription_ = '';
     this.initialized_ = false;
-    this.securitySettingsInfoHidden_ = false;
-    this.backButtonHidden_ = false;
   }
 
   get EXTERNAL_API() {
@@ -345,15 +329,8 @@ class EulaScreen extends EulaScreenBase {
 
   /**
    * Called just before the dialog is shown
-   * @param {Object} data
    */
-  onBeforeShow(data) {
-    if (data && 'backButtonHidden' in data) {
-      this.backButtonHidden_ = data['backButtonHidden'];
-    }
-    if (data && 'securitySettingsShown' in data) {
-      this.securitySettingsInfoHidden_ = data['securitySettingsShown'];
-    }
+  onBeforeShow() {
     window.setTimeout(this.initializeScreen_.bind(this), 0);
     this.loadEula();
   }

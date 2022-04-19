@@ -3,13 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {Oobe} from './cr_ui.m.js';
-import * as OobeDebugger from './debug/debug.m.js';
-import {invokePolymerMethod} from './display_manager.m.js';
-import {loadTimeData} from './i18n_setup.js';
 import 'chrome://oobe/components/test_util.m.js';
 import 'chrome://oobe/test_api/test_api.m.js';
-import {i18nTemplate} from 'chrome://resources/js/i18n_template_no_process.m.js';
 // clang-format on
 
 import 'chrome://oobe/screens/common/app_downloading.m.js';
@@ -32,7 +27,6 @@ import 'chrome://oobe/screens/common/managed_terms_of_service.m.js';
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';
 import 'chrome://oobe/screens/common/multidevice_setup.m.js';
 import 'chrome://oobe/screens/common/offline_ad_login.m.js';
-import 'chrome://oobe/screens/common/oobe_eula.m.js';
 import 'chrome://oobe/screens/common/oobe_reset.m.js';
 import 'chrome://oobe/screens/common/os_install.m.js';
 import 'chrome://oobe/screens/common/os_trial.m.js';
@@ -62,10 +56,18 @@ import 'chrome://oobe/screens/oobe/demo_setup.m.js';
 import 'chrome://oobe/screens/oobe/enable_debugging.m.js';
 import 'chrome://oobe/screens/oobe/enterprise_enrollment.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
+import 'chrome://oobe/screens/oobe/oobe_eula.m.js';
 import 'chrome://oobe/screens/oobe/oobe_network.m.js';
 import 'chrome://oobe/screens/oobe/welcome.m.js';
 import 'chrome://oobe/screens/oobe/packaged_license.m.js';
 import 'chrome://oobe/screens/oobe/update.m.js';
+
+import {i18nTemplate} from 'chrome://resources/js/i18n_template_no_process.m.js';
+
+import {Oobe} from './cr_ui.m.js';
+import * as OobeDebugger from './debug/debug.m.js';
+import {invokePolymerMethod} from './display_manager.m.js';
+import {loadTimeData} from './i18n_setup.js';
 
 function initializeDebugger() {
   if (document.readyState === 'loading') {

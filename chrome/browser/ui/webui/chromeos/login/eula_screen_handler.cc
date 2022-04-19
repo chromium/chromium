@@ -45,13 +45,7 @@ void EulaScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  // TODO(https://crbug.com/1309022): pass variables below directly to
-  //                                  EulaScreenHandler::Show once show_on_init_
-  //                                  is gone.
-  base::Value::Dict data;
-  data.Set("backButtonHidden", back_button_hidden_);
-  data.Set("securitySettingsShown", security_settings_hidden_);
-  ShowInWebUI(std::move(data));
+  ShowInWebUI();
 }
 
 void EulaScreenHandler::Hide() {
@@ -152,14 +146,6 @@ void EulaScreenHandler::ShowAdditionalTosDialog() {
 
 void EulaScreenHandler::ShowSecuritySettingsDialog() {
   CallJS("login.EulaScreen.showSecuritySettingsDialog");
-}
-
-void EulaScreenHandler::HideSecuritySettingsInfo() {
-  security_settings_hidden_ = true;
-}
-
-void EulaScreenHandler::HideBackButton() {
-  back_button_hidden_ = true;
 }
 
 void EulaScreenHandler::UpdateTpmDesc(

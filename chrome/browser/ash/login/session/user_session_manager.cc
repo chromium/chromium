@@ -456,7 +456,6 @@ bool IsHwDataUsageDeviceSettingSet() {
 // Updates local_state kOobeRevenUpdatedToFlex pref to true if OS was updated.
 // Returns value of the kOobeRevenUpdatedToFlex pref.
 bool IsRevenUpdatedToFlex() {
-  CHECK(switches::IsRevenBranding());
   PrefService* local_state = g_browser_process->local_state();
   if (local_state->GetBoolean(prefs::kOobeRevenUpdatedToFlex))
     return true;
@@ -468,7 +467,8 @@ bool IsRevenUpdatedToFlex() {
   // If this field isn't set it means that the device was updated to Flex
   // and owner hasn't logged in yet. Set a boolean flag to control if the
   // new terms should be shown for existing users on the device.
-  if (!is_hw_data_usage_enabled_already_set) {
+  if (!is_hw_data_usage_enabled_already_set &&
+      features::IsOobeConsolidatedConsentEnabled()) {
     local_state->SetBoolean(prefs::kOobeRevenUpdatedToFlex, true);
   }
   return local_state->GetBoolean(prefs::kOobeRevenUpdatedToFlex);
@@ -1858,9 +1858,6 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
       return false;
     }
-    if (MaybeShowNewTermsAfterUpdateToFlex(profile)) {
-      return false;
-    }
     if (!user_manager->IsCurrentUserNew() && !pending_screen.empty()) {
       LoginDisplayHost::default_host()->GetSigninUI()->ResumeUserOnboarding(
           OobeScreenId(pending_screen));
@@ -1872,6 +1869,9 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
           ->StartManagementTransition();
+      return false;
+    }
+    if (MaybeShowNewTermsAfterUpdateToFlex(profile)) {
       return false;
     }
     if (features::IsManagedTermsOfServiceEnabled() &&
