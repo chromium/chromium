@@ -736,16 +736,6 @@ void HangWatcher::WatchStateSnapShot::Init(
         any_hung_thread_has_dumping_enabled = true;
       }
 
-      // Emit trace events for monitored threads.
-      if (ThreadTypeLoggingLevelGreaterOrEqual(watch_state.get()->thread_type(),
-                                               LoggingLevel::kUmaOnly)) {
-        const uint64_t thread_id = watch_state.get()->GetThreadID();
-        const auto track = perfetto::Track::FromPointer(
-            this, perfetto::ThreadTrack::ForThread(thread_id));
-        TRACE_EVENT_BEGIN("base", "HangWatcher::ThreadHung", track, deadline);
-        TRACE_EVENT_END("base", track, now);
-      }
-
       // Attempt to mark the thread as needing to stay within its current
       // WatchHangsInScope until capture is complete.
       bool thread_marked = watch_state->SetShouldBlockOnHang(flags, deadline);
