@@ -1341,7 +1341,7 @@
     },
     {
       name: "LayoutNGBlockFragmentation",
-      implied_by: ["LayoutNGFlexFragmentation", "LayoutNGGridFragmentation", "LayoutNGPrinting", "LayoutNGTableFragmentation"],
+      implied_by: ["LayoutNGFlexFragmentation", "LayoutNGPrinting", "LayoutNGTableFragmentation"],
       status: "stable",
     },
     {
@@ -1360,8 +1360,8 @@
       // Block fragmentation support in the grid layout algorithm.
       // https://drafts.csswg.org/css-grid-1/#pagination
       name: "LayoutNGGridFragmentation",
-      depends_on: ["LayoutNG"],
-      status: "test",
+      depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
+      status: "stable",
     },
     {
       name: "LayoutNGPrinting",
