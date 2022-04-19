@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_APP_TERMINATION_OBSERVER_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_APP_TERMINATION_OBSERVER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class BrowserContextKeyedServiceFactory;
 
@@ -20,8 +19,7 @@ namespace chrome_apps {
 
 // A helper class to observe application termination, and notify the
 // appropriate apps systems.
-class AppTerminationObserver : public content::NotificationObserver,
-                               public KeyedService {
+class AppTerminationObserver : public KeyedService {
  public:
   explicit AppTerminationObserver(content::BrowserContext* browser_context);
   AppTerminationObserver(const AppTerminationObserver&) = delete;
@@ -30,14 +28,12 @@ class AppTerminationObserver : public content::NotificationObserver,
 
   static BrowserContextKeyedServiceFactory* GetFactoryInstance();
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
  private:
+  void OnAppTerminating();
+
   raw_ptr<content::BrowserContext> browser_context_;
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace chrome_apps
