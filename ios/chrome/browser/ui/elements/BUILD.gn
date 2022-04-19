@@ -15,11 +15,6 @@ source_set("elements") {
     "home_waiting_view.mm",
     "instruction_view.h",
     "instruction_view.mm",
-    "selector_picker_presentation_controller.h",
-    "selector_picker_presentation_controller.mm",
-    "selector_picker_view_controller.h",
-    "selector_picker_view_controller.mm",
-    "selector_view_controller_delegate.h",
     "self_sizing_table_view.h",
     "self_sizing_table_view.mm",
     "text_field_configuration.h",
@@ -44,37 +39,18 @@ source_set("elements") {
   ]
 }
 
-source_set("selector_coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "selector_coordinator.h",
-    "selector_coordinator.mm",
-  ]
-  deps = [
-    ":elements",
-    "//base",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui/colors",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "activity_overlay_coordinator_unittest.mm",
     "chrome_activity_overlay_coordinator_unittest.mm",
-    "selector_coordinator_unittest.mm",
-    "selector_picker_view_controller_unittest.mm",
     "text_field_configuration_unittest.mm",
     "windowed_container_view_unittest.mm",
   ]
   deps = [
     ":elements",
     ":elements_internal",
-    ":selector_coordinator",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
