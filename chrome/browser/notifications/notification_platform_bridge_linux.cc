@@ -15,6 +15,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"
@@ -33,7 +34,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -47,9 +48,6 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -343,15 +341,19 @@ bool NotificationPlatformBridge::CanHandleType(
 
 class NotificationPlatformBridgeLinuxImpl
     : public NotificationPlatformBridge,
-      public content::NotificationObserver,
       public base::RefCountedThreadSafe<NotificationPlatformBridgeLinuxImpl> {
  public:
   explicit NotificationPlatformBridgeLinuxImpl(scoped_refptr<dbus::Bus> bus)
       : bus_(bus) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     task_runner_ = dbus_thread_linux::GetTaskRunner();
-    registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                   content::NotificationService::AllSources());
+    // base::Unretained(this) is safe here as this object owns
+    // |on_app_terminating_subscription_| and the callback won't be invoked
+    // after the subscription is destroyed.
+    on_app_terminating_subscription_ =
+        browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+            &NotificationPlatformBridgeLinuxImpl::OnAppTerminating,
+            base::Unretained(this)));
   }
   NotificationPlatformBridgeLinuxImpl(
       const NotificationPlatformBridgeLinuxImpl&) = delete;
@@ -484,11 +486,8 @@ class NotificationPlatformBridgeLinuxImpl
     DLOG_IF(ERROR, !clean_up_on_task_runner_called_) << "Not cleaned up";
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
+  void OnAppTerminating() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
     // The browser process is about to exit.  Post the CleanUp() task
     // while we still can.
     CleanUp();
@@ -1148,7 +1147,7 @@ class NotificationPlatformBridgeLinuxImpl
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // State necessary for OnConnectionInitializationFinished() and
   // SetReadyCallback().
