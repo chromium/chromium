@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_CONVERSION_UTILS_H_
 #define EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_CONVERSION_UTILS_H_
 
-#include "chromeos/dbus/media_perception/media_perception.pb.h"
+#include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
 #include "extensions/common/api/media_perception_private.h"
 
 namespace extensions {

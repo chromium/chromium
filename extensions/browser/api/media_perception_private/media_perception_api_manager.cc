@@ -140,7 +140,7 @@ MediaPerceptionAPIManager::MediaPerceptionAPIManager(
     content::BrowserContext* context)
     : browser_context_(context),
       analytics_process_state_(AnalyticsProcessState::IDLE) {
-  scoped_observation_.Observe(chromeos::MediaAnalyticsClient::Get());
+  scoped_observation_.Observe(ash::MediaAnalyticsClient::Get());
 }
 
 MediaPerceptionAPIManager::~MediaPerceptionAPIManager() {
@@ -161,7 +161,7 @@ void MediaPerceptionAPIManager::SetMountPointNonEmptyForTesting() {
 
 void MediaPerceptionAPIManager::GetState(APIStateCallback callback) {
   if (analytics_process_state_ == AnalyticsProcessState::RUNNING) {
-    chromeos::MediaAnalyticsClient::Get()->GetState(
+    ash::MediaAnalyticsClient::Get()->GetState(
         base::BindOnce(&MediaPerceptionAPIManager::StateCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -353,7 +353,7 @@ void MediaPerceptionAPIManager::SetState(
 
 void MediaPerceptionAPIManager::SetStateInternal(APIStateCallback callback,
                                                  const mri::State& state) {
-  chromeos::MediaAnalyticsClient::Get()->SetState(
+  ash::MediaAnalyticsClient::Get()->SetState(
       state,
       base::BindOnce(&MediaPerceptionAPIManager::StateCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -361,7 +361,7 @@ void MediaPerceptionAPIManager::SetStateInternal(APIStateCallback callback,
 
 void MediaPerceptionAPIManager::GetDiagnostics(
     APIGetDiagnosticsCallback callback) {
-  chromeos::MediaAnalyticsClient::Get()->GetDiagnostics(
+  ash::MediaAnalyticsClient::Get()->GetDiagnostics(
       base::BindOnce(&MediaPerceptionAPIManager::GetDiagnosticsCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -423,7 +423,7 @@ void MediaPerceptionAPIManager::SendMojoInvitation(
 
   base::ScopedFD fd =
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD();
-  chromeos::MediaAnalyticsClient::Get()->BootstrapMojoConnection(
+  ash::MediaAnalyticsClient::Get()->BootstrapMojoConnection(
       std::move(fd),
       base::BindOnce(&MediaPerceptionAPIManager::OnBootstrapMojoConnection,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

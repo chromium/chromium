@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_
-#define CHROMEOS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/media_analytics/media_analytics_client.h"
-#include "chromeos/dbus/media_perception/media_perception.pb.h"
+#include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 // MediaAnalyticsClient is used to communicate with a media analytics process
 // running outside of Chrome.
@@ -80,11 +80,6 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) FakeMediaAnalyticsClient
   base::WeakPtrFactory<FakeMediaAnalyticsClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::FakeMediaAnalyticsClient;
-}
-
-#endif  // CHROMEOS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_

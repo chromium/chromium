@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/run_loop.h"
+#include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/dbus/media_analytics/fake_media_analytics_client.h"
-#include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -167,7 +167,7 @@ class MediaPerceptionAPIManagerTest : public testing::Test {
   ~MediaPerceptionAPIManagerTest() override = default;
 
   void SetUp() override {
-    chromeos::MediaAnalyticsClient::InitializeFake();
+    ash::MediaAnalyticsClient::InitializeFake();
 
     upstart_client_ = std::make_unique<TestUpstartClient>();
 
@@ -180,7 +180,7 @@ class MediaPerceptionAPIManagerTest : public testing::Test {
     // MediaAnalyticsClient.
     manager_.reset();
     upstart_client_.reset();
-    chromeos::MediaAnalyticsClient::Shutdown();
+    ash::MediaAnalyticsClient::Shutdown();
   }
 
   std::unique_ptr<MediaPerceptionAPIManager> manager_;
@@ -386,7 +386,7 @@ TEST_F(MediaPerceptionAPIManagerTest, MediaAnalyticsDbusError) {
   EXPECT_EQ(media_perception::SERVICE_ERROR_NONE,
             SetStateAndWaitForResponse(manager_.get(), state));
   // Disable the functionality of the fake process.
-  chromeos::FakeMediaAnalyticsClient::Get()->set_process_running(false);
+  ash::FakeMediaAnalyticsClient::Get()->set_process_running(false);
   EXPECT_EQ(media_perception::SERVICE_ERROR_SERVICE_UNREACHABLE,
             GetStateAndWaitForResponse(manager_.get()));
   EXPECT_EQ(media_perception::SERVICE_ERROR_SERVICE_UNREACHABLE,

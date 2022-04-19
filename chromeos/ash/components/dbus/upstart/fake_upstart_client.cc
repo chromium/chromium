@@ -10,7 +10,7 @@
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
-#include "chromeos/dbus/media_analytics/fake_media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
 
 namespace ash {
 

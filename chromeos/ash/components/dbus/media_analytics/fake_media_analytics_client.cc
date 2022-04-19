@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/media_analytics/fake_media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -137,4 +137,4 @@ void FakeMediaAnalyticsClient::OnMediaPerception(
     observer.OnDetectionSignal(media_perception);
 }
 
-}  // namespace chromeos
+}  // namespace ash

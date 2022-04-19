@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/media_analytics/media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
 
 #include <cstdint>
 #include <string>
@@ -12,14 +12,14 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/media_analytics/fake_media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -211,4 +211,4 @@ MediaAnalyticsClient* MediaAnalyticsClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

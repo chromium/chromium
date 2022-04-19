@@ -9,8 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/dbus/media_analytics/media_analytics_client.h"
-#include "chromeos/dbus/media_perception/media_perception.pb.h"
+#include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception_service.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/common/api/media_perception_private.h"
@@ -20,9 +20,8 @@
 
 namespace extensions {
 
-class MediaPerceptionAPIManager
-    : public BrowserContextKeyedAPI,
-      public chromeos::MediaAnalyticsClient::Observer {
+class MediaPerceptionAPIManager : public BrowserContextKeyedAPI,
+                                  public ash::MediaAnalyticsClient::Observer {
  public:
   using APISetAnalyticsComponentCallback = base::OnceCallback<void(
       extensions::api::media_perception_private::ComponentState
@@ -167,8 +166,8 @@ class MediaPerceptionAPIManager
   std::unique_ptr<MediaPerceptionControllerClient>
       media_perception_controller_client_;
 
-  base::ScopedObservation<chromeos::MediaAnalyticsClient,
-                          chromeos::MediaAnalyticsClient::Observer>
+  base::ScopedObservation<ash::MediaAnalyticsClient,
+                          ash::MediaAnalyticsClient::Observer>
       scoped_observation_{this};
   base::WeakPtrFactory<MediaPerceptionAPIManager> weak_ptr_factory_{this};
 };

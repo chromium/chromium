@@ -19,7 +19,9 @@
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
+#include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
@@ -43,9 +45,7 @@
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
-#include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
-#include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -131,10 +131,10 @@ void InitializeDBus() {
   InitializeDBusClient<HibermanClient>(bus);
 #endif
   InitializeDBusClient<chromeos::InstallAttributesClient>(bus);
-  InitializeDBusClient<chromeos::IpPeripheralServiceClient>(bus);
+  InitializeDBusClient<IpPeripheralServiceClient>(bus);
   InitializeDBusClient<KerberosClient>(bus);
   InitializeDBusClient<chromeos::MachineLearningClient>(bus);
-  InitializeDBusClient<chromeos::MediaAnalyticsClient>(bus);
+  InitializeDBusClient<MediaAnalyticsClient>(bus);
   InitializeDBusClient<chromeos::MissiveClient>(bus);
   InitializeDBusClient<OsInstallClient>(bus);
   InitializeDBusClient<PatchPanelClient>(bus);
@@ -224,10 +224,10 @@ void ShutdownDBus() {
   PatchPanelClient::Shutdown();
   OsInstallClient::Shutdown();
   chromeos::MissiveClient::Shutdown();
-  chromeos::MediaAnalyticsClient::Shutdown();
+  MediaAnalyticsClient::Shutdown();
   chromeos::MachineLearningClient::Shutdown();
   KerberosClient::Shutdown();
-  chromeos::IpPeripheralServiceClient::Shutdown();
+  IpPeripheralServiceClient::Shutdown();
   chromeos::InstallAttributesClient::Shutdown();
 #if BUILDFLAG(ENABLE_HIBERNATE)
   HibermanClient::Shutdown();

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_MEDIA_ANALYTICS_MEDIA_ANALYTICS_CLIENT_H_
-#define CHROMEOS_DBUS_MEDIA_ANALYTICS_MEDIA_ANALYTICS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_MEDIA_ANALYTICS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_MEDIA_ANALYTICS_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/dbus/media_perception/media_perception.pb.h"
 
 namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // MediaAnalyticsClient is used to communicate with a media analytics process
 // running outside of Chrome.
@@ -79,11 +79,6 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) MediaAnalyticsClient {
   virtual ~MediaAnalyticsClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::MediaAnalyticsClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_MEDIA_ANALYTICS_MEDIA_ANALYTICS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_MEDIA_ANALYTICS_CLIENT_H_

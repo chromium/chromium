@@ -109,7 +109,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/fwupd:test_support",
     "//chromeos/dbus/gnubby:unit_tests",
     "//chromeos/dbus/hermes:test_support",
-    "//chromeos/dbus/ip_peripheral:test_support",
     "//chromeos/dbus/lorgnette_manager:test_support",
     "//chromeos/dbus/oobe_config:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
