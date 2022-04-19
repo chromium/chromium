@@ -3384,6 +3384,18 @@ function testBlankWebview() {
   });
 }
 
+function testAddFencedFrame() {
+  let fencedFrameHostURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/fenced_frame_host.html';
+
+  let webview = new WebView();
+  webview.src = fencedFrameHostURL;
+  webview.addEventListener('loadstop', () => {
+    embedder.test.succeed();
+  });
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3512,7 +3524,8 @@ embedder.test.testList = {
   'testBlobURL': testBlobURL,
   'testWebViewAndEmbedderInNewWindow': testWebViewAndEmbedderInNewWindow,
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
-  'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation
+  'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
+  'testAddFencedFrame': testAddFencedFrame,
 };
 
 onload = function() {
