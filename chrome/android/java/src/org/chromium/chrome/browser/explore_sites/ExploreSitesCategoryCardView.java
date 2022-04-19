@@ -22,7 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.suggestions.tile.TileGridLayout;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesGridLayout;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -43,7 +43,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
 
     private final ExploreSitesSiteViewBinder mSiteViewBinder;
     private TextView mTitleView;
-    private TileGridLayout mTileView;
+    private MostVisitedTilesGridLayout mTileView;
     private RoundedIconGenerator mIconGenerator;
     private ContextMenuManager mContextMenuManager;
     private NativePageNavigationDelegate mNavigationDelegate;

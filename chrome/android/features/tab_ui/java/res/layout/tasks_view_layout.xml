@@ -41,7 +41,7 @@
             app:layout_scrollFlags="scroll">
             <include layout="@layout/query_tiles_layout" />
         </FrameLayout>
-        <include layout="@layout/mv_tiles_layout" />
+        <include layout="@layout/mv_tiles_container" />
         <LinearLayout
             android:id="@+id/tab_switcher_title"
             android:layout_width="match_parent"

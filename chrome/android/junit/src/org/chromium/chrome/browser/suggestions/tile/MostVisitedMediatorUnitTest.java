@@ -13,10 +13,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_MVT_LAYOUT_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.PLACEHOLDER_VIEW;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -47,7 +47,7 @@ import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 
-/** Tests for {@link MostVisitedListViewBinder}. */
+/** Tests for {@link MostVisitedTilesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class MostVisitedMediatorUnitTest {
@@ -60,7 +60,7 @@ public class MostVisitedMediatorUnitTest {
     @Mock
     View mMvTilesContainerLayout;
     @Mock
-    MvTilesLayout mMvTilesLayout;
+    MostVisitedTilesCarouselLayout mMvTilesLayout;
     @Mock
     ViewStub mNoMvPlaceholderStub;
     @Mock
@@ -84,12 +84,12 @@ public class MostVisitedMediatorUnitTest {
 
     private FakeMostVisitedSites mMostVisitedSites;
     private PropertyModel mModel;
-    private MostVisitedListMediator mMediator;
+    private MostVisitedTilesMediator mMediator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mModel = new PropertyModel(MostVisitedListProperties.ALL_KEYS);
+        mModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         mDisplayMetrics.widthPixels = 1000;
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
@@ -209,12 +209,12 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
-                (int) (mModel.get(EDGE_PADDINGS)));
+                (int) (mModel.get(HORIZONTAL_EDGE_PADDINGS)));
         Assert.assertEquals(
-                (int) ((mDisplayMetrics.widthPixels - mModel.get(EDGE_PADDINGS)
+                (int) ((mDisplayMetrics.widthPixels - mModel.get(HORIZONTAL_EDGE_PADDINGS)
                                - mResources.getDimensionPixelOffset(R.dimen.tile_view_width) * 4.5)
                         / 4),
-                (int) (mModel.get(INTERVAL_PADDINGS)));
+                (int) (mModel.get(HORIZONTAL_INTERVAL_PADDINGS)));
     }
 
     @Test
@@ -224,13 +224,13 @@ public class MostVisitedMediatorUnitTest {
         mMediator.onTileDataChanged();
 
         Assert.assertEquals(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                (int) (mModel.get(EDGE_PADDINGS)));
+                (int) (mModel.get(HORIZONTAL_EDGE_PADDINGS)));
         Assert.assertEquals(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                (int) (mModel.get(INTERVAL_PADDINGS)));
+                (int) (mModel.get(HORIZONTAL_INTERVAL_PADDINGS)));
     }
 
     private void createMediator() {
-        mMediator = new MostVisitedListMediator(
+        mMediator = new MostVisitedTilesMediator(
                 mResources, mMvTilesContainerLayout, mTileRenderer, mModel, false, false);
         mMediator.initWithNative(mSuggestionsUiDelegate, mContextMenuManager, mTileGroupDelegate,
                 mOfflinePageBridge, mTileRenderer);

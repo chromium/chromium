@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_CONTAINER_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_MVT_LAYOUT_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.PLACEHOLDER_VIEW;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedListViewBinder.ViewHolder;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesViewBinder.ViewHolder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -31,14 +31,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
- * Tests for {@link MostVisitedListViewBinder}.
+ * Tests for {@link MostVisitedTilesViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivityTestCase {
+public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivityTestCase {
     private ViewStub mNoMvPlaceholderStub;
     private View mNoMvPlaceholder;
     private LinearLayout mMvTilesContainerLayout;
-    private MvTilesLayout mMvTilesLayout;
+    private MostVisitedTilesCarouselLayout mMvTilesLayout;
     private TileView mFirstChildView;
     private TileView mSecondChildView;
     private TileView mThirdChildView;
@@ -50,7 +50,7 @@ public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivity
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMvTilesLayout = new MvTilesLayout(getActivity(), null);
+            mMvTilesLayout = new MostVisitedTilesCarouselLayout(getActivity(), null);
             mMvTilesLayout.setId(org.chromium.chrome.R.id.mv_tiles_layout);
             mFirstChildView = new TileView(getActivity(), null);
             mSecondChildView = new TileView(getActivity(), null);
@@ -70,10 +70,10 @@ public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivity
             mMvTilesContainerLayout.addView(mNoMvPlaceholderStub);
             getActivity().setContentView(mMvTilesContainerLayout);
 
-            mModel = new PropertyModel(MostVisitedListProperties.ALL_KEYS);
+            mModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
             PropertyModelChangeProcessor.create(mModel,
                     new ViewHolder(mMvTilesContainerLayout, mMvTilesLayout),
-                    MostVisitedListViewBinder::bind);
+                    MostVisitedTilesViewBinder::bind);
         });
     }
 
@@ -108,7 +108,7 @@ public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivity
     @UiThreadTest
     @SmallTest
     public void testIntervalPaddingsSet() {
-        mModel.set(INTERVAL_PADDINGS, 10);
+        mModel.set(HORIZONTAL_INTERVAL_PADDINGS, 10);
         MarginLayoutParams params = (MarginLayoutParams) mSecondChildView.getLayoutParams();
         Assert.assertEquals(10, params.leftMargin);
         params = (MarginLayoutParams) mThirdChildView.getLayoutParams();
@@ -119,7 +119,7 @@ public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivity
     @UiThreadTest
     @SmallTest
     public void testEdgePaddingsSet() {
-        mModel.set(EDGE_PADDINGS, 11);
+        mModel.set(HORIZONTAL_EDGE_PADDINGS, 11);
         MarginLayoutParams params = (MarginLayoutParams) mFirstChildView.getLayoutParams();
         Assert.assertEquals(11, params.leftMargin);
         params = (MarginLayoutParams) mThirdChildView.getLayoutParams();

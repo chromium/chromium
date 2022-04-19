@@ -55,10 +55,10 @@ import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedListCoordinator;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesGridLayout;
 import org.chromium.chrome.browser.suggestions.tile.SiteSectionViewHolder;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
-import org.chromium.chrome.browser.suggestions.tile.TileGridLayout;
 import org.chromium.chrome.browser.suggestions.tile.TileGridViewHolder;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
@@ -124,7 +124,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
     // Null if scrollable-mv-tiles flag is disabled.
     @Nullable
-    private MostVisitedListCoordinator mMostVisitedListCoordinator;
+    private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
 
     private OnSearchBoxScrollListener mSearchBoxScrollListener;
 
@@ -396,7 +396,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
         assert mMvTilesContainerLayout != null;
-        mMostVisitedListCoordinator = new MostVisitedListCoordinator(mActivity,
+        mMostVisitedTilesCoordinator = new MostVisitedTilesCoordinator(mActivity,
                 activityLifecycleDispatcher, mMvTilesContainerLayout, mWindowAndroid,
                 /*shouldShowSkeletonUIPreNative=*/false);
         // Let mMvTilesLayout attached to the edge of the screen.
@@ -405,7 +405,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         MarginLayoutParams params = (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
         params.leftMargin = -lateralPaddingsForNTP;
         params.rightMargin = -lateralPaddingsForNTP;
-        mMostVisitedListCoordinator.initWithNative(
+        mMostVisitedTilesCoordinator.initWithNative(
                 mManager, tileGroupDelegate, touchEnabledDelegate);
     }
 
@@ -480,7 +480,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         if (isScrollableMVTEnabled()) {
             setClipToPadding(false);
             mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(this.getContext())
-                                              .inflate(R.layout.mv_tiles_layout, this, false);
+                                              .inflate(R.layout.mv_tiles_container, this, false);
             mMvTilesContainerLayout.setVisibility(View.VISIBLE);
             addView(mMvTilesContainerLayout, insertionPoint);
 
@@ -498,7 +498,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     }
 
     /**
-     * @return the embedded {@link TileGridLayout}.
+     * @return the embedded {@link MostVisitedTilesGridLayout}.
      */
     private ViewGroup getSiteSectionView() {
         return mSiteSectionView;
@@ -530,8 +530,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     public void onSwitchToForeground() {
         if (mTileGroup != null) {
             mTileGroup.onSwitchToForeground(/* trackLoadTask = */ false);
-        } else if (mMostVisitedListCoordinator != null) {
-            mMostVisitedListCoordinator.onSwitchToForeground();
+        } else if (mMostVisitedTilesCoordinator != null) {
+            mMostVisitedTilesCoordinator.onSwitchToForeground();
         }
     }
 
@@ -991,9 +991,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
         mSearchBoxCoordinator.destroy();
 
-        if (mMostVisitedListCoordinator != null) {
-            mMostVisitedListCoordinator.destroyMVTiles();
-            mMostVisitedListCoordinator = null;
+        if (mMostVisitedTilesCoordinator != null) {
+            mMostVisitedTilesCoordinator.destroyMVTiles();
+            mMostVisitedTilesCoordinator = null;
         }
     }
 

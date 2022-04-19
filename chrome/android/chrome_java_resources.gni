@@ -570,7 +570,7 @@ chrome_java_resources = [
   "java/res/layout/managed_by_menu_item.xml",
   "java/res/layout/material_tooltip.xml",
   "java/res/layout/multiline_spinner_item.xml",
-  "java/res/layout/mv_tiles_layout.xml",
+  "java/res/layout/mv_tiles_container.xml",
   "java/res/layout/navigation_bubble.xml",
   "java/res/layout/navigation_sheet.xml",
   "java/res/layout/navigation_sheet_toolbar.xml",

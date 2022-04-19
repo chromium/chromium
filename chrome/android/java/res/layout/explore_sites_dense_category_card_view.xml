@@ -24,7 +24,7 @@
         android:minHeight="@dimen/explore_sites_dense_category_title_height"
         tools:text="Category" />
 
-    <org.chromium.chrome.browser.suggestions.tile.TileGridLayout
+    <org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesGridLayout
         android:id="@+id/category_sites"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

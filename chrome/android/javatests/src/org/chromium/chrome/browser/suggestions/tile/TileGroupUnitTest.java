@@ -302,7 +302,7 @@ public class TileGroupUnitTest {
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
         TileGridViewHolder tileGrid = setupView(tileGroup);
-        TileGridLayout layout = (TileGridLayout) tileGrid.getItemView();
+        MostVisitedTilesGridLayout layout = (MostVisitedTilesGridLayout) tileGrid.getItemView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS);
@@ -347,7 +347,7 @@ public class TileGroupUnitTest {
 
         // Initialise the layout with views whose URLs don't match the ones of the new tiles.
         TileGridViewHolder tileGrid = setupView(tileGroup);
-        TileGridLayout layout = (TileGridLayout) tileGrid.getItemView();
+        MostVisitedTilesGridLayout layout = (MostVisitedTilesGridLayout) tileGrid.getItemView();
         SuggestionsTileView view1 = mSuggestionsTileView1;
         layout.addView(view1);
 
@@ -372,7 +372,8 @@ public class TileGroupUnitTest {
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
         // Initialise the layout with views whose URLs match the ones of the new tiles.
-        TileGridLayout layout = new TileGridLayout(ContextUtils.getApplicationContext(), null);
+        MostVisitedTilesGridLayout layout =
+                new MostVisitedTilesGridLayout(ContextUtils.getApplicationContext(), null);
         SuggestionsTileView view1 = mSuggestionsTileView1;
         when(view1.getData()).thenReturn(sites.get(0));
         layout.addView(view1);
@@ -425,7 +426,8 @@ public class TileGroupUnitTest {
     }
 
     private TileGridViewHolder setupView(TileGroup tileGroup) {
-        TileGridLayout layout = new TileGridLayout(ContextUtils.getApplicationContext(), null);
+        MostVisitedTilesGridLayout layout =
+                new MostVisitedTilesGridLayout(ContextUtils.getApplicationContext(), null);
         TileGridViewHolder tileGrid = new TileGridViewHolder(layout, 4, 2);
         tileGrid.bindDataSource(tileGroup, mTileRenderer);
         return tileGrid;

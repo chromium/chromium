@@ -17,11 +17,11 @@ import org.chromium.components.browser_ui.widget.tile.TileView;
 /**
  * The layout for the container of MV tiles on the Start surface.
  */
-public class MvTilesLayout extends LinearLayout {
+public class MostVisitedTilesCarouselLayout extends LinearLayout {
     /**
      * Constructor for inflating from XML.
      */
-    public MvTilesLayout(Context context, AttributeSet attrs) {
+    public MostVisitedTilesCarouselLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -83,7 +83,7 @@ public class MvTilesLayout extends LinearLayout {
     }
 
     @VisibleForTesting
-    public SuggestionsTileView getTileViewForTesting(SiteSuggestion suggestion) {
+    public SuggestionsTileView findTileViewForTesting(SiteSuggestion suggestion) {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             SuggestionsTileView tileView = (SuggestionsTileView) getChildAt(i);

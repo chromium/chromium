@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedListViewBinder.ViewHolder;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesViewBinder.ViewHolder;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -29,13 +29,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /**
  * Coordinator for displaying a list of {@link SuggestionsTileView} in a {@link ViewGroup}.
  */
-public class MostVisitedListCoordinator implements ConfigurationChangedObserver {
+public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver {
     private static final int TITLE_LINES = 1;
     public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
 
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final MostVisitedListMediator mMediator;
+    private final MostVisitedTilesMediator mMediator;
     private final WindowAndroid mWindowAndroid;
     private final UiConfig mUiConfig;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
@@ -53,32 +53,33 @@ public class MostVisitedListCoordinator implements ConfigurationChangedObserver 
      * @param shouldShowSkeletonUIPreNative Whether to show the background icon for pre-native
      *         surface.
      */
-    public MostVisitedListCoordinator(Activity activity,
+    public MostVisitedTilesCoordinator(Activity activity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher, View mvTilesContainerLayout,
             WindowAndroid windowAndroid, boolean shouldShowSkeletonUIPreNative) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mWindowAndroid = windowAndroid;
-        MvTilesLayout mvTilesLayout = mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
+        MostVisitedTilesCarouselLayout mvTilesLayout =
+                mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
         mUiConfig = new UiConfig(mvTilesLayout);
 
-        PropertyModel propertyModel = new PropertyModel(MostVisitedListProperties.ALL_KEYS);
+        PropertyModel propertyModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
         mModelChangeProcessor = PropertyModelChangeProcessor.create(propertyModel,
                 new ViewHolder(mvTilesContainerLayout, mvTilesLayout),
-                MostVisitedListViewBinder::bind);
+                MostVisitedTilesViewBinder::bind);
 
         mRenderer =
                 new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
 
-        mMediator = new MostVisitedListMediator(activity.getResources(), mvTilesContainerLayout,
+        mMediator = new MostVisitedTilesMediator(activity.getResources(), mvTilesContainerLayout,
                 mRenderer, propertyModel, shouldShowSkeletonUIPreNative, isTablet);
     }
 
     /**
      * Called before the TasksSurface is showing to initialize MV tiles.
-     * {@link MostVisitedListCoordinator#destroyMVTiles()} is called after the TasksSurface hides.
+     * {@link MostVisitedTilesCoordinator#destroyMVTiles()} is called after the TasksSurface hides.
      *
      * @param suggestionsUiDelegate The UI delegate of suggestion surface.
      * @param tileGroupDelegate The delegate of tile group.

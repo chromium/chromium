@@ -12,15 +12,15 @@ import java.util.List;
 /**
  * A {@link SiteSectionViewHolder} specialised in displaying sites as a simple grid of tiles,
  * through
- * {@link TileGridLayout}.
+ * {@link MostVisitedTilesGridLayout}.
  */
 public class TileGridViewHolder extends SiteSectionViewHolder {
-    private final TileGridLayout mSectionView;
+    private final MostVisitedTilesGridLayout mSectionView;
 
     public TileGridViewHolder(ViewGroup view, int maxRows, int maxColumns) {
         super(view);
 
-        mSectionView = (TileGridLayout) view;
+        mSectionView = (MostVisitedTilesGridLayout) view;
         mSectionView.setMaxRows(maxRows);
         mSectionView.setMaxColumns(maxColumns);
     }

@@ -13,7 +13,7 @@
         <attr name="emptyErrorMessage" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="TileGridLayout">
+    <declare-styleable name="MostVisitedTilesGridLayout">
         <attr name="minHorizontalSpacing" format="dimension"/>
     </declare-styleable>
 

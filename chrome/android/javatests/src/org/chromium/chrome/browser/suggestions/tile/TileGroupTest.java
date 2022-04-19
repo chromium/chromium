@@ -126,13 +126,8 @@ public class TileGroupTest {
         Assert.assertTrue(mTab.getNativePage() instanceof NewTabPage);
         mNtp = (NewTabPage) mTab.getNativePage();
 
-        if (mEnableScrollableMVT) {
-            ViewUtils.waitForView(
-                    (ViewGroup) mNtp.getView(), ViewMatchers.withId(R.id.mv_tiles_layout));
-        } else {
-            ViewUtils.waitForView(
-                    (ViewGroup) mNtp.getView(), ViewMatchers.withId(R.id.tile_grid_layout));
-        }
+        ViewUtils.waitForView(
+                (ViewGroup) mNtp.getView(), ViewMatchers.withId(R.id.mv_tiles_layout));
     }
 
     @After
@@ -221,23 +216,20 @@ public class TileGroupTest {
         ViewGroup newTabPageLayout = mNtp.getNewTabPageLayout();
         Assert.assertNotNull("Unable to retrieve the NewTabPageLayout.", newTabPageLayout);
 
-        ViewGroup viewGroup;
-        if (mEnableScrollableMVT) {
-            viewGroup = newTabPageLayout.findViewById(R.id.mv_tiles_layout);
-            Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", viewGroup);
-        } else {
-            viewGroup = newTabPageLayout.findViewById(R.id.tile_grid_layout);
-            Assert.assertNotNull("Unable to retrieve the TileGridLayout.", viewGroup);
-        }
+        ViewGroup viewGroup = newTabPageLayout.findViewById(R.id.mv_tiles_layout);
+        Assert.assertNotNull("Unable to retrieve the "
+                        + (mEnableScrollableMVT ? "MvTilesLayout." : "TileGridLayout."),
+                viewGroup);
         return viewGroup;
     }
 
     private View getTileViewFor(SiteSuggestion suggestion) {
         View tileView;
         if (mEnableScrollableMVT) {
-            tileView = ((MvTilesLayout) getTileLayout()).getTileViewForTesting(suggestion);
+            tileView = ((MostVisitedTilesCarouselLayout) getTileLayout())
+                               .findTileViewForTesting(suggestion);
         } else {
-            tileView = ((TileGridLayout) getTileLayout()).getTileView(suggestion);
+            tileView = ((MostVisitedTilesGridLayout) getTileLayout()).getTileView(suggestion);
         }
         return tileView;
     }

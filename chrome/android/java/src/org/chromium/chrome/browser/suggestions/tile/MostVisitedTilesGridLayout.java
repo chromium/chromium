@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 /**
  * A layout that arranges tiles in a grid.
  */
-public class TileGridLayout extends FrameLayout {
+public class MostVisitedTilesGridLayout extends FrameLayout {
     private final int mVerticalSpacing;
     private final int mMinHorizontalSpacing;
     private final int mMaxHorizontalSpacing;
@@ -37,14 +37,15 @@ public class TileGridLayout extends FrameLayout {
      * @param context The view context in which this item will be shown.
      * @param attrs The attributes of the XML tag that is inflating the view.
      */
-    public TileGridLayout(Context context, AttributeSet attrs) {
+    public MostVisitedTilesGridLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         Resources res = getResources();
         mVerticalSpacing = res.getDimensionPixelOffset(R.dimen.tile_grid_layout_vertical_spacing);
-        TypedArray styledAttrs = context.obtainStyledAttributes(attrs, R.styleable.TileGridLayout);
+        TypedArray styledAttrs =
+                context.obtainStyledAttributes(attrs, R.styleable.MostVisitedTilesGridLayout);
         mMinHorizontalSpacing = styledAttrs.getDimensionPixelOffset(
-                R.styleable.TileGridLayout_minHorizontalSpacing,
+                R.styleable.MostVisitedTilesGridLayout_minHorizontalSpacing,
                 res.getDimensionPixelOffset(R.dimen.tile_grid_layout_min_horizontal_spacing));
         styledAttrs.recycle();
         mMaxHorizontalSpacing = Integer.MAX_VALUE;

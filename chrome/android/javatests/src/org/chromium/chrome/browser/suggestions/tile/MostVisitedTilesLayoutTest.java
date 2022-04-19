@@ -77,13 +77,14 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Instrumentation tests for the {@link TileGridLayout} on the New Tab Page.
+ * Instrumentation tests for the {@link MostVisitedTilesGridLayout} and {@link
+ * MostVisitedTilesCarouselLayout} on the New Tab Page.
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
-public class TileGridLayoutTest {
+public class MostVisitedTilesLayoutTest {
     public final int TILE_GRID_ROWS = 2;
     public final int TILE_GRID_COLUMNS = 4;
 
@@ -238,7 +239,7 @@ public class TileGridLayoutTest {
         NewTabPage ntp = (NewTabPage) mTab.getNativePage();
 
         org.chromium.ui.test.util.ViewUtils.waitForView(
-                (ViewGroup) ntp.getView(), ViewMatchers.withId(R.id.tile_grid_layout));
+                (ViewGroup) ntp.getView(), ViewMatchers.withId(R.id.mv_tiles_layout));
 
         return ntp;
     }
@@ -275,18 +276,19 @@ public class TileGridLayoutTest {
         return expectLandscape == viewIsLandscape;
     }
 
-    private TileGridLayout getTileGridLayout(NewTabPage ntp) {
-        TileGridLayout tileGridLayout = ntp.getView().findViewById(R.id.tile_grid_layout);
-        assertNotNull("Unable to retrieve the TileGridLayout.", tileGridLayout);
-        return tileGridLayout;
+    private MostVisitedTilesGridLayout getTileGridLayout(NewTabPage ntp) {
+        MostVisitedTilesGridLayout mostVisitedTilesGridLayout =
+                ntp.getView().findViewById(R.id.mv_tiles_layout);
+        assertNotNull("Unable to retrieve the TileGridLayout.", mostVisitedTilesGridLayout);
+        return mostVisitedTilesGridLayout;
     }
 
     /**
      * Starts and sets up an activity to render the provided site suggestions in the activity.
      * @return the layout in which the suggestions are rendered.
      */
-    private TileGridLayout renderTiles(List<SiteSuggestion> siteSuggestions, List<GURL> offlineUrls)
-            throws InterruptedException {
+    private MostVisitedTilesGridLayout renderTiles(List<SiteSuggestion> siteSuggestions,
+            List<GURL> offlineUrls) throws InterruptedException {
         // Launching the activity, that should now use the right UI.
         mActivityTestRule.startMainActivityOnBlankPage();
         ChromeActivity activity = mActivityTestRule.getActivity();
@@ -307,11 +309,11 @@ public class TileGridLayoutTest {
             createSiteSection(viewHolder, uiConfig, offlineUrls);
             contentView.addView(viewHolder.getItemView());
 
-            return (TileGridLayout) viewHolder.getItemView();
+            return (MostVisitedTilesGridLayout) viewHolder.getItemView();
         });
     }
 
-    private TileGridLayout renderTiles(List<SiteSuggestion> siteSuggestions)
+    private MostVisitedTilesGridLayout renderTiles(List<SiteSuggestion> siteSuggestions)
             throws InterruptedException {
         return renderTiles(siteSuggestions, Collections.emptyList());
     }

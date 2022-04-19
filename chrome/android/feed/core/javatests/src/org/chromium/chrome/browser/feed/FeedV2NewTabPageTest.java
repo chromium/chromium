@@ -30,7 +30,6 @@ import android.content.pm.ActivityInfo;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -183,8 +182,6 @@ public class FeedV2NewTabPageTest {
 
     private Tab mTab;
     private NewTabPage mNtp;
-    private ViewGroup mTileGridLayout;
-    private LinearLayout mScrollableMVTLayout;
     private FakeMostVisitedSites mMostVisitedSites;
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
@@ -246,13 +243,8 @@ public class FeedV2NewTabPageTest {
         Assert.assertTrue(mTab.getNativePage() instanceof NewTabPage);
         mNtp = (NewTabPage) mTab.getNativePage();
 
-        if (mEnableScrollableMVT) {
-            mScrollableMVTLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
-            Assert.assertEquals(mSiteSuggestions.size(), mScrollableMVTLayout.getChildCount());
-        } else {
-            mTileGridLayout = mNtp.getView().findViewById(R.id.tile_grid_layout);
-            Assert.assertEquals(mSiteSuggestions.size(), mTileGridLayout.getChildCount());
-        }
+        ViewGroup mvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
+        Assert.assertEquals(mSiteSuggestions.size(), mvTilesLayout.getChildCount());
     }
 
     private void waitForPopup(Matcher<View> matcher) {

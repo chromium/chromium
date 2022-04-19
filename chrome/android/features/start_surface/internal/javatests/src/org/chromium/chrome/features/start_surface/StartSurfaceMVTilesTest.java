@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.tile.MvTilesLayout;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -324,23 +324,23 @@ public class StartSurfaceMVTilesTest {
     private View getTileViewFor(SiteSuggestion suggestion) {
         onViewWaiting(
                 allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout), isDisplayed()));
-        View tileView = getMvTilesLayout().getTileViewForTesting(suggestion);
+        View tileView = getMvTilesLayout().findTileViewForTesting(suggestion);
         Assert.assertNotNull("Tile not found for suggestion " + suggestion.url, tileView);
 
         return tileView;
     }
 
-    private MvTilesLayout getMvTilesLayout() {
+    private MostVisitedTilesCarouselLayout getMvTilesLayout() {
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout));
-        MvTilesLayout mvTilesLayout = mActivityTestRule.getActivity().findViewById(
+        MostVisitedTilesCarouselLayout mvTilesLayout = mActivityTestRule.getActivity().findViewById(
                 org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
         Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", mvTilesLayout);
         return mvTilesLayout;
     }
 
     private void waitForTileRemoved(final SiteSuggestion suggestion) throws TimeoutException {
-        MvTilesLayout mvTilesLayout = getMvTilesLayout();
-        final SuggestionsTileView removedTile = mvTilesLayout.getTileViewForTesting(suggestion);
+        MostVisitedTilesCarouselLayout mvTilesLayout = getMvTilesLayout();
+        final SuggestionsTileView removedTile = mvTilesLayout.findTileViewForTesting(suggestion);
         if (removedTile == null) return;
 
         final CallbackHelper callback = new CallbackHelper();

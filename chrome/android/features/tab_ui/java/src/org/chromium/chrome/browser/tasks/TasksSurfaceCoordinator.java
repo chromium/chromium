@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedListCoordinator;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -71,12 +71,12 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final Activity mActivity;
     private final Supplier<Tab> mParentTabSupplier;
 
-    private MostVisitedListCoordinator mMostVisitedCoordinator;
+    private MostVisitedTilesCoordinator mMostVisitedCoordinator;
     private MostVisitedSuggestionsUiDelegate mSuggestionsUiDelegate;
     private TileGroupDelegateImpl mTileGroupDelegate;
 
     /**
-     * This flag should be reset once {@link MostVisitedListCoordinator#destroyMVTiles} is called.
+     * This flag should be reset once {@link MostVisitedTilesCoordinator#destroyMVTiles} is called.
      */
     private boolean mIsMVTilesInitialized;
 
@@ -146,7 +146,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
         if (hasMVTiles) {
             mMostVisitedCoordinator =
-                    new MostVisitedListCoordinator(activity, activityLifecycleDispatcher,
+                    new MostVisitedTilesCoordinator(activity, activityLifecycleDispatcher,
                             mView.findViewById(R.id.mv_tiles_container), windowAndroid,
                             TabUiFeatureUtilities.supportInstantStart(
                                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),

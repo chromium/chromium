@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_MVT_LAYOUT_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.PLACEHOLDER_VIEW;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -28,16 +28,16 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- *  Mediator for handling {@link MvTilesLayout}-related logic.
+ *  Mediator for handling {@link MostVisitedTilesCarouselLayout}-related logic.
  */
-public class MostVisitedListMediator implements TileGroup.Observer, TemplateUrlServiceObserver {
+public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrlServiceObserver {
     private static final String TAG = "TopSites";
 
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
     private static final int MAX_RESULTS = 12;
 
     private final Resources mResources;
-    private final MvTilesLayout mMvTilesLayout;
+    private final MostVisitedTilesCarouselLayout mMvTilesLayout;
     private final ViewStub mNoMvPlaceholderStub;
     private final PropertyModel mModel;
     private final boolean mIsTablet;
@@ -49,7 +49,7 @@ public class MostVisitedListMediator implements TileGroup.Observer, TemplateUrlS
     private TileGroup mTileGroup;
     private boolean mInitializationComplete;
 
-    public MostVisitedListMediator(Resources resources, View mvTilesContainerLayout,
+    public MostVisitedTilesMediator(Resources resources, View mvTilesContainerLayout,
             TileRenderer renderer, PropertyModel propertyModel,
             boolean shouldShowSkeletonUIPreNative, boolean isTablet) {
         mResources = resources;
@@ -196,13 +196,13 @@ public class MostVisitedListMediator implements TileGroup.Observer, TemplateUrlS
         if (mMvTilesLayout.getChildCount() < 1) return;
 
         if (mResources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            mModel.set(EDGE_PADDINGS, mTileViewLandscapePadding);
-            mModel.set(INTERVAL_PADDINGS, mTileViewLandscapePadding);
+            mModel.set(HORIZONTAL_EDGE_PADDINGS, mTileViewLandscapePadding);
+            mModel.set(HORIZONTAL_INTERVAL_PADDINGS, mTileViewLandscapePadding);
             return;
         }
 
-        mModel.set(EDGE_PADDINGS, mTileViewPortraitEdgePadding);
-        mModel.set(INTERVAL_PADDINGS, mTileViewPortraitIntervalPadding);
+        mModel.set(HORIZONTAL_EDGE_PADDINGS, mTileViewPortraitEdgePadding);
+        mModel.set(HORIZONTAL_INTERVAL_PADDINGS, mTileViewPortraitIntervalPadding);
     }
 
     /**
