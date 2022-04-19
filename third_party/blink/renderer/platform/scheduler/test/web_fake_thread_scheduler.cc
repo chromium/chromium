@@ -80,7 +80,6 @@ void WebFakeThreadScheduler::DidHandleInputEventOnMainThread(
 
 void WebFakeThreadScheduler::DidAnimateForInputOnCompositorThread() {}
 
-void WebFakeThreadScheduler::DidScheduleBeginMainFrame() {}
 void WebFakeThreadScheduler::DidRunBeginMainFrame() {}
 
 bool WebFakeThreadScheduler::IsHighPriorityWorkAnticipated() {

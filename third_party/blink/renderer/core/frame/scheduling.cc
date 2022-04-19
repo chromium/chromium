@@ -32,7 +32,6 @@ Scheduling::Scheduling(Navigator& navigator)
 
 bool Scheduling::isInputPending(const IsInputPendingOptions* options) const {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  DCHECK(RuntimeEnabledFeatures::ExperimentalIsInputPendingEnabled(window));
   DCHECK(options);
   if (!window)
     return false;
@@ -46,11 +45,6 @@ bool Scheduling::isInputPending(const IsInputPendingOptions* options) const {
     }
   }
   return false;
-}
-
-bool Scheduling::isFramePending() const {
-  auto* scheduler = ThreadScheduler::Current();
-  return scheduler->IsBeginMainFrameScheduled();
 }
 
 void Scheduling::Trace(Visitor* visitor) const {

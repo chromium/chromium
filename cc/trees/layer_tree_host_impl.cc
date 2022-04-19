@@ -522,11 +522,6 @@ const ThreadedInputHandler& LayerTreeHostImpl::GetInputHandler() const {
   return static_cast<const ThreadedInputHandler&>(*input_delegate_.get());
 }
 
-void LayerTreeHostImpl::WillSendBeginMainFrame() {
-  if (scheduling_client_)
-    scheduling_client_->DidScheduleBeginMainFrame();
-}
-
 void LayerTreeHostImpl::DidSendBeginMainFrame(const viz::BeginFrameArgs& args) {
   frame_trackers_.NotifyBeginMainFrame(args);
 }

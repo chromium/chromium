@@ -4,9 +4,7 @@
 
 // https://github.com/WICG/is-input-pending
 [
-    Exposed=Window,
-    RuntimeEnabled=ExperimentalIsInputPending
+    Exposed=Window
 ] interface Scheduling {
-    [RuntimeEnabled=ExperimentalIsFramePending] boolean isFramePending();
-    [MeasureAs=SchedulingIsInputPending, RuntimeEnabled=ExperimentalIsInputPending] boolean isInputPending(optional IsInputPendingOptions options = {});
+    [MeasureAs=SchedulingIsInputPending] boolean isInputPending(optional IsInputPendingOptions options = {});
 };

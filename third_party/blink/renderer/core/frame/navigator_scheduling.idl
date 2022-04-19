@@ -4,8 +4,7 @@
 
 // https://github.com/WICG/is-input-pending
 [
-    ImplementedAs=Scheduling,
-    RuntimeEnabled=ExperimentalIsInputPending
+    ImplementedAs=Scheduling
 ] partial interface Navigator {
   readonly attribute Scheduling scheduling;
 };

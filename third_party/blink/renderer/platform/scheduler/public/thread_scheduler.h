@@ -146,11 +146,6 @@ class PLATFORM_EXPORT ThreadScheduler {
     return {};
   }
 
-  // Indicates that a BeginMainFrame task has been scheduled to run on the main
-  // thread. Note that this is inherently racy, as it will be affected by code
-  // running on the compositor thread.
-  virtual bool IsBeginMainFrameScheduled() const { return false; }
-
   // Returns true if BeginMainFrame should be called soon, for example if it
   // hasn't been called for a long period of time.
   virtual bool DontDeferBeginMainFrame() const { return true; }

@@ -3481,21 +3481,6 @@ TEST_F(MainThreadSchedulerImplTest, MicrotaskCheckpointTiming) {
             observer.result().front().second);
 }
 
-TEST_F(MainThreadSchedulerImplTest, IsBeginMainFrameScheduled) {
-  EXPECT_FALSE(scheduler_->IsBeginMainFrameScheduled());
-  scheduler_->DidScheduleBeginMainFrame();
-  EXPECT_TRUE(scheduler_->IsBeginMainFrameScheduled());
-  scheduler_->DidRunBeginMainFrame();
-  EXPECT_FALSE(scheduler_->IsBeginMainFrameScheduled());
-  scheduler_->DidScheduleBeginMainFrame();
-  scheduler_->DidScheduleBeginMainFrame();
-  EXPECT_TRUE(scheduler_->IsBeginMainFrameScheduled());
-  scheduler_->DidRunBeginMainFrame();
-  EXPECT_TRUE(scheduler_->IsBeginMainFrameScheduled());
-  scheduler_->DidRunBeginMainFrame();
-  EXPECT_FALSE(scheduler_->IsBeginMainFrameScheduled());
-}
-
 TEST_F(MainThreadSchedulerImplTest, NonWakingTaskQueue) {
   std::vector<std::pair<std::string, base::TimeTicks>> log;
   base::TimeTicks start = scheduler_->NowTicks();

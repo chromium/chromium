@@ -512,11 +512,7 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
           false,
           "Scheduler.HaveSeenInputSinceNavigation",
           &main_thread_scheduler_impl->tracing_controller_,
-          YesNoStateToString),
-      begin_main_frame_scheduled_count(
-          0,
-          "Scheduler.BeginMainFrameScheduledCount",
-          &main_thread_scheduler_impl->tracing_controller_) {}
+          YesNoStateToString) {}
 
 MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
   low_priority_background_page =
@@ -1189,14 +1185,8 @@ void MainThreadSchedulerImpl::DidAnimateForInputOnCompositorThread() {
       helper_.NowTicks() + base::Milliseconds(kFlingEscalationLimitMillis);
 }
 
-void MainThreadSchedulerImpl::DidScheduleBeginMainFrame() {
-  base::AutoLock lock(any_thread_lock_);
-  any_thread().begin_main_frame_scheduled_count += 1;
-}
-
 void MainThreadSchedulerImpl::DidRunBeginMainFrame() {
   base::AutoLock lock(any_thread_lock_);
-  any_thread().begin_main_frame_scheduled_count -= 1;
   any_thread().last_main_frame_time = base::TimeTicks::Now();
 }
 
@@ -2249,11 +2239,6 @@ MainThreadSchedulerImpl::GetPendingUserInputInfo(
     bool include_continuous) const {
   base::AutoLock lock(any_thread_lock_);
   return any_thread().pending_input_monitor.Info(include_continuous);
-}
-
-bool MainThreadSchedulerImpl::IsBeginMainFrameScheduled() const {
-  base::AutoLock lock(any_thread_lock_);
-  return any_thread().begin_main_frame_scheduled_count.value() > 0;
 }
 
 bool MainThreadSchedulerImpl::DontDeferBeginMainFrame() const {

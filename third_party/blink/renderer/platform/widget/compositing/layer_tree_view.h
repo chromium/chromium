@@ -115,7 +115,6 @@ class PLATFORM_EXPORT LayerTreeView
   void ScheduleAnimationForWebTests() override;
 
   // cc::LayerTreeHostSchedulingClient implementation.
-  void DidScheduleBeginMainFrame() override;
   void DidRunBeginMainFrame() override;
 
   // Registers a callback that will be run on the first successful presentation

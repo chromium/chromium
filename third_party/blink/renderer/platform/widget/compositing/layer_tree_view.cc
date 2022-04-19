@@ -387,12 +387,6 @@ void LayerTreeView::RunPaintBenchmark(int repeat_count,
     delegate_->RunPaintBenchmark(repeat_count, result);
 }
 
-void LayerTreeView::DidScheduleBeginMainFrame() {
-  if (!delegate_ || !web_main_thread_scheduler_)
-    return;
-  web_main_thread_scheduler_->DidScheduleBeginMainFrame();
-}
-
 void LayerTreeView::DidRunBeginMainFrame() {
   if (!delegate_ || !web_main_thread_scheduler_)
     return;

@@ -172,10 +172,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // a fling). Called by the compositor (impl) thread.
   virtual void DidAnimateForInputOnCompositorThread();
 
-  // Tells the scheduler that the compositor thread queued up a BeginMainFrame
-  // task to run on the main thread.
-  virtual void DidScheduleBeginMainFrame();
-
   // Tells the scheduler that the main thread processed a BeginMainFrame task
   // from its queue. Note that DidRunBeginMainFrame will be called
   // unconditionally, even if BeginMainFrame early-returns without committing

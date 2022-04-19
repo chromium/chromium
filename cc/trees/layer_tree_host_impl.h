@@ -318,7 +318,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return viewport_damage_rect_;
   }
 
-  virtual void WillSendBeginMainFrame();
+  virtual void WillSendBeginMainFrame() {}
   virtual void DidSendBeginMainFrame(const viz::BeginFrameArgs& args);
   virtual void BeginMainFrameAborted(
       CommitEarlyOutReason reason,

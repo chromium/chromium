@@ -471,9 +471,6 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
     test_hooks_->DidReceiveCompositorFrameAck();
   }
 
-  void DidScheduleBeginMainFrame() override {
-    test_hooks_->DidScheduleBeginMainFrame();
-  }
   void DidRunBeginMainFrame() override { test_hooks_->DidRunBeginMainFrame(); }
 
   void DidSubmitCompositorFrame() override {}
