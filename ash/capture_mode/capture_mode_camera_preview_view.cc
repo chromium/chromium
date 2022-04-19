@@ -58,10 +58,13 @@ CameraPreviewView::CameraPreviewView(
     CaptureModeCameraController* camera_controller,
     const CameraId& camera_id,
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
-    const media::VideoCaptureFormat& capture_format)
+    const media::VideoCaptureFormat& capture_format,
+    bool should_flip_frames_horizontally)
     : camera_controller_(camera_controller),
       camera_id_(camera_id),
-      camera_video_renderer_(std::move(camera_video_source), capture_format),
+      camera_video_renderer_(std::move(camera_video_source),
+                             capture_format,
+                             should_flip_frames_horizontally),
       camera_video_host_view_(
           AddChildView(std::make_unique<views::NativeViewHost>())),
       resize_button_(AddChildView(std::make_unique<CaptureModeButton>(

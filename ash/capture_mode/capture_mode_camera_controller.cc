@@ -156,6 +156,13 @@ media::VideoCaptureFormat PickSuitableCaptureFormat(
   return supported_formats[result_index];
 }
 
+// Only rear device cameras marked as facing the environment should not act as
+// a mirror (those cameras are typically not used as selfie cams).
+bool ShouldCameraActLikeAMirror(const CameraInfo& camera_info) {
+  return camera_info.camera_facing_mode !=
+         media::MEDIA_VIDEO_FACING_ENVIRONMENT;
+}
+
 // Returns the CameraInfo item in `list` whose ID is equal to the given `id`, or
 // nullptr if no such item exists.
 const CameraInfo* GetCameraInfoById(const CameraId& id,
@@ -342,11 +349,13 @@ std::string CameraId::ToString() const {
 CameraInfo::CameraInfo(CameraId camera_id,
                        std::string device_id,
                        std::string display_name,
-                       const media::VideoCaptureFormats& supported_formats)
+                       const media::VideoCaptureFormats& supported_formats,
+                       media::VideoFacingMode camera_facing_mode)
     : camera_id(std::move(camera_id)),
       device_id(std::move(device_id)),
       display_name(std::move(display_name)),
-      supported_formats(supported_formats) {}
+      supported_formats(supported_formats),
+      camera_facing_mode(camera_facing_mode) {}
 
 CameraInfo::CameraInfo(CameraInfo&&) = default;
 
@@ -657,7 +666,7 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
         GetNextCameraNumber(model_id_or_display_name, &cam_models_map);
     available_cameras_.emplace_back(
         CameraId(model_id_or_display_name, cam_number), descriptor.device_id,
-        descriptor.display_name(), device.supported_formats);
+        descriptor.display_name(), device.supported_formats, descriptor.facing);
   }
 
   for (auto& observer : observers_)
@@ -745,7 +754,8 @@ void CaptureModeCameraController::RefreshCameraPreview() {
         std::make_unique<CameraPreviewView>(
             this, selected_camera_, std::move(camera_video_source),
             PickSuitableCaptureFormat(initial_temp_bounds.size(),
-                                      camera_info->supported_formats)));
+                                      camera_info->supported_formats),
+            ShouldCameraActLikeAMirror(*camera_info)));
     ui::Layer* layer = camera_preview_widget_->GetLayer();
     layer->SetFillsBoundsOpaquely(false);
     layer->SetMasksToBounds(true);

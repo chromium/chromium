@@ -10,6 +10,7 @@
 
 #include "ash/capture_mode/fake_camera_device.h"
 #include "base/callback_forward.h"
+#include "media/base/video_facing.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -41,7 +42,8 @@ class FakeVideoSourceProvider
   // `device_id`, `display_name` and `model_id`.
   void AddFakeCamera(const std::string& device_id,
                      const std::string& display_name,
-                     const std::string& model_id);
+                     const std::string& model_id,
+                     media::VideoFacingMode camera_facing_mode);
   void RemoveFakeCamera(const std::string& device_id);
 
   // video_capture::mojom::VideoSourceProvider:

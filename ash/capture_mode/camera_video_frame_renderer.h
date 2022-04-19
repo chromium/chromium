@@ -40,12 +40,16 @@ class CameraVideoFrameRenderer : public CameraVideoFrameHandler::Delegate,
  public:
   CameraVideoFrameRenderer(
       mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
-      const media::VideoCaptureFormat& capture_format);
+      const media::VideoCaptureFormat& capture_format,
+      bool should_flip_frames_horizontally);
   CameraVideoFrameRenderer(const CameraVideoFrameRenderer&) = delete;
   CameraVideoFrameRenderer& operator=(const CameraVideoFrameRenderer&) = delete;
   ~CameraVideoFrameRenderer() override;
 
   aura::Window* host_window() { return &host_window_; }
+  bool should_flip_frames_horizontally() const {
+    return should_flip_frames_horizontally_;
+  }
 
   // Initializes this renderer by creating the `layer_tree_frame_sink_` and
   // starts receiving video frames from the camera device.
@@ -129,6 +133,11 @@ class CameraVideoFrameRenderer : public CameraVideoFrameHandler::Delegate,
   // True if we submitted a compositor frame and are waiting for a call to
   // `DidReceiveCompositorFrameAck()`.
   bool pending_compositor_frame_ack_ = false;
+
+  // Whether the camera video frames should be flipped horizontally around the Y
+  // axis so that the camera behaves like a mirror. This can be false for world-
+  // facing cameras.
+  bool should_flip_frames_horizontally_ = true;
 };
 
 }  // namespace ash

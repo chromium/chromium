@@ -42,11 +42,13 @@ media::VideoCaptureFormats GenerateCaptureFormatList() {
 media::VideoCaptureDeviceInfo CreateCaptureDeviceInfo(
     const std::string& device_id,
     const std::string& display_name,
-    const std::string& model_id) {
+    const std::string& model_id,
+    media::VideoFacingMode camera_facing_mode) {
   media::VideoCaptureDeviceInfo info{media::VideoCaptureDeviceDescriptor(
       display_name, device_id, model_id, media::VideoCaptureApi::UNKNOWN,
       media::VideoCaptureControlSupport())};
   info.supported_formats = GenerateCaptureFormatList();
+  info.descriptor.facing = camera_facing_mode;
   return info;
 }
 
@@ -68,12 +70,14 @@ void FakeVideoSourceProvider::TriggerFatalErrorOnCamera(
   devices_map_.at(device_id)->TriggerFatalError();
 }
 
-void FakeVideoSourceProvider::AddFakeCamera(const std::string& device_id,
-                                            const std::string& display_name,
-                                            const std::string& model_id) {
+void FakeVideoSourceProvider::AddFakeCamera(
+    const std::string& device_id,
+    const std::string& display_name,
+    const std::string& model_id,
+    media::VideoFacingMode camera_facing_mode) {
   const auto iter = devices_map_.emplace(
       device_id, std::make_unique<FakeCameraDevice>(CreateCaptureDeviceInfo(
-                     device_id, display_name, model_id)));
+                     device_id, display_name, model_id, camera_facing_mode)));
   DCHECK(iter.second);
   NotifyVideoCaptureDevicesChanged();
 }

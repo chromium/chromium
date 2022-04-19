@@ -17,6 +17,7 @@
 #include "base/observer_list_types.h"
 #include "base/system/system_monitor.h"
 #include "base/timer/timer.h"
+#include "media/base/video_facing.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -79,7 +80,8 @@ struct CameraInfo {
   CameraInfo(CameraId camera_id,
              std::string device_id,
              std::string display_name,
-             const media::VideoCaptureFormats& supported_formats);
+             const media::VideoCaptureFormats& supported_formats,
+             media::VideoFacingMode camera_facing_mode);
   CameraInfo(CameraInfo&&);
   CameraInfo& operator=(CameraInfo&&);
   ~CameraInfo();
@@ -104,6 +106,11 @@ struct CameraInfo {
   // (See `media::VideoCaptureSystemImpl::DevicesInfoReady()`) by the frame size
   // area, then by frame width, then by the *largest* frame rate.
   media::VideoCaptureFormats supported_formats;
+
+  // Whether the camera is facing the user (e.g. for internal front cameras), or
+  // the environment (e.g. internal rear cameras), or unknown (e.g. usually for
+  // external USB cameras).
+  media::VideoFacingMode camera_facing_mode;
 };
 
 using CameraInfoList = std::vector<CameraInfo>;

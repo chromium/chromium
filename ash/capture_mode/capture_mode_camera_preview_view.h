@@ -43,7 +43,8 @@ class CameraPreviewView
       CaptureModeCameraController* camera_controller,
       const CameraId& camera_id,
       mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
-      const media::VideoCaptureFormat& capture_format);
+      const media::VideoCaptureFormat& capture_format,
+      bool should_flip_frames_horizontally);
   CameraPreviewView(const CameraPreviewView&) = delete;
   CameraPreviewView& operator=(const CameraPreviewView&) = delete;
   ~CameraPreviewView() override;
@@ -51,6 +52,9 @@ class CameraPreviewView
   const CameraId& camera_id() const { return camera_id_; }
   CaptureModeButton* resize_button() const { return resize_button_; }
   bool is_collapsible() const { return is_collapsible_; }
+  bool should_flip_frames_horizontally() const {
+    return camera_video_renderer_.should_flip_frames_horizontally();
+  }
 
   // Sets this camera preview collapsability to the given `value`, which will
   // update the resize button visibility.

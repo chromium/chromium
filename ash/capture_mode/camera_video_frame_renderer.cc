@@ -34,14 +34,16 @@ ui::ContextFactory* GetContextFactory() {
 
 CameraVideoFrameRenderer::CameraVideoFrameRenderer(
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
-    const media::VideoCaptureFormat& capture_format)
+    const media::VideoCaptureFormat& capture_format,
+    bool should_flip_frames_horizontally)
     : host_window_(/*delegate=*/nullptr),
       video_frame_handler_(/*delegate=*/this,
                            std::move(camera_video_source),
                            capture_format),
       context_provider_(GetContextFactory()->SharedMainThreadContextProvider()),
       raster_context_provider_(
-          GetContextFactory()->SharedMainThreadRasterContextProvider()) {
+          GetContextFactory()->SharedMainThreadRasterContextProvider()),
+      should_flip_frames_horizontally_(should_flip_frames_horizontally) {
   host_window_.set_owned_by_parent(false);
   host_window_.Init(ui::LAYER_SOLID_COLOR);
   host_window_.layer()->SetColor(SK_ColorDKGRAY);
@@ -233,18 +235,26 @@ viz::CompositorFrame CameraVideoFrameRenderer::CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, quad_rect, quad_rect,
                       gfx::Transform());
 
-  // The camera should always behave like a mirror, meaning we should flip the
-  // frames around the Y axis (by scaling by -1 in X).
+  // If the camera should behave like a mirror, we should flip the frames around
+  // the Y axis (by scaling by -1 in X).
   gfx::Transform transform;
-  transform.Scale(-1, 1);
-  transform.Translate(-compositor_frame_size.width(), 0);
+  if (should_flip_frames_horizontally_) {
+    transform.Scale(-1, 1);
+    transform.Translate(-compositor_frame_size.width(), 0);
+  }
 
   // Center the compositor frame horizontally and vertically inside
   // `host_window_`.
-  const int x_offset =
-      (compositor_frame_size.width() - host_size_pixels.width()) / 2;
+  int x_offset =
+      -(compositor_frame_size.width() - host_size_pixels.width()) / 2;
   const int y_offset =
       -(compositor_frame_size.height() - host_size_pixels.height()) / 2;
+
+  // When the frame is flipped horizontally around Y, we offset in the opposite
+  // direction.
+  if (should_flip_frames_horizontally_)
+    x_offset *= -1;
+
   transform.Translate(x_offset, y_offset);
 
   const bool context_opaque = media::IsOpaque(video_frame->format());

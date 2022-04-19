@@ -39,6 +39,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
@@ -46,6 +47,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "media/base/video_facing.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -204,10 +206,12 @@ class CaptureModeCameraTest : public AshTestBase {
 
   void AddFakeCamera(const std::string& device_id,
                      const std::string& display_name,
-                     const std::string& model_id) {
+                     const std::string& model_id,
+                     media::VideoFacingMode camera_facing_mode =
+                         media::MEDIA_VIDEO_FACING_NONE) {
     CameraDevicesChangeWaiter waiter;
     GetTestDelegate()->video_source_provider()->AddFakeCamera(
-        device_id, display_name, model_id);
+        device_id, display_name, model_id, camera_facing_mode);
     waiter.Wait();
   }
 
@@ -606,6 +610,27 @@ TEST_F(CaptureModeCameraTest, MissingCameraModelId) {
         base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
     loop.Run();
     EXPECT_EQ(0, observer.camera_change_event_count());
+  }
+}
+
+TEST_F(CaptureModeCameraTest, CameraFramesFlipping) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  int index = 0;
+  for (const auto facing_mode :
+       {media::MEDIA_VIDEO_FACING_NONE, media::MEDIA_VIDEO_FACING_USER,
+        media::MEDIA_VIDEO_FACING_ENVIRONMENT}) {
+    const std::string device_id = base::StringPrintf("/dev/video%d", index);
+    const std::string display_name = base::StringPrintf("Camera %d", index);
+    AddFakeCamera(device_id, display_name, display_name, facing_mode);
+    camera_controller->SetSelectedCamera(CameraId(display_name, 1));
+    EXPECT_TRUE(camera_controller->camera_preview_widget());
+    const bool should_be_flipped =
+        facing_mode != media::MEDIA_VIDEO_FACING_ENVIRONMENT;
+    EXPECT_EQ(should_be_flipped, camera_controller->camera_preview_view()
+                                     ->should_flip_frames_horizontally())
+        << "Failed for facing mode: " << facing_mode;
+    ++index;
   }
 }
 
