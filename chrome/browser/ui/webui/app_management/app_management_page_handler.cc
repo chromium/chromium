@@ -204,17 +204,25 @@ void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
 }
 
 void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
-  std::vector<app_management::mojom::AppPtr> apps;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForEachApp([this, &apps](const apps::AppUpdate& update) {
-        if (update.ShowInManagement().value_or(false) &&
-            apps_util::IsInstalled(update.Readiness())) {
-          apps.push_back(CreateUIAppPtr(update));
-        }
-      });
+  std::vector<app_management::mojom::AppPtr> app_management_apps;
+  std::vector<apps::AppPtr> apps =
+      apps::AppServiceProxyFactory::GetForProfile(profile_)
+          ->AppRegistryCache()
+          .GetAllApps();
 
-  std::move(callback).Run(std::move(apps));
+  // TODO(crbug/1315958): A speculative fix for crbug/1315958. If the crashes go
+  // away, there is some other bugs in CreateUIAppPtr, and we need to track down
+  // here so that the ForEachApps call works.
+  for (auto& app : apps) {
+    if (app->show_in_management.value_or(false) &&
+        apps_util::IsInstalled(app->readiness)) {
+      app_management_apps.push_back(
+          CreateUIAppPtr(apps::AppUpdate(app.get(),
+                                         /*delta=*/nullptr, AccountId())));
+    }
+  }
+
+  std::move(callback).Run(std::move(app_management_apps));
 }
 
 void AppManagementPageHandler::GetApp(const std::string& app_id,
