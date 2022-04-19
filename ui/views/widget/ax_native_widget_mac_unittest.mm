@@ -396,21 +396,13 @@ TEST_F(AXNativeWidgetMacTest, TextfieldGenericAttributes) {
   EXPECT_TRUE(AXObjectHandlesSelector(A11yElementAtMidpoint(),
                                       @selector(accessibilityPerformShowMenu)));
 
-  // Prevent the textfield from interfering with hit tests on the widget itself.
-  widget()->GetContentsView()->RemoveChildView(textfield);
-
   // NSAccessibilitySizeAttribute.
   EXPECT_EQ(GetWidgetBounds().size(),
             gfx::Size(ax_obj.accessibilityFrame.size));
   // Check the attribute is updated when the Widget is resized.
   gfx::Size new_size(200, 40);
-  widget()->SetSize(new_size);
-  // TODO(https://crbug.com/939860): Why does this fail to update with the new
-  // API but not the old one? With the new API, the frame is the same as it was
-  // before the change - perhaps we need to invalidate a cache somewhere? This
-  // EXPECT_NE() is actually checking that the behavior is *wrong*, so if it
-  // ever starts failing, you fixed 939860 :)
-  EXPECT_NE(new_size, gfx::Size(ax_obj.accessibilityFrame.size));
+  textfield->SetSize(new_size);
+  EXPECT_EQ(new_size, gfx::Size(ax_obj.accessibilityFrame.size));
 }
 
 TEST_F(AXNativeWidgetMacTest, TextfieldEditableAttributes) {
