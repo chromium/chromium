@@ -111,7 +111,7 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOSTest
         std::move(access_token_fetcher),
         base::BindLambdaForTesting(
             [this, &run_loop](
-                MockUserCloudSigninRestrictionPolicyFetcherChromeOS::Status st,
+                UserCloudSigninRestrictionPolicyFetcherChromeOS::Status st,
                 absl::optional<std::string> res, const std::string& hd) {
               this->policy_result_ = res;
               this->status_ = st;
@@ -134,9 +134,8 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOSTest
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
 
-  MockUserCloudSigninRestrictionPolicyFetcherChromeOS::Status status_ =
-      MockUserCloudSigninRestrictionPolicyFetcherChromeOS::Status::
-          kUnknownError;
+  UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status_ =
+      UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kUnknownError;
   absl::optional<std::string> policy_result_;
   std::string hosted_domain_;
   network::TestURLLoaderFactory url_loader_factory_;
@@ -167,9 +166,8 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
 
   EXPECT_TRUE(policy_result_.has_value());
   EXPECT_EQ(policy_result_.value(), "primary_account_signin");
-  EXPECT_EQ(
-      status_,
-      MockUserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess);
+  EXPECT_EQ(status_,
+            UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess);
   EXPECT_EQ(hosted_domain_, kFakeEnterpriseDomain);
 }
 
@@ -196,8 +194,8 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
                                          std::move(access_token_fetcher));
 
   EXPECT_FALSE(policy_result_.has_value());
-  EXPECT_EQ(status_, MockUserCloudSigninRestrictionPolicyFetcherChromeOS::
-                         Status::kGetUserInfoError);
+  EXPECT_EQ(status_, UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::
+                         kGetUserInfoError);
   EXPECT_EQ(hosted_domain_, std::string());
 }
 
@@ -224,8 +222,9 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
                                          std::move(access_token_fetcher));
 
   EXPECT_FALSE(policy_result_.has_value());
-  EXPECT_EQ(status_, MockUserCloudSigninRestrictionPolicyFetcherChromeOS::
-                         Status::kGetTokenError);
+  EXPECT_EQ(
+      status_,
+      UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kGetTokenError);
   EXPECT_EQ(hosted_domain_, std::string());
 }
 
@@ -255,8 +254,9 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
                                          std::move(access_token_fetcher));
 
   EXPECT_FALSE(policy_result_.has_value());
-  EXPECT_EQ(status_, MockUserCloudSigninRestrictionPolicyFetcherChromeOS::
-                         Status::kNetworkError);
+  EXPECT_EQ(
+      status_,
+      UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kNetworkError);
   EXPECT_EQ(hosted_domain_, kFakeEnterpriseDomain);
 }
 
@@ -282,7 +282,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
   EXPECT_FALSE(policy_result_.has_value());
   EXPECT_EQ(
       status_,
-      MockUserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kHttpError);
+      UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kHttpError);
   EXPECT_EQ(hosted_domain_, kFakeEnterpriseDomain);
 }
 
@@ -305,8 +305,8 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
                                          std::move(access_token_fetcher));
 
   EXPECT_FALSE(policy_result_.has_value());
-  EXPECT_EQ(status_, MockUserCloudSigninRestrictionPolicyFetcherChromeOS::
-                         Status::kParsingResponseError);
+  EXPECT_EQ(status_, UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::
+                         kParsingResponseError);
   EXPECT_EQ(hosted_domain_, kFakeEnterpriseDomain);
 }
 
@@ -330,8 +330,8 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
                                          std::move(access_token_fetcher));
 
   EXPECT_FALSE(policy_result_.has_value());
-  EXPECT_EQ(status_, MockUserCloudSigninRestrictionPolicyFetcherChromeOS::
-                         Status::kUnsupportedAccountTypeError);
+  EXPECT_EQ(status_, UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::
+                         kUnsupportedAccountTypeError);
   EXPECT_EQ(hosted_domain_, std::string());
 
   MockUserCloudSigninRestrictionPolicyFetcherChromeOS restriction_fetcherother(
@@ -349,8 +349,8 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
                                          std::move(access_token_fetcher));
 
   EXPECT_FALSE(policy_result_.has_value());
-  EXPECT_EQ(status_, MockUserCloudSigninRestrictionPolicyFetcherChromeOS::
-                         Status::kUnsupportedAccountTypeError);
+  EXPECT_EQ(status_, UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::
+                         kUnsupportedAccountTypeError);
   EXPECT_EQ(hosted_domain_, std::string());
 }
 
