@@ -102,9 +102,13 @@ class AdsPageLoadMetricsObserver
   ~AdsPageLoadMetricsObserver() override;
 
   // PageLoadMetricsObserver
+  const char* GetObserverName() const override;
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
@@ -201,7 +205,7 @@ class AdsPageLoadMetricsObserver
                             const mojom::ResourceDataUpdatePtr& resource) const;
 
   // Updates page level counters for resource loads.
-  void ProcessResourceForPage(int process_id,
+  void ProcessResourceForPage(content::RenderFrameHost* render_frame_host,
                               const mojom::ResourceDataUpdatePtr& resource);
   void ProcessResourceForFrame(content::RenderFrameHost* render_frame_host,
                                const mojom::ResourceDataUpdatePtr& resource);
