@@ -19,7 +19,6 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from threading import Thread
 from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
-from skia_gold_infra import finch_skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
 
 import common
@@ -52,10 +51,6 @@ _TEST_CASES = [
         'skia_gold_image': 'finch_smoke_render_chromium_org_html',
     },
 ]
-# This is the corpus used by skia gold to identify the data set.
-# We are not using the same corpus as the rest of the skia gold chromium tests.
-# This corpus is a dedicated one for finch smoke tests.
-CORPUS = 'finch-smoke-tests'
 
 
 def _get_httpd():
@@ -148,33 +143,18 @@ def _confirm_new_seed_downloaded(user_data_dir,
   return False
 
 
-def _get_skia_gold_session(session_manager):
-  """Returns a SkiaGoldSession from the given session_manager.
-
-  Args:
-    session_manager: A SkiaGoldSessionManager object.
-
-  Returns:
-    a SkiaGoldSession object.
-  """
-  key_input = {}
-  key_input['platform'] = _get_platform()
-  return session_manager.GetSkiaGoldSession(
-      key_input, CORPUS)
-
-def _run_tests(work_dir, session_manager, *args):
+def _run_tests(work_dir, skia_util, *args):
   """Runs the smoke tests.
 
   Args:
     work_dir: A working directory to store screenshots and other artifacts.
-    session_manager: A SkiaGoldSessionManager used to do
-      pixel test.
+    skia_util: A FinchSkiaGoldUtil used to do pixel test.
     args: Arguments to be passed to the chrome binary.
 
   Returns:
     0 if tests passed, otherwise 1.
   """
-  skia_gold_session = _get_skia_gold_session(session_manager)
+  skia_gold_session = skia_util.SkiaGoldSession
   path_chrome = _find_chrome_binary()
   path_chromedriver = os.path.join('.', 'chromedriver')
 
@@ -240,8 +220,13 @@ def _run_tests(work_dir, session_manager, *args):
         image_name = t['skia_gold_image']
         sc_file = os.path.join(work_dir, image_name + '.png')
         driver.save_screenshot(sc_file)
+        force_dryrun = False
+        if skia_util.IsTryjobRun and skia_util.IsRetryWithoutPatch:
+          force_dryrun = True
+        logging.warning('IsTryjobRun: %r, IsRetryWithoutPatch: %r',
+                        skia_util.IsTryjobRun, skia_util.IsRetryWithoutPatch)
         status, error = skia_gold_session.RunComparison(
-            image_name, sc_file)
+            name=image_name, png_file=sc_file, force_dryrun=force_dryrun)
         if status:
           finch_skia_gold_utils.log_skia_gold_status_code(
               skia_gold_session, image_name, status, error)
@@ -300,15 +285,16 @@ def main_run(args):
   logging.basicConfig(level=logging.INFO)
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
+  parser.add_argument('--isolated-script-test-filter', type=str)
   FinchSkiaGoldProperties.AddCommandLineArguments(parser)
   args, rest = parser.parse_known_args()
 
   temp_dir = tempfile.mkdtemp()
   httpd = _start_local_http_server()
-  manager = finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
-      temp_dir, FinchSkiaGoldProperties(args))
+  skia_util = finch_skia_gold_utils.FinchSkiaGoldUtil(
+      temp_dir, args)
   try:
-    rc = _run_tests(temp_dir, manager, *rest)
+    rc = _run_tests(temp_dir, skia_util, *rest)
     if args.isolated_script_test_output:
       with open(args.isolated_script_test_output, 'w') as f:
         common.record_local_script_results('run_variations_smoke_tests', f, [],

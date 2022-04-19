@@ -3,6 +3,74 @@
 # found in the LICENSE file.
 
 import logging
+import sys
+from .finch_skia_gold_properties import FinchSkiaGoldProperties
+from .finch_skia_gold_session_manager import FinchSkiaGoldSessionManager
+
+# This is the corpus used by skia gold to identify the data set.
+# We are not using the same corpus as the rest of the skia gold chromium tests.
+# This corpus is a dedicated one for finch smoke tests.
+CORPUS = 'finch-smoke-tests'
+
+
+class FinchSkiaGoldUtil:
+  def __init__(self, temp_dir, args):
+    self._skia_gold_properties = FinchSkiaGoldProperties(args)
+    self._skia_gold_session_manager = FinchSkiaGoldSessionManager(
+        temp_dir, self._skia_gold_properties)
+    self._skia_gold_session = self._GetSkiaGoldSession()
+    self._retry_without_patch = False
+    if args.isolated_script_test_filter:
+      self._retry_without_patch = True
+
+  @property
+  def SkiaGoldProperties(self):
+    return self._skia_gold_properties
+
+  @property
+  def SkiaGoldSessionManager(self):
+    return self._skia_gold_session_manager
+
+  @property
+  def SkiaGoldSession(self):
+    return self._skia_gold_session
+
+  @property
+  def IsTryjobRun(self):
+    return self._skia_gold_properties.IsTryjobRun()
+
+  @property
+  def IsRetryWithoutPatch(self):
+    return self._retry_without_patch
+
+  def _GetSkiaGoldSession(self):
+    """Returns a SkiaGoldSession from the given session_manager.
+
+    Returns:
+      a SkiaGoldSession object.
+    """
+    key_input = {}
+    key_input['platform'] = _get_platform()
+    return self._skia_gold_session_manager.GetSkiaGoldSession(
+        key_input, CORPUS)
+
+
+def _get_platform():
+  """Returns the host platform.
+
+  Returns:
+    One of 'linux', 'win' and 'mac'.
+  """
+  if sys.platform == 'win32' or sys.platform == 'cygwin':
+    return 'win'
+  if sys.platform.startswith('linux'):
+    return 'linux'
+  if sys.platform == 'darwin':
+    return 'mac'
+
+  raise RuntimeError(
+    'Unsupported platform: %s. Only Linux (linux*) and Mac (darwin) and '
+    'Windows (win32 or cygwin) are supported' % sys.platform)
 
 
 def _output_local_diff_files(skia_gold_session, image_name):
