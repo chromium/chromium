@@ -76,13 +76,6 @@ class AssistantOptInFlowScreenHandler
 
   ~AssistantOptInFlowScreenHandler() override;
 
-  // Set an optional callback that will run when the screen has been
-  // initialized.
-  void set_on_initialized(base::OnceClosure on_initialized) {
-    DCHECK(on_initialized_.is_null());
-    on_initialized_ = std::move(on_initialized);
-  }
-
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
@@ -155,8 +148,6 @@ class AssistantOptInFlowScreenHandler
   bool DeviceHasBattery();
 
   ash::AssistantOptInFlowScreen* screen_ = nullptr;
-
-  base::OnceClosure on_initialized_;
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;

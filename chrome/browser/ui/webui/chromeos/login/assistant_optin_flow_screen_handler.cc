@@ -660,9 +660,6 @@ void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
 
   initialized_ = true;
 
-  if (on_initialized_)
-    std::move(on_initialized_).Run();
-
   DCHECK(IsKnownEnumValue(static_cast<ash::FlowType>(flow_type)));
   flow_type_ = static_cast<ash::FlowType>(flow_type);
 

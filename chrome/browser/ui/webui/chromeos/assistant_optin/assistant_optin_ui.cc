@@ -77,8 +77,6 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
   auto assistant_handler = std::make_unique<AssistantOptInFlowScreenHandler>();
   assistant_handler_ptr_ = assistant_handler.get();
   web_ui->AddMessageHandler(std::move(assistant_handler));
-  assistant_handler_ptr_->set_on_initialized(base::BindOnce(
-      &AssistantOptInUI::Initialize, weak_factory_.GetWeakPtr()));
   assistant_handler_ptr_->SetupAssistantConnection();
 
   base::Value::Dict localized_strings;
@@ -113,8 +111,6 @@ void AssistantOptInUI::OnDialogClosed() {
     assistant_handler_ptr_->OnDialogClosed();
   }
 }
-
-void AssistantOptInUI::Initialize() {}
 
 // AssistantOptInDialog
 
