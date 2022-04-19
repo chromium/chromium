@@ -160,8 +160,8 @@ void PreferredAppsImpl::WriteToJSON(
 
   writing_preferred_apps_ = true;
 
-  auto preferred_apps_value = apps::ConvertPreferredAppsToValue(
-      ConvertMojomPreferredAppsToPreferredApps(preferred_apps.GetReference()));
+  auto preferred_apps_value =
+      apps::ConvertPreferredAppsToValue(preferred_apps.GetReference());
 
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);
@@ -225,9 +225,7 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
       if (!preferred_apps_upgraded) {
         UpgradePreferredApps(preferred_apps);
       }
-      auto mojom_preferred_apps =
-          ConvertPreferredAppsToMojomPreferredApps(preferred_apps);
-      preferred_apps_list_.Init(mojom_preferred_apps);
+      preferred_apps_list_.Init(preferred_apps);
     }
   }
   if (!preferred_apps_upgraded) {

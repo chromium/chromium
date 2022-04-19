@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,8 +28,6 @@ class PreferredAppsList : public PreferredAppsListHandle {
 
   PreferredAppsList(const PreferredAppsList&) = delete;
   PreferredAppsList& operator=(const PreferredAppsList&) = delete;
-
-  using PreferredApps = std::vector<apps::mojom::PreferredAppPtr>;
 
   // Initialize the preferred app with empty list or existing |preferred_apps|;
   void Init();

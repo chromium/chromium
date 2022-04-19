@@ -120,7 +120,7 @@ void SubscriberCrosapi::OnPreferredAppsChanged(
 }
 
 void SubscriberCrosapi::InitializePreferredApps(
-    PreferredAppsList::PreferredApps preferred_apps) {
+    std::vector<apps::mojom::PreferredAppPtr> preferred_apps) {
   if (!subscriber_.is_bound()) {
     return;
   }

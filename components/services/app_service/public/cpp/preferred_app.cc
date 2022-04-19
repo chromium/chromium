@@ -20,9 +20,22 @@ bool PreferredApp::operator!=(const PreferredApp& other) const {
   return !(*this == other);
 }
 
+std::unique_ptr<PreferredApp> PreferredApp::Clone() const {
+  return std::make_unique<PreferredApp>(intent_filter->Clone(), app_id);
+}
+
 PreferredAppChanges::PreferredAppChanges() = default;
 
 PreferredAppChanges::~PreferredAppChanges() = default;
+
+PreferredApps ClonePreferredApps(const PreferredApps& preferred_apps) {
+  PreferredApps ret;
+  ret.reserve(preferred_apps.size());
+  for (const auto& preferred_app : preferred_apps) {
+    ret.push_back(preferred_app->Clone());
+  }
+  return ret;
+}
 
 bool IsEqual(const PreferredApps& source, const PreferredApps& target) {
   if (source.size() != target.size()) {

@@ -22,6 +22,8 @@ struct PreferredApp {
   bool operator==(const PreferredApp& other) const;
   bool operator!=(const PreferredApp& other) const;
 
+  std::unique_ptr<PreferredApp> Clone() const;
+
   IntentFilterPtr intent_filter;
   std::string app_id;
 };
@@ -42,6 +44,9 @@ struct PreferredAppChanges {
 };
 
 using PreferredAppChangesPtr = std::unique_ptr<PreferredAppChanges>;
+
+// Creates a deep copy of `preferred_apps`.
+PreferredApps ClonePreferredApps(const PreferredApps& preferred_apps);
 
 bool IsEqual(const PreferredApps& source, const PreferredApps& target);
 

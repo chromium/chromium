@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 
 AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
     Profile* profile)
@@ -65,9 +66,8 @@ void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
   base::flat_map<std::string, std::stringstream> debug_info_map;
 
   for (const auto& preferred_app : proxy->PreferredAppsList().GetReference()) {
-    const auto& filter = preferred_app->intent_filter;
-    apps::operator<<(debug_info_map[preferred_app->app_id], filter);
-    debug_info_map[preferred_app->app_id] << std::endl;
+    debug_info_map[preferred_app->app_id]
+        << preferred_app->intent_filter->ToString() << std::endl;
   }
 
   for (const auto& kv : debug_info_map) {

@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -230,7 +231,9 @@ class FakeSubscriber : public apps::mojom::Subscriber {
   }
 
   void InitializePreferredApps(
-      PreferredAppsList::PreferredApps preferred_apps) override {
+      std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) override {
+    auto preferred_apps =
+        ConvertMojomPreferredAppsToPreferredApps(mojom_preferred_apps);
     preferred_apps_.Init(preferred_apps);
   }
 

@@ -358,7 +358,7 @@ class AppServiceProxyBase : public KeyedService,
   void OnPreferredAppsChanged(
       apps::mojom::PreferredAppChangesPtr changes) override;
   void InitializePreferredApps(
-      PreferredAppsList::PreferredApps preferred_apps) override;
+      std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) override;
 
   apps::mojom::IntentFilterPtr FindBestMatchingFilter(
       const apps::mojom::IntentPtr& intent);

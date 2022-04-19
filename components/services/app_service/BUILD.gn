@@ -15,6 +15,7 @@ source_set("lib") {
 
   public_deps = [
     "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:preferred_app",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/mojom",
   ]
@@ -32,6 +33,7 @@ source_set("unit_tests") {
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:preferred_app",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/cpp:publisher",
     "//components/services/app_service/public/cpp:run_on_os_login",

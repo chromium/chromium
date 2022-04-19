@@ -28,9 +28,8 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
   apps::PreferredAppsList preferred_apps;
   preferred_apps.Init();
   preferred_apps.AddPreferredApp(kAppId1, intent_filter);
-  auto converted_value = apps::ConvertPreferredAppsToValue(
-      apps::ConvertMojomPreferredAppsToPreferredApps(
-          preferred_apps.GetReference()));
+  auto converted_value =
+      apps::ConvertPreferredAppsToValue(preferred_apps.GetReference());
 
   auto* converted_preferred_apps =
       converted_value.FindKey(apps::kPreferredAppsKey);
@@ -63,9 +62,7 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
   auto preferred_apps_list = apps::ParseValueToPreferredApps(converted_value);
   preferred_apps.Init();
   EXPECT_EQ(absl::nullopt, preferred_apps.FindPreferredAppForUrl(filter_url));
-  auto mojom_preferred_apps =
-      ConvertPreferredAppsToMojomPreferredApps(preferred_apps_list);
-  preferred_apps.Init(mojom_preferred_apps);
+  preferred_apps.Init(preferred_apps_list);
   EXPECT_EQ(kAppId1, preferred_apps.FindPreferredAppForUrl(filter_url));
   GURL url_wrong_host = GURL("https://www.hahaha.com/");
   EXPECT_EQ(absl::nullopt,
@@ -80,9 +77,8 @@ TEST_F(PreferredAppsConverterTest, ConvertUpgradedSimpleEntryJson) {
   apps::PreferredAppsList preferred_apps;
   preferred_apps.Init();
   preferred_apps.AddPreferredApp(kAppId1, intent_filter);
-  auto converted_value = apps::ConvertPreferredAppsToValue(
-      apps::ConvertMojomPreferredAppsToPreferredApps(
-          preferred_apps.GetReference()));
+  auto converted_value =
+      apps::ConvertPreferredAppsToValue(preferred_apps.GetReference());
 
   const char expected_output_string[] =
       "{\"preferred_apps\": [ {\"app_id\": \"abcdefg\","
@@ -156,9 +152,7 @@ TEST_F(PreferredAppsConverterTest, ParseSimpleEntryJson) {
   preferred_apps.AddPreferredApp(kAppId1, intent_filter);
   auto& expected_entry = preferred_apps.GetReference();
 
-  EXPECT_TRUE(
-      IsEqual(apps::ConvertMojomPreferredAppsToPreferredApps(expected_entry),
-              parsed_entry));
+  EXPECT_TRUE(IsEqual(expected_entry, parsed_entry));
 }
 
 // Test parse simple entry from json string (upgraded for sharing).
@@ -205,9 +199,7 @@ TEST_F(PreferredAppsConverterTest, ParseUpgradedSimpleEntryJson) {
   preferred_apps.AddPreferredApp(kAppId1, intent_filter);
   auto& expected_entry = preferred_apps.GetReference();
 
-  EXPECT_TRUE(
-      IsEqual(apps::ConvertMojomPreferredAppsToPreferredApps(expected_entry),
-              parsed_entry));
+  EXPECT_TRUE(IsEqual(expected_entry, parsed_entry));
 }
 
 TEST_F(PreferredAppsConverterTest, ParseJsonWithInvalidAppId) {
@@ -553,8 +545,7 @@ TEST_F(PreferredAppsConverterTest, UpgradePreferredApp) {
   new_preferred_apps.AddPreferredApp(kAppId1, new_intent_filter);
 
   auto old_preferred_apps_value = old_preferred_apps.GetValue();
-  auto preferred_apps =
-      apps::ConvertMojomPreferredAppsToPreferredApps(old_preferred_apps_value);
-  apps::UpgradePreferredApps(preferred_apps);
-  EXPECT_EQ(old_preferred_apps_value, new_preferred_apps.GetReference());
+  apps::UpgradePreferredApps(old_preferred_apps_value);
+  EXPECT_TRUE(
+      IsEqual(old_preferred_apps_value, new_preferred_apps.GetReference()));
 }

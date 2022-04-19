@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -83,7 +84,8 @@ void AppServiceMojomImpl::RegisterSubscriber(
   // Initialise the Preferred Apps in the Subscribers on register.
   if (preferred_apps_.preferred_apps_list_.IsInitialized()) {
     subscriber->InitializePreferredApps(
-        preferred_apps_.preferred_apps_list_.GetValue());
+        ConvertPreferredAppsToMojomPreferredApps(
+            preferred_apps_.preferred_apps_list_.GetValue()));
   }
 
   // Add the new subscriber to the set.
@@ -313,7 +315,8 @@ void AppServiceMojomImpl::SetRunOnOsLoginMode(
 void AppServiceMojomImpl::InitializePreferredAppsForAllSubscribers() {
   for (auto& subscriber : subscribers_) {
     subscriber->InitializePreferredApps(
-        preferred_apps_.preferred_apps_list_.GetValue());
+        ConvertPreferredAppsToMojomPreferredApps(
+            preferred_apps_.preferred_apps_list_.GetValue()));
   }
 }
 

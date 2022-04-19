@@ -336,7 +336,7 @@ class AppServiceProxyLacros : public KeyedService,
   void OnPreferredAppsChanged(
       apps::mojom::PreferredAppChangesPtr changes) override;
   void InitializePreferredApps(
-      PreferredAppsList::PreferredApps preferred_apps) override;
+      std::vector<apps::mojom::PreferredAppPtr> preferred_apps) override;
 
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;
