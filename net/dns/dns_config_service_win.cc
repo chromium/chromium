@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/bind.h"
@@ -283,6 +284,28 @@ void ConfigureSuffixSearch(const WinDnsSystemSettings& settings,
   }
 }
 
+absl::optional<std::vector<IPEndPoint>> GetNameServers(
+    const IP_ADAPTER_ADDRESSES* adapter) {
+  std::vector<IPEndPoint> nameservers;
+  for (const IP_ADAPTER_DNS_SERVER_ADDRESS* address =
+           adapter->FirstDnsServerAddress;
+       address != nullptr; address = address->Next) {
+    IPEndPoint ipe;
+    if (ipe.FromSockAddr(address->Address.lpSockaddr,
+                         address->Address.iSockaddrLength)) {
+      if (WinDnsSystemSettings::IsStatelessDiscoveryAddress(ipe.address()))
+        continue;
+      // Override unset port.
+      if (!ipe.port())
+        ipe = IPEndPoint(ipe.address(), dns_protocol::kDefaultPort);
+      nameservers.push_back(ipe);
+    } else {
+      return absl::nullopt;
+    }
+  }
+  return nameservers;
+}
+
 }  // namespace
 
 std::string ParseDomainASCII(base::WStringPiece widestr) {
@@ -336,8 +359,11 @@ std::vector<std::string> ParseSearchList(base::WStringPiece value) {
 absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
     const WinDnsSystemSettings& settings) {
   bool uses_vpn = false;
+  bool has_adapter_specific_nameservers = false;
 
   DnsConfig dns_config;
+
+  std::set<IPEndPoint> previous_nameservers_set;
 
   // Use GetAdapterAddresses to get effective DNS server order and
   // connection-specific DNS suffix. Ignore disconnected and loopback adapters.
@@ -351,6 +377,22 @@ absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
       uses_vpn = true;
     }
 
+    absl::optional<std::vector<IPEndPoint>> nameservers =
+        GetNameServers(adapter);
+    if (!nameservers)
+      return absl::nullopt;
+
+    if (!nameservers->empty()) {
+      // Check if the |adapter| has adapter specific nameservers.
+      std::set<IPEndPoint> nameservers_set(nameservers->begin(),
+                                           nameservers->end());
+      if (!previous_nameservers_set.empty() &&
+          (previous_nameservers_set != nameservers_set)) {
+        has_adapter_specific_nameservers = true;
+      }
+      previous_nameservers_set = std::move(nameservers_set);
+    }
+
     // Skip disconnected and loopback adapters. If a good configuration was
     // previously found, skip processing another adapter.
     if (adapter->OperStatus != IfOperStatusUp ||
@@ -358,22 +400,7 @@ absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
         !dns_config.nameservers.empty())
       continue;
 
-    for (const IP_ADAPTER_DNS_SERVER_ADDRESS* address =
-             adapter->FirstDnsServerAddress;
-         address != nullptr; address = address->Next) {
-      IPEndPoint ipe;
-      if (ipe.FromSockAddr(address->Address.lpSockaddr,
-                           address->Address.iSockaddrLength)) {
-        if (WinDnsSystemSettings::IsStatelessDiscoveryAddress(ipe.address()))
-          continue;
-        // Override unset port.
-        if (!ipe.port())
-          ipe = IPEndPoint(ipe.address(), dns_protocol::kDefaultPort);
-        dns_config.nameservers.push_back(ipe);
-      } else {
-        return absl::nullopt;
-      }
-    }
+    dns_config.nameservers = std::move(*nameservers);
 
     // IP_ADAPTER_ADDRESSES in Vista+ has a search list at |FirstDnsSuffix|,
     // but it came up empty in all trials.
@@ -403,8 +430,10 @@ absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
     dns_config.use_local_ipv6 = true;
   }
 
-  if (settings.have_name_resolution_policy || settings.have_proxy || uses_vpn)
+  if (settings.have_name_resolution_policy || settings.have_proxy || uses_vpn ||
+      has_adapter_specific_nameservers) {
     dns_config.unhandled_options = true;
+  }
 
   ConfigureSuffixSearch(settings, dns_config);
   return dns_config;
