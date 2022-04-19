@@ -229,7 +229,7 @@ blink::UserAgentMetadata GetShellUserAgentMetadata() {
                                                 CONTENT_SHELL_VERSION);
   metadata.full_version = CONTENT_SHELL_VERSION;
   metadata.platform = "Unknown";
-  metadata.architecture = BuildCpuInfo();
+  metadata.architecture = GetCpuArchitecture();
   metadata.model = BuildModelInfo();
 
   metadata.bitness = GetCpuBitness();
