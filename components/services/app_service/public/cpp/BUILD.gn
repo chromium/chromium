@@ -228,6 +228,18 @@ source_set("protocol_handling") {
   deps = [ "//url" ]
 }
 
+source_set("preferred_app") {
+  sources = [
+    "preferred_app.cc",
+    "preferred_app.h",
+  ]
+
+  deps = [
+    ":app_types",
+    "//components/services/app_service/public/mojom",
+  ]
+}
+
 source_set("preferred_apps") {
   sources = [
     "preferred_apps_converter.cc",
