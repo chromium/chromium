@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
@@ -62,7 +61,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -402,12 +401,27 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1291207
     public void testViewYourChromeHistoryOmniboxPedalSuggestion() throws InterruptedException {
         // Generate the view chrome history pedal.
         typeInOmnibox("view chrome history");
 
         checkPedalWasShown(OmniboxPedalType.VIEW_CHROME_HISTORY, /*expectShown=*/true);
+
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(sActivityTestRule.getActivity())) {
+            // On the phone, the history setting page will be shown as a {@link Fragment}, but on
+            // the tablet, the history setting page will be shown as a native url. So we need to
+            // have a different way to verify if the history setting page is opened.
+            clickOnPedal(OmniboxPedalType.VIEW_CHROME_HISTORY);
+            CriteriaHelper.pollUiThread(() -> {
+                Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                Criteria.checkThat(tab, Matchers.notNullValue());
+                Criteria.checkThat(tab.getUrl().getSpec(),
+                        Matchers.startsWith(UrlConstants.NATIVE_HISTORY_URL));
+            });
+
+            verifyHistogram(OmniboxPedalType.VIEW_CHROME_HISTORY);
+            return;
+        }
 
         HistoryActivity historyActivity =
                 clickOnPedalToSettings(HistoryActivity.class, OmniboxPedalType.VIEW_CHROME_HISTORY);
