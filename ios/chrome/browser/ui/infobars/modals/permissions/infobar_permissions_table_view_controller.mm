@@ -238,11 +238,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     // Remove the switch item if the permission is not accessible.
     if (state == web::PermissionStateNotAccessible) {
-      [self.tableViewModel removeItemWithType:itemType
-                    fromSectionWithIdentifier:SectionIdentifierContent];
-      [self.presentationHandler resizeInfobarModal];
+      [self removeFromModelItemAtIndexPaths:@[ index ]];
       [self.tableView deleteRowsAtIndexPaths:@[ index ]
                             withRowAnimation:UITableViewRowAnimationAutomatic];
+      [self.presentationHandler resizeInfobarModal];
     } else {
       TableViewSwitchItem* currentItem =
           base::mac::ObjCCastStrict<TableViewSwitchItem>(
@@ -291,10 +290,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (tableViewLoaded) {
-    [self.presentationHandler resizeInfobarModal];
     NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
     [self.tableView insertRowsAtIndexPaths:@[ index ]
                           withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.presentationHandler resizeInfobarModal];
   }
 }
 

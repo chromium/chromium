@@ -320,8 +320,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
     // Remove the switch item if the permission is not accessible.
     if (state == web::PermissionStateNotAccessible) {
-      [self.tableViewModel removeItemWithType:itemType
-                    fromSectionWithIdentifier:SectionIdentifierPermissions];
+      [self removeFromModelItemAtIndexPaths:@[ index ]];
       [self.tableView deleteRowsAtIndexPaths:@[ index ]
                             withRowAnimation:UITableViewRowAnimationAutomatic];
     } else {
