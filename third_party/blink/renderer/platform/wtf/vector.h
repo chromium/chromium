@@ -439,6 +439,8 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
       AllocateBuffer(capacity);
   }
 
+  explicit VectorBuffer(HashTableDeletedValueType value) : Base(value) {}
+
   void Destruct() {
     DeallocateBuffer(buffer_);
     buffer_ = nullptr;
