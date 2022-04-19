@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_handler_impl.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"

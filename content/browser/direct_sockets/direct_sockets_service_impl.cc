@@ -17,7 +17,6 @@
 #include "content/browser/direct_sockets/direct_udp_socket_impl.h"
 #include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"

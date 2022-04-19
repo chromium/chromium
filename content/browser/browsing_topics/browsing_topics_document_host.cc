@@ -5,7 +5,6 @@
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
 
 #include "base/bind.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"

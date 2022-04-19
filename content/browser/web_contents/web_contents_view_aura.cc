@@ -32,7 +32,6 @@
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"

@@ -47,7 +47,6 @@ class NavigationControllerImpl;
 class NavigationEntry;
 class NavigationRequest;
 class NavigatorTest;
-class RenderFrameHostImpl;
 class RenderFrameHostManagerTest;
 class RenderFrameProxyHost;
 class RenderViewHost;

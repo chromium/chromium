@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

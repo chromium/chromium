@@ -97,7 +97,6 @@ class ClipboardFormatType;
 namespace content {
 class FrameTreeNode;
 class PrerenderHostRegistry;
-class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
 class SessionStorageNamespace;
 class SiteInstanceGroup;

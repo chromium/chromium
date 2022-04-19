@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/browsing_instance.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_group.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
@@ -32,6 +31,8 @@ CONTENT_EXPORT BrowsingContextStateImplementationType GetBrowsingContextMode();
 }  // namespace features
 
 namespace content {
+
+class RenderFrameHostImpl;
 
 // BrowsingContextState is intended to store all state associated with a given
 // browsing context (BrowsingInstance in the code, as defined in the HTML spec

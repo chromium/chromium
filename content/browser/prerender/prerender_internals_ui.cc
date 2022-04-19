@@ -6,7 +6,6 @@
 
 #include "content/browser/prerender/prerender_internals.mojom.h"
 #include "content/browser/prerender/prerender_internals_handler_impl.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
