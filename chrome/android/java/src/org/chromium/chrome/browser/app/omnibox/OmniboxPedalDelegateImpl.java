@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -21,6 +23,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.history.HistoryActivity;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
@@ -42,9 +45,13 @@ import org.chromium.ui.base.PageTransition;
  */
 public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     private final @NonNull Activity mActivity;
+    private @Nullable HistoryClustersCoordinator mHistoryClustersCoordinator;
 
-    public OmniboxPedalDelegateImpl(@NonNull Activity activity) {
+    public OmniboxPedalDelegateImpl(@NonNull Activity activity,
+            OneshotSupplier<HistoryClustersCoordinator> historyClustersCoordinatorSupplier) {
         mActivity = activity;
+        historyClustersCoordinatorSupplier.onAvailable(
+                coordinator -> mHistoryClustersCoordinator = coordinator);
     }
 
     @Override
