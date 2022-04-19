@@ -44,6 +44,7 @@ extern const base::Feature kPageEntitiesModelBypassFilters;
 extern const base::Feature kUseLocalPageEntitiesMetadataProvider;
 extern const base::Feature kBatchAnnotationsValidation;
 extern const base::Feature kPreventLongRunningPredictionModels;
+extern const base::Feature kOverrideNumThreadsForModelExecution;
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -296,6 +297,11 @@ bool BatchAnnotationsValidationUsePageTopics();
 
 // The maximum size of the visit annotation cache.
 size_t MaxVisitAnnotationCacheSize();
+
+// Returns the number of threads to use for model inference on the given
+// optimization target.
+absl::optional<int> OverrideNumThreadsForOptTarget(
+    proto::OptimizationTarget opt_target);
 
 }  // namespace features
 }  // namespace optimization_guide

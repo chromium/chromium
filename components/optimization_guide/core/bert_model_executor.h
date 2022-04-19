@@ -33,6 +33,9 @@ class BertModelExecutor
 
  private:
   const proto::OptimizationTarget optimization_target_;
+
+  // -1 tells TFLite to use its own default number of threads.
+  const int num_threads_ = -1;
 };
 
 }  // namespace optimization_guide

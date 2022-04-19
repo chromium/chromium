@@ -4,13 +4,17 @@
 
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
+#include <limits>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -134,6 +138,140 @@ TEST(OptimizationGuideFeaturesTest,
   EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
   EXPECT_FALSE(
       features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
+}
+
+TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
+  struct TestCase {
+    std::string label;
+    bool enabled;
+    std::map<std::string, std::string> params;
+    std::vector<std::pair<proto::OptimizationTarget, absl::optional<int>>> want;
+  };
+
+  struct TestCase tests[] = {
+      {
+          .label = "feature disabled",
+          .enabled = false,
+          .params = {},
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+              },
+      },
+      {
+          .label = "feature enabled, but no params",
+          .enabled = true,
+          .params = {},
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+              },
+      },
+      {
+          .label = "one target overriden",
+          .enabled = true,
+          .params =
+              {
+                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "1"},
+              },
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, 1},
+              },
+      },
+      {
+          .label = "zero is nullopt",
+          .enabled = true,
+          .params =
+              {
+                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "0"},
+              },
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+              },
+      },
+      {
+          .label = "less than -1",
+          .enabled = true,
+          .params =
+              {
+                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "-2"},
+              },
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, absl::nullopt},
+              },
+      },
+      {
+          .label = "-1 is valid",
+          .enabled = true,
+          .params =
+              {
+                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "-1"},
+              },
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, -1},
+              },
+      },
+      {
+          .label = "two targets overriden",
+          .enabled = true,
+          .params =
+              {
+                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2", "1"},
+                  {"OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD", "-1"},
+              },
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, 1},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, -1},
+              },
+      },
+      {
+          .label = "capped at num cpu",
+          .enabled = true,
+          .params =
+              {
+                  {"OPTIMIZATION_TARGET_PAGE_TOPICS_V2",
+                   base::NumberToString(std::numeric_limits<int>::max())},
+              },
+          .want =
+              {
+                  {proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
+                   base::SysInfo::NumberOfProcessors()},
+              },
+      },
+  };
+
+  for (const TestCase& test : tests) {
+    SCOPED_TRACE(test.label);
+
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (test.enabled) {
+      scoped_feature_list.InitAndEnableFeatureWithParameters(
+          features::kOverrideNumThreadsForModelExecution, test.params);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          features::kOverrideNumThreadsForModelExecution);
+    }
+
+    for (const auto& expectation : test.want) {
+      proto::OptimizationTarget opt_target = expectation.first;
+      absl::optional<int> num_threads = expectation.second;
+
+      EXPECT_EQ(num_threads,
+                features::OverrideNumThreadsForOptTarget(opt_target))
+          << GetStringNameForOptimizationTarget(opt_target);
+    }
+  }
 }
 
 }  // namespace

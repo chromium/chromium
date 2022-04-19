@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -170,6 +171,9 @@ const base::Feature
     kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations{
         "OptimizationGuideUseContinueOnShutdownForPageContentAnnotations",
         base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kOverrideNumThreadsForModelExecution{
+    "OverrideNumThreadsForModelExecution", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
@@ -588,6 +592,25 @@ size_t MaxVisitAnnotationCacheSize() {
   int batch_size = GetFieldTrialParamByFeatureAsInt(
       kPageContentAnnotations, "max_visit_annotation_cache_size", 50);
   return std::max(1, batch_size);
+}
+
+absl::optional<int> OverrideNumThreadsForOptTarget(
+    proto::OptimizationTarget opt_target) {
+  if (!base::FeatureList::IsEnabled(kOverrideNumThreadsForModelExecution)) {
+    return absl::nullopt;
+  }
+
+  // 0 is an invalid value to pass to TFLite, so make that nullopt. -1 is valid,
+  // but not anything less than that.
+  int num_threads = GetFieldTrialParamByFeatureAsInt(
+      kOverrideNumThreadsForModelExecution,
+      proto::OptimizationTarget_Name(opt_target), 0);
+  if (num_threads == 0 || num_threads < -1) {
+    return absl::nullopt;
+  }
+
+  // Cap to the number of CPUs on the device.
+  return std::min(num_threads, base::SysInfo::NumberOfProcessors());
 }
 
 }  // namespace features
