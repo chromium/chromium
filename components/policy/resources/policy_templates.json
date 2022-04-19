@@ -2127,7 +2127,7 @@
     },
     {
       'name': 'HistoryClustersVisible',
-      'owners': ['file://components/history_clusters/OWNERS', 'mahmadi@chromium.org'],
+      'owners': ['file://components/history_clusters/OWNERS', 'mahmadi@chromium.org', 'chrome-journeys@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
@@ -2162,6 +2162,8 @@
       If the policy is set to Disabled, Journeys will not be visible at chrome://history/journeys.
 
       If the policy is left unset, Journeys will be visible at chrome://history/journeys by default and users can change the visibility of Journeys.
+
+      Please note, if <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME">OptimizationGuideFetchingEnabled</ph> policy is set to Disabled, but <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME">HistoryClustersVisible</ph> is set to Enabled or unset, Journeys will still be available at chrome://history/journeys, but may be absent from the omnibox, and less relevant to the user.
       ''',
     },
     {
