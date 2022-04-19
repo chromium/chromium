@@ -83,8 +83,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
-#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -2289,7 +2289,7 @@ TEST_F(ProfileManagerTest, RegularSession) {
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();
   init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
 
   base::FilePath dest_path = temp_dir_.GetPath();
   dest_path = dest_path.Append(FILE_PATH_LITERAL("Regular Profile"));
@@ -2309,7 +2309,7 @@ TEST_F(ProfileManagerTest, ChildSession) {
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();
   init_params->session_type = crosapi::mojom::SessionType::kChildSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
 
   // Create and initialize a profile.
   base::FilePath dest_path = temp_dir_.GetPath();

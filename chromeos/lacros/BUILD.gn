@@ -48,7 +48,6 @@ source_set("test_support") {
     "//base",
     "//chromeos/crosapi/mojom",
     "//chromeos/lacros",
-    "//chromeos/startup",
   ]
   sources = [
     "lacros_test_helper.cc",

@@ -29,7 +29,6 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -211,10 +210,14 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // true.
   bool IsVideoCaptureDeviceFactoryAvailable() const;
 
-  // Returns BrowserInitParams which is passed from ash-chrome.
-  // TODO(crbug.com/1315921): Change init_params() to BrowserInitParams::Get()
-  // and remove this API.
-  const crosapi::mojom::BrowserInitParams* init_params() const;
+  // Returns BrowserInitParams which is passed from ash-chrome. On launching
+  // lacros-chrome from ash-chrome, ash-chrome creates a memory backed file
+  // serializes the BrowserInitParams to it, and the forked/executed
+  // lacros-chrome process inherits the file descriptor. The data is read
+  // in the constructor so is available from the beginning.
+  const crosapi::mojom::BrowserInitParams* init_params() const {
+    return init_params_.get();
+  }
 
   // Returns SystemIdleCache, which uses IdleInfoObserver to observe idle info
   // changes and caches the results. Requires IsIdleServiceAvailable() for full
@@ -226,6 +229,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // mojo::Remote::QueryVersion. It relies on Ash M88. Features that need to
   // work on M87 or older should not use this.
   int GetInterfaceVersion(base::Token interface_uuid) const;
+
+  // Sets `init_params_` to the provided value.
+  // Useful for tests that cannot setup a full Lacros test environment with a
+  // working Mojo connection to Ash.
+  void SetInitParamsForTests(crosapi::mojom::BrowserInitParamsPtr init_params);
 
   using Crosapi = crosapi::mojom::Crosapi;
 
@@ -283,6 +291,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // this class.
   friend class LacrosServiceNeverBlockingState;
 
+  // Needs to access |disable_crosapi_for_testing_|.
+  friend class ScopedDisableCrosapiForTesting;
+
   // Forward declare inner class to give it access to private members.
   template <typename CrosapiInterface,
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
@@ -315,10 +326,19 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
             uint32_t MethodMinVersion>
   void ConstructRemote();
 
+  // Tests will set this to |true| which will make all crosapi functionality
+  // unavailable. Should be set from ScopedDisableCrosapiForTesting always.
+  // TODO(https://crbug.com/1131722): Ideally we could stub this out or make
+  // this functional for tests without modifying production code
+  static bool disable_crosapi_for_testing_;
+
   // BrowserService implementation injected by chrome/. Must only be used on the
   // affine sequence.
   // TODO(hidehiko): Remove this.
   std::unique_ptr<crosapi::mojom::BrowserService> browser_service_;
+
+  // Parameters passed from ash-chrome.
+  crosapi::mojom::BrowserInitParamsPtr init_params_;
 
   // Receiver and cache of system idle info updates.
   std::unique_ptr<SystemIdleCache> system_idle_cache_;

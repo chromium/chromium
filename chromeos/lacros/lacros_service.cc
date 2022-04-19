@@ -96,6 +96,23 @@ crosapi::mojom::BrowserInfoPtr ToMojo(const std::string& browser_version) {
   return info;
 }
 
+// Reads and parses the startup data to BrowserInitParams.
+// If data is missing, or failed to parse, returns a null StructPtr.
+crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
+  absl::optional<std::string> content = ReadStartupData();
+  if (!content)
+    return {};
+
+  crosapi::mojom::BrowserInitParamsPtr result;
+  if (!crosapi::mojom::BrowserInitParams::Deserialize(
+          content->data(), content->size(), &result)) {
+    LOG(ERROR) << "Failed to parse startup data";
+    return {};
+  }
+
+  return result;
+}
+
 std::string SessionTypeToString(crosapi::mojom::SessionType session_type) {
   switch (session_type) {
     case crosapi::mojom::SessionType::kUnknown:
@@ -152,6 +169,9 @@ LacrosService* LacrosService::Get() {
 LacrosService::LacrosService()
     :  // If crosapi is disabled, use the empty params.
        // Otherwise, read the startup data from the inherited FD.
+      init_params_(disable_crosapi_for_testing_
+                       ? crosapi::mojom::BrowserInitParams::New()
+                       : ReadStartupBrowserInitParams()),
       never_blocking_sequence_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
@@ -160,12 +180,13 @@ LacrosService::LacrosService()
       weak_sequenced_state_(sequenced_state_->GetWeakPtr()),
       observer_list_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
-  if (init_params()->idle_info) {
+  DCHECK(init_params_);
+  if (init_params_->idle_info) {
     // Presence of initial |idle_info| indicates that ash-chrome can stream
     // idle info updates, so instantiate under Streaming mode, using
     // |idle_info| as initial cached values.
     system_idle_cache_ =
-        std::make_unique<SystemIdleCache>(*init_params()->idle_info);
+        std::make_unique<SystemIdleCache>(*init_params_->idle_info);
 
     // After construction finishes, start caching.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -176,10 +197,10 @@ LacrosService::LacrosService()
     system_idle_cache_ = std::make_unique<SystemIdleCache>();
   }
 
-  if (init_params()->native_theme_info) {
+  if (init_params_->native_theme_info) {
     // Start Lacros' native theme caching, since it is available in Ash.
     native_theme_cache_ =
-        std::make_unique<NativeThemeCache>(*init_params()->native_theme_info);
+        std::make_unique<NativeThemeCache>(*init_params_->native_theme_info);
 
     // After construction finishes, start caching.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -188,7 +209,7 @@ LacrosService::LacrosService()
   }
 
   static crash_reporter::CrashKeyString<32> session_type("session-type");
-  session_type.Set(SessionTypeToString(init_params()->session_type));
+  session_type.Set(SessionTypeToString(init_params_->session_type));
 
   // Short term workaround: if --crosapi-mojo-platform-channel-handle is
   // available, close --mojo-platform-channel-handle, and remove it
@@ -613,29 +634,29 @@ bool LacrosService::IsVideoCaptureDeviceFactoryAvailable() const {
                             kBindVideoCaptureDeviceFactoryMinVersion;
 }
 
-// Returns BrowserInitParams which is passed from ash-chrome.
-const crosapi::mojom::BrowserInitParams* LacrosService::init_params() const {
-  return BrowserInitParams::Get();
-}
-
 int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {
-  if (BrowserInitParams::disable_crosapi_for_testing())
+  if (disable_crosapi_for_testing_)
     return -1;
-  if (!init_params()->interface_versions)
+  if (!init_params_->interface_versions)
     return -1;
   const base::flat_map<base::Token, uint32_t>& versions =
-      init_params()->interface_versions.value();
+      init_params_->interface_versions.value();
   auto it = versions.find(interface_uuid);
   if (it == versions.end())
     return -1;
   return it->second;
 }
 
+void LacrosService::SetInitParamsForTests(
+    crosapi::mojom::BrowserInitParamsPtr init_params) {
+  init_params_ = std::move(init_params);
+}
+
 absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
-  if (BrowserInitParams::disable_crosapi_for_testing())
+  if (disable_crosapi_for_testing_)
     return absl::nullopt;
   DCHECK(did_bind_receiver_);
-  return init_params()->crosapi_version;
+  return init_params_->crosapi_version;
 }
 
 void LacrosService::StartSystemIdleCache() {
@@ -680,5 +701,8 @@ void LacrosService::NotifyPolicyUpdated(
   observer_list_->Notify(FROM_HERE, &Observer::OnPolicyUpdated,
                          policy_fetch_response);
 }
+
+// static
+bool LacrosService::disable_crosapi_for_testing_ = false;
 
 }  // namespace chromeos

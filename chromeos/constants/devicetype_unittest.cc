@@ -12,8 +12,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
-#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace chromeos {
@@ -48,45 +48,46 @@ TEST(DeviceTypeTest, GetDeviceTypeAsh) {
 TEST(DeviceTypeTest, GetDeviceTypeLacros) {
   base::test::TaskEnvironment task_environment;
   chromeos::ScopedDisableCrosapiForTesting disable_crosapi;
+  chromeos::LacrosService lacros_service;
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->device_type =
         crosapi::mojom::BrowserInitParams::DeviceType::kChromebook;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+    lacros_service.SetInitParamsForTests(std::move(params));
     EXPECT_EQ(GetDeviceType(), chromeos::DeviceType::kChromebook);
   }
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->device_type =
         crosapi::mojom::BrowserInitParams::DeviceType::kChromebase;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+    lacros_service.SetInitParamsForTests(std::move(params));
     EXPECT_EQ(GetDeviceType(), chromeos::DeviceType::kChromebase);
   }
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->device_type =
         crosapi::mojom::BrowserInitParams::DeviceType::kChromebit;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+    lacros_service.SetInitParamsForTests(std::move(params));
     EXPECT_EQ(GetDeviceType(), chromeos::DeviceType::kChromebit);
   }
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->device_type =
         crosapi::mojom::BrowserInitParams::DeviceType::kChromebox;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+    lacros_service.SetInitParamsForTests(std::move(params));
     EXPECT_EQ(GetDeviceType(), chromeos::DeviceType::kChromebox);
   }
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->device_type =
         crosapi::mojom::BrowserInitParams::DeviceType::kUnknown;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+    lacros_service.SetInitParamsForTests(std::move(params));
     EXPECT_EQ(GetDeviceType(), chromeos::DeviceType::kUnknown);
   }
   {
     // When device_type is not set, GetDeviceType() should return kUnknown.
     auto params = crosapi::mojom::BrowserInitParams::New();
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+    lacros_service.SetInitParamsForTests(std::move(params));
     EXPECT_EQ(GetDeviceType(), chromeos::DeviceType::kUnknown);
   }
 }
