@@ -2163,11 +2163,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPageRouteEvents) {
 #endif
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPageDetach) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   InterstitialTestHelper();
 
   content::WebContents* guest_web_contents =
@@ -2176,9 +2171,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPageDetach) {
 
   // Navigate to about:blank.
   content::TestNavigationObserver load_observer(guest_web_contents);
-  bool result = ExecuteScript(guest_web_contents,
-                              "window.location.assign('about:blank')");
-  EXPECT_TRUE(result);
+  auto* embedder_web_contents = GetFirstAppWindowWebContents();
+  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
+                                     "loadGuestUrl('about:blank');"));
   load_observer.Wait();
 }
 
