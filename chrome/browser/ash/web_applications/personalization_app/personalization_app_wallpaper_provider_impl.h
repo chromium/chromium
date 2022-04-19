@@ -143,6 +143,10 @@ class PersonalizationAppWallpaperProviderImpl
       bool preview_mode,
       SelectGooglePhotosPhotoCallback callback) override;
 
+  void SelectGooglePhotosAlbum(
+      const std::string& id,
+      SelectGooglePhotosAlbumCallback callback) override;
+
   void SetCurrentWallpaperLayout(ash::WallpaperLayout layout) override;
 
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
@@ -206,6 +210,10 @@ class PersonalizationAppWallpaperProviderImpl
   // Called after attempting to select a Google Photos wallpaper. Will be
   // dropped if new requests come in.
   void OnGooglePhotosWallpaperSelected(bool success);
+
+  // Called after attempting to select a Google Photos album for daily refresh.
+  // Will be dropped if new requests come in.
+  void OnGooglePhotosAlbumSelected(bool success);
 
   // Called after attempting to select a local image. Will be dropped if new
   // requests come in.
@@ -290,6 +298,8 @@ class PersonalizationAppWallpaperProviderImpl
   SelectLocalImageCallback pending_select_local_image_callback_;
 
   SelectGooglePhotosPhotoCallback pending_select_google_photos_photo_callback_;
+
+  SelectGooglePhotosAlbumCallback pending_select_google_photos_album_callback_;
 
   UpdateDailyRefreshWallpaperCallback
       pending_update_daily_refresh_wallpaper_callback_;

@@ -472,6 +472,19 @@ class ASH_EXPORT WallpaperControllerImpl
       ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
       bool success);
 
+  void OnDailyGooglePhotosPhotoFetched(
+      const AccountId& account_id,
+      const std::string& album_id,
+      RefreshWallpaperCallback callback,
+      ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
+      bool success);
+
+  void OnDailyGooglePhotosWallpaperDownloaded(const AccountId& account_id,
+                                              const std::string& photo_id,
+                                              const std::string& album_id,
+                                              RefreshWallpaperCallback callback,
+                                              const gfx::ImageSkia& image);
+
   void GetGooglePhotosWallpaperFromCacheOrDownload(
       const GooglePhotosWallpaperParams& params,
       ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
@@ -493,13 +506,13 @@ class ASH_EXPORT WallpaperControllerImpl
       SetWallpaperCallback callback,
       const gfx::ImageSkia& image);
 
-  // Sets the current wallpaper to the Google Photos photo specified by `params`
+  // Sets the current wallpaper to the Google Photos photo specified by `info`
   // and updates the Google Photos cache to contain only `image`. Shows the
   // wallpaper on screen if `show_wallpaper` is true.
-  void SetGooglePhotosWallpaperAndUpdateCache(
-      const GooglePhotosWallpaperParams& params,
-      const gfx::ImageSkia& image,
-      bool show_wallpaper);
+  void SetGooglePhotosWallpaperAndUpdateCache(const AccountId& account_id,
+                                              const WallpaperInfo& info,
+                                              const gfx::ImageSkia& image,
+                                              bool show_wallpaper);
 
   // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
   // |show_wallpaper| is true.
@@ -668,6 +681,9 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;
+
+  // If a Google Photos daily refresh wallpaper is the active user's wallpaper.
+  bool IsDailyGooglePhotosWallpaperSelected();
 
   // If the user has a Google Photos wallpaper set.
   bool IsGooglePhotosWallpaperSet() const;

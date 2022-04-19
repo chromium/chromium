@@ -62,8 +62,13 @@ enum class WallpaperType {
                       // goes away when another wallpaper is shown or the
                       // browser process exits. Note: the image will never be
                       // blurred or dimmed.
-  kGooglePhotos = 9,  // `WallpaperInfo.location` contains the Google Photos id.
-  kCount = 10
+  kGooglePhotos = 9,  // `WallpaperInfo.location` contains the Google
+                      // Photos photo id.
+  kDailyGooglePhotos = 10,  // `WallpaperInfo.location` contains the Google
+                            // Photos photo id for the currently selected
+                            // photo, and `WallpaperInfo.collection_id`
+                            // contains the album id.
+  kCount = 11
 };
 
 // The color profile type, ordered as the color profiles applied in

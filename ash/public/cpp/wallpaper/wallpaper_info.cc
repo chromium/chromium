@@ -32,10 +32,15 @@ WallpaperInfo::WallpaperInfo(
 
 WallpaperInfo::WallpaperInfo(
     const GooglePhotosWallpaperParams& google_photos_wallpaper_params)
-    : location(google_photos_wallpaper_params.id),
-      layout(google_photos_wallpaper_params.layout),
-      type(WallpaperType::kGooglePhotos),
-      date(base::Time::Now()) {}
+    : layout(google_photos_wallpaper_params.layout), date(base::Time::Now()) {
+  if (google_photos_wallpaper_params.daily_refresh_enabled) {
+    type = WallpaperType::kDailyGooglePhotos;
+    collection_id = google_photos_wallpaper_params.id;
+  } else {
+    type = WallpaperType::kGooglePhotos;
+    location = google_photos_wallpaper_params.id;
+  }
+}
 
 WallpaperInfo::WallpaperInfo(const std::string& in_location,
                              WallpaperLayout in_layout,
@@ -61,7 +66,9 @@ bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
              (std::equal(variants.begin(), variants.end(),
                          other.variants.begin()));
     case WallpaperType::kGooglePhotos:
-      return location == other.location && layout == other.layout;
+    case WallpaperType::kDailyGooglePhotos:
+      return location == other.location && layout == other.layout &&
+             collection_id == other.collection_id;
     case WallpaperType::kCustomized:
     case WallpaperType::kDefault:
     case WallpaperType::kPolicy:

@@ -121,6 +121,12 @@ void FakePersonalizationAppWallpaperProvider::SelectGooglePhotosPhoto(
   std::move(callback).Run(/*success=*/true);
 }
 
+void FakePersonalizationAppWallpaperProvider::SelectGooglePhotosAlbum(
+    const std::string& id,
+    SelectGooglePhotosAlbumCallback callback) {
+  std::move(callback).Run(/*success=*/true);
+}
+
 void FakePersonalizationAppWallpaperProvider::SelectLocalImage(
     const base::FilePath& path,
     ash::WallpaperLayout layout,

@@ -77,6 +77,11 @@ class WallpaperControllerClientImpl
   void FetchGooglePhotosPhoto(const AccountId& account_id,
                               const std::string& id,
                               FetchGooglePhotosPhotoCallback callback) override;
+  void FetchDailyGooglePhotosPhoto(
+      const AccountId& account_id,
+      const std::string& album_id,
+      const absl::optional<std::string>& current_photo_id,
+      FetchGooglePhotosPhotoCallback callback) override;
   void SaveWallpaperToDriveFs(
       const AccountId& account_id,
       const base::FilePath& origin,
@@ -194,6 +199,12 @@ class WallpaperControllerClientImpl
       const std::vector<backdrop::Image>& images);
 
   void OnGooglePhotosPhotoFetched(
+      FetchGooglePhotosPhotoCallback callback,
+      ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
+          response);
+
+  void OnGooglePhotosDailyAlbumFetched(
+      const absl::optional<std::string>& current_photo_id,
       FetchGooglePhotosPhotoCallback callback,
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
           response);

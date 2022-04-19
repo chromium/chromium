@@ -41,7 +41,10 @@ enum WallpaperType {
                       // goes away when another wallpaper is shown or the
                       // browser process exits. Note: the image will never be
                       // blurred or dimmed.
-  kGooglePhotos = 9,  // WallpaperInfo.location contains the Google Photos id.
+  kGooglePhotos = 9,       // WallpaperInfo.location contains the Google Photos
+                           // photo id.
+  kDailyGooglePhotos = 10, // WallpaperInfo.location contains the Google Photos
+                           // album id.
 };
 
 // The image type specific to online wallpapers. This should be kept in sync
@@ -258,6 +261,10 @@ interface WallpaperProvider {
     // Sets the Google Photos photo with the given id as the wallpaper.
     SelectGooglePhotosPhoto(string id, WallpaperLayout layout,
         bool preview_mode) => (bool success);
+
+    // Sets the Google Photos album with the given id as the daily refresh
+    // album.
+    SelectGooglePhotosAlbum(string id) => (bool success);
 
     // Sets the layout for current wallpaper.
     SetCurrentWallpaperLayout(WallpaperLayout layout);

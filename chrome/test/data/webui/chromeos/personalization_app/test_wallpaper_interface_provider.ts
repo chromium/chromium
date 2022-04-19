@@ -25,6 +25,7 @@ export class TestWallpaperProvider extends
       'getLocalImageThumbnail',
       'setWallpaperObserver',
       'selectGooglePhotosPhoto',
+      'selectGooglePhotosAlbum',
       'selectWallpaper',
       'selectLocalImage',
       'setCurrentWallpaperLayout',
@@ -224,6 +225,11 @@ export class TestWallpaperProvider extends
 
   selectGooglePhotosPhoto(id: string) {
     this.methodCalled('selectGooglePhotosPhoto', id);
+    return Promise.resolve({success: false});
+  }
+
+  selectGooglePhotosAlbum(id: string) {
+    this.methodCalled('selectGooglePhotosAlbum', id);
     return Promise.resolve({success: false});
   }
 

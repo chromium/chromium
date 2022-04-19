@@ -998,13 +998,13 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   EXPECT_EQ(0,
             test_wallpaper_controller()->set_google_photos_wallpaper_count());
-  EXPECT_NE(
-      ash::WallpaperInfo(
-          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-           /*preview_mode=*/false}),
-      test_wallpaper_controller()->wallpaper_info().value_or(
-          ash::WallpaperInfo()));
+  EXPECT_NE(ash::WallpaperInfo(
+                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+                 photo_id, /*daily_refresh_enabled=*/false,
+                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+                 /*preview_mode=*/false}),
+            test_wallpaper_controller()->wallpaper_info().value_or(
+                ash::WallpaperInfo()));
 
   // Test selecting a wallpaper after fetching the enterprise setting.
   FetchGooglePhotosEnabled();
@@ -1018,14 +1018,14 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
 
   EXPECT_EQ(feature_enabled ? 1 : 0,
             test_wallpaper_controller()->set_google_photos_wallpaper_count());
-  EXPECT_EQ(
-      feature_enabled,
-      ash::WallpaperInfo(
-          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           photo_id, ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-           /*preview_mode=*/false}) ==
-          test_wallpaper_controller()->wallpaper_info().value_or(
-              ash::WallpaperInfo()));
+  EXPECT_EQ(feature_enabled,
+            ash::WallpaperInfo(
+                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+                 photo_id, /*daily_refresh_enabled=*/false,
+                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+                 /*preview_mode=*/false}) ==
+                test_wallpaper_controller()->wallpaper_info().value_or(
+                    ash::WallpaperInfo()));
 }
 
 }  // namespace personalization_app

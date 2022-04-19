@@ -9,10 +9,12 @@ namespace ash {
 GooglePhotosWallpaperParams::GooglePhotosWallpaperParams(
     const AccountId& account_id,
     const std::string& id,
+    bool daily_refresh_enabled,
     WallpaperLayout layout,
     bool preview_mode)
     : account_id(account_id),
       id(id),
+      daily_refresh_enabled(daily_refresh_enabled),
       layout(layout),
       preview_mode(preview_mode) {}
 
@@ -29,6 +31,7 @@ std::ostream& operator<<(std::ostream& os,
   os << "GooglePhotosWallPaperParams:" << std::endl;
   os << "  Account Id: " << params.account_id << std::endl;
   os << "  Photo Id: " << params.id << std::endl;
+  os << "  Daily Refresh: " << params.daily_refresh_enabled << std::endl;
   os << "  Layout: " << params.layout << std::endl;
   os << "  Preview Mode: " << params.preview_mode << std::endl;
   return os;

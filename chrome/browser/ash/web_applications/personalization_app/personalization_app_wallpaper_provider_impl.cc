@@ -411,6 +411,14 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
                          weak_ptr_factory_.GetWeakPtr(), info,
                          wallpaper_data_url));
       return;
+    case ash::WallpaperType::kDailyGooglePhotos:
+      client->FetchGooglePhotosPhoto(
+          GetAccountId(profile_), info.location,
+          base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
+                             SendGooglePhotosAttribution,
+                         weak_ptr_factory_.GetWeakPtr(), info,
+                         wallpaper_data_url));
+      return;
     case ash::WallpaperType::kDefault:
     case ash::WallpaperType::kDevice:
     case ash::WallpaperType::kOneShot:
@@ -526,11 +534,41 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kGooglePhotos);
 
   client->SetGooglePhotosWallpaper(
-      ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id, layout,
+      ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id,
+                                       /*daily_refresh_enabled=*/false, layout,
                                        preview_mode),
       base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                          OnGooglePhotosWallpaperSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
+    const std::string& id,
+    SelectGooglePhotosAlbumCallback callback) {
+  if (!is_google_photos_enterprise_enabled_) {
+    std::move(callback).Run(false);
+    LOG(WARNING) << "Rejected attempt to set Google Photos wallpaper while "
+                 << "disabled via enterprise setting.";
+    return;
+  }
+
+  if (pending_select_google_photos_album_callback_)
+    std::move(pending_select_google_photos_album_callback_).Run(false);
+  pending_select_google_photos_album_callback_ = std::move(callback);
+  WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
+  DCHECK(client);
+
+  client->RecordWallpaperSourceUMA(ash::WallpaperType::kDailyGooglePhotos);
+
+  client->SetGooglePhotosWallpaper(
+      ash::GooglePhotosWallpaperParams(
+          GetAccountId(profile_), id,
+          /*daily_refresh=*/true,
+          ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+          /*preview_mode=*/false),
+      base::BindOnce(
+          &PersonalizationAppWallpaperProviderImpl::OnGooglePhotosAlbumSelected,
+          backend_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SetCurrentWallpaperLayout(
@@ -693,6 +731,12 @@ void PersonalizationAppWallpaperProviderImpl::OnGooglePhotosWallpaperSelected(
     bool success) {
   DCHECK(pending_select_google_photos_photo_callback_);
   std::move(pending_select_google_photos_photo_callback_).Run(success);
+}
+
+void PersonalizationAppWallpaperProviderImpl::OnGooglePhotosAlbumSelected(
+    bool success) {
+  DCHECK(pending_select_google_photos_album_callback_);
+  std::move(pending_select_google_photos_album_callback_).Run(success);
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnLocalImageSelected(

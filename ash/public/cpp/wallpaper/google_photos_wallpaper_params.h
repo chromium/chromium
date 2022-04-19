@@ -16,6 +16,7 @@ namespace ash {
 struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
   GooglePhotosWallpaperParams(const AccountId& account_id,
                               const std::string& id,
+                              bool daily_refresh_enabled,
                               WallpaperLayout layout,
                               bool preview_mode);
 
@@ -29,8 +30,11 @@ struct ASH_PUBLIC_EXPORT GooglePhotosWallpaperParams {
   // The user's account id.
   AccountId account_id;
 
-  // The unique identifier for the photo.
+  // The unique identifier for the photo or album.
   std::string id;
+
+  // Whether to start daily refresh, and `id` is an album id.
+  bool daily_refresh_enabled = false;
 
   // The layout of the wallpaper, used for wallpaper resizing.
   WallpaperLayout layout;

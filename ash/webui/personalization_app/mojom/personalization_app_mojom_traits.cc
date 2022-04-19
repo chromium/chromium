@@ -94,6 +94,8 @@ MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
       return MojomWallpaperType::kOneShot;
     case ash::WallpaperType::kGooglePhotos:
       return MojomWallpaperType::kGooglePhotos;
+    case ash::WallpaperType::kDailyGooglePhotos:
+      return MojomWallpaperType::kDailyGooglePhotos;
     case ash::WallpaperType::kCount:
       NOTREACHED();
       return MojomWallpaperType::kDefault;
@@ -130,6 +132,9 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
       return true;
     case MojomWallpaperType::kGooglePhotos:
       *output = ash::WallpaperType::kGooglePhotos;
+      return true;
+    case MojomWallpaperType::kDailyGooglePhotos:
+      *output = ash::WallpaperType::kDailyGooglePhotos;
       return true;
   }
   NOTREACHED();
