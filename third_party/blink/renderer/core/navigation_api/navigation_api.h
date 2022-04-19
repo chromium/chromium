@@ -165,6 +165,7 @@ class CORE_EXPORT NavigationApi final
   friend class NavigateReaction;
   friend class NavigationApiNavigation;
   void CloneFromPrevious(NavigationApi&);
+  HistoryItem* CloneNonCurrentItem(HistoryItem*);
   NavigationHistoryEntry* GetEntryForRestore(
       const mojom::blink::NavigationApiHistoryEntryPtr&);
   void PopulateKeySet();

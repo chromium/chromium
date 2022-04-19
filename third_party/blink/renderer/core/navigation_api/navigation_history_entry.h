@@ -36,6 +36,7 @@ class CORE_EXPORT NavigationHistoryEntry final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dispose, kDispose)
 
   HistoryItem* GetItem() { return item_; }
+  void SetItem(HistoryItem* item) { item_ = item; }
 
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
