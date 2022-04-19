@@ -76,22 +76,27 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             action='store_true',
             help=('Only run the tests explicitly given in arguments '
                   '(can run no tests, which will exit with code 0)'))
-        parser.add_argument(
-            '--dry-run',
-            action='store_true',
-            help='Do not upload results to ResultDB')
+        self.add_mode_arguments(parser)
+        self.add_output_arguments(parser)
+
+    def add_mode_arguments(self, parser):
+        group = parser.add_argument_group(
+            'Mode',
+            'Options for wptrunner modes other than running tests.')
         # We provide an option to show wptrunner's help here because the 'wpt'
         # executable may be inaccessible from the user's PATH. The top-level
         # 'wpt' command also needs to have virtualenv disabled.
-        parser.add_argument(
+        group.add_argument(
             '--wpt-help',
             action='store_true',
-            help="Show the wptrunner help message and exit")
+            help='Show the wptrunner help message and exit')
+        return group
 
-        self.output_group = parser.add_argument_group(
+    def add_output_arguments(self, parser):
+        group = parser.add_argument_group(
             'Output Logging',
             'Options for controlling logging behavior.')
-        self.output_group.add_argument(
+        group.add_argument(
             '--log-wptreport',
             nargs='?',
             # We cannot provide a default, since the default filename depends on
@@ -100,12 +105,13 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             help=('Log a wptreport in JSON to the output directory '
                   '(default filename: '
                   'wpt_reports_<product>_<shard-index>.json)'))
-        self.output_group.add_argument(
+        group.add_argument(
             '-v',
             '--verbose',
             action='count',
             default=0,
             help='Increase verbosity')
+        return group
 
     def _override_options(self, base_parser):
         """Create a parser that overrides existing options.
