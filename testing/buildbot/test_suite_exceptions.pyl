@@ -3015,13 +3015,6 @@
           '--jobs=1',
         ],
       },
-      # TODO crbug.com/1143924: Remove when experimentation is complete
-      'Linux Tests Robocrop': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
       # Disable parallelism on all Mac bots.
       'Mac10.11 Tests': {
         'args': [

@@ -1600,9 +1600,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'win32-dbg',
         'win-archive-dbg',
         'win32-archive-dbg',
-        # TODO crbug.com/1143924: Remove once experimentation is complete
-        'Linux Builder Robocrop',
-        'Linux Tests Robocrop',
     ]
 
   def get_internal_waterfalls(self):
