@@ -1301,10 +1301,10 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @private
    * @param {string} method
    * @param {!State} expectedState
    * @returns {!Promise<!StateResult>}
+   * @private
    */
   getNextStateForMethod_(method, expectedState) {
     if (this.states_.length === 0) {
@@ -1342,11 +1342,11 @@ export class FakeShimlessRmaService {
 
   /**
    * Sets the value that will be returned when calling getCurrent().
-   * @private
    * @param {!State} state
    * @param {boolean} canCancel,
    * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
+   * @private
    */
   setFakeCurrentState_(state, canCancel, canGoBack, error) {
     this.setFakeStateForMethod_(
@@ -1356,11 +1356,11 @@ export class FakeShimlessRmaService {
   /**
    * Sets the value that will be returned when calling
    * transitionPreviousState().
-   * @private
    * @param {!State} state
    * @param {boolean} canCancel,
    * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
+   * @private
    */
   setFakePrevState_(state, canCancel, canGoBack, error) {
     this.setFakeStateForMethod_(
@@ -1370,12 +1370,12 @@ export class FakeShimlessRmaService {
   /**
    * Sets the value that will be returned when calling state specific functions
    * that update state. e.g. setSameOwner()
-   * @private
    * @param {string} method
    * @param {!State} state
    * @param {boolean} canCancel,
    * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
+   * @private
    */
   setFakeStateForMethod_(method, state, canCancel, canGoBack, error) {
     this.methods_.setResult(method, /** @type {!StateResult} */ ({

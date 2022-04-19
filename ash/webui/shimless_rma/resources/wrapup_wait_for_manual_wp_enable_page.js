@@ -69,9 +69,9 @@ export class WrapupWaitForManualWpEnablePage extends
   }
 
   /**
-   * @protected
    * @param {boolean} hwwpEnabled
    * @return {string}
+   * @protected
    */
   getBodyText_(hwwpEnabled) {
     return this.hwwpEnabled_ ? this.i18n('manuallyEnabledWpMessageText') :

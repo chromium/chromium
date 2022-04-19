@@ -161,8 +161,8 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   }
 
   /**
-   * @protected
    * @return {string}
+   * @protected
    */
   getVerificationIcon_() {
     return this.isCompliant_ ? 'shimless-icon:check' : 'shimless-icon:warning';

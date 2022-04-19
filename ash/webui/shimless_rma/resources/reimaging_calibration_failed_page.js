@@ -111,8 +111,8 @@ export class ReimagingCalibrationFailedPage extends
   }
 
   /**
-   * @private
    * @return {!Array<!CalibrationComponentStatus>}
+   * @private
    */
   getComponentsList_() {
     return this.componentCheckboxes_.map(item => {

@@ -109,8 +109,8 @@ export class OnboardingSelectComponentsPageElement extends
   }
 
   /**
-   * @private
    * @return {!Array<!Component>}
+   * @private
    */
   getComponentRepairStateList_() {
     return this.componentCheckboxes_.map(item => {

@@ -66,8 +66,8 @@ export class OnboardingWaitForManualWpDisablePage extends
   }
 
   /**
-   * @public
    * @param {boolean} enabled
+   * @public
    */
   onHardwareWriteProtectionStateChanged(enabled) {
     this.hwwpEnabled_ = enabled;

@@ -146,8 +146,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   /**
-   * @private
    * @param {?{qrCode: QrCode}} response
+   * @private
    */
   updateQrCode_(response) {
     if (!response || !response.qrCode) {
@@ -181,8 +181,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   /**
-   * @protected
    * @param {!Event} event
+   * @protected
    */
   onRsuCodeChanged_(event) {
     // Set to false whenever the user changes the code to remove the red invalid
@@ -191,8 +191,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   /**
-   * @private
    * @return {!CanvasRenderingContext2D}
+   * @private
    */
   getCanvasContext_() {
     return this.shadowRoot.querySelector('#qrCodeCanvas').getContext('2d');

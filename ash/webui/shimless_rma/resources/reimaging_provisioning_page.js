@@ -98,8 +98,8 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   }
 
   /**
-   * @protected
    * @return {string}
+   * @protected
    */
   getStatusString_() {
     if (!this.status_) {
@@ -112,9 +112,9 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   /**
    * Implements ProvisioningObserver.onProvisioningUpdated()
    * TODO(joonbug): Add error handling and display failure using cr-dialog.
-   * @protected
    * @param {!ProvisioningStatus} status
    * @param {number} progress
+   * @protected
    */
   onProvisioningUpdated(status, progress) {
     this.status_ = status;

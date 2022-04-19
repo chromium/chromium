@@ -443,8 +443,8 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @private
    * @param {!StateResult} stateResult
+   * @private
    */
   processStateResult_(stateResult) {
     // Do not show the state screen if the critical error screen was shown.
@@ -461,9 +461,9 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @private
    * @param {!RmadErrorCode} error
    * @return {boolean}
+   * @private
    * Returns true if the critical error screen was displayed.
    */
   handleStandardAndCriticalError_(error) {
@@ -477,10 +477,10 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @private
    * @param {!State} state
    * @param {boolean} canCancel
    * @param {boolean} canGoBack
+   * @private
    */
   showState_(state, canCancel, canGoBack) {
     const pageInfo = StateComponentMapping[state];
@@ -567,17 +567,17 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @protected
    * @param {ButtonState} button
+   * @protected
    */
   isButtonDisabled_(button) {
     return (button === ButtonState.DISABLED) || this.allButtonsDisabled_;
   }
 
   /**
-   * @protected
    * @param {boolean} shouldDisableButtons
    * @param {boolean} showBusyStateOverlay
+   * @protected
    */
   setAllButtonsState_(shouldDisableButtons, showBusyStateOverlay) {
     // `showBusyStateOverlay` should only be true when disabling all buttons.

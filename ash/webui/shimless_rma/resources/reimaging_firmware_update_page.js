@@ -105,8 +105,8 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
 
   /**
    * Implements UpdateRoFirmwareObserver.onUpdateRoFirmwareStatusChanged()
-   * @protected
    * @param {!UpdateRoFirmwareStatus} status
+   * @protected
    */
   onUpdateRoFirmwareStatusChanged(status) {
     this.status_ = status;
