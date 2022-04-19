@@ -1202,6 +1202,8 @@ static_library("ui") {
       "passwords/bubble_controllers/save_update_bubble_controller.cc",
       "passwords/bubble_controllers/save_update_bubble_controller.h",
       "passwords/credential_leak_dialog_controller.h",
+      "passwords/credential_leak_dialog_controller_factory.cc",
+      "passwords/credential_leak_dialog_controller_factory.h",
       "passwords/credential_leak_dialog_controller_impl.cc",
       "passwords/credential_leak_dialog_controller_impl.h",
       "passwords/credential_manager_dialog_controller.h",
