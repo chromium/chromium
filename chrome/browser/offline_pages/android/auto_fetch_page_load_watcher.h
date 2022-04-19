@@ -115,6 +115,10 @@ class InternalImpl {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  std::vector<GURL>& pages_loaded_before_observer_ready_for_testing() {
+    return pages_loaded_before_observer_ready_;
+  }
+
  private:
   void SetNotificationStateToShown(int64_t request_id);
   void UpdateNotificationStateForAllRequests();
@@ -167,6 +171,10 @@ class AutoFetchPageLoadWatcher
   // Called when navigation completes, even on errors. This is only called
   // once per navigation.
   void HandleNavigation(content::NavigationHandle* navigation_handle);
+
+  std::vector<GURL>& loaded_pages_for_testing() {
+    return impl_.pages_loaded_before_observer_ready_for_testing();
+  }
 
  private:
   class NavigationObserver;

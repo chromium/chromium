@@ -96,7 +96,7 @@ class AutoFetchPageLoadWatcher::NavigationObserver
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->IsInMainFrame() ||
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
         !navigation_handle->HasCommitted())
       return;
     page_load_watcher_->HandleNavigation(navigation_handle);
