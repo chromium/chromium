@@ -14,6 +14,7 @@ import '../controls/settings_textarea.js';
 import '../controls/password_prompt_dialog.js';
 // </if>
 import '../settings_shared_css.js';
+import './password_edit_dialog.js';
 import './passwords_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -31,6 +32,7 @@ import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
+import {SavedPasswordEditedEvent} from './password_edit_dialog.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {getTemplate} from './password_view.html.js';
 
@@ -96,6 +98,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   // <if expr="chromeos_ash or chromeos_lacros">
   private showPasswordPromptDialog_: boolean;
   // </if>
+  private showEditDialog_: boolean;
   site: string;
   username: string;
 
@@ -174,8 +177,30 @@ export class PasswordViewElement extends PasswordViewElementBase {
   /** Handler to open edit dialog for the password. */
   private onEditButtonClick_() {
     assert(!this.isFederated_());
-    // TODO(https://crbug.com/1298027): Attach an edit dialog to this page and
-    // handle edits.
+    this.requestPlaintextPassword(
+            this.credential!.getAnyId(),
+            chrome.passwordsPrivate.PlaintextReason.EDIT)
+        .then(password => {
+          this.credential!.password = password;
+          this.showEditDialog_ = true;
+        });
+  }
+
+  private onEditDialogClosed_() {
+    this.showEditDialog_ = false;
+  }
+
+  private onSavedPasswordEdited_(event: SavedPasswordEditedEvent) {
+    const newUsername = event.detail.username;
+    if (this.credential!.username === newUsername) {
+      return;
+    }
+    // The dialog is recently closed. If the username has changed, reroute the
+    // page to the new credential.
+    this.username = newUsername;
+    const newParams = Router.getInstance().getQueryParameters();
+    newParams.set('username', newUsername);
+    Router.getInstance().updateRouteParams(newParams);
   }
 
   // <if expr="chromeos_ash or chromeos_lacros">

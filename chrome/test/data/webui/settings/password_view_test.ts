@@ -229,6 +229,7 @@ suite('PasswordViewTest', function() {
         assertEquals(
             1, passwordManager.getCallCount('requestPlaintextPassword'));
         await flushTasks();
+        passwordManager.resetResolver('requestPlaintextPassword');
 
         passwordManager.lastCallback.addSavedPasswordListChangedListener!
             (passwordList.concat([
@@ -237,9 +238,8 @@ suite('PasswordViewTest', function() {
 
         await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
-
         assertEquals(
-            2, passwordManager.getCallCount('requestPlaintextPassword'));
+            1, passwordManager.getCallCount('requestPlaintextPassword'));
       });
 
   test(
@@ -261,12 +261,67 @@ suite('PasswordViewTest', function() {
 
         await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
+        passwordManager.resetResolver('requestPlaintextPassword');
 
         passwordManager.lastCallback.addSavedPasswordListChangedListener!([]);
+
+        await flushTasks();
+
+        assertVisibilityOfPageElements(page, /*visibility=*/ false);
+      });
+
+  test(
+      'When edit button is tapped, the edit dialog is open with credential. ' +
+          'When the dialog is closed and username changed, view page gets updated',
+      async function() {
+        const NEW_USERNAME = 'user2';
+        const entry =
+            createPasswordEntry({url: SITE, username: USERNAME, id: 0});
+
+        passwordManager.setPlaintextPassword(PASSWORD);
+        passwordManager.data.passwords = [entry];
+        const page = document.createElement('password-view');
+        document.body.appendChild(page);
+        const params = new URLSearchParams({
+          username: USERNAME,
+          site: SITE,
+        });
+        Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+
+        await passwordManager.whenCalled('requestPlaintextPassword');
+        await flushTasks();
+        passwordManager.resetResolver('requestPlaintextPassword');
+
+        page.shadowRoot!.querySelector<HTMLButtonElement>(
+                            '#editButton')!.click();
+        flush();
 
         await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
 
-        assertVisibilityOfPageElements(page, /*visibility=*/ false);
+        const editDialog =
+            page.shadowRoot!.querySelector('password-edit-dialog');
+        assertTrue(!!editDialog);
+        assertTrue(!!editDialog.existingEntry);
+        assertEquals(entry.urls, editDialog.existingEntry.urls);
+        assertEquals(entry.username, editDialog.existingEntry.username);
+        assertEquals(PASSWORD, editDialog.existingEntry.password);
+
+        // user edits the username
+        editDialog.$.usernameInput.value = NEW_USERNAME;
+        editDialog.$.actionButton.click();
+        entry.username = NEW_USERNAME;
+        passwordManager.lastCallback.addSavedPasswordListChangedListener!
+            ([entry]);
+
+        await flushTasks();
+        await passwordManager.whenCalled('requestPlaintextPassword');
+        assertFalse(isVisible(editDialog));
+
+        assertEquals(NEW_USERNAME, page.credential!.username);
+
+        const urlParams = Router.getInstance().getQueryParameters();
+        assertEquals(urlParams.get('site'), SITE);
+        assertEquals(urlParams.get('username'), NEW_USERNAME);
       });
 });

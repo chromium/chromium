@@ -32,6 +32,15 @@ import {getTemplate} from './password_edit_dialog.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 
+export type SavedPasswordEditedEvent =
+    CustomEvent<chrome.passwordsPrivate.ChangeSavedPasswordParams>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'saved-password-edited': SavedPasswordEditedEvent;
+  }
+}
+
 export interface PasswordEditDialogElement {
   $: {
     actionButton: CrButtonElement,
@@ -567,8 +576,20 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     PasswordManagerImpl.getInstance()
         .changeSavedPassword(idsToChange, params)
         .finally(() => {
+          if (this.isPasswordNotesEnabled_) {
+            this.dispatchChangePasswordEvent_(params);
+          }
           this.close();
         });
+  }
+
+  private dispatchChangePasswordEvent_(
+      params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
+    this.dispatchEvent(new CustomEvent('saved-password-edited', {
+      bubbles: true,
+      composed: true,
+      detail: params,
+    }));
   }
 
   private getActionButtonName_(): string {
