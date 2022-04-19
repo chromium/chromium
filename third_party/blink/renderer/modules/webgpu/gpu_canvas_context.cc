@@ -174,10 +174,14 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       AsDawnEnum<WGPUTextureFormat>(descriptor->format());
   switch (format) {
     case WGPUTextureFormat_BGRA8Unorm:
+      // TODO(crbug.com/1298618): support RGBA8Unorm on MAC.
 #if !BUILDFLAG(IS_MAC)
     case WGPUTextureFormat_RGBA8Unorm:
 #endif
+      // TODO(crbug.com/1317015): support RGBA16Float on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
     case WGPUTextureFormat_RGBA16Float:
+#endif
       break;
     default:
       configured_device_->InjectError(WGPUErrorType_Validation,

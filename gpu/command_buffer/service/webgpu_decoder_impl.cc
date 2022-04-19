@@ -1677,7 +1677,7 @@ WebGPUDecoderImpl::AssociateMailboxDawn(const Mailbox& mailbox,
     return nullptr;
   }
 
-#if !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   if (usage & WGPUTextureUsage_StorageBinding) {
     DLOG(ERROR) << "AssociateMailbox: WGPUTextureUsage_StorageBinding is NOT "
                    "supported yet.";
