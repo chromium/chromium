@@ -806,16 +806,6 @@ content::WebContents* WebAppPublisherHelper::Launch(
     return nullptr;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
-    int64_t display_id =
-        window_info ? window_info->display_id : display::kInvalidDisplayId;
-    crostini::LaunchTerminalHome(profile_, display_id);
-    return nullptr;
-  }
-#endif
-
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return nullptr;
@@ -969,11 +959,18 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Terminal SWA has custom launch code and manages its own restore data.
+  if (params.app_id == crostini::kCrostiniTerminalSystemAppId) {
+    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
+    crostini::LaunchTerminalHome(profile_, params.display_id);
+    return nullptr;
+  }
+
   apps::AppLaunchParams params_for_restore(
       params.app_id, params.container, params.disposition, params.launch_source,
       params.display_id, params.launch_files, params.intent);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Create the FullRestoreSaveHandler instance before launching the app to
   // observe the browser window.
   full_restore::FullRestoreSaveHandler::GetInstance();
