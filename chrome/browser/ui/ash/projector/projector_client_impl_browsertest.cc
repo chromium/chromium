@@ -142,11 +142,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlValid) {
   VerifyUrlValid(kChromeUITrustedProjectorAppUrl);
 }
 
-// This test verifies that the Projector annotator WebUI URL is valid.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AnnotatorUrlValid) {
-  VerifyUrlValid(kChromeUIAnnotatorUrl);
-}
-
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   auto* profile = browser()->profile();
   web_app::WebAppProvider::GetForTest(profile)
