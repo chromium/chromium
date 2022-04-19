@@ -2259,6 +2259,14 @@ void LayoutText::InvalidateSubtreeLayoutForFontUpdates() {
   SetNeedsCollectInlines();
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kFontsChanged);
+  if (RuntimeEnabledFeatures::ParallelTextShapingEnabled()) {
+    if (!GetText().ContainsOnlyWhitespaceOrEmpty()) {
+      // The test[1] needs to do this for `document.fonts.add(face)` to kick off
+      // font load before layout.
+      // [1] fast/css/fontfaceset-ready.html
+      StyleRef().GetFont().WillUseFontData(GetText());
+    }
+  }
 }
 
 void LayoutText::DirtyOrDeleteLineBoxesIfNeeded(bool full_layout) {
