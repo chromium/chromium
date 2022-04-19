@@ -82,9 +82,10 @@ class SkiaGoldSession(object):
     self._bucket = bucket
     self._local_png_directory = (self._gold_properties.local_png_directory
                                  or tempfile.mkdtemp())
-    self._triage_link_file = tempfile.NamedTemporaryFile(suffix='.txt',
-                                                         dir=working_dir,
-                                                         delete=False).name
+    with tempfile.NamedTemporaryFile(suffix='.txt',
+                                     dir=working_dir,
+                                     delete=False) as triage_link_file:
+      self._triage_link_file = triage_link_file.name
     # A map of image name (string) to ComparisonResults for that image.
     self._comparison_results = {}
     self._authenticated = False

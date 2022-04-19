@@ -529,8 +529,6 @@ class SkiaGoldSessionInitializeTest(fake_filesystem_unittest.TestCase):
     self.assertNotIn('--cis', call_args)
 
 
-@unittest.skipIf(os.name == "nt", "Test fails with permission errors on "
-                 "deletion on Windows.")
 class SkiaGoldSessionCompareTest(fake_filesystem_unittest.TestCase):
   """Tests the functionality of SkiaGoldSession.Compare."""
 
