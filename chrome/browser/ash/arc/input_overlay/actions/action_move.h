@@ -48,6 +48,7 @@ class ActionMove : public Action {
 
   // Json value format:
   // {
+  //   "id": 0,
   //   "name": "WASD",
   //   "input_sources": [
   //     "keyboard"
@@ -64,6 +65,7 @@ class ActionMove : public Action {
   bool ParseJsonFromKeyboard(const base::Value& value);
   // Json value format:
   // {
+  //   "id": 0,
   //   "name": "camera move",
   //   "input_sources": [
   //     "mouse"

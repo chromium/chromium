@@ -5,6 +5,7 @@
 {
   "move": [
     {
+      "id": 0,
       "input_sources": [
         "keyboard"
       ],

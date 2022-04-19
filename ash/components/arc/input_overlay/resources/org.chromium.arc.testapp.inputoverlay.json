@@ -5,6 +5,7 @@
 {
   "tap": [
     {
+      "id": 0,
       "input_sources": [
         "keyboard"
       ],
@@ -22,6 +23,7 @@
       "radius": 0.1
     },
     {
+      "id": 1,
       "input_sources": [
         "keyboard"
       ],

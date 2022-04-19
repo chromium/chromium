@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
@@ -37,6 +38,23 @@ constexpr ui::DomCode kDefaultMouseLockCode = ui::DomCode::ESCAPE;
 // TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
 // after UX/UI strings are confirmed.
 constexpr base::StringPiece kEditErrorNotAllowedKey("Not allowed key");
+
+// Remove extra Actions with the same ID.
+void RemoveActionsWithSameID(std::vector<std::unique_ptr<Action>>& actions) {
+  base::flat_set<int> ids;
+  auto it = actions.begin();
+  while (it != actions.end()) {
+    int id = it->get()->id();
+    if (ids.find(id) == ids.end()) {
+      ids.insert(id);
+      it++;
+    } else {
+      LOG(ERROR) << "Remove action with duplicated ID {" << it->get()->name()
+                 << "}.";
+      actions.erase(it);
+    }
+  }
+}
 
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
@@ -67,8 +85,12 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   }
 
   // TODO(cuicuiruan): parse more actions.
+
+  RemoveActionsWithSameID(actions);
+
   return actions;
 }
+
 }  // namespace
 
 // Calculate the window content bounds (excluding caption if it exists) in the

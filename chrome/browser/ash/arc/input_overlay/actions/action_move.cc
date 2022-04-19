@@ -364,6 +364,7 @@ bool ActionMove::RequireInputElement(const InputElement& input_element,
 void ActionMove::Unbind() {
   // TODO(cuicuiruan): Implement if the input binding is unbound from
   // |ActionMove|.
+  NOTIMPLEMENTED();
 }
 
 bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,

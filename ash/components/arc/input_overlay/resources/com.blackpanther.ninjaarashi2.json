@@ -5,6 +5,7 @@
 {
   "tap": [
     {
+      "id": 0,
       "input_sources": [
         "keyboard"
       ],
@@ -27,6 +28,7 @@
       "radius": 0.095
     },
     {
+      "id": 1,
       "input_sources": [
         "keyboard"
       ],
@@ -49,6 +51,7 @@
       "radius": 0.095
     },
     {
+      "id": 2,
       "name": "jump",
       "key": "Space",
       "location": [
@@ -68,6 +71,7 @@
       "radius": 0.1
     },
     {
+      "id": 3,
       "input_sources": [
         "keyboard"
       ],
@@ -90,6 +94,7 @@
       "radius": 0.06574
     },
     {
+      "id": 4,
       "input_sources": [
         "keyboard"
       ],
@@ -112,6 +117,7 @@
       "radius": 0.05833
     },
     {
+      "id": 5,
       "input_sources": [
         "keyboard"
       ],
@@ -134,6 +140,7 @@
       "radius": 0.07
     },
     {
+      "id": 6,
       "input_sources": [
         "keyboard"
       ],

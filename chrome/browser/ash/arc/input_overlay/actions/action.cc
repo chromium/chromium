@@ -15,6 +15,7 @@ namespace arc {
 namespace input_overlay {
 namespace {
 // Json strings.
+constexpr char kID[] = "id";
 constexpr char kName[] = "name";
 constexpr char kInputSources[] = "input_sources";
 constexpr char kLocation[] = "location";
@@ -142,6 +143,14 @@ bool Action::ParseFromJson(const base::Value& value) {
   auto* name = value.FindStringKey(kName);
   if (name)
     name_ = *name;
+
+  // Unique ID is required.
+  auto id = value.GetDict().FindInt(kID);
+  if (!id) {
+    LOG(ERROR) << "Must have unique ID for action {" << name_ << "}";
+    return false;
+  }
+  id_ = *id;
 
   // Parse action device source.
   auto* sources = value.FindListKey(kInputSources);

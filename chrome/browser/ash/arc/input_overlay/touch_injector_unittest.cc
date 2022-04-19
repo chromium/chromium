@@ -31,6 +31,7 @@ constexpr const char kValidJsonActionTapKey[] =
     R"json({
       "tap": [
         {
+          "id": 0,
           "input_sources": [
             "keyboard"
           ],
@@ -62,6 +63,24 @@ constexpr const char kValidJsonActionTapKey[] =
           ]
         },
         {
+          "id": 0,
+          "input_sources": [
+            "keyboard"
+          ],
+          "name": "duplicate",
+          "key": "KeyC",
+          "location": [
+            {
+              "type": "position",
+              "anchor_to_target": [
+                0.5,
+                0.5
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1,
           "input_sources": [
             "keyboard"
           ],
@@ -87,6 +106,7 @@ constexpr const char kValidJsonActionTapMouse[] =
       },
       "tap": [
         {
+          "id": 0,
           "input_sources": [
             "mouse"
           ],
@@ -103,6 +123,7 @@ constexpr const char kValidJsonActionTapMouse[] =
           ]
         },
         {
+          "id": 1,
           "input_sources": [
             "mouse"
           ],
@@ -125,6 +146,7 @@ constexpr const char kValidJsonActionMoveKey[] =
     R"json({
       "move": [
         {
+          "id": 0,
           "input_sources": [
             "keyboard"
           ],
@@ -159,6 +181,7 @@ constexpr const char kValidJsonActionMoveMouse[] =
       },
       "move": [
         {
+          "id": 0,
           "input_sources": [
             "mouse"
           ],
@@ -182,6 +205,7 @@ constexpr const char kValidJsonActionMoveMouse[] =
           }
         },
         {
+          "id": 1,
           "name": "test name",
           "mouse_action": "secondary_drag_move"
         }
@@ -281,6 +305,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   base::JSONReader::ValueWithError json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value.value.value());
+  // Extra Action with the same ID is removed.
+  EXPECT_EQ(2, (int)injector_->actions().size());
   auto* actionA = injector_->actions()[0].get();
   auto* actionB = injector_->actions()[1].get();
   injector_->RegisterEventRewriter();

@@ -8,6 +8,7 @@
   },
   "move": [
     {
+      "id": 0,
       "input_sources": [
         "mouse"
       ],
@@ -41,6 +42,7 @@
       }
     },
     {
+      "id": 1,
       "input_sources": [
         "keyboard"
       ],
@@ -72,6 +74,7 @@
   ],
   "tap": [
     {
+      "id": 2,
       "input_sources": [
         "mouse"
       ],
@@ -96,6 +99,7 @@
       "radius": 0.0903
     },
     {
+      "id": 3,
       "input_sources": [
         "mouse"
       ],
@@ -120,6 +124,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 4,
       "input_sources": [
         "keyboard"
       ],
@@ -144,6 +149,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 5,
       "input_sources": [
         "keyboard"
       ],
@@ -168,6 +174,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 6,
       "input_sources": [
         "keyboard"
       ],
@@ -192,6 +199,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 7,
       "input_sources": [
         "keyboard"
       ],
@@ -216,6 +224,7 @@
       "radius": 0.04675925926
     },
     {
+      "id": 8,
       "input_sources": [
         "keyboard"
       ],
@@ -240,6 +249,7 @@
       "radius": 0.04675925926
     },
     {
+      "id": 9,
       "input_sources": [
         "keyboard"
       ],
@@ -264,6 +274,7 @@
       "radius": 0.05092592593
     },
     {
+      "id": 10,
       "input_sources": [
         "keyboard"
       ],
@@ -288,6 +299,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 11,
       "input_sources": [
         "keyboard"
       ],
@@ -312,6 +324,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 12,
       "input_sources": [
         "keyboard"
       ],
@@ -336,6 +349,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 13,
       "input_sources": [
         "keyboard"
       ],
@@ -360,6 +374,7 @@
       "radius": 0.05925925926
     },
     {
+      "id": 14,
       "input_sources": [
         "keyboard"
       ],
@@ -384,6 +399,7 @@
       "radius": 0.05925925926
     },
     {
+      "id": 15,
       "input_sources": [
         "keyboard"
       ],
@@ -408,6 +424,7 @@
       "radius": 0.05925925926
     },
     {
+      "id": 16,
       "input_sources": [
         "keyboard"
       ],
@@ -432,6 +449,7 @@
       "radius": 0.05925925926
     },
     {
+      "id": 17,
       "input_sources": [
         "keyboard"
       ],
@@ -456,6 +474,7 @@
       "radius": 0.1
     },
     {
+      "id": 18,
       "input_sources": [
         "keyboard"
       ],
@@ -480,6 +499,7 @@
       "radius": 0.02824074074
     },
     {
+      "id": 19,
       "input_sources": [
         "keyboard"
       ],
@@ -504,6 +524,7 @@
       "radius": 0.02824074074
     },
     {
+      "id": 20,
       "input_sources": [
         "keyboard"
       ],
@@ -526,6 +547,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 21,
       "input_sources": [
         "keyboard"
       ],
@@ -548,6 +570,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 22,
       "input_sources": [
         "keyboard"
       ],
@@ -570,6 +593,7 @@
       "radius": 0.05555555556
     },
     {
+      "id": 23,
       "input_sources": [
         "keyboard"
       ],
@@ -592,6 +616,7 @@
       "radius": 0.0462962963
     },
     {
+      "id": 24,
       "input_sources": [
         "keyboard"
       ],
@@ -614,6 +639,7 @@
       "radius": 0.0462962963
     },
     {
+      "id": 25,
       "input_sources": [
         "keyboard"
       ],

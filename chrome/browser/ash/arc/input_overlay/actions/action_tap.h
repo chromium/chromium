@@ -39,6 +39,7 @@ class ActionTap : public Action {
 
   // Json value format:
   // {
+  //   "id": 0,
   //   "input_sources": [
   //     "keyboard"
   //   ],
@@ -55,6 +56,7 @@ class ActionTap : public Action {
   bool ParseJsonFromKeyboard(const base::Value& value);
   // Json value format:
   // {
+  //   "id": 0,
   //   "name": "any name",
   //   "input_sources": [
   //     "mouse"

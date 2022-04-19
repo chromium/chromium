@@ -108,6 +108,7 @@ class Action {
       pending_binding_.reset();
     pending_binding_ = std::move(binding);
   }
+  int id() { return id_; }
   const std::string& name() { return name_; }
   const std::vector<std::unique_ptr<Position>>& locations() const {
     return locations_;
@@ -142,6 +143,8 @@ class Action {
   // Pending input binding. It is used during the editing before it is saved.
   std::unique_ptr<InputElement> pending_binding_;
 
+  // Unique ID for each action.
+  int id_ = 0;
   // name_ is basically for debugging and not visible to users.
   std::string name_;
   // Location take turns for each key press if there are more than
