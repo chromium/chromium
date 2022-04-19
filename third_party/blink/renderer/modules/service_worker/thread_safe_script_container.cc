@@ -12,7 +12,7 @@ ThreadSafeScriptContainer::RawScriptData::RawScriptData(
     const String& encoding,
     Vector<uint8_t> script_text,
     Vector<uint8_t> meta_data)
-    : encoding_(encoding.IsolatedCopy()),
+    : encoding_(encoding),
       script_text_(std::move(script_text)),
       meta_data_(std::move(meta_data)),
       headers_(std::make_unique<CrossThreadHTTPHeaderMapData>()) {}
@@ -21,7 +21,7 @@ ThreadSafeScriptContainer::RawScriptData::~RawScriptData() = default;
 
 void ThreadSafeScriptContainer::RawScriptData::AddHeader(const String& key,
                                                          const String& value) {
-  headers_->emplace_back(key.IsolatedCopy(), value.IsolatedCopy());
+  headers_->emplace_back(key, value);
 }
 
 ThreadSafeScriptContainer::ThreadSafeScriptContainer()
@@ -33,9 +33,7 @@ void ThreadSafeScriptContainer::AddOnIOThread(
   MutexLocker locker(mutex_);
   DCHECK_EQ(script_data_.end(), script_data_.find(url));
   ScriptStatus status = data ? ScriptStatus::kReceived : ScriptStatus::kFailed;
-  // |script_data_| is also accessed on the worker thread, so make a deep copy
-  // of |url| as key.
-  script_data_.Set(url.Copy(), std::make_pair(status, std::move(data)));
+  script_data_.Set(url, std::make_pair(status, std::move(data)));
   if (url == waiting_url_)
     waiting_cv_.Signal();
 }
@@ -58,9 +56,7 @@ bool ThreadSafeScriptContainer::WaitOnWorkerThread(const KURL& url) {
   MutexLocker locker(mutex_);
   DCHECK(!waiting_url_.IsValid())
       << "The script container is unexpectedly shared among worker threads.";
-  // |waiting_url_| is also accessed on the IO thread later, so make a deep copy
-  // of |url|.
-  waiting_url_ = url.Copy();
+  waiting_url_ = url;
   while (script_data_.find(url) == script_data_.end()) {
     // If waiting script hasn't been added yet though all data are received,
     // that means something went wrong.

@@ -142,7 +142,7 @@ class DatabaseVersionCache {
       version = guid_to_version_it->value;
       DCHECK(version);
     }
-    return version.IsolatedCopy();
+    return version;
   }
 
   // Updates the cached version of a database.
@@ -150,9 +150,8 @@ class DatabaseVersionCache {
   void SetVersion(DatabaseGuid guid, const String& new_version)
       EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
     mutex_.AssertAcquired();
-    guid_to_version_.Set(guid, new_version.IsNull()
-                                   ? g_empty_string
-                                   : new_version.IsolatedCopy());
+    guid_to_version_.Set(guid,
+                         new_version.IsNull() ? g_empty_string : new_version);
   }
 
  private:
@@ -237,9 +236,9 @@ Database::Database(DatabaseContext* database_context,
                    const String& expected_version,
                    const String& display_name)
     : database_context_(database_context),
-      name_(name.IsolatedCopy()),
-      expected_version_(expected_version.IsolatedCopy()),
-      display_name_(display_name.IsolatedCopy()),
+      name_(name),
+      expected_version_(expected_version),
+      display_name_(display_name),
       guid_(0),
       opened_(false),
       new_(false),
@@ -624,18 +623,15 @@ bool Database::PerformOpenAndVerify(bool should_set_version_in_new_database,
 }
 
 String Database::StringIdentifier() const {
-  // Return a deep copy for ref counting thread safety
-  return name_.IsolatedCopy();
+  return name_;
 }
 
 String Database::DisplayName() const {
-  // Return a deep copy for ref counting thread safety
-  return display_name_.IsolatedCopy();
+  return display_name_;
 }
 
 String Database::FileName() const {
-  // Return a deep copy for ref counting thread safety
-  return filename_.IsolatedCopy();
+  return filename_;
 }
 
 bool Database::GetVersionFromDatabase(String& version,
@@ -685,7 +681,7 @@ bool Database::SetVersionInDatabase(const String& version,
 }
 
 void Database::SetExpectedVersion(const String& version) {
-  expected_version_ = version.IsolatedCopy();
+  expected_version_ = version;
 }
 
 String Database::GetCachedVersion() const {
@@ -907,9 +903,6 @@ Vector<String> Database::PerformGetTableNames() {
 }
 
 Vector<String> Database::TableNames() {
-  // FIXME: Not using isolatedCopy on these strings looks ok since threads
-  // take strict turns in dealing with them. However, if the code changes,
-  // this may not be true anymore.
   Vector<String> result;
   base::WaitableEvent event;
   if (!GetDatabaseContext()->DatabaseThreadAvailable())

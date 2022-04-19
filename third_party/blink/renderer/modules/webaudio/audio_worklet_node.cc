@@ -42,7 +42,7 @@ AudioWorkletNode::AudioWorkletNode(
   HeapHashMap<String, Member<AudioParam>> audio_param_map;
   HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map;
   for (const auto& param_info : param_info_list) {
-    String param_name = param_info.Name().IsolatedCopy();
+    String param_name = param_info.Name();
     AudioParamHandler::AutomationRate param_automation_rate(
         AudioParamHandler::AutomationRate::kAudio);
     if (param_info.AutomationRate() == "k-rate") {

@@ -51,13 +51,10 @@ class SQLErrorData {
   }
 
   SQLErrorData(unsigned code, const String& message)
-      : code_(code), message_(message.IsolatedCopy()) {}
-
-  SQLErrorData(const SQLErrorData& data)
-      : code_(data.code_), message_(data.message_.IsolatedCopy()) {}
+      : code_(code), message_(message) {}
 
   unsigned Code() const { return code_; }
-  String Message() const { return message_.IsolatedCopy(); }
+  String Message() const { return message_; }
 
  private:
   unsigned code_;

@@ -19,12 +19,11 @@ class CrossThreadAudioParamInfo {
 
  public:
   explicit CrossThreadAudioParamInfo(const AudioParamDescriptor* descriptor)
-      : automation_rate_(
-            IDLEnumAsString(descriptor->automationRate()).IsolatedCopy()),
+      : automation_rate_(IDLEnumAsString(descriptor->automationRate())),
         default_value_(descriptor->defaultValue()),
         max_value_(descriptor->maxValue()),
         min_value_(descriptor->minValue()),
-        name_(descriptor->name().IsolatedCopy()) {}
+        name_(descriptor->name()) {}
 
   const String& AutomationRate() const { return automation_rate_; }
   float DefaultValue() const { return default_value_; }
@@ -49,7 +48,7 @@ class CrossThreadAudioWorkletProcessorInfo {
  public:
   explicit CrossThreadAudioWorkletProcessorInfo(
       const AudioWorkletProcessorDefinition& definition)
-      : name_(definition.GetName().IsolatedCopy()) {
+      : name_(definition.GetName()) {
     // To avoid unnecessary reallocations of the vector.
     param_info_list_.ReserveInitialCapacity(
         definition.GetAudioParamDescriptorNames().size());

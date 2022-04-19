@@ -86,7 +86,7 @@ SQLStatementBackend::SQLStatementBackend(SQLStatement* frontend,
                                          const Vector<SQLValue>& arguments,
                                          int permissions)
     : frontend_(frontend),
-      statement_(statement.IsolatedCopy()),
+      statement_(statement),
       arguments_(arguments),
       has_callback_(frontend_->HasCallback()),
       has_error_callback_(frontend_->HasErrorCallback()),

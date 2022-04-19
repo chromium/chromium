@@ -403,7 +403,7 @@ bool AudioWorkletProcessor::ParamValueMapMatchesToParamsObject(
   v8::Local<v8::Object> params_object = params.Get(isolate);
 
   for (const auto& entry : param_value_map) {
-    const String param_name = entry.key.IsolatedCopy();
+    const String param_name = entry.key;
     const auto* param_float_array = entry.value.get();
     v8::Local<v8::String> v8_param_name = V8String(isolate, param_name);
 
@@ -453,7 +453,7 @@ bool AudioWorkletProcessor::CloneParamValueMapToObject(
   v8::Local<v8::Object> new_params_object = v8::Object::New(isolate);
 
   for (const auto& entry : param_value_map) {
-    const String param_name = entry.key.IsolatedCopy();
+    const String param_name = entry.key;
     const auto* param_float_array = entry.value.get();
     v8::Local<v8::String> v8_param_name = V8String(isolate, param_name);
 
@@ -502,7 +502,7 @@ bool AudioWorkletProcessor::CopyParamValueMapToObject(
   v8::Local<v8::Object> params_object = params.Get(isolate);
 
   for (const auto& entry : param_value_map) {
-    const String param_name = entry.key.IsolatedCopy();
+    const String param_name = entry.key;
     const AudioFloatArray* param_array = entry.value.get();
 
     v8::Local<v8::Value> param_array_value;
