@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -473,7 +474,7 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
     web_app_info->title = u"WebAppTestWithShortcutMenuItems";
     web_app_info->scope = web_app_info->start_url;
     web_app_info->description = web_app_info->title;
-    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
     shortcut_info1.name = u"shortcut_info1";
     shortcut_info1.url = GURL(".");

@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -44,7 +45,7 @@ const char kTestUrl2[] = "https://test-url-2.com/";
 
 web_app::ExternalInstallOptions GetInstallOptionsForUrl(const GURL& url) {
   web_app::ExternalInstallOptions options(
-      url, blink::mojom::DisplayMode::kStandalone,
+      url, web_app::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kInternalDefault);
   options.override_previous_user_uninstall = true;
   options.bypass_service_worker_check = true;

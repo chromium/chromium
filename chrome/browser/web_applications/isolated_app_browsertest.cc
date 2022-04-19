@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -255,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(
 
   WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge()
-      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   GURL app_url =

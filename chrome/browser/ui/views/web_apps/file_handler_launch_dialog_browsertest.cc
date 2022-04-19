@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -105,7 +106,8 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
     // `WebAppInstallFinalizer::FinalizeInstall()`.
     ScopedRegistryUpdate update(
         &WebAppProvider::GetForTest(browser()->profile())->sync_bridge());
-    update->UpdateApp(app_id_)->SetUserDisplayMode(DisplayMode::kStandalone);
+    update->UpdateApp(app_id_)->SetUserDisplayMode(
+        UserDisplayMode::kStandalone);
   }
 
   const WebApp* GetApp() {

@@ -18,6 +18,7 @@
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_database.h"
@@ -99,7 +100,9 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   }
 
   // Always override user_display mode with a synced value.
-  app->SetUserDisplayMode(ToMojomDisplayMode(sync_data.user_display_mode()));
+  app->SetUserDisplayMode(
+      CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+          sync_data.user_display_mode()));
   app->SetUserPageOrdinal(syncer::StringOrdinal(sync_data.user_page_ordinal()));
   app->SetUserLaunchOrdinal(
       syncer::StringOrdinal(sync_data.user_launch_ordinal()));
@@ -188,30 +191,30 @@ void WebAppSyncBridge::Init(base::OnceClosure callback) {
 }
 
 void WebAppSyncBridge::SetAppUserDisplayMode(const AppId& app_id,
-                                             DisplayMode user_display_mode,
+                                             UserDisplayMode user_display_mode,
                                              bool is_user_action) {
   if (is_user_action) {
     switch (user_display_mode) {
-      case DisplayMode::kStandalone:
+      case UserDisplayMode::kStandalone:
         base::RecordAction(
             base::UserMetricsAction("WebApp.SetWindowMode.Window"));
         break;
-      case DisplayMode::kBrowser:
+      case UserDisplayMode::kBrowser:
         base::RecordAction(base::UserMetricsAction("WebApp.SetWindowMode.Tab"));
         break;
-      case DisplayMode::kTabbed:
+      case UserDisplayMode::kTabbed:
         base::RecordAction(
             base::UserMetricsAction("WebApp.SetWindowMode.Tabbed"));
         break;
-      default:
-        NOTREACHED();
     }
   }
 
-  ScopedRegistryUpdate update(this);
-  WebApp* web_app = update->UpdateApp(app_id);
-  if (web_app)
-    web_app->SetUserDisplayMode(user_display_mode);
+  {
+    ScopedRegistryUpdate update(this);
+    WebApp* web_app = update->UpdateApp(app_id);
+    if (web_app)
+      web_app->SetUserDisplayMode(user_display_mode);
+  }
 
   registrar_->NotifyWebAppUserDisplayModeChanged(app_id, user_display_mode);
 }

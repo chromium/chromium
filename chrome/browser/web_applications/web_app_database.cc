@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -741,7 +742,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
   web_app->SetUserDisplayMode(
-      ToMojomDisplayMode(sync_data.user_display_mode()));
+      CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+          sync_data.user_display_mode()));
 
   // Ordinals used for chrome://apps page.
   syncer::StringOrdinal page_ordinal =

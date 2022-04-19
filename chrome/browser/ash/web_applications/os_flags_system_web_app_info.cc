@@ -8,6 +8,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -53,7 +54,7 @@ std::unique_ptr<WebAppInstallInfo> OsFlagsSystemWebAppDelegate::GetWebAppInfo()
   info->theme_color = GetBgColor(/*use_dark_mode=*/false);
   info->dark_mode_theme_color = GetBgColor(/*use_dark_mode=*/true);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
   return info;
 }

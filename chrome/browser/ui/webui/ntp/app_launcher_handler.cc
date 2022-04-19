@@ -55,6 +55,7 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -254,7 +255,7 @@ base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
 
   extensions::LaunchContainerAndType result =
       extensions::GetLaunchContainerAndTypeFromDisplayMode(
-          registrar.GetAppUserDisplayMode(app_id));
+          registrar.GetAppEffectiveDisplayMode(app_id));
   dict.Set("launch_container", static_cast<int>(result.launch_container));
   dict.Set("launch_type", result.launch_type);
   dict.Set("is_component", false);
@@ -398,9 +399,9 @@ base::Value::Dict AppLauncherHandler::CreateExtensionInfo(
   if (!page_ordinal.IsValid()) {
     // Make sure every app has a page ordinal (some predate the page ordinal).
     // The webstore app should be on the first page.
-    page_ordinal = extension->id() == extensions::kWebStoreAppId ?
-        sorting->CreateFirstAppPageOrdinal() :
-        sorting->GetNaturalAppPageOrdinal();
+    page_ordinal = extension->id() == extensions::kWebStoreAppId
+                       ? sorting->CreateFirstAppPageOrdinal()
+                       : sorting->GetNaturalAppPageOrdinal();
     sorting->SetPageOrdinal(extension->id(), page_ordinal);
   }
   dict.Set("page_index", sorting->PageStringOrdinalAsInteger(page_ordinal));
@@ -411,9 +412,10 @@ base::Value::Dict AppLauncherHandler::CreateExtensionInfo(
     // Make sure every app has a launch ordinal (some predate the launch
     // ordinal). The webstore's app launch ordinal is always set to the first
     // position.
-    app_launch_ordinal = extension->id() == extensions::kWebStoreAppId ?
-        sorting->CreateFirstAppLaunchOrdinal(page_ordinal) :
-        sorting->CreateNextAppLaunchOrdinal(page_ordinal);
+    app_launch_ordinal =
+        extension->id() == extensions::kWebStoreAppId
+            ? sorting->CreateFirstAppLaunchOrdinal(page_ordinal)
+            : sorting->CreateNextAppLaunchOrdinal(page_ordinal);
     sorting->SetAppLaunchOrdinal(extension->id(), app_launch_ordinal);
   }
   dict.Set("app_launch_ordinal", app_launch_ordinal.ToInternalValue());
@@ -727,8 +729,8 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
                             base::Unretained(this));
     extension_pref_change_registrar_.Init(
         ExtensionPrefs::Get(profile)->pref_service());
-    extension_pref_change_registrar_.Add(
-        extensions::pref_names::kExtensions, callback);
+    extension_pref_change_registrar_.Add(extensions::pref_names::kExtensions,
+                                         callback);
     extension_pref_change_registrar_.Add(prefs::kNtpAppPageNames, callback);
 
     ExtensionRegistry::Get(profile)->AddObserver(this);
@@ -763,8 +765,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
   GURL override_url;
 
   extension_misc::AppLaunchBucket launch_bucket =
-      static_cast<extension_misc::AppLaunchBucket>(
-          static_cast<int>(source));
+      static_cast<extension_misc::AppLaunchBucket>(static_cast<int>(source));
   CHECK(launch_bucket >= 0 &&
         launch_bucket < extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
 
@@ -851,8 +852,8 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
   } else {
     // To give a more "launchy" experience when using the NTP launcher, we close
     // it automatically.
-    Browser* browser = chrome::FindBrowserWithWebContents(
-        web_ui()->GetWebContents());
+    Browser* browser =
+        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
     WebContents* old_contents = nullptr;
     if (browser)
       old_contents = browser->tab_strip_model()->GetActiveWebContents();
@@ -885,15 +886,16 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
   if (web_app_provider_->registrar().IsInstalled(app_id)) {
     // Don't update the page; it already knows about the launch type change.
     base::AutoReset<bool> auto_reset(&ignore_changes_, true);
-    web_app::DisplayMode display_mode = web_app::DisplayMode::kBrowser;
+    web_app::UserDisplayMode user_display_mode =
+        web_app::UserDisplayMode::kBrowser;
     switch (launch_type) {
       case extensions::LAUNCH_TYPE_FULLSCREEN:
       case extensions::LAUNCH_TYPE_WINDOW:
-        display_mode = web_app::DisplayMode::kStandalone;
+        user_display_mode = web_app::UserDisplayMode::kStandalone;
         break;
       case extensions::LAUNCH_TYPE_PINNED:
       case extensions::LAUNCH_TYPE_REGULAR:
-        display_mode = web_app::DisplayMode::kBrowser;
+        user_display_mode = web_app::UserDisplayMode::kBrowser;
         break;
       case extensions::LAUNCH_TYPE_INVALID:
       case extensions::NUM_LAUNCH_TYPES:
@@ -902,7 +904,7 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
     }
 
     web_app_provider_->sync_bridge().SetAppUserDisplayMode(
-        app_id, display_mode, /*is_user_action=*/true);
+        app_id, user_display_mode, /*is_user_action=*/true);
     return;
   }
 
@@ -1034,8 +1036,8 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
   if (!extension)
     return;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(
-        web_ui()->GetWebContents());
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
       base::BindOnce([](bool success) {

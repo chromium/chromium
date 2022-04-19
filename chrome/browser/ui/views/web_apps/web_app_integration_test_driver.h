@@ -73,10 +73,9 @@ struct AppState {
   AppState(AppId app_id,
            std::string app_name,
            GURL app_scope,
-           apps::WindowMode window_mode,
            apps::RunOnOsLoginMode run_on_os_login_mode,
            blink::mojom::DisplayMode effective_display_mode,
-           blink::mojom::DisplayMode user_display_mode,
+           absl::optional<UserDisplayMode> user_display_mode,
            std::string manifest_launcher_icon_filename,
            bool is_installed_locally,
            bool is_shortcut_created,
@@ -88,10 +87,9 @@ struct AppState {
   AppId id;
   std::string name;
   GURL scope;
-  apps::WindowMode window_mode;
   apps::RunOnOsLoginMode run_on_os_login_mode;
   blink::mojom::DisplayMode effective_display_mode;
-  blink::mojom::DisplayMode user_display_mode;
+  absl::optional<UserDisplayMode> user_display_mode;
   std::string manifest_launcher_icon_filename;
   bool is_installed_locally;
   bool is_shortcut_created;
@@ -212,8 +210,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppNotInList(const std::string& site_mode);
   void CheckAppIconSiteA(const std::string& color);
   void CheckAppTitleSiteA(const std::string& title);
-  void CheckAppWindowMode(const std::string& site_mode,
-                          apps::WindowMode window_mode);
   void CheckWindowModeIsNotVisibleInAppSettings(const std::string& site_mode);
   void CheckInstallable();
   void CheckInstallIconShown();
@@ -229,7 +225,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckRunOnOsLoginEnabled(const std::string& site_mode);
   void CheckRunOnOsLoginDisabled(const std::string& site_mode);
   void CheckUserCannotSetRunOnOsLogin(const std::string& site_mode);
-  void CheckUserDisplayModeInternal(DisplayMode display_mode);
+  void CheckUserDisplayModeInternal(UserDisplayMode user_display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
   void CheckWindowControlsOverlay(const std::string& site_mode,

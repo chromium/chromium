@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
-
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 
@@ -89,7 +88,8 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
     sync_proto.set_manifest_id(app.manifest_id().value());
   sync_proto.set_start_url(app.start_url().spec());
   sync_proto.set_user_display_mode(
-      ToWebAppSpecificsUserDisplayMode(app.user_display_mode()));
+      ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
+          app.user_display_mode().value_or(UserDisplayMode::kBrowser)));
   sync_proto.set_name(app.sync_fallback_data().name);
   if (app.sync_fallback_data().theme_color.has_value())
     sync_proto.set_theme_color(app.sync_fallback_data().theme_color.value());

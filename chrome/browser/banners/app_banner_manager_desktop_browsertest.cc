@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -173,7 +174,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
 #else
 #define MAYBE_DestroyWebContents DestroyWebContents
 #endif
-IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest, MAYBE_DestroyWebContents) {
+IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
+                       MAYBE_DestroyWebContents) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* manager = TestAppBannerManagerDesktop::FromWebContents(web_contents);
@@ -266,9 +268,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
 
   // Install the app via the menu instead of the banner.
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-  browser()
-      ->window()
-      ->ExecutePageActionIconForTesting(PageActionIconType::kPwaInstall);
+  browser()->window()->ExecutePageActionIconForTesting(
+      PageActionIconType::kPwaInstall);
   manager->AwaitAppInstall();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   web_app::ExternalInstallOptions options =
       web_app::CreateInstallOptions(GetBannerURL());
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
-  options.user_display_mode = web_app::DisplayMode::kBrowser;
+  options.user_display_mode = web_app::UserDisplayMode::kBrowser;
   web_app::ExternallyManagedAppManagerInstall(browser()->profile(), options);
 
   // Run promotability check.
@@ -317,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   web_app::ExternalInstallOptions options =
       web_app::CreateInstallOptions(GetBannerURL());
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
-  options.user_display_mode = web_app::DisplayMode::kBrowser;
+  options.user_display_mode = web_app::UserDisplayMode::kBrowser;
   web_app::ExternallyManagedAppManagerInstall(profile, options);
 
   // Uninstall web app by policy.
@@ -431,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
       web_app::CreateInstallOptions(GetBannerURLWithManifest(
           "/banners/manifest_display_override_contains_browser.json"));
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
-  options.user_display_mode = web_app::DisplayMode::kBrowser;
+  options.user_display_mode = web_app::UserDisplayMode::kBrowser;
   web_app::ExternallyManagedAppManagerInstall(browser()->profile(), options);
 
   // Run promotability check.

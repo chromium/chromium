@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -49,7 +50,7 @@ void WebAppProviderBridgeLacros::WebAppInstalledInArc(
             install_info->start_url = arc_install_info->start_url;
             install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
             install_info->user_display_mode =
-                blink::mojom::DisplayMode::kStandalone;
+                web_app::UserDisplayMode::kStandalone;
             install_info->theme_color = arc_install_info->theme_color;
             const SkBitmap& bitmap = *arc_install_info->icon.bitmap();
             install_info->icon_bitmaps.any[bitmap.width()] = bitmap;

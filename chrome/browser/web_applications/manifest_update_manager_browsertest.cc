@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -417,7 +418,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     const GURL app_url = GetAppURL();
     base::RunLoop run_loop;
     ExternalInstallOptions install_options(
-        app_url, DisplayMode::kStandalone,
+        app_url, UserDisplayMode::kStandalone,
         ExternalInstallSource::kInternalDefault);
     install_options.add_to_applications_menu = false;
     install_options.add_to_desktop = false;
@@ -441,7 +442,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     const GURL app_url = GetAppURL();
     base::RunLoop run_loop;
     ExternalInstallOptions install_options(
-        app_url, DisplayMode::kStandalone,
+        app_url, UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalPolicy);
     install_options.add_to_applications_menu = false;
     install_options.add_to_desktop = false;
@@ -471,7 +472,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
       synced_specifics_data->SetStartUrl(start_url);
 
       synced_specifics_data->AddSource(WebAppManagement::kSync);
-      synced_specifics_data->SetUserDisplayMode(DisplayMode::kBrowser);
+      synced_specifics_data->SetUserDisplayMode(UserDisplayMode::kBrowser);
       synced_specifics_data->SetName("Name From Sync");
 
       WebApp::SyncFallbackData sync_fallback_data;
@@ -1398,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {"standalone", kInstallableIconList});
   AppId app_id = InstallWebApp();
   GetProvider().sync_bridge().SetAppUserDisplayMode(
-      app_id, DisplayMode::kStandalone, /*is_user_action=*/false);
+      app_id, UserDisplayMode::kStandalone, /*is_user_action=*/false);
 
   OverrideManifest(kManifestTemplate, {"browser", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
@@ -1411,7 +1412,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // We don't touch the user's launch preference even if the app display mode
   // changes. Instead the effective display mode changes.
   EXPECT_EQ(GetProvider().registrar().GetAppUserDisplayMode(app_id),
-            DisplayMode::kStandalone);
+            UserDisplayMode::kStandalone);
   EXPECT_EQ(GetProvider().registrar().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kMinimalUi);
 }

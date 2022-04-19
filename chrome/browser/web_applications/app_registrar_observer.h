@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_REGISTRAR_OBSERVER_H_
 
 #include "base/observer_list_types.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
@@ -51,8 +52,9 @@ class AppRegistrarObserver : public base::CheckedObserver {
                                              const base::Time& time) {}
   virtual void OnWebAppInstallTimeChanged(const AppId& app_id,
                                           const base::Time& time) {}
-  virtual void OnWebAppUserDisplayModeChanged(const AppId& app_id,
-                                              DisplayMode user_display_mode) {}
+  virtual void OnWebAppUserDisplayModeChanged(
+      const AppId& app_id,
+      UserDisplayMode user_display_mode) {}
   virtual void OnWebAppRunOnOsLoginModeChanged(
       const AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode) {}

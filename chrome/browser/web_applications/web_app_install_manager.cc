@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
@@ -184,7 +185,7 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
   params.parent_app_id = parent_app_id;
   params.require_manifest = true;
   params.add_to_quick_launch_bar = false;
-  params.user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  params.user_display_mode = UserDisplayMode::kStandalone;
   params.fallback_start_url = install_url;
   // Don't want to allow devs to force manifest updates with the API.
   params.force_reinstall = false;

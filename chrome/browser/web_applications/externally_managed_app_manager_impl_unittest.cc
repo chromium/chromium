@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -54,7 +55,7 @@ ExternalInstallOptions GetInstallOptions(
     const GURL& url,
     absl::optional<bool> override_previous_user_uninstall =
         absl::optional<bool>()) {
-  ExternalInstallOptions options(std::move(url), DisplayMode::kBrowser,
+  ExternalInstallOptions options(std::move(url), UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
 
   if (override_previous_user_uninstall.has_value())
@@ -77,7 +78,7 @@ ExternalInstallOptions GetInstallOptionsWithWebAppInfo(
     const GURL& url,
     absl::optional<bool> override_previous_user_uninstall =
         absl::optional<bool>()) {
-  ExternalInstallOptions options(url, DisplayMode::kBrowser,
+  ExternalInstallOptions options(url, UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.only_use_app_info_factory = true;
   // Static to ensure re-use across multiple function calls for
@@ -1002,7 +1003,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_AlwaysUpdate) {
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
 
   auto get_force_reinstall_info = [kFooWebAppUrl]() {
-    ExternalInstallOptions options(kFooWebAppUrl, DisplayMode::kStandalone,
+    ExternalInstallOptions options(kFooWebAppUrl, UserDisplayMode::kStandalone,
                                    ExternalInstallSource::kExternalPolicy);
     options.force_reinstall = true;
     return options;
@@ -1668,7 +1669,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
     externally_managed_app_manager_impl().SetNextInstallationLaunchURL(
         install_url);
     ExternalInstallOptions install_option(
-        install_url, DisplayMode::kStandalone,
+        install_url, UserDisplayMode::kStandalone,
         ExternalInstallSource::kSystemInstalled);
     const auto& url_and_result =
         InstallAndWait(&externally_managed_app_manager_impl(), install_option);

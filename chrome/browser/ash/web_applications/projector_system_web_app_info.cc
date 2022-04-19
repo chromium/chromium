@@ -9,6 +9,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,7 +67,7 @@ ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   info->theme_color = GetBgColor(/*use_dark_mode=*/false);
   info->dark_mode_theme_color = GetBgColor(/*use_dark_mode=*/true);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
   // TODO(b/195127670): Add info.url_handlers for https://projector.apps.chrome
   // domain. Requires web-app-origin-association file at the new domain to prove

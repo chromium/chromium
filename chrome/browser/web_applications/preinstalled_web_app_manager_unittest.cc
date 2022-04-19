@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -233,7 +234,7 @@ TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
 
   GURL install_url("https://test.app");
   constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
-  ExternalInstallOptions options(install_url, DisplayMode::kBrowser,
+  ExternalInstallOptions options(install_url, UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalDefault);
   options.user_type_allowlist = {"unmanaged"};
   options.uninstall_and_replace = {kExtensionId};
@@ -291,8 +292,8 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
   std::vector<ExternalInstallOptions> test_install_options_list;
   {
     ExternalInstallOptions install_options(
-        GURL("https://www.chromestatus.com/features"), DisplayMode::kBrowser,
-        ExternalInstallSource::kExternalDefault);
+        GURL("https://www.chromestatus.com/features"),
+        UserDisplayMode::kBrowser, ExternalInstallSource::kExternalDefault);
     install_options.user_type_allowlist = {"unmanaged"};
     install_options.add_to_applications_menu = true;
     install_options.add_to_search = true;
@@ -306,7 +307,7 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
   {
     ExternalInstallOptions install_options(
         GURL("https://events.google.com/io2016/?utm_source=web_app_manifest"),
-        DisplayMode::kStandalone, ExternalInstallSource::kExternalDefault);
+        UserDisplayMode::kStandalone, ExternalInstallSource::kExternalDefault);
     install_options.user_type_allowlist = {"unmanaged"};
     install_options.add_to_applications_menu = true;
     install_options.add_to_search = true;

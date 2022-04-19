@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -95,7 +96,7 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
     install_manager_observation_.Observe(&provider->install_manager());
 }
 
-AppBannerManagerDesktop::~AppBannerManagerDesktop() { }
+AppBannerManagerDesktop::~AppBannerManagerDesktop() = default;
 
 base::WeakPtr<AppBannerManager> AppBannerManagerDesktop::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -180,7 +181,7 @@ bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   // TODO(crbug.com/1205529): Showing an install button when it's already
   // installed is confusing.
   auto display_mode = registrar().GetAppUserDisplayMode(app_id);
-  return display_mode == blink::mojom::DisplayMode::kBrowser;
+  return display_mode == web_app::UserDisplayMode::kBrowser;
 }
 
 void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
@@ -216,7 +217,7 @@ void AppBannerManagerDesktop::OnWebAppInstalled(
       registrar().FindAppWithUrlInScope(validated_url_);
   if (app_id.has_value() && *app_id == installed_app_id &&
       registrar().GetAppUserDisplayMode(*app_id) ==
-          blink::mojom::DisplayMode::kStandalone) {
+          web_app::UserDisplayMode::kStandalone) {
     OnInstall(registrar().GetEffectiveDisplayModeFromManifest(*app_id));
     SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
   }

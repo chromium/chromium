@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -72,7 +73,7 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"Test app";
     web_app_info->background_color = kAppBackgroundColor;
-    web_app_info->user_display_mode = DisplayMode::kTabbed;
+    web_app_info->user_display_mode = UserDisplayMode::kTabbed;
     AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
 
     Browser* app_browser = LaunchWebAppBrowser(profile, app_id);
@@ -154,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
             [](content::WebContents*,
                std::unique_ptr<WebAppInstallInfo> web_app_info,
                WebAppInstallationAcceptanceCallback acceptance_callback) {
-              web_app_info->user_display_mode = DisplayMode::kTabbed;
+              web_app_info->user_display_mode = UserDisplayMode::kTabbed;
               std::move(acceptance_callback)
                   .Run(/*user_accepted=*/true, std::move(web_app_info));
             }),

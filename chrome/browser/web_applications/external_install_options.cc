@@ -13,13 +13,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
 namespace web_app {
 
 ExternalInstallOptions::ExternalInstallOptions(
     const GURL& install_url,
-    DisplayMode user_display_mode,
+    absl::optional<UserDisplayMode> user_display_mode,
     ExternalInstallSource install_source)
     : install_url(install_url),
       user_display_mode(user_display_mode),
@@ -152,7 +153,9 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.SetKey("uninstall_and_replace",
               ConvertStringList(uninstall_and_replace));
   root.SetStringKey("user_display_mode",
-                    blink::DisplayModeToString(user_display_mode));
+                    user_display_mode.has_value()
+                        ? ConvertUserDisplayModeToString(*user_display_mode)
+                        : "");
   root.SetKey("user_type_allowlist", ConvertStringList(user_type_allowlist));
   root.SetBoolKey("wait_for_windows_closed", wait_for_windows_closed);
 

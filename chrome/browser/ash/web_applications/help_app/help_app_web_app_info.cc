@@ -11,6 +11,7 @@
 #include "ash/webui/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
@@ -55,7 +56,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
   }
 
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
   return info;
 }
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
@@ -234,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
-  web_app_info->user_display_mode = DisplayMode::kStandalone;
+  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
   AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -260,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInTab) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
-  web_app_info->user_display_mode = DisplayMode::kBrowser;
+  web_app_info->user_display_mode = UserDisplayMode::kBrowser;
   AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
@@ -287,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppWithoutScope) {
   // If app has no scope then UrlHandlers::GetUrlHandlers are empty. Therefore,
   // the app is counted as installed via the Create Shortcut button.
   web_app_info->scope = GURL();
-  web_app_info->user_display_mode = DisplayMode::kStandalone;
+  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
   AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
@@ -431,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url;
-  web_app_info->user_display_mode = DisplayMode::kBrowser;
+  web_app_info->user_display_mode = UserDisplayMode::kBrowser;
   AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
@@ -596,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
   ExternalInstallOptions install_options = CreateInstallOptions(example_url);
-  install_options.user_display_mode = DisplayMode::kBrowser;
+  install_options.user_display_mode = UserDisplayMode::kBrowser;
   auto result =
       ExternallyManagedAppManagerInstall(browser()->profile(), install_options);
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
