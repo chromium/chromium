@@ -48,8 +48,10 @@ void PrivacySandboxDialogHelper::DidFinishNavigation(
     return;
 
   // Only valid top frame navigations are considered.
-  if (!navigation_handle || !navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle || !navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // Check whether the navigation target is a suitable dialog location. The
   // navigation URL, rather than the visible or committed URL, is required to
