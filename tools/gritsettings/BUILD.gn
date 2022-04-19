@@ -19,6 +19,7 @@ action("default_resource_ids") {
     "--add-header",
     "--depfile",
     rebase_path(depfile, root_build_dir),
+    "--input",
     _rebased_input,
   ]
 
@@ -27,6 +28,7 @@ action("default_resource_ids") {
                                   [
                                     "update_resource_ids",
                                     "--analyze-inputs",
+                                    "--input",
                                     _rebased_input,
                                   ],
                                   "list lines")
