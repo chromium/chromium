@@ -263,6 +263,7 @@ def thin_tester(
     """
     cores = defaults.get_value("thin_tester_cores", cores)
     kwargs.setdefault("goma_backend", None)
+    kwargs.setdefault("reclient_instance", None)
     kwargs.setdefault("os", builders.os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
     return ci.builder(
         name = name,
