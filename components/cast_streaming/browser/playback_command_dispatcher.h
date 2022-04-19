@@ -12,8 +12,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/remoting_session_client.h"
 #include "components/cast_streaming/browser/renderer_control_multiplexer.h"
+#include "components/cast_streaming/browser/rpc_demuxer_stream_handler.h"
 #include "components/cast_streaming/browser/rpc_initialization_call_handler_base.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "media/base/audio_decoder_config.h"
+#include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
@@ -39,7 +42,8 @@ class RendererRpcCallTranslator;
 // also used for starting playback of a Cast Mirroring session.
 class PlaybackCommandDispatcher
     : public remoting::RpcInitializationCallHandlerBase,
-      public remoting::RemotingSessionClient {
+      public remoting::RemotingSessionClient,
+      public remoting::RpcDemuxerStreamHandler::Client {
  public:
   PlaybackCommandDispatcher(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -66,8 +70,13 @@ class PlaybackCommandDispatcher
 
   // RpcInitializationCallHandlerBase overrides.
   void RpcAcquireRendererAsync(AcquireRendererCB cb) override;
-  void OnRpcAcquireDemuxer(int audio_stream_handle,
-                           int video_stream_handle) override;
+  void OnRpcAcquireDemuxer(
+      openscreen::cast::RpcMessenger::Handle audio_stream_handle,
+      openscreen::cast::RpcMessenger::Handle video_stream_handle) override;
+
+  // RpcDemuxerStreamHandler::Client overrides.
+  void OnNewAudioConfig(media::AudioDecoderConfig new_config) override;
+  void OnNewVideoConfig(media::VideoDecoderConfig new_config) override;
 
   // Synchronization for calling |acquire_renderer_cb_| at the correct time.
   bool has_set_playback_controller_call_returned_ = false;
@@ -82,6 +91,9 @@ class PlaybackCommandDispatcher
   // Handles translating between Remoting commands (in proto form) and mojo
   // commands.
   std::unique_ptr<remoting::RendererRpcCallTranslator> call_translator_;
+
+  // Handles DemuxerStream interactions.
+  std::unique_ptr<remoting::RpcDemuxerStreamHandler> demuxer_stream_handler_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<PlaybackCommandDispatcher> weak_factory_{this};
