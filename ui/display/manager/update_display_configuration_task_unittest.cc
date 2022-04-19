@@ -366,7 +366,12 @@ TEST_F(UpdateDisplayConfigurationTaskTest, FailExtendedConfiguration) {
                          gfx::Point(0, small_mode_.size().height()),
                          &big_mode_})
               .c_str(),
-          // Retry logic fails to modeset internal display. Since internal
+          // Turn off all displays to reset the system resources allocation.
+          GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr})
+              .c_str(),
+          GetCrtcAction({displays_[1]->display_id(), gfx::Point(), nullptr})
+              .c_str(),  // Retry logic fails to modeset internal display. Since
+                         // internal
           // displays are restricted to their preferred mode, there are no other
           // modes to try. The configuration will fail, but the external display
           // will still try to modeset.

@@ -12,6 +12,7 @@
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_observer.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace display {
 namespace test {
@@ -62,12 +63,47 @@ bool TestNativeDisplayDelegate::Configure(
 
   if (max_configurable_pixels_ == 0)
     return true;
-
-  if (!display_config_params.mode.has_value())
+  else if (max_configurable_pixels_ < 0)
     return false;
 
-  return display_config_params.mode.value()->size().GetArea() <=
-         max_configurable_pixels_;
+  if (display_config_params.mode.has_value()) {
+    return display_config_params.mode.value()->size().GetArea() <=
+           max_configurable_pixels_;
+  }
+
+  return true;
+}
+
+bool TestNativeDisplayDelegate::IsConfigurationWithinSystemBandwidth(
+    const std::vector<display::DisplayConfigurationParams>& config_requests) {
+  if (system_bandwidth_limit_ == 0)
+    return true;
+
+  // We need a copy of the current state to account for current configuration.
+  // But we can't overwrite it yet because we may fail to configure
+  base::flat_map<int64_t, int> requested_ids_with_bandwidth =
+      display_id_to_used_system_bw_;
+  for (const DisplayConfigurationParams& config : config_requests) {
+    requested_ids_with_bandwidth[config.id] =
+        config.mode.has_value() ? config.mode.value()->size().GetArea() : 0;
+  }
+
+  int requested_bandwidth = 0;
+  for (const auto& it : requested_ids_with_bandwidth) {
+    requested_bandwidth += it.second;
+  }
+
+  return requested_bandwidth <= system_bandwidth_limit_;
+}
+
+void TestNativeDisplayDelegate::SaveCurrentConfigSystemBandwidth(
+    const std::vector<display::DisplayConfigurationParams>& config_requests) {
+  // On a successful configuration, we update the current state to reflect the
+  // current system usage.
+  for (const DisplayConfigurationParams& config : config_requests) {
+    display_id_to_used_system_bw_[config.id] =
+        config.mode.has_value() ? config.mode.value()->size().GetArea() : 0;
+  }
 }
 
 void TestNativeDisplayDelegate::Configure(
@@ -76,6 +112,11 @@ void TestNativeDisplayDelegate::Configure(
   bool config_success = true;
   for (const auto& config : config_requests)
     config_success &= Configure(config);
+
+  config_success &= IsConfigurationWithinSystemBandwidth(config_requests);
+
+  if (config_success)
+    SaveCurrentConfigSystemBandwidth(config_requests);
 
   if (run_async_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(

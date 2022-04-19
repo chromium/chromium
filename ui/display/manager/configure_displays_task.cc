@@ -314,8 +314,17 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
 
 void ConfigureDisplaysTask::PartitionRequests() {
   pending_display_group_requests_ = PartitionedRequestsQueue();
-  base::flat_set<uint64_t> handled_connectors;
 
+  // PartitionRequests occurs when the first modeset fails and we start by
+  // modesetting the groups of connectors one after the other. When doing this,
+  // we must start by resetting the state and the allocation of resources to
+  // turn off any displays hogging the resources.
+  std::vector<DisplayConfigureRequest> disable_requests;
+  for (const DisplayConfigureRequest& request : requests_)
+    disable_requests.emplace_back(request.display, nullptr, gfx::Point());
+  pending_display_group_requests_.push(disable_requests);
+
+  base::flat_set<uint64_t> handled_connectors;
   for (size_t i = 0; i < requests_.size(); ++i) {
     uint64_t connector_id = requests_[i].display->base_connector_id();
     if (handled_connectors.find(connector_id) != handled_connectors.end())
@@ -327,8 +336,8 @@ void ConfigureDisplaysTask::PartitionRequests() {
         request_group.push_back(requests_[j]);
     }
 
-    pending_display_group_requests_.push(request_group);
     handled_connectors.insert(connector_id);
+    pending_display_group_requests_.push(request_group);
   }
 }
 

@@ -14,6 +14,9 @@
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/types/display_mode.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace display {
 namespace test {
@@ -27,6 +30,11 @@ constexpr uint64_t kThirdConnectorId = kEdpConnectorId + 20u;
 
 // Invalid PATH topology parse connector ID.
 constexpr uint64_t kInvalidConnectorId = 0u;
+
+std::string GetDisableCrtcAction(
+    const std::unique_ptr<DisplaySnapshot>& display) {
+  return GetCrtcAction({display->display_id(), gfx::Point(), nullptr});
+}
 
 class ConfigureDisplaysTaskTest : public testing::Test {
  public:
@@ -77,7 +85,6 @@ class ConfigureDisplaysTaskTest : public testing::Test {
   const DisplayMode small_mode_;
   const DisplayMode medium_mode_;
   const DisplayMode big_mode_;
-
   std::vector<std::unique_ptr<DisplaySnapshot>> displays_;
 };
 
@@ -255,7 +262,8 @@ TEST_F(ConfigureDisplaysTaskTest, DisableInternalDisplayFails) {
   ConfigureDisplaysTask::ResponseCallback callback = base::BindOnce(
       &ConfigureDisplaysTaskTest::ConfigureCallback, base::Unretained(this));
 
-  delegate_.set_max_configurable_pixels(1);
+  // Force a failed configuration.
+  delegate_.set_max_configurable_pixels(-1);
 
   std::vector<DisplayConfigureRequest> requests(
       1, DisplayConfigureRequest(displays_[0].get(), nullptr, gfx::Point()));
@@ -264,17 +272,14 @@ TEST_F(ConfigureDisplaysTaskTest, DisableInternalDisplayFails) {
 
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::ERROR, status_);
-  EXPECT_EQ(
-      JoinActions(
-          // Initial modeset fails. Initiate retry logic.
-          GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr})
-              .c_str(),
-          // There is no way to downgrade a disable request. Configuration
-          // fails.
-          GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr})
-              .c_str(),
-          nullptr),
-      log_.GetActionsAndClear());
+  EXPECT_EQ(JoinActions(
+                // Initial modeset fails. Initiate retry logic.
+                GetDisableCrtcAction(displays_[0]).c_str(),
+                GetDisableCrtcAction(displays_[0]).c_str(),
+                // There is no way to downgrade a disable request. Configuration
+                // fails.
+                GetDisableCrtcAction(displays_[0]).c_str(), nullptr),
+            log_.GetActionsAndClear());
 }
 
 // Tests that the internal display does not attempt to fallback to alternative
@@ -293,19 +298,22 @@ TEST_F(ConfigureDisplaysTaskTest, NoModeChangeAttemptWhenInternalDisplayFails) {
 
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::ERROR, status_);
-  EXPECT_EQ(JoinActions(
-                // Initial modeset fails. Initiate retry logic.
-                GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                               displays_[0]->native_mode()})
-                    .c_str(),
-                // Retry logic fails to modeset internal display. Since internal
-                // displays are restricted to their preferred mode, there are no
-                // other modes to try. The configuration fails completely.
-                GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                               displays_[0]->native_mode()})
-                    .c_str(),
-                nullptr),
-            log_.GetActionsAndClear());
+  EXPECT_EQ(
+      JoinActions(
+          // Initial modeset fails. Initiate retry logic.
+          GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                         displays_[0]->native_mode()})
+              .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          // Retry logic fails to modeset internal display. Since internal
+          // displays are restricted to their preferred mode, there are no
+          // other modes to try. The configuration fails completely.
+          GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                         displays_[0]->native_mode()})
+              .c_str(),
+          nullptr),
+      log_.GetActionsAndClear());
 }
 
 // Tests that an external display (with no internal display present; e.g.
@@ -330,6 +338,8 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureOneExternalNoInternalDisplayFails) {
           // Initial modeset fails. Initiate retry logic.
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[1]).c_str(),
           // External display will fail, downgrade once, and fail completely.
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
@@ -383,6 +393,9 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureTwoNoneMstDisplaysNoInternalFail) {
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
           // |displays_[0]| will fail, downgrade once, and pass.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
@@ -444,6 +457,9 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureTwoMstDisplaysNoInternalFail) {
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
           // MST displays will be tested (and fail) together.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
@@ -503,6 +519,9 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
           // Retry logic fails to modeset internal display. Since internal
           // displays are restricted to their preferred mode, there are no other
           // modes to try. The configuration will fail completely, but the
@@ -565,6 +584,9 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
           // Internal display will succeed to modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -619,6 +641,10 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[2]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
           // Retry logic fails to modeset internal display. Since internal
           // displays are restricted to their preferred mode, there are no other
           // modes to try. The configuration will fail completely. The external
@@ -704,6 +730,10 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[2]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
           // Internal display will succeed to modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -784,6 +814,11 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[3]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
+          GetDisableCrtcAction(displays_[3]).c_str(),
           // Retry logic fails to modeset internal display. Since internal
           // displays are restricted to their preferred mode, there are no other
           // modes to try. The configuration will fail completely, but the
@@ -875,6 +910,11 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[3]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
+          GetDisableCrtcAction(displays_[3]).c_str(),
           // Internal display will succeed to modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -963,6 +1003,11 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[3]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
+          GetDisableCrtcAction(displays_[3]).c_str(),
           // Internal display will succeed modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1030,6 +1075,10 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[2]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
           // Internal display will succeed modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1117,6 +1166,12 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[4]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
+          GetDisableCrtcAction(displays_[3]).c_str(),
+          GetDisableCrtcAction(displays_[4]).c_str(),
           // Internal display will succeed modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1209,6 +1264,9 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureLastDisplayPartialSuccess) {
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
           // Internal display will succeed to modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1260,6 +1318,10 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureMiddleDisplayPartialSuccess) {
           GetCrtcAction(
               {displays_[2]->display_id(), gfx::Point(), &small_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
           // Internal display will succeed to modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1317,6 +1379,10 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureTwoMstDisplaysPartialSuccess) {
               .c_str(),
           GetCrtcAction({displays_[2]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
           // Internal display will succeed modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1396,6 +1462,11 @@ TEST_F(ConfigureDisplaysTaskTest,
               .c_str(),
           GetCrtcAction({displays_[3]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
+          GetDisableCrtcAction(displays_[2]).c_str(),
+          GetDisableCrtcAction(displays_[3]).c_str(),
           // Internal display will succeed modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1525,6 +1596,11 @@ TEST_F(ConfigureDisplaysTaskTest,
             GetCrtcAction(
                 {displays_[3]->display_id(), gfx::Point(), &big_mode_})
                 .c_str(),
+            // Turn off all displays to reset the system resources allocation.
+            GetDisableCrtcAction(displays_[0]).c_str(),
+            GetDisableCrtcAction(displays_[1]).c_str(),
+            GetDisableCrtcAction(displays_[2]).c_str(),
+            GetDisableCrtcAction(displays_[3]).c_str(),
             // Internal display will succeed to modeset.
             GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                            displays_[0]->native_mode()})
@@ -1603,6 +1679,9 @@ TEST_F(ConfigureDisplaysTaskTest, AsyncConfigureWithTwoDisplaysPartialSuccess) {
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(), &big_mode_})
               .c_str(),
+          // Turn off all displays to reset the system resources allocation.
+          GetDisableCrtcAction(displays_[0]).c_str(),
+          GetDisableCrtcAction(displays_[1]).c_str(),
           // Internal display will succeed to modeset.
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                          displays_[0]->native_mode()})
@@ -1612,6 +1691,149 @@ TEST_F(ConfigureDisplaysTaskTest, AsyncConfigureWithTwoDisplaysPartialSuccess) {
               .c_str(),
           GetCrtcAction(
               {displays_[1]->display_id(), gfx::Point(), &small_mode_})
+              .c_str(),
+          nullptr),
+      log_.GetActionsAndClear());
+}
+
+// Tests requiring a resources cleanup for an internal display to succeed after
+// it was closed and the system bandwidth can't handle all displays at big mode.
+TEST_F(ConfigureDisplaysTaskTest, CloseLidThenOpenLid) {
+  std::unique_ptr<DisplaySnapshot> internal_display =
+      FakeDisplaySnapshot::Builder()
+          .SetId(100)
+          .SetNativeMode(big_mode_.Clone())
+          .SetCurrentMode(big_mode_.Clone())
+          .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+          .SetBaseConnectorId(kEdpConnectorId)
+          .Build();
+  std::unique_ptr<DisplaySnapshot> external_display1 =
+      FakeDisplaySnapshot::Builder()
+          .SetId(200)
+          .SetNativeMode(big_mode_.Clone())
+          .SetCurrentMode(big_mode_.Clone())
+          .AddMode(small_mode_.Clone())
+          .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+          .SetBaseConnectorId(kSecondConnectorId)
+          .Build();
+  std::unique_ptr<DisplaySnapshot> external_display2 =
+      FakeDisplaySnapshot::Builder()
+          .SetId(external_display1->display_id() + 1)
+          .SetNativeMode(big_mode_.Clone())
+          .SetCurrentMode(big_mode_.Clone())
+          .AddMode(small_mode_.Clone())
+          .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+          .SetBaseConnectorId(kSecondConnectorId)
+          .Build();
+
+  // Turn on all displays at the same time.
+  std::vector<DisplayConfigureRequest> requests;
+  requests.emplace_back(internal_display.get(), internal_display->native_mode(),
+                        gfx::Point());
+  requests.emplace_back(external_display1.get(),
+                        external_display1->native_mode(), gfx::Point());
+  requests.emplace_back(external_display2.get(),
+                        external_display2->native_mode(), gfx::Point());
+  // Set the bandwidth which the system can handle. it should be based on the
+  // area of the mode.
+  // For this test, we wanna support either just 2 monitors at big mode or 1
+  // internal display + 2 monitors at small mode. This is to mean we can't have
+  // all 3 running at max mode.
+  int supported_option_1 = big_mode_.size().GetArea() * 2;
+  int supported_option_2 =
+      big_mode_.size().GetArea() + small_mode_.size().GetArea() * 2;
+  // pick the biggest one.
+  int supported_bw = std::max(supported_option_1, supported_option_2);
+  // but also make sure we can't run all 3 at max mode.
+  ASSERT_LT(supported_bw, big_mode_.size().GetArea() * 3);
+  delegate_.set_system_bandwidth_limit(supported_bw);
+
+  // Run Task turning on all displays.
+  ConfigureDisplaysTask::ResponseCallback callback = base::BindOnce(
+      &ConfigureDisplaysTaskTest::ConfigureCallback, base::Unretained(this));
+  ConfigureDisplaysTask turn_on_all_displays_task(&delegate_, requests,
+                                                  std::move(callback));
+  turn_on_all_displays_task.Run();
+  // This case has been checked in all other tests. Just verify and work to move
+  // on to the case we're interested in in this test.
+  ASSERT_EQ(ConfigureDisplaysTask::PARTIAL_SUCCESS, status_);
+  log_.GetActionsAndClear();
+
+  // Simulate closing the lid
+  requests.clear();
+  requests.emplace_back(internal_display.get(), nullptr, gfx::Point());
+  requests.emplace_back(external_display1.get(),
+                        external_display1->native_mode(), gfx::Point());
+  requests.emplace_back(external_display2.get(),
+                        external_display2->native_mode(), gfx::Point());
+  callback = base::BindOnce(&ConfigureDisplaysTaskTest::ConfigureCallback,
+                            base::Unretained(this));
+  ConfigureDisplaysTask close_lid(&delegate_, requests, std::move(callback));
+  close_lid.Run();
+  EXPECT_EQ(ConfigureDisplaysTask::SUCCESS, status_);
+  EXPECT_EQ(JoinActions(GetDisableCrtcAction(internal_display).c_str(),
+                        GetCrtcAction({external_display1->display_id(),
+                                       gfx::Point(), &big_mode_})
+                            .c_str(),
+                        GetCrtcAction({external_display2->display_id(),
+                                       gfx::Point(), &big_mode_})
+                            .c_str(),
+                        nullptr),
+            log_.GetActionsAndClear());
+
+  // Simulate opening the lid as the 2 external displays are already running at
+  // big mode.
+  requests.clear();
+  requests.emplace_back(internal_display.get(), internal_display->native_mode(),
+                        gfx::Point());
+  requests.emplace_back(external_display1.get(),
+                        external_display1->native_mode(), gfx::Point());
+  requests.emplace_back(external_display2.get(),
+                        external_display2->native_mode(), gfx::Point());
+  callback = base::BindOnce(&ConfigureDisplaysTaskTest::ConfigureCallback,
+                            base::Unretained(this));
+  ConfigureDisplaysTask open_lid(&delegate_, requests, std::move(callback));
+  open_lid.Run();
+  ASSERT_EQ(ConfigureDisplaysTask::PARTIAL_SUCCESS, status_);
+  EXPECT_EQ(
+      JoinActions(
+          // Attempt to turn everything on with the highest mode.
+          GetCrtcAction(
+              {internal_display->display_id(), gfx::Point(), &big_mode_})
+              .c_str(),
+          GetCrtcAction(
+              {external_display1->display_id(), gfx::Point(), &big_mode_})
+              .c_str(),
+          GetCrtcAction(
+              {external_display2->display_id(), gfx::Point(), &big_mode_})
+              .c_str(),
+          // Turn off all displays to reset the system resources
+          GetDisableCrtcAction(internal_display).c_str(),
+          GetDisableCrtcAction(external_display1).c_str(),
+          GetDisableCrtcAction(external_display2).c_str(),
+          // Internal display will be the first to be turned on at big mode.
+          GetCrtcAction(
+              {internal_display->display_id(), gfx::Point(), &big_mode_})
+              .c_str(),
+          // External displays will attempt to be turned on at big mode.
+          GetCrtcAction(
+              {external_display1->display_id(), gfx::Point(), &big_mode_})
+              .c_str(),
+          GetCrtcAction(
+              {external_display2->display_id(), gfx::Point(), &big_mode_})
+              .c_str(),
+          // Fallback until success as small mode.
+          GetCrtcAction(
+              {external_display1->display_id(), gfx::Point(), &small_mode_})
+              .c_str(),
+          GetCrtcAction(
+              {external_display2->display_id(), gfx::Point(), &big_mode_})
+              .c_str(),
+          GetCrtcAction(
+              {external_display1->display_id(), gfx::Point(), &small_mode_})
+              .c_str(),
+          GetCrtcAction(
+              {external_display2->display_id(), gfx::Point(), &small_mode_})
               .c_str(),
           nullptr),
       log_.GetActionsAndClear());
