@@ -472,7 +472,8 @@ void VaapiVideoEncodeAccelerator::RecycleVASurface(
       return;
   }
 
-  EncodePendingInputs();
+  if (!input_queue_.empty())
+    EncodePendingInputs();
 }
 
 void VaapiVideoEncodeAccelerator::TryToReturnBitstreamBuffers() {
@@ -481,8 +482,10 @@ void VaapiVideoEncodeAccelerator::TryToReturnBitstreamBuffers() {
   if (state_ != kEncoding)
     return;
 
-  TRACE_EVENT1("media,gpu", "VAVEA::TryToReturnBitstreamBuffers",
-               "pending encode results", pending_encode_results_.size());
+  TRACE_EVENT2("media,gpu", "VAVEA::TryToReturnBitstreamBuffers",
+               "pending encode results", pending_encode_results_.size(),
+               "available bitstream buffers",
+               available_bitstream_buffers_.size());
   while (!pending_encode_results_.empty()) {
     if (pending_encode_results_.front() == nullptr) {
       // A null job indicates a flush command.
@@ -845,6 +848,8 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     return;
   }
 
+  TRACE_EVENT1("media,gpu", "VAVEA::EncodePendingInputs",
+               "pending input frames", input_queue_.size());
   while (state_ == kEncoding && !input_queue_.empty()) {
     const std::unique_ptr<InputFrameRef>& input_frame = input_queue_.front();
     if (!input_frame) {
