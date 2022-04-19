@@ -2193,7 +2193,12 @@ views::AnimationBuilder AppsGridView::FadeOutVisibleItemsForReorder(
   if (fade_out_start_closure_for_test_)
     animation_builder.OnStarted(std::move(fade_out_start_closure_for_test_));
 
+  // Set the preemption strategy to be `IMMEDIATELY_ANIMATE_TO_NEW_TARGET` so
+  // that if there is an existing apps grid animation, fade out animation for
+  // reorder is still going to run.
   animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
                               weak_factory_.GetWeakPtr(), done_callback,
                               /*abort=*/false))

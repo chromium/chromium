@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
@@ -1381,4 +1382,87 @@ IN_PROC_BROWSER_TEST_P(AppListSortLoginTest,
   user_manager::UserManager::Get()->SwitchActiveUser(account_id1_);
   histogram.ExpectBucketCount(histogram_name, ash::AppListSortOrder::kCustom,
                               2);
+}
+
+class AppListSortLoginTalbetTest : public ash::LoginManagerTest {
+ public:
+  AppListSortLoginTalbetTest() : LoginManagerTest() {
+    login_mixin_.AppendRegularUsers(2);
+    account_id1_ = login_mixin_.users()[0].account_id;
+    account_id2_ = login_mixin_.users()[1].account_id;
+
+    feature_list_.InitWithFeatures(
+        {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
+        /*disabled_features=*/{});
+  }
+  AppListSortLoginTalbetTest(const AppListSortLoginTalbetTest&) = delete;
+  AppListSortLoginTalbetTest& operator=(const AppListSortLoginTalbetTest&) =
+      delete;
+  ~AppListSortLoginTalbetTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+    ash::LoginManagerTest::SetUpOnMainThread();
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        ash::Shell::GetPrimaryRootWindow());
+  }
+
+  ash::AppListTestApi app_list_test_api_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  AccountId account_id1_;
+  AccountId account_id2_;
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
+                       PRE_SwitchUnderTemporarySort) {
+  LoginUser(account_id1_);
+
+  // Because Account 1 is new, the reorder education nudge should show.
+  EXPECT_EQ(ash::AppListToastType::kReorderNudge,
+            app_list_test_api_.GetToastType());
+
+  // Reorder the app list.
+  ReorderAnimationEndState actual_state;
+  app_list_test_api_.ReorderByMouseClickAtToplevelAppsGridMenu(
+      ash::AppListSortOrder::kColor, MenuType::kAppListNonFolderItemMenu,
+      event_generator_.get(),
+      /*target_state=*/ReorderAnimationEndState::kCompleted, &actual_state);
+  EXPECT_EQ(ReorderAnimationEndState::kCompleted, actual_state);
+
+  // Verify that the reorder undo toast shows.
+  EXPECT_EQ(ash::AppListToastType::kReorderUndo,
+            app_list_test_api_.GetToastType());
+}
+
+// Verifies that the active account switch works as expected when the app list
+// is under temporary sort.
+IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest, SwitchUnderTemporarySort) {
+  LoginUser(account_id1_);
+
+  // Reorder has been triggered in the pretest so the toast should not show.
+  EXPECT_EQ(ash::AppListToastType::kNone, app_list_test_api_.GetToastType());
+
+  // Switch to Account 2.
+  ash::UserAddingScreen::Get()->Start();
+  AddUser(account_id2_);
+  EXPECT_EQ(ash::AppListToastType::kReorderNudge,
+            app_list_test_api_.GetToastType());
+
+  // Reorder the app list and check that the undo toast shows.
+  ReorderAnimationEndState actual_state;
+  app_list_test_api_.ReorderByMouseClickAtToplevelAppsGridMenu(
+      ash::AppListSortOrder::kColor, MenuType::kAppListNonFolderItemMenu,
+      event_generator_.get(),
+      /*target_state=*/ReorderAnimationEndState::kCompleted, &actual_state);
+  EXPECT_EQ(ReorderAnimationEndState::kCompleted, actual_state);
+  EXPECT_EQ(ash::AppListToastType::kReorderUndo,
+            app_list_test_api_.GetToastType());
+
+  // Switch back to Account 1. Verify that the toast should not show.
+  user_manager::UserManager::Get()->SwitchActiveUser(account_id1_);
+  EXPECT_EQ(account_id1_,
+            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  EXPECT_EQ(ash::AppListToastType::kNone, app_list_test_api_.GetToastType());
 }

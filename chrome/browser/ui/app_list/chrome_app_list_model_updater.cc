@@ -152,6 +152,9 @@ void ChromeAppListModelUpdater::SetActive(bool active) {
   if (active) {
     ash::AppListController::Get()->SetActiveModel(model_id(), &model_,
                                                   &search_model_);
+  } else if (is_under_temporary_sort()) {
+    // Commit the temporary order when the model updater is deactivated.
+    EndTemporarySortAndTakeAction(EndAction::kCommit);
   }
 }
 
