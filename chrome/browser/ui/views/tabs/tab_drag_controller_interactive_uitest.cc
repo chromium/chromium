@@ -1772,7 +1772,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       new_browser->window()->GetNativeWindow()));
 
   const bool kMaximizedStateRetainedOnTabDrag =
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
       false;
 #else
       true;
