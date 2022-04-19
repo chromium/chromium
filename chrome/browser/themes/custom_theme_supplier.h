@@ -66,7 +66,7 @@ class CustomThemeSupplier
   // from the UI thread.
   bool GetTint(int id, color_utils::HSL* hsl) const override;
   bool GetColor(int id, SkColor* color) const override;
-  virtual bool GetDisplayProperty(int id, int* result) const;
+  bool GetDisplayProperty(int id, int* result) const override;
 
   // Returns the theme image for |id|. Returns an empty image if no image is
   // found for |id|.

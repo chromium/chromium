@@ -80,14 +80,24 @@ class TabStyle {
   struct TabColors {
     SkColor foreground_color = gfx::kPlaceholderColor;
     SkColor background_color = gfx::kPlaceholderColor;
+    SkColor focus_ring_color = gfx::kPlaceholderColor;
+    SkColor close_button_focus_ring_color = gfx::kPlaceholderColor;
 
     TabColors() = default;
-    TabColors(SkColor foreground_color, SkColor background_color)
+    TabColors(SkColor foreground_color,
+              SkColor background_color,
+              SkColor focus_ring_color,
+              SkColor close_button_focus_ring_color)
         : foreground_color(foreground_color),
-          background_color(background_color) {}
+          background_color(background_color),
+          focus_ring_color(focus_ring_color),
+          close_button_focus_ring_color(close_button_focus_ring_color) {}
     bool operator==(const TabColors& other) const {
-      return std::tie(foreground_color, background_color) ==
-             std::tie(other.foreground_color, other.background_color);
+      return std::tie(foreground_color, background_color, focus_ring_color,
+                      close_button_focus_ring_color) ==
+             std::tie(other.foreground_color, other.background_color,
+                      other.focus_ring_color,
+                      other.close_button_focus_ring_color);
     }
   };
 

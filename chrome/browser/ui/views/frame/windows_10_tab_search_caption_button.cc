@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/windows_10_tab_search_caption_button.h"
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
@@ -27,6 +28,12 @@ Windows10TabSearchCaptionButton::Windows10TabSearchCaptionButton(
 }
 
 Windows10TabSearchCaptionButton::~Windows10TabSearchCaptionButton() = default;
+
+void Windows10TabSearchCaptionButton::OnThemeChanged() {
+  Windows10CaptionButton::OnThemeChanged();
+  views::FocusRing::Get(this)->SetColor(
+      GetColorProvider()->GetColor(kColorTabSearchCaptionButtonFocusRing));
+}
 
 BEGIN_METADATA(Windows10TabSearchCaptionButton, Windows10CaptionButton)
 END_METADATA

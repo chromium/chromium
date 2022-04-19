@@ -11,10 +11,11 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -473,12 +474,21 @@ TabActive GM2TabStyle::GetApparentActiveState() const {
 }
 
 TabStyle::TabColors GM2TabStyle::CalculateColors() const {
+  const TabActive active = GetApparentActiveState();
   const SkColor foreground_color =
-      tab_->controller()->GetTabForegroundColor(GetApparentActiveState());
+      tab_->controller()->GetTabForegroundColor(active);
   const SkColor background_color = color_utils::AlphaBlend(
       GetTabBackgroundColor(TabActive::kActive),
       GetTabBackgroundColor(TabActive::kInactive), GetActiveOpacity());
-  return {foreground_color, background_color};
+  const auto* const color_provider = tab_->GetColorProvider();
+  const SkColor focus_ring_color = color_provider->GetColor(
+      (active == TabActive::kActive) ? kColorTabFocusRingActive
+                                     : kColorTabFocusRingInactive);
+  const SkColor close_button_focus_ring_color = color_provider->GetColor(
+      (active == TabActive::kActive) ? kColorTabCloseButtonFocusRingActive
+                                     : kColorTabCloseButtonFocusRingInactive);
+  return {foreground_color, background_color, focus_ring_color,
+          close_button_focus_ring_color};
 }
 
 const gfx::FontList& GM2TabStyle::GetFontList() const {
@@ -986,10 +996,14 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 // static
 std::u16string ui::metadata::TypeConverter<TabStyle::TabColors>::ToString(
     ui::metadata::ArgType<TabStyle::TabColors> source_value) {
-  return base::ASCIIToUTF16(base::StringPrintf(
-      "{%s,%s}",
-      color_utils::SkColorToRgbaString(source_value.foreground_color).c_str(),
-      color_utils::SkColorToRgbaString(source_value.background_color).c_str()));
+  return base::ASCIIToUTF16(base::StrCat(
+      {"{", color_utils::SkColorToRgbaString(source_value.foreground_color),
+       ",", color_utils::SkColorToRgbaString(source_value.background_color),
+       ",", color_utils::SkColorToRgbaString(source_value.focus_ring_color),
+       ",",
+       color_utils::SkColorToRgbaString(
+           source_value.close_button_focus_ring_color),
+       "}"}));
 }
 
 // static
@@ -1000,11 +1014,18 @@ absl::optional<TabStyle::TabColors> ui::metadata::TypeConverter<
   std::u16string::const_iterator color_pos = trimmed_string.cbegin();
   const auto foreground_color = SkColorConverter::GetNextColor(
       color_pos, trimmed_string.cend(), color_pos);
-  const auto background_color =
+  const auto background_color = SkColorConverter::GetNextColor(
+      color_pos, trimmed_string.cend(), color_pos);
+  const auto focus_ring_color = SkColorConverter::GetNextColor(
+      color_pos, trimmed_string.cend(), color_pos);
+  const auto close_button_focus_ring_color =
       SkColorConverter::GetNextColor(color_pos, trimmed_string.cend());
-  return (foreground_color && background_color)
+  return (foreground_color && background_color && focus_ring_color &&
+          close_button_focus_ring_color)
              ? absl::make_optional<TabStyle::TabColors>(
-                   foreground_color.value(), background_color.value())
+                   foreground_color.value(), background_color.value(),
+                   focus_ring_color.value(),
+                   close_button_focus_ring_color.value())
              : absl::nullopt;
 }
 

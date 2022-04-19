@@ -80,15 +80,11 @@ class NewTabButton : public views::ImageButton,
   // Paints the fill region of the button into |canvas|.
   void PaintFill(gfx::Canvas* canvas) const;
 
-  SkColor GetButtonFillColor() const;
-
   // Returns the path for the given |origin| and |scale|.  If |extend_to_top| is
   // true, the path is extended vertically to y = 0.
   SkPath GetBorderPath(const gfx::Point& origin,
                        float scale,
                        bool extend_to_top) const;
-
-  void UpdateInkDropBaseColor();
 
   // Tab strip that contains this button.
   raw_ptr<TabStrip> tab_strip_;

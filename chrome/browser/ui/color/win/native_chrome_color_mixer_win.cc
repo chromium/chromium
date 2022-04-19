@@ -242,6 +242,9 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
       GetCaptionForegroundColor(ui::kColorFrameActive);
   mixer[kColorCaptionForegroundInactive] =
       SetAlpha(GetCaptionForegroundColor(ui::kColorFrameInactive), 0x66);
+  mixer[kColorTabSearchCaptionButtonFocusRing] = ui::PickGoogleColor(
+      ui::kColorFocusableBorderFocused, ui::kColorFrameActive,
+      color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorTryChromeBackground] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorTryChromeBorder] = {SkColorSetARGB(0x80, 0x80, 0x80, 0x80)};
   mixer[kColorTryChromeButtonBackgroundAccept] = {

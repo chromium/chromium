@@ -148,6 +148,32 @@ ui::ColorTransform GetToolbarTopSeparatorColorTransform(
                              std::move(frame_color_transform));
 }
 
+ui::ColorTransform PickGoogleColorTwoBackgrounds(
+    ui::ColorTransform fg_transform,
+    ui::ColorTransform bg_a_transform,
+    ui::ColorTransform bg_b_transform,
+    float contrast_threshold) {
+  const auto generator =
+      [](ui::ColorTransform fg_transform, ui::ColorTransform bg_a_transform,
+         ui::ColorTransform bg_b_transform, float contrast_threshold,
+         SkColor input_color, const ui::ColorMixer& mixer) {
+    const SkColor fg_color = fg_transform.Run(input_color, mixer);
+    const SkColor bg_a_color = bg_a_transform.Run(input_color, mixer);
+    const SkColor bg_b_color = bg_b_transform.Run(input_color, mixer);
+    const SkColor result_color = color_utils::PickGoogleColor(
+        fg_color, bg_a_color, bg_b_color, contrast_threshold);
+    DVLOG(2) << "ColorTransform PickGoogleColorTwoBackgrounds:"
+             << " Foreground Color: " << ui::SkColorName(fg_color)
+             << " Background Color A: " << ui::SkColorName(bg_a_color)
+             << " Background Color B: " << ui::SkColorName(bg_b_color)
+             << " Result Color: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(fg_transform),
+                             std::move(bg_a_transform),
+                             std::move(bg_b_transform), contrast_threshold);
+}
+
 // Flat version of dark mode colors used in bookmarks bar to fill
 // the buttons.
 constexpr SkColor kFlatGrey = SkColorSetRGB(0x5D, 0x5E, 0x62);
@@ -311,6 +337,30 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorMediaRouterIconActive] = {ui::kColorAccent};
   mixer[kColorMediaRouterIconError] = {ui::kColorAlertHighSeverity};
   mixer[kColorMediaRouterIconWarning] = {ui::kColorAlertMediumSeverity};
+  {
+    int result = 0;
+    if (!key.custom_theme ||
+        !key.custom_theme->GetDisplayProperty(
+            ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR, &result) ||
+        result) {
+      mixer[kColorNewTabButtonBackgroundFrameActive] = {
+          kColorTabBackgroundInactiveFrameActive};
+      mixer[kColorNewTabButtonBackgroundFrameInactive] = {
+          kColorTabBackgroundInactiveFrameInactive};
+    } else {
+      mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
+      mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
+    }
+  }
+  mixer[kColorNewTabButtonFocusRing] = PickGoogleColorTwoBackgrounds(
+      ui::kColorFocusableBorderFocused,
+      ui::GetResultingPaintColor(kColorNewTabButtonBackgroundFrameActive,
+                                 ui::kColorFrameActive),
+      ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorNewTabButtonInkDropFrameActive] =
+      ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameActive);
+  mixer[kColorNewTabButtonInkDropFrameInactive] =
+      ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameInactive);
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
   mixer[kColorNewTabPageHeader] = {SkColorSetRGB(0x96, 0x96, 0x96)};
   mixer[kColorNewTabPageLink] = {dark_mode ? gfx::kGoogleBlue300
@@ -441,6 +491,18 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::SelectBasedOnDarkInput(kColorTabForegroundInactiveFrameInactive,
                                  gfx::kGoogleBlue600,
                                  kColorTabForegroundInactiveFrameInactive);
+  mixer[kColorTabCloseButtonFocusRingActive] = ui::PickGoogleColor(
+      ui::kColorFocusableBorderFocused, kColorTabBackgroundActiveFrameActive,
+      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorTabCloseButtonFocusRingInactive] = ui::PickGoogleColor(
+      ui::kColorFocusableBorderFocused, kColorTabBackgroundInactiveFrameActive,
+      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorTabFocusRingActive] = PickGoogleColorTwoBackgrounds(
+      ui::kColorFocusableBorderFocused, kColorTabBackgroundActiveFrameActive,
+      ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorTabFocusRingInactive] = PickGoogleColorTwoBackgrounds(
+      ui::kColorFocusableBorderFocused, kColorTabBackgroundInactiveFrameActive,
+      ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
 
   mixer[kColorTabGroupTabStripFrameActiveBlue] =
       ui::SelectBasedOnDarkInput(kColorTabBackgroundInactiveFrameActive,

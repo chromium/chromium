@@ -10,8 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -86,7 +86,13 @@ NewTabButton::~NewTabButton() {
 }
 
 void NewTabButton::FrameColorsChanged() {
-  UpdateInkDropBaseColor();
+  const auto* const color_provider = GetColorProvider();
+  views::FocusRing::Get(this)->SetColor(
+      color_provider->GetColor(kColorNewTabButtonFocusRing));
+  views::InkDrop::Get(this)->SetBaseColor(
+      color_provider->GetColor(tab_strip_->ShouldPaintAsActiveFrame()
+                                   ? kColorNewTabButtonInkDropFrameActive
+                                   : kColorNewTabButtonInkDropFrameInactive));
   SchedulePaint();
 }
 
@@ -206,7 +212,10 @@ void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
         contents_bounds.y(), x_scale, scale, 0, 0, SkTileMode::kRepeat,
         SkTileMode::kRepeat, &flags);
   } else {
-    flags.setColor(GetButtonFillColor());
+    flags.setColor(GetColorProvider()->GetColor(
+        tab_strip_->ShouldPaintAsActiveFrame()
+            ? kColorNewTabButtonBackgroundFrameActive
+            : kColorNewTabButtonBackgroundFrameInactive));
   }
 
   canvas->DrawPath(GetBorderPath(gfx::Point(), scale, false), flags);
@@ -235,14 +244,6 @@ void NewTabButton::PaintIcon(gfx::Canvas* canvas) {
   canvas->DrawLine(gfx::PointF(center, start), gfx::PointF(center, end), flags);
 }
 
-SkColor NewTabButton::GetButtonFillColor() const {
-  return GetThemeProvider()->GetDisplayProperty(
-             ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR)
-             ? tab_strip_->GetTabBackgroundColor(
-                   TabActive::kInactive, BrowserFrameActiveState::kUseCurrent)
-             : SK_ColorTRANSPARENT;
-}
-
 SkPath NewTabButton::GetBorderPath(const gfx::Point& origin,
                                    float scale,
                                    bool extend_to_top) const {
@@ -264,11 +265,6 @@ SkPath NewTabButton::GetBorderPath(const gfx::Point& origin,
                    radius);
   }
   return path;
-}
-
-void NewTabButton::UpdateInkDropBaseColor() {
-  views::InkDrop::Get(this)->SetBaseColor(
-      color_utils::GetColorWithMaxContrast(GetButtonFillColor()));
 }
 
 BEGIN_METADATA(NewTabButton, views::ImageButton)

@@ -136,6 +136,12 @@
   E_CPONLY(kColorMediaRouterIconActive) \
   E_CPONLY(kColorMediaRouterIconError) \
   E_CPONLY(kColorMediaRouterIconWarning) \
+  /* New tab button colors. */ \
+  E_CPONLY(kColorNewTabButtonBackgroundFrameActive) \
+  E_CPONLY(kColorNewTabButtonBackgroundFrameInactive) \
+  E_CPONLY(kColorNewTabButtonFocusRing) \
+  E_CPONLY(kColorNewTabButtonInkDropFrameActive) \
+  E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
   /* New Tab Page colors. */ \
   E(kColorNewTabPageBackground, ThemeProperties::COLOR_NTP_BACKGROUND) \
   E(kColorNewTabPageHeader, ThemeProperties::COLOR_NTP_HEADER) \
@@ -292,6 +298,10 @@
     ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE) \
   E(kColorTabBackgroundInactiveFrameInactive, \
     ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE) \
+  E_CPONLY(kColorTabCloseButtonFocusRingActive) \
+  E_CPONLY(kColorTabCloseButtonFocusRingInactive) \
+  E_CPONLY(kColorTabFocusRingActive) \
+  E_CPONLY(kColorTabFocusRingInactive) \
   E_CPONLY(kColorTabForegroundActiveFrameActive) \
   E_CPONLY(kColorTabForegroundActiveFrameInactive) \
   E_CPONLY(kColorTabForegroundInactiveFrameActive) \
@@ -467,6 +477,8 @@
     E_CPONLY(kColorCaptionCloseButtonForegroundHovered) \
     E_CPONLY(kColorCaptionForegroundActive) \
     E_CPONLY(kColorCaptionForegroundInactive) \
+    /* Tab search caption button colors. */ \
+    E_CPONLY(kColorTabSearchCaptionButtonFocusRing) \
     /* Try Chrome dialog colors. */ \
     E_CPONLY(kColorTryChromeBackground) \
     E_CPONLY(kColorTryChromeBorder) \
