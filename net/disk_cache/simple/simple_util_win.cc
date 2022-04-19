@@ -34,11 +34,11 @@ bool SimpleCacheDeleteFile(const base::FilePath& path) {
   bool rename_succeeded =
       !!MoveFile(path.value().c_str(), rename_target.value().c_str());
   if (rename_succeeded)
-    return DeleteCacheFile(rename_target);
+    return base::DeleteFile(rename_target);
 
   // The rename did not succeed. The fallback behaviour is to delete the file in
   // place, which might cause some flake.
-  return DeleteCacheFile(path);
+  return base::DeleteFile(path);
 }
 
 }  // namespace simple_util

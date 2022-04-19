@@ -353,7 +353,7 @@ class SimpleSynchronousEntry {
                  SimpleEntryStat* out_entry_stat);
   bool CreateFiles(BackendFileOperations* file_operations,
                    SimpleEntryStat* out_entry_stat);
-  void CloseFile(int index);
+  void CloseFile(BackendFileOperations* file_operations, int index);
   void CloseFiles();
 
   // Read the header and key at the beginning of the file, and validate that
@@ -428,7 +428,7 @@ class SimpleSynchronousEntry {
   bool CreateSparseFile(BackendFileOperations* file_operations);
 
   // Closes the sparse data file.
-  void CloseSparseFile();
+  void CloseSparseFile(BackendFileOperations* file_operations);
 
   // Writes the header to the (newly-created) sparse file.
   bool InitializeSparseFile(base::File* file);

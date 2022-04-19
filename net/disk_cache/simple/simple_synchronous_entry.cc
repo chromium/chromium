@@ -365,6 +365,7 @@ void SimpleSynchronousEntry::OpenEntry(
   }
   if (out_results->result != net::OK) {
     sync_entry->Doom();
+    sync_entry->CloseFiles();
     out_results->sync_entry = nullptr;
     out_results->unbound_file_operations =
         std::move(sync_entry->unbound_file_operations_);
@@ -404,6 +405,7 @@ void SimpleSynchronousEntry::CreateEntry(
   if (out_results->result != net::OK) {
     if (out_results->result != net::ERR_FILE_EXISTS)
       sync_entry->Doom();
+    sync_entry->CloseFiles();
     out_results->unbound_file_operations =
         std::move(sync_entry->unbound_file_operations_);
     out_results->sync_entry = nullptr;
@@ -452,6 +454,7 @@ void SimpleSynchronousEntry::OpenOrCreateEntry(
           // In this case, ::OpenOrCreateEntry already returned claiming it made
           // a new entry. Try extra-hard to make that the actual case.
           sync_entry->Doom();
+          sync_entry->CloseFiles();
           file_operations = std::move(sync_entry->unbound_file_operations_);
           sync_entry = nullptr;
           CreateEntry(cache_type, path, key, entry_hash, file_tracker,
@@ -463,6 +466,7 @@ void SimpleSynchronousEntry::OpenOrCreateEntry(
       default:
         // Trouble. Fail this time.
         sync_entry->Doom();
+        sync_entry->CloseFiles();
         out_results->unbound_file_operations =
             std::move(sync_entry->unbound_file_operations_);
         return;
@@ -1117,11 +1121,11 @@ void SimpleSynchronousEntry::Close(
       if (!file.IsOK() || !CheckHeaderAndKey(file.get(), i))
         Doom();
     }
-    CloseFile(i);
+    CloseFile(file_operations.get(), i);
   }
 
   if (sparse_file_open()) {
-    CloseSparseFile();
+    CloseSparseFile(file_operations.get());
   }
 
   SIMPLE_CACHE_UMA(TIMES, "DiskCloseLatency", cache_type_,
@@ -1151,9 +1155,7 @@ SimpleSynchronousEntry::SimpleSynchronousEntry(
 }
 
 SimpleSynchronousEntry::~SimpleSynchronousEntry() {
-  DCHECK(!(have_open_files_ && initialized_));
-  if (have_open_files_)
-    CloseFiles();
+  DCHECK(!have_open_files_);
 }
 
 bool SimpleSynchronousEntry::MaybeOpenFile(
@@ -1234,7 +1236,7 @@ bool SimpleSynchronousEntry::OpenFiles(BackendFileOperations* file_operations,
       SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncOpenPlatformFileError", cache_type_,
                          -error, -base::File::FILE_ERROR_MAX);
       while (--i >= 0)
-        CloseFile(i);
+        CloseFile(file_operations, i);
       return false;
     }
   }
@@ -1289,7 +1291,7 @@ bool SimpleSynchronousEntry::CreateFiles(BackendFileOperations* file_operations,
       SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncCreatePlatformFileError",
                          cache_type_, -error, -base::File::FILE_ERROR_MAX);
       while (--i >= 0)
-        CloseFile(i);
+        CloseFile(file_operations, i);
       return false;
     }
   }
@@ -1305,7 +1307,8 @@ bool SimpleSynchronousEntry::CreateFiles(BackendFileOperations* file_operations,
   return true;
 }
 
-void SimpleSynchronousEntry::CloseFile(int index) {
+void SimpleSynchronousEntry::CloseFile(BackendFileOperations* file_operations,
+                                       int index) {
   if (empty_file_omitted_[index]) {
     empty_file_omitted_[index] = false;
   } else {
@@ -1313,7 +1316,7 @@ void SimpleSynchronousEntry::CloseFile(int index) {
     // this before calling SimpleFileTracker::Close, since that would make the
     // name available to other threads.
     if (entry_file_key_.doom_generation != 0u) {
-      base::DeleteFile(path_.AppendASCII(
+      file_operations->DeleteFile(path_.AppendASCII(
           GetFilenameFromEntryFileKeyAndFileIndex(entry_file_key_, index)));
     }
     file_tracker_->Close(this, SubFileForFileIndex(index));
@@ -1321,10 +1324,16 @@ void SimpleSynchronousEntry::CloseFile(int index) {
 }
 
 void SimpleSynchronousEntry::CloseFiles() {
+  if (!have_open_files_) {
+    return;
+  }
+  BackendFileOperations* file_operations = nullptr;
+  ScopedFileOperationsBinding binding(this, &file_operations);
   for (int i = 0; i < kSimpleEntryNormalFileCount; ++i)
-    CloseFile(i);
+    CloseFile(file_operations, i);
   if (sparse_file_open())
-    CloseSparseFile();
+    CloseSparseFile(file_operations);
+  have_open_files_ = false;
 }
 
 bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
@@ -1469,7 +1478,7 @@ int SimpleSynchronousEntry::InitializeForOpen(
   DCHECK(CanOmitEmptyFile(stream2_file_index));
   if (!empty_file_omitted_[stream2_file_index] &&
       out_entry_stat->data_size(2) == 0) {
-    CloseFile(stream2_file_index);
+    CloseFile(file_operations, stream2_file_index);
     DeleteFileForEntryHash(path_, entry_file_key_.entry_hash,
                            stream2_file_index);
     empty_file_omitted_[stream2_file_index] = true;
@@ -1826,11 +1835,13 @@ bool SimpleSynchronousEntry::CreateSparseFile(
   return true;
 }
 
-void SimpleSynchronousEntry::CloseSparseFile() {
+void SimpleSynchronousEntry::CloseSparseFile(
+    BackendFileOperations* file_operations) {
   DCHECK(sparse_file_open());
-  if (entry_file_key_.doom_generation != 0u)
-    DeleteCacheFile(
+  if (entry_file_key_.doom_generation != 0u) {
+    file_operations->DeleteFile(
         path_.AppendASCII(GetSparseFilenameFromEntryFileKey(entry_file_key_)));
+  }
   file_tracker_->Close(this, SimpleFileTracker::SubFile::FILE_SPARSE);
   sparse_file_open_ = false;
 }

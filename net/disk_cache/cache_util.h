@@ -35,9 +35,6 @@ NET_EXPORT_PRIVATE bool MoveCache(const base::FilePath& from_path,
 NET_EXPORT_PRIVATE void DeleteCache(const base::FilePath& path,
                                     bool remove_folder);
 
-// Deletes a cache file.
-NET_EXPORT_PRIVATE bool DeleteCacheFile(const base::FilePath& name);
-
 // Renames cache directory synchronously and fires off a background cleanup
 // task. Used by cache creator itself or by backends for self-restart on error.
 bool DelayedCacheCleanup(const base::FilePath& full_path);

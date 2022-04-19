@@ -3914,7 +3914,7 @@ TEST_F(DiskCacheBackendTest, FileSharing) {
   EXPECT_TRUE(file->Read(buffer2, kSize, 0));
   EXPECT_EQ(0, memcmp(buffer1, buffer2, kSize));
 
-  EXPECT_TRUE(disk_cache::DeleteCacheFile(name));
+  EXPECT_TRUE(base::DeleteFile(name));
 }
 
 TEST_F(DiskCacheBackendTest, UpdateRankForExternalCacheHit) {
@@ -4062,7 +4062,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOpenMissingFile) {
   base::FilePath to_delete_file = cache_path_.AppendASCII(
       disk_cache::simple_util::GetFilenameFromKeyAndFileIndex(key, 0));
   EXPECT_TRUE(base::PathExists(to_delete_file));
-  EXPECT_TRUE(disk_cache::DeleteCacheFile(to_delete_file));
+  EXPECT_TRUE(base::DeleteFile(to_delete_file));
 
   // Failing to open the entry should delete the rest of these files.
   ASSERT_THAT(OpenEntry(key, &entry), IsError(net::ERR_FAILED));

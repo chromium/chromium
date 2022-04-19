@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
@@ -1263,7 +1264,7 @@ void EntryImpl::DeleteData(Addr address, int index) {
   if (!address.is_initialized())
     return;
   if (address.is_separate_file()) {
-    int failure = !DeleteCacheFile(backend_->GetFileName(address));
+    int failure = !base::DeleteFile(backend_->GetFileName(address));
     CACHE_UMA(COUNTS, "DeleteFailed", 0, failure);
     if (failure) {
       LOG(ERROR) << "Failed to delete " <<

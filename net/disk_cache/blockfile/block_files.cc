@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -596,7 +597,7 @@ bool BlockFiles::RemoveEmptyFile(FileType block_type) {
       this_file->Init(name);
       block_files_[file_index] = nullptr;
 
-      int failure = DeleteCacheFile(name) ? 0 : 1;
+      int failure = base::DeleteFile(name) ? 0 : 1;
       UMA_HISTOGRAM_COUNTS_1M("DiskCache.DeleteFailed2", failure);
       if (failure)
         LOG(ERROR) << "Failed to delete " << name.value() << " from the cache.";

@@ -92,14 +92,6 @@ TEST_F(CacheUtilTest, DeleteCacheAndDir) {
   EXPECT_FALSE(base::PathExists(file3_));
 }
 
-TEST_F(CacheUtilTest, DeleteCacheFile) {
-  EXPECT_TRUE(disk_cache::DeleteCacheFile(file1_));
-  EXPECT_FALSE(base::PathExists(file1_));
-  EXPECT_TRUE(base::PathExists(cache_dir_)); // cache dir stays
-  EXPECT_TRUE(base::PathExists(dir1_));
-  EXPECT_TRUE(base::PathExists(file3_));
-}
-
 TEST_F(CacheUtilTest, PreferredCacheSize) {
   const struct TestCase {
     int64_t available;
