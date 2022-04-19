@@ -1439,35 +1439,6 @@
         "trigger_script": {
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         }
-      },
-      {
-        "args": [
-          "--strip-chrome"
-        ],
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_type": "kevin",
-              "os": "ChromeOS",
-              "pool": "chromium.tests"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "disk_usage_tast_test",
-        "test_id_prefix": "ninja://chromeos:disk_usage_tast_test/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        }
       }
     ],
     "isolated_scripts": [
@@ -1501,40 +1472,6 @@
           "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        }
-      },
-      {
-        "args": [
-          "--browser=cros-chrome",
-          "--remote=variable_chromeos_device_hostname",
-          "--jobs=1"
-        ],
-        "isolate_name": "telemetry_unittests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_type": "kevin",
-              "os": "ChromeOS",
-              "pool": "chromium.tests"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_unittests/",
         "trigger_script": {
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         }
