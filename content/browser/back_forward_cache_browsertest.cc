@@ -678,13 +678,12 @@ void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
   std::unique_ptr<URLLoaderInterceptor> url_interceptor =
       URLLoaderInterceptor::SetupRequestFailForURL(url,
                                                    net::ERR_BLOCKED_BY_CLIENT);
-  TestNavigationManager manager(web_contents(), url);
   if (history_offset) {
     shell()->GoBackOrForward(history_offset);
   } else {
     shell()->LoadURL(url);
   }
-  manager.WaitForNavigationFinished();
+  WaitForLoadStop(web_contents());
   ASSERT_EQ(current_frame_host()->GetLastCommittedURL(), url);
   ASSERT_TRUE(current_frame_host()->IsErrorDocument());
 }
