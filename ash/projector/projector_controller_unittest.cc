@@ -260,6 +260,70 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
 
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
+  EXPECT_CALL(mock_client_, OpenProjectorApp()).Times(0);
+  EXPECT_CALL(mock_client_,
+              OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                  NewScreencastPreconditionState::kDisabled,
+                  {NewScreencastPreconditionReason::kInProjectorSession})));
+
+  controller_->projector_session()->Start("projector_data");
+  histogram_tester_.ExpectUniqueSample(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kSessionStarted, /*count=*/1);
+
+  controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
+  histogram_tester_.ExpectBucketCount(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kRecordingStarted, /*count=*/1);
+
+  base::RunLoop runLoop;
+  controller_->CreateScreencastContainerFolder(base::BindLambdaForTesting(
+      [&](const base::FilePath& screencast_file_path_no_extension) {
+        EXPECT_CALL(
+            mock_client_,
+            OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                NewScreencastPreconditionState::kEnabled, {})))
+            .Times(0);
+        EXPECT_CALL(mock_client_, StopSpeechRecognition())
+            .WillOnce(testing::Invoke(
+                [&]() { controller_->OnSpeechRecognitionStopped(); }));
+        EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(_)).Times(0);
+
+        controller_->OnRecordingEnded(/*is_in_projector_mode=*/true);
+        runLoop.Quit();
+      }));
+
+  runLoop.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      kProjectorCreationFlowHistogramName,
+      /*sample=*/ProjectorCreationFlow::kRecordingEnded, /*count=*/1);
+  histogram_tester_.ExpectTotalCount(kProjectorCreationFlowHistogramName,
+                                     /*count=*/3);
+}
+
+class ProjectorOnDlpRestrictionCheckedAtVideoEndTest
+    : public ::testing::WithParamInterface<::testing::tuple<bool, bool>>,
+      public ProjectorControllerTest {
+ public:
+  ProjectorOnDlpRestrictionCheckedAtVideoEndTest() = default;
+  ProjectorOnDlpRestrictionCheckedAtVideoEndTest(
+      const ProjectorOnDlpRestrictionCheckedAtVideoEndTest&) = delete;
+  ProjectorOnDlpRestrictionCheckedAtVideoEndTest& operator=(
+      const ProjectorOnDlpRestrictionCheckedAtVideoEndTest&) = delete;
+  ~ProjectorOnDlpRestrictionCheckedAtVideoEndTest() override = default;
+};
+
+TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
+  bool wrap_up_by_speech_stopped = std::get<0>(GetParam());
+  bool user_deleted_video_file = std::get<1>(GetParam());
+
+  base::FilePath screencast_container_path;
+  ASSERT_TRUE(
+      mock_client_.GetDriveFsMountPointPath(&screencast_container_path));
+  ON_CALL(mock_client_, IsDriveFsMounted())
+      .WillByDefault(testing::Return(true));
+
   EXPECT_CALL(mock_client_, OpenProjectorApp());
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
@@ -289,39 +353,55 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
             mock_client_,
             OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                 NewScreencastPreconditionState::kEnabled, {})));
-        EXPECT_CALL(mock_client_, StopSpeechRecognition())
-            .WillOnce(testing::Invoke(
-                [&]() { controller_->OnSpeechRecognitionStopped(); }));
 
-        // Verify that |SaveMetadata| in |ProjectorMetadataController| is called
-        // with the expected path.
-        const std::string expected_screencast_name =
-            "Recording 2021-01-02 20.02.10";
-        const base::FilePath expected_path =
-            screencast_container_path.Append("root")
-                .Append("projector_data")
-                // Screencast container folder.
-                .Append(expected_screencast_name)
-                // Screencast file name without extension.
-                .Append(expected_screencast_name);
-        EXPECT_EQ(screencast_file_path_no_extension, expected_path);
-        EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(expected_path));
+        if (!user_deleted_video_file) {
+          // Verify that |SaveMetadata| in |ProjectorMetadataController| is
+          // called with the expected path.
+          const std::string expected_screencast_name =
+              "Recording 2021-01-02 20.02.10";
+          const base::FilePath expected_path =
+              screencast_container_path.Append("root")
+                  .Append("projector_data")
+                  // Screencast container folder.
+                  .Append(expected_screencast_name)
+                  // Screencast file name without extension.
+                  .Append(expected_screencast_name);
+          EXPECT_EQ(screencast_file_path_no_extension, expected_path);
+          // Verify that save metadata only triggered once.
+          EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(expected_path))
+              .Times(1);
+        } else {
+          // Verify that save metadata is not triggered.
+          EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(_)).Times(0);
+        }
 
-        controller_->OnRecordingEnded(/*is_in_projector_mode=*/true);
+        gfx::ImageSkia null_image;
+        if (wrap_up_by_speech_stopped) {
+          controller_->OnDlpRestrictionCheckedAtVideoEnd(
+              /*is_in_projector_mode=*/true,
+              /*user_deleted_video_file=*/user_deleted_video_file,
+              /*thumbnail=*/null_image);
+          controller_->OnSpeechRecognitionStopped();
+        } else {
+          controller_->OnSpeechRecognitionStopped();
+          controller_->OnDlpRestrictionCheckedAtVideoEnd(
+              /*is_in_projector_mode=*/true,
+              /*user_deleted_video_file=*/user_deleted_video_file,
+              /*thumbnail=*/null_image);
+        }
         runLoop.Quit();
       }));
 
   runLoop.Run();
 
-  histogram_tester_.ExpectBucketCount(
-      kProjectorCreationFlowHistogramName,
-      /*sample=*/ProjectorCreationFlow::kRecordingEnded, /*count=*/1);
-  histogram_tester_.ExpectBucketCount(
-      kProjectorCreationFlowHistogramName,
-      /*sample=*/ProjectorCreationFlow::kSessionStopped, /*count=*/1);
   histogram_tester_.ExpectTotalCount(kProjectorCreationFlowHistogramName,
-                                     /*count=*/4);
+                                     /*count=*/3);
 }
+
+INSTANTIATE_TEST_SUITE_P(WrapUpRecordingOnce,
+                         ProjectorOnDlpRestrictionCheckedAtVideoEndTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 TEST_F(ProjectorControllerTest, NoTranscriptsTest) {
   InitializeRealMetadataController();

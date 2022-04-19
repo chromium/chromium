@@ -97,6 +97,7 @@ void ProjectorControllerImpl::StartProjectorSession(
     // DLP, ... etc. We don't start a Projector session until we're sure a
     // capture session started.
     controller->Start(CaptureModeEntryType::kProjector);
+    dlp_restriction_checked_completed_ = false;
     if (controller->IsActive()) {
       projector_session_->Start(storage_dir);
       client_->MinimizeProjectorApp();
@@ -160,14 +161,10 @@ void ProjectorControllerImpl::OnTranscriptionError() {
 }
 
 void ProjectorControllerImpl::OnSpeechRecognitionStopped() {
-  if (projector_session_->screencast_container_path()) {
-    // Finish saving the screencast if the container is available. The container
-    // might be unavailable if fail in creating the directory.
-    SaveScreencast();
-  }
-
   is_speech_recognition_on_ = false;
-  projector_session_->Stop();
+
+  // Try to wrap up recording. This can be no-op if DLP check is not completed.
+  MaybeWrapUpRecording();
 }
 
 bool ProjectorControllerImpl::IsEligible() const {
@@ -283,11 +280,6 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
 
   MaybeStopSpeechRecognition();
 
-  // At this point, the screencast might not synced to Drive yet. Open
-  // Projector App which shows the Gallery view by default.
-  if (client_)
-    client_->OpenProjectorApp();
-
   RecordCreationFlowMetrics(ProjectorCreationFlow::kRecordingEnded);
 }
 
@@ -295,8 +287,29 @@ void ProjectorControllerImpl::OnDlpRestrictionCheckedAtVideoEnd(
     bool is_in_projector_mode,
     bool user_deleted_video_file,
     const gfx::ImageSkia& thumbnail) {
-  if (!is_in_projector_mode)
+  if (!is_in_projector_mode) {
     OnNewScreencastPreconditionChanged();
+    return;
+  }
+
+  dlp_restriction_checked_completed_ = true;
+  user_deleted_video_file_ = user_deleted_video_file;
+
+  if (user_deleted_video_file) {
+    // TODO(b/228636099): Clean up recording folder since video file is
+    // deleted.
+  } else {
+    // TODO(b/228650046): Save the thumbnail file.
+  }
+
+  // Try to wrap up recording. This can be no-op if speech recognition is not
+  // completely stopped.
+  MaybeWrapUpRecording();
+
+  // At this point, the screencast might not synced to Drive yet. Open
+  // Projector App which shows the Gallery view by default.
+  if (client_)
+    client_->OpenProjectorApp();
 }
 
 void ProjectorControllerImpl::OnRecordingStartAborted() {
@@ -412,6 +425,23 @@ void ProjectorControllerImpl::OnContainerFolderCreated(
 
 void ProjectorControllerImpl::SaveScreencast() {
   metadata_controller_->SaveMetadata(GetScreencastFilePathNoExtension());
+}
+
+void ProjectorControllerImpl::MaybeWrapUpRecording() {
+  // Only wrap up the recording if speech recognition session and DLP check are
+  // completed.
+  if (is_speech_recognition_on_ || !dlp_restriction_checked_completed_)
+    return;
+
+  if (!user_deleted_video_file_ &&
+      projector_session_->screencast_container_path().has_value()) {
+    // Finish saving the screencast if the container is available. The container
+    // might be unavailable if fail in creating the directory or the folder is
+    // deleted due to DLP.
+    SaveScreencast();
+  }
+
+  projector_session_->Stop();
 }
 
 base::FilePath ProjectorControllerImpl::GetScreencastFilePathNoExtension()

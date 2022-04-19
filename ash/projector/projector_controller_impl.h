@@ -151,6 +151,11 @@ class ASH_EXPORT ProjectorControllerImpl
   // Saves the screencast including metadata.
   void SaveScreencast();
 
+  // Wrap up recording by saving the metadata file and stop the projector
+  // session. This is no-op if speech recognition is not finished or DLP
+  // restriction check is not completed.
+  void MaybeWrapUpRecording();
+
   // Get the screencast file path without file extension. This will be used
   // to construct media and metadata file path.
   base::FilePath GetScreencastFilePathNoExtension() const;
@@ -166,6 +171,11 @@ class ASH_EXPORT ProjectorControllerImpl
 
   // Whether speech recognition is taking place or not.
   bool is_speech_recognition_on_ = false;
+
+  // Whether DLP restriction check is completed.
+  bool dlp_restriction_checked_completed_ = false;
+  // Whether user deleted video file at DLP restriction check dialog.
+  bool user_deleted_video_file_ = false;
 
   base::WeakPtrFactory<ProjectorControllerImpl> weak_factory_{this};
 };
