@@ -28,10 +28,10 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -56,7 +56,8 @@ struct PLATFORM_EXPORT UnicodeRange final {
   UChar32 to_;
 };
 
-class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
+class PLATFORM_EXPORT UnicodeRangeSet
+    : public RefCountedWillBeThreadSafeForParallelTextShaping<UnicodeRangeSet> {
   USING_FAST_MALLOC(UnicodeRangeSet);
 
  public:

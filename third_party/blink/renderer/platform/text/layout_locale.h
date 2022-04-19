@@ -9,11 +9,11 @@
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 #include <unicode/uscript.h>
 
@@ -23,7 +23,8 @@ namespace blink {
 
 enum class LineBreakIteratorMode { kDefault, kNormal, kStrict, kLoose };
 
-class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
+class PLATFORM_EXPORT LayoutLocale
+    : public RefCountedWillBeThreadSafeForParallelTextShaping<LayoutLocale> {
   USING_FAST_MALLOC(LayoutLocale);
 
  public:

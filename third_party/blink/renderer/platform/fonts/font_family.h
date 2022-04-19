@@ -28,8 +28,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -86,8 +86,10 @@ class PLATFORM_EXPORT FontFamily {
   mutable bool is_prewarmed_ = false;
 };
 
-class PLATFORM_EXPORT SharedFontFamily : public FontFamily,
-                                         public RefCounted<SharedFontFamily> {
+class PLATFORM_EXPORT SharedFontFamily
+    : public FontFamily,
+      public RefCountedWillBeThreadSafeForParallelTextShaping<
+          SharedFontFamily> {
   USING_FAST_MALLOC(SharedFontFamily);
  public:
   SharedFontFamily(const SharedFontFamily&) = delete;

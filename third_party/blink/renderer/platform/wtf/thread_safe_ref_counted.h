@@ -32,6 +32,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace WTF {
 
@@ -68,5 +69,10 @@ class ThreadSafeRefCounted : public base::RefCountedThreadSafe<T, Traits> {
 }  // namespace WTF
 
 using WTF::ThreadSafeRefCounted;
+
+// TODO(yosin): Once parallel text shaping is release, we should get rid of
+// this alias.
+template <typename T>
+using RefCountedWillBeThreadSafeForParallelTextShaping = RefCounted<T>;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SAFE_REF_COUNTED_H_

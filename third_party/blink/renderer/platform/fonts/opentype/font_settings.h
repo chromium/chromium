@@ -8,9 +8,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -111,7 +111,8 @@ using FontVariationAxis = FontTagValuePair<float>;
 
 class PLATFORM_EXPORT FontFeatureSettings
     : public FontSettings<FontFeature>,
-      public RefCounted<FontFeatureSettings> {
+      public RefCountedWillBeThreadSafeForParallelTextShaping<
+          FontFeatureSettings> {
  public:
   static scoped_refptr<FontFeatureSettings> Create() {
     return base::AdoptRef(new FontFeatureSettings());
@@ -126,7 +127,8 @@ class PLATFORM_EXPORT FontFeatureSettings
 
 class PLATFORM_EXPORT FontVariationSettings
     : public FontSettings<FontVariationAxis>,
-      public RefCounted<FontVariationSettings> {
+      public RefCountedWillBeThreadSafeForParallelTextShaping<
+          FontVariationSettings> {
  public:
   static scoped_refptr<FontVariationSettings> Create() {
     return base::AdoptRef(new FontVariationSettings());

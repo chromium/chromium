@@ -19,7 +19,9 @@ const unsigned kInvalidFallbackMetricsValue = static_cast<unsigned>(-1);
 // The HarfBuzzFontData struct carries thread specific user-pointer data for
 // |hb_font_t| callback functions/operations. It contains metrics and OpenType
 // layout information related to a font scaled to a particular size.
-struct HarfBuzzFontData : public RefCounted<HarfBuzzFontData> {
+struct HarfBuzzFontData final
+    : public RefCountedWillBeThreadSafeForParallelTextShaping<
+          HarfBuzzFontData> {
   USING_FAST_MALLOC(HarfBuzzFontData);
 
  public:

@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -16,7 +17,8 @@ namespace blink {
  * FontDescription. It's used for representing the computed style
  * information which can contain either light, dark or custom palette
  * information according to the font-palette property. */
-class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
+class PLATFORM_EXPORT FontPalette
+    : public RefCountedWillBeThreadSafeForParallelTextShaping<FontPalette> {
  public:
   enum KeywordPaletteName {
     kNormalPalette = 0,
