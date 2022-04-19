@@ -47,12 +47,19 @@ void AXRelationCache::ProcessUpdatesWithCleanLayout() {
   if (!initialized_)
     DoInitialDocumentScan();
 
-  for (AXID aria_owns_obj_id : owner_ids_to_update_) {
+  HashSet<AXID> old_owner_ids_to_update;
+  old_owner_ids_to_update.swap(owner_ids_to_update_);
+
+  for (AXID aria_owns_obj_id : old_owner_ids_to_update) {
     AXObject* obj = ObjectFromAXID(aria_owns_obj_id);
     if (obj)
       UpdateAriaOwnsWithCleanLayout(obj);
   }
 
+  // TODO(1301117): this is a workaround to avoid an infinite loop.
+  // owner_ids_to_update_ is modified in calls to
+  // UpdateAriaOwnsWithCleanLayout and add again AXIDs that will end up
+  // looping forever in AXObjectCacheImpl::ProcessDeferredAccessibilityEvents
   owner_ids_to_update_.clear();
 }
 
