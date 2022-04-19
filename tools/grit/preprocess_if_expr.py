@@ -45,8 +45,7 @@ class PreprocessIfExprNode(grit.node.base.Node):
 
 def ParseDefinesArg(definesArg):
   defines = {}
-  for define_arg in definesArg:
-    define, = define_arg
+  for define in definesArg:
     parts = [part.strip() for part in define.split('=', 1)]
     name = parts[0]
     val = True if len(parts) == 1 else parts[1]
@@ -79,7 +78,7 @@ def main(argv):
   parser.add_argument('--out-folder', required=True)
   parser.add_argument('--out-manifest')
   parser.add_argument('--in-files', required=True, nargs="*")
-  parser.add_argument('-D', '--defines', nargs="*", action='append')
+  parser.add_argument('-D', '--defines', action='append')
   parser.add_argument('-E', '--environment')
   parser.add_argument('-t', '--target')
   parser.add_argument('--enable_removal_comments', action='store_true')
