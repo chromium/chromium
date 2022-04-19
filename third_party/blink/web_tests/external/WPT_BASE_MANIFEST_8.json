@@ -85286,6 +85286,84 @@
        {}
       ]
      ],
+     "out-of-flow-in-multicolumn-085.html": [
+      "eb8314c2d86684911911b23d2fb7d1a1fd323f66",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-086.html": [
+      "17073077e21ef1a2559cc273048e58642dbf9904",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-087.html": [
+      "bd1c941f87074817a4e21ecbdfb541bb437b7614",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-088.html": [
+      "9adffb15d48972e5c78090aa76dec2c80d649f44",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-089.html": [
+      "a13aad886d52d8c59559159c413a5316ec2105c9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-090.html": [
+      "e6cf192dd3555a004c700fb6e25505afe8b05281",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "out-of-flow-in-multicolumn-091.html": [
       "4049412545c7017796e0f7bcda83b943d46af19e",
       [
@@ -85645,6 +85723,110 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-avoidance-001.html": [
+       "6dc765c82a7da8ddf9a32c1b644bf2221178ae6b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-avoidance-002.html": [
+       "25c4496e92d108605daa8812b922ed2d206a2955",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-avoidance-003.html": [
+       "e09eaccfa4249cbdb6a5ddfd45c60573e5903345",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-avoidance-004.html": [
+       "e8eb516fec6ecea97cc5c296a86317c6b088c4ab",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-avoidance-005.html": [
+       "a9d53e24558daae387c65a8fa63344e1c062ad64",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-avoidance-006.html": [
+       "b8dc0f41442b35d5eb385c883ac02af7d6acb266",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-before-expansion-001.html": [
+       "1f10eb59f52488f21f4752eb09485656d9aaa1a9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-before-expansion-002.html": [
+       "6c413caa7ee683cef272178ba2e2d9776417da17",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -398538,7 +398720,7 @@
     },
     "css-values": {
      "absolute-length-units-001.html": [
-      "ae20834572efdba85a1bab124a774632bd057329",
+      "22b4390bde89d62402ea51c089928e8dfdb34e39",
       [
        null,
        {}
