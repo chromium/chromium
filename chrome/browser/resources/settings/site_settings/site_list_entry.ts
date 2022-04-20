@@ -15,7 +15,7 @@ import '../icons.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -171,6 +171,19 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
       return this.model.embeddingOrigin;
     }
     return this.model.displayName;
+  }
+
+  /**
+   * Returns the appropriate origin that a favicon will be fetched for.
+   */
+  private computeFaviconOrigin_(): string {
+    if (this.model.origin.trim() !== SITE_EXCEPTION_WILDCARD) {
+      return this.model.origin.trim();
+    }
+    if (this.model.embeddingOrigin.trim() !== SITE_EXCEPTION_WILDCARD) {
+      return this.model.embeddingOrigin.trim();
+    }
+    assertNotReached();
   }
 
   /**
