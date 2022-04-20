@@ -39,9 +39,6 @@ const CGFloat kWidthLandscapeSplitViewOnLargeIPad = 678.0;
 
 @implementation MultitaskingTestSceneDelegate
 
-// This getter is called when the SceneDelegate is created. Returning a
-// ChromeOverlayWindow allows UIKit to use that as the main window for this
-// scene.
 - (UIWindow*)window {
   UIWindow* window = [super window];
   // Adjust window size for multitasking tests.
