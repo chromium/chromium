@@ -14,19 +14,46 @@
 
 namespace history_clusters {
 
-// If `continuation_end_time` is base::Time(), then we've exhausted History.
-// This matches the same semantics as returned directly from History.
+struct QueryClustersContinuationParams {
+  QueryClustersContinuationParams() = default;
+  QueryClustersContinuationParams(base::Time continuation_time,
+                                  bool is_continuation,
+                                  bool is_partial_day,
+                                  bool exhausted_history,
+                                  bool is_done)
+      : continuation_time(continuation_time),
+        is_continuation(is_continuation),
+        is_partial_day(is_partial_day),
+        exhausted_history(exhausted_history),
+        is_done(is_done) {}
+
+  // The time already fetched visits up to and where the next request will
+  // continue.
+  base::Time continuation_time = base::Time();
+  // False for the first request, true otherwise.
+  bool is_continuation = false;
+  // True if left off midday; i.e. not a day boundary. This occurs when the max
+  // visit threshold was reached.
+  bool is_partial_day = false;
+  // True if unclustered visits were exhausted. If we're searching oldest to
+  // newest, this is true iff `is_done` is true. Otherwise, this may be true
+  // before `is_done` is true but not the reverse.
+  bool exhausted_history = false;
+  // True if history was exhausted.
+  bool is_done = false;
+};
+
 using QueryClustersCallback =
-    base::OnceCallback<void(std::vector<history::Cluster> clusters,
-                            base::Time continuation_end_time)>;
+    base::OnceCallback<void(std::vector<history::Cluster>,
+                            QueryClustersContinuationParams)>;
 
 // Tracks which fields have been or are pending recording. This helps 1) avoid
-// re-recording fields and 2) determine whether a visit is compete (i.e. has all
-// expected fields recorded).
+// re-recording fields and 2) determine whether a visit is complete (i.e. has
+// all expected fields recorded).
 struct RecordingStatus {
   // Whether `url_row` and `visit_row` have been set.
   bool history_rows = false;
-  // Whether a navigation has ended; i.e. another navigation has began in the
+  // Whether a navigation has ended; i.e. another navigation has begun in the
   // same tab or the navigation's tab has been closed.
   bool navigation_ended = false;
   // Whether the `context_annotations` associated with navigation end have been
