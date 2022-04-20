@@ -137,10 +137,9 @@ constexpr CGFloat kButtonCornerRadius = 8;
   FaviconContainerView* faviconContainerView =
       [[FaviconContainerView alloc] init];
   faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.faviconLoader->FaviconForPageUrl(
-      self.followedWebChannel.channelURL.gurl, kDesiredSmallFaviconSizePt,
-      kMinFaviconSizePt,
-      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+  self.faviconLoader->FaviconForIconUrl(
+      self.followedWebChannel.faviconURL.gurl, kDesiredSmallFaviconSizePt,
+      kMinFaviconSizePt, ^(FaviconAttributes* attributes) {
         [faviconContainerView.faviconView configureWithAttributes:attributes];
       });
 
