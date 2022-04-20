@@ -33,26 +33,26 @@ void SigninErrorHandler::OnBrowserRemoved(Browser* browser) {
 }
 
 void SigninErrorHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "confirm", base::BindRepeating(&SigninErrorHandler::HandleConfirm,
                                      base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "switchToExistingProfile",
       base::BindRepeating(&SigninErrorHandler::HandleSwitchToExistingProfile,
                           base::Unretained(this)));
   if (!is_system_profile_) {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "learnMore", base::BindRepeating(&SigninErrorHandler::HandleLearnMore,
                                          base::Unretained(this)));
   }
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializedWithSize",
       base::BindRepeating(&SigninErrorHandler::HandleInitializedWithSize,
                           base::Unretained(this)));
 }
 
 void SigninErrorHandler::HandleSwitchToExistingProfile(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (duplicate_profile_path_.empty())
     return;
 
@@ -68,11 +68,11 @@ void SigninErrorHandler::HandleSwitchToExistingProfile(
   profiles::SwitchToProfile(path_switching_to, false);
 }
 
-void SigninErrorHandler::HandleConfirm(const base::ListValue* args) {
+void SigninErrorHandler::HandleConfirm(const base::Value::List& args) {
   CloseDialog();
 }
 
-void SigninErrorHandler::HandleLearnMore(const base::ListValue* args) {
+void SigninErrorHandler::HandleLearnMore(const base::Value::List& args) {
   // "Learn more" only shown when is_system_profile_=false
   DCHECK(!is_system_profile_);
   if (!browser_)
@@ -82,7 +82,7 @@ void SigninErrorHandler::HandleLearnMore(const base::ListValue* args) {
 }
 
 void SigninErrorHandler::HandleInitializedWithSize(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   if (duplicate_profile_path_.empty())
     FireWebUIListener("switch-button-unavailable");

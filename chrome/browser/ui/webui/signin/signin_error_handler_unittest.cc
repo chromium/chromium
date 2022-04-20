@@ -127,8 +127,8 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
 
   // Open learn more
   CreateHandlerInBrowser();
-  base::ListValue args;
-  handler()->HandleLearnMore(&args);
+  base::Value::List args;
+  handler()->HandleLearnMore(args);
 
   // Dialog should be closed now.
   EXPECT_TRUE(handler()->browser_modal_dialog_did_close());
@@ -151,8 +151,8 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
   handler()->OnBrowserRemoved(browser());
 
   // Open learn more
-  base::ListValue args;
-  handler()->HandleLearnMore(&args);
+  base::Value::List args;
+  handler()->HandleLearnMore(args);
 
   // Dialog is not closed if the browser was removed.
   EXPECT_FALSE(handler()->browser_modal_dialog_did_close());
@@ -165,8 +165,8 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
 
 TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
   CreateHandlerInBrowser();
-  base::ListValue args;
-  handler()->HandleConfirm(&args);
+  base::Value::List args;
+  handler()->HandleConfirm(args);
 
   // Confirm simply closes the dialog.
   EXPECT_TRUE(handler()->browser_modal_dialog_did_close());
@@ -174,8 +174,8 @@ TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
 
 TEST_F(SigninErrorHandlerTest, InProfilePickerTestConfirm) {
   CreateHandlerInProfilePicker();
-  base::ListValue args;
-  handler()->HandleConfirm(&args);
+  base::Value::List args;
+  handler()->HandleConfirm(args);
 
   // Confirm simply closes the dialog.
   EXPECT_TRUE(handler()->profile_picker_force_signin_dialog_did_close());

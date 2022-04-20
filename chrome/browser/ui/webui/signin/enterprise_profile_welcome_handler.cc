@@ -141,7 +141,7 @@ void EnterpriseProfileWelcomeHandler::RegisterMessages() {
       "initialized",
       base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializedWithSize",
       base::BindRepeating(
           &EnterpriseProfileWelcomeHandler::HandleInitializedWithSize,
@@ -209,7 +209,7 @@ void EnterpriseProfileWelcomeHandler::HandleInitialized(
 }
 
 void EnterpriseProfileWelcomeHandler::HandleInitializedWithSize(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   if (browser_)

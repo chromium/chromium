@@ -66,11 +66,11 @@ Browser* GetDesktopBrowser(content::WebUI* web_ui) {
 
 void SetInitializedModalHeight(Browser* browser,
                                content::WebUI* web_ui,
-                               const base::ListValue* args) {
+                               const base::Value::List& args) {
   if (!browser)
     return;
 
-  double height = args->GetListDeprecated()[0].GetDouble();
+  double height = args[0].GetDouble();
   browser->signin_view_controller()->SetModalSigninHeight(
       static_cast<int>(height));
 }

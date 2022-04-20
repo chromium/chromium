@@ -80,7 +80,7 @@ class EnterpriseProfileWelcomeHandler
   // Handles the web ui message sent when the html content is done being laid
   // out and it's time to resize the native view hosting it to fit. |args| is
   // a single integer value for the height the native view should resize to.
-  void HandleInitializedWithSize(const base::ListValue* args);
+  void HandleInitializedWithSize(const base::Value::List& args);
   void HandleProceed(const base::Value::List& args);
   void HandleCancel(const base::Value::List& args);
 

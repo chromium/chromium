@@ -67,40 +67,41 @@ void SyncConfirmationHandler::OnBrowserRemoved(Browser* browser) {
 }
 
 void SyncConfirmationHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "confirm", base::BindRepeating(&SyncConfirmationHandler::HandleConfirm,
                                      base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "undo", base::BindRepeating(&SyncConfirmationHandler::HandleUndo,
                                   base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "goToSettings",
       base::BindRepeating(&SyncConfirmationHandler::HandleGoToSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializedWithSize",
       base::BindRepeating(&SyncConfirmationHandler::HandleInitializedWithSize,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "accountInfoRequest",
       base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
 }
 
-void SyncConfirmationHandler::HandleConfirm(const base::ListValue* args) {
+void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
   did_user_explicitly_interact_ = true;
   RecordConsent(args);
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 }
 
-void SyncConfirmationHandler::HandleGoToSettings(const base::ListValue* args) {
+void SyncConfirmationHandler::HandleGoToSettings(
+    const base::Value::List& args) {
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
   RecordConsent(args);
   CloseModalSigninWindow(LoginUIService::CONFIGURE_SYNC_FIRST);
 }
 
-void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
+void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
 #endif
@@ -109,7 +110,7 @@ void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
 }
 
 void SyncConfirmationHandler::HandleAccountInfoRequest(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
@@ -122,12 +123,10 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
     SetAccountInfo(primary_account_info);
 }
 
-void SyncConfirmationHandler::RecordConsent(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  base::Value::ConstListView consent_description =
-      args->GetListDeprecated()[0].GetListDeprecated();
-  const std::string& consent_confirmation =
-      args->GetListDeprecated()[1].GetString();
+void SyncConfirmationHandler::RecordConsent(const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
+  const base::Value::List& consent_description = args[0].GetList();
+  const std::string& consent_confirmation = args[1].GetString();
 
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As
@@ -218,7 +217,7 @@ void SyncConfirmationHandler::CloseModalSigninWindow(
 }
 
 void SyncConfirmationHandler::HandleInitializedWithSize(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(

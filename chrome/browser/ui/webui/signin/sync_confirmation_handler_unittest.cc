@@ -232,9 +232,9 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoIfPrimaryAccountReady) {
       "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kDefaultDialogHeight);
-  handler()->HandleInitializedWithSize(&args);
+  handler()->HandleInitializedWithSize(args);
 
   ASSERT_EQ(1U, web_ui()->call_data().size());
   ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
@@ -242,9 +242,9 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoIfPrimaryAccountReady) {
 
 TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIfPrimaryAccountReadyLater) {
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kDefaultDialogHeight);
-  handler()->HandleInitializedWithSize(&args);
+  handler()->HandleInitializedWithSize(args);
 
   // No callback called when there's no account image available.
   ASSERT_EQ(0U, web_ui()->call_data().size());
@@ -260,9 +260,9 @@ TEST_F(SyncConfirmationHandlerTest,
 
 TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIgnoredIfSecondaryAccountUpdated) {
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kDefaultDialogHeight);
-  handler()->HandleInitializedWithSize(&args);
+  handler()->HandleInitializedWithSize(args);
   EXPECT_EQ(0U, web_ui()->call_data().size());
 
   AccountInfo account_info =
@@ -293,16 +293,16 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoManaged) {
       "google.com", "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kDefaultDialogHeight);
-  handler()->HandleInitializedWithSize(&args);
+  handler()->HandleInitializedWithSize(args);
 
   ASSERT_EQ(1U, web_ui()->call_data().size());
   ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
 }
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
-  handler()->HandleUndo(nullptr);
+  handler()->HandleUndo(base::Value::List());
   did_user_explicitly_interact_ = true;
 
   EXPECT_TRUE(on_sync_confirmation_ui_closed_called_);
@@ -328,11 +328,11 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   base::Value consent_confirmation(SyncConfirmationHandlerTest::kConsentText5);
 
   // These are passed as parameters to HandleConfirm().
-  base::ListValue args;
+  base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
 
-  handler()->HandleConfirm(&args);
+  handler()->HandleConfirm(args);
   did_user_explicitly_interact_ = true;
 
   EXPECT_TRUE(on_sync_confirmation_ui_closed_called_);
@@ -369,11 +369,11 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   base::Value consent_confirmation(SyncConfirmationHandlerTest::kConsentText2);
 
   // These are passed as parameters to HandleGoToSettings().
-  base::ListValue args;
+  base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
 
-  handler()->HandleGoToSettings(&args);
+  handler()->HandleGoToSettings(args);
   did_user_explicitly_interact_ = true;
 
   EXPECT_TRUE(on_sync_confirmation_ui_closed_called_);
