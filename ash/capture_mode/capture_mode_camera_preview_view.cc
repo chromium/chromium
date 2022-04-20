@@ -57,7 +57,6 @@ bool IsArrowKeyEvent(const ui::KeyEvent* event) {
 CameraPreviewView::CameraPreviewView(
     CaptureModeCameraController* camera_controller,
     const CameraId& camera_id,
-    const gfx::Size& preferred_size,
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
     const media::VideoCaptureFormat& capture_format)
     : camera_controller_(camera_controller),
@@ -70,8 +69,6 @@ CameraPreviewView::CameraPreviewView(
                               base::Unretained(this)),
           GetIconOfResizeButton(
               camera_controller_->is_camera_preview_collapsed())))) {
-  SetPreferredSize(preferred_size);
-
   resize_button_->SetPaintToLayer();
   resize_button_->layer()->SetFillsBoundsOpaquely(false);
   resize_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -90,6 +87,13 @@ CameraPreviewView::CameraPreviewView(
 }
 
 CameraPreviewView::~CameraPreviewView() = default;
+
+void CameraPreviewView::SetIsCollapsible(bool value) {
+  if (value != is_collapsible_) {
+    is_collapsible_ = value;
+    RefreshResizeButtonVisibility();
+  }
+}
 
 bool CameraPreviewView::MaybeHandleKeyEvent(const ui::KeyEvent* event) {
   if (!has_focus())
@@ -123,10 +127,13 @@ void CameraPreviewView::RefreshResizeButtonVisibility() {
   if (target_opacity == resize_button_->layer()->GetTargetOpacity())
     return;
 
-  if (target_opacity == 1.f)
+  resize_button_hide_timer_.Stop();
+  if (target_opacity == 1.f) {
     FadeInResizeButton();
-  else
+    ScheduleRefreshResizeButtonVisibility();
+  } else {
     FadeOutResizeButton();
+  }
 }
 
 void CameraPreviewView::AddedToWidget() {
@@ -181,9 +188,9 @@ void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_TAP:
-      resize_button_hide_timer_.Stop();
-      FadeInResizeButton();
-      ScheduleRefreshResizeButtonVisibility();
+      has_been_tapped_ = true;
+      RefreshResizeButtonVisibility();
+      has_been_tapped_ = false;
       break;
     default:
       break;
@@ -194,7 +201,6 @@ void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void CameraPreviewView::OnMouseEntered(const ui::MouseEvent& event) {
-  resize_button_hide_timer_.Stop();
   RefreshResizeButtonVisibility();
 }
 
@@ -308,10 +314,10 @@ void CameraPreviewView::ScheduleRefreshResizeButtonVisibility() {
 }
 
 float CameraPreviewView::CalculateResizeButtonTargetOpacity() {
-  if (camera_controller_->is_drag_in_progress())
+  if (!is_collapsible_ || camera_controller_->is_drag_in_progress())
     return 0.f;
 
-  if (IsMouseHovered() || resize_button_->IsMouseHovered())
+  if (IsMouseHovered() || resize_button_->IsMouseHovered() || has_been_tapped_)
     return 1.f;
 
   return 0.f;

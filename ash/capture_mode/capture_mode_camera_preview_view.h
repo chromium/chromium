@@ -42,7 +42,6 @@ class CameraPreviewView
   CameraPreviewView(
       CaptureModeCameraController* camera_controller,
       const CameraId& camera_id,
-      const gfx::Size& preferred_size,
       mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
       const media::VideoCaptureFormat& capture_format);
   CameraPreviewView(const CameraPreviewView&) = delete;
@@ -51,6 +50,11 @@ class CameraPreviewView
 
   const CameraId& camera_id() const { return camera_id_; }
   CaptureModeButton* resize_button() const { return resize_button_; }
+  bool is_collapsible() const { return is_collapsible_; }
+
+  // Sets this camera preview collapsability to the given `value`, which will
+  // update the resize button visibility.
+  void SetIsCollapsible(bool value);
 
   // Returns true if the `event` has been handled by CameraPrevieView. It
   // happens if it is control+arrow keys, which will be used to move the camera
@@ -129,6 +133,13 @@ class CameraPreviewView
   // inside the camera preview. Runs RefreshResizeButtonVisibility() to fade out
   // the resize button if possible.
   base::OneShotTimer resize_button_hide_timer_;
+
+  // True if the size of the preview in the expanded state is big enough to
+  // allow it to be collapsible.
+  bool is_collapsible_ = true;
+
+  // True only while handling a gesture tap event on this view.
+  bool has_been_tapped_ = false;
 
   base::WeakPtrFactory<CameraPreviewView> weak_ptr_factory_{this};
 };
