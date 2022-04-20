@@ -35,8 +35,6 @@ using ::testing::InvokeWithoutArgs;
 using ::testing::StrictMock;
 using ::testing::Return;
 
-constexpr char kSRTPromptGroup[] = "SRTGroup";
-
 class MockChromeCleanerPromptDelegate : public ChromeCleanerPromptDelegate {
  public:
   MOCK_METHOD3(ShowChromeCleanerPrompt,
@@ -59,8 +57,7 @@ class ChromeCleanerPromptUserTest
 
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kChromeCleanupInBrowserPromptFeature,
-        {{"Seed", incoming_seed_}, {"Group", kSRTPromptGroup}});
+        kChromeCleanupInBrowserPromptFeature, {{"Seed", incoming_seed_}});
 // dialog_controller_ expects that the cleaner controller would be on
 // scanning state.
 #if DCHECK_IS_ON()

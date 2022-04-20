@@ -59,8 +59,6 @@ using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-constexpr char kSRTPromptGroup[] = "SRTGroup";
-
 class Waiter {
  public:
   Waiter() = default;
@@ -208,8 +206,7 @@ class ReporterRunnerTest
         &policy_provider_);
 
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kChromeCleanupInBrowserPromptFeature,
-        {{"Seed", incoming_seed_}, {"Group", kSRTPromptGroup}});
+        kChromeCleanupInBrowserPromptFeature, {{"Seed", incoming_seed_}});
 
     switch (policy_state_) {
       case PolicyState::kNoLogs:
