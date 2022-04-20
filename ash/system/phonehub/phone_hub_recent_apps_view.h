@@ -52,7 +52,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
     void Layout() override;
     const char* GetClassName() const override;
 
-    void AddRecentAppButton(views::View* recent_app_button);
+    views::View* AddRecentAppButton(
+        std::unique_ptr<views::View> recent_app_button);
     void Reset();
   };
 
@@ -60,7 +61,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
   void Update();
 
   RecentAppButtonsView* recent_app_buttons_view_ = nullptr;
-  std::vector<std::unique_ptr<views::View>> recent_app_button_list_;
+  std::vector<views::View*> recent_app_button_list_;
   phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler_ =
       nullptr;
   PlaceholderView* placeholder_view_ = nullptr;

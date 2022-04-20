@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 
+#include <memory>
 #include <numeric>
 #include <vector>
 
@@ -117,9 +118,9 @@ PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() = default;
 
 PhoneHubRecentAppsView::RecentAppButtonsView::~RecentAppButtonsView() = default;
 
-void PhoneHubRecentAppsView::RecentAppButtonsView::AddRecentAppButton(
-    views::View* recent_app_button) {
-  AddChildView(recent_app_button);
+views::View* PhoneHubRecentAppsView::RecentAppButtonsView::AddRecentAppButton(
+    std::unique_ptr<views::View> recent_app_button) {
+  return AddChildView(std::move(recent_app_button));
 }
 
 // phonehub::RecentAppsInteractionHandler::Observer:
@@ -204,11 +205,10 @@ void PhoneHubRecentAppsView::Update() {
             &phonehub::RecentAppsInteractionHandler::NotifyRecentAppClicked,
             base::Unretained(recent_apps_interaction_handler_), recent_app);
         recent_app_button_list_.push_back(
-            std::make_unique<PhoneHubRecentAppButton>(
-                recent_app.icon, recent_app.visible_app_name,
-                pressed_callback));
-        recent_app_buttons_view_->AddRecentAppButton(
-            recent_app_button_list_.back().get());
+            recent_app_buttons_view_->AddRecentAppButton(
+                std::make_unique<PhoneHubRecentAppButton>(
+                    recent_app.icon, recent_app.visible_app_name,
+                    pressed_callback)));
       }
       recent_app_buttons_view_->SetVisible(true);
       placeholder_view_->SetVisible(false);
