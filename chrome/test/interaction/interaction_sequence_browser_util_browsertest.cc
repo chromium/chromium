@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/test/interaction/interaction_sequence_browser_util.h"
 
 #include <sstream>
@@ -12,10 +13,13 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +28,11 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -1395,6 +1404,142 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                                 kInteractionTestUtilCustomEventType)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
                        .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       CompareScreenshot_View) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery1{"#ref"};
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery2{"#ref", "p#pp"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kAppMenuButtonElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_TRUE(
+                            InteractionSequenceBrowserUtil::CompareScreenshot(
+                                element, "AppMenuButton", "3575231"));
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       CompareScreenshot_WebPage) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  // Set the browser view to a consistent size.
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->GetWidget()->SetSize({400, 300});
+
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  util->LoadPage(url);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_TRUE(
+                            InteractionSequenceBrowserUtil::CompareScreenshot(
+                                element, std::string(), "3575231"));
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+// This test checks that we can attach to a WebUI that isn't embedded in a tab.
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       CompareScreenshot_WebUI) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  std::unique_ptr<InteractionSequenceBrowserUtil> tab_search_page;
+  auto test_util = CreateInteractionTestUtil();
+  const ui::ElementContext context = browser()->window()->GetElementContext();
+  std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+
+  // Poke into the doc to find something that's not at the top level, just to
+  // verify we can.
+  const InteractionSequenceBrowserUtil::DeepQuery kTabSearchListQuery = {
+      "tab-search-app", "#tabsList"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(context)
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->PressButton(element);
+                           }))
+                       .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kTabSearchBubbleElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        auto* const bubble =
+                            views::AsViewClass<WebUIBubbleDialogView>(
+                                element->AsA<views::TrackedElementViews>()
+                                    ->view());
+                        // Since browser tests can run in parallel, make sure
+                        // to prevent the tab search bubble from closing if it
+                        // loses activation.
+                        pin = bubble->PreventCloseOnDeactivate();
+                        tab_search_page =
+                            InteractionSequenceBrowserUtil::ForNonTabWebView(
+                                bubble->web_view(),
+                                kInteractionSequenceBrowserUtilTestId);
+                      }))
+                  .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        EXPECT_TRUE(
+                            InteractionSequenceBrowserUtil::CompareScreenshot(
+                                element, "ExampleTabSearchDialog", "3575231"));
+                        pin.reset();
+                      }))
+                  .Build())
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());

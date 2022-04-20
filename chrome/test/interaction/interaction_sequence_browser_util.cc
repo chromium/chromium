@@ -28,6 +28,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,6 +49,43 @@ class RenderFrameHost;
 }
 
 namespace {
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define SUPPORTS_PIXEL_TESTS 1
+#else
+#define SUPPORTS_PIXEL_TESTS 0
+#endif
+
+#if SUPPORTS_PIXEL_TESTS
+class PixelTestUi : public TestBrowserUi {
+ public:
+  PixelTestUi(views::View* view,
+              const std::string& screenshot_name,
+              const std::string& baseline)
+      : view_(view), screenshot_name_(screenshot_name), baseline_(baseline) {}
+  ~PixelTestUi() override = default;
+
+  void ShowUi(const std::string& name) override { NOTREACHED(); }
+  void WaitForUserDismissal() override { NOTREACHED(); }
+
+  bool VerifyUi() override {
+    auto* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    const std::string test_name =
+        base::StrCat({test_info->test_case_name(), "_", test_info->name()});
+    const std::string screenshot_name =
+        screenshot_name_.empty()
+            ? baseline_
+            : base::StrCat({screenshot_name_, "_", baseline_});
+    return VerifyPixelUi(view_, test_name, screenshot_name);
+  }
+
+ private:
+  base::raw_ptr<views::View> view_ = nullptr;
+  std::string screenshot_name_;
+  std::string baseline_;
+};
+#endif  // SUPPORTS_PIXEL_TESTS
 
 content::WebContents* GetWebContents(Browser* browser,
                                      absl::optional<int> tab_index) {
@@ -395,6 +435,38 @@ bool InteractionSequenceBrowserUtil::IsTruthy(const base::Value& value) {
     case Type::NONE:
       return false;
   }
+}
+
+// static
+bool InteractionSequenceBrowserUtil::CompareScreenshot(
+    ui::TrackedElement* element,
+    const std::string& screenshot_name,
+    const std::string& baseline) {
+#if SUPPORTS_PIXEL_TESTS
+  views::View* view = nullptr;
+  if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
+    view = view_el->view();
+  } else if (auto* const page_el = element->AsA<TrackedElementWebPage>()) {
+    auto* const util = page_el->owner();
+    if (util->web_view_data_) {
+      view = util->web_view_data_->web_view();
+    } else {
+      Browser* const browser = GetBrowserFromContext(page_el->context());
+      BrowserView* const browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser);
+      CHECK(browser_view);
+      CHECK_EQ(util->web_contents(), browser_view->GetActiveWebContents());
+      view = browser_view->contents_web_view();
+    }
+  }
+
+  CHECK(view);
+
+  PixelTestUi pixel_test_ui(view, screenshot_name, baseline);
+  return pixel_test_ui.VerifyUi();
+#else  // !SUPPORTS_PIXEL_TESTS
+  return true;
+#endif
 }
 
 // static
