@@ -4,7 +4,7 @@
 """Definitions of builders in the chromium.android.fyi builder group."""
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "os")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
@@ -13,10 +13,11 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 consoles.console_view(
@@ -35,8 +36,6 @@ ci.builder(
     # Higher build timeout since dbg ASAN builds can take a while on a clobber
     # build.
     execution_timeout = 4 * time.hour,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = 150,
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
@@ -46,9 +45,6 @@ ci.builder(
         category = "wpt|webview",
         short_name = "p-arm64",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -57,9 +53,6 @@ ci.builder(
         category = "wpt|chrome",
         short_name = "p-x86",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.thin_tester(
@@ -78,9 +71,6 @@ ci.builder(
         category = "wpt|weblayer",
         short_name = "p-x86",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -89,9 +79,6 @@ ci.builder(
         category = "wpt|weblayer",
         short_name = "p-x86",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -100,9 +87,6 @@ ci.builder(
         category = "wpt|webview",
         short_name = "p-x86",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -111,9 +95,6 @@ ci.builder(
         category = "builder|weblayer_with_aosp_webview",
         short_name = "x86",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -122,9 +103,6 @@ ci.builder(
         category = "reviver",
         short_name = "M",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
     # reference only and should not run any new builds.
@@ -154,9 +132,6 @@ ci.builder(
         short_name = "N",
     ),
     execution_timeout = 4 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 # TODO(crbug.com/1022533#c40): Remove this builder once there are no associated
@@ -167,7 +142,6 @@ ci.builder(
         category = "emulator|x86|rel",
         short_name = "P",
     ),
-    goma_jobs = goma.jobs.J150,
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
     # reference only and should not run any new builds.
@@ -191,9 +165,6 @@ ci.builder(
         category = "emulator|x86|rel",
         short_name = "11",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -215,9 +186,6 @@ ci.builder(
         short_name = "and",
     ),
     notifies = ["annotator-rel"],
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -226,9 +194,6 @@ ci.builder(
         category = "builder|x86",
         short_name = "x86",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
@@ -311,7 +276,4 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
 )
