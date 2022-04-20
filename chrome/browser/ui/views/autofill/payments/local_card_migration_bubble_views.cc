@@ -151,7 +151,7 @@ void LocalCardMigrationBubbleViews::WindowClosing() {
 }
 
 void LocalCardMigrationBubbleViews::OnWidgetClosing(views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
+  LocationBarBubbleDelegateView::OnWidgetClosing(widget);
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kCancelButtonClicked);
   closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
