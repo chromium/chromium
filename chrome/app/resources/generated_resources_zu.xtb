@@ -918,6 +918,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
     <ph name="BEGIN_PARAGRAPH2" />Ungavala nedivayisi ye-TPM ngokuphelele. Idatha yakho isazogcinwa ngokuphepha ngokubethelwa kwesofthiwe, kodwa izakhi ezithile zokuphepha ezifana nezitifiketi ezisekelwa ngezingxenyekazi zekhompyutha zizokhutshazwa.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ungaguqula amasethingi akho we-TPM ngokuqalisa kabusha bese ufaka amasethingi we-BIOS/UEFI. Izinyathelo ziyahluka ngokwemodeli yedivayisi. Mayelana nolwazi olubanzi, vula amadokhumenti we-<ph name="DEVICE_OS" /> kudivayisi ehlukile ngaphambi kokuthi uqalise kabusha: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Thola isofthiwe eyingozi</translation>
+<translation id="1852322248807969514">Amaphasiwedi alondolozwa ku-<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">Kube nephutha ngenkathi izama ukufunda ifayela: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Qhubeka lapho ogcine khona. Ungasetha ama-app ukuthi abuyisele njalo ekuqaliseni noma uvale ukubuyisela Kumasethingi.</translation>
 <translation id="1854180393107901205">Misa ukusakaza</translation>
@@ -1877,6 +1878,7 @@ bese u-Ctrl+Alt+Brightness down ukuze uhlehlise isithombe.</translation>
 <translation id="2783829359200813069">Khetha izinhlobo zokubethela</translation>
 <translation id="2783952358106015700">Sebenzisa ukhiye wakho wokuqinisekisa ubunikazi ne-<ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Izichazi zefayela</translation>
+<translation id="2787022501752539710">Gcina idatha yokubhrawuza yasendaweni (amabhukhimakhi, amaphasiwedi, umlando, njll.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Inombolo yeqembu</translation>
@@ -5117,6 +5119,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6057381398996433816">Leli sayithi livinjelwe kusukela ekusebenziseni izinzwa zokunyakaza nezokukhanya.</translation>
 <translation id="6059276912018042191">Amathebhu we-Chrome wakamuva</translation>
 <translation id="6059652578941944813">Ukuhleleka kwesitifiketi</translation>
+<translation id="6063284707309177505">Dala ikhodi yakho ye-QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Qaphela<ph name="END_BOLD" /> Izwi elifanayo noma ukurekhoda kungase kukwazi ukufinyelela kwimiphumela yomuntu siqu ka-<ph name="SUPERVISED_USER_NAME" />. Ukuze wonge ibhethri, ungakhetha kumasethingi wakho Womsizi ka-<ph name="SUPERVISED_USER_NAME" /> ukuze okuthi “Ok Google” kuvulwe uma le divayisi ixhunywe kumthombo wamandla.</translation>
 <translation id="6064217302520318294">Isikrini sivaliwe</translation>
 <translation id="6065289257230303064">Umkhombandlela wezichasiso zesihloko sesitifiketi</translation>

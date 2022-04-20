@@ -920,6 +920,7 @@
     <ph name="BEGIN_PARAGRAPH2" />এছাড়াও আপনি সরাসরি TPM ডিভাইস সম্পূর্ণভাবে বন্ধ করতে পারেন। আপনার ডেটা সুরক্ষিতভাবে সফ্টওয়্যার এনক্রিপশন সহ সেভ করা হবে তবে হার্ডওয়্যার-ব্যাকড সার্টিফিকেটের মতো নির্দিষ্ট নিরাপত্তা ফিচার বন্ধ হয়ে যাবে।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />সিস্টেম BIOS/UEFI সেটিংস এন্টার করে এবং রিবুট করার মাধ্যমে আপনার TPM সেটিং পরিবর্তন করতে পারবেন। ডিভাইস মডেলের উপর ভিত্তি করে ধাপ আলাদা হতে পারে। আরও তথ্যের জন্য রিবুট করার আগে আলাদা ডিভাইসে <ph name="DEVICE_OS" /> ডকুমেন্টেশন খুলুন: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">ক্ষতিকর সফ্টওয়্যার খুঁজুন</translation>
+<translation id="1852322248807969514"><ph name="GOOGLE_PASSWORD_MANAGER" />-এ পাসওয়ার্ড সেভ করা হয়েছে</translation>
 <translation id="1852799913675865625"><ph name="ERROR_TEXT" /> ফাইলটি পড়ার চেষ্টা করার সময় একটি ত্রুটি ঘটেছিল৷</translation>
 <translation id="1854049213067042715">আপনি যেখানে শেষ করেছিলেন সেখান থেকে চালু করুন। আপনি অ্যাপ স্টার্টআপের সময় যেকোনও সময়ে রিস্টোর করুন বা সেটিংস থেকে 'রিস্টোর করুন' বিকল্প বন্ধ করতে পারবেন।</translation>
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
@@ -1878,6 +1879,7 @@
 <translation id="2783829359200813069">এনক্রিপশনের ধরন বেছে নিন</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />-এ আপনার নিরাপত্তা কী ব্যবহার করুন</translation>
 <translation id="2785873697295365461">ফাইল বর্ণনাকারী</translation>
+<translation id="2787022501752539710">লোকাল ব্রাউজ করা ডেটা রাখুন (বুকমার্ক, পাসওয়ার্ড, ইতিহাস, ইত্যাদি।)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">গ্রুপ নম্বর</translation>
@@ -5118,6 +5120,7 @@
 <translation id="6057381398996433816">মোশন এবং লাইট সেন্সর ব্যবহার করা থেকে এই সাইটটি ব্লক করা হয়েছে।</translation>
 <translation id="6059276912018042191">Chrome-এ সম্প্রতি খোলা ট্যাবগুলি</translation>
 <translation id="6059652578941944813">সার্টিফিকেট শ্রেণীক্রম</translation>
+<translation id="6063284707309177505">QR কোড তৈরি করুন</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />মনে রাখবেন:<ph name="END_BOLD" /> একই ধরনের কোনও ভয়েস বা রেকর্ডিং <ph name="SUPERVISED_USER_NAME" />-এর ব্যক্তিগত ফলাফল হয়ত অ্যাক্সেস করতে পারবে। ব্যাটারির চার্জ বাঁচাতে হলে, এই ডিভাইস বিদ্যুতের উৎসের সঙ্গে কানেক্ট করা থাকলে, শুধুমাত্র তখনই আপনি “Ok Google”-এর জন্য <ph name="SUPERVISED_USER_NAME" />-এর Assistant সেটিংস বেছে নিতে পারেন।</translation>
 <translation id="6064217302520318294">স্ক্রিন লক</translation>
 <translation id="6065289257230303064">সার্টিফিকেট বিষয় নির্দেশিকা গুণাবলী</translation>

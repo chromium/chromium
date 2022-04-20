@@ -282,6 +282,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8493179195440786826">A Chromium elavult</translation>
 <translation id="8550334526674375523">Ez a munkaprofil teljesen el van választva a személyes profiljától.</translation>
 <translation id="8558383651099478961">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását. A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem telepíthető.</translation>
+<translation id="8561285221328166383">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a macOS 10.13-as vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS X 10.12 fut.</translation>
 <translation id="8568283329061645092">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chromiumban. Ha például felkeres egy webhelyet, ahol maratonfutáshoz való cipőt vásárol, akkor a webhely meghatározhatja a maratonfutást az Ön egyik érdeklődési köreként. Ha később felkeres egy másik webhelyet, hogy jelentkezzen egy versenyre, ezen a webhelyen megjelenhet egy futócipőket reklámozó hirdetés az Ön érdeklődési köre alapján.</translation>
@@ -312,6 +313,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9185526690718004400">Indítsa újra a Chromium frissítéshez</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Előfordulhat, hogy a Chromium nem működik majd megfelelően, mert a továbbiakban már nem támogatja a következő rendszereket: Windows XP és Windows Vista</translation>
+<translation id="945990405696787151">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a macOS 10.13-as vagy újabb verziójára lesz szüksége. Ezen a számítógépen az OS X 10.11 fut.</translation>
 <translation id="965162752251293939">Ki használja a Chromiumot?</translation>
 <translation id="967427899662692980">Állítsa be a Chromium legerősebb védelmét</translation>
 <translation id="985602178874221306">A Chromium szerzői</translation>

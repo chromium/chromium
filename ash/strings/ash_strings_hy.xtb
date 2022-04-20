@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">USB-C մալուխը չի աջակցում Thunderbolt միջերես։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
 <translation id="2108303511227308752">«Alt + Backspace» ստեղնային դյուրանցումը փոփոխվել է։ Delete ստեղնի գործողությունն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Backspace։</translation>
 <translation id="211328683600082144">ՄԻԱՑՆԵԼ ԽՈՍԱՓՈՂԸ</translation>
+<translation id="2123115117533398272">ChromeOS-ը ցուցադրում է նոր բովանդակության առաջարկներ։ Ուղարկում է վիճակագրություն՝ ծառայությունների որակը բարելավելու համար, միայն եթե դուք որոշել եք կիսվել օգտագործման տվյալներով։ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Նոր աշխատանքային տարածք</translation>
 <translation id="2127372758936585790">Մարտկոցի լիցքը սպառվում է</translation>
 <translation id="2132302418721800944">Տեսագրել լիաէկրան ռեժիմում</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
 <translation id="263399434338050016">«Select all» (ընտրել բոլորը)</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Պատուհանի տեսագրում</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2658778018866295321">Սեղմել և քաշել</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">Միացված է</translation>
 <translation id="3378442621503952303">Միացում պրոֆիլին։ Մի փոքր սպասեք։</translation>
 <translation id="3386978599540877378">Լիաէկրան խոշորացույց</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Լրացուցիչ կարգավորումներ</translation>
 <translation id="3410336247007142655">Ցույց տալ մուգ թեմայի կարգավորումները</translation>
 <translation id="3413817803639110246">Դեռևս ոչինչ չկա</translation>

@@ -109,7 +109,7 @@
 <translation id="4050175100176540509">بهبودهای امنیتی مهم و ویژگی‌های جدید در جدیدترین نسخه در دسترس است.</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> - ورود به سیستم شبکه - Chromium</translation>
 <translation id="421369550622382712">‏برنامه‌ها، بازی‌ها، افزونه‌ها و طرح‌های زمینه Chromium را کشف کنید.</translation>
-<translation id="4216212958613226427">‏از این زبان برای نمایش میانای کاربر Chromium استفاده می‌شود</translation>
+<translation id="4216212958613226427">‏از این زبان برای نمایش واسط کاربر Chromium استفاده می‌شود</translation>
 <translation id="4230135487732243613">‏داده‌های Chromium به این حساب مرتبط شود؟</translation>
 <translation id="4271805377592243930">‏دریافت کمک برای Chromium</translation>
 <translation id="4285930937574705105">‏به دلیل خطای نامشخص نصب ناموفق بود. اگر Chromium در حال اجرا است، لطفاً آن را ببندید و دوباره سعی کنید.</translation>
@@ -282,6 +282,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8493179195440786826">‏نسخه Chromium قدیمی است</translation>
 <translation id="8550334526674375523">این نمایه کاری کاملاً مجزا از نمایه شخصی‌تان است.</translation>
 <translation id="8558383651099478961">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chromium خاموش کرده است. افزودن این <ph name="EXTENSION_TYPE_PARAMETER" /> مجاز نیست.</translation>
+<translation id="8561285221328166383">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید macOS نسخه ۱۰.۱۳ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۰.۱۲ استفاده می‌کند.</translation>
 <translation id="8568283329061645092">‏وقتی با «حساب Google» خود به سیستم وارد می‌شوید، Chromium می‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="8586442755830160949">‏حق نشر <ph name="YEAR" /> نویسندگان Chromium. کلیه حقوق محفوظ است.</translation>
 <translation id="8608079656141766906">‏<ph name="BEGIN_BOLD" />نحوه استفاده ما از این داده‌ها:<ph name="END_BOLD" /> سایت‌ها می‌توانند بااستفاده از Chromium اطلاعاتی درباره علایقتان ذخیره کنند. برای مثال، اگر برای خرید کفش مخصوص ماراتون از سایتی بازدید کنید، ممکن است آن سایت علاقه شما را به‌صورت دونده ماراتون مشخص کند. بعداً، اگر برای ثبت‌نام در مسابقه‌ای به سایتی دیگر مراجعه کردید، آن سایت می‌تواند براساس علایقتان آگهی‌ای برای کفش مخصوص دویدن به شما نشان دهد.</translation>
@@ -312,6 +313,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="9185526690718004400">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium</translation>
 <translation id="9190841055450128916">‏Chromium‏ (mDNS ورودی)</translation>
 <translation id="93478295209880648">‏Chromium ممکن است درست کار نکند زیرا دیگر در Windows XP یا Windows Vista پشتیبانی نمی‌شود</translation>
+<translation id="945990405696787151">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید macOS نسخه ۱۰.۱۳ یا بالاتر داشته باشید. این رایانه از OS X نسخه ۱۰.۱۱ استفاده می‌کند.</translation>
 <translation id="965162752251293939">‏چه‌کسی از Chromium استفاده می‌کند؟</translation>
 <translation id="967427899662692980">‏دریافت قوی‌ترین امنیت Chromium</translation>
 <translation id="985602178874221306">Chromium Authors</translation>

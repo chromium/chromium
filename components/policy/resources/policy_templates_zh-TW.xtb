@@ -2779,6 +2779,13 @@
 <translation id="4025500273782820766">如有外部通訊協定對話方塊詢問使用者是否要略過日後的確認提示，允許使用者選取 [一律允許]</translation>
 <translation id="402759845255257575">不允許任何網站執行 JavaScript</translation>
 <translation id="4027608872760987929">啟用預設搜尋引擎</translation>
+<translation id="4027904270588278067">你可以透過這項政策設定 Chrome 用來下載檔案的目錄。不論使用者是否指定目錄或已啟用旗標讓系統詢問每次的下載位置，Chrome 都會使用提供的目錄。
+
+      這項政策會覆寫 <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策。
+
+      如果未設定這項政策，Chrome 會使用預設的下載目錄，且使用者可以進行變更。
+
+      注意：如要查看可使用的變數清單，請前往 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。</translation>
 <translation id="4041577849977347218">如果將這項政策設為啟用或不設定，即使下載的檔案來自可信任的來源，安全瀏覽功能仍會將其送交分析。
 
       如果將這項政策設為停用，只要下載的檔案來自可信任的來源，安全瀏覽功能就不會將其送交分析。
@@ -5926,6 +5933,12 @@
 
       如果將這項政策設為停用，則已註冊的裝置不會回報儲存空間統計資料。
       例外狀況：裝置搭載 M95 以下版本，且磁碟大小和磁碟可用空間是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
+<translation id="7719175048012980445">你可以透過這項政策變更 Chrome 下載檔案時的預設目錄，但使用者可以自行變更目錄。
+
+      如果未設定這項政策，Chrome 會使用其平台專屬的預設目錄。
+
+      如果設定了 <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策，則這項政策不會有任何作用。
+      注意：如要查看可使用的變數清單，請前往 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 使用者 ID</translation>
 <translation id="7724161903134898864">如果將這項政策設為 1，網站即可顯示彈出式視窗。如果將這項政策設為 2，網站將無法顯示彈出式視窗。
 

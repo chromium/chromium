@@ -922,6 +922,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
     <ph name="BEGIN_PARAGRAPH2" />Napravo TPM lahko tudi v celoti izklopite. Vaši podatki bodo še vedno varno shranjeni s šifriranjem programske opreme, vendar bodo onemogočene nekatere varnostne funkcije, kot so potrdila, podprta s strojno opremo.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Nastavitve TPM lahko spremenite tako, da napravo znova zaženete in odprete nastavitve za sistemski BIOS/UEFI. Postopek se razlikuje glede na model naprave. Če želite več informacij, odprite dokumentacijo za <ph name="DEVICE_OS" /> v ločeni napravi, preden znova zaženete: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Iskanje škodljive programske opreme</translation>
+<translation id="1852322248807969514">Gesla se shranjujejo v orodju <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">Pri poskusu branja datoteke je prišlo do napake: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Nadaljujte, kjer ste končali. V nastavitvah lahko nastavite, da se aplikacije ob zagonu vedno obnovijo, ali pa izklopite obnovitev.</translation>
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
@@ -1881,6 +1882,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2783829359200813069">Izberite vrste šifriranja</translation>
 <translation id="2783952358106015700">Uporaba varnostnega ključa z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Deskriptorji datotek</translation>
+<translation id="2787022501752539710">Ohrani lokalne podatke o brskanju (zaznamke, gesla, zgodovino ipd.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Številka skupine</translation>
@@ -5121,6 +5123,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6057381398996433816">Temu spletnemu mestu je preprečena uporaba tipal gibanja in svetlobe.</translation>
 <translation id="6059276912018042191">Nedavni Chromovi zavihki</translation>
 <translation id="6059652578941944813">Hierarhija potrdil</translation>
+<translation id="6063284707309177505">Ustvari kodo QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> S podobnim glasom ali posnetkom bi bilo morda mogoče dostopati do osebnih rezultatov otroka <ph name="SUPERVISED_USER_NAME" />. Zaradi varčevanja z baterijo lahko v nastavitvah Pomočnika otroka <ph name="SUPERVISED_USER_NAME" /> izberete, da je sprožilna besedna zveza »Hey Google« vklopljena samo, ko je ta naprava priključena na vir napajanja.</translation>
 <translation id="6064217302520318294">Zaklepanje zaslona</translation>
 <translation id="6065289257230303064">Atributi imenika subjekta potrdila</translation>

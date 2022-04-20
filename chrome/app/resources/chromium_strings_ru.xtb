@@ -279,6 +279,7 @@
 <translation id="8493179195440786826">Версия Chromium устарела</translation>
 <translation id="8550334526674375523">Этот рабочий профиль никак не связан с вашим личным профилем.</translation>
 <translation id="8558383651099478961">Родители отключили в Chromium параметр "Разрешения для сайтов, приложений и расширений". Добавлять это <ph name="EXTENSION_TYPE_PARAMETER" /> запрещено.</translation>
+<translation id="8561285221328166383">На вашем компьютере используется macOS 10.12. Чтобы получать обновления Chromium, установите на устройство macOS 10.13 или более поздней версии.</translation>
 <translation id="8568283329061645092">Chromium проверит ваши пароли, когда вы войдете в аккаунт Google.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" /> . Все права защищены.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Как мы используем эти данные.<ph name="END_BOLD" /> Сайты могут хранить в Chromium информацию о ваших интересах. Например, вы перешли на сайт, чтобы купить беговые кроссовки. Он определит, что вам интересны марафоны. Когда вы перейдете на другой сайт, чтобы зарегистрироваться на забег, то увидите рекламу беговых кроссовок.</translation>
@@ -309,6 +310,7 @@
 <translation id="9185526690718004400">Перезапустить для обновления &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">В работе Chromium могут возникать сбои, так как браузер больше не поддерживает Windows XP и Windows Vista.</translation>
+<translation id="945990405696787151">На вашем компьютере используется OS X 10.11. Чтобы получать обновления Chromium, установите на устройство macOS 10.13 или более поздней версии.</translation>
 <translation id="965162752251293939">Кто использует Chromium?</translation>
 <translation id="967427899662692980">Обеспечьте максимальную защиту в Chromium</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>

@@ -904,6 +904,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
     <ph name="BEGIN_PARAGRAPH2" />TPM cihazını tamamilə deaktiv edə bilərsiniz. Datanız hələ də proqram şifrələməsi ilə etibarlı şəkildə saxlanacaq, ancaq avadanlıq dəstəkli sertifikatlar kimi müəyyən güvənlik funksiyaları deaktiv ediləcək.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Sistemi yenidən başladaraq və BIOS/UEFI ayarlarına daxil olaraq TPM ayarlarınızı dəyişə bilərsiniz. Adımlar cihaz modelinə görə dəyişir. Digər məlumatlar üçün yenidən başlatmazdan əvvəl ayrı bir cihazda <ph name="DEVICE_OS" /> sənədlərini açın: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Zərərli proqram təminatını tapın</translation>
+<translation id="1852322248807969514">Parollar burada saxlanılır: <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">Faylı oxuyan zaman xəta baş verdi: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Qaldığınız yerdən davam edin. Ayarlarda tətbiqlərin başlanğıcda avtomatik bərpa olmasını ayarlaya və ya bərpanı söndürə bilərsiniz.</translation>
 <translation id="1854180393107901205">Yayımı dayandırın</translation>
@@ -1133,6 +1134,24 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2090165459409185032">Hesab məlumatlarını bərpa üçün getmək üçün: Google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Giriş etdiyiniz zaman avtomatik olaraq qoşulur</translation>
 <translation id="2090876986345970080">Sistem güvənlik ayarı</translation>
+<translation id="2092356157625807382"><ph name="BEGIN_H3" />Debaq Funksiyaları<ph name="END_H3" />
+    <ph name="BR" />
+    Cihazınızda fərdi kodu quraşdırmaq və test etmək üçün ChromeOS Cihazında debaq funksiyalarını aktiv edə bilərsiniz. Bununla edə biləcəksiniz:<ph name="BR" />
+    <ph name="BEGIN_LIST" />
+      <ph name="LIST_ITEM" />Əməliyyat sistemi fayllarına düzəliş etmək üçün kök doğrulamasını deaktiv edin
+      <ph name="LIST_ITEM" />Standart test açarları istifadə edərək cihaza SSH girişini aktiv edin ki, <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" /> kimi alətləri istifadə edəsiniz və cihaza daxil ola biləsiniz
+      <ph name="LIST_ITEM" />USB yaddaşdan əməliyyat sistemi təsvirini quraşdıra bilmək üçün USB-dən yüklənməyə icazə verin
+      <ph name="LIST_ITEM" />Cihaza manual yol ilə SSH daxil etmək üçün cihaz və sistem kökü giriş parolunu fərdi dəyər ilə ayarlayın
+    <ph name="END_LIST" />
+    <ph name="BR" />
+    İcazə veriləndən sonra hətta korporativ idarə edilən cihazda sıfırlama edilsə, yaxud data silinsə belə, debaq funksiyalarının çoxu aktiv olaraq qalacaq. Bütün debaq funksiyalarını tam deaktiv etmək üçün Chrome Əməliyyat Sisteminin bərpa prosesini tamamlayın (https://support.google.com/chromebook/answer/1080595).
+    <ph name="BR" />
+    <ph name="BR" />
+    Debaq funksiyaları haqqında ətraflı məlumat üçün bura daxil olun:<ph name="BR" />
+    https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" />  Əməliyyat zamanı sistem yenidən işə başlayacaq.</translation>
 <translation id="2095774564753225041">Dəstəklənən fayl növləri</translation>
 <translation id="2096715839409389970">Üçüncü tərəf kukilərini təmizləyin</translation>
 <translation id="2098805196501063469">Qalan parolları yoxlayın</translation>
@@ -1354,6 +1373,24 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2300383962156589922"><ph name="APP_NAME" /> tətbiqini fərdiləşdirin və nəzarət edin</translation>
 <translation id="2301382460326681002">Artırma kökü kataloqu etibarsızdır.</translation>
 <translation id="2301402091755573488">Paylaşılan Tab</translation>
+<translation id="2302342861452486996"><ph name="BEGIN_H3" />Debaq Funksiyaları<ph name="END_H3" />
+    <ph name="BR" />
+    Cihazınızda fərdi kodu quraşdırmaq və test etmək üçün ChromeOS Flex Cihazında debaq funksiyalarını aktiv edə bilərsiniz. Bununla edə biləcəksiniz:<ph name="BR" />
+    <ph name="BEGIN_LIST" />
+      <ph name="LIST_ITEM" />Əməliyyat sistemi fayllarına düzəliş etmək üçün kök doğrulamasını deaktiv edin
+      <ph name="LIST_ITEM" />Standart test açarları istifadə edərək cihaza SSH girişini aktiv edin ki, <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" /> kimi alətləri istifadə edəsiniz və cihaza daxil ola biləsiniz
+      <ph name="LIST_ITEM" />USB yaddaşdan əməliyyat sistemi təsvirini quraşdıra bilmək üçün USB-dən yüklənməyə icazə verin
+      <ph name="LIST_ITEM" />Cihaza manual yol ilə SSH daxil etmək üçün cihaz və sistem kökü giriş parolunu fərdi dəyər ilə ayarlayın
+    <ph name="END_LIST" />
+    <ph name="BR" />
+    İcazə veriləndən sonra hətta korporativ idarə edilən cihazda sıfırlama edilsə, yaxud data silinsə belə, debaq funksiyalarının çoxu aktiv olaraq qalacaq. Bütün debaq funksiyalarını tam deaktiv etmək üçün Chrome Əməliyyat Sisteminin bərpa prosesini tamamlayın (https://support.google.com/chromebook/answer/1080595).
+    <ph name="BR" />
+    <ph name="BR" />
+    Debaq funksiyaları haqqında ətraflı məlumat üçün bura daxil olun:<ph name="BR" />
+    https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+    <ph name="BR" />
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" />  Əməliyyat zamanı sistem yenidən işə başlayacaq.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" əlavə icazə istəyir.</translation>
 <translation id="23055578400314116">İstifadəçi adı seçin</translation>
 <translation id="2307462900900812319">Şəbəkəni konfiqurasiya edin</translation>
@@ -1716,7 +1753,9 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2642111877055905627">Futbol topu</translation>
 <translation id="2643698698624765890">Pəncərə menyusunda artırmalara klikləməklə artırmalarınızı idarə edin.</translation>
 <translation id="2645047101481282803">Cihazınız <ph name="PROFILE_NAME" /> tərəfindən idarə olunur</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-şifrələnmiş ASCII, sertifikat zənciri</translation>
+<translation id="2652129567809778422">Parol seçin</translation>
 <translation id="2653033005692233957">Axtarış uğursuz oldu</translation>
 <translation id="2653266418988778031">Sertifikasiya Doğrulaması sertifikatını silsəniz, brauzeriniz Sertifikasiya Doğrulaması tərəfindən verilmiş heç bir sertifikata inanmayacaq.</translation>
 <translation id="2653275834716714682">Mətn Əvəzetməsi</translation>
@@ -1861,6 +1900,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2783829359200813069">Şifrələmə növlərini seçin</translation>
 <translation id="2783952358106015700">Təhlükəsizlik açarını <ph name="APP_NAME" /> ilə istifadə edin</translation>
 <translation id="2785873697295365461">Fayl təsviri</translation>
+<translation id="2787022501752539710">Yerli baxış məlumatlarını (əlfəcinlər, parollar, tarixçə və s.) saxlayın.</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Qrup nömrəsi</translation>
@@ -1924,6 +1964,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2839032553903800133">Bildirişlər blok edilib</translation>
 <translation id="2841013758207633010">Vaxt</translation>
 <translation id="2841837950101800123">Provayder</translation>
+<translation id="2843560154284403323">Linux'un ayarlanmasını bitirmək üçün ChromeOS'i güncəlləyin və yenidən cəhd edin.</translation>
 <translation id="2844169650293029770">USB-C cihazı (ön sol port)</translation>
 <translation id="2844809857160214557">Çap işlərinə baxın və idarə edin</translation>
 <translation id="2845382757467349449">Həmişə Əlfəcin Panelini Göstərin</translation>
@@ -1941,6 +1982,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2854896010770911740">Üçüncü Tərəf Kukilərini Silin</translation>
 <translation id="2856776373509145513">Yeni konteyner yaradın</translation>
 <translation id="2858138569776157458">Populyar saytlar</translation>
+<translation id="2859383038987078242">ChromeOS diaqnostik testlərini işə salın.</translation>
 <translation id="2861301611394761800">Sistem güncəlləməsi tamamdır. Lütfən, sistemi yenidən başladın.</translation>
 <translation id="2861941300086904918">Doğma Klient təhlükəsizlik meneceri</translation>
 <translation id="2862815659905780618">Linux tərtibat mühitini silin</translation>
@@ -2301,6 +2343,8 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3238192140106069382">Qoşulur və doğrulanır</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> üçün vaxt limiti ləğv edilib</translation>
 <translation id="3241680850019875542">Artırma paketinin kök direktoriyasını seçin. Artırmanı güncəlləşdirmək üçün yenidən istifadə etmək məqsədilə şəxsi açar seçin.</translation>
+<translation id="3242289508736283383">"Yalnız_kiosk" funksiyası olan tətbiqlər ChromeOS kiosk rejimində quraşdırılmalıdır</translation>
+<translation id="3242665648857227438">Bu profil ChromeOS proksi ayarlarından istifadə edir.</translation>
 <translation id="3244294424315804309">Səssiz etməyə davam edin</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Şəbəkə xətası</translation>
 <translation id="3248902735035392926">Təhlükəsizlik məsələləri. İndi <ph name="BEGIN_LINK" />artırmaları yoxlayın<ph name="END_LINK" /></translation>
@@ -2378,6 +2422,8 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3315442055907669208">Oxucu rejiminə daxil olun</translation>
 <translation id="3317459757438853210">İkitərəfli</translation>
 <translation id="3317678681329786349">Kamera və mikrofon blok edildi</translation>
+<translation id="3320620783302968370">Problem davam edərsə, cihazınızı yenidən başladın 
+    Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">Təhlükəsiz Baxış (təhlükəli saytlardan qoruma) və digər güvənlik ayarları</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Bu data həssas və ya təhlükəli məzmun ehtiva edir. Bu məzmunu silin və yenidən cəhd edin.}=1{Bu fayl həssas və ya təhlükəli məzmun ehtiva edir. Bu məzmunu silin və yenidən cəhd edin.}other{Bu fayllar həssas və ya təhlükəli məzmun ehtiva edir. Bu məzmunu silin və yenidən cəhd edin.}}</translation>
 <translation id="3323521181261657960">Bonus! Daha çox ekran vaxtı əldə etdiniz</translation>
@@ -2676,6 +2722,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3617891479562106823">Arxa fonlar əlçatan deyil. Sonra yenidən cəhd edin.</translation>
 <translation id="3619115746895587757">Kappuçino</translation>
 <translation id="3619962278978697442">Hər dəfə daxil olanda birini seçin</translation>
+<translation id="3621807901162200696">ChromeOS funksiyalarını və performansı təkmilləşdirməyə yardım edin</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{tətbiq}other{# tətbiq}}</translation>
 <translation id="362333465072914957">Sertifikat Təşkilatının sertifikat verməsi gözlənilir</translation>
 <translation id="3624567683873126087">Cihazı kiliddən çıxarın və Google Hesabına daxil olun</translation>
@@ -2997,6 +3044,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3915280005470252504">Səsli axtarış</translation>
 <translation id="3916233823027929090">Güvənlik yoxlanışları tamamlanıb</translation>
 <translation id="3916445069167113093">Bu fayl növü kompüterinizi zədələyə bilər. <ph name="FILE_NAME" /> faylını yenə də saxlamaq istəyirsiniz?</translation>
+<translation id="3917184139185490151">Kompüter ChromeOS'da bir çox kritik təhlükəsizlik funksiyalarının tətbiqi üçün istifadə olunan təhlükəsizlik modulundan ibarətdir. Ətraflı məlumat üçün Chromebook Yardım Mərkəzinə daxil olun: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3918972485393593704">Detalları Google'a bildirin</translation>
 <translation id="3919145445993746351">Artırmaları bütün kompüterlərdə əldə etmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="3919229493046408863">Cihazlar yaxınlıqda olduqda bildirişi deaktiv edin</translation>
@@ -3424,6 +3472,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4354073718307267720">Sayt ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və ya kamera mövqeyini izləmək istədikdə icazə tələb edin</translation>
 <translation id="4354344420232759511">Daxil olduğunuz saytlar burda görünəcək</translation>
 <translation id="435527878592612277">Foto seçin</translation>
+<translation id="4358302248024731679">Google istifadəçiləri Bluetooth problemlərini daha yaxşı müəyyən etmək üçün rəy hesabatları ilə birlikdə əlavə Bluetooth girişləri daxil edə bilər. Bu seçim yoxlandıqda hesabata cari sessiyadan btsnoop və HCI girişləri (mümkün qədər çox PII silmək üçün təmizlənmişdir) əlavə ediləcək. Listnr cihazında ChromeOS məhsul qrupunun menecerləri üçün bu girişlər məhdudlaşdırılıb. Girişlər 90 gündən sonra təmizlənəcək.</translation>
 <translation id="4358313196493694334">Klik məkanını stabilləşdirin</translation>
 <translation id="4359408040881008151">Asılı artırmalara görə quraşdırılıb.</translation>
 <translation id="4359717112757026264">Şəhər mənzərəsi</translation>
@@ -3553,6 +3602,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4487489714832036847">Chromebook'larda ənənəvi proqram əvəzinə tətbiqlər istifadə olunur. Məhsuldarlıq, əyləncə və daha çoxu üçün tətbiqlər əldə edin.</translation>
 <translation id="4488257340342212116">Kameranızdan istifadə etmək icazəsi verilib</translation>
 <translation id="4488502501195719518">Bütün data silinsin?</translation>
+<translation id="4490086832405043258">Bu profil üçün ChromeOS proksi ayarlarından istifadə edin.</translation>
 <translation id="449126573531210296">Sinxronlaşdırılmış parolları Google Hesabınız ilə şifrləyin</translation>
 <translation id="449232563137139956">Saytlar adətən onlayn mağazalar və ya xəbər məqalələri üçün fotolar kimi illustrasiyaları təmin etmək məqsədilə şəkillər göstərir</translation>
 <translation id="4492698018379445570">Hazır olduğunuz zaman alış-veriş arabalarına əlavə etdiklərinizi tapın və ödəniş edin</translation>
@@ -3750,6 +3800,8 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4675828034887792601">Saytları axtarmaq üçün qısayollar yaradın və axtarış sisteminizi idarə edin</translation>
 <translation id="4676595058027112862">Telefon Mərkəzi, Ətraflı Məlumat</translation>
 <translation id="4677772697204437347">GPU yaddaş</translation>
+<translation id="4677970983462111944">Bu cihazda Steam'ə icazə verilmir. İcazə almaq üçün administratorunuzla əlaqə saxlayın 
+    Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">Kamera deaktivdir</translation>
 <translation id="4680105648806843642">Bu səhifə səssiz rejimdədir</translation>
 <translation id="4681453295291708042">Yaxındakılarla Paylaşmanı deaktiv edin</translation>
@@ -4112,6 +4164,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5062930723426326933">Hesaba giriş alınmadı, internetə qoşulun və yenidən cəhd edin.</translation>
 <translation id="5063480226653192405">Istifadə</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
+<translation id="5066100345385738837">ChromeOS ayarlarında güvənli DNS'i idarə edin</translation>
 <translation id="5067399438976153555">Həmişə aktivdir</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> mikforonu işlətmək istəyəndə icazə alsın</translation>
 <translation id="5068918910148307423">Son qapadılan saytlara data göndərilməsini və qəbulunu tamamlamağa icazə verməyin</translation>
@@ -4254,6 +4307,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="520621735928254154">Sertifikat İmport Xətası</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Oğurlanmış parol uğurla dəyişdirildi. Daha # oğurlanmış parolunuz var. Chrome bu parolu indi yoxlamağı tövsiyə edir.}other{Oğurlanmış parol uğurla dəyişdirildi. Daha # oğurlanmış parolunuz var. Chrome bu parolları indi yoxlamağı tövsiyə edir.}}</translation>
 <translation id="5207949376430453814">Mətn karetini vurğulayın</translation>
+<translation id="520840839826327499"><ph name="SERVICE_NAME" /> uyğun ChromeOS cihazı istifadə edib-etmədiyinizi yoxlamaq istəyir.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> identifikasiya açarının saxlanılması</translation>
 <translation id="520902706163766447">Hazırda açıq olan tablar üzərində axtarış aparmaq üçün Top Chrome UI'də popap qabarcığını aktivləşdirin.</translation>
 <translation id="5209320130288484488">Heç bir cihaz tapılmadı</translation>
@@ -4375,6 +4429,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5329858601952122676">&amp;Silin</translation>
 <translation id="5331069282670671859">Bu kateqoriyada sertifikat yoxdur</translation>
 <translation id="5331425616433531170">"<ph name="CHROME_EXTENSION_NAME" />" bunun ilə cütləndirmək istəyir</translation>
+<translation id="5331568967879689647">ChromeOS Sistem Tətbiqi</translation>
 <translation id="5331975486040154427">USB-C cihazı (arxa sol port)</translation>
 <translation id="5333896723098573627">Tətbiqləri silmək üçün Ayarlar &gt; Tətbiqlər &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Tətbiqlər və ya Tətbiq meneceri bölməsinə daxil olun. Sonra quraşdırılmasını ləğv etmək istədiyiniz tətbiqə klikləyin (tətbiqi tapmaq üçün sağa və ya sola sürüşdürməlisiniz). Quraşdırılmanı Ləğv Edin və ya Deaktiv Edin seçiminə klikləyin.</translation>
 <translation id="5334142896108694079">Skript keşi</translation>
@@ -5094,6 +5149,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6057381398996433816">Bu saytın hərəkət və zəif sensorlardan istifadə etməsi blok edilib.</translation>
 <translation id="6059276912018042191">Son Chrome tabları</translation>
 <translation id="6059652578941944813">Sertifikat İyerarxiyası</translation>
+<translation id="6063284707309177505">QR Kodu yaradın</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər. Batareyaya qənaət etmək üçün <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin Assistentinin ayarlarında "Ok Google" seçiminin yalnız bu cihaz enerji mənbəyinə qoşulu olduqda yanılı olmasını seçə bilərsiniz.</translation>
 <translation id="6064217302520318294">Ekran kilidi</translation>
 <translation id="6065289257230303064">Sertifikat Subyekt Direktoriyası Atributları</translation>
@@ -5288,6 +5344,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="624789221780392884">Yükləmə hazırdır</translation>
 <translation id="6248988683584659830">Axtarış ayarları</translation>
 <translation id="6249200942125593849">A11y funksiyalarını idarə edin</translation>
+<translation id="6250186368828697007">Ekranınızı paylaşdığınız zaman detallar gizlədilir</translation>
 <translation id="6251870443722440887">GDI dəstəkləri</translation>
 <translation id="625369703868467034">Şəbəkə Vəziyyəti</translation>
 <translation id="6254503684448816922">Açar Kompromisi</translation>
@@ -5355,6 +5412,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6313950457058510656">Cəld modemi deaktiv edin</translation>
 <translation id="6314819609899340042"><ph name="IDS_SHORT_PRODUCT_NAME" /> cihazında debaq funksiyalarını uğurla aktiv etdiniz.</translation>
 <translation id="6315493146179903667">Hamısını Önə Gətirin</translation>
+<translation id="6316432269411143858">Google ChromeOS Şərtlərinin kontentləri</translation>
 <translation id="6317369057005134371">Tətbiq pəncərəsi gözlənilir...</translation>
 <translation id="6318125393809743217">Siyasət konfiqurasiyalarına policies.json faylını daxil edin.</translation>
 <translation id="6318407754858604988">Endirmə başladı</translation>
@@ -5400,6 +5458,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6363990818884053551">Sinxronizasiyaya başlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ailə və dostlarınızı əlavə edin</translation>
+<translation id="6367097275976877956">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz? Belədirsə, boşluq düyməsinə basın.</translation>
 <translation id="6367985768157257101">Yaxındakılarla Paylaşma ilə qəbul edilsin?</translation>
 <translation id="6368276408895187373">Aktivdir – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
@@ -5433,6 +5492,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6398715114293939307">Google Play Mağazanı Silin</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="6399774419735315745">Cəsus</translation>
+<translation id="6401597285454423070">Kompüteriniz ChromeOS'da bir çox kritik təhlükəsizlik funksiyalarının tətbiqi üçün istifadə olunan Trusted Platform Module (TPM) təhlükəsizlik cihazından ibarətdir. Ətraflı məlumat üçün Chromebook Yardım Mərkəzinə daxil olun: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook Oyun</translation>
 <translation id="6404511346730675251">Əlfəcinə düzəliş edin</translation>
 <translation id="6406303162637086258">Brauzeri yenidən başlatmağı modelləşdirin</translation>
@@ -5785,6 +5845,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtlərini<ph name="END_LINK2" /> oxudum və qəbul edirəm.</translation>
 <translation id="6750757184909117990">Mobil şəbəkəni deaktiv edin</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkoqnito)</translation>
+<translation id="6756157672127672536">Fayllar tətbiqi Google Disk, xarici yaddaş və ya ChromeOS cihazınızda saxladığınız fayllara sürətli giriş təmin edir.</translation>
 <translation id="6758056191028427665">Necə işlədiyimizi bizə bildirin.</translation>
 <translation id="6759193508432371551">Zavod Sıfırlaması</translation>
 <translation id="6761431452438552910">Bluetooth cihazınızın birləşmə rejimində və yaxınlıqda olduğuna əmin olun. Yalnız etibar etdiyiniz cihazlarla birləşdirin.</translation>
@@ -5863,6 +5924,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6825184156888454064">Ad üzrə sıralayın</translation>
 <translation id="6826872289184051766">USB ilə doğrulayın</translation>
 <translation id="6827121912381363404">Bütün artırmaların <ph name="PERMITTED_SITE" /> saytını oxumasına və dəyişməsinə icazə verin</translation>
+<translation id="6827517233063803343">Tətbiqlər və ayarlarınız Google hesabınız ilə daxil olduğunuz bütün ChromeOS cihazlarında sinxronlaşdırılacaq. Brauzerin sinxronlaşdırma seçimləri üçün <ph name="LINK_BEGIN" />Chrome ayarları<ph name="LINK_END" /> bölməsinə keçin.</translation>
 <translation id="6828153365543658583">Aşağıdakı istifadəçilərə girişi məhdudlaşdırın:</translation>
 <translation id="6828182567531805778">Datanızı sinxronizasiya etmək üçün parol ifadəsini daxil edin</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5943,6 +6005,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6902066522699286937">Önizləmək üçün səs</translation>
 <translation id="6902336033320348843">Bölmə dəstəklənmir: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Cihazı domenə qoşun</translation>
+<translation id="6903022061658753260">Datanız bu hesab üçün sinxronizasiyanı aktiv etdiyiniz bütün Chrome brauzerlərində sinxronlaşdırılacaq. ChromeOS sinxronizasiya seçimləri üçün <ph name="LINK_BEGIN" />ChromeOS ayarlarına<ph name="LINK_END" /> keçin.</translation>
 <translation id="6903590427234129279">Hamısını açın (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
 <translation id="6904344821472985372">Fayl girişini ləğv edin</translation>
@@ -5955,6 +6018,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="691289340230098384">Subtitr tərcihləri</translation>
 <translation id="6914783257214138813">Eksport edilmiş faylı görən hər kəs parollarınızı görəcək.</translation>
 <translation id="6916590542764765824">İstisnaları idarə edin</translation>
+<translation id="6918677045355889289">ChromeOS güncəllənməsi tələb olunur</translation>
 <translation id="6919354101107095996">Sayta daxil olmağa çalışın. Sonra yenidən endirin</translation>
 <translation id="6919868320029503575">Zəif parollar</translation>
 <translation id="6919952941889172531">Həmçinin bu Chrome profili üçün Qabaqcıl Güvənli Baxış aktiv edilsin?</translation>
@@ -5989,6 +6053,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6952242901357037157">Həmçinin <ph name="BEGIN_LINK" />Google Hesabınızdakı<ph name="END_LINK" /> parolları göstərə bilərsiniz</translation>
 <translation id="6955446738988643816">Popap göstərin</translation>
 <translation id="6955535239952325894">Bu ayar idarə edilən brauzerlərdə deaktiv edilib</translation>
+<translation id="6955698182324067397">ChromeOS baq ləğvini aktivləşdirirsiniz ki, sshd daemon quraşdırır və USB cihazlarından yüklənməyə imkan verir.</translation>
 <translation id="6955893174999506273">Daha 1 keçirici təyin edin</translation>
 <translation id="6957044667612803194">Bu güvənlik açarı PIN kodları dəstəkləmir</translation>
 <translation id="6960507406838246615">Linux güncəlləməsi tələb edilir</translation>
@@ -6556,6 +6621,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7535730537657706072">Cihazınızdan Anonim brauzer tarixçəsini təmizləmək üçün bütün Anonim tabları bağlayın</translation>
 <translation id="7535791657097741517">İşıqlı temanı aktiv edin</translation>
 <translation id="7537451260744431038">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətindəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilmir</translation>
+<translation id="7538932151125743389">ChromeOS cihazı və komponentinin seriya nömrələrini oxuyun.</translation>
 <translation id="7540972813190816353">Güncəlləşmələri yoxlayarkən xəta baş verdi: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> bu cihazı əvvəlki versiyaya qaytarıb. Mühüm faylları yadda saxlayın və yenidən başladın. Cihazdakı bütün data silinəcək.</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> Tətbiqi ilə <ph name="ACTION_NAME" /></translation>
@@ -6755,6 +6821,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7717845620320228976">Güncəlləmələri yoxlayın</translation>
 <translation id="7719367874908701697">Səhifə yaxınlaşdırması</translation>
 <translation id="7719588063158526969">Cihazın adı çox uzundur</translation>
+<translation id="7720216670798402294">ChromeOS cihaz məlumatlarını və cihaz datasını oxuyun.</translation>
 <translation id="7721179060400456005">Pəncərələrin ekranı örtməsinə icazə verin</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7721258531237831532">Təşkilatınız profil tələb edir</translation>
@@ -6804,6 +6871,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7766082757934713382">Avtomatik tətbiq və sistem güncəlləmələrini durduraraq şəbəkə datası istifadəsini azaltmağa yardım edir</translation>
 <translation id="7766807826975222231">Tanış olun</translation>
 <translation id="7766838926148951335">İcazələri qəbul edin</translation>
+<translation id="7767554953520855281">Ekranınızı paylaşdığınız zaman detallar gizlədilir</translation>
 <translation id="7768507955883790804">Saytları ziyarət etdikdə onlar avtomatik bu ayarı izləyir</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı fayllara baxa biləcək</translation>
 <translation id="7768770796815395237">Dəyişin</translation>
@@ -7289,6 +7357,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8228783756378591900">Bu sənəd təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> üçün parol yadda saxlanılsın?</translation>
 <translation id="8230446983261649357">Saytlara şəkilləri göstərmək icazəsi verməyin</translation>
+<translation id="8233028084277069927">İndi açın</translation>
 <translation id="8234795456569844941">Bu problemin həll edilməsində mühəndislərimizə yardım edin. Profil xəta mesajını əldə etmədən öncə nə baş verdiyini bizə deyin:</translation>
 <translation id="8235418492073272647">Səhifə <ph name="DEVICE_NAME" /> cihazından paylaşılıb</translation>
 <translation id="8236911020904880539">çıxış</translation>
@@ -7462,6 +7531,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> və daha <ph name="COUNT" /> üçün icazə verilib</translation>
 <translation id="8413385045638830869">Öncə soruşun (tövsiyə olunur)</translation>
+<translation id="8413956290606243087">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz?</translation>
 <translation id="8414249071344507766">Xatirələr iki günlük gizlədilib</translation>
 <translation id="8414685983518053656">Qeydlər</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Keys)</translation>
@@ -7710,6 +7780,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="867085395664725367">Müvəqqəti server xətası baş verdi.</translation>
 <translation id="8673026256276578048">Vebdə axtarın...</translation>
 <translation id="8673383193459449849">Server problemi</translation>
+<translation id="8674903726754070732">Kompüteriniz düzgün olmayan avadanlıq ID-si ilə sazlanıb. Bu, ChromeOS'i ən son güvənlik bərpaları etməyə mane ola və kompüteriniz <ph name="BEGIN_BOLD" />hücumlara məruz qala bilər<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Quraşdırıcı <ph name="DEVICE_OS" /> sistemini quraşdırmaq üçün etibarlı bir yer tapa bilmədi.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# video}}</translation>
 <translation id="8676313779986170923">Rəy göndərdiyiniz üçün təşəkkür edirik.</translation>
@@ -7897,6 +7968,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8855977033756560989">Bu Chromebook Enterprise cihazı Chrome Enterprise Upgrade ilə bir paket şəklində təqdim edilir. Müəssisə imkanlarından yararlanmaq üçün bu cihazı Google admin hesabı ilə qeydiyyatdan keçirin.</translation>
 <translation id="8856028055086294840">Tətbiq və səhifələri bərpa edin</translation>
 <translation id="885701979325669005">Yaddaş</translation>
+<translation id="885746075120788020">Google Hesabınızla daxil olduğunuz zaman yadda saxlanılan tərcihləriniz və fəaliyyətiniz istənilən ChromeOS cihazında hazır olacaq. Ayarlarda nələri sinxronlaşdıracağınızı seçə bilərsiniz.</translation>
 <translation id="8859174528519900719">Alt çərçivə: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Xidmət Şərtlərini yükləmək mümkün olmadı</translation>
 <translation id="8859662783913000679">Valideyn hesabı</translation>
@@ -8084,6 +8156,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9037818663270399707">Bağlantınız bütün şəbəkə trafiki üçün məxfi deyil</translation>
 <translation id="9037965129289936994">Orijinalı Göstərin</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Bir cəhdiniz qalıb.}other{# cəhdiniz qalıb.}}</translation>
+<translation id="9040473193163777637">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz? Belədirsə, hər iki səs düyməsinə beş saniyə basıb saxlayın.</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> üçün parol yenilənsin?</translation>
 <translation id="9041692268811217999">Cihazda lokal fayllara giriş administrator tərəfindən deaktiv edilib</translation>
 <translation id="904224458472510106">Bu əməliyyat geri qaytarıla bilməz</translation>
@@ -8260,6 +8333,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9220525904950070496">Hesabı silin</translation>
 <translation id="9220820413868316583">Barmağınızı çəkin və bir daha yoxlayın.</translation>
 <translation id="923467487918828349">Hamısını göstərin</translation>
+<translation id="924818813611903184">ChromeOS parametrlərində dilləri idarə edin</translation>
 <translation id="929117907539171075">Quraşdırılmış tətbiqdəki oflayn data da silinəcək</translation>
 <translation id="930268624053534560">Detallı Zaman Damğaları</translation>
 <translation id="930893132043726269">Hazırda rouminqdədir</translation>

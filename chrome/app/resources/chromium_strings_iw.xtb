@@ -282,6 +282,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8493179195440786826">‏Chromium אינו מעודכן</translation>
 <translation id="8550334526674375523">פרופיל העבודה שלך נפרד לחלוטין מהפרופיל האישי שלך.</translation>
 <translation id="8558383651099478961">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="8561285221328166383">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-macOS מגרסה 10.13 ואילך. במחשב הזה מותקנת מערכת ההפעלה macOS 10.12.</translation>
 <translation id="8568283329061645092">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8608079656141766906">‏<ph name="BEGIN_BOLD" />אופן השימוש בנתונים האלה:<ph name="END_BOLD" /> אתרים יכולים לשמור מידע ב-Chromium לגבי תחומי העניין שלך. לדוגמה, אם ביקרת באתר כדי לקנות נעליים למרתון, האתר עשוי להגדיר 'ריצת מרתון' כתחום עניין שלך. לאחר מכן, בביקור באתר שונה, למשל כדי להירשם למרוץ, יכול להיות שתוצג לך מודעה לנעלי ריצה על סמך תחומי העניין שלך.</translation>
@@ -312,6 +313,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="9185526690718004400">‏הפעלה מחדש לצורך עדכון &amp;Chromium</translation>
 <translation id="9190841055450128916">‏Chromium ‏(mDNS-In)</translation>
 <translation id="93478295209880648">‏ייתכן ש-Chromium לא יפעל כראוי כי הוא כבר לא נתמך ב-Windows XP וב-Windows Vista</translation>
+<translation id="945990405696787151">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-macOS מגרסה 10.13 ואילך. במחשב הזה פועלת מערכת ההפעלה ‎OS X 10.11.</translation>
 <translation id="965162752251293939">‏מי משתמש/ת ב-Chromium?</translation>
 <translation id="967427899662692980">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chromium?</translation>
 <translation id="985602178874221306">‏מחברי Chromium</translation>

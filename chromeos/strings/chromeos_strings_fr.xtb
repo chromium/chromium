@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">Échec de la requête UDP</translation>
 <translation id="1947737735496445907">Impression terminée</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1977994649430373166">Photo du profil Google</translation>
 <translation id="1979103255016296513">Mot de passe à modifier</translation>
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2006864819935886708">Connectivité</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de la galerie d'art</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Activation/Désactivation du rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Changer de disposition</translation>
 <translation id="225692081236532131">État d'activation</translation>
 <translation id="2287186687001756809">Aucune image disponible. Pour ajouter des photos, accédez à <ph name="LINK" /></translation>
@@ -626,6 +628,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8031884997696620457">HSPA+</translation>
 <translation id="80398733265834479">Activer le mode couleur auto</translation>
 <translation id="8041089156583427627">Envoyer</translation>
+<translation id="8045012663542226664">Désactivation du micro</translation>
 <translation id="8075838845814659848">Niveau de charge</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS depuis les applis Android</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>

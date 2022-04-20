@@ -1627,6 +1627,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2724313944474873275">Si vous activez cette règle, ou si vous ne la configurez pas, les appareils <ph name="PRODUCT_OS_NAME" /> utilisent l'attestation à distance (accès validé) pour obtenir un certificat délivré par l'autorité de certification de <ph name="PRODUCT_OS_NAME" />, qui atteste que vous pouvez lire du contenu protégé sur cet appareil. Ce processus implique l'envoi d'informations relatives au matériel à l'autorité de certification de <ph name="PRODUCT_OS_NAME" /> permettant d'identifier l'appareil de façon unique.
 
       Si vous désactivez cette règle, l'appareil ne peut pas utiliser l'attestation à distance pour la protection du contenu, et pourrait ne pas pouvoir lire de contenu protégé.</translation>
+<translation id="2724868837491558133">Permet de dresser la liste des formats d'URL des sites qui accordent automatiquement l'autorisation d'utiliser des polices locales. Cela étend la capacité des sites à voir les informations sur les polices locales.
+
+      Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.
+
+      Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="2725855586003209701">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent la liste des utilisateurs qui se sont récemment connectés.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas cette liste.</translation>
@@ -2479,6 +2484,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle n'est pas définie, <ph name="PRINTERS_ALLOW_ALL" /> est utilisé.</translation>
 <translation id="3695204334462456702">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD) (obsolète)</translation>
 <translation id="3695706037816556327">Action lors du retrait du jeton de sécurité (carte à puce, par exemple) pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3699986274986041335">Demander chaque fois qu'un site souhaite obtenir l'autorisation d'utiliser des polices locales</translation>
 <translation id="3700193037252896716">Fréquence de redémarrage prévue.</translation>
 <translation id="3700318587977845664">Fréquence de recherche des mises à jour.</translation>
 <translation id="3701121231485832347">Contrôle les paramètres propres aux appareils <ph name="PRODUCT_OS_NAME" /> gérés par <ph name="MS_AD_NAME" />.</translation>
@@ -2817,6 +2823,13 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="4025500273782820766">Autoriser les utilisateurs à sélectionner "Toujours autoriser" quand une boîte de dialogue de protocole externe s'affiche pour permettre à l'utilisateur d'ignorer les futures invites de confirmation</translation>
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
+<translation id="4027904270588278067">Cette règle définit le répertoire utilisé par Chrome pour le téléchargement de fichiers. Ce répertoire sera utilisé même si l'utilisateur en indique un autre ou s'il a activé l'option permettant de choisir un emplacement cible à chaque téléchargement.
+
+      Cette règle remplace la règle <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Si cette règle n'est pas configurée, Chrome utilise le répertoire de téléchargement par défaut, que les utilisateurs peuvent modifier.
+
+      Remarque : Pour savoir quelles variables vous pouvez utiliser, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="4041577849977347218">Si cette règle est activée ou si elle n'est pas configurée, la fonctionnalité de navigation sécurisée analyse les fichiers téléchargés, même s'ils proviennent d'une source fiable.
 
       Si cette règle est désactivée, la fonctionnalité de navigation sécurisée n'analyse pas les fichiers téléchargés qui proviennent d'une source fiable.
@@ -3282,6 +3295,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si une règle ne figure pas dans la liste et qu'il y a conflit entre plusieurs sources, champs d'application ou niveaux, la règle ayant la plus haute priorité s'applique.</translation>
 <translation id="4646739075621507361">Transmettre les tâches d'impression</translation>
 <translation id="4649395978608361979">Destinations des imprimantes locales</translation>
+<translation id="4650044303940238102">Paramètres de polices locales</translation>
 <translation id="4650759511838826572">Désactiver les schémas de protocole d'URL</translation>
 <translation id="465099050592230505">URL de boutique en ligne d'entreprise (abandonné)</translation>
 <translation id="4653465451589191309">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent gérer (déconnecter ou modifier) les connexions VPN. Si la connexion VPN est créée à l'aide d'une application VPN, l'interface utilisateur dans cette application n'est pas affectée. Ainsi, les utilisateurs peuvent quand même utiliser l'application pour modifier la connexion VPN. Utilisez cette règle avec la fonctionnalité VPN toujours activée, ce qui permet à l'administrateur d'établir une connexion VPN lors du démarrage d'un appareil.
@@ -3375,6 +3389,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4820432864264617413">Empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="4821987881803903281">Bloquer l'autorisation de positionnement des fenêtres sur ces sites</translation>
 <translation id="4826326557828204741">Définit l'action à effectuer si le délai d'inactivité est atteint lorsque l'appareil fonctionne sur batterie.</translation>
+<translation id="4827727182370777723">Paramètres de l'autorisation des polices locales par défaut</translation>
 <translation id="482803100714220060">Affiche les URL complètes</translation>
 <translation id="4832852360828533362">Création de rapports sur les utilisateurs et les appareils</translation>
 <translation id="4834526953114077364">Les utilisateurs qui ne se sont pas connectés au cours des trois derniers mois et dont les comptes ont été utilisés le moins récemment sont supprimés jusqu'à ce que l'espace libre soit suffisant.</translation>
@@ -4565,9 +4580,26 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6198947200418556248">Cette règle est obsolète. Si vous nécessitez toujours l'ancien comportement des cookies, veuillez utiliser <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. Ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour obtenir une description complète, consultez https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Lorsque cette règle n'est pas configurée, le comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> par défaut des cookies dépend de la configuration personnelle de l'utilisateur concernant les fonctionnalités <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> et <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, qui peut être définie lors d'un test, ou par l'activation ou la désactivation des indicateurs <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> ou <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />, respectivement.</translation>
+<translation id="6200225675236107198">Si cette règle est définie sur <ph name="BLOCK_LOCAL_FONTS_POLICY_NAME" /> (valeur 2), l'autorisation d'utiliser des polices locales est par défaut automatiquement refusée aux sites. Cela limite la capacité des sites à voir les informations sur les polices locales.
+
+      Si cette règle est définie sur <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (valeur 3), l'utilisateur reçoit par défaut une invite lorsque l'autorisation d'utiliser des polices locales est demandée. Si les utilisateurs accordent l'autorisation, cela étend la capacité des sites à voir les informations sur les polices locales.
+
+      Si cette règle n'est pas configurée, le comportement par défaut (invite envoyée à l'utilisateur) s'applique. Les utilisateurs peuvent toutefois modifier ce paramètre.</translation>
 <translation id="6207607210601267301">Désactiver l'authentification sans code PIN pour l'hôte d'accès à distance</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
+<translation id="6210422374261465354">Permet de spécifier les configurations pour les URL d'authentification dans <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Ces URL d'authentification seraient traitées spécialement par <ph name="WEBVIEW_PRODUCT_NAME" />, de sorte que durant l'authentification, lorsque la page Web dans <ph name="WEBVIEW_PRODUCT_NAME" />
+      navigue vers les URL d'authentification, l'appli d'authentification des fournisseurs d'identité correspondants qui peut traiter cette URL d'authentification est lancée.
+
+      Ce flux de lancement de l'appli d'authentification des fournisseurs d'identité serait utilisé par les fournisseurs d'identité pour activer
+      les cas d'utilisation comme la fourniture du SSO dans les applis ou pour proposer une meilleure protection en récoltant les signaux d'appareil zéro confiance pour comprendre la position de l'appareil lors de l'authentification.
+
+      Si aucune appli valide n'est installée pour gérer l'URL d'authentification sur l'appareil, la navigation se poursuivra dans <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Une URL d'authentification valide doit avoir le schéma <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> et ne doit pas comporter de caractère générique.
+      </translation>
 <translation id="6212868225782276239">Toutes les imprimantes sont affichées à l'exception de celles qui sont répertoriées dans la liste noire.</translation>
 <translation id="6220835555850906733">Si cette règle est activée ou si elle n'est pas configurée, toutes les sorties audio compatibles sur les appareils des utilisateurs sont autorisées.
 
@@ -4744,6 +4776,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6378393933102834628">Si cette règle est définie sur "True", le raccourci des applications est affiché. Si cette règle est définie sur "False", ce raccourci n'est jamais affiché.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, les utilisateurs peuvent choisir d'afficher ou de masquer ce raccourci dans le menu contextuel de la barre de favoris.</translation>
+<translation id="6382351416269252693">Permet de dresser la liste des formats d'URL des sites qui refusent automatiquement l'autorisation d'utiliser des polices locales. Cela limite la capacité des sites à voir les informations sur les polices locales.
+
+      Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.
+
+      Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="6384542789059421431">Activer l'affichage des pages de résultats du moteur de recherche par défaut dans un panneau latéral du navigateur.</translation>
 <translation id="6394350458541421998">Cette règle a été supprimée à partir de la version 29 de <ph name="PRODUCT_OS_NAME" />. Veuillez utiliser la règle PresentationScreenDimDelayScale à la place.</translation>
 <translation id="6397588391180665797">Signale la configuration du réseau des utilisateurs sur les appareils enregistrés.
@@ -5578,6 +5615,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
       Sous <ph name="MS_WIN_NAME" />, la règle KDC est toujours respectée.</translation>
 <translation id="7274077256421167535">Activer le partage d'alimentation USB</translation>
 <translation id="7275334191706090484">Favoris gérés</translation>
+<translation id="7275689301063927473">Par défaut, refuse l'autorisation d'utiliser des polices locales pour tous les sites</translation>
 <translation id="7278854311116092134">Noms des hôtes de messagerie native à exclure de la liste de blocage</translation>
 <translation id="7291084543582732020">Si vous activez ce paramètre, les utilisateurs peuvent utiliser Smart Lock si les conditions requises pour cette fonctionnalité sont réunies.
 
@@ -5981,6 +6019,13 @@ au maximum si un utilisateur se sert de l'appareil.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.
       Exception : Sur les versions M95 et antérieures, les informations concernant le volume total et disponible des disques sont contrôlées par la règle <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
+<translation id="7719175048012980445">Cette règle définit le répertoire par défaut utilisé par Chrome pour le téléchargement de fichiers, mais permet aux utilisateurs d'indiquer un autre emplacement.
+
+      Si cette règle n'est pas configurée, Chrome utilise le répertoire par défaut correspondant à la plate-forme.
+
+      Cette règle n'a aucun effet si la règle <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> est définie.
+
+      Remarque : Pour savoir quelles variables vous pouvez utiliser, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="7721944091689270995">ID utilisateur <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Si cette règle est définie sur "1", les sites Web peuvent afficher des pop-up. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher de pop-up.
 
@@ -6551,6 +6596,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8369602308428138533">Délai d'arrêt de l'écran (secteur)</translation>
 <translation id="8371178326720637170">Autorise les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Bloquer l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
+<translation id="8378266419596669629">Bloquer l'autorisation des polices locales pour ces sites</translation>
 <translation id="8379317372795444261">Authentification <ph name="BASIC_AUTH" /> autorisée sur les connexions HTTP</translation>
 <translation id="8381678031726288574">Appliquer les paramètres par défaut pour l'abandon de l'API U2F.</translation>
 <translation id="8382184662529825177">Autoriser l'utilisation de l'attestation à distance pour assurer la protection du contenu de l'appareil</translation>
@@ -7244,6 +7290,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 
       REMARQUE : Le comportement par défaut des appareils grand public et professionnels diffère. Sur les appareils gérés, le P2P est activé, tandis que sur les appareils non gérés, il ne l'est pas.</translation>
 <translation id="9164656078867027374">Définir les domaines autorisés à accéder à <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
+<translation id="9165128017344777105">Accorder l'autorisation des polices locales pour ces sites</translation>
 <translation id="9166670902476893480">Cette règle permet d'autoriser <ph name="PRODUCT_NAME" /> à demander d'autres types d'enregistrements DNS en cas d'envois de requêtes DNS à risque, ou de l'en empêcher. Cette règle n'a aucune incidence sur les requêtes DNS envoyées via DNS sécurisé, qui peut toujours envoyer d'autres types de requêtes DNS.
 
       Si cette règle n'est pas configurée ou si elle est activée, d'autres types de requêtes, par exemple <ph name="DNS_TYPE_HTTPS" /> (type de DNS 65), peuvent être demandés en plus des types <ph name="DNS_TYPE_A" /> (type de DNS 1) et <ph name="DNS_TYPE_AAAA" /> (type de DNS 28).

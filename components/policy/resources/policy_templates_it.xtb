@@ -2820,6 +2820,13 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4025500273782820766">Consenti agli utenti di selezionare "Consenti sempre" quando viene mostrata una finestra di dialogo relativa a un protocollo esterno per non ricevere più messaggi di conferma in futuro</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
+<translation id="4027904270588278067">Se il criterio viene configurato, viene impostata anche la directory utilizzata da Chrome per il download dei file. Viene utilizzata la directory fornita, indipendentemente dal fatto che gli utenti ne abbiano specificata una o abbiano attivato il flag richiesto ogni volta per il percorso di download.
+
+      Questo criterio esegue l'override del criterio <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, Chrome utilizza la directory predefinita per il download, che gli utenti possono modificare.
+
+      Nota. Vedi l'elenco di variabili che puoi utilizzare: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="4041577849977347218">Se il criterio viene impostato su Attivato o se non viene configurato, i file scaricati vengono inviati per essere analizzati da Navigazione sicura, anche se provengono da una fonte attendibile.
 
       Se il criterio viene impostato su Disattivato, i file scaricati non vengono inviati per essere analizzati da Navigazione sicura se provengono da una fonte attendibile.
@@ -6015,6 +6022,13 @@ Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visu
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano statistiche relative all'archiviazione.
       Eccezione: le dimensioni del disco e lo spazio libero su disco vengono controllati tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
+<translation id="7719175048012980445">La configurazione del criterio modifica la directory predefinita in cui Chrome scarica i file, che però gli utenti possono modificare.
+
+      Se il criterio non viene configurato, Chrome utilizza la directory predefinita specifica della piattaforma.
+
+      Questo criterio non ha effetto se viene configurato il criterio <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Nota. Vedi l'elenco di variabili che puoi utilizzare: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="7721944091689270995">ID utente <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se il criterio è impostato su 1, i siti web possono mostrare i popup. Se il criterio è impostato su 2, i popup vengono negati.
 

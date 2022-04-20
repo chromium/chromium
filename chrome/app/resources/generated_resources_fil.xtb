@@ -920,6 +920,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
     <ph name="BEGIN_PARAGRAPH2" />Puwede mo ring tuluyang i-off ang TPM device. Ligtas na maso-store ang iyong data sa tulong ng pag-encrypt ng software, pero madi-disable ang ilang partikular na panseguridad na feature gaya ng mga hardware-backed na certificate.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puwede mong baguhin ang mga setting ng iyong TPM sa pamamagitan ng pag-reboot at paglalagay ng mga setting ng BIOS/UEFI ng system. Nag-iiba ang mga hakbang batay sa modelo ng device. Para sa higit pang impormasyon, buksan ang dokumentasyon ng <ph name="DEVICE_OS" /> sa hiwalay na device bago ka mag-reboot: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Maghanap ng mapaminsalang software</translation>
+<translation id="1852322248807969514">Sine-save ang mga password sa <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">Nagkaroon ng error habang sinusubukang basahin ang file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Magpatuloy mula sa kung saan ka huminto. Puwede mong itakda na palaging mag-restore ang mga app sa startup o i-off ang pag-restore sa Mga Setting.</translation>
 <translation id="1854180393107901205">Ihinto ang pagka-cast</translation>
@@ -1879,6 +1880,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2783829359200813069">Pumili ng mga uri ng pag-encrypt</translation>
 <translation id="2783952358106015700">Gamitin ang iyong security key sa <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Mga descriptor ng file</translation>
+<translation id="2787022501752539710">Panatilihin ang lokal na data sa pag-browse (mga bookmark, password, history, atbp.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Numero ng grupo</translation>
@@ -5117,6 +5119,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6057381398996433816">Na-block ang site na ito sa paggamit ng sensor ng paggalaw at liwanag.</translation>
 <translation id="6059276912018042191">Mga kamakailang tab ng Chrome</translation>
 <translation id="6059652578941944813">Pagkakasunud-sunod ng Certificate</translation>
+<translation id="6063284707309177505">Gumawa ng QR Code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang mga personal na resulta ni <ph name="SUPERVISED_USER_NAME" />. Para makatipid ng baterya, puwede mong piliin sa mga setting ng Assistant ni <ph name="SUPERVISED_USER_NAME" /> na i-on lang ang “Hey Google” kapag nakakonekta ang device na ito sa isang power source.</translation>
 <translation id="6064217302520318294">Lock ng screen</translation>
 <translation id="6065289257230303064">Mga Katangian ng Direktoryo ng Paksa ng Certificate</translation>

@@ -919,6 +919,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
     <ph name="BEGIN_PARAGRAPH2" />Anda juga boleh mematikan peranti TPM sepenuhnya. Data anda masih akan disimpan dengan selamat dengan penyulitan perisian, tetapi ciri keselamatan tertentu seperti sijil yang disokong perkakasan akan dilumpuhkan.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Anda boleh menukar tetapan TPM anda dengan mengebut semula dan memasuki tetapan BIOS/UEFI sistem. Langkah berbeza-beza berdasarkan model peranti. Untuk mendapatkan maklumat lanjut, buka dokumentasi <ph name="DEVICE_OS" /> pada peranti lain sebelum mengebut semula: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Cari perisian berbahaya</translation>
+<translation id="1852322248807969514">Kata laluan disimpan pada <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">Terdapat ralat ketika cuba membaca fail: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Sambung semula dari tempat anda berhenti. Anda boleh menetapkan agar apl sentiasa dipulihkan semasa permulaan atau mematikan pemulihan dalam Tetapan.</translation>
 <translation id="1854180393107901205">Berhenti menghantar</translation>
@@ -1878,6 +1879,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2783829359200813069">Pilih jenis penyulitan</translation>
 <translation id="2783952358106015700">Gunakan kunci keselamatan anda dengan <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Pemerihal fail</translation>
+<translation id="2787022501752539710">Simpan data penyemakan imbas setempat (penanda halaman, kata laluan, sejarah, dll.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Nombor kumpulan</translation>
@@ -5116,6 +5118,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6057381398996433816">Tapak ini telah disekat daripada menggunakan penderia gerakan dan cahaya.</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6059652578941944813">Hierarki Sijil</translation>
+<translation id="6063284707309177505">Buat Kod QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" />Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian <ph name="SUPERVISED_USER_NAME" />. Untuk menjimatkan bateri, dalam tetapan Assistant <ph name="SUPERVISED_USER_NAME" />, anda boleh memilih untuk menghidupkan “Ok Google” hanya semasa peranti ini disambungkan kepada sumber kuasa.</translation>
 <translation id="6064217302520318294">Kunci skrin</translation>
 <translation id="6065289257230303064">Atribut Direktori Subjek Sijil</translation>

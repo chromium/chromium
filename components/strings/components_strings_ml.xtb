@@ -511,6 +511,7 @@
 <translation id="2298855485018661510">കുക്കികൾ ബട്ടൺ മാനേജ് ചെയ്യുക, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="2300306941146563769">അപ്‌ലോഡ് ചെയ്‌തില്ല</translation>
 <translation id="2310021320168182093">Chou2 (എൻവലപ്പ്)</translation>
+<translation id="2316159751672436664">ChromeOS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കുക</translation>
 <translation id="2316887270356262533">1 MB-യിൽ കുറഞ്ഞ ഡാറ്റ ലാഭിക്കുന്നു. അടുത്തതവണ നിങ്ങൾ സന്ദർശിക്കുമ്പോൾ ചില സൈറ്റുകൾ ഇതിനേക്കാൾ പതുക്കെ ലോഡാകാം.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ഡൊമെയ്‌ന് ഉപയോക്തൃനാമവും പാസ്‌വേഡും ആവശ്യമാണ്.</translation>
 <translation id="2318594867107319532">അവസാന നയ ടൈംസ്റ്റാമ്പ്:</translation>
@@ -1665,6 +1666,7 @@
 <translation id="5518670652865028077">കലയും വിനോദവും</translation>
 <translation id="5519516356611866228">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സഹിതം</translation>
 <translation id="5523118979700054094">നയത്തിന്റെ പേര്</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="5528532273234423708">ഹോം ഓട്ടോമേഷൻ</translation>
 <translation id="55293785478302737">അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
 <translation id="553484882784876924">Prc6 (എൻവലപ്പ്)</translation>
@@ -2243,6 +2245,7 @@
 <translation id="722454870747268814">പുതിയ ആൾമാറാട്ട ടാബ്</translation>
 <translation id="7233592378249864828">സ്ഥിരീകരണ ഷീറ്റ് പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="7234638337680728591">പെട്രോൾ വിലയും വാഹന ഇന്ധനവും</translation>
+<translation id="7237492777898608035">ഈ സൈറ്റിൽ വീണ്ടും ഈ സന്ദേശം കാണിക്കരുത്</translation>
 <translation id="7238585580608191973">SHA-256 ഫിംഗര്‍പ്രിന്‍റ്</translation>
 <translation id="7240120331469437312">സര്‍‌ട്ടിഫിക്കറ്റ് വിഷയേതര നാമം</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2623,6 +2626,7 @@
 <translation id="8242426110754782860">തുടരുക</translation>
 <translation id="8249296373107784235">ഉപേക്ഷിക്കുക</translation>
 <translation id="8249463483885748674">ഏകീകൃത, പ്രവേശന ടെസ്റ്റുകൾ</translation>
+<translation id="8252991034201168845">ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക ബട്ടൺ, ChromeOS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Enter അമർത്തുക</translation>
 <translation id="8253091569723639551">ബില്ലിംഗ് വിലാസം ആവശ്യമാണ്</translation>
 <translation id="8257387598443225809">ഈ ആപ്പ് മൊബൈലിനായി രൂപകൽപ്പന ചെയ്തിരിക്കുന്നു</translation>
 <translation id="825929999321470778">സംരക്ഷിച്ച എല്ലാ പാസ്‌വേഡുകളും കാണിക്കുക</translation>

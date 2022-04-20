@@ -919,6 +919,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
     <ph name="BEGIN_PARAGRAPH2" />Arra is lehetősége van, hogy teljesen kikapcsolja a TPM-eszközt. Adatait biztonságosan, szoftveres titkosítással tárolja a rendszer, de bizonyos biztonsági funkciók (például a hardveresen támogatott tanúsítványok) letiltásra kerülnek.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />TPM-beállításait a rendszert újraindítva, majd a BIOS-/UEFI-beállításokba belépve módosíthatja. A lépések eszközmodellenként eltérők lehetnek. További információért az újraindítás előtt nyissa meg egy másik eszközön a <ph name="DEVICE_OS" /> dokumentációját: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Keressen kártékony szoftvereket</translation>
+<translation id="1852322248807969514">A jelszavakat a rendszer a <ph name="GOOGLE_PASSWORD_MANAGER" /> szolgáltatásba menti</translation>
 <translation id="1852799913675865625">Hiba lépett fel a fájl olvasása közben: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Ott folytathatja, ahol abbahagyta. A beállítások között kiválaszthatja azokat az alkalmazásokat, amelyeket vissza szeretne állítani minden indításkor, vagy kikapcsolhatja a visszaállítást.</translation>
 <translation id="1854180393107901205">Átküldés leállítása</translation>
@@ -1876,6 +1877,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2783829359200813069">Titkosítási típusok kiválasztása</translation>
 <translation id="2783952358106015700">Biztonsági hardverkulcs használata a következő alkalmazással: <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Fájlleírók</translation>
+<translation id="2787022501752539710">A helyi böngészési adatok (könyvjelzők, jelszavak, előzmények stb.) megtartása</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Csoportszám</translation>
@@ -5115,6 +5117,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6057381398996433816">Ennél a webhelynél le van tiltva a mozgás- és fényérzékelők használata.</translation>
 <translation id="6059276912018042191">Nemrég megnyitott Chrome-lapok</translation>
 <translation id="6059652578941944813">Tanúsítvány-hierarchia</translation>
+<translation id="6063284707309177505">QR-kód létrehozása</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Megjegyzés<ph name="END_BOLD" />: Előfordulhat, hogy hasonló hangú személy vagy hangfelvétel segítségével is hozzá lehet férni <ph name="SUPERVISED_USER_NAME" /> személyes találataihoz. Az akkumulátor üzemidejének növelése érdekében <ph name="SUPERVISED_USER_NAME" /> Segédjének beállításaiban megadhatja, hogy csak akkor legyen bekapcsolva az „Ok Google” parancsszó, amikor az eszköz áramforrásra csatlakozik.</translation>
 <translation id="6064217302520318294">Képernyőzárolás</translation>
 <translation id="6065289257230303064">Tanúsítványtulajdonos könyvtárattribútumai</translation>

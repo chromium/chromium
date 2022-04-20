@@ -2869,6 +2869,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3797739167230984533">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> est géré<ph name="END_LINK" /> par votre organisation</translation>
 <translation id="3797900183766075808">&amp;Rechercher "<ph name="SEARCH_TERMS" />" avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Version</translation>
+<translation id="379850776451304458">Mode automatique</translation>
 <translation id="3799128412641261490">Paramètres Switch Access</translation>
 <translation id="3800806661949714323">Tout afficher (recommandé)</translation>
 <translation id="3800828618615365228">Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS</translation>
@@ -3249,6 +3250,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4150201353443180367">Écran</translation>
 <translation id="4150569944729499860">Contexte de l'écran</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
+<translation id="4154406342347435125">Mode clair en journée et mode sombre en soirée. Sélection automatique.</translation>
 <translation id="4154664944169082762">Empreintes</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Succès</translation>
@@ -4564,6 +4566,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5511379779384092781">Très léger</translation>
 <translation id="5511823366942919280">Voulez-vous vraiment configurer cet appareil en tant que "requin" ?</translation>
 <translation id="5512739112435045339">Libérez de l'espace sur votre appareil, puis relancez le téléchargement.</translation>
+<translation id="5514315914873062345">Tabulation</translation>
 <translation id="5517304475148761050">Cette application a besoin d'accéder au Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Me demander lorsqu'un site souhaite voir le texte et les images copiés dans le presse-papiers</translation>
@@ -5448,6 +5451,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6410328738210026208">Changer de version et Powerwash</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
 <translation id="6410668567036790476">Ajouter un moteur de recherche</translation>
+<translation id="6412293788397766100">Dernières précisions…</translation>
 <translation id="641469293210305670">Installer des mises à jour et des applications</translation>
 <translation id="6414878884710400018">Ouvrir les préférences système</translation>
 <translation id="6414888972213066896">Une demande d'autorisation a été envoyée à tes parents pour la consultation de ce site</translation>
@@ -6814,6 +6818,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7768784765476638775">Sélectionner pour prononcer</translation>
 <translation id="7770406201819593386">Exécuter des tests de diagnostic Chrome OS Flex.</translation>
 <translation id="7770450735129978837">Clic droit de la souris</translation>
+<translation id="7770566005197683248">Adapté en cas de bonne luminosité.</translation>
 <translation id="7770612696274572992">Image copiée depuis un autre appareil</translation>
 <translation id="7771452384635174008">Mise en page</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
@@ -7370,6 +7375,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8300374739238450534">Bleu nuit</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresse}one{# adresse}other{# adresses}}</translation>
 <translation id="8304383784961451596">Vous n'êtes pas autorisé à utiliser cet appareil. Veuillez contacter l'administrateur pour obtenir l'autorisation de connexion ou connectez-vous à l'aide d'un compte Google supervisé par Family Link.</translation>
+<translation id="8307094075368387939">Vous pouvez ajuster programmation, définir un fond d'écran, un écran de veille et changer les couleurs du système dans le hub "Personnalisation".</translation>
 <translation id="8308016398665340540">Vous partagez ce réseau avec d'autres utilisateurs de cet appareil</translation>
 <translation id="8308179586020895837">Demander si l'accès à votre caméra est requis sur <ph name="HOST" /></translation>
 <translation id="830868413617744215">Bêta</translation>
@@ -7519,6 +7525,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="846374874681391779">Barre de téléchargements</translation>
 <translation id="8463955938112983119">Plug-in <ph name="PLUGIN_NAME" /> désactivé.</translation>
 <translation id="8464132254133862871">Ce compte utilisateur n'est pas compatible avec ce service.</translation>
+<translation id="8464735509712879725">Idéal en cas de faible éclairage. Parfait pour préserver l'autonomie de votre batterie.</translation>
 <translation id="8465252176946159372">Non valide</translation>
 <translation id="8465444703385715657">L'exécution de <ph name="PLUGIN_NAME" /> requiert votre autorisation.</translation>
 <translation id="8466417995783206254">Une vidéo est diffusée en mode PIP dans cet onglet.</translation>
@@ -7791,6 +7798,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8749863574775030885">Accéder à des appareils USB d'un fournisseur inconnu</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> tente de se connecter à un port de série</translation>
 <translation id="8750346984209549530">APN du réseau mobile</translation>
+<translation id="8751419011949619279">Ouvrir les sites Web dans les applis installées sur votre appareil</translation>
 <translation id="8752451679755290210">Se déplacer automatiquement entre les éléments</translation>
 <translation id="8753868764580670305">Voir et gérer les mots de passe enregistrés sur cet appareil</translation>
 <translation id="8753948258138515839">L'appli Fichiers vous permet d'accéder rapidement aux fichiers que vous avez enregistrés dans Google Drive, sur un périphérique de stockage externe ou sur votre appareil Chrome OS Flex.</translation>

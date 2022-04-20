@@ -918,6 +918,7 @@
     <ph name="BEGIN_PARAGRAPH2" />אפשר גם לכבות לגמרי את מכשיר ה-TPM. הנתונים שלך עדיין יישמרו באופן מאובטח באמצעות הצפנת תוכנה, אבל חלק מתכונות האבטחה, כמו אישורים בגיבוי חומרה, יושבתו.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />אפשר לשנות את הגדרות ה-TPM על ידי הפעלה מחדש וכניסה להגדרות ה-BIOS/‏UEFI של המערכת. השלבים משתנים בהתאם לדגם של המכשיר. למידע נוסף, עליך לפתוח את התיעוד לגבי <ph name="DEVICE_OS" /> במכשיר אחר לפני ההפעלה מחדש: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">חיפוש תוכנה מזיקה</translation>
+<translation id="1852322248807969514">הסיסמאות נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">אירעה שגיאה בעת ניסיון לקרוא את הקובץ: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">רוצה להמשיך מאיפה שהפסקת? יש לך אפשרות להגדיר שחזור לאפליקציות בתהליך ההפעלה או להשבית את השחזור ב'הגדרות'.</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
@@ -1878,6 +1879,7 @@
 <translation id="2783829359200813069">בחירת סוגי הצפנה</translation>
 <translation id="2783952358106015700">שימוש במפתח האבטחה באפליקציה <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">מתארי קבצים</translation>
+<translation id="2787022501752539710">שמירת נתוני הגלישה המקומיים (סימניות, סיסמאות, היסטוריה וכו')</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">מספר הקבוצה</translation>
@@ -5116,6 +5118,7 @@
 <translation id="6057381398996433816">נחסמה היכולת של האתר הזה להשתמש בחיישני התנועה והתאורה.</translation>
 <translation id="6059276912018042191">‏כרטיסיות Chrome אחרונות</translation>
 <translation id="6059652578941944813">היררכיית אישורים</translation>
+<translation id="6063284707309177505">‏יצירת קוד QR</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות של <ph name="SUPERVISED_USER_NAME" /> גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לבחור בהגדרות Assistant של <ph name="SUPERVISED_USER_NAME" /> שהפקודה “Hey Google” תפעל רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="6064217302520318294">נעילת מסך</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>

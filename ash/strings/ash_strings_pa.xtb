@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">ਤੁਹਾਡੀ USB-C ਕੇਬਲ Thunderbolt ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2108303511227308752">Alt + ਬੈਕਸਪੇਸ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Delete ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਬੈਕਸਪੇਸ ਦਬਾਓ।</translation>
 <translation id="211328683600082144">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="2123115117533398272">ChromeOS ਪੜਚੋਲ ਕਰਨ ਲਈ ਨਵੀਂ ਸਮੱਗਰੀ ਦੇ ਸੁਝਾਅ ਦਿਖਾਉਂਦਾ ਹੈ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੋਂ ਡਾਟੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਚੋਣ ਕੀਤੇ ਜਾਣ 'ਤੇ ਹੀ ਕੁਆਲਿਟੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਅੰਕੜੇ ਭੇਜੇ ਜਾਂਦੇ ਹਨ। <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">ਨਵਾਂ ਡੈਸਕ</translation>
 <translation id="2127372758936585790">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ</translation>
 <translation id="2132302418721800944">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
 <translation id="2621713457727696555">ਸੁਰੱਖਿਅਤ</translation>
 <translation id="263399434338050016">"ਸਭ ਚੁਣੋ"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ਵਿੰਡੋ ਕੈਪਚਰ</translation>
 <translation id="2653659639078652383">ਪ੍ਰਸਤੁਤ ਕਰੋ</translation>
 <translation id="2658778018866295321">ਕਲਿੱਕ ਕਰਕੇ ਘਸੀਟੋ</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">ਕਨੈਕਟ ਹੈ</translation>
 <translation id="3378442621503952303">ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="3386978599540877378">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">ਵਾਧੂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3410336247007142655">ਗੂੜ੍ਹੇ ਥੀਮ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="3413817803639110246">ਅਜੇ ਦੇਖਣ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
