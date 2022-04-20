@@ -29,10 +29,7 @@ constexpr int kDefaultNoticeDialogHeight = 494;
 
 class PrivacySandboxDialogDelegate : public views::DialogDelegate {
  public:
-  explicit PrivacySandboxDialogDelegate(
-      Browser* browser,
-      PrivacySandboxService::DialogType dialog_type)
-      : browser_(browser), dialog_type_(dialog_type) {
+  explicit PrivacySandboxDialogDelegate(Browser* browser) : browser_(browser) {
     if (auto* privacy_sandbox_serivce =
             PrivacySandboxServiceFactory::GetForProfile(browser->profile())) {
       privacy_sandbox_serivce->DialogOpenedForBrowser(browser);
@@ -42,23 +39,10 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
   }
 
   bool OnCloseRequested(views::Widget::ClosedReason close_reason) override {
-    // Any close reason is sufficient to close the notice.
-    if (dialog_type_ == PrivacySandboxService::DialogType::kNotice) {
-      // If the notice was dismissed via esc inform the Privacy Sandbox service.
-      if (close_reason == views::Widget::ClosedReason::kEscKeyPressed) {
-        if (auto* privacy_sandbox_serivce =
-                PrivacySandboxServiceFactory::GetForProfile(
-                    browser_->profile())) {
-          privacy_sandbox_serivce->DialogActionOccurred(
-              PrivacySandboxService::DialogAction::kNoticeDismiss);
-        }
-      }
-      return true;
-    }
-
     // Only an unspecified close reason, which only occurs when the user has
-    // actually made a choice and not for things like pressing escape, is
-    // sufficient to close the consent.
+    // actually made a choice is sufficient to close the consent. Reason for
+    // closing the dialog (like dismissing notice dialog with escape) is handled
+    // in WebUI.
     return close_reason == views::Widget::ClosedReason::kUnspecified;
   }
 
@@ -71,7 +55,6 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
 
  private:
   Browser* browser_;
-  PrivacySandboxService::DialogType dialog_type_;
 };
 
 }  // namespace
@@ -79,8 +62,7 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
 // static
 void ShowPrivacySandboxDialog(Browser* browser,
                               PrivacySandboxService::DialogType dialog_type) {
-  auto delegate =
-      std::make_unique<PrivacySandboxDialogDelegate>(browser, dialog_type);
+  auto delegate = std::make_unique<PrivacySandboxDialogDelegate>(browser);
   delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   delegate->SetShowCloseButton(false);
@@ -145,6 +127,7 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
 
 void PrivacySandboxDialogView::ShowNativeView() {
   GetWidget()->Show();
+  web_view_->RequestFocus();
 
   DCHECK(!dialog_created_time_.is_null());
   base::UmaHistogramTimes("Settings.PrivacySandbox.DialogLoadTime",
