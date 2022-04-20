@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
@@ -76,7 +76,7 @@ class DISPLAY_MANAGER_EXPORT DisplayLayoutStore {
   bool forced_mirror_mode_for_tablet_ = false;
 
   // Display layout per list of devices.
-  std::map<DisplayIdList, std::unique_ptr<DisplayLayout>> layouts_;
+  base::flat_map<DisplayIdList, std::unique_ptr<DisplayLayout>> layouts_;
 };
 
 }  // namespace display
