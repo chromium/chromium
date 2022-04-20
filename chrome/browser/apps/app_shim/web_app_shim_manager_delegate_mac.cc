@@ -215,12 +215,11 @@ void WebAppShimManagerDelegate::LaunchApp(
                                   login_item_restore_state);
     return;
   }
-  DisplayMode effective_display_mode = WebAppProvider::GetForWebApps(profile)
-                                           ->registrar()
-                                           .GetAppEffectiveDisplayMode(app_id);
-
+  DisplayMode display_mode =
+      WebAppProvider::GetForWebApps(profile)->registrar().GetAppUserDisplayMode(
+          app_id);
   apps::mojom::LaunchContainer launch_container =
-      web_app::ConvertDisplayModeToAppLaunchContainer(effective_display_mode);
+      web_app::ConvertDisplayModeToAppLaunchContainer(display_mode);
   apps::mojom::LaunchSource launch_source =
       apps::mojom::LaunchSource::kFromCommandLine;
   if (login_item_restore_state !=

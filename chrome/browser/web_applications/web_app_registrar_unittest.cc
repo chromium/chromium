@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -49,7 +48,7 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
     web_app->SetStartUrl(GURL(url));
     web_app->SetName("Name" + base::NumberToString(i));
     web_app->SetDisplayMode(DisplayMode::kBrowser);
-    web_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    web_app->SetUserDisplayMode(DisplayMode::kBrowser);
 
     registry.emplace(app_id, std::move(web_app));
   }
@@ -173,7 +172,7 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
 
   web_app->AddSource(WebAppManagement::kSync);
   web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetName(name);
   web_app->SetDescription(description);
   web_app->SetStartUrl(start_url);
@@ -182,7 +181,7 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
 
   web_app2->AddSource(WebAppManagement::kDefault);
   web_app2->SetDisplayMode(DisplayMode::kBrowser);
-  web_app2->SetUserDisplayMode(UserDisplayMode::kBrowser);
+  web_app2->SetUserDisplayMode(DisplayMode::kBrowser);
   web_app2->SetStartUrl(start_url2);
   web_app2->SetName(name);
 
@@ -377,7 +376,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   const std::string description = "Description";
   const absl::optional<SkColor> theme_color = 0xAABBCCDD;
   const auto display_mode = DisplayMode::kMinimalUi;
-  const auto user_display_mode = UserDisplayMode::kStandalone;
+  const auto user_display_mode = DisplayMode::kStandalone;
   std::vector<DisplayMode> display_mode_override;
 
   EXPECT_EQ(std::string(), registrar().GetAppShortName(app_id));
@@ -405,7 +404,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   EXPECT_EQ(description, registrar().GetAppDescription(app_id));
   EXPECT_EQ(theme_color, registrar().GetAppThemeColor(app_id));
   EXPECT_EQ(start_url, registrar().GetAppStartUrl(app_id));
-  EXPECT_EQ(UserDisplayMode::kStandalone,
+  EXPECT_EQ(DisplayMode::kStandalone,
             registrar().GetAppUserDisplayMode(app_id));
 
   {
@@ -425,15 +424,15 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   }
 
   {
-    EXPECT_FALSE(registrar().GetAppUserDisplayMode("unknown").has_value());
+    EXPECT_EQ(DisplayMode::kUndefined,
+              registrar().GetAppUserDisplayMode("unknown"));
 
-    web_app_ptr->SetUserDisplayMode(UserDisplayMode::kBrowser);
-    EXPECT_EQ(UserDisplayMode::kBrowser,
-              registrar().GetAppUserDisplayMode(app_id));
+    web_app_ptr->SetUserDisplayMode(DisplayMode::kBrowser);
+    EXPECT_EQ(DisplayMode::kBrowser, registrar().GetAppUserDisplayMode(app_id));
 
-    sync_bridge().SetAppUserDisplayMode(app_id, UserDisplayMode::kStandalone,
+    sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
                                         /*is_user_action=*/false);
-    EXPECT_EQ(UserDisplayMode::kStandalone, web_app_ptr->user_display_mode());
+    EXPECT_EQ(DisplayMode::kStandalone, web_app_ptr->user_display_mode());
     EXPECT_EQ(DisplayMode::kMinimalUi, web_app_ptr->display_mode());
 
     ASSERT_EQ(2u, web_app_ptr->display_mode_override().size());
@@ -833,7 +832,7 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeBrowser) {
   auto web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
   web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetIsLocallyInstalled(false);
   RegisterApp(std::move(web_app));
 
@@ -853,7 +852,7 @@ TEST_F(WebAppRegistrarTest,
   auto web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
   web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetIsLocallyInstalled(false);
 
   // Not locally installed apps get browser display mode because they do not
@@ -875,7 +874,7 @@ TEST_F(WebAppRegistrarTest,
 
   // Valid manifest must have standalone display mode
   web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+  web_app->SetUserDisplayMode(DisplayMode::kBrowser);
   web_app->SetIsLocallyInstalled(true);
   web_app->SetStorageIsolated(true);
 
@@ -895,7 +894,7 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeOverride) {
   display_mode_overrides.push_back(DisplayMode::kMinimalUi);
 
   web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetDisplayModeOverride(display_mode_overrides);
   web_app->SetIsLocallyInstalled(false);
   RegisterApp(std::move(web_app));
@@ -920,7 +919,7 @@ TEST_F(WebAppRegistrarTest,
   display_mode_overrides.push_back(DisplayMode::kMinimalUi);
 
   web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetDisplayModeOverride(display_mode_overrides);
   web_app->SetIsLocallyInstalled(false);
   RegisterApp(std::move(web_app));

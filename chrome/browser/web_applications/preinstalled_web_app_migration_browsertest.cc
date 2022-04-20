@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
@@ -485,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     EXPECT_EQ(WebAppProvider::GetForTest(profile())
                   ->registrar()
                   .GetAppUserDisplayMode(web_app_id),
-              UserDisplayMode::kBrowser);
+              DisplayMode::kBrowser);
   }
 }
 
@@ -524,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
   EXPECT_EQ(
       WebAppProvider::GetForTest(profile())->registrar().GetAppUserDisplayMode(
           GetWebAppId()),
-      UserDisplayMode::kStandalone);
+      DisplayMode::kStandalone);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -644,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        MigrateToPreinstalledWebApp) {
   ScopedTestingPreinstalledAppData preinstalled_apps;
-  ExternalInstallOptions options(GetWebAppUrl(), UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(GetWebAppUrl(), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalDefault);
   options.gate_on_feature = kMigrationFlag;
   options.user_type_allowlist = {"unmanaged"};

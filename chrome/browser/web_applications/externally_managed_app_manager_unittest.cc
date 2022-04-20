@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -87,7 +86,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     install_options_list.reserve(urls.size());
     for (const auto& url : urls) {
       install_options_list.emplace_back(
-          url, UserDisplayMode::kStandalone,
+          url, DisplayMode::kStandalone,
           ExternalInstallSource::kInternalDefault);
     }
 
@@ -156,10 +155,10 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
 TEST_F(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
   std::vector<ExternalInstallOptions> install_options_list;
   install_options_list.emplace_back(GURL("https://foo.example"),
-                                    UserDisplayMode::kStandalone,
+                                    DisplayMode::kStandalone,
                                     ExternalInstallSource::kInternalDefault);
   install_options_list.emplace_back(GURL("https://bar.example"),
-                                    UserDisplayMode::kStandalone,
+                                    DisplayMode::kStandalone,
                                     ExternalInstallSource::kInternalDefault);
 
   externally_managed_app_manager().SynchronizeInstalledApps(
@@ -179,7 +178,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
   {
     std::vector<ExternalInstallOptions> install_options_list;
     install_options_list.emplace_back(GURL("https://foo.example"),
-                                      UserDisplayMode::kStandalone,
+                                      DisplayMode::kStandalone,
                                       ExternalInstallSource::kInternalDefault);
     base::RunLoop run_loop;
     externally_managed_app_manager().SynchronizeInstalledApps(

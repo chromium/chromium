@@ -74,7 +74,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -490,7 +489,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 // Verify that startup URLs aren't used when the process already exists
 // and has other tabbed browser windows.  This is the common case of starting a
 // new browser.
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsOnNewWindow) {
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       StartupURLsOnNewWindow) {
   // Use a couple arbitrary URLs.
   std::vector<GURL> urls;
   urls.push_back(ui_test_utils::GetTestUrl(
@@ -1767,7 +1767,7 @@ web_app::AppId InstallPWAWithName(Profile* profile,
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
-  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_info->title = base::UTF8ToUTF16(app_name);
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
@@ -1998,7 +1998,7 @@ web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
-  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_info->title = u"A Web App";
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
@@ -2240,7 +2240,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     WebAppInstallInfo info;
     info.start_url = GURL(kStartUrl);
     info.title = kAppName;
-    info.user_display_mode = web_app::UserDisplayMode::kStandalone;
+    info.user_display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_finalizer.FinalizeInstall(
         info, options,
         base::BindLambdaForTesting([&](const web_app::AppId& app_id,
@@ -2254,7 +2254,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     run_loop.Run();
 
     EXPECT_EQ(provider->registrar().GetAppUserDisplayMode(kAppId),
-              web_app::UserDisplayMode::kStandalone);
+              blink::mojom::DisplayMode::kStandalone);
   }
 }
 
@@ -2532,7 +2532,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
         std::make_unique<WebAppInstallInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
-    info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
     info->file_handlers = file_handlers;
     web_app::AppId app_id =
@@ -3052,10 +3052,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTabs) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_MAC)
 // http://crbug.com/314819
 #define MAYBE_RestoreOnStartupURLsPolicySpecified \
-  DISABLED_RestoreOnStartupURLsPolicySpecified
+    DISABLED_RestoreOnStartupURLsPolicySpecified
 #else
 #define MAYBE_RestoreOnStartupURLsPolicySpecified \
-  RestoreOnStartupURLsPolicySpecified
+    RestoreOnStartupURLsPolicySpecified
 #endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
                        MAYBE_RestoreOnStartupURLsPolicySpecified) {
@@ -3107,7 +3107,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_MAC)
 // http://crbug.com/314819
 #define MAYBE_FirstRunTabsWithRestoreSession \
-  DISABLED_FirstRunTabsWithRestoreSession
+    DISABLED_FirstRunTabsWithRestoreSession
 #else
 #define MAYBE_FirstRunTabsWithRestoreSession FirstRunTabsWithRestoreSession
 #endif
@@ -3129,7 +3129,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   StartupBrowserCreator browser_creator;
   browser_creator.AddFirstRunTabs(
       {embedded_test_server()->GetURL("/title1.html")});
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kRestoreOnStartup, 1);
 
   // Do a process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);

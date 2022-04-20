@@ -35,7 +35,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -81,7 +80,7 @@ namespace web_app {
 namespace {
 
 WebAppInstallParams MakeParams(
-    absl::optional<UserDisplayMode> display_mode = absl::nullopt) {
+    DisplayMode display_mode = DisplayMode::kUndefined) {
   WebAppInstallParams params;
   params.fallback_start_url = GURL("https://example.com/fallback");
   params.user_display_mode = display_mode;
@@ -166,7 +165,7 @@ class WebAppInstallTaskTest : public WebAppTest {
                              const std::string& description,
                              const GURL& scope,
                              absl::optional<SkColor> theme_color,
-                             UserDisplayMode user_display_mode) {
+                             DisplayMode user_display_mode) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
 
     web_app_info->start_url = url;
@@ -183,7 +182,7 @@ class WebAppInstallTaskTest : public WebAppTest {
                              const std::string& name,
                              const std::string& description) {
     CreateRendererAppInfo(url, name, description, GURL(), absl::nullopt,
-                          /*user_display_mode=*/UserDisplayMode::kStandalone);
+                          /*user_display_mode=*/DisplayMode::kStandalone);
   }
 
   void InitializeInstallTaskAndRetriever(
@@ -213,8 +212,7 @@ class WebAppInstallTaskTest : public WebAppTest {
     CreateDefaultDataToRetrieve(url, GURL{});
   }
 
-  void CreateDataToRetrieve(const GURL& url,
-                            UserDisplayMode user_display_mode) {
+  void CreateDataToRetrieve(const GURL& url, DisplayMode user_display_mode) {
     DCHECK(data_retriever_);
 
     auto renderer_web_app_info = std::make_unique<WebAppInstallInfo>();
@@ -416,7 +414,7 @@ class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {
                              const std::string& description,
                              const GURL& scope,
                              absl::optional<SkColor> theme_color,
-                             UserDisplayMode user_display_mode) {
+                             DisplayMode user_display_mode) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
 
     web_app_info->start_url = url;
@@ -448,7 +446,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
       webapps::WebappInstallSource::MENU_BROWSER_TAB);
   CreateRendererAppInfo(url, "Renderer Name", description, /*scope*/ GURL{},
                         theme_color,
-                        /*user_display_mode=*/UserDisplayMode::kStandalone);
+                        /*user_display_mode=*/DisplayMode::kStandalone);
   {
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
@@ -625,7 +623,7 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
   CreateRendererAppInfo(GURL("https://renderer.com/path"), "RendererName",
                         renderer_description,
                         GURL("https://renderer.com/scope"), 0x00,
-                        /*user_display_mode=*/UserDisplayMode::kStandalone);
+                        /*user_display_mode=*/DisplayMode::kStandalone);
 
   const GURL manifest_start_url = GURL("https://example.com/start");
   const AppId app_id =
@@ -1055,7 +1053,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
 
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = url;
-  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode = DisplayMode::kStandalone;
   web_app_info->title = u"App Name";
 
   base::RunLoop run_loop;
@@ -1072,7 +1070,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
             std::unique_ptr<WebAppInstallInfo> final_web_app_info =
                 fake_install_finalizer().web_app_info();
             EXPECT_EQ(final_web_app_info->user_display_mode,
-                      UserDisplayMode::kStandalone);
+                      DisplayMode::kStandalone);
 
             run_loop.Quit();
           }));
@@ -1086,7 +1084,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
 
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL("https://example.com/path");
-  web_app_info->user_display_mode = UserDisplayMode::kBrowser;
+  web_app_info->user_display_mode = DisplayMode::kBrowser;
   web_app_info->title = u"App Name";
 
   // Add square yellow icon.
@@ -1115,8 +1113,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
           EXPECT_EQ(SK_ColorYELLOW, icon.second.getColor(0, 0));
         }
 
-        EXPECT_EQ(final_web_app_info->user_display_mode,
-                  UserDisplayMode::kBrowser);
+        EXPECT_EQ(final_web_app_info->user_display_mode, DisplayMode::kBrowser);
 
         run_loop.Quit();
       }));
@@ -1170,7 +1167,7 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
   InitializeInstallTaskAndRetriever(
       webapps::WebappInstallSource::MENU_BROWSER_TAB);
   CreateRendererAppInfo(url, name, description, /*scope*/ GURL{}, theme_color,
-                        /*user_display_mode=*/UserDisplayMode::kStandalone);
+                        /*user_display_mode=*/DisplayMode::kStandalone);
   {
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
@@ -1233,46 +1230,44 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_DisplayMode) {
     InitializeInstallTaskAndRetriever(
         webapps::WebappInstallSource::EXTERNAL_DEFAULT);
     CreateDataToRetrieve(GURL("https://example.com/"),
-                         /*user_display_mode=*/UserDisplayMode::kBrowser);
+                         /*user_display_mode=*/DisplayMode::kBrowser);
 
-    auto app_id = InstallWebAppWithParams(MakeParams(absl::nullopt));
+    auto app_id = InstallWebAppWithParams(MakeParams(DisplayMode::kUndefined));
 
-    EXPECT_EQ(UserDisplayMode::kBrowser,
+    EXPECT_EQ(DisplayMode::kBrowser,
               registrar().GetAppById(app_id)->user_display_mode());
   }
   {
     InitializeInstallTaskAndRetriever(
         webapps::WebappInstallSource::EXTERNAL_DEFAULT);
     CreateDataToRetrieve(GURL("https://example.org/"),
-                         /*user_display_mode=*/UserDisplayMode::kStandalone);
+                         /*user_display_mode=*/DisplayMode::kStandalone);
 
-    auto app_id = InstallWebAppWithParams(MakeParams(absl::nullopt));
+    auto app_id = InstallWebAppWithParams(MakeParams(DisplayMode::kUndefined));
 
-    EXPECT_EQ(UserDisplayMode::kStandalone,
+    EXPECT_EQ(DisplayMode::kStandalone,
               registrar().GetAppById(app_id)->user_display_mode());
   }
   {
     InitializeInstallTaskAndRetriever(
         webapps::WebappInstallSource::EXTERNAL_DEFAULT);
     CreateDataToRetrieve(GURL("https://example.au/"),
-                         /*user_display_mode=*/UserDisplayMode::kStandalone);
+                         /*user_display_mode=*/DisplayMode::kStandalone);
 
-    auto app_id =
-        InstallWebAppWithParams(MakeParams(UserDisplayMode::kBrowser));
+    auto app_id = InstallWebAppWithParams(MakeParams(DisplayMode::kBrowser));
 
-    EXPECT_EQ(UserDisplayMode::kBrowser,
+    EXPECT_EQ(DisplayMode::kBrowser,
               registrar().GetAppById(app_id)->user_display_mode());
   }
   {
     InitializeInstallTaskAndRetriever(
         webapps::WebappInstallSource::EXTERNAL_DEFAULT);
     CreateDataToRetrieve(GURL("https://example.app/"),
-                         /*user_display_mode=*/UserDisplayMode::kBrowser);
+                         /*user_display_mode=*/DisplayMode::kBrowser);
 
-    auto app_id =
-        InstallWebAppWithParams(MakeParams(UserDisplayMode::kStandalone));
+    auto app_id = InstallWebAppWithParams(MakeParams(DisplayMode::kStandalone));
 
-    EXPECT_EQ(UserDisplayMode::kStandalone,
+    EXPECT_EQ(DisplayMode::kStandalone,
               registrar().GetAppById(app_id)->user_display_mode());
   }
 }
@@ -1485,7 +1480,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
       webapps::WebappInstallSource::MENU_BROWSER_TAB);
   CreateDefaultDataToRetrieve(url, scope);
   CreateRendererAppInfo(url, name, description, /*scope=*/GURL{}, theme_color,
-                        /*user_display_mode=*/UserDisplayMode::kStandalone);
+                        /*user_display_mode=*/DisplayMode::kStandalone);
 
   const char kWebAppSettingWithDefaultConfiguration[] = R"([
     {
@@ -1637,7 +1632,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = url;
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = DisplayMode::kStandalone;
     web_app_info->theme_color = theme_color;
     web_app_info->title = u"App Name";
 

@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -55,7 +54,7 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.scope = start_url;
   web_app_info.title = base::UTF8ToUTF16(app_name);
   web_app_info.description = base::UTF8ToUTF16(app_name);
-  web_app_info.user_display_mode = UserDisplayMode::kStandalone;
+  web_app_info.user_display_mode = DisplayMode::kStandalone;
 
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_DEFAULT);

@@ -12,7 +12,6 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -81,9 +80,7 @@ class WebApp {
 
   DisplayMode display_mode() const { return display_mode_; }
 
-  absl::optional<UserDisplayMode> user_display_mode() const {
-    return user_display_mode_;
-  }
+  DisplayMode user_display_mode() const { return user_display_mode_; }
 
   const std::vector<DisplayMode>& display_mode_override() const {
     return display_mode_override_;
@@ -302,7 +299,7 @@ class WebApp {
   void SetBackgroundColor(absl::optional<SkColor> background_color);
   void SetDarkModeBackgroundColor(absl::optional<SkColor> background_color);
   void SetDisplayMode(DisplayMode display_mode);
-  void SetUserDisplayMode(UserDisplayMode user_display_mode);
+  void SetUserDisplayMode(DisplayMode user_display_mode);
   void SetDisplayModeOverride(std::vector<DisplayMode> display_mode_override);
   void SetUserPageOrdinal(syncer::StringOrdinal page_ordinal);
   void SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal);
@@ -380,7 +377,7 @@ class WebApp {
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> dark_mode_background_color_;
   DisplayMode display_mode_ = DisplayMode::kUndefined;
-  absl::optional<UserDisplayMode> user_display_mode_ = absl::nullopt;
+  DisplayMode user_display_mode_ = DisplayMode::kUndefined;
   std::vector<DisplayMode> display_mode_override_;
   syncer::StringOrdinal user_page_ordinal_;
   syncer::StringOrdinal user_launch_ordinal_;

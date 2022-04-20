@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -188,8 +187,22 @@ void WebApp::SetDisplayMode(DisplayMode display_mode) {
   display_mode_ = display_mode;
 }
 
-void WebApp::SetUserDisplayMode(UserDisplayMode user_display_mode) {
-  user_display_mode_ = user_display_mode;
+void WebApp::SetUserDisplayMode(DisplayMode user_display_mode) {
+  switch (user_display_mode) {
+    case DisplayMode::kBrowser:
+    case DisplayMode::kTabbed:
+      user_display_mode_ = user_display_mode;
+      break;
+    case DisplayMode::kUndefined:
+    case DisplayMode::kMinimalUi:
+    case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
+      NOTREACHED();
+      [[fallthrough]];
+    case DisplayMode::kStandalone:
+      user_display_mode_ = DisplayMode::kStandalone;
+      break;
+  }
 }
 
 void WebApp::SetDisplayModeOverride(
@@ -741,9 +754,7 @@ base::Value WebApp::AsDebugValue() const {
   root.SetKey("url_handlers", ConvertDebugValueList(url_handlers_));
 
   root.SetStringKey("user_display_mode",
-                    user_display_mode_.has_value()
-                        ? ConvertUserDisplayModeToString(*user_display_mode_)
-                        : "");
+                    blink::DisplayModeToString(user_display_mode_));
 
   root.SetStringKey("user_launch_ordinal",
                     user_launch_ordinal_.ToDebugString());

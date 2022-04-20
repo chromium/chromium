@@ -62,7 +62,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -427,9 +426,10 @@ bool BrowserState::operator==(const BrowserState& other) const {
 AppState::AppState(web_app::AppId app_id,
                    std::string app_name,
                    GURL app_scope,
+                   apps::WindowMode window_mode,
                    apps::RunOnOsLoginMode run_on_os_login_mode,
                    blink::mojom::DisplayMode effective_display_mode,
-                   absl::optional<UserDisplayMode> user_display_mode,
+                   blink::mojom::DisplayMode user_display_mode,
                    std::string manifest_launcher_icon_filename,
                    bool installed_locally,
                    bool shortcut_created,
@@ -437,6 +437,7 @@ AppState::AppState(web_app::AppId app_id,
     : id(std::move(app_id)),
       name(std::move(app_name)),
       scope(std::move(app_scope)),
+      window_mode(window_mode),
       run_on_os_login_mode(run_on_os_login_mode),
       effective_display_mode(effective_display_mode),
       user_display_mode(user_display_mode),
@@ -449,6 +450,7 @@ AppState::~AppState() = default;
 AppState::AppState(const AppState&) = default;
 bool AppState::operator==(const AppState& other) const {
   return id == other.id && name == other.name && scope == other.scope &&
+         window_mode == other.window_mode &&
          run_on_os_login_mode == other.run_on_os_login_mode &&
          effective_display_mode == other.effective_display_mode &&
          user_display_mode == other.user_display_mode &&
@@ -1051,6 +1053,7 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
 
   EXPECT_EQ(app->id, app_state.id);
   EXPECT_EQ(app->title.value(), app_state.name);
+  EXPECT_EQ(app->window_mode, app_state.window_mode);
   ASSERT_TRUE(app->run_on_os_login.has_value());
   EXPECT_EQ(app->run_on_os_login.value()->login_mode,
             app_state.run_on_os_login_mode);
@@ -1215,7 +1218,8 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
   // Will need to add feature flag based condition for web app settings page
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
-  sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser, true);
+  sync_bridge.SetAppUserDisplayMode(app_id, blink::mojom::DisplayMode::kBrowser,
+                                    true);
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kBrowser);
@@ -1232,7 +1236,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(
   // Will need to add feature flag based condition for web app settings page.
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
-  sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kStandalone, true);
+  sync_bridge.SetAppUserDisplayMode(
+      app_id, blink::mojom::DisplayMode::kStandalone, true);
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kWindow);
@@ -1477,7 +1482,7 @@ void WebAppIntegrationTestDriver::CheckAppInListTabbed(
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(app_state->user_display_mode, UserDisplayMode::kBrowser);
+  EXPECT_EQ(app_state->user_display_mode, blink::mojom::DisplayMode::kBrowser);
   AfterStateCheckAction();
 }
 
@@ -1488,7 +1493,8 @@ void WebAppIntegrationTestDriver::CheckAppInListWindowed(
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(app_state->user_display_mode, UserDisplayMode::kStandalone);
+  EXPECT_EQ(app_state->user_display_mode,
+            blink::mojom::DisplayMode::kStandalone);
   AfterStateCheckAction();
 }
 
@@ -1618,6 +1624,17 @@ void WebAppIntegrationTestDriver::CheckAppTitleSiteA(const std::string& title) {
       after_state_change_action_state_.get(), profile(), "SiteA");
   ASSERT_TRUE(app_state);
   EXPECT_EQ(app_state->name, title);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppWindowMode(
+    const std::string& site_mode,
+    apps::WindowMode window_mode) {
+  BeforeStateCheckAction(__FUNCTION__);
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->window_mode, window_mode);
   AfterStateCheckAction();
 }
 
@@ -1848,12 +1865,12 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(
 }
 
 void WebAppIntegrationTestDriver::CheckUserDisplayModeInternal(
-    UserDisplayMode user_display_mode) {
+    DisplayMode display_mode) {
   BeforeStateCheckAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(user_display_mode, app_state->user_display_mode);
+  EXPECT_EQ(display_mode, app_state->user_display_mode);
   AfterStateCheckAction();
 }
 
@@ -2114,6 +2131,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       auto state = AppState(
           app_id, registrar.GetAppShortName(app_id),
           registrar.GetAppScope(app_id),
+          web_app_publisher_helper.ConvertDisplayModeToWindowMode(
+              registrar.GetAppUserDisplayMode(app_id)),
           web_app_publisher_helper.ConvertOsLoginMode(
               registrar.GetAppRunOnOsLoginMode(app_id).value),
           registrar.GetAppEffectiveDisplayMode(app_id),

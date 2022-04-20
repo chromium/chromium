@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -100,8 +99,7 @@ base::Value GetWindowedItem() {
 }
 
 ExternalInstallOptions GetWindowedInstallOptions() {
-  ExternalInstallOptions options(GURL(kWindowedUrl),
-                                 UserDisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -121,7 +119,7 @@ base::Value GetTabbedItem() {
 }
 
 ExternalInstallOptions GetTabbedInstallOptions() {
-  ExternalInstallOptions options(GURL(kTabbedUrl), UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kTabbedUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -139,8 +137,7 @@ base::Value GetNoContainerItem() {
 }
 
 ExternalInstallOptions GetNoContainerInstallOptions() {
-  ExternalInstallOptions options(GURL(kNoContainerUrl),
-                                 UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -158,8 +155,7 @@ base::Value GetCreateDesktopShortcutDefaultItem() {
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions() {
-  ExternalInstallOptions options(GURL(kNoContainerUrl),
-                                 UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -178,8 +174,7 @@ base::Value GetCreateDesktopShortcutFalseItem() {
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions() {
-  ExternalInstallOptions options(GURL(kNoContainerUrl),
-                                 UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -198,8 +193,7 @@ base::Value GetCreateDesktopShortcutTrueItem() {
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions() {
-  ExternalInstallOptions options(GURL(kNoContainerUrl),
-                                 UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -234,8 +228,7 @@ base::Value GetFallbackAppNameItem() {
 }
 
 ExternalInstallOptions GetFallbackAppNameInstallOptions() {
-  ExternalInstallOptions options(GURL(kWindowedUrl),
-                                 UserDisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -258,8 +251,7 @@ base::Value GetCustomAppNameItem(std::string name) {
 }
 
 ExternalInstallOptions GetCustomAppNameInstallOptions(std::string name) {
-  ExternalInstallOptions options(GURL(kWindowedUrl),
-                                 UserDisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -285,8 +277,7 @@ base::Value GetCustomAppIconItem(bool secure = true) {
 }
 
 ExternalInstallOptions GetCustomAppIconInstallOptions() {
-  ExternalInstallOptions options(GURL(kWindowedUrl),
-                                 UserDisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;

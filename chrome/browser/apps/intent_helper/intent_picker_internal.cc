@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -79,7 +78,7 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
 
   auto* const provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (provider->registrar().GetAppUserDisplayMode(*app_id) ==
-      web_app::UserDisplayMode::kBrowser) {
+      web_app::DisplayMode::kBrowser) {
     return apps;
   }
 

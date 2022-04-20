@@ -113,6 +113,7 @@ DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
 
   const absl::optional<DisplayMode> resolved_override_display_mode =
       TryResolveOverridesDisplayMode(display_mode_overrides);
+
   if (resolved_override_display_mode.has_value()) {
     return *resolved_override_display_mode;
   }

@@ -68,8 +68,7 @@ struct WebAppInstallParams {
   // Whether the app should be reinstalled even if it is already installed.
   bool force_reinstall = false;
 
-  // See `WebAppInstallTask::ApplyParamsToWebAppInstallInfo`
-  absl::optional<UserDisplayMode> user_display_mode = absl::nullopt;
+  DisplayMode user_display_mode = DisplayMode::kUndefined;
 
   // URL to be used as start_url if manifest is unavailable.
   GURL fallback_start_url;

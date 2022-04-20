@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -351,14 +350,14 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
     LOG(WARNING) << "Policy-installed web app has invalid URL " << *install_url;
   }
 
-  UserDisplayMode user_display_mode;
+  DisplayMode user_display_mode;
   if (!default_launch_container) {
-    user_display_mode = UserDisplayMode::kBrowser;
+    user_display_mode = DisplayMode::kBrowser;
   } else if (default_launch_container->GetString() ==
              kDefaultLaunchContainerTabValue) {
-    user_display_mode = UserDisplayMode::kBrowser;
+    user_display_mode = DisplayMode::kBrowser;
   } else {
-    user_display_mode = UserDisplayMode::kStandalone;
+    user_display_mode = DisplayMode::kStandalone;
   }
 
   ExternalInstallOptions install_options{

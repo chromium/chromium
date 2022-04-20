@@ -93,7 +93,6 @@
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -2501,8 +2500,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
   DCHECK(provider);
   provider->sync_bridge().SetAppUserDisplayMode(
-      web_app_id, web_app::UserDisplayMode::kStandalone,
-      /*is_user_action=*/false);
+      web_app_id, web_app::DisplayMode::kStandalone, /*is_user_action=*/false);
 
   // The apps should be closed.
   EXPECT_EQ(ash::STATUS_CLOSED,

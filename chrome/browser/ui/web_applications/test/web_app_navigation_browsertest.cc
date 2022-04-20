@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -241,7 +240,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   web_app_info->scope = https_server_.GetURL(app_host, app_scope);
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
   web_app_info->description = u"Test description";
-  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   return test::InstallWebApp(profile(), std::move(web_app_info));
 }

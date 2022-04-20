@@ -93,7 +93,6 @@
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1534,7 +1533,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
 
   // Only applies to apps that open in an app window.
   if (provider->registrar().GetAppUserDisplayMode(*link_app_id) ==
-      web_app::UserDisplayMode::kBrowser) {
+      web_app::DisplayMode::kBrowser) {
     return;
   }
 

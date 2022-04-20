@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -608,8 +607,8 @@ void WebAppInstallTask::OnGetWebAppInstallInfo(
 void WebAppInstallTask::ApplyParamsToWebAppInstallInfo(
     const WebAppInstallParams& install_params,
     WebAppInstallInfo& web_app_info) {
-  if (install_params.user_display_mode.has_value())
-    web_app_info.user_display_mode = *install_params.user_display_mode;
+  if (install_params.user_display_mode != DisplayMode::kUndefined)
+    web_app_info.user_display_mode = install_params.user_display_mode;
 
   if (!install_params.override_manifest_id.has_value())
     web_app_info.manifest_id = install_params.override_manifest_id;
@@ -925,8 +924,9 @@ void WebAppInstallTask::OnDialogCompleted(
 
     UpdateFinalizerClientData(install_params_, &finalize_options);
 
-    if (install_params_->user_display_mode.has_value())
+    if (install_params_->user_display_mode != DisplayMode::kUndefined)
       web_app_info_copy.user_display_mode = install_params_->user_display_mode;
+
     finalize_options.add_to_applications_menu =
         install_params_->add_to_applications_menu;
     finalize_options.add_to_desktop = install_params_->add_to_desktop;
@@ -991,7 +991,7 @@ void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
         install_finalizer_->CanReparentTab(app_id, !error);
 
     if (can_reparent_tab &&
-        (web_app_info->user_display_mode != UserDisplayMode::kBrowser)) {
+        (web_app_info->user_display_mode != DisplayMode::kBrowser)) {
       install_finalizer_->ReparentTab(app_id, !error, web_contents());
     }
   }
