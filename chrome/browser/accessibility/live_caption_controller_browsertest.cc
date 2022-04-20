@@ -6,11 +6,11 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/ranges/ranges.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption_test_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -29,7 +29,6 @@
 #include "components/soda/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_test.h"
-#include "media/base/media_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -38,15 +37,6 @@
 namespace captions {
 
 namespace {
-
-// Chrome OS requires an additional feature flag to enable Live Caption.
-std::vector<base::Feature> RequiredFeatureFlags() {
-  std::vector<base::Feature> features = {media::kLiveCaption};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  features.push_back(ash::features::kOnDeviceSpeechRecognition);
-#endif
-  return features;
-}
 
 speech::LanguageCode en_us() {
   return speech::LanguageCode::kEnUs;
@@ -77,42 +67,13 @@ Profile* CreateProfile() {
   return profile_manager->GetProfileByPath(profile_path);
 }
 
-class LiveCaptionControllerTest : public InProcessBrowserTest {
+class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
  public:
   LiveCaptionControllerTest() = default;
   ~LiveCaptionControllerTest() override = default;
   LiveCaptionControllerTest(const LiveCaptionControllerTest&) = delete;
   LiveCaptionControllerTest& operator=(const LiveCaptionControllerTest&) =
       delete;
-
-  // InProcessBrowserTest overrides:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
-    InProcessBrowserTest::SetUp();
-  }
-
-  void SetLiveCaptionEnabled(bool enabled) {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                                 enabled);
-    if (enabled) {
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
-          en_us());
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-    }
-  }
-
-  void SetLiveCaptionEnabledOnProfile(bool enabled, Profile* profile) {
-    profile->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
-    if (enabled) {
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
-          en_us());
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-    }
-  }
-
-  LiveCaptionController* GetController() {
-    return GetControllerForProfile(browser()->profile());
-  }
 
   LiveCaptionController* GetControllerForProfile(Profile* profile) {
     return LiveCaptionControllerFactory::GetForProfile(profile);
@@ -203,7 +164,6 @@ class LiveCaptionControllerTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<CaptionBubbleContextBrowser> caption_bubble_context_;
 };
 

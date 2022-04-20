@@ -4,10 +4,10 @@
 
 #include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,11 +15,9 @@
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
-#include "components/soda/soda_installer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
-#include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -28,15 +26,6 @@
 #endif
 
 namespace {
-// Chrome OS requires an additional feature flag to enable Live Caption.
-std::vector<base::Feature> RequiredFeatureFlags() {
-  std::vector<base::Feature> features = {media::kLiveCaption};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  features.push_back(ash::features::kOnDeviceSpeechRecognition);
-#endif
-  return features;
-}
-
 // A WebContentsObserver that allows waiting for some media to start or stop
 // playing fullscreen.
 class FullscreenEventsWaiter : public content::WebContentsObserver {
@@ -66,7 +55,7 @@ class FullscreenEventsWaiter : public content::WebContentsObserver {
 
 namespace captions {
 
-class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
+class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
  public:
   LiveCaptionSpeechRecognitionHostTest() = default;
   ~LiveCaptionSpeechRecognitionHostTest() override = default;
@@ -75,13 +64,12 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
   LiveCaptionSpeechRecognitionHostTest& operator=(
       const LiveCaptionSpeechRecognitionHostTest&) = delete;
 
-  // InProcessBrowserTest overrides:
+  // LiveCaptionBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
     // This is required for the fullscreen video tests.
     embedded_test_server()->ServeFilesFromSourceDirectory(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-    InProcessBrowserTest::SetUp();
+    LiveCaptionBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -122,16 +110,6 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
     remotes_[frame_host]->OnSpeechRecognitionError();
   }
 
-  void SetLiveCaptionEnabled(bool enabled) {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                                 enabled);
-    if (enabled) {
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
-          speech::LanguageCode::kEnUs);
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-    }
-  }
-
   bool HasBubbleController() {
     return LiveCaptionControllerFactory::GetForProfile(browser()->profile())
                ->caption_bubble_controller_.get() != nullptr;
@@ -151,7 +129,6 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
     EXPECT_EQ(expected_success, success);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::map<content::RenderFrameHost*,
            mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>>
       remotes_;

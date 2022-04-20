@@ -1158,6 +1158,7 @@ if (!is_android) {
       "//chrome/browser:cart_db_content_proto",
       "//chrome/browser:coupon_db_content_proto",
       "//chrome/browser:theme_properties",
+      "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
