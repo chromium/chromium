@@ -1035,7 +1035,8 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   // Post-startup mitigations.
   mitigations = MITIGATION_DLL_SEARCH_ORDER;
   if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
-      sandbox_type != Sandbox::kSpeechRecognition) {
+      sandbox_type != Sandbox::kSpeechRecognition &&
+      sandbox_type != Sandbox::kMediaFoundationCdm) {
     mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
   }
 
