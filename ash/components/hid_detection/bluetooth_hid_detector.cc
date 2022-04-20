@@ -50,7 +50,7 @@ BluetoothHidDetector::BluetoothHidDetectionStatus::
     ~BluetoothHidDetectionStatus() = default;
 
 BluetoothHidDetector::BluetoothHidDetector() {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
+  DCHECK(ash::features::IsOobeHidDetectionRevampEnabled());
 }
 
 BluetoothHidDetector::~BluetoothHidDetector() = default;

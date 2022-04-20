@@ -4,7 +4,9 @@
 
 #include "ash/components/hid_detection/bluetooth_hid_detector_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_power_controller.h"
@@ -59,7 +61,11 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   ~BluetoothHidDetectorImplTest() override = default;
 
   // testing::Test:
-  void SetUp() override {}
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOobeHidDetectionRevamp);
+    bluetooth_hid_detector_ = std::make_unique<BluetoothHidDetectorImpl>();
+  }
 
   void TearDown() override {
     // HID detection must be stopped before BluetoothHidDetectorImpl is
@@ -73,7 +79,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
       bool keyboard_is_missing = true) {
     delegates_.push_back(std::make_unique<FakeBluetoothHidDetectorDelegate>());
     FakeBluetoothHidDetectorDelegate* delegate = delegates_.back().get();
-    bluetooth_hid_detector_.StartBluetoothHidDetection(
+    bluetooth_hid_detector()->StartBluetoothHidDetection(
         delegate, {.pointer_is_missing = pointer_is_missing,
                    .keyboard_is_missing = keyboard_is_missing});
     base::RunLoop().RunUntilIdle();
@@ -81,19 +87,19 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   }
 
   void StopBluetoothHidDetection() {
-    bluetooth_hid_detector_.StopBluetoothHidDetection();
+    bluetooth_hid_detector()->StopBluetoothHidDetection();
     base::RunLoop().RunUntilIdle();
   }
 
   void SetInputDevicesStatus(
       BluetoothHidDetector::InputDevicesStatus input_devices_status) {
-    bluetooth_hid_detector_.SetInputDevicesStatus(input_devices_status);
+    bluetooth_hid_detector()->SetInputDevicesStatus(input_devices_status);
     base::RunLoop().RunUntilIdle();
   }
 
   const BluetoothHidDetector::BluetoothHidDetectionStatus
   GetBluetoothHidDetectionStatus() {
-    return bluetooth_hid_detector_.GetBluetoothHidDetectionStatus();
+    return bluetooth_hid_detector()->GetBluetoothHidDetectionStatus();
   }
 
   // Simulates Bluetooth being toggled by a UI surface. This sets the state of
@@ -177,7 +183,12 @@ class BluetoothHidDetectorImplTest : public testing::Test {
         ->SetDiscoveredDevices(std::move(unpaired_devices));
   }
 
+  BluetoothHidDetectorImpl* bluetooth_hid_detector() {
+    return bluetooth_hid_detector_.get();
+  }
+
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::vector<BluetoothDevicePropertiesPtr> unpaired_devices_;
   size_t num_devices_created_ = 0u;
@@ -189,7 +200,8 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
 
-  hid_detection::BluetoothHidDetectorImpl bluetooth_hid_detector_;
+  std::unique_ptr<hid_detection::BluetoothHidDetectorImpl>
+      bluetooth_hid_detector_;
 };
 
 TEST_F(BluetoothHidDetectorImplTest, StartStopStartDetection_BluetoothEnabled) {

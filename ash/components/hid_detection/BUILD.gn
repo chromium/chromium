@@ -32,6 +32,7 @@ source_set("unit_tests") {
 
   deps = [
     ":hid_detection",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/services/bluetooth_config",
