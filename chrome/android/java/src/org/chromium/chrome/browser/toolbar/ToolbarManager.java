@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
@@ -122,7 +121,6 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -1308,14 +1306,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mTabModelSelector = mTabModelSelectorSupplier.get();
         mShowStartSurfaceSupplier = showStartSurfaceSupplier;
 
-        OnLongClickListener tabSwitcherLongClickHandler =
-                TabSwitcherActionMenuCoordinator.createOnLongClickListener(
-                        (id) -> mAppMenuDelegate.onOptionsItemSelected(id, null));
-
         mToolbar.initializeWithNative(layoutManager::requestUpdate, tabSwitcherClickHandler,
-                tabSwitcherLongClickHandler, newTabClickHandler, bookmarkClickHandler,
-                customTabsBackClickHandler, layoutManager, mActivityTabProvider,
-                mBrowserControlsSizer, mTopUiThemeColorProvider);
+                newTabClickHandler, bookmarkClickHandler, customTabsBackClickHandler,
+                mAppMenuDelegate, layoutManager, mActivityTabProvider, mBrowserControlsSizer,
+                mTopUiThemeColorProvider);
 
         mToolbar.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override

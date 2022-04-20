@@ -65,6 +65,8 @@ public class TabSwitcherActionMenuCoordinator {
         return (view) -> {
             Context context = view.getContext();
             menu.displayMenu(context, (ListMenuButton) view, menu.buildMenuItems(), (id) -> {
+                // TODO(crbug.com/1317817): Refactor to allow subclasses to record different user
+                // actions and update StartSurfaceTabSwitcherActionMenuCoordinator.
                 recordUserActions(id);
                 onItemClicked.onResult(id);
             });
@@ -91,7 +93,7 @@ public class TabSwitcherActionMenuCoordinator {
      * @param onItemClicked  The clicked listener handling clicks on TabSwitcherActionMenu.
      */
     @VisibleForTesting
-    public void displayMenu(final Context context, ListMenuButton anchorView, ModelList listItems,
+    void displayMenu(final Context context, ListMenuButton anchorView, ModelList listItems,
             Callback<Integer> onItemClicked) {
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
         BasicListMenu listMenu = new BasicListMenu(context, listItems, (model) -> {
@@ -121,12 +123,11 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     @VisibleForTesting
-    public View getContentView() {
+    View getContentView() {
         return mContentView;
     }
 
-    @VisibleForTesting
-    public ModelList buildMenuItems() {
+    ModelList buildMenuItems() {
         ModelList itemList = new ModelList();
         itemList.add(buildListItemByMenuItemType(MenuItemType.CLOSE_TAB));
         itemList.add(buildListItemByMenuItemType(MenuItemType.DIVIDER));
