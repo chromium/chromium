@@ -31,7 +31,6 @@
     <includes>
       <!-- Resources that are served under fixed paths -->
       <include name="IDR_OOBE_POLY3_HTML" file="oobe_polymer3.html" type="chrome_html" />
-      <include name="IDR_MD_LOGIN_POLY3_HTML" file="md_login_polymer3.html" type="chrome_html" />
 
       <part file="oobe_image_resources.grdp" />
       <part file="oobe_animation_resources.grdp" />
