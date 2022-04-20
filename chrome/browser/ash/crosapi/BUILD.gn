@@ -268,7 +268,10 @@ source_set("crosapi") {
   # dependency, so add this indirect dependency to make it work as intended.
   deps += [ "//ash/webui/print_management/mojom" ]
 
-  public_deps = [ ":browser_util" ]
+  public_deps = [
+    ":browser_util",
+    "//media/gpu:buildflags",
+  ]
 }
 
 source_set("test_support") {
