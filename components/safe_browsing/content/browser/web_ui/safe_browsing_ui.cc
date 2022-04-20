@@ -904,6 +904,8 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
         dict_document_processing_info.SetStringKey(
             "maldoca_error_message", processing_info.maldoca_error_message());
       }
+      dict_document_processing_info.SetBoolKey(
+          "processing_successful", processing_info.processing_successful());
       dict_document_summary.SetKey("processing_info",
                                    std::move(dict_document_processing_info));
     }
