@@ -67,11 +67,6 @@ component("dbus") {
     "dbus_clients_browser.h",
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
-    "usb/fake_usbguard_client.cc",
-    "usb/fake_usbguard_client.h",
-    "usb/usbguard_client.cc",
-    "usb/usbguard_client.h",
-    "usb/usbguard_observer.h",
   ]
 }
 

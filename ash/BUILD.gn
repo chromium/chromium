@@ -2203,6 +2203,7 @@ component("ash") {
     "//chromeos/dbus/services:services",
     "//chromeos/dbus/shill",
     "//chromeos/dbus/system_clock",
+    "//chromeos/dbus/usb",
     "//chromeos/login/login_state",
     "//chromeos/metrics",
     "//chromeos/network",
