@@ -135,7 +135,7 @@ void KeyboardLockServiceImpl::GetKeyboardLayoutMap(
     return;
   }
   response->status = blink::mojom::GetKeyboardLayoutMapStatus::kSuccess;
-  response->layout_map = render_frame_host_->GetKeyboardLayoutMap();
+  response->layout_map = render_frame_host_->GetPage().GetKeyboardLayoutMap();
 
   std::move(callback).Run(std::move(response));
 }

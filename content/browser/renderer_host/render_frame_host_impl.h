@@ -1536,9 +1536,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForwardMessageFromHost(blink::TransferableMessage message,
                               const url::Origin& source_origin);
 
-  // Returns the keyboard layout mapping.
-  base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
-
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
 
   // A CommitCallbackInterceptor is used to modify parameters for or cancel a

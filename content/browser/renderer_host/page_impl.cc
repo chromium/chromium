@@ -282,4 +282,8 @@ void PageImpl::NotifyVirtualKeyboardOverlayRect(
       keyboard_rect);
 }
 
+base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
+  return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
+}
+
 }  // namespace content

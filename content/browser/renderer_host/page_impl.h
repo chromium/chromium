@@ -174,6 +174,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   const std::string& GetEncoding() { return canonical_encoding_; }
   void UpdateEncoding(const std::string& encoding_name);
 
+  // Returns the keyboard layout mapping.
+  base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 

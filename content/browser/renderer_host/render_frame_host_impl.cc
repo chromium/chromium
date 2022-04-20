@@ -5755,13 +5755,6 @@ void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
   GetPage().set_virtual_keyboard_overlays_content(vk_overlays_content);
 }
 
-// Returns the keyboard layout mapping.
-base::flat_map<std::string, std::string>
-RenderFrameHostImpl::GetKeyboardLayoutMap() {
-  // Fetch the keyboard layout from the main frame.
-  return GetMainFrame()->GetRenderWidgetHost()->GetKeyboardLayoutMap();
-}
-
 void RenderFrameHostImpl::VisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   visibility_ = visibility;
