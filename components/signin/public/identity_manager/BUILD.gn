@@ -174,6 +174,10 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
+  if (is_chromeos_ash) {
+    deps += [ "//ash/components/account_manager" ]
+  }
+
   if (is_chromeos_lacros) {
     deps += [ "//components/account_manager_core" ]
   }

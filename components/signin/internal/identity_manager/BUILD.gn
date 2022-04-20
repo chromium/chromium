@@ -108,7 +108,6 @@ source_set("identity_manager") {
 
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]
-    public_deps += [ "//ash/components/account_manager" ]
   }
 
   if (!is_android && !is_ios) {
@@ -189,14 +188,14 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "profile_oauth2_token_service_delegate_chromeos_unittest.cc" ]
 
-    deps += [
-      "//ash/components/account_manager",
-      "//ash/constants",
-      "//components/account_manager_core:test_support",
-    ]
+    deps += [ "//components/account_manager_core:test_support" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
   }
 
   if (is_ios) {
