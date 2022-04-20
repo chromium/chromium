@@ -84,6 +84,30 @@ SkRect MapRect(const SkMatrix& matrix, const SkRect& src) {
   matrix.mapRect(&dst, src);
   return dst;
 }
+
+void DrawImageRect(SkCanvas* canvas,
+                   const SkImage* image,
+                   const SkRect& src,
+                   const SkRect& dst,
+                   const SkSamplingOptions& options,
+                   const SkPaint* paint,
+                   SkCanvas::SrcRectConstraint constraint) {
+  if (!image)
+    return;
+  if (constraint == SkCanvas::kStrict_SrcRectConstraint &&
+      options.mipmap != SkMipmapMode::kNone &&
+      src.contains(SkRect::Make(image->dimensions()))) {
+    SkMatrix m;
+    m.setRectToRect(src, dst, SkMatrix::ScaleToFit::kFill_ScaleToFit);
+    canvas->save();
+    canvas->concat(m);
+    canvas->drawImage(image, 0, 0, options, paint);
+    canvas->restore();
+    return;
+  }
+  canvas->drawImageRect(image, src, dst, options, paint, constraint);
+}
+
 }  // namespace
 
 #define TYPES(M)      \
@@ -1661,8 +1685,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       }
       if (!sk_image)
         sk_image = op->image.GetSwSkImage();
-      c->drawImageRect(sk_image.get(), adjusted_src, op->dst, op->sampling, &p,
-                       op->constraint);
+      DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling, &p,
+                    op->constraint);
     });
     return;
   }
@@ -1695,8 +1719,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
                                                              const SkPaint& p) {
     SkSamplingOptions options = PaintFlags::FilterQualityToSkSamplingOptions(
         decoded_image.filter_quality());
-    c->drawImageRect(decoded_image.image().get(), adjusted_src, op->dst,
-                     options, &p, op->constraint);
+    DrawImageRect(c, decoded_image.image().get(), adjusted_src, op->dst,
+                  options, &p, op->constraint);
   });
 }
 
