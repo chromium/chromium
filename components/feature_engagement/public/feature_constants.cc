@@ -208,7 +208,7 @@ const base::Feature kIPHPageInfoStoreInfoFeature{
 const base::Feature kIPHPreviewsOmniboxUIFeature{
     "IPH_PreviewsOmniboxUI", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHShoppingListMenuItemFeature{
-    "IPH_ShoppingListMenuItem", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_ShoppingListMenuItem", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHTabGroupsQuicklyComparePagesFeature{
     "IPH_TabGroupsQuicklyComparePages", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHTabGroupsTapToSeeAnotherTabFeature{

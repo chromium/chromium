@@ -6736,28 +6736,6 @@
             ]
         }
     ],
-    "ShoppingListMenuItem": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210125",
-                    "params": {
-                        "availability": ">=0",
-                        "event_trigger": "name:shopping_list_menu_item_iph_triggered;comparator:==0;window:7;storage:7",
-                        "event_trigger_last_year": "name:shopping_list_menu_item_iph_triggered;comparator:<3;window:360;storage:360",
-                        "event_used": "name:shopping_list_track_price_from_menu;comparator:==0;window:360;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_ShoppingListMenuItem"
-                    ]
-                }
-            ]
-        }
-    ],
     "ShowScrollableMVTOnNTPAndroid": [
         {
             "platforms": [
