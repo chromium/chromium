@@ -138,7 +138,7 @@ TEST(BrowserDataMigratorUtilTest, NoPathOverlaps) {
   base::span<const char* const> deletable_paths =
       base::make_span(kDeletablePaths);
   base::span<const char* const> common_data_paths =
-      base::make_span(kNeedCopyDataPaths);
+      base::make_span(kNeedCopyForMoveDataPaths);
 
   std::vector<base::span<const char* const>> paths_groups{
       remain_in_ash_paths, lacros_data_paths, deletable_paths,
@@ -612,7 +612,7 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, GetTargetItems) {
       {profile_data_dir_.Append(kPolicyDataPath), kTextFileSize,
        TargetItem::ItemType::kFile}};
   TargetItems need_copy_items =
-      GetTargetItems(profile_data_dir_, ItemType::kNeedCopy);
+      GetTargetItems(profile_data_dir_, ItemType::kNeedCopyForMove);
   EXPECT_EQ(need_copy_items.total_size, kTextFileSize);
   ASSERT_EQ(need_copy_items.items.size(), expected_need_copy_items.size());
   EXPECT_EQ(need_copy_items.items[0], expected_need_copy_items[0]);

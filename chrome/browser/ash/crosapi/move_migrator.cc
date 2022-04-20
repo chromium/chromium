@@ -274,7 +274,7 @@ MoveMigrator::TaskResult MoveMigrator::PreMigrationCleanUp(
   browser_data_migrator_util::TargetItems need_copy_items =
       browser_data_migrator_util::GetTargetItems(
           original_profile_dir,
-          browser_data_migrator_util::ItemType::kNeedCopy);
+          browser_data_migrator_util::ItemType::kNeedCopyForMove);
 
   const int64_t extra_bytes_required_to_be_freed =
       browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
@@ -343,7 +343,7 @@ MoveMigrator::TaskResult MoveMigrator::SetupLacrosDir(
   browser_data_migrator_util::TargetItems need_copy_items =
       browser_data_migrator_util::GetTargetItems(
           original_profile_dir,
-          browser_data_migrator_util::ItemType::kNeedCopy);
+          browser_data_migrator_util::ItemType::kNeedCopyForMove);
 
   progress_tracker->SetTotalSizeToCopy(need_copy_items.total_size);
 
