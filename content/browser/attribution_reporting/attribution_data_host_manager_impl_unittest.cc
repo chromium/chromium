@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -1475,6 +1476,46 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationDataHostNotRegistered) {
 
   // kNotFound = 1.
   histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus", 1, 1);
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       TriggerDataHost_AggregatableValuesCheckPerformed) {
+  const struct {
+    const char* description;
+    bool valid;
+    AttributionAggregatableTrigger::Values values;
+  } kTestCases[] = {
+      {"negative", false, {{"key", -1}}},
+      {"zero", false, {{"key", 0}}},
+      {"max limit", true, {{"key", 65536}}},
+      {"out of range", false, {{"key", 65537}}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://trigger.example")));
+
+    auto trigger_data = blink::mojom::AttributionTriggerData::New();
+    trigger_data->reporting_origin =
+        url::Origin::Create(GURL("https://reporter.example"));
+
+    trigger_data->filters = blink::mojom::AttributionFilterData::New();
+
+    trigger_data->aggregatable_trigger =
+        blink::mojom::AttributionAggregatableTrigger::New(
+            std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr>(),
+            test_case.values);
+
+    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+  }
 }
 
 }  // namespace content

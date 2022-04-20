@@ -430,8 +430,10 @@ bool ParseAttributionAggregatableValues(
     }
 
     int key_value;
-    if (!value->AsInteger(&key_value) || key_value <= 0)
+    if (!value->AsInteger(&key_value) || key_value <= 0 ||
+        key_value > kMaxAttributionAggregatableValue) {
       return false;
+    }
 
     values.insert(std::move(key_id), key_value);
   }

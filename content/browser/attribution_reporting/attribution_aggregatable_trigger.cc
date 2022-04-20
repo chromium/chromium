@@ -106,7 +106,8 @@ AttributionAggregatableTrigger::FromMojo(
   bool is_valid = base::ranges::all_of(mojo->values, [](const auto& value) {
     return value.first.size() <=
                blink::kMaxBytesPerAttributionAggregatableKeyId &&
-           value.second > 0;
+           value.second > 0 &&
+           value.second <= blink::kMaxAttributionAggregatableValue;
   });
   if (!is_valid)
     return absl::nullopt;

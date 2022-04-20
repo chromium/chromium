@@ -407,6 +407,8 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableValues) {
        R"({"key1":123,"key2":456})",
        true,
        {{"key1", 123}, {"key2", 456}}},
+      {"Max valid value", R"({"key":65536})", true, {{"key", 65536}}},
+      {"Value out of range", R"({"key":65537})", false, {}},
   };
 
   for (const auto& test_case : kTestCases) {
