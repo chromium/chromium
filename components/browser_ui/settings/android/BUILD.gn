@@ -56,6 +56,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/ic_business_small.png",
     "java/res/drawable-xxxhdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable/list_divider.xml",
+    "java/res/layout-sw360dp/preference_spinner_single_line.xml",
     "java/res/layout/button_preference_button.xml",
     "java/res/layout/button_preference_layout.xml",
     "java/res/layout/checkable_image_view_widget.xml",
@@ -66,7 +67,9 @@ android_resources("java_resources") {
     "java/res/layout/preference_spinner_single_line.xml",
     "java/res/layout/preference_spinner_single_line_item.xml",
     "java/res/layout/settings_action_bar_shadow.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/attrs.xml",
+    "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
   ]

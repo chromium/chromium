@@ -36,7 +36,4 @@
 
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">28dp</dimen>
-
-    <!-- Preferences dimensions -->
-    <dimen name="pref_spinner_padding_end">16dp</dimen>
 </resources>

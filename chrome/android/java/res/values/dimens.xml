@@ -288,8 +288,6 @@
     <!-- Clear browsing data preferences dimensions -->
     <dimen name="clear_browsing_data_button_margin">16dp</dimen>
 
-    <dimen name="pref_spinner_padding_end">8dp</dimen>
-
     <dimen name="pref_languages_add_button_padding">24dp</dimen>
     <dimen name="pref_languages_item_popup_width">260dp</dimen>
 

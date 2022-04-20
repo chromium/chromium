@@ -457,7 +457,6 @@ chrome_java_resources = [
   "java/res/drawable/tab_indicator.xml",
   "java/res/drawable/tile_view_hairline_border_background.xml",
   "java/res/drawable/virtual_card_enrollment_illustration.xml",
-  "java/res/layout-sw360dp/preference_spinner_single_line.xml",
   "java/res/layout-sw600dp/find_toolbar.xml",
   "java/res/layout/accessibility_tab_switcher.xml",
   "java/res/layout/accessibility_tab_switcher_list_item.xml",
