@@ -14,6 +14,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -34,6 +36,10 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 
 namespace content {
 class RenderFrameHost;
@@ -265,6 +271,95 @@ struct InteractionSequenceBrowserUtil::PollerData {
   ui::CustomElementEventType timeout_event;
 };
 
+// Class that tracks a WebView and its WebContents in a secondary UI.
+class InteractionSequenceBrowserUtil::WebViewData : public views::ViewObserver {
+ public:
+  WebViewData(InteractionSequenceBrowserUtil* owner, views::WebView* web_view)
+      : owner_(owner), web_view_(web_view) {}
+  ~WebViewData() override = default;
+
+  // Separate init is required from construction so that the util object that
+  // owns this object can store a pointer before any calls back to the util
+  // object are performed.
+  void Init() {
+    scoped_observation_.Observe(web_view_);
+    ui::ElementIdentifier id =
+        web_view_->GetProperty(views::kElementIdentifierKey);
+    if (!id) {
+      id = ui::ElementTracker::kTemporaryIdentifier;
+      web_view_->SetProperty(views::kElementIdentifierKey, id);
+    }
+    context_ = views::ElementTrackerViews::GetContextForView(web_view_);
+    CHECK(context_);
+
+    shown_subscription_ =
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            id, context_,
+            base::BindRepeating(&WebViewData::OnElementShown,
+                                base::Unretained(this)));
+    hidden_subscription_ =
+        ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+            id, context_,
+            base::BindRepeating(&WebViewData::OnElementHidden,
+                                base::Unretained(this)));
+
+    if (auto* const element =
+            views::ElementTrackerViews::GetInstance()->GetElementForView(
+                web_view_)) {
+      OnElementShown(element);
+    }
+  }
+
+  ui::ElementContext context() const { return context_; }
+
+  bool visible() const { return visible_; }
+
+  views::WebView* web_view() const { return web_view_; }
+
+ private:
+  void OnElementShown(ui::TrackedElement* element) {
+    if (visible_)
+      return;
+    auto* el = element->AsA<views::TrackedElementViews>();
+    if (!el || el->view() != web_view_)
+      return;
+    visible_ = true;
+    owner_->Observe(web_view_->web_contents());
+    owner_->MaybeCreateElement();
+  }
+
+  void OnElementHidden(ui::TrackedElement* element) {
+    if (!visible_)
+      return;
+    auto* el = element->AsA<views::TrackedElementViews>();
+    if (!el || el->view() != web_view_)
+      return;
+    visible_ = false;
+    owner_->Observe(nullptr);
+    owner_->DiscardCurrentElement();
+  }
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* view) override {
+    visible_ = false;
+    web_view_ = nullptr;
+    shown_subscription_ = ui::ElementTracker::Subscription();
+    hidden_subscription_ = ui::ElementTracker::Subscription();
+    scoped_observation_.Reset();
+    owner_->Observe(nullptr);
+    owner_->DiscardCurrentElement();
+  }
+
+  InteractionSequenceBrowserUtil* const owner_;
+  base::raw_ptr<views::WebView> web_view_;
+  bool visible_ = false;
+  ui::ElementContext context_;
+  ui::ElementTracker::Subscription shown_subscription_;
+  ui::ElementTracker::Subscription hidden_subscription_;
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
+      this};
+};
+
 // static
 constexpr base::TimeDelta
     InteractionSequenceBrowserUtil::kDefaultPollingInterval;
@@ -318,19 +413,25 @@ InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
     Browser* browser,
     ui::ElementIdentifier page_identifier,
     absl::optional<int> tab_index) {
-  return ForWebContents(GetWebContents(browser, tab_index), page_identifier,
-                        nullptr);
+  return ForTabWebContents(GetWebContents(browser, tab_index), page_identifier);
 }
 
 // static
 std::unique_ptr<InteractionSequenceBrowserUtil>
-InteractionSequenceBrowserUtil::ForWebContents(
+InteractionSequenceBrowserUtil::ForTabWebContents(
     content::WebContents* web_contents,
-    ui::ElementIdentifier page_identifier,
-    Browser* browser) {
+    ui::ElementIdentifier page_identifier) {
   return base::WrapUnique(new InteractionSequenceBrowserUtil(
-      web_contents, page_identifier,
-      browser ? absl::make_optional(browser) : absl::nullopt));
+      web_contents, page_identifier, absl::nullopt, nullptr));
+}
+
+// static
+std::unique_ptr<InteractionSequenceBrowserUtil>
+InteractionSequenceBrowserUtil::ForNonTabWebView(
+    views::WebView* web_view,
+    ui::ElementIdentifier page_identifier) {
+  return base::WrapUnique(new InteractionSequenceBrowserUtil(
+      web_view->GetWebContents(), page_identifier, absl::nullopt, web_view));
 }
 
 // static
@@ -348,16 +449,16 @@ InteractionSequenceBrowserUtil::ForNextTabInBrowser(
     Browser* browser,
     ui::ElementIdentifier page_identifier) {
   CHECK(browser);
-  return base::WrapUnique(
-      new InteractionSequenceBrowserUtil(nullptr, page_identifier, browser));
+  return base::WrapUnique(new InteractionSequenceBrowserUtil(
+      nullptr, page_identifier, browser, nullptr));
 }
 
 // static
 std::unique_ptr<InteractionSequenceBrowserUtil>
 InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
     ui::ElementIdentifier page_identifier) {
-  return base::WrapUnique(
-      new InteractionSequenceBrowserUtil(nullptr, page_identifier, nullptr));
+  return base::WrapUnique(new InteractionSequenceBrowserUtil(
+      nullptr, page_identifier, nullptr, nullptr));
 }
 
 // static
@@ -522,28 +623,22 @@ void InteractionSequenceBrowserUtil::OnTabStripModelChanged(
 InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier,
-    absl::optional<Browser*> browser)
+    absl::optional<Browser*> browser,
+    views::WebView* web_view)
     : WebContentsObserver(web_contents), page_identifier_(page_identifier) {
   CHECK(page_identifier);
 
-  if (browser.has_value()) {
-    // Are we watching for a new tab, or are we just specifying the browser?
-    if (!web_contents) {
-      // Watching for a new tab.
-      new_tab_watcher_ = std::make_unique<NewTabWatcher>(this, browser.value());
-    } else {
-      // See if we redundantly specified a tab and its browser.
-      Browser* const found = chrome::FindBrowserWithWebContents(web_contents);
-      if (found == browser.value()) {
-        // Yes, this is a tab. Watch it as normal.
-        StartWatchingWebContents(web_contents);
-      } else {
-        // No this is not a tab. Remember the context so we can properly create
-        // elements.
-        force_context_ = browser.value()->window()->GetElementContext();
-        MaybeCreateElement();
-      }
-    }
+  if (web_view) {
+    // This is specifically for a web view that is not a tab.
+    CHECK(web_contents);
+    CHECK(!browser);
+    CHECK(!chrome::FindBrowserWithWebContents(web_contents));
+    web_view_data_ = std::make_unique<WebViewData>(this, web_view);
+    web_view_data_->Init();
+  } else if (browser.has_value()) {
+    // Watching for a new tab.
+    CHECK(!web_contents);
+    new_tab_watcher_ = std::make_unique<NewTabWatcher>(this, browser.value());
   } else {
     // This has to be a tab, so use standard watching logic.
     StartWatchingWebContents(web_contents);
@@ -557,8 +652,12 @@ void InteractionSequenceBrowserUtil::MaybeCreateElement(bool force) {
   if (!force && !web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
 
-  ui::ElementContext context = force_context_;
-  if (!context) {
+  ui::ElementContext context = ui::ElementContext();
+  if (web_view_data_) {
+    if (!web_view_data_->visible())
+      return;
+    context = web_view_data_->context();
+  } else {
     Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
     if (!browser)
       return;

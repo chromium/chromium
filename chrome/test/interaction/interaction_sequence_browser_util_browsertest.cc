@@ -104,48 +104,13 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
-                       ElementCreatedForExistingWebContentsWithoutBrowser) {
+                       ElementCreatedForExistingWebContentsWithoutWebView) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  // Using this constructor hits all of the rest of the constructors, saving us
-  // the hassle of writing three identical tests.
-  auto util = InteractionSequenceBrowserUtil::ForWebContents(
+  auto util = InteractionSequenceBrowserUtil::ForTabWebContents(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       kInteractionSequenceBrowserUtilTestId);
-  auto sequence =
-      ui::InteractionSequence::Builder()
-          .SetCompletedCallback(completed.Get())
-          .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetType(ui::InteractionSequence::StepType::kShown)
-                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence* sequence,
-                          ui::TrackedElement* element) {
-                        EXPECT_TRUE(element->IsA<TrackedElementWebPage>());
-                        EXPECT_EQ(
-                            util.get(),
-                            element->AsA<TrackedElementWebPage>()->owner());
-                      }))
-                  .Build())
-          .Build();
-
-  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
-}
-
-IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
-                       ElementCreatedForExistingWebContentsWithBrowser) {
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
-
-  // Using this constructor hits all of the rest of the constructors, saving us
-  // the hassle of writing three identical tests.
-  auto util = InteractionSequenceBrowserUtil::ForWebContents(
-      browser()->tab_strip_model()->GetWebContentsAt(0),
-      kInteractionSequenceBrowserUtilTestId, browser());
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
