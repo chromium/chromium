@@ -54,6 +54,7 @@ SDK_PLATFORM_DICT = {
     version_codes.Q: 'Q',
     version_codes.R: 'R',
     version_codes.S: 'S',
+    version_codes.S_V2: 'S',
 }
 
 # The test apks are apparently compatible across all architectures, the
