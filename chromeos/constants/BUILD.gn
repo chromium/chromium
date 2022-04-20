@@ -39,6 +39,7 @@ source_set("unit_tests") {
     deps += [
       "//chromeos/lacros:lacros",
       "//chromeos/lacros:test_support",
+      "//chromeos/startup",
     ]
   }
 }

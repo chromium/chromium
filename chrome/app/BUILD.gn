@@ -231,6 +231,7 @@ static_library("test_support") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/lacros/dbus",
+      "//chromeos/startup",
     ]
   }
 

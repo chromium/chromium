@@ -562,6 +562,7 @@ static_library("test_support") {
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
+      "//chromeos/startup",
       "//chromeos/ui/base",
       "//components/account_manager_core:test_support",
     ]
@@ -2567,6 +2568,7 @@ if (!is_android) {
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
         "//chromeos/lacros:test_support",
+        "//chromeos/startup",
         "//chromeos/ui/base",
         "//chromeos/ui/frame:test_support",
         "//components/account_manager_core:test_support",
@@ -4480,6 +4482,7 @@ if (is_chromeos_lacros) {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+      "//chromeos/startup",
       "//ui/platform_window",
     ]
 
@@ -4559,6 +4562,7 @@ if (is_chromeos_lacros) {
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
+      "//chromeos/startup",
       "//components/account_manager_core:test_support",
       "//components/captive_portal/content:content",
       "//components/captive_portal/core:buildflags",
@@ -7013,6 +7017,7 @@ test("unit_tests") {
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros:test_support",
+      "//chromeos/startup",
       "//chromeos/ui/base",
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",

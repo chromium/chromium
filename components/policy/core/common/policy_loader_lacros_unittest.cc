@@ -9,8 +9,8 @@
 
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
@@ -72,8 +72,7 @@ class PolicyLoaderLacrosTest : public PolicyTestBase {
     std::vector<uint8_t> data = GetValidPolicyFetchResponseWithAllPolicy();
     auto init_params = crosapi::mojom::BrowserInitParams::New();
     init_params->device_account_policy = data;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
   }
 
   void CheckProfilePolicies(const PolicyMap& policy_map) const {
@@ -124,8 +123,7 @@ class PolicyLoaderLacrosTest : public PolicyTestBase {
       crosapi::mojom::SessionType session_type) {
     auto init_params = crosapi::mojom::BrowserInitParams::New();
     init_params->session_type = session_type;
-    chromeos::LacrosService::Get()->SetInitParamsForTests(
-        std::move(init_params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
     EXPECT_TRUE(PolicyLoaderLacros::IsDeviceLocalAccountUser());
     EXPECT_TRUE(PolicyLoaderLacros::IsMainUserAffiliated());
   }
@@ -159,7 +157,7 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTestProfilePolicies) {
   per_profile_ = PolicyPerProfileFilter::kTrue;
   auto init_params = crosapi::mojom::BrowserInitParams::New();
 
-  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros* loader = new PolicyLoaderLacros(
       task_environment_.GetMainThreadTaskRunner(), per_profile_);
@@ -181,7 +179,7 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTestSystemWidePolicies) {
   per_profile_ = PolicyPerProfileFilter::kFalse;
   auto init_params = crosapi::mojom::BrowserInitParams::New();
 
-  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros* loader = new PolicyLoaderLacros(
       task_environment_.GetMainThreadTaskRunner(), per_profile_);
@@ -202,7 +200,7 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTestSystemWidePolicies) {
 TEST_F(PolicyLoaderLacrosTest, TwoLoaders) {
   auto init_params = crosapi::mojom::BrowserInitParams::New();
 
-  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros* system_wide_loader =
       new PolicyLoaderLacros(task_environment_.GetMainThreadTaskRunner(),
@@ -251,7 +249,7 @@ TEST_F(PolicyLoaderLacrosTest, ChildUsersNoEnterpriseDefaults) {
   auto init_params = crosapi::mojom::BrowserInitParams::New();
   init_params->session_type = crosapi::mojom::SessionType::kChildSession;
   init_params->device_account_policy = std::move(data);
-  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
   // Load the policy.
   PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner(),

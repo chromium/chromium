@@ -20,7 +20,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -439,8 +439,6 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
 TEST(StartupTabProviderTest, GetCrosapiTabs) {
   base::test::TaskEnvironment task_environment;
 
-  chromeos::LacrosService lacros_service;
-
   // Non kOpenWindowWithUrls case.
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
@@ -448,7 +446,7 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
         crosapi::mojom::InitialBrowserAction::kUseStartupPreference;
     // The given URLs should be ignored.
     params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
-    lacros_service.SetInitParamsForTests(std::move(params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
     StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
     EXPECT_TRUE(output.empty());
   }
@@ -460,7 +458,7 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
         crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
     // The given URLs should be ignored.
     params->startup_urls = std::vector<GURL>{GURL("https://google.com")};
-    lacros_service.SetInitParamsForTests(std::move(params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
     StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("https://google.com"), output[0].url);
@@ -473,7 +471,7 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
         crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
     params->startup_urls = std::vector<GURL>{GURL("https://google.com"),
                                              GURL("https://gmail.com")};
-    lacros_service.SetInitParamsForTests(std::move(params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
     StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
     ASSERT_EQ(2u, output.size());
     EXPECT_EQ(GURL("https://google.com"), output[0].url);
@@ -486,7 +484,7 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
     params->initial_browser_action =
         crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
     params->startup_urls = std::vector<GURL>{GURL("chrome://flags")};
-    lacros_service.SetInitParamsForTests(std::move(params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
     StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
     EXPECT_TRUE(output.empty());
   }
@@ -498,7 +496,7 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
         crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
     params->startup_urls =
         std::vector<GURL>{GURL("chrome://settings/resetProfileSettings")};
-    lacros_service.SetInitParamsForTests(std::move(params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
     StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("chrome://settings/resetProfileSettings"), output[0].url);
@@ -510,7 +508,7 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
     params->initial_browser_action =
         crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls;
     params->startup_urls = std::vector<GURL>{GURL("about:blank")};
-    lacros_service.SetInitParamsForTests(std::move(params));
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
     StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("about:blank"), output[0].url);
