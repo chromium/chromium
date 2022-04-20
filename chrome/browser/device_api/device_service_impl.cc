@@ -166,7 +166,7 @@ void DeviceServiceImpl::OnDisposingIfNeeded() {
   // DeviceServiceImpl is allocated on the heap, thus it is safe to remove it
   // like this.
   if (!IsTrustedContext(host_, origin())) {
-    delete this;
+    ResetAndDeleteThis();
   }
 }
 

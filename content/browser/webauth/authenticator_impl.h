@@ -44,6 +44,9 @@ class CONTENT_EXPORT AuthenticatorImpl
     return authenticator_common_.get();
   }
 
+  // DocumentService
+  void WillBeDestroyed(DocumentServiceDestructionReason) override;
+
   // mojom:Authenticator
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,

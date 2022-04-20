@@ -93,7 +93,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   WebBluetoothServiceImpl(const WebBluetoothServiceImpl&) = delete;
   WebBluetoothServiceImpl& operator=(const WebBluetoothServiceImpl&) = delete;
 
-  void CrashRendererAndClosePipe(bad_message::BadMessageReason reason);
+  // Prefer `DocumentService::ReportBadMessageAndDeleteThis()` in new code.
+  // Existing callers should be migrated as well.
+  void TerminateRendererAndDeleteThis(bad_message::BadMessageReason reason);
 
   // Checks the current requesting and embedding origins as well as the policy
   // or global Web Bluetooth block to determine if Web Bluetooth is allowed.

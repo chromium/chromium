@@ -57,6 +57,9 @@ class CONTENT_EXPORT WebOTPService
   using SmsParsingStatus = SmsParser::SmsParsingStatus;
   using UserConsent = SmsFetcher::UserConsent;
 
+  // content::DocumentService:
+  void WillBeDestroyed(DocumentServiceDestructionReason) override;
+
   // blink::mojom::WebOTPService:
   void Receive(ReceiveCallback) override;
   void Abort() override;

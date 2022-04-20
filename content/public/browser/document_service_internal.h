@@ -24,11 +24,18 @@ class CONTENT_EXPORT DocumentServiceBase {
 
   virtual ~DocumentServiceBase();
 
+  // Virtual as an implementation detail of //content, which keeps a generic
+  // container of pointers to document services via this base class, but still
+  // needs to be able to end the lifetime of document service instances. See
+  // `DocumentService<T>` for more information.
+  virtual void ResetAndDeleteThis() = 0;
+
   // To be called just before the destructor, when the object does not
-  // self-destroy (via `delete this`). It reports the reason that the object is
-  // being destroyed via DocumentServiceDestructionReason, which gives the
-  // subclass a chance to react in a specific way.
-  virtual void WillBeDestroyed(DocumentServiceDestructionReason) {}
+  // self-destroy via one of the *AndDeleteThis() helpers. `reason` provides
+  // context on why `this` is being destroyed (i.e. the document is deleted or
+  // the Mojo message pipe is disconnected); subclasses can override this method
+  // to react in a specific way to a destruction reason.
+  virtual void WillBeDestroyed(DocumentServiceDestructionReason reason) {}
 
  protected:
   explicit DocumentServiceBase(RenderFrameHost* render_frame_host);

@@ -668,7 +668,7 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDevice) {
   service_->RequestDevice(std::move(options), callback.Get());
 
   base::RunLoop loop;
-  delete service_;
+  std::exchange(service_, nullptr)->ResetAndDeleteThis();
   loop.RunUntilIdle();
 }
 
@@ -714,7 +714,9 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStart) {
   // Post a task to delete the WebBluetoothService state during a call to
   // RequestScanningStart().
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([this]() { delete service_; }));
+      FROM_HERE, base::BindLambdaForTesting([this]() {
+        std::exchange(service_, nullptr)->ResetAndDeleteThis();
+      }));
 
   loop.RunUntilIdle();
 }
@@ -932,7 +934,7 @@ TEST_P(WebBluetoothServiceImplBondingTest, IncompletePairingOnShutdown) {
 
   // Simulate the WebBluetoothServiceImpl being destroyed due to a navigation or
   // tab closure while the pairing request is in progress.
-  delete service_;
+  std::exchange(service_, nullptr)->ResetAndDeleteThis();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

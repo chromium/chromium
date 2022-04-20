@@ -134,10 +134,6 @@ WebOTPService::WebOTPService(
 }
 
 WebOTPService::~WebOTPService() {
-  // Resolve any pending callback and invoke clean up to unsubscribe this
-  // service from fetcher.
-  CompleteRequest(SmsStatus::kUnhandledRequest);
-
   DCHECK(!callback_);
 }
 
@@ -160,6 +156,22 @@ bool WebOTPService::Create(
       ->OnBackForwardCacheDisablingStickyFeatureUsed(
           blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
   return true;
+}
+
+void WebOTPService::WillBeDestroyed(DocumentServiceDestructionReason) {
+  // Resolve any pending callback and invoke clean up to unsubscribe this
+  // service from fetcher.
+  //
+  // TODO(https://crbug.com/1317531): Previously, running the callbacks in the
+  // destructor was required to avoid triggering DCHECKs since the
+  // mojo::Receiver was (incorrectly) not yet reset in the destructor.
+  //
+  // The destruction order is fixed so running the reply callbacks should no
+  // longer be necessary; however, there are now unit test-only dependencies on
+  // this behavior. Remove those test dependencies and migrate any remaining
+  // cleanup logic that is still needed to the destructor and delete this
+  // `WillBeDestroyed()` override.
+  CompleteRequest(SmsStatus::kUnhandledRequest);
 }
 
 void WebOTPService::Receive(ReceiveCallback callback) {

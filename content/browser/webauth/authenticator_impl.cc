@@ -42,6 +42,22 @@ AuthenticatorImpl::AuthenticatorImpl(
 
 AuthenticatorImpl::~AuthenticatorImpl() = default;
 
+// DocumentService
+void AuthenticatorImpl::WillBeDestroyed(DocumentServiceDestructionReason) {
+  // Explicit reset() `authenticator_commmon_` now, which tries to reply to
+  // pending Mojo callbacks in its destructor.
+  //
+  // TODO(https://crbug.com/1317534): Previously, running the callbacks in the
+  // destructor was required to avoid triggering DCHECKs since the
+  // mojo::Receiver was (incorrectly) not yet reset in the destructor.
+  //
+  // The destruction order is fixed so running the reply callbacks should no
+  // longer be necessary; however, there are now unit test-only dependencies on
+  // this behavior. Remove those test dependencies and this `WillBeDestroyed()`
+  // override can be completely deleted.
+  authenticator_common_.reset();
+}
+
 // mojom::Authenticator
 void AuthenticatorImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,

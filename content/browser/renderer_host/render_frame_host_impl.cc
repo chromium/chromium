@@ -13463,7 +13463,7 @@ RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
     // DocumentServiceBase unregisters itself at destruction time.
     services.back()->WillBeDestroyed(
         DocumentServiceDestructionReason::kEndOfDocumentLifetime);
-    delete services.back();
+    services.back()->ResetAndDeleteThis();
   }
 
   // Explicitly clear all user data here, so that the other fields of

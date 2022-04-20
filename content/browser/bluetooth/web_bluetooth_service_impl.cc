@@ -577,10 +577,6 @@ WebBluetoothServiceImpl::WebBluetoothServiceImpl(
 WebBluetoothServiceImpl::~WebBluetoothServiceImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Releasing the adapter will drop references to callbacks that have not yet
-  // been executed. The receiver must be closed first so that this is allowed.
-  receiver()->reset();
-
 #if PAIR_BLUETOOTH_ON_DEMAND()
   // Destroy the pairing manager before releasing the adapter to give it an
   // opportunity to cancel pairing operations that are in progress.
@@ -1282,7 +1278,7 @@ void WebBluetoothServiceImpl::RemoteCharacteristicWriteValue(
   // get a value with length > 512, we can assume it's a hostile
   // renderer and kill it.
   if (value.size() > 512) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
     return;
   }
 
@@ -1499,7 +1495,7 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
   // get a value with length > 512, we can assume it's a hostile
   // renderer and kill it.
   if (value.size() > 512) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
     return;
   }
 
@@ -1558,7 +1554,7 @@ void WebBluetoothServiceImpl::RequestScanningStart(
 
   // The renderer should never send invalid options.
   if (!IsValidRequestScanOptions(options)) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_OPTIONS);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_OPTIONS);
     return;
   }
 
@@ -1595,7 +1591,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDevice(
 
   // The renderer should never send an invalid |device_id|.
   if (!device_id.IsValid()) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_OPTIONS);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_OPTIONS);
     return;
   }
 
@@ -1748,7 +1744,7 @@ void WebBluetoothServiceImpl::RequestDeviceImpl(
     scoped_refptr<BluetoothAdapter> adapter) {
   // The renderer should never send invalid options.
   if (!IsValidRequestDeviceOptions(options)) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_OPTIONS);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_OPTIONS);
     return;
   }
 
@@ -2296,7 +2292,8 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForDevice(
   }
 
   if (device_address.empty()) {
-    CrashRendererAndClosePipe(bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
+    TerminateRendererAndDeleteThis(
+        bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2318,7 +2315,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForService(
 
   // Kill the render, see "ID Not in Map Note" above.
   if (device_iter == service_id_to_device_address_.end()) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_SERVICE_ID);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_SERVICE_ID);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2327,7 +2324,8 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForService(
 
   // Kill the renderer if origin is not allowed to access the device.
   if (!device_id.IsValid()) {
-    CrashRendererAndClosePipe(bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
+    TerminateRendererAndDeleteThis(
+        bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2342,7 +2340,8 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForService(
   }
 
   if (!IsAllowedToAccessService(device_id, result.service->GetUUID())) {
-    CrashRendererAndClosePipe(bad_message::BDH_SERVICE_NOT_ALLOWED_FOR_ORIGIN);
+    TerminateRendererAndDeleteThis(
+        bad_message::BDH_SERVICE_NOT_ALLOWED_FOR_ORIGIN);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
   return result;
@@ -2355,7 +2354,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForCharacteristic(
 
   // Kill the render, see "ID Not in Map Note" above.
   if (characteristic_iter == characteristic_id_to_service_id_.end()) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_CHARACTERISTIC_ID);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_CHARACTERISTIC_ID);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2382,7 +2381,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForDescriptor(
 
   // Kill the render, see "ID Not in Map Note" above.
   if (descriptor_iter == descriptor_id_to_characteristic_id_.end()) {
-    CrashRendererAndClosePipe(bad_message::BDH_INVALID_DESCRIPTOR_ID);
+    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_DESCRIPTOR_ID);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2431,10 +2430,10 @@ BluetoothAdapter* WebBluetoothServiceImpl::GetAdapter() {
   return BluetoothAdapterFactoryWrapper::Get().GetAdapter(this);
 }
 
-void WebBluetoothServiceImpl::CrashRendererAndClosePipe(
+void WebBluetoothServiceImpl::TerminateRendererAndDeleteThis(
     bad_message::BadMessageReason reason) {
   bad_message::ReceivedBadMessage(GetRenderProcessHost(), reason);
-  receiver()->reset();
+  ResetAndDeleteThis();
 }
 
 BluetoothAllowedDevices& WebBluetoothServiceImpl::allowed_devices() {
