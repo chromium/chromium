@@ -223,7 +223,7 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet preferred_types,
 }
 
 void DataTypeManagerImpl::ConnectDataTypes() {
-  for (ModelType type : last_enabled_types_) {
+  for (ModelType type : preferred_types_without_errors_) {
     auto dtc_iter = controllers_->find(type);
     if (dtc_iter == controllers_->end()) {
       continue;
@@ -368,14 +368,15 @@ void DataTypeManagerImpl::Restart() {
   if (old_state == STOPPED || old_state == CONFIGURED)
     NotifyStart();
 
-  // Compute `last_enabled_types_` after NotifyStart() to be sure to provide
-  // consistent values to ModelLoadManager. (Namely, observers may trigger
-  // another reconfiguration which may change the value of `preferred_types_`.)
-  last_enabled_types_ = GetEnabledTypes();
-  configuration_types_queue_ = PrioritizeTypes(last_enabled_types_);
+  // Compute `preferred_types_without_errors_` after NotifyStart() to be sure to
+  // provide consistent values to ModelLoadManager. (Namely, observers may
+  // trigger another reconfiguration which may change the value of
+  // `preferred_types_`.)
+  preferred_types_without_errors_ = GetEnabledTypes();
+  configuration_types_queue_ = PrioritizeTypes(preferred_types_without_errors_);
 
   model_load_manager_.Initialize(
-      /*desired_types=*/last_enabled_types_,
+      /*desired_types=*/preferred_types_without_errors_,
       /*preferred_types=*/preferred_types_, last_requested_context_);
 }
 

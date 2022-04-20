@@ -186,7 +186,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ConfigureContext last_requested_context_;
 
   // A set of types that were enabled at the time of Restart().
-  ModelTypeSet last_enabled_types_;
+  ModelTypeSet preferred_types_without_errors_;
 
   // A set of types that have been configured but haven't been
   // connected/activated.
