@@ -79,6 +79,13 @@ const base::FeatureParam<bool>
         &kTrimArcVmOnMemoryPressure,
         "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot", false};
 
+const base::FeatureParam<int> kTrimArcVmMaxPagesPerIteration = {
+    &kTrimArcVmOnMemoryPressure, "MaxPageLimit", arc::ArcSession::NoPageLimit};
+
+const base::FeatureParam<int> kTrimArcVmPagesPerMinute = {
+    &kTrimArcVmOnMemoryPressure, "PagesPerMinute",
+    arc::ArcSession::NoPageLimit};
+
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
 const base::FeatureParam<int> kNodeInvisibileTimeSec = {
@@ -126,6 +133,10 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
       kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot.Get();
   params.only_drop_caches_on_first_memory_pressure_after_arcvm_boot =
       kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot.Get();
+
+  params.trim_arcvm_max_pages_per_iteration =
+      kTrimArcVmMaxPagesPerIteration.Get();
+  params.trim_arcvm_pages_per_minute = kTrimArcVmPagesPerMinute.Get();
 
   return params;
 }

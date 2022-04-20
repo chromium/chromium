@@ -2855,6 +2855,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.WorkingSetTrim.ArcVmTrimFailCountPer30Mins"
+    units="failures" expires_after="2022-10-15">
+  <owner>raging@google.com</owner>
+  <owner>yusukes@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <summary>
+    Tracks the number of failures that resulted from ArcVM trim operations.
+    Recorded every 30 minutes as long as ARCVM trimming is enabled. Available on
+    ChromeOS. Also, one last report is emitted for the &lt;= 30 minute period
+    since the last report, at browser exit.
+  </summary>
+</histogram>
+
+<histogram name="Memory.WorkingSetTrim.ArcVmTrimPageLimit" units="pages"
+    expires_after="2022-10-15">
+  <owner>raging@google.com</owner>
+  <owner>yusukes@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <summary>
+    Tracks the ongoing computed value used to limit the number of pages to trim
+    each time the ArcVM operation runs. Available on ChromeOS. If VM trimming is
+    enabled, this is recorded at the start of every trim operation, with the
+    page limit computed for each operation. Values tracked as zero mean
+    unlimited trimming.
+  </summary>
+</histogram>
+
 <histogram name="Memory.WorkingSetTrim.RendererTrimCount"
     units="RenderersTrimmed" expires_after="M95">
   <owner>bgeffon@chromium.org</owner>

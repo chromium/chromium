@@ -126,6 +126,13 @@ class ArcSessionRunner : public ArcSession::Observer {
   // Returns the current ArcSession instance for testing purpose.
   ArcSession* GetArcSessionForTesting() { return arc_session_.get(); }
 
+  // Makes a test ArcSession (shortcut to bypass full session manager
+  // initialization, just to get to a state where we have a session).
+  void MakeArcSessionForTesting() { arc_session_ = factory_.Run(); }
+
+  // Undoes the action of MakeArcSessionForTesting().
+  void DiscardArcSessionForTesting() { arc_session_.reset(); }
+
   // Normally, automatic restarting happens after a short delay. When testing,
   // however, we'd like it to happen immediately to avoid adding unnecessary
   // delays.

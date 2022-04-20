@@ -67,17 +67,55 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
   void TrimArcVmWorkingSet(
       WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback) {
     trimmer_->TrimArcVmWorkingSet(std::move(callback),
-                                  ArcVmReclaimType::kReclaimAll);
+                                  ArcVmReclaimType::kReclaimAll,
+                                  arc::ArcSession::NoPageLimit);
   }
   void TrimArcVmWorkingSetDropPageCachesOnly(
       WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback) {
     trimmer_->TrimArcVmWorkingSet(std::move(callback),
-                                  ArcVmReclaimType::kReclaimGuestPageCaches);
+                                  ArcVmReclaimType::kReclaimGuestPageCaches,
+                                  arc::ArcSession::NoPageLimit);
+  }
+  void TrimArcVmWorkingSetWithPageLimit(
+      WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback,
+      int page_limit) {
+    trimmer_->TrimArcVmWorkingSet(std::move(callback),
+                                  ArcVmReclaimType::kReclaimAll, page_limit);
   }
 
   void TearDownArcSessionManager() { arc_session_manager_.reset(); }
 
   arc::FakeMemoryInstance* memory_instance() { return &memory_instance_; }
+
+  arc::ArcSessionRunner* arc_session_runner() {
+    return arc_session_manager_->GetArcSessionRunnerForTesting();
+  }
+
+  static constexpr char kDefaultLocale[] = "en-US";
+  arc::UpgradeParams DefaultUpgradeParams() {
+    arc::UpgradeParams params;
+    params.locale = kDefaultLocale;
+    return params;
+  }
+
+  // Use this object within a code block that needs to interact with
+  // the FakeSession within the ArcSessionRunner.
+  // It is important to discard the session when done, even if errors
+  // happen - so doing it in the destructor, to make it automatic.
+  struct FakeArcSessionHolder {
+    explicit FakeArcSessionHolder(arc::ArcSessionRunner* runner)
+        : runner_(runner) {
+      runner_->MakeArcSessionForTesting();
+    }
+    FakeArcSessionHolder(const FakeArcSessionHolder&) = delete;
+    FakeArcSessionHolder& operator=(const FakeArcSessionHolder&) = delete;
+    ~FakeArcSessionHolder() { runner_->DiscardArcSessionForTesting(); }
+    arc::FakeArcSession* session() {
+      return static_cast<arc::FakeArcSession*>(
+          runner_->GetArcSessionForTesting());
+    }
+    arc::ArcSessionRunner* runner_;
+  };
 
   std::unique_ptr<WorkingSetTrimmerChromeOS> trimmer_;
 
@@ -91,13 +129,29 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
 
 namespace {
 
-// Tests that TrimArcVmWorkingSet runs the passed callback.
+// Tests that TrimArcVmWorkingSet runs the passed callback,
+// and that the page limit is passed as requested.
 TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSet) {
   absl::optional<bool> result;
-  TrimArcVmWorkingSet(base::BindLambdaForTesting(
-      [&result](bool r, const std::string&) { result = r; }));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(result);
+  std::string reason;
+
+  {
+    FakeArcSessionHolder session_holder(arc_session_runner());
+    session_holder.session()->set_trim_result(true, "test_reason");
+    TrimArcVmWorkingSetWithPageLimit(
+        base::BindLambdaForTesting(
+            [&result, &reason](bool disposition, const std::string& status) {
+              result = disposition;
+              reason = status;
+            }),
+        5003);
+    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(*result);
+    EXPECT_EQ(reason, "test_reason");
+    EXPECT_EQ(session_holder.session()->trim_vm_memory_count(), 1);
+    EXPECT_EQ(session_holder.session()->last_trim_vm_page_limit(), 5003);
+  }
 }
 
 // Tests that TrimArcVmWorkingSet runs the passed callback even when

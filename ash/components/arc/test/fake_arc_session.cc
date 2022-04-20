@@ -50,7 +50,9 @@ void FakeArcSession::SetDemoModeDelegate(
 
 void FakeArcSession::TrimVmMemory(TrimVmMemoryCallback callback,
                                   int page_limit) {
-  std::move(callback).Run(true, std::string());
+  ++trim_vm_memory_count_;
+  last_trim_vm_page_limit_ = page_limit;
+  std::move(callback).Run(trim_success_, trim_fail_reason);
 }
 
 void FakeArcSession::SetDefaultDeviceScaleFactor(float scale_factor) {}

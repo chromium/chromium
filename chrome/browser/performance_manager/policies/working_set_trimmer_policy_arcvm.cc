@@ -118,12 +118,17 @@ WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
 
 mechanism::ArcVmReclaimType WorkingSetTrimmerPolicyArcVm::IsEligibleForReclaim(
     const base::TimeDelta& arcvm_inactivity_time,
-    mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot) {
+    mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,
+    bool* is_first_trim_post_boot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_first_trim_post_boot)
+    *is_first_trim_post_boot = false;  // Unless proven otherwise, below.
   if (!is_boot_complete_and_connected_)
     return mechanism::ArcVmReclaimType::kReclaimNone;
   if (!trimmed_at_boot_ && trim_once_type_after_arcvm_boot !=
                                mechanism::ArcVmReclaimType::kReclaimNone) {
+    if (is_first_trim_post_boot)
+      *is_first_trim_post_boot = true;
     trimmed_at_boot_ = true;
     return trim_once_type_after_arcvm_boot;
   }

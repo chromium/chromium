@@ -48,6 +48,7 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   friend class base::NoDestructor<WorkingSetTrimmerChromeOS>;
   friend class policies::WorkingSetTrimmerPolicyChromeOS;
   friend class TestWorkingSetTrimmerChromeOS;
+  friend class MockWorkingSetTrimmerChromeOS;
   using TrimArcVmWorkingSetCallback =
       base::OnceCallback<void(bool result, const std::string& failure_reason)>;
 
@@ -60,10 +61,16 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
 
   // Asks vm_concierge to trim ARCVM's memory in the same way as TrimWorkingSet.
   // The function must be called on the UI thread.
-  void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback,
-                           ArcVmReclaimType reclaim_type);
+  // |callback| is invoked upon completion.
+  // |page_limit| is the maximum number of pages to reclaim
+  //             (arc::ArcSession::NoPageLimit for no limit)
+  // Note: made virtual to ease unit testing (redefine in derived mock).
+  virtual void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback,
+                                   ArcVmReclaimType reclaim_type,
+                                   int page_limit);
   void OnDropArcVmCaches(TrimArcVmWorkingSetCallback callback,
                          ArcVmReclaimType reclaim_type,
+                         int page_limit,
                          bool result);
 
   // The constructor is made private to prevent instantiation of this class

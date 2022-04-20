@@ -73,16 +73,6 @@ void GetArcProcessListOnUIThread(
   }
 }
 
-void OnTrimArcVmWorkingSetOnUIThread(bool success,
-                                     const std::string& failure_reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (success) {
-    VLOG(2) << "Reclaimed ARCVM memory";
-    return;
-  }
-  LOG(WARNING) << "Failed to reclaim ARCVM memory: " << failure_reason;
-}
-
 }  // namespace
 
 WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
@@ -244,6 +234,12 @@ bool WorkingSetTrimmerPolicyChromeOS::IsArcProcessEligibleForReclaim(
   return true;
 }
 
+mechanism::WorkingSetTrimmerChromeOS*
+WorkingSetTrimmerPolicyChromeOS::GetTrimmer() {
+  return static_cast<mechanism::WorkingSetTrimmerChromeOS*>(
+      mechanism::WorkingSetTrimmer::GetInstance());
+}
+
 bool WorkingSetTrimmerPolicyChromeOS::TrimArcProcess(base::ProcessId pid) {
   SetArcProcessLastTrimTime(pid, base::TimeTicks::Now());
 
@@ -251,9 +247,7 @@ bool WorkingSetTrimmerPolicyChromeOS::TrimArcProcess(base::ProcessId pid) {
   base::UmaHistogramCounts10000("Memory.WorkingSetTrim.ArcProcessTrimCount",
                                 ++arc_processes_trimmed);
 
-  auto* trimmer = static_cast<mechanism::WorkingSetTrimmerChromeOS*>(
-      mechanism::WorkingSetTrimmer::GetInstance());
-  return trimmer->TrimWorkingSet(pid);
+  return GetTrimmer()->TrimWorkingSet(pid);
 }
 
 void WorkingSetTrimmerPolicyChromeOS::TrimReceivedArcProcesses(
@@ -325,7 +319,6 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
     features::TrimOnMemoryPressureParams params,
     base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   // TODO(crbug.com/1189677): Let the policy own WorkingSetTrimmerPolicyArcVm
   // instance once performance_manager code is migrated to UI thread.
   auto* arcvm_delegate = g_arcvm_delegate_for_testing
@@ -341,40 +334,119 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
                  ? mechanism::ArcVmReclaimType::kReclaimGuestPageCaches
                  : mechanism::ArcVmReclaimType::kReclaimAll)
           : mechanism::ArcVmReclaimType::kReclaimNone;
+
+  bool is_first_trim_post_boot = false;
   const mechanism::ArcVmReclaimType reclaim_type =
       force_reclaim
           ? mechanism::ArcVmReclaimType::kReclaimAll
           : arcvm_delegate->IsEligibleForReclaim(
-                params.arcvm_inactivity_time, trim_once_type_after_arcvm_boot);
+                params.arcvm_inactivity_time, trim_once_type_after_arcvm_boot,
+                &is_first_trim_post_boot);
 
+  // NOTE: To ease unit test, we invoke OnTrimArcVmProcesses even
+  // reclaim_type is kReclaimNone.
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(&WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses,
-                     ptr, reclaim_type));
+                     ptr, reclaim_type, is_first_trim_post_boot,
+                     params.trim_arcvm_pages_per_minute,
+                     params.trim_arcvm_max_pages_per_iteration));
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses(
-    mechanism::ArcVmReclaimType reclaim_type) {
+    mechanism::ArcVmReclaimType reclaim_type,
+    bool is_first_trim_post_boot,
+    int pages_per_minute,
+    int max_pages_per_iteration) {
+  // If there's nothing to do, cut it short.
   if (reclaim_type == mechanism::ArcVmReclaimType::kReclaimNone)
     return;
+
+  // Computing the page limit requires touching the "this" pointer,
+  // so it must be done in the PM thread.
+  // Checking that "this" has not yet been deleted is done by BindOnce()
+  // at invocation time.
+  int page_limit = arc::ArcSession::NoPageLimit;
+  if (!is_first_trim_post_boot) {
+    bool per_minute_limit_applied = false;
+    if (pages_per_minute != arc::ArcSession::NoPageLimit &&
+        last_arcvm_trim_success_) {
+      auto elapsed_mins =
+          (base::TimeTicks::Now() - *last_arcvm_trim_success_).InMinutes();
+      if (elapsed_mins > 0) {
+        page_limit = elapsed_mins * pages_per_minute;
+        per_minute_limit_applied = true;
+      }  // else, let the per-iteration limit prevail.
+    }
+
+    if (max_pages_per_iteration != arc::ArcSession::NoPageLimit) {
+      // If set, the per-iteration max overrides the per-minute value.
+      if (!per_minute_limit_applied || max_pages_per_iteration < page_limit)
+        page_limit = max_pages_per_iteration;
+    }
+  }
+
+  // keep track of actually-chosen page limits. The 1M limit is reasonable
+  // because we will cap the computing with a maximum, that will for sure be
+  // less than 1M. Limiting at more than 1M pages (4GB of RAM) is
+  // meaningless, because if we reclaim this much as once, it will cause
+  // enough jank to defeat the purpose of limiting pages.
+  base::UmaHistogramCounts1M("Memory.WorkingSetTrim.ArcVmTrimPageLimit",
+                             page_limit);
+
   // TODO(crbug.com/1189677): Remove the PostTask once performance_manager code
   // is migrated to UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindRepeating(&DoTrimArcVmOnUIThread, reclaim_type));
-  if (reclaim_type == mechanism::ArcVmReclaimType::kReclaimAll) {
-    last_arcvm_trim_ = base::TimeTicks::Now();
-    ++arcvm_trim_count_;
-  }
+      FROM_HERE, base::BindRepeating(&DoTrimArcVmOnUIThread,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     GetTrimmer(), reclaim_type, page_limit));
+  if (reclaim_type == mechanism::ArcVmReclaimType::kReclaimAll)
+    OnArcVmTrimStarting();
 }
 
 // static
 void WorkingSetTrimmerPolicyChromeOS::DoTrimArcVmOnUIThread(
-    mechanism::ArcVmReclaimType reclaim_type) {
+    base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr,
+    mechanism::WorkingSetTrimmerChromeOS* trimmer,
+    mechanism::ArcVmReclaimType reclaim_type,
+    int page_limit) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* trimmer = static_cast<mechanism::WorkingSetTrimmerChromeOS*>(
-      mechanism::WorkingSetTrimmer::GetInstance());
-  trimmer->TrimArcVmWorkingSet(base::BindOnce(&OnTrimArcVmWorkingSetOnUIThread),
-                               reclaim_type);
+
+  trimmer->TrimArcVmWorkingSet(
+      base::BindOnce(&OnTrimArcVmWorkingSetOnUIThread, ptr, reclaim_type),
+      reclaim_type, page_limit);
+}
+
+// static
+void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmWorkingSetOnUIThread(
+    base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr,
+    mechanism::ArcVmReclaimType reclaim_type,
+    bool success,
+    const std::string& failure_reason) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (reclaim_type == mechanism::ArcVmReclaimType::kReclaimAll) {
+    PerformanceManager::CallOnGraph(
+        FROM_HERE,
+        base::BindOnce(&WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded, ptr,
+                       success));
+  }
+  if (success) {
+    VLOG(2) << "Reclaimed ARCVM memory";
+    return;
+  }
+  LOG(WARNING) << "Failed to reclaim ARCVM memory: " << failure_reason;
+}
+
+void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimStarting() {
+  last_arcvm_trim_ = base::TimeTicks::Now();
+  ++arcvm_trim_count_;
+}
+
+void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(bool success) {
+  if (success)
+    last_arcvm_trim_success_ = base::TimeTicks::Now();
+  else
+    ++arcvm_trim_fail_count_;
 }
 
 // static
@@ -392,8 +464,9 @@ size_t WorkingSetTrimmerPolicyChromeOS::GetArcVmTrimCountForFinalReport(
                                     arcvm_trim_backoff_time.InMinutes() +
                                 1;
 
-  // Adjust the |arcvm_trim_count_| before the final report. Use std::min() to
-  // avoid reporting unrealistically large counts.
+  // Adjust |current_arcvm_trim_count|
+  // before the final report. Use std::min() to avoid reporting unrealistically
+  // large counts.
   return std::min<size_t>(
       current_arcvm_trim_count * arcvm_trim_metric_report_delay.InMinutes() /
           time_since_last_arcvm_trim_metric_report.InMinutes(),
@@ -403,8 +476,13 @@ size_t WorkingSetTrimmerPolicyChromeOS::GetArcVmTrimCountForFinalReport(
 void WorkingSetTrimmerPolicyChromeOS::ReportArcVmTrimMetric() {
   base::UmaHistogramExactLinear("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins",
                                 arcvm_trim_count_, kArcVmTrimMetricMaxCount);
+  base::UmaHistogramExactLinear(
+      "Memory.WorkingSetTrim.ArcVmTrimFailCountPer30Mins",
+      arcvm_trim_fail_count_, kArcVmTrimMetricMaxCount + 1);
   time_since_last_arcvm_trim_metric_report_ = base::ElapsedTimer();
+  // TODO(raging):  remove arcvm_trim_count_ and the metric for it
   arcvm_trim_count_ = 0;
+  arcvm_trim_fail_count_ = 0;
 }
 
 void WorkingSetTrimmerPolicyChromeOS::ReportArcVmTrimMetricOnDestruction() {

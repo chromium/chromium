@@ -71,7 +71,8 @@ bool WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
 
 void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
     TrimArcVmWorkingSetCallback callback,
-    ArcVmReclaimType reclaim_type) {
+    ArcVmReclaimType reclaim_type,
+    int page_limit) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_NE(ArcVmReclaimType::kReclaimNone, reclaim_type);
   const char* error = nullptr;
@@ -96,19 +97,21 @@ void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
       std::move(callback).Run(false, error);
     } else {
       // Otherwise, continue without dropping them.
-      OnDropArcVmCaches(std::move(callback), reclaim_type, /*result=*/false);
+      OnDropArcVmCaches(std::move(callback), reclaim_type, page_limit,
+                        /*result=*/false);
     }
     return;
   }
 
   bridge->DropCaches(base::BindOnce(
       &WorkingSetTrimmerChromeOS::OnDropArcVmCaches, weak_factory_.GetWeakPtr(),
-      std::move(callback), reclaim_type));
+      std::move(callback), reclaim_type, page_limit));
 }
 
 void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
     TrimArcVmWorkingSetCallback callback,
     ArcVmReclaimType reclaim_type,
+    int page_limit,
     bool result) {
   constexpr const char kErrorMessage[] =
       "Failed to drop ARCVM's guest page caches";
@@ -130,9 +133,8 @@ void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
     std::move(callback).Run(false, "ArcSessionManager unavailable");
     return;
   }
-  // TODO(raging): compute and pass down a proper page_limit
-  arc_session_manager->TrimVmMemory(std::move(callback),
-                                    arc::ArcSession::NoPageLimit);
+
+  arc_session_manager->TrimVmMemory(std::move(callback), page_limit);
 }
 
 bool WorkingSetTrimmerChromeOS::TrimWorkingSet(
