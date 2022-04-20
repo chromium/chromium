@@ -86,9 +86,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     /**
      * Updates tab strip scrim.
-     * @param scrim
+     * @param scrim - Scrim applied to tab strip.
      */
     public void updateStripScrim(StripScrim scrim) {
+        if (mNativePtr == 0) return;
+
         TabStripSceneLayerJni.get().updateStripScrim(mNativePtr, TabStripSceneLayer.this,
                 scrim.getX(), scrim.getY(), scrim.getWidth() * mDpToPx, scrim.getHeight() * mDpToPx,
                 scrim.getColor(), scrim.getAlpha());
