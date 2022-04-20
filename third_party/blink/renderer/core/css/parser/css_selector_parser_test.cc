@@ -913,4 +913,98 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
   }
 }
 
+static const SelectorTestCase invalid_pseudo_has_arguments_data[] = {
+    // clang-format off
+    // restrict use of :is(), :where() and :has() inside :has()
+    {":has(:has(.a))", ":has()"},
+    {":has(:is(.a))", ":has()"},
+    {":has(:where(.a))", ":has()"},
+    {":has(:-webkit-any(.a, .b))", ":has()"},
+
+    // restrict use of pseudo element inside :has()
+    {":has(::-webkit-progress-bar)", ":has()"},
+    {":has(::-webkit-progress-value)", ":has()"},
+    {":has(::-webkit-slider-runnable-track)", ":has()"},
+    {":has(::-webkit-slider-thumb)", ":has()"},
+    {":has(::after)", ":has()"},
+    {":has(::backdrop)", ":has()"},
+    {":has(::before)", ":has()"},
+    {":has(::cue)", ":has()"},
+    {":has(::first-letter)", ":has()"},
+    {":has(::first-line)", ":has()"},
+    {":has(::grammar-error)", ":has()"},
+    {":has(::marker)", ":has()"},
+    {":has(::placeholder)", ":has()"},
+    {":has(::selection)", ":has()"},
+    {":has(::slotted(*))", ":has()"},
+    {":has(::part(foo))", ":has()"},
+    {":has(::spelling-error)", ":has()"},
+    {":has(:after)", ":has()"},
+    {":has(:before)", ":has()"},
+    {":has(:cue)", ":has()"},
+    {":has(:first-letter)", ":has()"},
+    {":has(:first-line)", ":has()"},
+    // clang-format on
+};
+
+INSTANTIATE_TEST_SUITE_P(InvalidPseudoHasArguments,
+                         SelectorParseTest,
+                         testing::ValuesIn(invalid_pseudo_has_arguments_data));
+
+static const SelectorTestCase has_forgiving_data[] = {
+    // clang-format off
+    {":has(.a, :has(.b), .c)", ":has(.a, .c)"},
+    {":has(.a, :has(.b))", ":has(.a)"},
+    {":has(:has(.a), .b)", ":has(.b)"},
+    {":has(:has(.a))", ":has()"},
+    {":has(,,  ,, )", ":has()"},
+    {":has(.a,,,,)", ":has(.a)"},
+    {":has(,,.a,,)", ":has(.a)"},
+    {":has(,,,,.a)", ":has(.a)"},
+    {":has(@x {,.b,}, .a)", ":has(.a)"},
+    {":has({,.b,} @x, .a)", ":has(.a)"},
+    {":has((@x), .a)", ":has(.a)"},
+    {":has((.b), .a)", ":has(.a)"},
+    // clang-format on
+};
+
+INSTANTIATE_TEST_SUITE_P(HasForgiving,
+                         SelectorParseTest,
+                         testing::ValuesIn(has_forgiving_data));
+
+static const SelectorTestCase has_nesting_data[] = {
+    // clang-format off
+    // :has() is not allowed in the pseudos accepting only compound selectors:
+    {"::slotted(:has(.a))", "::slotted(:has())"},
+    {":host(:has(.a))", ":host(:has())"},
+    {":host-context(:has(.a))", ":host-context(:has())"},
+    {"::cue(:has(.a))", "::cue(:has())"},
+    // :has() is not allowed after pseudo elements:
+    {"::part(foo):has(:hover)", "::part(foo):has()"},
+    {"::part(foo):has(:hover:focus)", "::part(foo):has()"},
+    {"::part(foo):has(:focus, :hover)", "::part(foo):has()"},
+    {"::part(foo):has(:focus)", "::part(foo):has()"},
+    {"::part(foo):has(:focus, :--bar)", "::part(foo):has()"},
+    {"::part(foo):has(.a)", "::part(foo):has()"},
+    {"::part(foo):has(.a:hover)", "::part(foo):has()"},
+    {"::part(foo):has(:hover.a)", "::part(foo):has()"},
+    {"::part(foo):has(:hover + .a)", "::part(foo):has()"},
+    {"::part(foo):has(.a + :hover)", "::part(foo):has()"},
+    {"::part(foo):has(:hover:enabled)", "::part(foo):has()"},
+    {"::part(foo):has(:enabled:hover)", "::part(foo):has()"},
+    {"::part(foo):has(:hover, :where(.a))", "::part(foo):has()"},
+    {"::part(foo):has(:hover, .a)", "::part(foo):has()"},
+    {"::part(foo):has(:--bar, .a)", "::part(foo):has()"},
+    {"::part(foo):has(:enabled)", "::part(foo):has()"},
+    {"::-webkit-scrollbar:has(:enabled)", "::-webkit-scrollbar:has()"},
+    {"::selection:has(:window-inactive)", "::selection:has()"},
+    {"::-webkit-input-placeholder:has(:hover)",
+     "::-webkit-input-placeholder:has()"},
+    // clang-format on
+};
+
+INSTANTIATE_TEST_SUITE_P(NestedHasSelectorValidity,
+                         SelectorParseTest,
+                         testing::ValuesIn(has_nesting_data));
+
 }  // namespace blink

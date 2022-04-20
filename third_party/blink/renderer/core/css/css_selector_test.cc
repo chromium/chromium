@@ -164,7 +164,7 @@ TEST(CSSSelector, Specificity_Has) {
   EXPECT_EQ(Specificity(".a :has(.e+.f, .g>.b, .h#i)"), Specificity(".a .h#i"));
   EXPECT_EQ(Specificity(".a+:has(.b+span.f, :has(.c>.e, .g))"),
             Specificity(".a+.b+span.f"));
-  EXPECT_EQ(Specificity("div > :has(div:where(span:where(.b ~ .c)))"),
+  EXPECT_EQ(Specificity("div > :has(div, div:where(span:where(.b ~ .c)))"),
             Specificity("div > div"));
   EXPECT_EQ(Specificity(":has(.c + .c + .c, .b + .c:not(span), .b + .c + .e)"),
             Specificity(".c + .c + .c"));

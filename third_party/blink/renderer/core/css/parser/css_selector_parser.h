@@ -62,7 +62,7 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList ConsumeForgivingComplexSelectorList(CSSParserTokenRange&);
   CSSSelectorList ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
-  CSSSelectorList ConsumeRelativeSelectorList(CSSParserTokenRange&);
+  CSSSelectorList ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
 
   std::unique_ptr<CSSParserSelector> ConsumeRelativeSelector(
       CSSParserTokenRange&);

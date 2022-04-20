@@ -226,23 +226,30 @@ CSSSelectorList CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
   return CSSSelectorList::AdoptSelectorVector(selector_list);
 }
 
-CSSSelectorList CSSSelectorParser::ConsumeRelativeSelectorList(
+CSSSelectorList CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
     CSSParserTokenRange& range) {
   Vector<std::unique_ptr<CSSParserSelector>> selector_list;
-  std::unique_ptr<CSSParserSelector> selector = ConsumeRelativeSelector(range);
-  if (!selector)
-    return CSSSelectorList();
-  selector_list.push_back(std::move(selector));
-  while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
+
+  while (!range.AtEnd()) {
+    base::AutoReset<bool> reset_failure(&failed_parsing_, false);
+    CSSParserTokenRange argument = ConsumeNestedArgument(range);
+    std::unique_ptr<CSSParserSelector> selector =
+        ConsumeRelativeSelector(argument);
+    if (selector && !failed_parsing_ && argument.AtEnd())
+      selector_list.push_back(std::move(selector));
+    if (range.Peek().GetType() != kCommaToken)
+      break;
     range.ConsumeIncludingWhitespace();
-    selector = ConsumeRelativeSelector(range);
-    if (!selector)
-      return CSSSelectorList();
-    selector_list.push_back(std::move(selector));
   }
 
-  if (failed_parsing_)
+  // :has() is not allowed in the pseudos accepting only compound selectors, or
+  // not allowed after pseudo elements.
+  // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
+  if (inside_compound_pseudo_ ||
+      restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
+      selector_list.IsEmpty()) {
     return CSSSelectorList();
+  }
 
   return CSSSelectorList::AdoptSelectorVector(selector_list);
 }
@@ -537,6 +544,24 @@ bool IsSimpleSelectorValidAfterPseudoElement(
   return IsPseudoClassValidAfterPseudoElement(pseudo, compound_pseudo_element);
 }
 
+bool IsPseudoClassValidWithinHasArgument(CSSParserSelector& selector) {
+  DCHECK_EQ(selector.Match(), CSSSelector::kPseudoClass);
+  switch (selector.GetPseudoType()) {
+    // Limited these logical combinations inside :has() to avoid increasing
+    // the :has() invalidation complexity.
+    // Currently, SelectorChecker supports these cases, but StyleEngine doesn't
+    // support invalidation for these cases yet because it can increase
+    // invalidation complexity.
+    case CSSSelector::kPseudoIs:
+    case CSSSelector::kPseudoWhere:
+    case CSSSelector::kPseudoAny:
+    case CSSSelector::kPseudoHas:
+      return false;
+    default:
+      return true;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
@@ -784,9 +809,6 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
   bool has_arguments = token.GetType() == kFunctionToken;
   selector->UpdatePseudoType(value, *context_, has_arguments, context_->Mode());
 
-  if (UNLIKELY(is_inside_has_argument_))
-    found_pseudo_in_has_argument_ = true;
-
   if (selector->Match() == CSSSelector::kPseudoElement) {
     switch (selector->GetPseudoType()) {
       case CSSSelector::kPseudoBefore:
@@ -805,6 +827,13 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
   if (selector->Match() == CSSSelector::kPseudoElement &&
       disallow_pseudo_elements_)
     return nullptr;
+
+  if (UNLIKELY(is_inside_has_argument_)) {
+    DCHECK(disallow_pseudo_elements_);
+    if (!IsPseudoClassValidWithinHasArgument(*selector))
+      return nullptr;
+    found_pseudo_in_has_argument_ = true;
+  }
 
   if (token.GetType() == kIdentToken) {
     range.Consume();
@@ -887,8 +916,8 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeRelativeSelectorList(block);
-      if (!selector_list->IsValid() || !block.AtEnd())
+      *selector_list = ConsumeForgivingRelativeSelectorList(block);
+      if (!block.AtEnd())
         return nullptr;
 
       selector->SetSelectorList(std::move(selector_list));
