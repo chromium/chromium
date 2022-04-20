@@ -89,7 +89,12 @@ void XRFrameTransport::FrameSubmitMissing(
     int16_t vr_frame_id) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   gpu::SyncToken sync_token;
-  gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+  // https://crbug.com/1132837 : Apparently the GL context is sometimes null
+  // when reaching this method. Avoid a crash in that case, but do send the mojo
+  // message to ensure the XR session stays in sync.
+  if (gl) {
+    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+  }
   vr_presentation_provider->SubmitFrameMissing(vr_frame_id, sync_token);
 }
 
