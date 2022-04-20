@@ -64,7 +64,8 @@ void StatsCollector::ReportTracesAndHistsImpl(
         continue;
       }
       reporter.ReportTraceEvent(static_cast<IdType<context>>(id), tid,
-                                event.start_time, event.end_time);
+                                event.start_time.ToInternalValue(),
+                                event.end_time.ToInternalValue());
       accumulated_events[id] += (event.end_time - event.start_time);
     }
   }
@@ -75,7 +76,7 @@ void StatsCollector::ReportTracesAndHistsImpl(
     if (accumulated_events[id].is_zero())
       continue;
     reporter.ReportStats(ToUMAString(static_cast<IdType<context>>(id)).c_str(),
-                         accumulated_events[id]);
+                         accumulated_events[id].InMicroseconds());
   }
 }
 

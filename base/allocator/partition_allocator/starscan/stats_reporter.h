@@ -7,7 +7,6 @@
 
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 
 namespace partition_alloc {
 
@@ -18,18 +17,18 @@ class StatsReporter {
  public:
   virtual void ReportTraceEvent(internal::StatsCollector::ScannerId id,
                                 const base::PlatformThreadId tid,
-                                base::TimeTicks start_time,
-                                base::TimeTicks end_time) {}
+                                int64_t start_time_ticks_internal_value,
+                                int64_t end_time_ticks_internal_value) {}
   virtual void ReportTraceEvent(internal::StatsCollector::MutatorId id,
                                 const base::PlatformThreadId tid,
-                                base::TimeTicks start_time,
-                                base::TimeTicks end_time) {}
+                                int64_t start_time_ticks_internal_value,
+                                int64_t end_time_ticks_internal_value) {}
 
   virtual void ReportSurvivedQuarantineSize(size_t survived_size) {}
 
   virtual void ReportSurvivedQuarantinePercent(double survivied_rate) {}
 
-  virtual void ReportStats(const char* stats_name, base::TimeDelta sample) {}
+  virtual void ReportStats(const char* stats_name, int64_t sample_in_usec) {}
 };
 
 }  // namespace partition_alloc
