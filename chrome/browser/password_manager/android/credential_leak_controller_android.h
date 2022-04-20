@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -26,6 +27,8 @@ class CredentialLeakControllerAndroid {
       password_manager::CredentialLeakType leak_type,
       const GURL& origin,
       const std::u16string& username,
+      password_manager::PasswordChangeSuccessTracker*
+          password_change_success_tracker,
       ui::WindowAndroid* window_android);
 
   CredentialLeakControllerAndroid(const CredentialLeakControllerAndroid&) =
@@ -78,7 +81,10 @@ class CredentialLeakControllerAndroid {
 
   const std::u16string username_;
 
-  raw_ptr<ui::WindowAndroid> window_android_;
+  const raw_ptr<password_manager::PasswordChangeSuccessTracker>
+      password_change_success_tracker_;
+
+  const raw_ptr<ui::WindowAndroid> window_android_;
 
   std::unique_ptr<CredentialLeakDialogViewAndroid> dialog_view_;
 };
