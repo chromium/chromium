@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
-#include "chrome/browser/ui/translate/translate_bubble_view_state_transition.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -36,8 +35,7 @@ namespace {
 class MockTranslateBubbleModel : public TranslateBubbleModel {
  public:
   explicit MockTranslateBubbleModel(TranslateBubbleModel::ViewState view_state)
-      : view_state_transition_(view_state),
-        error_type_(translate::TranslateErrors::NONE),
+      : error_type_(translate::TranslateErrors::NONE),
         source_language_index_(1),
         target_language_index_(2),
         never_translate_language_(false),
@@ -51,22 +49,22 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
         translation_declined_(false),
         source_language_index_on_translation_(-1),
         target_language_index_on_translation_(-1),
-        can_add_site_to_never_prompt_list(true) {}
+        can_add_site_to_never_prompt_list(true) {
+    DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
+    DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
+    current_view_state_ = view_state;
+  }
 
   TranslateBubbleModel::ViewState GetViewState() const override {
-    return view_state_transition_.view_state();
+    return current_view_state_;
   }
 
   void SetViewState(TranslateBubbleModel::ViewState view_state) override {
-    view_state_transition_.SetViewState(view_state);
+    current_view_state_ = view_state;
   }
 
   void ShowError(translate::TranslateErrors::Type error_type) override {
     error_type_ = error_type;
-  }
-
-  void GoBackFromAdvanced() override {
-    view_state_transition_.GoBackFromAdvanced();
   }
 
   int GetNumberOfSourceLanguages() const override { return 1000; }
@@ -161,7 +159,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
 
   void ReportUIInteraction(translate::UIInteraction ui_interaction) override {}
 
-  TranslateBubbleViewStateTransition view_state_transition_;
+  ViewState current_view_state_;
   translate::TranslateErrors::Type error_type_;
   int source_language_index_;
   int target_language_index_;
@@ -183,7 +181,7 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
 
 class TranslateBubbleViewTest : public ChromeViewsTestBase {
  public:
-  TranslateBubbleViewTest() {}
+  TranslateBubbleViewTest() = default;
 
  protected:
   void SetUp() override {
@@ -199,9 +197,9 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
 
   void CreateAndShowBubble() {
     std::unique_ptr<TranslateBubbleModel> model(mock_model_);
-    bubble_ = new TranslateBubbleView(anchor_widget_->GetContentsView(),
-                                      std::move(model),
-                                      translate::TranslateErrors::NONE, NULL);
+    bubble_ = new TranslateBubbleView(
+        anchor_widget_->GetContentsView(), std::move(model),
+        translate::TranslateErrors::NONE, nullptr);
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
 

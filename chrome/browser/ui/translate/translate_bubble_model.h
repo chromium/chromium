@@ -50,9 +50,6 @@ class TranslateBubbleModel : public TranslateLanguageListModel {
   // Shows an error.
   virtual void ShowError(translate::TranslateErrors::Type error_type) = 0;
 
-  // Goes back from the 'Advanced' view state.
-  virtual void GoBackFromAdvanced() = 0;
-
   // TranslateLanguageListModel:
   int GetNumberOfSourceLanguages() const override = 0;
   int GetNumberOfTargetLanguages() const override = 0;

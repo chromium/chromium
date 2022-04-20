@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 
@@ -14,9 +15,14 @@ TranslateBubbleModelImpl::TranslateBubbleModelImpl(
     translate::TranslateStep step,
     std::unique_ptr<translate::TranslateUIDelegate> ui_delegate)
     : ui_delegate_(std::move(ui_delegate)),
-      view_state_transition_(TranslateStepToViewState(step)),
       translation_declined_(false),
       translate_executed_(false) {
+  ViewState view_state = TranslateStepToViewState(step);
+  // The initial view type must not be 'Advanced'.
+  DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
+  DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
+  current_view_state_ = view_state;
+
   if (GetViewState() != TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE)
     translate_executed_ = true;
 }
@@ -43,7 +49,7 @@ TranslateBubbleModelImpl::TranslateStepToViewState(
 }
 
 TranslateBubbleModel::ViewState TranslateBubbleModelImpl::GetViewState() const {
-  return view_state_transition_.view_state();
+  return current_view_state_;
 }
 
 bool TranslateBubbleModelImpl::ShouldAlwaysTranslateBeCheckedByDefault() const {
@@ -56,16 +62,15 @@ bool TranslateBubbleModelImpl::ShouldShowAlwaysTranslateShortcut() const {
 
 void TranslateBubbleModelImpl::SetViewState(
     TranslateBubbleModel::ViewState view_state) {
-  view_state_transition_.SetViewState(view_state);
+  current_view_state_ = view_state;
+  if (view_state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
+      view_state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
+    translate::ReportUiAction(translate::SET_STATE_OPTIONS);
 }
 
 void TranslateBubbleModelImpl::ShowError(
     translate::TranslateErrors::Type error_type) {
   ui_delegate_->OnErrorShown(error_type);
-}
-
-void TranslateBubbleModelImpl::GoBackFromAdvanced() {
-  view_state_transition_.GoBackFromAdvanced();
 }
 
 int TranslateBubbleModelImpl::GetNumberOfSourceLanguages() const {

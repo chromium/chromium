@@ -9,7 +9,6 @@
 
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
-#include "chrome/browser/ui/translate/translate_bubble_view_state_transition.h"
 
 namespace translate {
 class TranslateUIDelegate;
@@ -36,7 +35,6 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   TranslateBubbleModel::ViewState GetViewState() const override;
   void SetViewState(TranslateBubbleModel::ViewState view_state) override;
   void ShowError(translate::TranslateErrors::Type error_type) override;
-  void GoBackFromAdvanced() override;
   int GetNumberOfSourceLanguages() const override;
   int GetNumberOfTargetLanguages() const override;
   std::u16string GetSourceLanguageNameAt(int index) const override;
@@ -64,7 +62,7 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
 
  private:
   std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;
-  TranslateBubbleViewStateTransition view_state_transition_;
+  ViewState current_view_state_;
 
   bool translation_declined_;
   bool translate_executed_;

@@ -1,11 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_VIEW_STATE_TRANSITION_H_
-#define CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_VIEW_STATE_TRANSITION_H_
-
-#include "chrome/browser/ui/translate/translate_bubble_model.h"
+#ifndef CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_UI_ACTION_LOGGER_H_
+#define CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_UI_ACTION_LOGGER_H_
 
 namespace translate {
 
@@ -93,35 +91,4 @@ void ReportUiAction(translate::TranslateBubbleUiEvent action);
 
 }  // namespace translate
 
-// The class which manages the transition of the view state of the Translate
-// bubble.
-class TranslateBubbleViewStateTransition {
- public:
-  explicit TranslateBubbleViewStateTransition(
-      TranslateBubbleModel::ViewState view_state);
-
-  TranslateBubbleViewStateTransition(
-      const TranslateBubbleViewStateTransition&) = delete;
-  TranslateBubbleViewStateTransition& operator=(
-      const TranslateBubbleViewStateTransition&) = delete;
-
-  TranslateBubbleModel::ViewState view_state() const { return view_state_; }
-
-  // Transitions the view state.
-  void SetViewState(TranslateBubbleModel::ViewState view_state);
-
-  // Goes back from the 'Advanced' view state.
-  void GoBackFromAdvanced();
-
- private:
-  // The current view type.
-  TranslateBubbleModel::ViewState view_state_;
-
-  // When the current view type is not 'Advanced' view, this is equivalent to
-  // |view_state_|. Otherwise, this is the previous view type before the user
-  // opens the 'Advanced' view. This is used to navigate back after pressing the
-  // 'Cancel' button on the 'Advanced' view.
-  TranslateBubbleModel::ViewState view_state_before_advanced_view_;
-};
-
-#endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_VIEW_STATE_TRANSITION_H_
+#endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_UI_ACTION_LOGGER_H_

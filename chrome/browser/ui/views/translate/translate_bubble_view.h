@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/translate/target_language_combobox_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
-#include "chrome/browser/ui/translate/translate_bubble_view_state_transition.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/translate/core/common/translate_errors.h"
