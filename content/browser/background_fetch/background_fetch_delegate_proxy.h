@@ -27,7 +27,7 @@ class SkBitmap;
 
 namespace content {
 
-class PermissionControllerImpl;
+class PermissionController;
 class RenderFrameHostImpl;
 class StoragePartitionImpl;
 
@@ -172,7 +172,7 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
 
   BackgroundFetchDelegate* GetDelegate();
 
-  PermissionControllerImpl* GetPermissionController();
+  PermissionController* GetPermissionController();
 
   // Map from unique job ids to the controller.
   std::map<std::string, base::WeakPtr<Controller>> controller_map_;

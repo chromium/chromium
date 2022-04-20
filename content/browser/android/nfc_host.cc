@@ -9,8 +9,10 @@
 #include "base/atomic_sequence_num.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/android/content_jni_headers/NfcHost_jni.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -54,8 +56,10 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     return;
   }
 
-  if (permission_controller_->GetPermissionStatusForCurrentDocument(
-          PermissionType::NFC, render_frame_host) !=
+  if (render_frame_host->GetBrowserContext()
+          ->GetPermissionController()
+          ->GetPermissionStatusForCurrentDocument(PermissionType::NFC,
+                                                  render_frame_host) !=
       blink::mojom::PermissionStatus::GRANTED) {
     return;
   }

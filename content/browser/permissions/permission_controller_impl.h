@@ -16,7 +16,9 @@
 namespace content {
 
 class BrowserContext;
+class PermissionControllerImplTest;
 class RenderProcessHost;
+class PermissionServiceImpl;
 
 // Implementation of the PermissionController interface. This
 // is used by content/ layer to manage permissions.
@@ -48,40 +50,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       const blink::mojom::PermissionStatus& status);
   void ResetOverridesForDevTools();
 
-  // PermissionController implementation.
-  blink::mojom::PermissionStatus DeprecatedGetPermissionStatus(
-      PermissionType permission,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) override;
-
-  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
-      PermissionType permission,
-      RenderProcessHost* render_process_host,
-      const url::Origin& worker_origin) override;
-
-  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host) override;
-
-  blink::mojom::PermissionStatus GetPermissionStatusForOriginWithoutContext(
-      PermissionType permission,
-      const url::Origin& origin) override;
-
-  void RequestPermissionFromCurrentDocument(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      bool user_gesture,
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
-
-  void RequestPermissions(
-      const std::vector<PermissionType>& permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
-
   void ResetPermission(PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin);
@@ -99,6 +67,47 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void UnsubscribePermissionStatusChange(SubscriptionId subscription_id);
 
  private:
+  friend class PermissionControllerImplTest;
+  friend class PermissionServiceImpl;
+
+  blink::mojom::PermissionStatus DeprecatedGetPermissionStatus(
+      PermissionType permission,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin);
+
+  // PermissionController implementation.
+  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+      PermissionType permission,
+      RenderProcessHost* render_process_host,
+      const url::Origin& worker_origin) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForOriginWithoutContext(
+      PermissionType permission,
+      const url::Origin& origin) override;
+  void RequestPermissionFromCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissionsFromCurrentDocument(
+      const std::vector<PermissionType>& permission,
+      RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
+
+  void RequestPermissions(
+      const std::vector<PermissionType>& permission,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
+
   blink::mojom::PermissionStatus GetPermissionStatusForFrame(
       PermissionType permission,
       RenderFrameHost* render_frame_host,

@@ -28,6 +28,8 @@
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -175,20 +177,23 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
     const GURL& security_origin,
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  ContentSettingsType content_settings_type =
+  content::PermissionType permission_type =
       type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
-          ? ContentSettingsType::MEDIASTREAM_MIC
-          : ContentSettingsType::MEDIASTREAM_CAMERA;
+          ? content::PermissionType::AUDIO_CAPTURE
+          : content::PermissionType::VIDEO_CAPTURE;
 
-  DCHECK(!security_origin.is_empty());
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(profile);
-  return permission_manager
-             ->GetPermissionStatusForFrame(content_settings_type,
-                                           render_frame_host, security_origin)
-             .content_setting == CONTENT_SETTING_ALLOW;
+  CHECK_EQ(render_frame_host->GetLastCommittedOrigin().GetURL(),
+           security_origin);
+  // It is OK to ignore `security_origin` because it will be calculated from
+  // `render_frame_host` and we always ignore `requesting_origin` for
+  // `AUDIO_CAPTURE` and `VIDEO_CAPTURE`.
+  // `render_frame_host->GetMainFrame()->GetLastCommittedOrigin()` will be used
+  // instead.
+  return render_frame_host->GetBrowserContext()
+             ->GetPermissionController()
+             ->GetPermissionStatusForCurrentDocument(permission_type,
+                                                     render_frame_host) ==
+         blink::mojom::PermissionStatus::GRANTED;
 }
 
 void PermissionBubbleMediaAccessHandler::HandleRequest(

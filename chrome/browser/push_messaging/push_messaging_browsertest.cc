@@ -472,7 +472,8 @@ void PushMessagingBrowserTestBase::SetupOrphanedPushSubscription(
 
   base::RunLoop run_loop;
   push_service()->SubscribeFromWorker(
-      requesting_origin, service_worker_registration_id, std::move(options),
+      requesting_origin, service_worker_registration_id,
+      /*render_process_id=*/-1, std::move(options),
       base::BindOnce(&DidRegister, run_loop.QuitClosure()));
   run_loop.Run();
 

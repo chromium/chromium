@@ -156,14 +156,22 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
     blink::mojom::MediaStreamType video_type =
         video_id.empty() ? blink::mojom::MediaStreamType::NO_SERVICE
                          : blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
-    EXPECT_EQ(example_url(),
-              GetWebContents()->GetMainFrame()->GetLastCommittedURL());
+    if (!GetWebContents()
+             ->GetMainFrame()
+             ->GetLastCommittedOrigin()
+             .GetURL()
+             .is_empty()) {
+      EXPECT_EQ(
+          example_url().DeprecatedGetOriginAsURL(),
+          GetWebContents()->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+    }
     int render_process_id =
         GetWebContents()->GetMainFrame()->GetProcess()->GetID();
     int render_frame_id = GetWebContents()->GetMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
-        render_process_id, render_frame_id, 0, example_url(), false,
-        request_type, audio_id, video_id, audio_type, video_type,
+        render_process_id, render_frame_id, 0,
+        example_url().DeprecatedGetOriginAsURL(), false, request_type, audio_id,
+        video_id, audio_type, video_type,
         /*disable_local_echo=*/false, request_pan_tilt_zoom_permission);
   }
 
@@ -1017,6 +1025,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   // Make the child frame the source of the request.
   request.render_process_id = child_frame->GetProcess()->GetID();
   request.render_frame_id = child_frame->GetRoutingID();
+  request.security_origin = child_frame->GetLastCommittedOrigin().GetURL();
+
   RequestPermissions(GetWebContents(), request);
 
   ASSERT_EQ(0, prompt_factory()->TotalRequestCount());
@@ -1047,6 +1057,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   // Make the child frame the source of the request.
   request.render_process_id = child_frame->GetProcess()->GetID();
   request.render_frame_id = child_frame->GetRoutingID();
+  request.security_origin = child_frame->GetLastCommittedOrigin().GetURL();
+
   RequestPermissions(GetWebContents(), request);
 
   ASSERT_EQ(0, prompt_factory()->TotalRequestCount());

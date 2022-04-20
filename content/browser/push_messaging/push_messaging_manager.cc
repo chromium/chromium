@@ -358,7 +358,8 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
                        std::move(data)));
   } else {
     push_service->SubscribeFromWorker(
-        requesting_origin.GetURL(), registration_id, std::move(options),
+        requesting_origin.GetURL(), registration_id,
+        render_process_host_.GetID(), std::move(options),
         base::BindOnce(&PushMessagingManager::DidRegister, AsWeakPtr(),
                        std::move(data)));
   }

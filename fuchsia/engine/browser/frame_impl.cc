@@ -32,7 +32,7 @@
 #include "content/public/browser/message_port_provider.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -69,6 +69,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/wm/core/base_focus_rules.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -1262,11 +1263,14 @@ void FrameImpl::RequestMediaAccessPermission(
     return;
   }
 
-  auto* permission_controller =
-      web_contents_->GetBrowserContext()->GetPermissionControllerDelegate();
-  permission_controller->RequestPermissions(
-      permissions, render_frame_host, request.security_origin,
-      request.user_gesture,
+  content::PermissionController* permission_controller =
+      web_contents_->GetBrowserContext()->GetPermissionController();
+  DCHECK(permission_controller);
+  CHECK_EQ(url::Origin::Create(request.security_origin),
+           render_frame_host->GetLastCommittedOrigin());
+
+  permission_controller->RequestPermissionsFromCurrentDocument(
+      permissions, render_frame_host, request.user_gesture,
       base::BindOnce(&HandleMediaPermissionsRequestResult, request,
                      std::move(callback)));
 }
@@ -1287,10 +1291,15 @@ bool FrameImpl::CheckMediaAccessPermission(
       NOTREACHED();
       return false;
   }
-  auto* permission_controller =
-      web_contents_->GetBrowserContext()->GetPermissionControllerDelegate();
-  return permission_controller->GetPermissionStatusForFrame(
-             permission, render_frame_host, security_origin) ==
+
+  content::PermissionController* permission_controller =
+      web_contents_->GetBrowserContext()->GetPermissionController();
+  DCHECK(permission_controller);
+  CHECK_EQ(url::Origin::Create(security_origin),
+           render_frame_host->GetLastCommittedOrigin());
+
+  return permission_controller->GetPermissionStatusForCurrentDocument(
+             permission, render_frame_host) ==
          blink::mojom::PermissionStatus::GRANTED;
 }
 

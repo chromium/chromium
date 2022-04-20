@@ -343,11 +343,27 @@ void PermissionControllerImpl::RequestPermissionFromCurrentDocument(
     RenderFrameHost* render_frame_host,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  // TODO(https://crbug.com/1271543): `RequestPermissionFromCurrentDocument`
+  // TODO(https://crbug.com/1271543): Add `RequestPermissionFromCurrentDocument`
   // into `PermissionControllerDelegate` and use it here.
-  RequestPermission(permission, render_frame_host,
-                    render_frame_host->GetLastCommittedOrigin().GetURL(),
-                    user_gesture, std::move(callback));
+  RequestPermission(
+      permission, render_frame_host,
+      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host),
+      user_gesture, std::move(callback));
+}
+
+void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
+    const std::vector<PermissionType>& permissions,
+    RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  // TODO(https://crbug.com/1271543): Add
+  // `RequestPermissionsFromCurrentDocument` into `PermissionControllerDelegate`
+  // and use it here.
+  RequestPermissions(
+      permissions, render_frame_host,
+      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host),
+      user_gesture, std::move(callback));
 }
 
 blink::mojom::PermissionStatus

@@ -12,6 +12,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_util.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
 #include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
@@ -125,7 +126,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       continue;
 #endif
     ContentSettingsType content_settings_type =
-        permissions::PermissionManager::PermissionTypeToContentSetting(type);
+        permissions::PermissionUtil::PermissionTypeToContentSetting(type);
     if (permission_contexts.find(content_settings_type) ==
         permission_contexts.end()) {
       permission_contexts[content_settings_type] =

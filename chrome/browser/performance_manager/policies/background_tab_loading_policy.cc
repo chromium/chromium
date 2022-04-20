@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
@@ -22,7 +21,7 @@
 #include "components/performance_manager/public/graph/policies/background_tab_loading_policy.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
-#include "components/permissions/permission_manager.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
@@ -70,19 +69,18 @@ void ScheduleLoadForRestoredTabs(
   page_node_and_notification_permission_vector.reserve(
       web_contents_vector.size());
   for (content::WebContents* content : web_contents_vector) {
-    const GURL last_committed_origin =
-        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-            content->GetMainFrame());
-    auto notif_permission =
-        PermissionManagerFactory::GetForProfile(
-            Profile::FromBrowserContext(content->GetBrowserContext()))
-            ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                  last_committed_origin, last_committed_origin);
+    content::PermissionController* permission_controller =
+        content->GetBrowserContext()->GetPermissionController();
+
+    bool has_notifications_permission =
+        permission_controller->GetPermissionStatusForCurrentDocument(
+            content::PermissionType::NOTIFICATIONS, content->GetMainFrame()) ==
+        blink::mojom::PermissionStatus::GRANTED;
 
     BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission
         page_node_and_notification_permission(
             PerformanceManager::GetPrimaryPageNodeForWebContents(content),
-            notif_permission.content_setting == CONTENT_SETTING_ALLOW);
+            has_notifications_permission);
 
     page_node_and_notification_permission_vector.push_back(
         page_node_and_notification_permission);

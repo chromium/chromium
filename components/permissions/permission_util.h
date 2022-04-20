@@ -73,6 +73,16 @@ class PermissionUtil {
   // permission decisions in `render_frame_host`.
   static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
+
+  // Helper method to convert PermissionType to ContentSettingType.
+  // If PermissionType is not supported or found, returns
+  // ContentSettingsType::DEFAULT.
+  static ContentSettingsType PermissionTypeToContentSettingSafe(
+      content::PermissionType permission);
+
+  // Helper method to convert PermissionType to ContentSettingType.
+  static ContentSettingsType PermissionTypeToContentSetting(
+      content::PermissionType permission);
 };
 
 }  // namespace permissions

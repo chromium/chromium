@@ -18,15 +18,14 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -234,7 +233,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
 }
 
 TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
-  Profile* profile = CreateProfile("myprofile@gmail.com");
+  TestingProfile* profile = CreateProfile("myprofile@gmail.com");
   CreateClient();
 
   GURL origin("https://example.com/");
@@ -246,24 +245,24 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
           ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS, NULL);
   ASSERT_EQ(CONTENT_SETTING_ASK, default_setting);
 
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(profile);
+  profile->SetPermissionControllerDelegate(
+      permissions::GetPermissionControllerDelegate(profile));
 
   // (1) Enable the permission when the default is to ask (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            profile->GetPermissionController()
+                ->GetPermissionStatusForOriginWithoutContext(
+                    content::PermissionType::NOTIFICATIONS,
+                    url::Origin::Create(origin)));
 
   // (2) Disable the permission when the default is to ask (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
+            profile->GetPermissionController()
+                ->GetPermissionStatusForOriginWithoutContext(
+                    content::PermissionType::NOTIFICATIONS,
+                    url::Origin::Create(origin)));
 
   // Change the default content setting vaule for notifications to ALLOW.
   HostContentSettingsMapFactory::GetForProfile(profile)
@@ -272,19 +271,20 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   // (3) Disable the permission when the default is allowed (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
+            profile->GetPermissionController()
+                ->GetPermissionStatusForOriginWithoutContext(
+                    content::PermissionType::NOTIFICATIONS,
+                    url::Origin::Create(origin)));
 
   // (4) Enable the permission when the default is allowed (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+
+  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            profile->GetPermissionController()
+                ->GetPermissionStatusForOriginWithoutContext(
+                    content::PermissionType::NOTIFICATIONS,
+                    url::Origin::Create(origin)));
 
   // Now change the default content setting value to BLOCK.
   HostContentSettingsMapFactory::GetForProfile(profile)
@@ -293,19 +293,19 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   // (5) Enable the permission when the default is blocked (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            profile->GetPermissionController()
+                ->GetPermissionStatusForOriginWithoutContext(
+                    content::PermissionType::NOTIFICATIONS,
+                    url::Origin::Create(origin)));
 
   // (6) Disable the permission when the default is blocked (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
+            profile->GetPermissionController()
+                ->GetPermissionStatusForOriginWithoutContext(
+                    content::PermissionType::NOTIFICATIONS,
+                    url::Origin::Create(origin)));
 }
 
 }  // namespace

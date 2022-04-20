@@ -27,7 +27,6 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,7 +54,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_background_services_context.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/child_process_host.h"
@@ -65,6 +67,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/background_mode_manager.h"
@@ -127,22 +130,6 @@ void RecordUnsubscribeGCMResult(gcm::GCMClient::Result result) {
 
 void RecordUnsubscribeIIDResult(InstanceID::Result result) {
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationIIDResult", result);
-}
-
-blink::mojom::PermissionStatus ToPermissionStatus(
-    ContentSetting content_setting) {
-  switch (content_setting) {
-    case CONTENT_SETTING_ALLOW:
-      return blink::mojom::PermissionStatus::GRANTED;
-    case CONTENT_SETTING_BLOCK:
-      return blink::mojom::PermissionStatus::DENIED;
-    case CONTENT_SETTING_ASK:
-      return blink::mojom::PermissionStatus::ASK;
-    default:
-      break;
-  }
-  NOTREACHED();
-  return blink::mojom::PermissionStatus::DENIED;
 }
 
 void UnregisterCallbackToClosure(
@@ -739,6 +726,7 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
     blink::mojom::PushSubscriptionOptionsPtr options,
     bool user_gesture,
     RegisterCallback callback) {
+  render_process_id_ = render_process_id;
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, requesting_origin, service_worker_registration_id);
@@ -780,10 +768,14 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
     return;
   }
 
-  // Push does not allow permission requests from iframes.
-  PermissionManagerFactory::GetForProfile(profile_)->RequestPermission(
-      ContentSettingsType::NOTIFICATIONS, render_frame_host, requesting_origin,
-      user_gesture,
+  CHECK_EQ(render_frame_host->GetLastCommittedOrigin().GetURL(),
+           requesting_origin);
+
+  // It is OK to ignore `requesting_origin` because it will be calculated from
+  // `render_frame_host` and we always use `requesting_origin` for
+  // NOTIFICATIONS.
+  profile_->GetPermissionController()->RequestPermissionFromCurrentDocument(
+      content::PermissionType::NOTIFICATIONS, render_frame_host, user_gesture,
       base::BindOnce(&PushMessagingServiceImpl::DoSubscribe,
                      weak_factory_.GetWeakPtr(), std::move(app_identifier),
                      std::move(options), std::move(callback), render_process_id,
@@ -793,8 +785,10 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
 void PushMessagingServiceImpl::SubscribeFromWorker(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
+    int render_process_id,
     blink::mojom::PushSubscriptionOptionsPtr options,
     RegisterCallback register_callback) {
+  render_process_id_ = render_process_id;
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, requesting_origin, service_worker_registration_id);
@@ -823,7 +817,7 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
   DoSubscribe(std::move(app_identifier), std::move(options),
               std::move(register_callback),
               /* render_process_id= */ -1, /* render_frame_id= */ -1,
-              CONTENT_SETTING_ALLOW);
+              blink::mojom::PermissionStatus::GRANTED);
 }
 
 blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
@@ -835,11 +829,17 @@ blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
   // Because the Push API is tied to Service Workers, many usages of the API
   // won't have an embedding origin at all. Only consider the requesting
   // |origin| when checking whether permission to use the API has been granted.
-  return ToPermissionStatus(
-      PermissionManagerFactory::GetForProfile(profile_)
-          ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS, origin,
-                                origin)
-          .content_setting);
+  if (render_process_id_ != content::ChildProcessHost::kInvalidUniqueID) {
+    return profile_->GetPermissionController()->GetPermissionStatusForWorker(
+        content::PermissionType::NOTIFICATIONS,
+        content::RenderProcessHost::FromID(render_process_id_),
+        url::Origin::Create(origin));
+  } else {
+    return profile_->GetPermissionController()
+        ->GetPermissionStatusForOriginWithoutContext(
+            content::PermissionType::NOTIFICATIONS,
+            url::Origin::Create(origin));
+  }
 }
 
 bool PushMessagingServiceImpl::SupportNonVisibleMessages() {
@@ -852,8 +852,8 @@ void PushMessagingServiceImpl::DoSubscribe(
     RegisterCallback register_callback,
     int render_process_id,
     int render_frame_id,
-    ContentSetting content_setting) {
-  if (content_setting != CONTENT_SETTING_ALLOW) {
+    blink::mojom::PermissionStatus permission_status) {
+  if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
     SubscribeEndWithError(
         std::move(register_callback),
         blink::mojom::PushRegistrationStatus::PERMISSION_DENIED);
@@ -1552,7 +1552,7 @@ void PushMessagingServiceImpl::UpdateSubscription(
   // the expiration time of |app_identifier|
   DoSubscribe(app_identifier, std::move(options), std::move(register_callback),
               -1 /* render_process_id */, -1 /* render_frame_id */,
-              CONTENT_SETTING_ALLOW);
+              blink::mojom::PermissionStatus::GRANTED);
 }
 
 void PushMessagingServiceImpl::DidUpdateSubscription(

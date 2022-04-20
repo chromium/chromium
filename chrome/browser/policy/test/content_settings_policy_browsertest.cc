@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,10 +20,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/private_network_settings.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -387,14 +385,14 @@ class SensorsPolicyTest : public PolicyTest {
     PolicyTest::SetUpCommandLine(command_line);
   }
 
-  void VerifyPermission(const char* url, ContentSetting content_setting_type) {
-    permissions::PermissionManager* permission_manager =
-        PermissionManagerFactory::GetForProfile(browser()->profile());
-    EXPECT_EQ(permission_manager
-                  ->GetPermissionStatus(ContentSettingsType::SENSORS, GURL(url),
-                                        GURL(url))
-                  .content_setting,
-              content_setting_type);
+  void VerifyPermission(const char* url,
+                        blink::mojom::PermissionStatus status) {
+    content::PermissionController* permission_controller =
+        browser()->profile()->GetPermissionController();
+    EXPECT_EQ(
+        permission_controller->GetPermissionStatusForOriginWithoutContext(
+            content::PermissionType::SENSORS, url::Origin::Create(GURL(url))),
+        status);
   }
 
   void AllowUrl(const char* url) {
@@ -468,27 +466,27 @@ IN_PROC_BROWSER_TEST_F(SensorsPolicyTest, DynamicRefresh) {
   constexpr int kAllowAll = 1;
 
   BlockUrl(kFooUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_BLOCK);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_ALLOW);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::DENIED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::GRANTED);
 
   BlockUrl(kBarUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_ALLOW);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_BLOCK);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::GRANTED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::DENIED);
 
   SetDefault(kBlockAll);
   ClearLists();
   AllowUrl(kFooUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_ALLOW);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_BLOCK);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::GRANTED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::DENIED);
 
   AllowUrl(kBarUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_BLOCK);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_ALLOW);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::DENIED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::GRANTED);
 
   SetDefault(kAllowAll);
   ClearLists();
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_ALLOW);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_ALLOW);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::GRANTED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::GRANTED);
 }
 
 }  // namespace policy

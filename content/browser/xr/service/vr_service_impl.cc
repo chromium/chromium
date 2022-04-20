@@ -16,12 +16,12 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/browser/xr/service/browser_xr_runtime_impl.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -493,9 +493,8 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   }
 #endif
 
-  PermissionControllerImpl* permission_controller =
-      PermissionControllerImpl::FromBrowserContext(
-          GetWebContents()->GetBrowserContext());
+  PermissionController* permission_controller =
+      GetWebContents()->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
 
   // Need to calculate the permissions before the call below, as otherwise
@@ -504,9 +503,8 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
       GetRequiredPermissions(request.options->mode, request.required_features,
                              request.optional_features);
 
-  permission_controller->RequestPermissions(
-      permissions, render_frame_host_,
-      render_frame_host_->GetLastCommittedURL(), true,
+  permission_controller->RequestPermissionsFromCurrentDocument(
+      permissions, render_frame_host_, true,
       base::BindOnce(&VRServiceImpl::OnPermissionResults,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request),
                      permissions));

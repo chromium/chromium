@@ -28,13 +28,14 @@ class WebTestPushMessagingService : public PushMessagingService {
   // PushMessagingService implementation:
   void SubscribeFromDocument(const GURL& requesting_origin,
                              int64_t service_worker_registration_id,
-                             int renderer_id,
+                             int render_process_id,
                              int render_frame_id,
                              blink::mojom::PushSubscriptionOptionsPtr options,
                              bool user_gesture,
                              RegisterCallback callback) override;
   void SubscribeFromWorker(const GURL& requesting_origin,
                            int64_t service_worker_registration_id,
+                           int render_process_id,
                            blink::mojom::PushSubscriptionOptionsPtr options,
                            RegisterCallback callback) override;
   void GetSubscriptionInfo(const GURL& origin,

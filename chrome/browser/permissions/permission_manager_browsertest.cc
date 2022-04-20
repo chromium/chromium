@@ -34,6 +34,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   return permission_contexts;
 }
 
+}  // namespace
+
 // PermissionManager subclass that enables the test below to deterministically
 // wait until there is a permission status subscription from a service worker.
 // Deleting the off-the-record profile under these circumstances would
@@ -70,8 +72,6 @@ class SubscriptionInterceptingPermissionManager
  private:
   base::RepeatingClosure callback_;
 };
-
-}  // namespace
 
 class PermissionManagerBrowserTest : public InProcessBrowserTest {
  public:

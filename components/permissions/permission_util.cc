@@ -264,4 +264,82 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   return render_frame_host->GetLastCommittedOrigin().GetURL();
 }
 
+ContentSettingsType PermissionUtil::PermissionTypeToContentSettingSafe(
+    PermissionType permission) {
+  switch (permission) {
+    case PermissionType::MIDI:
+      return ContentSettingsType::MIDI;
+    case PermissionType::MIDI_SYSEX:
+      return ContentSettingsType::MIDI_SYSEX;
+    case PermissionType::NOTIFICATIONS:
+      return ContentSettingsType::NOTIFICATIONS;
+    case PermissionType::GEOLOCATION:
+      return ContentSettingsType::GEOLOCATION;
+    case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+      return ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER;
+#else
+      break;
+#endif
+    case PermissionType::DURABLE_STORAGE:
+      return ContentSettingsType::DURABLE_STORAGE;
+    case PermissionType::AUDIO_CAPTURE:
+      return ContentSettingsType::MEDIASTREAM_MIC;
+    case PermissionType::VIDEO_CAPTURE:
+      return ContentSettingsType::MEDIASTREAM_CAMERA;
+    case PermissionType::BACKGROUND_SYNC:
+      return ContentSettingsType::BACKGROUND_SYNC;
+    case PermissionType::SENSORS:
+      return ContentSettingsType::SENSORS;
+    case PermissionType::ACCESSIBILITY_EVENTS:
+      return ContentSettingsType::ACCESSIBILITY_EVENTS;
+    case PermissionType::CLIPBOARD_READ_WRITE:
+      return ContentSettingsType::CLIPBOARD_READ_WRITE;
+    case PermissionType::CLIPBOARD_SANITIZED_WRITE:
+      return ContentSettingsType::CLIPBOARD_SANITIZED_WRITE;
+    case PermissionType::PAYMENT_HANDLER:
+      return ContentSettingsType::PAYMENT_HANDLER;
+    case PermissionType::BACKGROUND_FETCH:
+      return ContentSettingsType::BACKGROUND_FETCH;
+    case PermissionType::IDLE_DETECTION:
+      return ContentSettingsType::IDLE_DETECTION;
+    case PermissionType::PERIODIC_BACKGROUND_SYNC:
+      return ContentSettingsType::PERIODIC_BACKGROUND_SYNC;
+    case PermissionType::WAKE_LOCK_SCREEN:
+      return ContentSettingsType::WAKE_LOCK_SCREEN;
+    case PermissionType::WAKE_LOCK_SYSTEM:
+      return ContentSettingsType::WAKE_LOCK_SYSTEM;
+    case PermissionType::NFC:
+      return ContentSettingsType::NFC;
+    case PermissionType::VR:
+      return ContentSettingsType::VR;
+    case PermissionType::AR:
+      return ContentSettingsType::AR;
+    case PermissionType::STORAGE_ACCESS_GRANT:
+      return ContentSettingsType::STORAGE_ACCESS;
+    case PermissionType::CAMERA_PAN_TILT_ZOOM:
+      return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
+    case PermissionType::WINDOW_PLACEMENT:
+      return ContentSettingsType::WINDOW_PLACEMENT;
+    case PermissionType::LOCAL_FONTS:
+      return ContentSettingsType::LOCAL_FONTS;
+    case PermissionType::DISPLAY_CAPTURE:
+      return ContentSettingsType::DISPLAY_CAPTURE;
+    case PermissionType::NUM:
+      break;
+  }
+
+  return ContentSettingsType::DEFAULT;
+}
+
+ContentSettingsType PermissionUtil::PermissionTypeToContentSetting(
+    PermissionType permission) {
+  ContentSettingsType content_setting =
+      PermissionTypeToContentSettingSafe(permission);
+  DCHECK_NE(content_setting, ContentSettingsType::DEFAULT)
+      << "Unknown content setting for permission "
+      << static_cast<int>(permission);
+  return content_setting;
+}
+
 }  // namespace permissions

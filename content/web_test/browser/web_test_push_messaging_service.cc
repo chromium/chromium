@@ -7,7 +7,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/web_test/browser/web_test_browser_context.h"
 #include "content/web_test/browser/web_test_content_browser_client.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
@@ -56,26 +58,30 @@ WebTestPushMessagingService::~WebTestPushMessagingService() {}
 void WebTestPushMessagingService::SubscribeFromDocument(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
-    int renderer_id,
+    int render_process_id,
     int render_frame_id,
     blink::mojom::PushSubscriptionOptionsPtr options,
     bool user_gesture,
     RegisterCallback callback) {
   SubscribeFromWorker(requesting_origin, service_worker_registration_id,
-                      std::move(options), std::move(callback));
+                      render_process_id, std::move(options),
+                      std::move(callback));
 }
 
 void WebTestPushMessagingService::SubscribeFromWorker(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
+    int render_process_id,
     blink::mojom::PushSubscriptionOptionsPtr options,
     RegisterCallback callback) {
   blink::mojom::PermissionStatus permission_status =
       WebTestContentBrowserClient::Get()
           ->browser_context()
-          ->GetPermissionControllerDelegate()
-          ->GetPermissionStatus(PermissionType::NOTIFICATIONS,
-                                requesting_origin, requesting_origin);
+          ->GetPermissionController()
+          ->GetPermissionStatusForWorker(
+              content::PermissionType::NOTIFICATIONS,
+              content::RenderProcessHost::FromID(render_process_id),
+              url::Origin::Create(requesting_origin));
 
   // The `userVisibleOnly` option is still required when subscribing.
   if (!options->user_visible_only)

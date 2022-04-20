@@ -192,7 +192,8 @@ class PushMessagingServiceTest : public ::testing::Test {
         kTestSenderId + sizeof(kTestSenderId) / sizeof(char) - 1);
 
     push_service->SubscribeFromWorker(
-        origin, kTestServiceWorkerId, std::move(options),
+        origin, kTestServiceWorkerId, /*render_process_id=*/-1,
+        std::move(options),
         base::BindOnce(&PushMessagingServiceTest::DidRegister,
                        base::Unretained(this), &subscription_id, &endpoint,
                        &expiration_time, &p256dh, &auth,

@@ -14,6 +14,8 @@
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -64,6 +66,14 @@ void MediaStreamDevicesController::RequestPermissions(
         {}, {});
     return;
   }
+
+  if (rfh->GetLastCommittedOrigin().GetURL().is_empty()) {
+    std::move(callback).Run(
+        MediaStreamDevices(),
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, false, {},
+        {});
+    return;
+  }
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   std::unique_ptr<MediaStreamDevicesController> controller(
@@ -78,10 +88,12 @@ void MediaStreamDevicesController::RequestPermissions(
   bool will_prompt_for_audio = false;
   bool will_prompt_for_video = false;
 
+  CHECK_EQ(rfh->GetLastCommittedOrigin().GetURL(), request.security_origin);
+
   if (controller->ShouldRequestAudio()) {
     permissions::PermissionResult permission_status =
-        permission_manager->GetPermissionStatusForFrame(
-            ContentSettingsType::MEDIASTREAM_MIC, rfh, request.security_origin);
+        permission_manager->GetPermissionStatusForCurrentDocument(
+            ContentSettingsType::MEDIASTREAM_MIC, rfh);
     if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
       controller->denial_reason_ =
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
@@ -97,9 +109,8 @@ void MediaStreamDevicesController::RequestPermissions(
   }
   if (controller->ShouldRequestVideo()) {
     permissions::PermissionResult permission_status =
-        permission_manager->GetPermissionStatusForFrame(
-            ContentSettingsType::MEDIASTREAM_CAMERA, rfh,
-            request.security_origin);
+        permission_manager->GetPermissionStatusForCurrentDocument(
+            ContentSettingsType::MEDIASTREAM_CAMERA, rfh);
     if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
       controller->denial_reason_ =
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
@@ -121,9 +132,9 @@ void MediaStreamDevicesController::RequestPermissions(
     // pan-tilt-zoom permission and there are suitable PTZ capable devices
     // available.
     if (request.request_pan_tilt_zoom_permission && has_pan_tilt_zoom_camera) {
-      permission_status = permission_manager->GetPermissionStatusForFrame(
-          ContentSettingsType::CAMERA_PAN_TILT_ZOOM, rfh,
-          request.security_origin);
+      permission_status =
+          permission_manager->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::CAMERA_PAN_TILT_ZOOM, rfh);
       if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
         controller->denial_reason_ =
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
@@ -136,6 +147,11 @@ void MediaStreamDevicesController::RequestPermissions(
     }
   }
 
+  // It is OK to ignore `request.security_origin` because it will be calculated
+  // from `render_frame_host` and we always ignore `requesting_origin` for
+  // `AUDIO_CAPTURE` and `VIDEO_CAPTURE`.
+  // `render_frame_host->GetMainFrame()->GetLastCommittedOrigin()` will be used
+  // instead.
   permission_manager->RequestPermissionsFromCurrentDocument(
       content_settings_types, rfh, request.user_gesture,
       base::BindOnce(
@@ -479,11 +495,11 @@ bool MediaStreamDevicesController::PermissionIsBlockedForReason(
   // PermissionManager::RequestPermissions returned a denial reason.
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_.render_process_id, request_.render_frame_id);
+  CHECK_EQ(rfh->GetLastCommittedOrigin().GetURL(), request_.security_origin);
   permissions::PermissionResult result =
       permissions::PermissionsClient::Get()
           ->GetPermissionManager(web_contents_->GetBrowserContext())
-          ->GetPermissionStatusForFrame(content_type, rfh,
-                                        request_.security_origin);
+          ->GetPermissionStatusForCurrentDocument(content_type, rfh);
   if (result.source == reason) {
     DCHECK_EQ(CONTENT_SETTING_BLOCK, result.content_setting);
     return true;

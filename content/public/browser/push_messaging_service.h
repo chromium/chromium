@@ -82,6 +82,7 @@ class CONTENT_EXPORT PushMessagingService {
   virtual void SubscribeFromWorker(
       const GURL& requesting_origin,
       int64_t service_worker_registration_id,
+      int render_process_id,
       blink::mojom::PushSubscriptionOptionsPtr options,
       RegisterCallback callback) = 0;
 

@@ -10,7 +10,6 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
-#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/background_fetch_description.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
@@ -354,12 +354,11 @@ BackgroundFetchDelegate* BackgroundFetchDelegateProxy::GetDelegate() {
   return browser_context->GetBackgroundFetchDelegate();
 }
 
-PermissionControllerImpl*
-BackgroundFetchDelegateProxy::GetPermissionController() {
+PermissionController* BackgroundFetchDelegateProxy::GetPermissionController() {
   auto* browser_context = GetBrowserContext();
   if (!browser_context)
     return nullptr;
-  return PermissionControllerImpl::FromBrowserContext(browser_context);
+  return browser_context->GetPermissionController();
 }
 
 void BackgroundFetchDelegateProxy::DidGetPermissionFromDownloadRequestLimiter(

@@ -28,9 +28,13 @@ class RenderFrameHost;
 class RenderProcessHost;
 }
 
+class GeolocationPermissionContextDelegateTests;
+class SubscriptionInterceptingPermissionManager;
+
 namespace permissions {
 class PermissionContextBase;
 struct PermissionResult;
+class PermissionManagerTest;
 
 class PermissionManager : public KeyedService,
                           public content::PermissionControllerDelegate,
@@ -63,6 +67,69 @@ class PermissionManager : public KeyedService,
                           const GURL& requesting_origin,
                           const GURL& embedding_origin) const;
 
+  // This method is deprecated. Use `GetPermissionStatusForCurrentDocument`
+  // instead or `GetPermissionStatusForDisplayOnSettingsUI`.
+  PermissionResult GetPermissionStatusDeprecated(ContentSettingsType permission,
+                                                 const GURL& requesting_origin,
+                                                 const GURL& embedding_origin);
+
+  // Returns the permission status for a given `permission` and displayed,
+  // top-level `origin`. This should be used only for displaying on the
+  // browser's native UI (PageInfo, Settings, etc.). This method does not take
+  // context specific restrictions (e.g. permission policy) into consideration.
+  PermissionResult GetPermissionStatusForDisplayOnSettingsUI(
+      ContentSettingsType permission,
+      const GURL& origin);
+
+  // Returns the status for the given `permission` on behalf of the last
+  // committed document in `render_frame_host`, also performing additional
+  // checks such as Permission Policy.
+  PermissionResult GetPermissionStatusForCurrentDocument(
+      ContentSettingsType permission,
+      content::RenderFrameHost* render_frame_host);
+
+  // KeyedService implementation.
+  void Shutdown() override;
+
+  // Requests the given `permission` on behalf of the last committed document in
+  // `render_frame_host`, also performing additional checks such as Permission
+  // Policy.
+  void RequestPermissionsFromCurrentDocument(
+      const std::vector<ContentSettingsType>& permissions,
+      content::RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<void(const std::vector<ContentSetting>&)> callback);
+
+  PermissionContextBase* GetPermissionContextForTesting(
+      ContentSettingsType type);
+
+  PermissionContextMap& PermissionContextsForTesting() {
+    return permission_contexts_;
+  }
+
+ private:
+  friend class PermissionManagerTest;
+  friend class ::GeolocationPermissionContextDelegateTests;
+  friend class ::SubscriptionInterceptingPermissionManager;
+
+  // The `PendingRequestLocalId` will be unique within the `PermissionManager`
+  // instance, thus within a `BrowserContext`, which overachieves the
+  // requirement from `PermissionRequestID` that the `RequestLocalId` be unique
+  // within each frame.
+  class PendingRequest;
+  using PendingRequestLocalId = PermissionRequestID::RequestLocalId;
+  using PendingRequestsMap =
+      base::IDMap<std::unique_ptr<PendingRequest>, PendingRequestLocalId>;
+
+  class PermissionResponseCallback;
+
+  struct Subscription;
+  using SubscriptionsMap =
+      base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
+  using SubscriptionTypeCounts = base::flat_map<ContentSettingsType, size_t>;
+
+  PermissionContextBase* GetPermissionContext(ContentSettingsType type);
+
   // Callers from within chrome/ should use the methods which take the
   // ContentSettingsType enum. The methods which take PermissionType values
   // are for the content::PermissionControllerDelegate overrides and shouldn't
@@ -73,6 +140,7 @@ class PermissionManager : public KeyedService,
                          const GURL& requesting_origin,
                          bool user_gesture,
                          base::OnceCallback<void(ContentSetting)> callback);
+
   // Deprecated. Use `RequestPermissionsFromCurrentDocument` instead.
   void RequestPermissions(
       const std::vector<ContentSettingsType>& permissions,
@@ -85,27 +153,6 @@ class PermissionManager : public KeyedService,
       content::RenderFrameHost* render_frame_host,
       bool user_gesture,
       base::OnceCallback<void(ContentSetting)> callback);
-  // Requests the given `permission` on behalf of the last committed document in
-  // `render_frame_host`, also performing additional checks such as Permission
-  // Policy.
-  void RequestPermissionsFromCurrentDocument(
-      const std::vector<ContentSettingsType>& permissions,
-      content::RenderFrameHost* render_frame_host,
-      bool user_gesture,
-      base::OnceCallback<void(const std::vector<ContentSetting>&)> callback);
-
-  PermissionResult GetPermissionStatus(ContentSettingsType permission,
-                                       const GURL& requesting_origin,
-                                       const GURL& embedding_origin);
-
-  // Returns the permission status for a given `permission` and displayed,
-  // top-level `origin`. This should be used only for displaying on the
-  // browser's native UI (PageInfo, Settings, etc.). This method does not take
-  // context specific restrictions (e.g. permission policy) into consideration.
-  PermissionResult GetPermissionStatusForDisplayOnSettingsUI(
-      ContentSettingsType permission,
-      const GURL& origin);
-
   // Returns the permission status for a given frame. This should be preferred
   // over GetPermissionStatus as additional checks can be performed when we know
   // the exact context the request is coming from.
@@ -117,13 +164,6 @@ class PermissionManager : public KeyedService,
       ContentSettingsType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin);
-
-  // Returns the status for the given `permission` on behalf of the last
-  // committed document in `render_frame_host`, also performing additional
-  // checks such as Permission Policy.
-  PermissionResult GetPermissionStatusForCurrentDocument(
-      ContentSettingsType permission,
-      content::RenderFrameHost* render_frame_host);
 
   // Returns the status of the given `permission` for a worker on `origin`
   // running in the renderer corresponding to `render_process_host`.
@@ -179,49 +219,6 @@ class PermissionManager : public KeyedService,
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
 
-  // TODO(raymes): Rather than exposing this, use the denial reason from
-  // GetPermissionStatus in callers to determine whether a permission is
-  // denied due to the kill switch.
-  bool IsPermissionKillSwitchOn(ContentSettingsType);
-
-  // For the given |origin|, overrides permissions that belong to |overrides|.
-  // These permissions are in-sync with the PermissionController.
-  void SetPermissionOverridesForDevTools(
-      const absl::optional<url::Origin>& origin,
-      const PermissionOverrides& overrides) override;
-  void ResetPermissionOverridesForDevTools() override;
-
-  // KeyedService implementation
-  void Shutdown() override;
-
-  // Helper method to convert PermissionType to ContentSettingType.
-  static ContentSettingsType PermissionTypeToContentSetting(
-      content::PermissionType permission);
-
-  PermissionContextBase* GetPermissionContextForTesting(
-      ContentSettingsType type);
-
- private:
-  friend class PermissionManagerTest;
-
-  // The `PendingRequestLocalId` will be unique within the `PermissionManager`
-  // instance, thus within a `BrowserContext`, which overachieves the
-  // requirement from `PermissionRequestID` that the `RequestLocalId` be unique
-  // within each frame.
-  class PendingRequest;
-  using PendingRequestLocalId = PermissionRequestID::RequestLocalId;
-  using PendingRequestsMap =
-      base::IDMap<std::unique_ptr<PendingRequest>, PendingRequestLocalId>;
-
-  class PermissionResponseCallback;
-
-  struct Subscription;
-  using SubscriptionsMap =
-      base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
-  using SubscriptionTypeCounts = base::flat_map<ContentSettingsType, size_t>;
-
-  PermissionContextBase* GetPermissionContext(ContentSettingsType type);
-
   // Called when a permission was decided for a given PendingRequest. The
   // PendingRequest is identified by its |request_local_id| and the permission
   // is identified by its |permission_id|. If the PendingRequest contains more
@@ -250,6 +247,14 @@ class PermissionManager : public KeyedService,
   ContentSetting GetPermissionOverrideForDevTools(
       const url::Origin& origin,
       ContentSettingsType permission);
+
+  // content::PermissionControllerDelegate implementation.
+  // For the given |origin|, overrides permissions that belong to |overrides|.
+  // These permissions are in-sync with the PermissionController.
+  void SetPermissionOverridesForDevTools(
+      const absl::optional<url::Origin>& origin,
+      const PermissionOverrides& overrides) override;
+  void ResetPermissionOverridesForDevTools() override;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

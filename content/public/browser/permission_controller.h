@@ -34,15 +34,6 @@ class CONTENT_EXPORT PermissionController
 
   ~PermissionController() override {}
 
-  // Returns the permission status of a given requesting_origin/embedding_origin
-  // tuple. This is not taking a RenderFrameHost because the call might happen
-  // outside of a frame context. Prefer GetPermissionStatusForCurrentDocument
-  // (below) whenever possible.
-  virtual blink::mojom::PermissionStatus DeprecatedGetPermissionStatus(
-      PermissionType permission,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) = 0;
-
   // Returns the status of the given |permission| for a worker on
   // |worker_origin| running in the renderer corresponding to
   // |render_process_host|. Use this over GetPermissionStatus to correctly
@@ -76,16 +67,28 @@ class CONTENT_EXPORT PermissionController
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) = 0;
 
-  // Requests the permission for the current document in the given
-  // RenderFrameHost. Use this over `RequestPermission` whenever
-  // possible as this API takes into account the lifecycle state of a given
-  // document (i.e. whether it's in back-forward cache or being prerendered) in
-  // addition to its origin.
+  // Requests the permission from the current document in the given
+  // RenderFrameHost. Use this over `RequestPermission` whenever possible as
+  // this API takes into account the lifecycle state of a given document (i.e.
+  // whether it's in back-forward cache or being prerendered) in addition to its
+  // origin.
   virtual void RequestPermissionFromCurrentDocument(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) = 0;
+
+  // Requests permissions from the current document in the given
+  // RenderFrameHost. Use this over `RequestPermission` whenever possible as
+  // this API takes into account the lifecycle state of a given document (i.e.
+  // whether it's in back-forward cache or being prerendered) in addition to its
+  // origin.
+  virtual void RequestPermissionsFromCurrentDocument(
+      const std::vector<PermissionType>& permission,
+      RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<void(
+          const std::vector<blink::mojom::PermissionStatus>&)> callback) = 0;
 };
 
 }  // namespace content

@@ -52,6 +52,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -60,6 +62,7 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "weblayer/browser/autofill_client_impl.h"
@@ -79,7 +82,6 @@
 #include "weblayer/browser/page_load_metrics_initialize.h"
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
 #include "weblayer/browser/password_manager_driver_factory.h"
-#include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/persistence/browser_persister.h"
 #include "weblayer/browser/popup_navigation_delegate_impl.h"
 #include "weblayer/browser/profile_impl.h"
@@ -1132,15 +1134,22 @@ bool TabImpl::CheckMediaAccessPermission(
     blink::mojom::MediaStreamType type) {
   DCHECK(type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  ContentSettingsType content_settings_type =
+  content::PermissionType permission_type =
       type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
-          ? ContentSettingsType::MEDIASTREAM_MIC
-          : ContentSettingsType::MEDIASTREAM_CAMERA;
-  return PermissionManagerFactory::GetForBrowserContext(
-             render_frame_host->GetBrowserContext())
-             ->GetPermissionStatusForFrame(content_settings_type,
-                                           render_frame_host, security_origin)
-             .content_setting == CONTENT_SETTING_ALLOW;
+          ? content::PermissionType::AUDIO_CAPTURE
+          : content::PermissionType::VIDEO_CAPTURE;
+  CHECK_EQ(render_frame_host->GetLastCommittedOrigin().GetURL(),
+           security_origin);
+  // It is OK to ignore `security_origin` because it will be calculated from
+  // `render_frame_host` and we always ignore `requesting_origin` for
+  // `AUDIO_CAPTURE` and `VIDEO_CAPTURE`.
+  // `render_frame_host->GetMainFrame()->GetLastCommittedOrigin()` will be used
+  // instead.
+  return render_frame_host->GetBrowserContext()
+             ->GetPermissionController()
+             ->GetPermissionStatusForCurrentDocument(permission_type,
+                                                     render_frame_host) ==
+         blink::mojom::PermissionStatus::GRANTED;
 }
 
 void TabImpl::EnterFullscreenModeForTab(

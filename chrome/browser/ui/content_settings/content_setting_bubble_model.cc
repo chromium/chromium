@@ -49,7 +49,6 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
-#include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
@@ -64,6 +63,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -1005,15 +1006,15 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
           CameraAccessed() ? IDS_BLOCKED_MEDIASTREAM_MIC_AND_CAMERA_NO_ACTION
                            : IDS_BLOCKED_MEDIASTREAM_MIC_NO_ACTION;
   } else {
-    permissions::PermissionManager* permission_manager =
-        permissions::PermissionsClient::Get()->GetPermissionManager(
-            web_contents()->GetBrowserContext());
-    permissions::PermissionResult pan_tilt_zoom_permission =
-        permission_manager->GetPermissionStatusForFrame(
-            ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-            &GetPage().GetMainDocument(), url);
     bool has_pan_tilt_zoom_permission_granted =
-        pan_tilt_zoom_permission.content_setting == CONTENT_SETTING_ALLOW;
+        web_contents()
+            ->GetBrowserContext()
+            ->GetPermissionController()
+            ->GetPermissionStatusForCurrentDocument(
+                content::PermissionType::CAMERA_PAN_TILT_ZOOM,
+                &GetPage().GetMainDocument()) ==
+        blink::mojom::PermissionStatus::GRANTED;
+
     if (MicrophoneAccessed() && CameraAccessed()) {
       radio_allow_label_id =
           has_pan_tilt_zoom_permission_granted

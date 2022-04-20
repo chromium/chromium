@@ -199,7 +199,7 @@ ContentSetting GetPermissionSettingForOrigin(
     embedder_url = GURL(embedder_str);
   return permissions::PermissionsClient::Get()
       ->GetPermissionManager(unwrap(jbrowser_context_handle))
-      ->GetPermissionStatus(content_type, url, embedder_url)
+      ->GetPermissionStatusDeprecated(content_type, url, embedder_url)
       .content_setting;
 }
 
@@ -302,16 +302,14 @@ static jboolean JNI_WebsitePreferenceBridge_IsNotificationEmbargoedForOrigin(
     const JavaParamRef<jobject>& jbrowser_context_handle,
     const JavaParamRef<jstring>& origin) {
   GURL origin_url(ConvertJavaStringToUTF8(env, origin));
-  permissions::PermissionResult status =
-      permissions::PermissionsClient::Get()
-          ->GetPermissionManager(unwrap(jbrowser_context_handle))
-          ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS, origin_url,
-                                origin_url);
-  return status.content_setting == ContentSetting::CONTENT_SETTING_BLOCK &&
-         (status.source ==
-              permissions::PermissionStatusSource::MULTIPLE_IGNORES ||
-          status.source ==
-              permissions::PermissionStatusSource::MULTIPLE_DISMISSALS);
+  BrowserContext* browser_context = unwrap(jbrowser_context_handle);
+  permissions::PermissionDecisionAutoBlocker* auto_blocker =
+      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser_context);
+
+  return auto_blocker
+             ->GetEmbargoResult(origin_url, ContentSettingsType::NOTIFICATIONS)
+             .content_setting == CONTENT_SETTING_BLOCK;
 }
 
 static void SetNotificationSettingForOrigin(

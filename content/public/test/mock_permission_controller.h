@@ -59,6 +59,13 @@ class MockPermissionController : public PermissionController {
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
+  void RequestPermissionsFromCurrentDocument(
+      const std::vector<PermissionType>& permission,
+      RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
 };
 
 }  // namespace content

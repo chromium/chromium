@@ -6,14 +6,32 @@
 
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/webrtc/media_stream_device_enumerator.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace permissions {
+
+// TODO(crbug.com/1271543): This method is a temporary solution because of
+// inconsistency between the new permissions API that is migrated to
+// `blink::mojom::PermissionStatus` and its callsites that still use
+// `ContentSetting`.
+void CallbackWrapper(base::OnceCallback<void(ContentSetting)> callback,
+                     blink::mojom::PermissionStatus status) {
+  ContentSetting result = CONTENT_SETTING_ASK;
+  if (status == blink::mojom::PermissionStatus::GRANTED) {
+    result = CONTENT_SETTING_ALLOW;
+  } else if (status == blink::mojom::PermissionStatus::DENIED) {
+    result = CONTENT_SETTING_BLOCK;
+  }
+  std::move(callback).Run(result);
+}
 
 CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context,
@@ -52,14 +70,17 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
 
   // If there is no camera with PTZ capabilities, let's request a "regular"
   // camera permission instead.
-  content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
-      id.render_process_id(), id.render_frame_id());
-  permissions::PermissionManager* permission_manager =
-      permissions::PermissionsClient::Get()->GetPermissionManager(
-          web_contents->GetBrowserContext());
-  permission_manager->RequestPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                        frame, requesting_frame_origin,
-                                        user_gesture, std::move(callback));
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(id.render_process_id(),
+                                       id.render_frame_id());
+
+  CHECK_EQ(requesting_frame_origin,
+           PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host));
+  web_contents->GetBrowserContext()
+      ->GetPermissionController()
+      ->RequestPermissionFromCurrentDocument(
+          content::PermissionType::VIDEO_CAPTURE, render_frame_host,
+          user_gesture, base::BindOnce(&CallbackWrapper, std::move(callback)));
 }
 
 ContentSetting CameraPanTiltZoomPermissionContext::GetPermissionStatusInternal(
