@@ -593,6 +593,7 @@ class XRSession final
   bool frames_throttled_ = false;
 
   bool views_updated_this_frame_ = false;
+  bool canvas_was_resized_ = false;
 
   // Indicates that we've already logged a metric, so don't need to log it
   // again.

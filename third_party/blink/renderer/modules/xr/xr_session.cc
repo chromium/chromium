@@ -1946,6 +1946,8 @@ void XRSession::UpdateCanvasDimensions(Element* element) {
   if (render_state_->baseLayer()) {
     render_state_->baseLayer()->OnResize();
   }
+
+  canvas_was_resized_ = true;
 }
 
 void XRSession::OnButtonEvent(
@@ -2252,6 +2254,10 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
         }
       }
     } else {
+      if (canvas_was_resized_) {
+        views_.clear();
+        canvas_was_resized_ = false;
+      }
       if (views_.IsEmpty()) {
         views_.emplace_back(MakeGarbageCollected<XRViewData>(
             device::mojom::blink::XREye::kNone,
