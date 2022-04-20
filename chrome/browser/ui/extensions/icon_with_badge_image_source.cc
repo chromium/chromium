@@ -61,7 +61,7 @@ IconWithBadgeImageSource::IconWithBadgeImageSource(
     const gfx::Size& size,
     const ui::ColorProvider* color_provider)
     : gfx::CanvasImageSource(size), color_provider_(color_provider) {
-  DCHECK(color_provider_);
+  CHECK(color_provider_);
 }
 
 IconWithBadgeImageSource::~IconWithBadgeImageSource() {}
