@@ -54,6 +54,8 @@ export function createTestApp(): App {
       learnMoreUrl: {url: 'https://google.com/'},
     },
     installSource: InstallSource.kUnknown,
+    appSize: undefined,
+    dataSize: undefined,
   };
 
   const permissionTypes = [

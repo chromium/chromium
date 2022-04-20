@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_constants.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #include "url/gurl.h"
@@ -407,6 +408,15 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->version = update.Version();
 
   app->description = update.Description();
+
+  if (update.AppSizeInBytes().has_value()) {
+    app->app_size =
+        base::UTF16ToUTF8(ui::FormatBytes(update.AppSizeInBytes().value()));
+  }
+  if (update.DataSizeInBytes().has_value()) {
+    app->data_size =
+        base::UTF16ToUTF8(ui::FormatBytes(update.DataSizeInBytes().value()));
+  }
 
   // On other OS's, is_pinned defaults to OptionalBool::kUnknown, which is
   // used to represent the fact that there is no concept of being pinned.

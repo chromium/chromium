@@ -149,6 +149,8 @@ struct App {
   array<string> supported_links;
   RunOnOsLogin? run_on_os_login;
   FileHandlingState? file_handling_state;
+  string? app_size;
+  string? data_size;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be

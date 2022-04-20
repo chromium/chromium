@@ -76,6 +76,47 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
   }
 
   /**
+   * The full storage information is only shown for
+   * Android and Web apps.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowStorage_(app) {
+    switch (app.type) {
+      case AppType.kWeb:
+      case AppType.kArc:
+      case AppType.kSystemWeb:
+        return (app.appSize !== null || app.dataSize !== null);
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * The app size information is displayed when a value exists.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowAppSize_(app) {
+    return app.appSize !== null && app.appSize !== '';
+  }
+
+  /**
+   * The data size information is displayed when a value exists.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowDataSize_(app) {
+    return app.dataSize !== null && app.dataSize !== '';
+  }
+
+  /**
    * Returns the string for the app type.
    *
    * @param {!App} app
@@ -148,6 +189,37 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
         console.error('Install source not recognised.');
         return this.getTypeString_(app);
     }
+  }
+
+  /**
+   * Returns the app size string.
+   *
+   * @param {!App} app
+   * @returns {string}
+   * @private
+   */
+  getAppSizeString_(app) {
+    if (app.appSize === null || app.appSize === '') {
+      return '';
+    }
+    return this.i18n(
+        'appManagementAppDetailsAppSize', /** @type {!string} */ (app.appSize));
+  }
+
+  /**
+   * Returns the data size string.
+   *
+   * @param {!App} app
+   * @returns {string}
+   * @private
+   */
+  getDataSizeString_(app) {
+    if (app.dataSize === null || app.dataSize === '') {
+      return '';
+    }
+    return this.i18n(
+        'appManagementAppDetailsDataSize',
+        /** @type {!string} */ (app.dataSize));
   }
 
   /**

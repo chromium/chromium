@@ -13,6 +13,21 @@
     [[getTypeAndSourceString_(app)]]
   </localized-link>
 </div>
+<template is="dom-if" if="[[shouldShowStorage_(app)]]" restamp>
+  <div class="indented-permission-block" id="storage-title">
+    $i18n{appManagementAppDetailsStorageTitle}
+  </div>
+  <template is="dom-if" if="[[shouldShowAppSize_(app)]]" restamp>
+    <div class="indented-storage-block" id="app-size">
+      [[getAppSizeString_(app)]]
+    </div>
+  </template>
+  <template is="dom-if" if="[[shouldShowDataSize_(app)]]" restamp>
+    <div class="indented-storage-block" id="data-size">
+      [[getDataSizeString_(app)]]
+    </div>
+  </template>
+</template>
 <template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>
   <div class="indented-permission-block" id="version">
     [[getVersionString_(app)]]
