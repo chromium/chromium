@@ -23,6 +23,14 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
+// Chromium的线程模型是：
+// Chromium是一个极其多线程的产品。我们努力让UI尽可能快速响应，这意味着任何阻塞I/O
+// 或者其他昂贵操作不能阻塞UI线程。我们的做法是在线程间传递消息作为交流的方式。我们
+// 不鼓励锁和线程安全对象。相反的，对象仅存在与单个线程中，我们只为通信而在线程间传
+// 递消息，我们会在大多数跨进程请求间使用回调接口（由消息传递实现）。
+// 每个线程有一个消息泵（查看base/message_loop/message_pump.h），消息泵处理这
+// 个线程的消息。你可以使用message_pump_factory函数获取一个线程对应的消息泵。
+
 namespace base {
 
 class MessagePump;
@@ -96,6 +104,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // appropriate for |message_pump_type| is created. Setting this forces the
     // MessagePumpType to TYPE_CUSTOM. This is not compatible with a non-null
     // |delegate|.
+    // MessagePumpFactory的真实类型是std::unique_ptr<MessagePump>()
     MessagePumpFactory message_pump_factory;
 
     // Specifies the maximum stack size that the thread is allowed to use.
@@ -114,7 +123,9 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // user-after-frees (proposal @ https://crbug.com/629139#c14)
     bool joinable = true;
 
-    bool IsValid() const { return !moved_from; }
+    bool IsValid() const {
+      return !moved_from;
+    }
 
    private:
     // Set to true when the object is moved into another. Use to prevent reuse

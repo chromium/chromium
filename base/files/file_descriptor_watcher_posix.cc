@@ -137,8 +137,7 @@ void FileDescriptorWatcher::Controller::Watcher::OnFileCanReadWithoutBlocking(
       FROM_HERE, BindOnce(&Controller::RunCallback, controller_));
 }
 
-void FileDescriptorWatcher::Controller::Watcher::OnFileCanWriteWithoutBlocking(
-    int fd) {
+void FileDescriptorWatcher::Controller::Watcher::OnFileCanWriteWithoutBlocking(int fd) {
   DCHECK_EQ(fd_, fd);
   DCHECK_EQ(MessagePumpForIO::WATCH_WRITE, mode_);
   DCHECK(thread_checker_.CalledOnValidThread());

@@ -13,10 +13,9 @@
 
 namespace base {
 
-namespace {
+namespace { // 匿名命名空间包裹的内容，只能在当前当前文件(编译单元)中使用
 
-class PostTaskAndReplyWithTraitsTaskRunner
-    : public internal::PostTaskAndReplyImpl {
+class PostTaskAndReplyWithTraitsTaskRunner : public internal::PostTaskAndReplyImpl {
  public:
   explicit PostTaskAndReplyWithTraitsTaskRunner(const TaskTraits& traits)
       : traits_(traits) {}

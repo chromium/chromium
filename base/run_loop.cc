@@ -71,7 +71,8 @@ bool RunLoop::Delegate::ShouldQuitWhenIdle() {
   const auto* top_loop = active_run_loops_.top();
   if (top_loop->quit_when_idle_) {
     TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop_ExitedOnIdle",
-                           TRACE_ID_LOCAL(top_loop), TRACE_EVENT_FLAG_FLOW_IN);
+                           TRACE_ID_LOCAL(top_loop),
+                           TRACE_EVENT_FLAG_FLOW_IN);
     return true;
   }
   return false;
@@ -127,10 +128,14 @@ void RunLoop::Run(const Location& location) {
   CancelableOnceClosure cancelable_timeout;
   const RunLoopTimeout* run_timeout = GetTimeoutForCurrentThread();
   if (run_timeout) {
-    cancelable_timeout.Reset(BindOnce(&OnRunLoopTimeout, Unretained(this),
-                                      location, run_timeout->on_timeout));
-    origin_task_runner_->PostDelayedTask(
-        FROM_HERE, cancelable_timeout.callback(), run_timeout->timeout);
+    cancelable_timeout.Reset(BindOnce(&OnRunLoopTimeout,
+                                      Unretained(this),
+                                      location,
+                                      run_timeout->on_timeout));
+
+    origin_task_runner_->PostDelayedTask(FROM_HERE,
+                                         cancelable_timeout.callback(),
+                                         run_timeout->timeout);
   }
 
   DCHECK_EQ(this, delegate_->active_run_loops_.top());
@@ -337,8 +342,10 @@ bool RunLoop::BeforeRun() {
 
   // Allow Quit to be called before Run.
   if (quit_called_) {
-    TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop_ExitedEarly",
-                           TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+    TRACE_EVENT_WITH_FLOW0("toplevel.flow",
+                           "RunLoop_ExitedEarly",
+                           TRACE_ID_LOCAL(this),
+                           TRACE_EVENT_FLAG_FLOW_IN);
     return false;
   }
 

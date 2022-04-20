@@ -7,6 +7,7 @@
 
 // This header is a forwarding header to coalesce the various platform specific
 // types representing MessagePumpForIO.
+// 此头文件是一个转发头文件，用于合并表示 MessagePumpForIO 的各种平台特定类型。
 
 #include "build/build_config.h"
 

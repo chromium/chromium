@@ -29,6 +29,7 @@ namespace base {
 
 // Location provides basic info where of an object was constructed, or was
 // significantly brought to life.
+// 位置提供了对象的构建位置或显式实现的位置的基本信息。
 class BASE_EXPORT Location {
  public:
   Location();

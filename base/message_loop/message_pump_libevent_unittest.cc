@@ -39,6 +39,7 @@ class MessagePumpLibeventTest : public testing::Test {
       : task_environment_(std::make_unique<test::SingleThreadTaskEnvironment>(
             test::SingleThreadTaskEnvironment::MainThreadType::UI)),
         io_thread_("MessagePumpLibeventTestIOThread") {}
+
   ~MessagePumpLibeventTest() override = default;
 
   void SetUp() override {

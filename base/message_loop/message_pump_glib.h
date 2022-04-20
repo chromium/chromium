@@ -120,11 +120,14 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   // This is a GLib structure that we can add event sources to.  On the main
   // thread, we use the default GLib context, which is the one to which all GTK
   // events are dispatched.
+  // 这是一个 GLib 结构，我们可以向其中添加事件源。 在主线程上，我们使用默认的
+  // GLib 上下文，它是所有 GTK 事件被分派到的上下文。
   GMainContext* context_ = nullptr;
   bool context_owned_ = false;
 
   // The work source.  It is shared by all calls to Run and destroyed when
   // the message pump is destroyed.
+  // 工作来源。 它由所有对 Run 的调用共享，并在消息泵被销毁时被销毁。
   GSource* work_source_;
 
   // We use a wakeup pipe to make sure we'll get out of the glib polling phase

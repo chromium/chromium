@@ -228,7 +228,9 @@ class ReaderWriterHandler : public MessagePumpForIO::FdWatcher {
     }
   }
 
-  MessagePumpForIO::FdWatchController* controller() { return &controller_; }
+  MessagePumpForIO::FdWatchController* controller() {
+    return &controller_;
+  }
 
  private:
   void DoAction() {

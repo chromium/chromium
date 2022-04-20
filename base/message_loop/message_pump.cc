@@ -17,13 +17,10 @@
 namespace base {
 
 namespace {
-
 MessagePump::MessagePumpFactory* message_pump_for_ui_factory_ = nullptr;
-
 }  // namespace
 
 MessagePump::MessagePump() = default;
-
 MessagePump::~MessagePump() = default;
 
 void MessagePump::SetTimerSlack(TimerSlack) {}

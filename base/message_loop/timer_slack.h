@@ -17,9 +17,11 @@ struct Feature;
 // 用于延迟计时器的计时器松弛量。增加定时器松弛允许操作系统更有效地合并定时器。
 enum TimerSlack {
   // Lowest value for timer slack allowed by OS.
+  // OS允许的定时器松弛的最小值
   TIMER_SLACK_NONE,
 
   // Maximal value for timer slack allowed by OS.
+  // OS允许的计时器松弛的最大值
   TIMER_SLACK_MAXIMUM
 };
 

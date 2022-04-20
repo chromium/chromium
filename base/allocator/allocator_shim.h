@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+// 资料：https://www.cnblogs.com/haomiao/p/4790298.html
+
 #ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 

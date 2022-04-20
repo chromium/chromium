@@ -14,6 +14,15 @@
 
 namespace base {
 
+/**
+ * @brief 简单消息泵
+ * MessagePump 在初始化时（Init函数）会注册事件，然后在 Run 函数循环过程中会等待该事件。
+ * 其中 MessagePumpDefault 最简单，它只能处理Task任务，所以它 Run 时直接阻塞在一个条件
+ * 变量上即可，然后等待 ScheduleWork 函数来唤醒它。ScheduleWork什么时候调用呢？已经很明确了，
+ * 在有人调用MessageLoop::AddToIncomingQueue向该线程的消息incoming队列中放任务时，就
+ * 要调用MessagePumpDefault的ScheduleWork函数。
+ */
+
 class BASE_EXPORT MessagePumpDefault : public MessagePump {
  public:
   MessagePumpDefault();
@@ -26,6 +35,9 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
   // MessagePump methods:
   void Run(Delegate* delegate) override;
   void Quit() override;
+  /**
+   * @brief 唤醒（调度）任务
+   */
   void ScheduleWork() override;
   void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
 #if defined(OS_APPLE)
@@ -39,8 +51,8 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
   bool keep_running_;
 
   // Used to sleep until there is more work to do.
-  // 用于休眠，直到有更多的工作要做。
-  WaitableEvent event_;
+  // 用于休眠，直到有更多的工作要做，类似：std::condition_variable
+  WaitableEvent event_; // std::condition_variable
 };
 
 }  // namespace base

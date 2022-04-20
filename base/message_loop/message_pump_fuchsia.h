@@ -18,7 +18,7 @@
 typedef struct fdio fdio_t;
 
 namespace async {
-class Loop;
+class Loop; // Fuchsia 基于 Zircon OS内核
 }  // namespace async
 
 namespace base {
@@ -157,6 +157,7 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
   // This flag is set to false when Run should return.
   bool keep_running_ = true;
 
+  // Fuchsia 基于 Zircon OS内核，这里使用 Zircon 提供的消息循环机制
   std::unique_ptr<async::Loop> async_loop_;
 
   base::WeakPtrFactory<MessagePumpFuchsia> weak_factory_;

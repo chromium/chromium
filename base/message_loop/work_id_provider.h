@@ -21,6 +21,8 @@ class ThreadControllerWithMessagePumpImpl;
 // reflecting the current work item being executed by the message loop. The item
 // is accessed lock-free from other threads to provide a snapshot of the
 // currently-executing work item.
+// WorkIdProvider 与当前线程（通过 TLS）关联一个 id 状态，反映消息循环正在执行的
+// 当前工作项。可以从其他线程无锁地访问该项目，以提供当前正在执行的工作项目的快照。
 //
 // The expected user is the ThreadProfiler which samples the id along with the
 // thread's stack to identify cases where the same task spans multiple

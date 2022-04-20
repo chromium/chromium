@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @brief
+ * Chromium有一个[多进程架构]，这意味着我们有许多需要互相交流的进程。我们的主要跨
+ * 进程交流元素是命名管道, 在Linux和OS X上，我们使用socketpair(). 每个渲染器进
+ * 程可以分配到一个命名管道来跟浏览器进程交流，这些管道是用异步方式使用的，确保没有
+ * 哪个端会等待另一个端。
+ */
+
 #ifndef IPC_IPC_MESSAGE_H_
 #define IPC_IPC_MESSAGE_H_
 
@@ -71,7 +79,9 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   Message(const Message& other);
   Message& operator=(const Message& other);
 
-  bool IsValid() const { return header_size() == sizeof(Header) && header(); }
+  bool IsValid() const {
+    return header_size() == sizeof(Header) && header();
+  }
 
   PriorityValue priority() const {
     return static_cast<PriorityValue>(header()->flags & PRIORITY_MASK);

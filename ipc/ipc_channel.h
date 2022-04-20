@@ -44,7 +44,7 @@ class Listener;
 
 // Channels are implemented using mojo message pipes on all platforms other
 // than NaCl.
-
+// IPC::Channel()（定义在ipc/ipc_channel.h里）定义了通过管道交流的方法
 class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // Security tests need access to the pipe handle.
   friend class ChannelTest;

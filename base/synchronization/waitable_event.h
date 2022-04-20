@@ -119,6 +119,9 @@ class BASE_EXPORT WaitableEvent {
   // is useful to avoid telling base-internals that this thread is "blocked"
   // when it's merely idle and ready to do work. As such, this is only expected
   // to be used by thread and thread pool impls.
+  // 声明此 WaitableEvent 只会被在其堆栈底部空闲并等待工作的线程使用（特别是，在恢复正在进
+  // 行的工作之前它不会同步等待此事件）。 这对于避免告诉基本内部线程该线程在它只是空闲并准备
+  // 好工作时被“阻塞”很有用。 因此，这仅预计由线程和线程池实现使用。
   void declare_only_used_while_idle() { waiting_is_blocking_ = false; }
 
   // Wait, synchronously, on multiple events.
@@ -254,6 +257,7 @@ class BASE_EXPORT WaitableEvent {
   // behaviour.
   struct WaitableEventKernel :
       public RefCountedThreadSafe<WaitableEventKernel> {
+
    public:
     WaitableEventKernel(ResetPolicy reset_policy, InitialState initial_state);
 
