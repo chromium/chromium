@@ -193,21 +193,6 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     bool cleared_user_data_dir) {
   LaunchParamsFromBackground params;
 
-  // TODO(crbug/1198528): remove use_new_account_manager parameter.
-  // This code wipes the Lacros --user-data-dir exactly once due to an
-  // incompatible account_manager change. This code can be removed when ash is
-  // newer than M92, as we can then assume that all relevant users have been
-  // migrated.
-  //
-  // If we want to use the new account manager, and we haven't yet cleared the
-  // user data dir, do so.
-  if (!cleared_user_data_dir) {
-    params.use_new_account_manager =
-        base::DeletePathRecursively(browser_util::GetUserDataDir());
-  } else {
-    params.use_new_account_manager = true;
-  }
-
   if (!RotateLacrosLogs()) {
     // If log file does not exist, most likely the user directory does not
     // exist either. So create it here.
@@ -901,14 +886,6 @@ void BrowserManager::StartWithLogFile(
     // signalled by the system. Ensure that we do not start lacros-chrome in
     // this case.
     LOG(ERROR) << "Start attempted after Shutdown() called.";
-    SetState(State::STOPPED);
-    return;
-  }
-
-  if (!params.use_new_account_manager) {
-    // If `use_new_account_manager` is false, that means deleting old lacros
-    // data directory failed. In such a case, do not launch lacros.
-    LOG(ERROR) << "Failed to delete old user data dir.";
     SetState(State::STOPPED);
     return;
   }

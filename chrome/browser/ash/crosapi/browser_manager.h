@@ -271,9 +271,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
     // An fd for a log file.
     base::ScopedFD logfd;
-
-    // Whether this version of Lacros supports the new account manager.
-    bool use_new_account_manager = false;
   };
 
  protected:

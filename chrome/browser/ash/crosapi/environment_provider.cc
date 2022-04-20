@@ -191,8 +191,4 @@ void EnvironmentProvider::SetDeviceAccountComponentPolicy(
   component_policy_ = std::move(component_policy);
 }
 
-bool EnvironmentProvider::GetUseNewAccountManager() {
-  return true;
-}
-
 }  // namespace crosapi
