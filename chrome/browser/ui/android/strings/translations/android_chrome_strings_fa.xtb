@@ -161,7 +161,7 @@
 <translation id="1894023287452300670">قیمت را در اینجا پیگیری کنید</translation>
 <translation id="1900260903084164610">درصورت ادامه دادن، موافقتتان را با <ph name="BEGIN_TOS_LINK" />شرایط خدمات<ph name="END_TOS_LINK" /> اعلام می‌کنید.</translation>
 <translation id="1910950723001426294">فهرست گزینه‌های هم‌رسانی بسته است.</translation>
-<translation id="1918175104945982129">میانای کاربر رضایت برای جستجوی گفتاری «دستیار» تا نیمه باز شد</translation>
+<translation id="1918175104945982129">واسط کاربر رضایت برای جستجوی گفتاری «دستیار» تا نیمه باز شد</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
 <translation id="1922362554271624559">زبان‌های پیشنهادشده</translation>
 <translation id="1925021887439448749">نشانی وب سفارشی وارد کنید</translation>
@@ -196,7 +196,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{۱ بارگیری انجام نشد}one{# بارگیری انجام نشد}other{# بارگیری انجام نشد}}</translation>
 <translation id="2067805253194386918">نوشتار</translation>
 <translation id="2068748236079642969">تماشای ویدیوی بعدی</translation>
-<translation id="2074143993849053708">میانای کاربر رضایت برای جستجوی گفتاری «دستیار» بسته شد</translation>
+<translation id="2074143993849053708">واسط کاربر رضایت برای جستجوی گفتاری «دستیار» بسته شد</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">همگام‌سازی و شخصی‌سازی در همه دستگاه‌ها</translation>
 <translation id="2100273922101894616">ورود به سیستم خودکار</translation>
@@ -379,7 +379,7 @@
 <translation id="3026955690410463085">لحاظ کردن پیوند</translation>
 <translation id="3029276696788198026">گزینه پیش‌بارگیری وجود ندارد</translation>
 <translation id="3029704984691124060">عبارت‌های عبور مطابقت ندارند</translation>
-<translation id="3031225630520268969">میانای کاربر رضایت برای جستجوی گفتاری «دستیار»</translation>
+<translation id="3031225630520268969">واسط کاربر رضایت برای جستجوی گفتاری «دستیار»</translation>
 <translation id="3034163383943672781">بارگیری <ph name="DATE" /> شروع خواهد شد.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />دریافت راهنمایی<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
@@ -466,7 +466,7 @@
 <translation id="3513704683820682405">واقعیت افزوده</translation>
 <translation id="3518985090088779359">پذیرش و ادامه</translation>
 <translation id="3522247891732774234">به‌روزرسانی موجود است. گزینه‌های بیشتر</translation>
-<translation id="3524138585025253783">میانای کاربر برنامه‌نویس</translation>
+<translation id="3524138585025253783">واسط کاربر برنامه‌نویس</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> مجاز می‌شود هویت شما را تأیید کند</translation>
 <translation id="3527085408025491307">پوشه</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> کیلوبایت دردسترس است</translation>
@@ -580,7 +580,7 @@
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />انواع داده‌ای که استفاده می‌شود:<ph name="END_BOLD" /> سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chrome در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
-<translation id="4263656433980196874">میانای کاربر رضایت برای جستجوی گفتاری «دستیار» به‌صورت کامل باز شد</translation>
+<translation id="4263656433980196874">واسط کاربر رضایت برای جستجوی گفتاری «دستیار» به‌صورت کامل باز شد</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
 <translation id="4290281343757112331">بعداً بارگیری شود؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />روشن کردن قفل صفحه در تنظیمات Android<ph name="END_LINK" /></translation>

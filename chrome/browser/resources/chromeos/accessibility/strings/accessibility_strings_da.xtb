@@ -111,7 +111,7 @@
 <translation id="1639634871799530612">{COUNT,plural, =1{større end}one{# større end-tegn}other{# større end-tegn}}</translation>
 <translation id="1653266918374749391">Forrige niveau 3-overskrift</translation>
 <translation id="1657616855184033958">Vis filtre for begivenhedsstreaming</translation>
-<translation id="1659072772017912254">Ikke kontrolleret</translation>
+<translation id="1659072772017912254">Ikke markeret</translation>
 <translation id="1666326070478924810">Indstillinger for Tekstoplæsning</translation>
 <translation id="1674262202423278359">Navigation i ChromeVox</translation>
 <translation id="16777221443363124">Menulinje</translation>
@@ -259,7 +259,7 @@
 <translation id="2723001399770238859">lyd</translation>
 <translation id="27349076983469322">Lys baggrund</translation>
 <translation id="2737898226590637227">Der er ikke flere ARIA-orienteringspunkter</translation>
-<translation id="2749275490991666823">Kontrolleret</translation>
+<translation id="2749275490991666823">Markeret</translation>
 <translation id="27527859628328957">Gå til næste element, der kan fokuseres på</translation>
 <translation id="2756452585631602151">Angiv en tilpasset etiket</translation>
 <translation id="2766299274563946262">Der er ingen celle til venstre</translation>
@@ -714,7 +714,7 @@
 <translation id="5847883414085148048">Dedikation</translation>
 <translation id="5850707923114094062">Panorer tilbage</translation>
 <translation id="5851548754964597211">Faneliste</translation>
-<translation id="5866042630553435010">Delvist kontrolleret</translation>
+<translation id="5866042630553435010">Delvist markeret</translation>
 <translation id="5866210856231860256">Tryk på søgetasten+højrepil eller på søgetasten+venstrepil for at gennemse lektioner til dette emne</translation>
 <translation id="5867591286054666064">Undervejs i dette selvstudie kan du trykke på en given tast for at høre, hvad den hedder.</translation>
 <translation id="5869546221129391014">Gitter</translation>
