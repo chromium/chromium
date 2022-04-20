@@ -122,11 +122,14 @@ public class CloseAllTabsDialogUnitTest {
                 model.get(ModalDialogProperties.BUTTON_STYLES));
     }
 
-    private void verifyDismissed(boolean positiveAction) {
+    private void verifyDismissed(boolean positiveAction, boolean isIncognito) {
         assertNull(mMockModalDialogManager.getDialogModel());
         assertEquals(-1, mMockModalDialogManager.getDialogType());
         verify(mUmaRecorder, times(1))
-                .recordBooleanHistogram("Tab.CloseAllTabsDialog.ClosedAllTabs", positiveAction);
+                .recordBooleanHistogram(isIncognito
+                                ? "Tab.CloseAllTabsDialog.ClosedAllTabs.Incognito"
+                                : "Tab.CloseAllTabsDialog.ClosedAllTabs.NonIncognito",
+                        positiveAction);
     }
 
     @Test
@@ -139,7 +142,7 @@ public class CloseAllTabsDialogUnitTest {
 
         mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.POSITIVE);
         assertTrue(mRunnableCalled);
-        verifyDismissed(true);
+        verifyDismissed(true, isIncognito);
     }
 
     @Test
@@ -152,7 +155,7 @@ public class CloseAllTabsDialogUnitTest {
 
         mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.NEGATIVE);
         assertFalse(mRunnableCalled);
-        verifyDismissed(false);
+        verifyDismissed(false, isIncognito);
     }
 
     @Test
@@ -166,6 +169,6 @@ public class CloseAllTabsDialogUnitTest {
         mMockModalDialogManager.dismissDialog(mMockModalDialogManager.getDialogModel(),
                 DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         assertFalse(mRunnableCalled);
-        verifyDismissed(false);
+        verifyDismissed(false, isIncognito);
     }
 }

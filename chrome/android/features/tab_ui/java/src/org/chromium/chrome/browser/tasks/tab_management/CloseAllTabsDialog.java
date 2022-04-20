@@ -54,9 +54,12 @@ public class CloseAllTabsDialog {
                     RecordUserAction.record("MobileCloseAllTabsDialog.CancelledWithTouchOutside");
                 }
 
-                // Assess whether a stricter warning has any impact on close all tabs behavior.
-                RecordHistogram.recordBooleanHistogram("Tab.CloseAllTabsDialog.ClosedAllTabs",
-                        dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                final boolean closedAll =
+                        dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
+                RecordHistogram.recordBooleanHistogram(isIncognito
+                                ? "Tab.CloseAllTabsDialog.ClosedAllTabs.Incognito"
+                                : "Tab.CloseAllTabsDialog.ClosedAllTabs.NonIncognito",
+                        closedAll);
             }
         };
 

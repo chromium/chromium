@@ -359,13 +359,35 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs" units="Boolean"
     expires_after="2022-09-11">
+  <obsolete>
+    Removed 4/2022. Replaced with a metric split by incognito and non-incognito
+    usage of the modal dialog as experiments showed possible differences between
+    the groups. The sum of the new .Incognito and .NonIncognito values should be
+    equivalent to what this value reported.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
-    Records the whether the &quot;Close all tabs&quot; action was taken when
+    Records whether the &quot;Close all tabs&quot; action was taken when the
     close all tabs confirmation dialog was shown through App Menu &gt; Close all
     tabs. This is only recorded for Android.
   </summary>
+</histogram>
+
+<histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs.{CloseType}"
+    units="Boolean" expires_after="2022-09-11">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Records whether the &quot;Close all tabs&quot; action was taken when the
+    close all tabs confirmation dialog was shown through App Menu &gt; Close all
+    tabs. This is only recorded for Android for {CloseType} close all tabs menu
+    actions.
+  </summary>
+  <token key="CloseType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
 </histogram>
 
 <histogram name="Tab.Count.Guest" units="units" expires_after="2022-08-21">
