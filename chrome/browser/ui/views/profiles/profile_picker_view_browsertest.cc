@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
       /*expected_type=*/
       EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+      /*choice=*/signin::SIGNIN_CHOICE_CONTINUE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "No, thanks".
@@ -1363,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
       /*expected_type=*/
       EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled,
-      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+      /*choice=*/signin::SIGNIN_CHOICE_CONTINUE);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
   WaitForLoadStop(GURL("chrome://newtab/"),
@@ -1415,7 +1415,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
       /*expected_type=*/
       EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+      /*choice=*/signin::SIGNIN_CHOICE_CONTINUE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "Configure sync".
@@ -1848,10 +1848,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
   WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
 
   // Proceed to the sync confirmation page.
-  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
-      /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome,
-      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+  EnterpriseProfileWelcomeHandler* handler =
+      profiles::testing::ExpectPickerWelcomeScreenType(
+          EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome);
+  handler->HandleProceedForTesting(/*should_link_data=*/false);
   WaitForLoadStop(GetSyncConfirmationURL(absl::optional<SkColor>()));
 
   // Exit the FRE.
@@ -1886,10 +1886,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_OptIn) {
   WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
 
   // Proceed to the sync confirmation page.
-  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
-      /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome,
-      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+  EnterpriseProfileWelcomeHandler* handler =
+      profiles::testing::ExpectPickerWelcomeScreenType(
+          EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome);
+  handler->HandleProceedForTesting(/*should_link_data=*/false);
   WaitForLoadStop(GetSyncConfirmationURL(absl::optional<SkColor>()));
 
   // Opt-in to sync

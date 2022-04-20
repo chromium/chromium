@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #endif
 
+class EnterpriseProfileWelcomeHandler;
+
 // This file contains helper functions for testing profile UIs, in particular,
 // the profile picker.
 namespace profiles::testing {
@@ -32,6 +34,11 @@ void WaitForPickerLoadStop(const GURL& url);
 
 // Waits until the picker gets closed.
 void WaitForPickerClosed();
+
+// Checks that the profile picker is currently displaying a welcome screen of
+// type `expected_type` and returns the handler associated with it.
+EnterpriseProfileWelcomeHandler* ExpectPickerWelcomeScreenType(
+    EnterpriseProfileWelcomeUI::ScreenType expected_type);
 
 // Checks that the profile picker is currently displaying a welcome screen of
 // type `expected_type` and performs the user action represented by `choice` on

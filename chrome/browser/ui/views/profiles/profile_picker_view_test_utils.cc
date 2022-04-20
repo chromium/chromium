@@ -120,18 +120,25 @@ void WaitForPickerClosed() {
   ViewDeletedWaiter(ProfilePicker::GetViewForTesting()).Wait();
 }
 
-void ExpectPickerWelcomeScreenTypeAndProceed(
-    EnterpriseProfileWelcomeUI::ScreenType expected_type,
-    signin::SigninChoice choice) {
+EnterpriseProfileWelcomeHandler* ExpectPickerWelcomeScreenType(
+    EnterpriseProfileWelcomeUI::ScreenType expected_type) {
   content::WebContents* web_contents = GetPickerWebContents();
-  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(web_contents);
   EnterpriseProfileWelcomeHandler* handler =
       web_contents->GetWebUI()
           ->GetController()
           ->GetAs<EnterpriseProfileWelcomeUI>()
           ->GetHandlerForTesting();
-  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler);
   EXPECT_EQ(handler->GetTypeForTesting(), expected_type);
+  return handler;
+}
+
+void ExpectPickerWelcomeScreenTypeAndProceed(
+    EnterpriseProfileWelcomeUI::ScreenType expected_type,
+    signin::SigninChoice choice) {
+  EnterpriseProfileWelcomeHandler* handler =
+      ExpectPickerWelcomeScreenType(expected_type);
 
   // Simulate clicking on the next button.
   handler->CallProceedCallbackForTesting(choice);
@@ -150,10 +157,9 @@ void CompleteLacrosFirstRun(
   ASSERT_TRUE(ProfilePicker::IsLacrosFirstRunOpen());
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 
-  ExpectPickerWelcomeScreenTypeAndProceed(
-      /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome,
-      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+  EnterpriseProfileWelcomeHandler* handler = ExpectPickerWelcomeScreenType(
+      EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome);
+  handler->HandleProceedForTesting(/*should_link_data=*/false);
   WaitForPickerLoadStop(AppendSyncConfirmationQueryParams(
       GURL("chrome://sync-confirmation/"),
       {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,

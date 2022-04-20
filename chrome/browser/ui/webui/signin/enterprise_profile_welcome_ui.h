@@ -44,7 +44,16 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
   EnterpriseProfileWelcomeUI& operator=(const EnterpriseProfileWelcomeUI&) =
       delete;
 
-  // Initializes the EnterpriseProfileWelcomeUI.
+  // Initializes the EnterpriseProfileWelcomeUI, which will obtain the user's
+  // choice about how to set up the profile with the new account.
+  // `proceed_callback` will be called when the user performs an action to exit
+  // the screen. Their choice will depend on other flags passed to this method.
+  // `force_new_profile` set to true indicates that we want them to use a
+  // dedicated profile for the account they are adding.
+  // `show_link_data_option` will make the screen display a checkbox, and when
+  // selected, will indicate that the user wants the current profile to be used
+  // as dedicated profile for the new account, linking the current data with
+  // synced data from the new account.
   void Initialize(Browser* browser,
                   ScreenType type,
                   const AccountInfo& account_info,
