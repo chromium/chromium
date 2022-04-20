@@ -641,7 +641,7 @@ void LocalFrameMojoHandler::Collapse(bool collapsed) {
 }
 
 void LocalFrameMojoHandler::EnableViewSourceMode() {
-  DCHECK(!frame_->Tree().Parent());
+  DCHECK(frame_->IsOutermostMainFrame());
   frame_->SetInViewSourceMode(true);
 }
 

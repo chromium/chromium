@@ -8334,7 +8334,7 @@ void RenderFrameHostImpl::CommitNavigation(
   // The renderer can exit view source mode when any error or cancellation
   // happen. When reusing the same renderer, overwrite to recover the mode.
   if (commit_params->is_view_source && IsActive()) {
-    DCHECK(!GetParent());
+    DCHECK(!GetParentOrOuterDocument());
     GetAssociatedLocalFrame()->EnableViewSourceMode();
   }
 
