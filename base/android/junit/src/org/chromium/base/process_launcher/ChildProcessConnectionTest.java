@@ -57,6 +57,7 @@ public class ChildProcessConnectionTest {
         private boolean mBound;
         private int mGroup;
         private int mImportanceInGroup;
+        private boolean mBindResult = true;
 
         public ChildServiceConnectionMock(
                 Intent bindIntent, ChildServiceConnectionDelegate delegate) {
@@ -67,7 +68,7 @@ public class ChildProcessConnectionTest {
         @Override
         public boolean bindServiceConnection() {
             mBound = true;
-            return true;
+            return mBindResult;
         }
 
         @Override
@@ -89,6 +90,10 @@ public class ChildProcessConnectionTest {
         @Override
         public void retire() {
             mBound = false;
+        }
+
+        public void setBindResult(boolean result) {
+            mBindResult = result;
         }
 
         public void notifyServiceConnected(IBinder service) {
@@ -602,6 +607,49 @@ public class ChildProcessConnectionTest {
             Assert.assertEquals("TestFallbackService", bindIntent.getComponent().getClassName());
         }
         Assert.assertNotNull(boundServiceConnection);
+
+        // Complete connection.
+        boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        verify(mServiceCallback, times(1)).onChildStarted();
+        verify(mServiceCallback, never()).onChildStartFailed(any());
+        verify(mServiceCallback, never()).onChildProcessDied(any());
+    }
+
+    @Test
+    public void testFallbackOnBindServiceFailure() throws RemoteException {
+        Bundle serviceBundle = new Bundle();
+        final String intKey = "org.chromium.myInt";
+        final int intValue = 34;
+        serviceBundle.putInt(intKey, intValue);
+
+        ChildProcessConnection connection = createTestConnection(false /* bindToCaller */,
+                false /* bindAsExternalService */, serviceBundle, true /* useFallback */);
+        assertNotNull(mFirstServiceConnection);
+        mFirstServiceConnection.setBindResult(false);
+
+        connection.start(false /* useStrongBinding */, mServiceCallback);
+
+        verify(mServiceCallback, never()).onChildStarted();
+        verify(mServiceCallback, never()).onChildStartFailed(any());
+        verify(mServiceCallback, never()).onChildProcessDied(any());
+
+        Assert.assertEquals(8, mMockConnections.size());
+        // First 4 should be unbound now.
+        for (int i = 0; i < 4; ++i) {
+            verify(mMockConnections.get(i), times(1)).retire();
+            Assert.assertFalse(mMockConnections.get(i).isBound());
+        }
+        // New connection for fallback service should be bound.
+        ChildServiceConnectionMock boundServiceConnection = null;
+        for (int i = 4; i < 8; ++i) {
+            if (mMockConnections.get(i).isBound()) {
+                boundServiceConnection = mMockConnections.get(i);
+            }
+            Intent bindIntent = mMockConnections.get(i).getBindIntent();
+            assertNotNull(bindIntent);
+            assertEquals(intValue, bindIntent.getIntExtra(intKey, -1));
+            Assert.assertEquals("TestFallbackService", bindIntent.getComponent().getClassName());
+        }
 
         // Complete connection.
         boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);

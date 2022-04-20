@@ -136,7 +136,10 @@ public class ChildProcessConnection {
     private static int sLastRecordedZygotePid;
 
     // Only accessed on launcher thread.
-    private static boolean sFallbackEnabled;
+    // Set when a launching a service with zygote times out, in which case
+    // it's assumed the zygote code path is not functional. Make all future
+    // launches directly fallback without timeout to minimize user impact.
+    private static boolean sAlwaysFallback;
 
     // Lock to protect all the fields that can be accessed outside launcher thread.
     private final Object mBindingStateLock = new Object();
@@ -336,8 +339,8 @@ public class ChildProcessConnection {
             }
         };
 
-        createBindings(sFallbackEnabled && mFallbackServiceName != null ? mFallbackServiceName
-                                                                        : mServiceName);
+        createBindings(sAlwaysFallback && mFallbackServiceName != null ? mFallbackServiceName
+                                                                       : mServiceName);
     }
 
     private void createBindings(ComponentName serviceName) {
@@ -794,15 +797,24 @@ public class ChildProcessConnection {
         assert !mUnbound;
 
         boolean success;
+        boolean usedFallback = sAlwaysFallback && mFallbackServiceName != null;
         if (useStrongBinding) {
             success = mStrongBinding.bindServiceConnection();
         } else {
             mModerateBindingCount++;
             success = mModerateBinding.bindServiceConnection();
         }
-        if (!success) return false;
+        if (!success) {
+            // Note this error condition is generally transient so `sAlwaysFallback` is
+            // not set in this code path.
+            if (!usedFallback && mFallbackServiceName != null && retireBindingsAndBindFallback()) {
+                usedFallback = true;
+            } else {
+                return false;
+            }
+        }
 
-        if (!sFallbackEnabled && mFallbackServiceName != null) {
+        if (!usedFallback && mFallbackServiceName != null) {
             mLauncherHandler.postDelayed(
                     this::checkBindTimeOut, FALLBACK_TIMEOUT_IN_SECONDS * 1000);
         }
@@ -821,9 +833,13 @@ public class ChildProcessConnection {
         if (mUnbound) {
             return;
         }
+        sAlwaysFallback = true;
+        retireBindingsAndBindFallback();
+    }
 
-        Log.w(TAG, "Fallback to " + mFallbackServiceName);
-        sFallbackEnabled = true;
+    private boolean retireBindingsAndBindFallback() {
+        assert mFallbackServiceName != null;
+        Log.w(TAG, "Fallback to %s", mFallbackServiceName);
         boolean isStrongBindingBound = mStrongBinding.isBound();
         boolean isModerateBindingBound = mModerateBinding.isBound();
         boolean isModerateWaiveCpuBindingBound = mModerateWaiveCpuBinding.isBound();
@@ -833,12 +849,29 @@ public class ChildProcessConnection {
         mModerateWaiveCpuBinding.retire();
         mWaivedBinding.retire();
         createBindings(mFallbackServiceName);
-        if (isStrongBindingBound) mStrongBinding.bindServiceConnection();
-        if (isModerateBindingBound) mModerateBinding.bindServiceConnection();
-        if (isModerateWaiveCpuBindingBound) {
-            mModerateWaiveCpuBinding.bindServiceConnection();
+        // Expect all bindings to succeed or fail together. So early out as soon as
+        // one binding fails.
+        if (isStrongBindingBound) {
+            if (!mStrongBinding.bindServiceConnection()) {
+                return false;
+            }
         }
-        if (isWaivedBindingBound) mWaivedBinding.bindServiceConnection();
+        if (isModerateBindingBound) {
+            if (!mModerateBinding.bindServiceConnection()) {
+                return false;
+            }
+        }
+        if (isModerateWaiveCpuBindingBound) {
+            if (!mModerateWaiveCpuBinding.bindServiceConnection()) {
+                return false;
+            }
+        }
+        if (isWaivedBindingBound) {
+            if (!mWaivedBinding.bindServiceConnection()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @VisibleForTesting

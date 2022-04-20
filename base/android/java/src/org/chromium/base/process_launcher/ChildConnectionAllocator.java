@@ -349,7 +349,7 @@ public abstract class ChildConnectionAllocator {
         /* package */ ChildProcessConnection doAllocate(Context context, Bundle serviceBundle,
                 ChildProcessConnection.ServiceCallback serviceCallback) {
             if (mFreeConnectionIndices.isEmpty()) {
-                Log.d(TAG, "Ran out of services to allocate.");
+                Log.w(TAG, "Ran out of services to allocate.");
                 return null;
             }
             int slot = mFreeConnectionIndices.remove(0);
@@ -450,7 +450,7 @@ public abstract class ChildConnectionAllocator {
 
         private ChildProcessConnection allocate(Context context, Bundle serviceBundle) {
             if (mAllocatedConnections.size() >= mMaxAllocated) {
-                Log.d(TAG, "Ran out of UIDs to allocate.");
+                Log.w(TAG, "Ran out of UIDs to allocate.");
                 return null;
             }
             ComponentName serviceName = new ComponentName(mPackageName, mServiceClassName);
