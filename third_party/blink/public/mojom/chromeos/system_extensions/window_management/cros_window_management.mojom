@@ -20,7 +20,9 @@ struct CrosWindow {
 
   string title;
   bool is_fullscreen;
+  bool is_maximized;
   bool is_minimized;
+  bool is_focused;
   bool is_visible;
 };
 

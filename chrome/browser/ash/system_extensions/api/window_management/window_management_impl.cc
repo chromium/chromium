@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -45,7 +46,15 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
         window->app_id = update.AppId();
         window->bounds = target->bounds();
         window->is_fullscreen = widget->IsFullscreen();
+        window->is_maximized = widget->IsMaximized();
         window->is_minimized = widget->IsMinimized();
+        // Instance registry references the activatable component of a window
+        // which itself does not have focus but contains the child focusable. To
+        // detect focus on the window, we assert that the focused window has our
+        // activatable as its top level parent
+        window->is_focused = target == aura::client::GetFocusClient(target)
+                                           ->GetFocusedWindow()
+                                           ->GetToplevelWindow();
         window->is_visible = widget->IsVisible();
         windows.push_back(std::move(window));
       });

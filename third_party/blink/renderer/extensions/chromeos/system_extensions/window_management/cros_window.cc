@@ -33,8 +33,16 @@ bool CrosWindow::isFullscreen() {
   return window_->is_fullscreen;
 }
 
-bool CrosWindow::isMinimised() {
+bool CrosWindow::isMaximized() {
+  return window_->is_maximized;
+}
+
+bool CrosWindow::isMinimized() {
   return window_->is_minimized;
+}
+
+bool CrosWindow::isFocused() {
+  return window_->is_focused;
 }
 
 bool CrosWindow::isVisible() {

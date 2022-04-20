@@ -8,7 +8,9 @@ interface CrosWindow {
   readonly attribute DOMString title;
   readonly attribute DOMString appId;
   readonly attribute boolean isFullscreen;
-  readonly attribute boolean isMinimised;
+  readonly attribute boolean isMaximized;
+  readonly attribute boolean isMinimized;
+  readonly attribute boolean isFocused;
   readonly attribute boolean isVisible;
 
   readonly attribute DOMPoint origin;
