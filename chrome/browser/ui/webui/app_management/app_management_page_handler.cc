@@ -140,9 +140,10 @@ std::vector<apps::mojom::IntentFilterPtr> GetSupportedLinkIntentFilters(
 std::vector<std::string> GetSupportedLinks(Profile* profile,
                                            const std::string& app_id) {
   std::set<std::string> supported_links;
-  auto intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
-  for (auto& filter : intent_filters) {
-    for (const auto& link : apps_util::AppManagementGetSupportedLinks(filter)) {
+  auto mojom_intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
+  for (auto& mojom_filter : mojom_intent_filters) {
+    auto filter = apps::ConvertMojomIntentFilterToIntentFilter(mojom_filter);
+    for (const auto& link : filter->GetSupportedLinksForAppManagement()) {
       supported_links.insert(link);
     }
   }

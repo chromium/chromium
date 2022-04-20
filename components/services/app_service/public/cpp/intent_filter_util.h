@@ -82,10 +82,6 @@ void UpgradeFilter(apps::mojom::IntentFilterPtr& filter);
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
 
-// Convert an intent filter to a list of its supported links.
-std::set<std::string> AppManagementGetSupportedLinks(
-    const apps::mojom::IntentFilterPtr& intent_filter);
-
 // Checks if the `intent_filter` is a supported link for `app_id`, i.e. it has
 // the "view" action, a http or https scheme, and at least one host and pattern.
 bool IsSupportedLinkForApp(const std::string& app_id,
