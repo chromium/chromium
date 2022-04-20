@@ -222,6 +222,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/tabmodel/PendingTabClosureManagerTest.java",
   "junit/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImplTest.java",
   "junit/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorProfileSupplierTest.java",
+  "junit/src/org/chromium/chrome/browser/tabmodel/UndoTabModelUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tasks/EngagementTimeUtilTest.java",
   "junit/src/org/chromium/chrome/browser/tasks/JourneyManagerTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",

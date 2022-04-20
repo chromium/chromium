@@ -102,6 +102,7 @@ public class MockTab extends TabImpl {
     @Override
     public void destroy() {
         mIsDestroyed = true;
+        mIsInitialized = false;
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
         mObservers.clear();
     }
