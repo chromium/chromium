@@ -19167,7 +19167,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobileTabGridOpenRegularTabDuringSearch">
+<action name="MobileTabGridOpenRegularTabSearchResult">
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <description>
