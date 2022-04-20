@@ -351,7 +351,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the run failures for the different sync datatypes. These are
     failures that occur after startup while the datatype is syncing. This is one
-    of the base sync health metrics.
+    of the base sync health metrics. The Sync.ModelTypeStoreBackendError
+    histograms may help diagnosing the problem.
   </summary>
 </histogram>
 
@@ -366,7 +367,8 @@ chromium-metrics-reviews@google.com.
     For USS datatypes, these errors are caused by failures in reading metadata
     (or data) from the DB or by another failure in interaction with the model.
     For Directory datatypes, startup errors are due to missing top level sync
-    nodes or model association. This is one of the base sync health metrics.
+    nodes or model association. This is one of the base sync health metrics. The
+    Sync.ModelTypeStoreBackendError histograms may help diagnosing the problem.
   </summary>
 </histogram>
 
@@ -692,7 +694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeStoreBackendError.{Operation}"
-    enum="LevelDBStatus" expires_after="2022-05-28">
+    enum="LevelDBStatus" expires_after="2023-05-28">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
