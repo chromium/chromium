@@ -33,7 +33,7 @@ GbmPixmapWayland::GbmPixmapWayland(WaylandBufferManagerGpu* buffer_manager)
       buffer_id_(buffer_manager->AllocateBufferID()) {}
 
 GbmPixmapWayland::~GbmPixmapWayland() {
-  if (gbm_bo_ && widget_ != gfx::kNullAcceleratedWidget)
+  if (created_wl_buffer_)
     buffer_manager_->DestroyBuffer(buffer_id_);
 }
 
@@ -83,8 +83,6 @@ bool GbmPixmapWayland::InitializeBuffer(
            << " usage=" << gfx::BufferUsageToString(usage);
 
   visible_area_size_ = visible_area_size ? visible_area_size.value() : size;
-  if (widget_ != gfx::kNullAcceleratedWidget)
-    CreateDmabufBasedBuffer();
   return true;
 }
 
@@ -112,8 +110,6 @@ bool GbmPixmapWayland::InitializeBufferFromHandle(
   DVLOG(3) << "Created gbm bo. format= " << gfx::BufferFormatToString(format);
 
   visible_area_size_ = size;
-  if (widget_ != gfx::kNullAcceleratedWidget)
-    CreateDmabufBasedBuffer();
   return true;
 }
 
@@ -170,8 +166,8 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
     std::vector<gfx::GpuFence> release_fences) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
 
-  if (widget_ == gfx::kNullAcceleratedWidget)
-    CreateDmabufBasedBuffer();
+  if (!created_wl_buffer_)
+    CreateDmabufBasedWlBuffer();
 
   widget_ = widget;
 
@@ -218,7 +214,7 @@ gfx::NativePixmapHandle GbmPixmapWayland::ExportHandle() {
   return handle;
 }
 
-void GbmPixmapWayland::CreateDmabufBasedBuffer() {
+void GbmPixmapWayland::CreateDmabufBasedWlBuffer() {
   uint64_t modifier = gbm_bo_->GetFormatModifier();
 
   std::vector<uint32_t> strides;
@@ -237,6 +233,10 @@ void GbmPixmapWayland::CreateDmabufBasedBuffer() {
     PLOG(FATAL) << "dup";
     return;
   }
+
+  // The wl_buffer must be destroyed once this pixmap is destroyed.
+  created_wl_buffer_ = true;
+
   // Asks Wayland to create a wl_buffer based on the |file| fd.
   buffer_manager_->CreateDmabufBasedBuffer(
       std::move(fd), visible_area_size_, strides, offsets, modifiers,

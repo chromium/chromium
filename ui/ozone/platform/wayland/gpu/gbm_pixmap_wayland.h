@@ -72,7 +72,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   ~GbmPixmapWayland() override;
 
   // Asks Wayland to create a dmabuf based wl_buffer.
-  void CreateDmabufBasedBuffer();
+  void CreateDmabufBasedWlBuffer();
 
   // gbm_bo wrapper for struct gbm_bo.
   std::unique_ptr<GbmBuffer> gbm_bo_;
@@ -88,6 +88,9 @@ class GbmPixmapWayland : public gfx::NativePixmap {
 
   // Size of the visible area of the buffer.
   gfx::Size visible_area_size_;
+
+  // Says a wl_buffer has been created and must removed.
+  bool created_wl_buffer_ = false;
 };
 
 }  // namespace ui

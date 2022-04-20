@@ -254,17 +254,6 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::BufferFormat::BGRA_8888, gfx::BufferUsage::SCANOUT);
     fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
         native_pixmap, window_->GetBounds().size()));
-
-    Sync();
-
-    // Create one buffer at a time.
-    auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
-    DCHECK_EQ(params_vector.size(), 1u);
-    zwp_linux_buffer_params_v1_send_created(
-        params_vector.front()->resource(),
-        params_vector.front()->buffer_resource());
-
-    Sync();
   }
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
@@ -310,6 +299,8 @@ TEST_P(WaylandSurfaceFactoryTest,
                        base::Unretained(&cbs_helper), swap_id));
   }
 
+  Sync();
+
   // Let's sync so that 1) GbmSurfacelessWayland submits the buffer according to
   // internal queue and fake server processes the request.
 
@@ -321,6 +312,15 @@ TEST_P(WaylandSurfaceFactoryTest,
   EXPECT_CALL(*root_surface, Attach(_, _, _)).Times(1);
   EXPECT_CALL(*root_surface, Frame(_)).Times(0);
   EXPECT_CALL(*root_surface, Commit()).Times(1);
+
+  // The wl_buffers are requested during ScheduleOverlays. Thus, we have pending
+  // requests that we need to execute.
+  auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
+  DCHECK_EQ(params_vector.size(), 2u);
+  for (auto* mock_params : params_vector) {
+    zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
+                                            mock_params->buffer_resource());
+  }
 
   Sync();
 
@@ -394,6 +394,17 @@ TEST_P(WaylandSurfaceFactoryTest,
   EXPECT_CALL(*root_surface, DamageBuffer(_, _, _, _)).Times(0);
   EXPECT_CALL(*root_surface, Commit()).Times(1);
 
+  Sync();
+
+  auto params_vector2 = server_.zwp_linux_dmabuf_v1()->buffer_params();
+  DCHECK_EQ(params_vector.size(), 2u);
+  for (auto* mock_params : params_vector2) {
+    zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
+                                            mock_params->buffer_resource());
+  }
+
+  Sync();
+
   // Send the frame callback so that pending buffer for swap id=1u is processed
   // and swapped.
   mock_overlay_surface->SendFrameCallback();
@@ -451,6 +462,17 @@ TEST_P(WaylandSurfaceFactoryTest,
   EXPECT_CALL(*root_surface, Frame(_)).Times(0);
   EXPECT_CALL(*root_surface, DamageBuffer(_, _, _, _)).Times(0);
   EXPECT_CALL(*root_surface, Commit()).Times(1);
+
+  Sync();
+
+  auto params_vector3 = server_.zwp_linux_dmabuf_v1()->buffer_params();
+  DCHECK_EQ(params_vector.size(), 2u);
+  for (auto* mock_params : params_vector3) {
+    zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
+                                            mock_params->buffer_resource());
+  }
+
+  Sync();
 
   // Send the frame callback so that pending buffer for swap id=2u is processed
   // and swapped.
@@ -513,9 +535,6 @@ TEST_P(WaylandSurfaceFactoryTest,
   static_cast<ui::GbmSurfacelessWayland*>(gl_surface.get())
       ->SetNoGLFlushForTests();
 
-  // Expect to create 5 buffers.
-  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(5);
-
   // Create buffers and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
   for (int i = 0; i < 5; ++i) {
@@ -524,17 +543,6 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::BufferFormat::BGRA_8888, gfx::BufferUsage::SCANOUT);
     fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
         native_pixmap, window_->GetBounds().size()));
-
-    Sync();
-
-    // Create one buffer at a time.
-    auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
-    DCHECK_EQ(params_vector.size(), 1u);
-    zwp_linux_buffer_params_v1_send_created(
-        params_vector.front()->resource(),
-        params_vector.front()->buffer_resource());
-
-    Sync();
   }
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
@@ -601,6 +609,20 @@ TEST_P(WaylandSurfaceFactoryTest,
   EXPECT_CALL(*mock_primary_surface, Commit()).Times(1);
   EXPECT_CALL(*root_surface, Frame(_)).Times(0);
   EXPECT_CALL(*root_surface, Commit()).Times(1);
+
+  // Expect to create 3 buffers.
+  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(3);
+
+  Sync();
+
+  // If wl_buffers have never been created, they will be requested during the
+  // first commit.
+  auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
+  DCHECK_EQ(params_vector.size(), 3u);
+  for (auto* param : params_vector) {
+    zwp_linux_buffer_params_v1_send_created(param->resource(),
+                                            param->buffer_resource());
+  }
 
   Sync();
 
@@ -685,6 +707,21 @@ TEST_P(WaylandSurfaceFactoryTest,
   EXPECT_CALL(*root_surface, Frame(_)).Times(0);
   EXPECT_CALL(*root_surface, DamageBuffer(_, _, _, _)).Times(0);
   EXPECT_CALL(*root_surface, Commit()).Times(1);
+
+  // Expect to create 2 more buffers.
+  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(2);
+
+  Sync();
+
+  // 2 more buffers are to be created.
+  params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
+  DCHECK_EQ(params_vector.size(), 2u);
+  for (auto* param : params_vector) {
+    zwp_linux_buffer_params_v1_send_created(param->resource(),
+                                            param->buffer_resource());
+  }
+
+  Sync();
 
   // Send the frame callback so that pending buffer for swap id=1u is processed
   // and swapped.
@@ -874,7 +911,7 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
       ->SetNoGLFlushForTests();
 
   // Expect to create 4 buffers.
-  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(4);
+  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
 
   gfx::Size test_buffer_size = {300, 100};
   gfx::RectF test_buffer_dmg_uv = {0.2f, 0.3f, 0.6, 0.32f};
@@ -888,24 +925,11 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
 
   // Create buffers and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
-  for (int i = 0; i < 4; ++i) {
-    auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, test_buffer_size, gfx::BufferFormat::BGRA_8888,
-        gfx::BufferUsage::SCANOUT);
-    fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
-        native_pixmap, test_buffer_size));
-
-    Sync();
-
-    // Create one buffer at a time.
-    auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
-    DCHECK_EQ(params_vector.size(), 1u);
-    zwp_linux_buffer_params_v1_send_created(
-        params_vector.front()->resource(),
-        params_vector.front()->buffer_resource());
-
-    Sync();
-  }
+  auto native_pixmap = surface_factory_->CreateNativePixmap(
+      widget_, nullptr, test_buffer_size, gfx::BufferFormat::BGRA_8888,
+      gfx::BufferUsage::SCANOUT);
+  fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
+      native_pixmap, test_buffer_size));
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
@@ -944,9 +968,6 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
                        base::Unretained(&cbs_helper), swap_id));
   }
 
-  // Let's sync so that 1) GbmSurfacelessWayland submits the buffer according to
-  // internal queue and fake server processes the request.
-
   // Wait until the mojo calls are done.
   base::RunLoop().RunUntilIdle();
 
@@ -960,6 +981,18 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
                            .WillOnce(SaveArg<0>(&buffer_resource));
   EXPECT_CALL(*surface_, Commit()).After(damage, attach);
 
+  // Let's sync so that 1) GbmSurfacelessWayland submits the buffer according to
+  // internal queue and fake server processes the request.
+  Sync();
+
+  auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
+  DCHECK_EQ(params_vector.size(), 1u);
+
+  zwp_linux_buffer_params_v1_send_created(
+      params_vector.front()->resource(),
+      params_vector.front()->buffer_resource());
+
+  // And create buffers.
   Sync();
 
   testing::Mock::VerifyAndClearExpectations(mock_primary_surface);
