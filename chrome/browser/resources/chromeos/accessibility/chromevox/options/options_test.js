@@ -49,31 +49,36 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F('ChromeVoxOptionsTest', 'NumberReadingStyleSelect', async function() {
-  const [mockFeedback, evt] = await this.loadOptionsPage();
-  const numberStyleSelect = evt.target.find(
-      {role: RoleType.POP_UP_BUTTON, attributes: {name: 'Read numbers as:'}});
-  assertNotNullNorUndefined(numberStyleSelect);
-  mockFeedback.call(numberStyleSelect.focus.bind(numberStyleSelect))
-      .expectSpeech('Read numbers as:', 'Words', 'Collapsed')
-      .call(numberStyleSelect.doDefault.bind(numberStyleSelect))
-      .expectSpeech('Expanded')
+// TODO(crbug.com/1318133): Test times out flakily.
+TEST_F(
+    'ChromeVoxOptionsTest', 'DISABLED_NumberReadingStyleSelect',
+    async function() {
+      const [mockFeedback, evt] = await this.loadOptionsPage();
+      const numberStyleSelect = evt.target.find({
+        role: RoleType.POP_UP_BUTTON,
+        attributes: {name: 'Read numbers as:'}
+      });
+      assertNotNullNorUndefined(numberStyleSelect);
+      mockFeedback.call(numberStyleSelect.focus.bind(numberStyleSelect))
+          .expectSpeech('Read numbers as:', 'Words', 'Collapsed')
+          .call(numberStyleSelect.doDefault.bind(numberStyleSelect))
+          .expectSpeech('Expanded')
 
-      // Before selecting the menu option.
-      .call(() => {
-        assertEquals('asWords', localStorage['numberReadingStyle']);
-      })
+          // Before selecting the menu option.
+          .call(() => {
+            assertEquals('asWords', localStorage['numberReadingStyle']);
+          })
 
-      .call(press(KeyCode.DOWN))
-      .expectSpeech('Digits', 'List item', ' 2 of 2 ')
-      .call(press(KeyCode.RETURN))
-      .expectSpeech('Digits', 'Collapsed')
-      .call(() => {
-        assertEquals('asDigits', localStorage['numberReadingStyle']);
-      })
+          .call(press(KeyCode.DOWN))
+          .expectSpeech('Digits', 'List item', ' 2 of 2 ')
+          .call(press(KeyCode.RETURN))
+          .expectSpeech('Digits', 'Collapsed')
+          .call(() => {
+            assertEquals('asDigits', localStorage['numberReadingStyle']);
+          })
 
-      .replay();
-});
+          .replay();
+    });
 
 // TODO(crbug.com/1128926, crbug.com/1172387):
 // Test times out flakily.
