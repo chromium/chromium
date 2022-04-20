@@ -22,6 +22,9 @@ int ModifierDomCodeToEventFlag(ui::DomCode code) {
     case ui::DomCode::SHIFT_LEFT:
     case ui::DomCode::SHIFT_RIGHT:
       return ui::EF_SHIFT_DOWN;
+    case ui::DomCode::CONTROL_LEFT:
+    case ui::DomCode::CONTROL_RIGHT:
+      return ui::EF_CONTROL_DOWN;
     default:
       return ui::EF_NONE;
   }
