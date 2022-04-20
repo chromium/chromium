@@ -55,7 +55,6 @@ bool VideoFrameValidator::Initialize() {
 
 void VideoFrameValidator::CleanUpOnValidatorThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
-  corrupt_frame_processor_.reset();
   video_frame_mapper_.reset();
 }
 
@@ -73,6 +72,8 @@ void VideoFrameValidator::Destroy() {
   frame_validator_thread_.Stop();
   base::AutoLock auto_lock(frame_validator_lock_);
   DCHECK_EQ(0u, num_frames_validating_);
+
+  corrupt_frame_processor_.reset();
 }
 
 void VideoFrameValidator::PrintMismatchedFramesInfo() const {
@@ -185,8 +186,10 @@ void VideoFrameValidator::ProcessVideoFrameTask(
   if (mismatched_info) {
     mismatched_frames_.push_back(std::move(mismatched_info));
     // Perform additional processing on the corrupt video frame if requested.
+    // Pass |video_frame|, not |frame|, so that |frame| is destroyed in
+    // |frame_validator_thread_|.
     if (corrupt_frame_processor_)
-      corrupt_frame_processor_->ProcessVideoFrame(frame, frame_index);
+      corrupt_frame_processor_->ProcessVideoFrame(video_frame, frame_index);
   }
 
   num_frames_validating_--;
