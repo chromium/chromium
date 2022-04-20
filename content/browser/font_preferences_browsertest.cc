@@ -103,7 +103,14 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FontPreferencesBrowserTest, GenericFamilies) {
+// TODO(https://crbug.com/1317381): Re-enable once the test is passing on
+// Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_GenericFamilies DISABLED_GenericFamilies
+#else
+#define MAYBE_GenericFamilies GenericFamilies
+#endif
+IN_PROC_BROWSER_TEST_F(FontPreferencesBrowserTest, MAYBE_GenericFamilies) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,BODY_TEXT")));
   Attach();
