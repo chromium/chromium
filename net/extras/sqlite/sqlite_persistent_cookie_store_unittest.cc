@@ -597,8 +597,8 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, is_same_party) "
-      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,0)"));
+      "source_scheme, source_port, is_same_party, last_update_utc) "
+      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,0,0)"));
   ASSERT_TRUE(stmt.is_valid());
 
   struct CookieInfo {
@@ -839,7 +839,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteExtendedTreatedAsUnspecified) {
   // Force the store to write its data to the disk.
   DestroyStore();
 
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   std::string update_stmt(
@@ -1255,7 +1255,7 @@ void ConfirmV9CookiesFromDB(
 // creation time uniqueness constraint to one with the (name, domain, path)
 // uniqueness constraint works with a good DB.
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion10) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV9Schema(&connection));
@@ -1271,7 +1271,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion10) {
 // creation time uniqueness constraint to one with the (name, domain, path)
 // uniqueness constraint works with a corrupted DB.
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion10Corrupted) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
 
@@ -1742,7 +1742,7 @@ void ConfirmV10CookiesFromDB(
 // Confirm that cookies with SameSite equal to NO_RESTRICTION get changed to
 // UNSPECIFIED.
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion11) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV10Schema(&connection));
@@ -1922,10 +1922,10 @@ bool CreateFaultyV16Schema(sql::Database* db) {
   return true;
 }
 
-bool CreateV16Schema(sql::Database* db) {
+bool CreateV16Schema(sql::Database* db, int version_override = 16) {
   sql::MetaTable meta_table;
-  if (!meta_table.Init(db, /* version = */ 16,
-                       /* earliest compatible version = */ 16)) {
+  if (!meta_table.Init(db, /* version = */ version_override,
+                       /* earliest compatible version = */ version_override)) {
     return false;
   }
 
@@ -1963,6 +1963,11 @@ bool CreateV16Schema(sql::Database* db) {
     return false;
 
   return true;
+}
+
+bool CreateV17Schema(sql::Database* db) {
+  // v17 fixes a bad migration to v16, so it's the same schema.
+  return CreateV16Schema(db, /*version_override=*/17);
 }
 
 int GetDBCurrentVersionNumber(sql::Database* db) {
@@ -2214,6 +2219,11 @@ bool AddV16CookiesToDB(sql::Database* db) {
   return AddV15CookiesToDB(db);
 }
 
+bool AddV17CookiesToDB(sql::Database* db) {
+  // This version fixed a bad migration to v16.
+  return AddV16CookiesToDB(db);
+}
+
 // Confirm the cookie list passed in has the above cookies in it.
 void ConfirmCookiesAfterMigrationTest(
     std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies,
@@ -2227,6 +2237,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
+  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -2236,6 +2247,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
+  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -2245,6 +2257,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(expect_same_party_cookies, read_in_cookies[i]->IsSameParty());
+  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -2254,6 +2267,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(expect_same_party_cookies, read_in_cookies[i]->IsSameParty());
+  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -2263,6 +2277,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
+  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -2272,11 +2287,12 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
+  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
 }
 
 // Confirm that source_scheme gets added and is set to "Unset".
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion12) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV11Schema(&connection));
@@ -2289,7 +2305,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion12) {
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion13) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV12Schema(&connection));
@@ -2302,7 +2318,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion13) {
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion15) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV13Schema(&connection));
@@ -2315,7 +2331,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion15) {
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion16) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV15Schema(&connection));
@@ -2328,7 +2344,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion16) {
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion17) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV16Schema(&connection));
@@ -2344,7 +2360,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion17) {
 
 // Testing bug: 1290841
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion17FromFaultyV16) {
-  // Open db
+  // Open db.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateFaultyV16Schema(&connection));
@@ -2356,6 +2372,21 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion17FromFaultyV16) {
   CreateAndLoad(false, false, &read_in_cookies);
   ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies), true);
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), 17);
+  connection.Close();
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion18) {
+  // Open db.
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
+  ASSERT_TRUE(CreateV17Schema(&connection));
+  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 17);
+  ASSERT_TRUE(AddV17CookiesToDB(&connection));
+
+  std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
+  CreateAndLoad(false, false, &read_in_cookies);
+  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies), true);
+  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 18);
   connection.Close();
 }
 
@@ -2413,8 +2444,8 @@ TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, is_same_party) "
-      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,0)"));
+      "source_scheme, source_port, is_same_party, last_update_utc) "
+      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,0,0)"));
   ASSERT_TRUE(stmt.is_valid());
 
   base::Time creation(base::Time::Now());

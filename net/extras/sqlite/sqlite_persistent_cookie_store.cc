@@ -121,6 +121,7 @@ namespace {
 
 // Version number of the database.
 //
+// Version 18 - 2022/04/19 - https://crrev.com/c/3594203
 // Version 17 - 2022/01/25 - https://crrev.com/c/3416230
 // Version 16 - 2021/09/10 - https://crrev.com/c/3152897
 // Version 15 - 2021/07/01 - https://crrev.com/c/3001822
@@ -138,6 +139,10 @@ namespace {
 // Version 5  - 2011/12/05 - https://codereview.chromium.org/8533013
 // Version 4  - 2009/09/01 - https://codereview.chromium.org/183021
 //
+//
+// Version 18 adds one new field: "last_update_utc" (if not 0 this represents
+// the last time the cookie was updated). This is distinct from creation_utc
+// which is carried forward when cookies are updated.
 //
 // Version 17 fixes crbug.com/1290841: Bug in V16 migration.
 //
@@ -217,8 +222,8 @@ namespace {
 // Version 3 updated the database to include the last access time, so we can
 // expire them in decreasing order of use when we've reached the maximum
 // number of cookies.
-const int kCurrentVersionNumber = 17;
-const int kCompatibleVersionNumber = 17;
+const int kCurrentVersionNumber = 18;
+const int kCompatibleVersionNumber = 18;
 
 }  // namespace
 
@@ -697,6 +702,45 @@ bool CreateV17Schema(sql::Database* db) {
   return CreateV16Schema(db);
 }
 
+// Initializes the cookies table, returning true on success.
+// The table cannot exist when calling this function.
+bool CreateV18Schema(sql::Database* db) {
+  DCHECK(!db->DoesTableExist("cookies"));
+
+  const char* kCreateTableQuery =
+      "CREATE TABLE cookies("
+      "creation_utc INTEGER NOT NULL,"
+      "host_key TEXT NOT NULL,"
+      "top_frame_site_key TEXT NOT NULL,"
+      "name TEXT NOT NULL,"
+      "value TEXT NOT NULL,"
+      "encrypted_value BLOB NOT NULL,"
+      "path TEXT NOT NULL,"
+      "expires_utc INTEGER NOT NULL,"
+      "is_secure INTEGER NOT NULL,"
+      "is_httponly INTEGER NOT NULL,"
+      "last_access_utc INTEGER NOT NULL,"
+      "has_expires INTEGER NOT NULL,"
+      "is_persistent INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "samesite INTEGER NOT NULL,"
+      "source_scheme INTEGER NOT NULL,"
+      "source_port INTEGER NOT NULL,"
+      "is_same_party INTEGER NOT NULL,"
+      "last_update_utc INTEGER NOT NULL);";
+
+  const char* kCreateIndexQuery =
+      "CREATE UNIQUE INDEX cookies_unique_index "
+      "ON cookies(host_key, top_frame_site_key, name, path)";
+
+  if (!db->Execute(kCreateTableQuery))
+    return false;
+  if (!db->Execute(kCreateIndexQuery))
+    return false;
+
+  return true;
+}
+
 }  // namespace
 
 void SQLitePersistentCookieStore::Backend::Load(
@@ -845,7 +889,7 @@ bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
   if (db()->DoesTableExist("cookies"))
     return true;
 
-  return CreateV17Schema(db());
+  return CreateV18Schema(db());
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
@@ -923,14 +967,16 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
         "SELECT creation_utc, host_key, top_frame_site_key, name, value, path, "
         "expires_utc, is_secure, is_httponly, last_access_utc, has_expires, "
         "is_persistent, priority, encrypted_value, samesite, source_scheme, "
-        "source_port, is_same_party FROM cookies WHERE host_key = ?"));
+        "source_port, is_same_party, last_update_utc FROM cookies WHERE "
+        "host_key = ?"));
   } else {
     smt.Assign(db()->GetCachedStatement(
         SQL_FROM_HERE,
         "SELECT creation_utc, host_key, top_frame_site_key, name, value, path, "
         "expires_utc, is_secure, is_httponly, last_access_utc, has_expires, "
         "is_persistent, priority, encrypted_value, samesite, source_scheme, "
-        "source_port, is_same_party FROM cookies WHERE host_key = ? AND "
+        "source_port, is_same_party, last_update_utc FROM cookies WHERE "
+        "host_key = ? AND "
         "is_persistent = 1"));
   }
   delete_statement.Assign(db()->GetCachedStatement(
@@ -1046,6 +1092,8 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         std::move(cookie_partition_key),                  // top_frame_site_key
         DBToCookieSourceScheme(statement.ColumnInt(15)),  // source_scheme
         statement.ColumnInt(16));                         // source_port
+    // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+    DCHECK_EQ(statement.ColumnInt(18), 0);
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
           << L"CreationDate too recent";
@@ -1366,6 +1414,45 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     transaction.Commit();
   }
 
+  if (cur_version == 17) {
+    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV18");
+
+    sql::Transaction transaction(db());
+    if (!transaction.Begin())
+      return absl::nullopt;
+
+    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old"))
+      return absl::nullopt;
+    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
+      return absl::nullopt;
+    if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index"))
+      return absl::nullopt;
+
+    if (!CreateV18Schema(db()))
+      return absl::nullopt;
+    static constexpr char insert_cookies_sql[] =
+        "INSERT OR REPLACE INTO cookies "
+        "(creation_utc, host_key, top_frame_site_key, name, value, "
+        "encrypted_value, path, expires_utc, is_secure, is_httponly, "
+        "last_access_utc, has_expires, is_persistent, priority, samesite, "
+        "source_scheme, source_port, is_same_party, last_update_utc) "
+        "SELECT creation_utc, host_key, top_frame_site_key, name, value,"
+        "       encrypted_value, path, expires_utc, is_secure, is_httponly,"
+        "       last_access_utc, has_expires, is_persistent, priority, "
+        "       samesite, source_scheme, source_port, is_same_party, 0 "
+        "FROM cookies_old ORDER BY creation_utc ASC";
+    if (!db()->Execute(insert_cookies_sql))
+      return absl::nullopt;
+    if (!db()->Execute("DROP TABLE cookies_old"))
+      return absl::nullopt;
+
+    ++cur_version;
+    meta_table()->SetVersionNumber(cur_version);
+    meta_table()->SetCompatibleVersionNumber(
+        std::min(cur_version, kCompatibleVersionNumber));
+    transaction.Commit();
+  }
+
   // Put future migration cases here.
 
   return absl::make_optional(cur_version);
@@ -1467,8 +1554,8 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "last_access_utc, has_expires, is_persistent, priority, samesite, "
-      "source_scheme, source_port, is_same_party) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+      "source_scheme, source_port, is_same_party, last_update_utc) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   if (!add_statement.is_valid())
     return;
 
@@ -1535,6 +1622,8 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_statement.BindInt(15, static_cast<int>(po->cc().SourceScheme()));
           add_statement.BindInt(16, po->cc().SourcePort());
           add_statement.BindBool(17, po->cc().IsSameParty());
+          // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+          add_statement.BindInt(18, 0);
           if (!add_statement.Run()) {
             DLOG(WARNING) << "Could not add a cookie to the DB.";
             RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ADD);
