@@ -58,7 +58,8 @@ struct Empty {};
 
 union ReportStatus {
   Empty pending;
-  Empty replaced_by_higher_priority_report;
+  // Contains the external report ID of the replacement report.
+  string replaced_by_higher_priority_report;
   Empty prohibited_by_browser_policy;
   // Contains the HTTP response code.
   int32 sent;

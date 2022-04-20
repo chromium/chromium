@@ -115,6 +115,11 @@ class CONTENT_EXPORT AttributionReport {
     return static_cast<ReportType>(report_id.index());
   }
 
+  // Returns the minimum non-null time of `a` and `b`, or `absl::nullopt` if
+  // both are null.
+  static absl::optional<base::Time> MinReportTime(absl::optional<base::Time> a,
+                                                  absl::optional<base::Time> b);
+
   AttributionReport(
       AttributionInfo attribution_info,
       base::Time report_time,

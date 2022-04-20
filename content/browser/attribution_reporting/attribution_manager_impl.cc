@@ -5,7 +5,6 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <cmath>
-#include <functional>
 #include <iterator>
 #include <utility>
 
@@ -503,16 +502,20 @@ void AttributionManagerImpl::OnReportStored(const AttributionTrigger trigger,
                                             CreateReportResult result) {
   RecordCreateReportStatus(result);
 
-  if (std::vector<AttributionReport>& new_reports = result.new_reports();
-      !new_reports.empty()) {
-    auto min_report = base::ranges::min_element(
-        new_reports, std::less<>(), &AttributionReport::report_time);
-    scheduler_.ScheduleSend(min_report->report_time());
+  absl::optional<base::Time> min_new_report_time;
 
-    for (AttributionReport& report : new_reports) {
-      MaybeSendDebugReport(std::move(report));
-    }
+  if (auto& report = result.new_event_level_report()) {
+    min_new_report_time = report->report_time();
+    MaybeSendDebugReport(std::move(*report));
   }
+
+  if (auto& report = result.new_aggregatable_report()) {
+    min_new_report_time = AttributionReport::MinReportTime(
+        min_new_report_time, report->report_time());
+    MaybeSendDebugReport(std::move(*report));
+  }
+
+  scheduler_.ScheduleSend(min_new_report_time);
 
   if (result.event_level_status() !=
       AttributionTrigger::EventLevelResult::kInternalError) {

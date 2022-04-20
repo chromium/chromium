@@ -449,10 +449,14 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     DCHECK_EQ(
         result.event_level_status(),
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
+    DCHECK(result.new_event_level_report().has_value());
 
-    auto web_ui_report = WebUIReport(
-        *report, /*is_debug_report=*/false,
-        ReportStatus::NewReplacedByHigherPriorityReport(Empty::New()));
+    auto web_ui_report =
+        WebUIReport(*report, /*is_debug_report=*/false,
+                    ReportStatus::NewReplacedByHigherPriorityReport(
+                        result.new_event_level_report()
+                            ->external_report_id()
+                            .AsLowercaseString()));
 
     for (auto& observer : observers_) {
       observer->OnReportDropped(web_ui_report.Clone());

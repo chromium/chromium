@@ -189,7 +189,8 @@ TEST_F(AttributionStorageTest,
       storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kNoMatchingImpressions),
-            NewReportsAre(IsEmpty())));
+            NewEventLevelReportIs(absl::nullopt),
+            NewAggregatableReportIs(absl::nullopt)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
@@ -1939,12 +1940,13 @@ TEST_F(AttributionStorageTest, AttributionAggregatableSource_RoundTrips) {
 
 TEST_F(AttributionStorageTest, MaybeCreateAndStoreReport_ReturnsNewReport) {
   storage()->StoreSource(SourceBuilder(base::Time::Now()).Build());
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(
-          TriggerBuilder().SetTriggerData(123).Build()),
-      AllOf(CreateReportEventLevelStatusIs(
-                AttributionTrigger::EventLevelResult::kSuccess),
-            NewReportsAre(ElementsAre(EventLevelDataIs(TriggerDataIs(123))))));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  TriggerBuilder().SetTriggerData(123).Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    NewEventLevelReportIs(
+                        Optional(EventLevelDataIs(TriggerDataIs(123)))),
+                    NewAggregatableReportIs(absl::nullopt)));
 }
 
 // This is tested more thoroughly by the `RateLimitTable` unit tests. Here just
@@ -2405,7 +2407,8 @@ TEST_F(AttributionStorageTest,
           DefaultAggregatableTriggerBuilder().Build()),
       AllOf(CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kNoMatchingImpressions),
-            NewReportsAre(IsEmpty())));
+            NewEventLevelReportIs(absl::nullopt),
+            NewAggregatableReportIs(absl::nullopt)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
@@ -2427,10 +2430,9 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess),
-            NewReportsAre(ElementsAre(
-                EventLevelDataIs(TriggerDataIs(5)),
-                AggregatableAttributionDataIs(
-                    AggregatableHistogramContributionsAre(contributions))))));
+            NewEventLevelReportIs(Optional(EventLevelDataIs(TriggerDataIs(5)))),
+            NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+                AggregatableHistogramContributionsAre(contributions))))));
 
   const auto source = source_builder.SetDefaultFilterData().BuildStored();
   auto expected_event_level_report =
@@ -2481,19 +2483,21 @@ TEST_F(
   // limit; the event-level report itself shouldn't be stored as we've already
   // reached the maximum number of event-level reports per source, whereas the
   // aggregatable report is still stored.
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
-                  DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
-                      .SetTriggerData(5)
-                      .Build()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kPriorityTooLow),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess),
-                    ReplacedEventLevelReportIs(absl::nullopt),
-                    NewReportsAre(ElementsAre(AggregatableAttributionDataIs(
-                        AggregatableHistogramContributionsAre(
-                            DefaultAggregatableHistogramContributions(
-                                /*histogram_values=*/{5})))))));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
+              .SetTriggerData(5)
+              .Build()),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kPriorityTooLow),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kSuccess),
+            ReplacedEventLevelReportIs(absl::nullopt),
+            NewEventLevelReportIs(absl::nullopt),
+            NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+                AggregatableHistogramContributionsAre(
+                    DefaultAggregatableHistogramContributions(
+                        /*histogram_values=*/{5})))))));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(

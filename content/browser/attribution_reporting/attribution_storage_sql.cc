@@ -349,17 +349,6 @@ absl::optional<StoredSourceData> ReadSourceToAttribute(
   return ReadSourceFromStatement(statement);
 }
 
-absl::optional<base::Time> GetMinTime(absl::optional<base::Time> a,
-                                      absl::optional<base::Time> b) {
-  if (!a.has_value())
-    return b;
-
-  if (!b.has_value())
-    return a;
-
-  return std::min(*a, *b);
-}
-
 }  // namespace
 
 // static
@@ -718,30 +707,6 @@ bool IsSuccessResult(absl::optional<AggregatableResult> result) {
   return result == AggregatableResult::kSuccess;
 }
 
-CreateReportResult AssembleReportResult(
-    base::Time trigger_time,
-    EventLevelResult event_level_status,
-    AggregatableResult aggregatable_status,
-    absl::optional<AttributionReport> new_event_level_report,
-    absl::optional<AttributionReport> new_aggregatable_report,
-    absl::optional<AttributionReport> replaced_event_level_report) {
-  std::vector<AttributionReport> new_reports;
-
-  if (IsSuccessResult(event_level_status)) {
-    DCHECK(new_event_level_report.has_value());
-    new_reports.push_back(std::move(*new_event_level_report));
-  }
-
-  if (IsSuccessResult(aggregatable_status)) {
-    DCHECK(new_aggregatable_report.has_value());
-    new_reports.push_back(std::move(*new_aggregatable_report));
-  }
-
-  return CreateReportResult(
-      trigger_time, event_level_status, aggregatable_status,
-      std::move(replaced_event_level_report), std::move(new_reports));
-}
-
 }  // namespace
 
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
@@ -769,16 +734,24 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                  : new_event_level_status;
         DCHECK(event_level_status.has_value());
 
+        if (!IsSuccessResult(*event_level_status)) {
+          new_event_level_report = absl::nullopt;
+          replaced_event_level_report = absl::nullopt;
+        }
+
         aggregatable_status = aggregatable_status.has_value()
                                   ? aggregatable_status
                                   : new_aggregatable_status;
         DCHECK(aggregatable_status.has_value());
 
-        return AssembleReportResult(trigger_time, *event_level_status,
-                                    *aggregatable_status,
-                                    std::move(new_event_level_report),
-                                    std::move(new_aggregatable_report),
-                                    std::move(replaced_event_level_report));
+        if (!IsSuccessResult(*aggregatable_status))
+          new_aggregatable_report = absl::nullopt;
+
+        return CreateReportResult(trigger_time, *event_level_status,
+                                  *aggregatable_status,
+                                  std::move(replaced_event_level_report),
+                                  std::move(new_event_level_report),
+                                  std::move(new_aggregatable_report));
       };
 
   if (trigger.aggregatable_trigger().trigger_data().empty() &&
@@ -1336,8 +1309,8 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
   absl::optional<base::Time> next_aggregatable_report_time =
       GetNextAggregatableAttributionReportTime(time);
 
-  return GetMinTime(next_event_level_report_time,
-                    next_aggregatable_report_time);
+  return AttributionReport::MinReportTime(next_event_level_report_time,
+                                          next_aggregatable_report_time);
 }
 
 absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
@@ -1554,8 +1527,8 @@ absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes() {
   absl::optional<base::Time> next_aggregatable_report_time =
       AdjustOfflineAggregatableAttributionReportTimes(delay->min, delay->max,
                                                       now);
-  return GetMinTime(next_event_level_report_time,
-                    next_aggregatable_report_time);
+  return AttributionReport::MinReportTime(next_event_level_report_time,
+                                          next_aggregatable_report_time);
 }
 
 bool AttributionStorageSql::AdjustOfflineReportTimes(sql::StatementID id,

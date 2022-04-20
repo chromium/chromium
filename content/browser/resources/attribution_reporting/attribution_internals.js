@@ -646,7 +646,8 @@ class Report extends Selectable {
     } else if (mojo.status.pending !== undefined) {
       this.status = 'Pending';
     } else if (mojo.status.replacedByHigherPriorityReport !== undefined) {
-      this.status = 'Replaced by higher-priority report';
+      this.status = `Replaced by higher-priority report: ${
+          mojo.status.replacedByHigherPriorityReport}`;
     } else if (mojo.status.prohibitedByBrowserPolicy !== undefined) {
       this.status = 'Prohibited by browser policy';
     } else if (mojo.status.networkError !== undefined) {

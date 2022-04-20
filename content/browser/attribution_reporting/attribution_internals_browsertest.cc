@@ -72,10 +72,18 @@ auto InvokeCallback(std::vector<AttributionReport> value) {
       };
 }
 
-std::vector<AttributionReport> IrreleventNewReports() {
-  return {ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
-              .Build()};
+AttributionReport IrreleventEventLevelReport() {
+  return ReportBuilder(
+             AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+      .Build();
+}
+
+AttributionReport IrreleventAggregatableReport() {
+  return ReportBuilder(
+             AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+      .SetAggregatableHistogramContributions(
+          {AggregatableHistogramContribution(1, 2)})
+      .BuildAggregatableAttribution();
 }
 
 }  // namespace
@@ -449,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetReportTime(now + base::Hours(1))
               .SetPriority(11)
               .Build(),
-          /*new_reports=*/IrreleventNewReports()));
+          /*new_event_level_report=*/IrreleventEventLevelReport()));
 
   {
     static constexpr char wait_script[] = R"(
@@ -462,7 +470,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[7].innerText === "yes" &&
             table.children[0].children[2].innerText === "Pending" &&
             table.children[1].children[6].innerText === "11" &&
-            table.children[1].children[2].innerText === "Replaced by higher-priority report" &&
+            table.children[1].children[2].innerText ===
+              "Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e" &&
             table.children[2].children[6].innerText === "0" &&
             table.children[2].children[7].innerText === "no" &&
             table.children[2].children[2].innerText === "Sent: HTTP 200" &&
@@ -493,7 +502,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[5].children[7].innerText === "yes" &&
             table.children[5].children[2].innerText === "Pending" &&
             table.children[4].children[6].innerText === "11" &&
-            table.children[4].children[2].innerText === "Replaced by higher-priority report" &&
+            table.children[4].children[2].innerText ===
+              "Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e" &&
             table.children[3].children[6].innerText === "0" &&
             table.children[3].children[7].innerText === "no" &&
             table.children[3].children[2].innerText === "Sent: HTTP 200" &&
@@ -526,7 +536,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[7].innerText === "yes" &&
             table.children[0].children[2].innerText === "Pending" &&
             table.children[1].children[6].innerText === "11" &&
-            table.children[1].children[2].innerText === "Replaced by higher-priority report" &&
+            table.children[1].children[2].innerText ===
+              "Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e" &&
             table.children[2].children[6].innerText === "0" &&
             table.children[2].children[7].innerText === "no" &&
             table.children[2].children[2].innerText === "Sent: HTTP 200" &&
@@ -894,11 +905,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           AttributionTrigger::AggregatableResult aggregatable_status) {
         static int offset_hours = 0;
         manager_.NotifyTriggerHandled(
-            trigger, CreateReportResult(
-                         /*trigger_time=*/now + base::Hours(++offset_hours),
-                         event_status, aggregatable_status,
-                         /*replaced_event_level_report=*/absl::nullopt,
-                         /*new_reports=*/IrreleventNewReports()));
+            trigger,
+            CreateReportResult(
+                /*trigger_time=*/now + base::Hours(++offset_hours),
+                event_status, aggregatable_status,
+                /*replaced_event_level_report=*/absl::nullopt,
+                /*new_event_level_report=*/IrreleventEventLevelReport(),
+                /*new_aggregatable_report=*/IrreleventAggregatableReport()));
       };
 
   notify_trigger_handled(AttributionTrigger::EventLevelResult::kSuccess,

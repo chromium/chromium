@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_report.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -271,6 +272,19 @@ void AttributionReport::SetExternalReportIdForTesting(
     base::GUID external_report_id) {
   DCHECK(external_report_id.is_valid());
   external_report_id_ = std::move(external_report_id);
+}
+
+// static
+absl::optional<base::Time> AttributionReport::MinReportTime(
+    absl::optional<base::Time> a,
+    absl::optional<base::Time> b) {
+  if (!a.has_value())
+    return b;
+
+  if (!b.has_value())
+    return a;
+
+  return std::min(*a, *b);
 }
 
 }  // namespace content

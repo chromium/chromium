@@ -903,8 +903,14 @@ MATCHER_P(DeactivatedSourceIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(NewReportsAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.new_reports(), result_listener);
+MATCHER_P(NewEventLevelReportIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.new_event_level_report(),
+                            result_listener);
+}
+
+MATCHER_P(NewAggregatableReportIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.new_aggregatable_report(),
+                            result_listener);
 }
 
 struct EventTriggerDataMatcherConfig {
