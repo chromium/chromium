@@ -60,6 +60,21 @@ void GetDebugInfoForModule(HMODULE module_handle,
   *build_id = WideToUTF8(buffer);
 }
 
+// Returns true if the address is in the address space accessible to
+// applications and DLLs, as reported by ::GetSystemInfo.
+bool IsValidUserSpaceAddress(uintptr_t address) {
+  static LPVOID max_app_addr = 0;
+  static LPVOID min_app_addr = 0;
+  if (!max_app_addr) {
+    SYSTEM_INFO sys_info;
+    ::GetSystemInfo(&sys_info);
+    max_app_addr = sys_info.lpMaximumApplicationAddress;
+    min_app_addr = sys_info.lpMinimumApplicationAddress;
+  }
+  return reinterpret_cast<LPVOID>(address) >= min_app_addr &&
+         reinterpret_cast<LPVOID>(address) <= max_app_addr;
+}
+
 // Traits class to adapt GenericScopedHandle for HMODULES.
 class ModuleHandleTraits : public win::HandleTraits {
  public:
@@ -110,12 +125,16 @@ class WindowsModule : public ModuleCache::Module {
   FilePath debug_basename_;
 };
 
-ScopedModuleHandle GetModuleHandleForAddress(DWORD64 address) {
+ScopedModuleHandle GetModuleHandleForAddress(uintptr_t address) {
   // Record the address in crash dumps to help understand the source of
   // GetModuleHandleEx crashes on Windows 11 observed in
   // https://crbug.com/1297776.
   debug::Alias(&address);
+  if (!IsValidUserSpaceAddress(address))
+    return ScopedModuleHandle(nullptr);
+
   HMODULE module_handle = nullptr;
+
   // GetModuleHandleEx() increments the module reference count, which is then
   // managed and ultimately decremented by ScopedModuleHandle.
   if (!::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
