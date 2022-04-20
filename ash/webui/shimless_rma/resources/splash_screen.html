@@ -3,22 +3,20 @@
     float: left;
   }
   .loading-message {
+    display: flex;
     float: left;
   }
 </style>
 
 <base-page>
   <div slot="left-pane">
-    <div class="busy-icon">
-      <paper-spinner-lite id="busyIcon" active></paper-spinner-lite>
-    </div>
     <br> <!-- div is not enough to make a new line after the spinner. -->
     <div class="splash-title">
       <h1>[[i18n('shimlessSplashTitle')]]</h1>
     </div>
     <div class="loading-message">
-      <div>[[i18n('shimlessSplashRemembering')]]</div>
-      <div>[[i18n('shimlessSplashLoading')]]</div>
+      <paper-spinner-lite id="busyIcon" class="small-icon" active></paper-spinner-lite>
+      <span class="instructions">[[getSplashInstructionsText_()]]</span>
     </div>
   </div>
   <div slot="right-pane">

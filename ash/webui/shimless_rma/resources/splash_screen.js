@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 import './icons.js';
 import './shimless_rma_shared_css.js';
@@ -32,6 +33,16 @@ export class SplashScreen extends SplashScreenBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  /**
+   * Display the splash instructions.
+   * @returns {string}
+   * @protected
+   */
+  getSplashInstructionsText_() {
+    return this.i18n('shimlessSplashRemembering') +
+        this.i18n('shimlessSplashLoading');
   }
 }
 
