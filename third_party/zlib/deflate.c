@@ -56,9 +56,6 @@
 #if (defined(__ARM_NEON__) || defined(__ARM_NEON))
 #include "contrib/optimizations/slide_hash_neon.h"
 #endif
-#if defined(CRC32_ARMV8_CRC32)
-#include "crc32_simd.h"
-#endif
 
 #ifdef FASTEST
 /* See http://crbug.com/1113596 */
