@@ -7,7 +7,6 @@
 #include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/strings/char_traits.h"
 #include "base/test/metrics/histogram_tester.h"
 
 namespace ash {

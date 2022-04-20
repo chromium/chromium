@@ -6,11 +6,11 @@
 
 #include <windows.h>
 
+#include <wchar.h>
 #include <winstring.h>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/char_traits.h"
 
 namespace base {
 namespace {
@@ -56,7 +56,7 @@ HStringReference::HStringReference(const wchar_t* str, size_t length) {
 }
 
 HStringReference::HStringReference(const wchar_t* str)
-    : HStringReference(str, str ? CharTraits<wchar_t>::length(str) : 0) {}
+    : HStringReference(str, str ? wcslen(str) : 0) {}
 
 }  // namespace win
 }  // namespace base

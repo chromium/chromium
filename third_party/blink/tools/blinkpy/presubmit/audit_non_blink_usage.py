@@ -192,9 +192,6 @@ _CONFIG = [
             'base::SafeUnsignedAbs',
             'base::StrictNumeric',
 
-            # //base/strings/char_traits.h.
-            'base::CharTraits',
-
             # //base/synchronization/lock.h.
             'base::AutoLock',
             'base::AutoUnlock',

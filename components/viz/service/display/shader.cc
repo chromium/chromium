@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/strings/char_traits.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

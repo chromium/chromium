@@ -32,8 +32,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
-#include "base/strings/char_traits.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -244,7 +244,7 @@ class ErrorContext {
     StringBuilder result;
     constexpr const char* const separator = ": ";
     constexpr wtf_size_t separator_length =
-        base::CharTraits<char>::length(separator);
+        std::char_traits<char>::length(separator);
 
     wtf_size_t length = (messages_.size() - 1) * separator_length;
     for (wtf_size_t i = 0; i < messages_.size(); ++i)
