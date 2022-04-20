@@ -1024,6 +1024,7 @@ message ActionProto {
     UpdateClientSettingsProto update_client_settings = 89;
     JsFlowProto js_flow = 92;
     ExecuteJsProto execute_js = 93;
+    RegisterPasswordResetRequestProto register_password_reset_request = 94;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -2923,6 +2924,11 @@ message SaveSubmittedPasswordProto {
     optional bool used_leaked_credential = 2;
   }
 }
+
+// Notifies the client that a password reset has been requested. This is
+// relevant for analyzing the outcome of password change flows. The action
+// fails if login details are not saved in the client's |UserData|.
+message RegisterPasswordResetRequestProto {}
 
 // Configures the UI of the autofill assistant client.
 message ConfigureUiStateProto {
