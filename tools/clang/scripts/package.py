@@ -471,7 +471,10 @@ def main():
       dest = os.path.join(pdir, f)
       shutil.copy(src, dest)
       # Strip libraries.
-      if sys.platform == 'darwin' and f.endswith('.dylib'):
+      if 'libclang_rt.builtins' in f and 'android' in f:
+        # Keep the builtins' DWARF info for unwinding.
+        pass
+      elif sys.platform == 'darwin' and f.endswith('.dylib'):
         subprocess.call(['strip', '-x', dest])
       elif (sys.platform.startswith('linux') and
             os.path.splitext(f)[1] in ['.so', '.a']):
