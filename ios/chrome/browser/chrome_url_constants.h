@@ -83,6 +83,12 @@ extern const char kCrashReasonURL[];
 // "Learn more" URL for the Privacy section under Options.
 extern const char kPrivacyLearnMoreURL[];
 
+// "Terms of service" URL.
+extern const char kTermsOfServiceURL[];
+
+// "Terms of service" URL for mobile view.
+extern const char kEmbeddedTermsOfServiceURL[];
+
 // "Learn more" URL for the "Do not track" setting in the privacy section.
 extern const char kDoNotTrackLearnMoreURL[];
 

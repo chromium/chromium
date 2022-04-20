@@ -99,6 +99,11 @@ const char kCrashReasonURL[] =
 const char kPrivacyLearnMoreURL[] =
     "https://support.google.com/chrome/answer/114836?p=settings_privacy&ios=1";
 
+const char kTermsOfServiceURL[] = "https://policies.google.com/terms";
+
+const char kEmbeddedTermsOfServiceURL[] =
+    "https://policies.google.com/terms/embedded";
+
 const char kDoNotTrackLearnMoreURL[] =
     "https://support.google.com/chrome/answer/"
     "2942429?p=mobile_do_not_track&ios=1";

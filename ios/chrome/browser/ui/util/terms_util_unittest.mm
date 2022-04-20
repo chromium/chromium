@@ -8,6 +8,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,6 +40,15 @@ class FileLocationsTest : public PlatformTest {
 TEST_F(FileLocationsTest, TestTermsOfServiceUrl) {
   std::string filename(GetTermsOfServicePath());
   EXPECT_FALSE(filename.empty());
+}
+
+TEST_F(FileLocationsTest, TestUnifiedTermsOfServiceUrl) {
+  GURL embbeded_terms_of_service_url(
+      GetUnifiedTermsOfServiceURL(/*embbeded=*/true));
+  EXPECT_TRUE(embbeded_terms_of_service_url.is_valid());
+  GURL terms_of_service_url = GetUnifiedTermsOfServiceURL(/*embbeded=*/false);
+  EXPECT_TRUE(terms_of_service_url.is_valid());
+  EXPECT_NE(embbeded_terms_of_service_url, terms_of_service_url);
 }
 
 TEST_F(FileLocationsTest, TestIOSLocaleMapping) {

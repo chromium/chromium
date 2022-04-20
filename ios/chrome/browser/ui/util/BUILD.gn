@@ -105,7 +105,10 @@ source_set("terms_util") {
   deps = [
     ":terms_resources",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ui/base",
+    "//url",
   ]
 }
 
