@@ -58,6 +58,7 @@ RemoveTaskFeedbackDialog::RemoveTaskFeedbackDialog(
       .SetPaintToLayer()
       .AddChildren(
           views::Builder<views::Label>()
+              .CopyAddressTo(&title_)
               .SetText(l10n_util::GetStringUTF16(
                   IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_TITLE))
               .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
@@ -66,6 +67,7 @@ RemoveTaskFeedbackDialog::RemoveTaskFeedbackDialog(
               .SetAutoColorReadabilityEnabled(false)
               .SetPaintToLayer(),
           views::Builder<views::Label>()
+              .CopyAddressTo(&feedback_text_)
               .SetText(l10n_util::GetStringUTF16(
                   IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_FEEDBACK_TEXT))
               .SetProperty(views::kMarginsKey,
@@ -113,6 +115,10 @@ RemoveTaskFeedbackDialog::RemoveTaskFeedbackDialog(
               .CopyAddressTo(&button_row))
       .BuildChildren();
 
+  layer()->SetFillsBoundsOpaquely(false);
+  title_->layer()->SetFillsBoundsOpaquely(false);
+  feedback_text_->layer()->SetFillsBoundsOpaquely(false);
+
   cancel_button_ = button_row->AddChildView(std::make_unique<ash::PillButton>(
       views::Button::PressedCallback(base::BindRepeating(
           &RemoveTaskFeedbackDialog::Cancel, base::Unretained(this))),
@@ -146,6 +152,20 @@ gfx::Size RemoveTaskFeedbackDialog::CalculatePreferredSize() const {
 
 void RemoveTaskFeedbackDialog::OnThemeChanged() {
   views::WidgetDelegateView::OnThemeChanged();
+
+  title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  feedback_text_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  auto set_checkbox_text_color = [](views::Checkbox* view) {
+    view->SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  };
+  set_checkbox_text_color(all_suggestions_option_);
+  set_checkbox_text_color(single_suggestion_option_);
+  set_checkbox_text_color(done_using_option_);
+  set_checkbox_text_color(not_show_option_);
 
   SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetBaseLayerColor(
