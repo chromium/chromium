@@ -74,8 +74,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kAvatarBubbleReauthAccountButton = 9,
     // A Chrome extension required account re-authentication.
     kChromeExtensionReauth = 10,
+    // Sync promo with an account that requires re-authentication.
+    kChromeSyncPromoReauth = 11,
 
-    kMaxValue = kChromeExtensionReauth
+    kMaxValue = kChromeSyncPromoReauth
   };
 
   AccountManagerFacade();

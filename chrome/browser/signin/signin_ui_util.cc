@@ -169,6 +169,11 @@ GetAccountReauthSourceFromAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kAvatarBubbleReauthAccountButton;
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeSyncPromoReauth;
     default:
       NOTREACHED() << "Reauth is requested from an unknown access point "
                    << static_cast<int>(access_point);
@@ -434,9 +439,13 @@ void EnableSyncFromMultiAccountPromo(Browser* browser,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  internal::EnableSyncFromPromo(browser, account, access_point,
-                                is_default_promo_account,
-                                base::BindOnce(&CreateTurnSyncOnHelper));
+  internal::EnableSyncFromPromo(
+      browser, account, access_point, is_default_promo_account,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      ::GetAccountManagerFacade(browser->profile()->GetPath().value()),
+      GetAddAccountCallback(browser->profile()),
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::BindOnce(&CreateTurnSyncOnHelper));
 #else
   NOTREACHED();
 #endif
@@ -480,6 +489,10 @@ void EnableSyncFromPromo(
     const AccountInfo& account,
     signin_metrics::AccessPoint access_point,
     bool is_default_promo_account,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    account_manager::AccountManagerFacade* account_manager_facade,
+    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback) {
   DCHECK(browser);
   DCHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
@@ -492,10 +505,17 @@ void EnableSyncFromPromo(
     return;
   }
 
+  signin_metrics::PromoAction promo_action =
+      is_default_promo_account
+          ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
+          : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
+
   if (account.IsEmpty()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(https://crbug.com/1260291): add support for signed out profiles.
-    NOTREACHED();
+    ShowSigninPromptAndMaybeEnableSync(
+        browser, profile, std::move(add_account_callback),
+        std::move(create_turn_sync_on_helper_callback), /*enable_sync=*/true,
+        access_point, promo_action);
 #else
     chrome::ShowBrowserSignin(browser, access_point,
                               signin::ConsentLevel::kSync);
@@ -508,11 +528,6 @@ void EnableSyncFromPromo(
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) ||
          AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
 
-  signin_metrics::PromoAction promo_action =
-      is_default_promo_account
-          ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
-          : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
-
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   bool needs_reauth_before_enable_sync =
@@ -521,8 +536,9 @@ void EnableSyncFromPromo(
           account.account_id);
   if (needs_reauth_before_enable_sync) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(https://crbug.com/1260291): add support for signed out profiles.
-    NOTREACHED();
+    // TODO(https://crbug.com/1260291): turn on sync after reauth is completed.
+    account_manager_facade->ShowReauthAccountDialog(
+        GetAccountReauthSourceFromAccessPoint(access_point), account.email);
 #else
     browser->signin_view_controller()->ShowDiceEnableSyncTab(
         access_point, promo_action, account.email);

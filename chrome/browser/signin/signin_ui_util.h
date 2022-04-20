@@ -192,13 +192,22 @@ std::string GetAllowedDomain(std::string signin_pattern);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace internal {
-// Same as |EnableSyncFromPromo| but with a callback that creates a
-// TurnSyncOnHelper so that it can be unit tested.
+// Same as `EnableSyncFromPromo()` but with extra parameters that can be
+// injected for unit testing.
+// `add_account_callback` encapsulates the logic to add a new account. It
+// accepts a callback parameter that is invoked when the add account flow is
+// complete.
+// `create_turn_sync_on_helper_callback` creates a TurnSyncOnHelper when Sync
+// needs to be enabled.
 void EnableSyncFromPromo(
     Browser* browser,
     const AccountInfo& account,
     signin_metrics::AccessPoint access_point,
     bool is_default_promo_account,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    account_manager::AccountManagerFacade* account_manager_facade,
+    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback);
 }  // namespace internal
 #endif

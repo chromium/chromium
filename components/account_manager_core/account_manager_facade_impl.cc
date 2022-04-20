@@ -95,6 +95,7 @@ bool GetIsAvailableInArcBySource(
     case AccountManagerFacade::AccountAdditionSource::
         kAvatarBubbleReauthAccountButton:
     case AccountManagerFacade::AccountAdditionSource::kChromeExtensionReauth:
+    case AccountManagerFacade::AccountAdditionSource::kChromeSyncPromoReauth:
       NOTREACHED();
       return false;
     // Unused enums that cannot be deleted.
