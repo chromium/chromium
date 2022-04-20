@@ -5779,9 +5779,22 @@ class SSLUITestNoCert : public SSLUITest,
   void CertificatesRefreshed() override {}
 };
 
+class TestCertDatabaseObserver : public net::CertDatabase::Observer {
+ public:
+  TestCertDatabaseObserver() {
+    net::CertDatabase* cert_db = net::CertDatabase::GetInstance();
+    cert_db->AddObserver(this);
+  }
+  ~TestCertDatabaseObserver() override = default;
+  void OnCertDBChanged() override { run_loop.Quit(); }
+  void WaitForCertDBChange() { run_loop.Run(); }
+
+ private:
+  base::RunLoop run_loop;
+};
+
 // Checks that a newly-added certificate authority is usable immediately.
-// Flaky on ChromeOS: crbug.com/1312981.
-IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, DISABLED_NewCertificateAuthority) {
+IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, NewCertificateAuthority) {
   if (!content::IsOutOfProcessNetworkService())
     return;
 
@@ -5816,9 +5829,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, DISABLED_NewCertificateAuthority) {
         cert.get());
   }
 
+  TestCertDatabaseObserver cert_database_observer;
   net::NSSCertDatabase::ImportCertFailureList not_imported;
   EXPECT_TRUE(model->ImportCACerts(nss_certs, net::NSSCertDatabase::TRUSTED_SSL,
                                    &not_imported));
+  cert_database_observer.WaitForCertDBChange();
   EXPECT_TRUE(not_imported.empty());
 
   content::FlushNetworkServiceInstanceForTesting();
