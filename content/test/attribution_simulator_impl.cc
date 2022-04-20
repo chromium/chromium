@@ -345,18 +345,14 @@ class AttributionEventHandler : public AttributionObserver {
     if (event_level_reason_str.empty() && aggregatable_reason_str.empty())
       return;
 
-    base::DictionaryValue dict;
-    if (!event_level_reason_str.empty()) {
-      dict.SetStringKey("event_level_reason",
-                        std::move(event_level_reason_str));
-    }
+    base::Value::Dict dict;
+    if (!event_level_reason_str.empty())
+      dict.Set("event_level_reason", std::move(event_level_reason_str));
 
-    if (!aggregatable_reason_str.empty()) {
-      dict.SetStringKey("aggregatable_reason",
-                        std::move(aggregatable_reason_str));
-    }
+    if (!aggregatable_reason_str.empty())
+      dict.Set("aggregatable_reason", std::move(aggregatable_reason_str));
 
-    dict.SetKey("trigger", std::move(input_value));
+    dict.Set("trigger", std::move(input_value));
 
     rejected_triggers_.Append(std::move(dict));
   }
@@ -464,39 +460,34 @@ base::Value RunAttributionSimulation(
     task_environment.FastForwardBy(last_report_time - base::Time::Now());
   }
 
-  base::Value output(base::Value::Type::DICTIONARY);
-  output.SetKey("event_level_reports",
-                base::Value(std::move(event_level_reports)));
+  base::Value::Dict output;
+  output.Set("event_level_reports", std::move(event_level_reports));
 
   if (!debug_event_level_reports.empty()) {
-    output.SetKey("debug_event_level_reports",
-                  base::Value(std::move(debug_event_level_reports)));
+    output.Set("debug_event_level_reports",
+               std::move(debug_event_level_reports));
   }
 
-  if (!aggregatable_reports.empty()) {
-    output.SetKey("aggregatable_reports",
-                  base::Value(std::move(aggregatable_reports)));
-  }
+  if (!aggregatable_reports.empty())
+    output.Set("aggregatable_reports", std::move(aggregatable_reports));
 
   if (!debug_aggregatable_reports.empty()) {
-    output.SetKey("debug_aggregatable_reports",
-                  base::Value(std::move(debug_aggregatable_reports)));
+    output.Set("debug_aggregatable_reports",
+               std::move(debug_aggregatable_reports));
   }
 
   if (!rejected_sources.empty())
-    output.SetKey("rejected_sources", base::Value(std::move(rejected_sources)));
+    output.Set("rejected_sources", std::move(rejected_sources));
 
-  if (!rejected_triggers.empty()) {
-    output.SetKey("rejected_triggers",
-                  base::Value(std::move(rejected_triggers)));
-  }
+  if (!rejected_triggers.empty())
+    output.Set("rejected_triggers", std::move(rejected_triggers));
 
   if (!replaced_event_level_reports.empty()) {
-    output.SetKey("replaced_event_level_reports",
-                  base::Value(std::move(replaced_event_level_reports)));
+    output.Set("replaced_event_level_reports",
+               std::move(replaced_event_level_reports));
   }
 
-  return output;
+  return base::Value(std::move(output));
 }
 
 }  // namespace content
