@@ -582,6 +582,8 @@ static_library("test_support") {
     "geo/test_region_data_loader.h",
     "logging/stub_log_manager.cc",
     "logging/stub_log_manager.h",
+    "metrics/autofill_metrics_test_base.cc",
+    "metrics/autofill_metrics_test_base.h",
     "mock_autocomplete_history_manager.cc",
     "mock_autocomplete_history_manager.h",
     "mock_single_field_form_fill_router.cc",

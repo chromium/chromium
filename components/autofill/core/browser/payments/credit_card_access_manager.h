@@ -36,6 +36,10 @@ namespace autofill {
 class BrowserAutofillManager;
 enum class WebauthnDialogCallbackType;
 
+namespace metrics {
+class AutofillMetricsBaseTest;
+}
+
 // Flow type denotes which card unmask authentication method was used.
 enum class UnmaskAuthFlowType {
   kNone = 0,
@@ -216,6 +220,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
+  friend class ::autofill::metrics::AutofillMetricsBaseTest;
   friend class CreditCardAccessManagerTest;
 
 #if !BUILDFLAG(IS_IOS)

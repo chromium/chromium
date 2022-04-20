@@ -25,6 +25,10 @@ class CreditCardCVCAuthenticatorTest;
 class CreditCard;
 class PersonalDataManager;
 
+namespace metrics {
+class AutofillMetricsBaseTest;
+}
+
 namespace payments {
 
 // Retrieves the full card details, including the pan and the cvc.
@@ -162,6 +166,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
  private:
   friend class autofill::BrowserAutofillManagerTest;
   friend class autofill::AutofillMetricsTest;
+  friend class autofill::metrics::AutofillMetricsBaseTest;
   friend class autofill::CreditCardAccessManagerTest;
   friend class autofill::CreditCardCVCAuthenticatorTest;
 

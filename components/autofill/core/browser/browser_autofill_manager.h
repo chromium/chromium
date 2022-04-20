@@ -61,6 +61,10 @@ class FormStructureBrowserTest;
 struct FormData;
 struct FormFieldData;
 
+namespace metrics {
+class AutofillMetricsBaseTest;
+}
+
 // We show the credit card signin promo only a certain number of times.
 constexpr int kCreditCardSigninPromoImpressionLimit = 3;
 
@@ -775,6 +779,7 @@ class BrowserAutofillManager : public AutofillManager,
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
+  friend class ::autofill::metrics::AutofillMetricsBaseTest;
   friend class FormStructureBrowserTest;
   friend class GetMatchingTypesTest;
   friend class CreditCardAccessoryControllerTest;
