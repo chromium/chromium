@@ -27,6 +27,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -695,7 +696,7 @@ TEST_F(PrefetchProxyTabHelperTest, WrongWebContents) {
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
-TEST_F(PrefetchProxyTabHelperTest, HasPurposePrefetchHeader) {
+TEST_F(PrefetchProxyTabHelperTest, HasExplicitHeaders) {
   base::HistogramTester histogram_tester;
 
   NavigateSomewhere();
@@ -704,7 +705,15 @@ TEST_F(PrefetchProxyTabHelperTest, HasPurposePrefetchHeader) {
   MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
 
   VerifyCommonRequestState(prediction_url);
+
+  // Checks that headers added explicitly by |PrefetchProxyTabHelper| were
+  // included.
   EXPECT_EQ(RequestHeader("Purpose"), "prefetch");
+  EXPECT_EQ(RequestHeader("Sec-Purpose"), "prefetch;anonymous-client-ip");
+  EXPECT_EQ(
+      RequestHeader("Accept"),
+      content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile()));
+  EXPECT_EQ(RequestHeader("Upgrade-Insecure-Requests"), "1");
 
   EXPECT_EQ(predicted_urls_count(), 1U);
   EXPECT_EQ(prefetch_eligible_count(), 1U);

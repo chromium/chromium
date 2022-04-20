@@ -43,6 +43,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
@@ -846,6 +847,10 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
       prefetch_container->GetPrefetchType().IsProxyRequired()
           ? prefetch::headers::kSecPurposePrefetchAnonymousClientIpHeaderValue
           : prefetch::headers::kSecPurposePrefetchHeaderValue);
+  request->headers.SetHeader(
+      net::HttpRequestHeaders::kAccept,
+      content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile_));
+  request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
   // Remove the user agent header if it was set so that the network context's
   // default is used.
   request->headers.RemoveHeader("User-Agent");
