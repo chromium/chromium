@@ -3483,7 +3483,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Shelf.ShutdownConfirmationBubble.TimeToNextBoot"
+<histogram
+    name="Ash.Shelf.ShutdownConfirmationBubble.TimeToNextBoot.LoginShutdownToPowerUpDuration"
     units="seconds" expires_after="2022-12-31">
   <owner>sherrilin@google.com</owner>
   <owner>cros-lurs@google.com</owner>
