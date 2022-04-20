@@ -106,8 +106,9 @@ bool KeyboardLock::EnsureServiceConnected() {
 
 bool KeyboardLock::CalledFromSupportedContext(ExecutionContext* context) {
   DCHECK(context);
-  // This API is only accessible from a top level, secure browsing context.
-  return DomWindow() && DomWindow()->GetFrame()->IsMainFrame() &&
+  // This API is only accessible from an outermost main frame, secure browsing
+  // context.
+  return DomWindow() && DomWindow()->GetFrame()->IsOutermostMainFrame() &&
          context->IsSecureContext();
 }
 
