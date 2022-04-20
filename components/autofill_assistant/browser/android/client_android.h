@@ -146,6 +146,7 @@ class ClientAndroid : public Client,
   void RecordDropOut(Metrics::DropOutReason reason) override;
   bool HasHadUI() const override;
   ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() override;
+  bool MustUseBackendData() const override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(

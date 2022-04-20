@@ -95,6 +95,7 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
   MOCK_METHOD(void, SetBrowseModeInvisible, (bool invisible), (override));
   MOCK_METHOD(ProcessedActionStatusDetailsProto&, GetLogInfo, (), (override));
   MOCK_METHOD(bool, ShouldShowWarning, (), (override));
+  MOCK_METHOD(bool, MustUseBackendData, (), (const override));
 
  private:
   ClientSettings client_settings_;

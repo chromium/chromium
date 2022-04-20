@@ -101,7 +101,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
-            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid,
+            @Nullable AssistantEditorFactory editorFactory, WindowAndroid windowAndroid,
             AssistantSettingsUtil settingsUtil) {
         mAccessibilityUtil = accessibilityUtil;
         mModel = model;

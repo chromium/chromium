@@ -465,6 +465,10 @@ class ActionDelegate {
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
           callback) = 0;
 
+  // Returns whether or not this instance of Autofill Assistant must use a
+  // backend endpoint to query data.
+  virtual bool MustUseBackendData() const = 0;
+
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
  protected:

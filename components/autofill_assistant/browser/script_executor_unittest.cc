@@ -2265,5 +2265,13 @@ TEST_F(ScriptExecutorTest, RequestUserData) {
               ElementsAre(AutofillAssistantState::RUNNING));
 }
 
+TEST_F(ScriptExecutorTest, MustUseBackendData) {
+  delegate_.SetMustUseBackendData(true);
+  EXPECT_TRUE(executor_->MustUseBackendData());
+
+  delegate_.SetMustUseBackendData(false);
+  EXPECT_FALSE(executor_->MustUseBackendData());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

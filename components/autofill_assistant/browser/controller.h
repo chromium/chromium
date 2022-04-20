@@ -135,6 +135,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetBrowseModeInvisible(bool invisible) override;
   bool ShouldShowWarning() override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
+  bool MustUseBackendData() const override;
 
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.

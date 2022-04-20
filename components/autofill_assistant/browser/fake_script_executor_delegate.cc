@@ -116,6 +116,10 @@ ProcessedActionStatusDetailsProto& FakeScriptExecutorDelegate::GetLogInfo() {
   return log_info_;
 }
 
+bool FakeScriptExecutorDelegate::MustUseBackendData() const {
+  return must_use_backend_data_;
+}
+
 void FakeScriptExecutorDelegate::AddNavigationListener(
     ScriptExecutorDelegate::NavigationListener* listener) {
   navigation_listeners_.insert(listener);

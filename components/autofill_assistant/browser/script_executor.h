@@ -264,6 +264,7 @@ class ScriptExecutor : public ActionDelegate,
       const CollectUserDataOptions& options,
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback)
       override;
+  bool MustUseBackendData() const override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.

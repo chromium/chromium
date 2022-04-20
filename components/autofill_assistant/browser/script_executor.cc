@@ -1100,4 +1100,8 @@ void ScriptExecutor::OnRequestUserData(
   std::move(callback).Run(success, response_proto);
 }
 
+bool ScriptExecutor::MustUseBackendData() const {
+  return delegate_->MustUseBackendData();
+}
+
 }  // namespace autofill_assistant

@@ -184,6 +184,8 @@ class CollectUserDataActionTest : public testing::Test {
         .WillByDefault(Return(web_contents_.get()));
     ON_CALL(mock_action_delegate_, GetUkmRecorder())
         .WillByDefault(Return(&ukm_recorder_));
+    ON_CALL(mock_action_delegate_, MustUseBackendData())
+        .WillByDefault(Return(false));
   }
 
   void ExpectSelectedProfileMatches(const std::string& profile_name,
@@ -2567,10 +2569,32 @@ TEST_F(CollectUserDataActionTest, ConfirmButtonFallbackText) {
   action.ProcessAction(callback_.Get());
 }
 
+TEST_F(CollectUserDataActionTest, FailsForWebLayerRunsWithoutBackendData) {
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_action_delegate_, CollectUserData).Times(0);
+  EXPECT_CALL(mock_action_delegate_, RequestUserData).Times(0);
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->set_request_payment_method(true);
+  collect_user_data->set_billing_address_name("billing");
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
 TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
-  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
         EXPECT_FALSE(collect_user_data_options->can_edit_contacts);
@@ -2623,9 +2647,11 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
 }
 
 TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
-  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
         EXPECT_FALSE(collect_user_data_options->can_edit_contacts);
@@ -2706,9 +2732,11 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
 
 TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
   autofill::CountryNames::SetLocaleString("en-US");
-  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
         EXPECT_THAT(user_data_.available_payment_instruments_[0]->card->guid(),
@@ -2791,9 +2819,11 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
 
 TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
   autofill::CountryNames::SetLocaleString("en-US");
-  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
         EXPECT_THAT(user_data_.available_addresses_[0]->profile->guid(),
@@ -2838,9 +2868,11 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
 }
 
 TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
-  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
         EXPECT_THAT(user_data_.available_contacts_[0]->profile->guid(),
@@ -2892,9 +2924,11 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
 
 TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
   autofill::CountryNames::SetLocaleString("en-US");
-  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         ASSERT_TRUE(user_data_.has_selected_address("contact"));
         EXPECT_EQ(user_data_.selected_address("contact")->GetRawInfo(
@@ -2980,9 +3014,11 @@ TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
 TEST_F(CollectUserDataActionTest,
        DefaultSelectEntriesFromProtoWithoutIdentifiers) {
   autofill::CountryNames::SetLocaleString("en-US");
-  ON_CALL(mock_action_delegate_, GetPersonalDataManager())
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         ASSERT_TRUE(user_data_.has_selected_address("contact"));
         EXPECT_EQ(user_data_.selected_address("contact")->GetRawInfo(
@@ -3881,6 +3917,8 @@ TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
 
   ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
       .Times(3)
       .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));

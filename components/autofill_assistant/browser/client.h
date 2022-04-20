@@ -122,6 +122,10 @@ class Client {
   // nullptr.
   virtual ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() = 0;
 
+  // Returns whether or not this instance of Autofill Assistant must use a
+  // backend endpoint to query data.
+  virtual bool MustUseBackendData() const = 0;
+
  protected:
   Client() = default;
 };

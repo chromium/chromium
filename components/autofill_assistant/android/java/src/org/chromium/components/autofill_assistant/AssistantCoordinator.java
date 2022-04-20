@@ -40,7 +40,7 @@ public class AssistantCoordinator {
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
-            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid,
+            @Nullable AssistantEditorFactory editorFactory, WindowAndroid windowAndroid,
             AssistantSettingsUtil settingsUtil) {
         if (overlayCoordinator != null) {
             mModel = new AssistantModel(overlayCoordinator.getModel());

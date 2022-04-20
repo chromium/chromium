@@ -64,6 +64,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   void RecordDropOut(Metrics::DropOutReason reason) override;
   bool HasHadUI() const override;
   ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() override;
+  bool MustUseBackendData() const override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(

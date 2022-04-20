@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.components.autofill_assistant.AssistantEditorFactory;
 import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.components.autofill_assistant.LayoutUtils;
@@ -30,7 +32,7 @@ public class AssistantCollectUserDataCoordinator {
     private AssistantCollectUserDataBinder.ViewHolder mViewHolder;
 
     public AssistantCollectUserDataCoordinator(Activity activity,
-            AssistantCollectUserDataModel model, AssistantEditorFactory editorFactory,
+            AssistantCollectUserDataModel model, @Nullable AssistantEditorFactory editorFactory,
             WindowAndroid windowAndroid) {
         mActivity = activity;
         mModel = model;

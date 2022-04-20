@@ -2210,6 +2210,11 @@ TEST_F(ControllerPrerenderTest, SuccessfulNavigation) {
   EXPECT_THAT(listener.events, IsEmpty());
 }
 
+TEST_F(ControllerTest, MustUseBackendData) {
+  EXPECT_CALL(mock_client_, MustUseBackendData).WillOnce(Return(true));
+  EXPECT_TRUE(controller_->MustUseBackendData());
+}
+
 class ControllerFencedFrameTest : public ControllerTest {
  public:
   ControllerFencedFrameTest() {

@@ -988,13 +988,17 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
             collect_user_data.required_shipping_address_data_piece().end());
   }
 
+  bool should_use_backend_data = ShouldUseBackendData(collect_user_data);
+  if (delegate_->MustUseBackendData() && !should_use_backend_data) {
+    VLOG(1) << "This run must use backend data but does not.";
+    return false;
+  }
   collect_user_data_options_->should_store_data_changes =
       !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
-      !ShouldUseBackendData(collect_user_data);
-  collect_user_data_options_->can_edit_contacts =
-      !ShouldUseBackendData(collect_user_data);
+      !should_use_backend_data;
+  collect_user_data_options_->can_edit_contacts = !should_use_backend_data;
   collect_user_data_options_->use_gms_core_edit_dialogs =
-      ShouldUseBackendData(collect_user_data);
+      should_use_backend_data;
 
   collect_user_data_options_->request_login_choice =
       collect_user_data.has_login_details();

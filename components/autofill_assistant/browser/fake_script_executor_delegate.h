@@ -69,6 +69,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void SetBrowseModeInvisible(bool invisible) override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
+  bool MustUseBackendData() const override;
 
   bool ShouldShowWarning() override;
 
@@ -109,6 +110,10 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
 
   std::vector<std::string>* GetCurrentBrowseDomainsList();
 
+  void SetMustUseBackendData(bool must_use_backend_data) {
+    must_use_backend_data_ = must_use_backend_data;
+  }
+
  private:
   ClientSettings client_settings_;
   GURL current_url_;
@@ -126,6 +131,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::vector<std::string> browse_domains_;
   raw_ptr<UserModel> user_model_ = nullptr;
   ProcessedActionStatusDetailsProto log_info_;
+  bool must_use_backend_data_ = false;
 
   bool require_ui_ = false;
 };

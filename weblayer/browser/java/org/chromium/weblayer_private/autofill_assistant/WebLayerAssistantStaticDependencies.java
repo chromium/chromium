@@ -121,8 +121,11 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
     }
 
     @Override
+    @Nullable
     public AssistantEditorFactory createEditorFactory() {
-        // TODO(b/222671580): Implement
+        // This factory should not be used in a WebLayer context. All code paths leading to the
+        // use of this factory point to a misconfiguration. For WebLayer, the external editors
+        // should be used.
         return null;
     }
 

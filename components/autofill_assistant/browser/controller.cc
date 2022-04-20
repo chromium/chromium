@@ -195,6 +195,10 @@ ProcessedActionStatusDetailsProto& Controller::GetLogInfo() {
   return log_info_;
 }
 
+bool Controller::MustUseBackendData() const {
+  return client_->MustUseBackendData();
+}
+
 void Controller::AddNavigationListener(
     ScriptExecutorDelegate::NavigationListener* listener) {
   navigation_listeners_.AddObserver(listener);

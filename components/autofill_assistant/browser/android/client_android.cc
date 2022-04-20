@@ -614,6 +614,14 @@ ScriptExecutorUiDelegate* ClientAndroid::GetScriptExecutorUiDelegate() {
   return ui_controller_.get();
 }
 
+bool ClientAndroid::MustUseBackendData() const {
+  // For WebLayer flows the client does not have access to Chrome's Autofill
+  // data and must use data from our backend. Similarly the client can not use
+  // e.g. Autofill's data editors and must rely on GMS Core provided
+  // replacements.
+  return dependencies_->IsWebLayer();
+}
+
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
   if (!controller_)
     return;

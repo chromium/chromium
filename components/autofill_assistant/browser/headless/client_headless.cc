@@ -153,6 +153,10 @@ ScriptExecutorUiDelegate* ClientHeadless::GetScriptExecutorUiDelegate() {
   return headless_ui_controller_.get();
 }
 
+bool ClientHeadless::MustUseBackendData() const {
+  return false;
+}
+
 void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {}
 
 void ClientHeadless::FetchAccessToken(
