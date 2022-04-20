@@ -26,7 +26,7 @@
         <include name="IDR_ABOUT_CONFLICTS_HTML" file="resources\conflicts\about_conflicts.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_ABOUT_CONFLICTS_JS" file="resources\conflicts\about_conflicts.js" type="BINDATA" />
       </if>
-      <if expr="not disable_nacl">
+      <if expr="enable_nacl">
         <include name="IDR_ABOUT_NACL_HTML" file="resources\about_nacl\about_nacl.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_ABOUT_NACL_CSS" file="resources\about_nacl\about_nacl.css" type="chrome_html" />
         <include name="IDR_ABOUT_NACL_JS" file="resources\about_nacl\about_nacl.js" type="BINDATA" />
