@@ -41461,7 +41461,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "absl_hardening_tests",
@@ -41487,13 +41487,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41507,7 +41507,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -41533,13 +41533,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41553,7 +41553,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "boringssl_crypto_tests",
@@ -41579,13 +41579,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41599,7 +41599,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "boringssl_ssl_tests",
@@ -41625,13 +41625,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41645,7 +41645,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -41671,13 +41671,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41691,7 +41691,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "crypto_unittests",
@@ -41717,13 +41717,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41737,7 +41737,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -41763,13 +41763,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41783,7 +41783,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "google_apis_unittests",
@@ -41809,13 +41809,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41829,7 +41829,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -41855,13 +41855,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41875,7 +41875,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ios_net_unittests",
@@ -41901,13 +41901,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41921,7 +41921,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -41947,13 +41947,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -41967,7 +41967,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -41993,13 +41993,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -42013,7 +42013,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -42039,13 +42039,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -42059,7 +42059,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "net_unittests",
@@ -42085,13 +42085,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -42105,7 +42105,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -42131,13 +42131,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -42151,7 +42151,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "sql_unittests",
@@ -42177,13 +42177,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -42197,7 +42197,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -42223,13 +42223,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
@@ -42243,7 +42243,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "url_unittests",
@@ -42269,13 +42269,13 @@
             {
               "cpu": "x86-64",
               "device": "iPhone9,1",
-              "os": "Mac-10.15"
+              "os": "Mac-11|Mac-10.16"
             }
           ],
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             }
           ],
