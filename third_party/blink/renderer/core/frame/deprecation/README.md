@@ -49,9 +49,14 @@ case DeprecationIssueType::kFeatureName:
 Please do not skip this step! Examples can be found in:
 (/third_party/blink/web_tests/http/tests/inspector-protocol/issues/deprecation-issue.js)
 
+Tests in this folder can be run like:
+```
+third_party/blink/tools/run_web_tests.py http/tests/inspector-protocol/issues
+```
+
 ## (6) Merge steps 1-5 in a `chromium/src` CL
 
-Please tag deprecation-devtool-issues@chromium.org.
+Please tag deprecation-devtool-issues@chromium.org for review.
 
 ## (7) Manually roll dependencies from `chromium/src` to `devtools/devtools-frontend`
 
@@ -65,7 +70,7 @@ This pushes the change from (1c) into `devtools/devtools-frontend` so you can us
 
 ## (8) Merge step 7 in a `devtools/devtools-frontend` CL
 
-Please tag deprecation-devtool-issues@chromium.org as a reviewer.
+Please tag deprecation-devtool-issues@chromium.org for review.
 
 ## (9) Update [DeprecationIssue](/third_party/devtools-frontend/src/front_end/models/issues_manager/DeprecationIssue.ts)
 
@@ -84,14 +89,28 @@ case Protocol.Audits.DeprecationIssueType.FeatureName:
   break;
 ```
 
+If your deprecation has an associated [chrome platform status](https://chromestatus.com/features) and/or [chrome milestone](https://chromiumdash.appspot.com/schedule) be sure to set `feature` and/or `milestone` to include the relevant links, for example:
+```
+case Protocol.Audits.DeprecationIssueType.FeatureName:
+  messageFunction = i18nLazyString(UIStrings.featureName);
+  feature = 5684289032159232;
+  milestone = 100;
+  break;
+```
+
 ## (10) Test
 
 Please do not skip this step! Examples can be found in:
 (/third_party/devtools-frontend/src/test/e2e/issues/deprecation-issues_test.ts)
 
+Tests in this folder can be run like:
+```
+node scripts/test/run_test_suite.js --test-suite-path=gen/test/e2e --test-suite-source-dir=test/e2e --test-file-pattern=issues/*
+```
+
 ## (11) Merge steps 9 and 10 in a `devtools/devtools-frontend` CL
 
-Please tag deprecation-devtool-issues@chromium.org as a reviewer.
+Please tag deprecation-devtool-issues@chromium.org for review.
 
 ## (12) Wait for automatic roll dependencies from `devtools/devtools-frontend` to `chromium/src`
 
