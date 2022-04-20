@@ -210,13 +210,10 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   // Policy, do nothing
   if (!render_frame_host()->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    receiver()->ReportBadMessage("Unexpected request");
+    mojo::ReportBadMessage("Unexpected request");
     return;
   }
-
-  // If the interest group API is not allowed for this origin do nothing. This
-  // is not considered a bad message because the renderer cannot currently check
-  // for this state.
+  // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kJoin,
           group.owner)) {
@@ -243,21 +240,18 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
   // Policy, do nothing
   if (!render_frame_host()->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    receiver()->ReportBadMessage(
+    mojo::ReportBadMessage(
         "Unexpected request: JoinAdInterestGroup feature disabled");
     return;
   }
-
-  // If the interest group API is not allowed for this origin do nothing. This
-  // is not considered a bad message because the renderer cannot currently check
-  // for this state.
+  // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kLeave, origin())) {
     return;
   }
 
   if (origin().scheme() != url::kHttpsScheme) {
-    receiver()->ReportBadMessage(
+    mojo::ReportBadMessage(
         "Unexpected request: JoinAdInterestGroup only supported for secure "
         "origins");
     return;
@@ -280,14 +274,14 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   }
 
   if (origin().scheme() != url::kHttpsScheme) {
-    receiver()->ReportBadMessage(
+    mojo::ReportBadMessage(
         "Unexpected request: JoinAdInterestGroupForDocument only supported for "
         "secure origins");
     return;
   }
 
   if (!render_frame_host()->IsNestedWithinFencedFrame()) {
-    receiver()->ReportBadMessage(
+    mojo::ReportBadMessage(
         "Unexpected request: JoinAdInterestGroupForDocument only supported "
         "within fenced frames");
     return;
@@ -324,7 +318,7 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   // Policy, do nothing
   if (!render_frame_host()->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    receiver()->ReportBadMessage("Unexpected request");
+    mojo::ReportBadMessage("Unexpected request");
     return;
   }
   // If the interest group API is not allowed for this origin do nothing.
@@ -342,7 +336,7 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   // Policy, do nothing
   if (!render_frame_host()->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
-    receiver()->ReportBadMessage("Unexpected request");
+    mojo::ReportBadMessage("Unexpected request");
     return;
   }
   if (!IsAuctionValid(*config, /*is_top_level_auction=*/true)) {
