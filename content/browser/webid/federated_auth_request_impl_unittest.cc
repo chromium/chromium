@@ -76,7 +76,6 @@ constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
-constexpr bool kManifestInList = true;
 
 // Values will be added here as token introspection is implemented.
 constexpr char kToken[] = "[not a real token]";
@@ -89,6 +88,8 @@ static const std::initializer_list<IdentityRequestAccount> kAccounts{{
     "Ken",              // given_name
     GURL()              // picture
 }};
+
+static const std::set<std::string> kManifestList{kProviderUrl};
 
 // Parameters for a call to RequestIdToken.
 struct RequestParameters {
@@ -129,17 +130,21 @@ struct MockClientIdConfiguration {
   const char* terms_of_service_url;
 };
 
+struct MockManifestList {
+  std::set<std::string> provider_urls;
+};
+
 struct MockManifest {
   FetchStatus fetch_status;
   const char* accounts_endpoint;
   const char* token_endpoint;
   const char* client_metadata_endpoint;
   const char* revocation_endpoint;
-  bool manifest_in_list;
 };
 
 struct MockConfiguration {
   const char* token;
+  MockManifestList manifest_list;
   MockManifest manifest;
   MockClientIdConfiguration client_metadata;
   FetchStatus accounts_response;
@@ -157,13 +162,13 @@ static const RequestParameters kDefaultRequestParameters{
 
 static const MockConfiguration kConfigurationValid{
     kToken,
+    {kManifestList},
     {
         FetchStatus::kSuccess,
         kAccountsEndpoint,
         kTokenEndpoint,
         kClientMetadataEndpoint,
         kRevocationEndpoint,
-        kManifestInList,
     },
     kDefaultClientMetadata,
     FetchStatus::kSuccess,
@@ -376,11 +381,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void FetchManifestList(FetchManifestListCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::MANIFEST_LIST;
-    std::set<std::string> urls;
-    if (config_.manifest.manifest_in_list) {
-      urls.insert(kProviderUrl);
-    }
-    std::move(callback).Run(FetchStatus::kSuccess, urls);
+    std::move(callback).Run(FetchStatus::kSuccess,
+                            config_.manifest_list.provider_urls);
   }
 
   void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
@@ -859,26 +861,81 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListSuccess) {
                            /* expected_revocation_hint=*/"");
   SetNetworkRequestManager(std::move(checker));
 
-  RequestExpectations expect{kExpectationSuccess};
-  expect.fetched_endpoints |= FetchedEndpoint::MANIFEST_LIST;
-
-  RunAuthTest(kDefaultRequestParameters, expect, kConfigurationValid);
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
 }
 
+// Test the provider url is not in the manifest list.
 TEST_F(BasicFederatedAuthRequestImplTest, ManifestListNotInList) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmManifestValidation);
-
-  MockConfiguration config_not_in_list{kConfigurationValid};
-  config_not_in_list.manifest.manifest_in_list = false;
 
   RequestExpectations request_not_in_list = {
       RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorManifestNotInManifestList,
       FetchedEndpoint::MANIFEST_LIST};
 
-  RunAuthTest(kDefaultRequestParameters, request_not_in_list,
-              config_not_in_list);
+  RequestParameters parameters{"https://not-in-list.example", kClientId, kNonce,
+                               /*prefer_auto_sign_in=*/false};
+  RunAuthTest(parameters, request_not_in_list, kConfigurationValid);
+}
+
+// Test mismatching trailing slash is allowed.
+TEST_F(BasicFederatedAuthRequestImplTest, ManifestListHasExtraTrailingSlash) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmManifestValidation);
+
+  RequestParameters parameters{"https://idp.example/", kClientId, kNonce,
+                               /*prefer_auto_sign_in=*/false};
+  MockConfiguration config{kConfigurationValid};
+  config.manifest_list.provider_urls =
+      std::set<std::string>{"https://idp.example"};
+
+  RunAuthTest(parameters, kExpectationSuccess, config);
+}
+
+// Test mismatching trailing slash is allowed.
+TEST_F(BasicFederatedAuthRequestImplTest, ManifestListHasNoTrailingSlash) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmManifestValidation);
+
+  RequestParameters parameters{"https://idp.example", kClientId, kNonce,
+                               /*prefer_auto_sign_in=*/false};
+  MockConfiguration config{kConfigurationValid};
+  config.manifest_list.provider_urls =
+      std::set<std::string>{"https://idp.example/"};
+
+  RunAuthTest(parameters, kExpectationSuccess, config);
+}
+
+// Test mismatching trailing slash is allowed.
+TEST_F(BasicFederatedAuthRequestImplTest,
+       ManifestListHasTrailingSlashAfterPath) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmManifestValidation);
+
+  RequestParameters parameters{"https://idp.example/foo/", kClientId, kNonce,
+                               /*prefer_auto_sign_in=*/false};
+  MockConfiguration config{kConfigurationValid};
+  config.manifest_list.provider_urls =
+      std::set<std::string>{"https://idp.example/foo"};
+
+  RunAuthTest(parameters, kExpectationSuccess, config);
+}
+
+// Test mismatching trailing slash is allowed.
+TEST_F(BasicFederatedAuthRequestImplTest,
+       ManifestListHasNoTrailingSlashAfterPath) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmManifestValidation);
+
+  RequestParameters parameters{"https://idp.example/foo", kClientId, kNonce,
+                               /*prefer_auto_sign_in=*/false};
+  MockConfiguration config{kConfigurationValid};
+  config.manifest_list.provider_urls =
+      std::set<std::string>{"https://idp.example/foo/"};
+
+  RunAuthTest(parameters, kExpectationSuccess, config);
 }
 
 // Test that request fails if manifest is missing token endpoint.

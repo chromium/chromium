@@ -588,7 +588,40 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
     return;
   }
 
-  if (urls.count(provider_.spec()) == 0) {
+  // The provider url from the API call:
+  // navigator.credentials.get({
+  //   federated: {
+  //     providers: [{
+  //       url: "https://foo.idp.example",
+  //       clientId: "1234"
+  //     }],
+  //   }
+  // });
+  // must match the one in the manifest list:
+  // {
+  //   "provider_urls": [
+  //     "https://foo.idp.example"
+  //   ]
+  // }
+  // However, it's possible for developers to append a trailing slash in one of
+  // them but not in the other one especially when there's path involved.
+  // Besides, for GURL without path, |provider_.spec()| will append a trailing
+  // slash automatically. Therefore we relax the requirement by allowing
+  // mismatch on trailing slash.
+  std::string provider_url = provider_.spec();
+  if (provider_.path().empty() || provider_.path().back() != '/') {
+    std::string new_path = provider_.path() + '/';
+    GURL::Replacements replacements;
+    replacements.SetPathStr(new_path);
+    provider_url = provider_.ReplaceComponents(replacements).spec();
+  }
+  DCHECK_EQ(provider_url.back(), '/');
+
+  bool provider_url_is_valid = (urls.count(provider_url) != 0);
+  provider_url.pop_back();
+  provider_url_is_valid |= (urls.count(provider_url) != 0);
+
+  if (!provider_url_is_valid) {
     RecordRequestIdTokenStatus(IdTokenStatus::kManifestNotInManifestList,
                                render_frame_host_->GetPageUkmSourceId());
     CompleteRequest(FederatedAuthRequestResult::kErrorManifestNotInManifestList,
