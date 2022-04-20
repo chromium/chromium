@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -3838,6 +3839,7 @@ class BackForwardCacheBrowserTestWithFencedFrames
         blink::features::kFencedFrames, "implementation_type",
         GetParam() == FencedFramesImplementationType::kShadowDOM ? "shadow_dom"
                                                                  : "mparch");
+    EnableFeatureAndSetParams(features::kPrivacySandboxAdsAPIsOverride, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

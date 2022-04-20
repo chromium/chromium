@@ -1539,9 +1539,11 @@ class MessagingApiFencedFrameTest
       public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
  protected:
   MessagingApiFencedFrameTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames,
-        {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
   }
   ~MessagingApiFencedFrameTest() override = default;
 

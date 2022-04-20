@@ -47,6 +47,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/webplugininfo.h"
@@ -1495,9 +1496,11 @@ class DownloadFencedFrameTest
         blink::features::FencedFramesImplementationType::kMPArch) {
       fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
     } else {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          blink::features::kFencedFrames,
-          {{"implementation_type", "shadow_dom"}});
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kFencedFrames,
+            {{"implementation_type", "shadow_dom"}}},
+           {features::kPrivacySandboxAdsAPIsOverride, {}}},
+          {/* disabled_features */});
     }
   }
 

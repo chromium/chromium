@@ -219,7 +219,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
     {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
-    {wf::EnableFencedFrames, blink::features::kFencedFrames,
+    {wf::EnableFencedFrames, features::kPrivacySandboxAdsAPIsOverride,
      kSetOnlyIfOverridden},
     {wf::EnableSharedStorageAPI, blink::features::kSharedStorageAPI},
     {wf::EnableForcedColors, features::kForcedColors},
@@ -602,7 +602,8 @@ void ResolveInvalidConfigurations() {
 
   // Fenced frames, like Portals, cannot be enabled without the support of the
   // browser process.
-  if (!base::FeatureList::IsEnabled(blink::features::kFencedFrames)) {
+  if (base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride) &&
+      !base::FeatureList::IsEnabled(blink::features::kFencedFrames)) {
     LOG_IF(WARNING, WebRuntimeFeatures::IsFencedFramesEnabled())
         << "Fenced frames cannot be enabled in this configuration. Use --"
         << switches::kEnableFeatures << "="

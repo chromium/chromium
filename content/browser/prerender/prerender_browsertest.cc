@@ -5984,9 +5984,11 @@ class PrerenderFencedFrameBrowserTest
       public testing::WithParamInterface<bool /* shadow_dom_fenced_frames */> {
  public:
   PrerenderFencedFrameBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames,
-        {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
   }
   ~PrerenderFencedFrameBrowserTest() override = default;
 

@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -104,8 +105,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
 class SnapshotAXTreeFencedFrameBrowserTest : public SnapshotAXTreeBrowserTest {
  public:
   SnapshotAXTreeFencedFrameBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
   }
 
   void SetUpOnMainThread() override {

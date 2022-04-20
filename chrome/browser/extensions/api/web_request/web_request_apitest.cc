@@ -4622,9 +4622,11 @@ class ExtensionWebRequestApiFencedFrameTest
       public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
  protected:
   ExtensionWebRequestApiFencedFrameTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames,
-        {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
     // Fenced frames are only allowed in secure contexts.
     UseHttpsTestServer();
   }
