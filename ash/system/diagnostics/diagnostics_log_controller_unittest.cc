@@ -165,5 +165,30 @@ TEST_F(DiagnosticsLogControllerTest,
   EXPECT_EQ(expected_path_regular_user, log_base_path());
 }
 
+TEST_F(DiagnosticsLogControllerTest,
+       LogBaseCorrectlyUpdatedOnActiveUserSessionChanged) {
+  const base::FilePath expected_path_not_regular_user =
+      base::FilePath(kTmpDiagnosticsDir);
+  InitializeWithFakeDelegate();
+
+  // Simulate sign-in user.
+  ClearLogin();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+
+  SimulateGuestLogin();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+
+  SimulateKioskMode(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+
+  SimulateKioskMode(user_manager::UserType::USER_TYPE_ARC_KIOSK_APP);
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+
+  SimulateUserLogin(kTestUserEmail);
+  const base::FilePath expected_path_regular_user =
+      base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
+  EXPECT_EQ(expected_path_regular_user, log_base_path());
+}
+
 }  // namespace diagnostics
 }  // namespace ash

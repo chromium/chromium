@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
+#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/system/diagnostics/networking_log.h"
@@ -20,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -35,6 +37,10 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+
+#include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_suite.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 namespace diagnostics {
@@ -84,6 +90,19 @@ std::unique_ptr<ui::SelectFilePolicy> CreateTestSelectFilePolicy(
     content::WebContents* web_contents) {
   return std::make_unique<TestSelectFilePolicy>();
 }
+
+// A fake DiagnosticsBrowserDelegate.
+class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
+ public:
+  FakeDiagnosticsBrowserDelegate() = default;
+  ~FakeDiagnosticsBrowserDelegate() override = default;
+
+  base::FilePath GetActiveUserProfileDir() override {
+    base::ScopedTempDir tmp_dir;
+    EXPECT_TRUE(tmp_dir.CreateUniqueTempDir());
+    return tmp_dir.GetPath();
+  }
+};
 
 // A fake ui::SelectFileDialog.
 class TestSelectFileDialog : public ui::SelectFileDialog {
@@ -284,15 +303,54 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   EXPECT_EQ("--- Network Events ---", log_lines[17]);
 }
 
+// Test class using NoSessionAshTestBase to ensure shell is available for
+// tests requiring DiagnosticsLogController singleton.
+class SessionLogHandlerAshTest : public NoSessionAshTestBase {
+ public:
+  SessionLogHandlerAshTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
+  ~SessionLogHandlerAshTest() override = default;
+
+  void SetUp() override {
+    // Setup to ensure ash::Shell can configure for tests.
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    // Setup feature list before setting up ash::Shell.
+    feature_list_.InitAndEnableFeature(
+        ash::features::kEnableLogControllerForDiagnosticsApp);
+    NoSessionAshTestBase::SetUp();
+    DiagnosticsLogController::Initialize(
+        std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    session_log_handler_ = std::make_unique<SessionLogHandler>(
+        base::BindRepeating(&CreateTestSelectFilePolicy),
+        /*telemetry_log*/ nullptr,
+        /*routine_log*/ nullptr,
+        /*networking_log*/ nullptr,
+        /*holding_space_client*/ &holding_space_client_);
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    session_log_handler_->SetWebUIForTest(&web_ui_);
+    session_log_handler_->RegisterMessages();
+    session_log_handler_->SetTaskRunnerForTesting(task_runner_);
+    // Call handler to enable Javascript.
+    base::ListValue args;
+    web_ui_.HandleReceivedMessage("initialize", &args);
+  }
+
+  void RunTasks() { task_runner_->RunPendingTasks(); }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<SessionLogHandler> session_log_handler_;
+  content::TestWebUI web_ui_;
+  base::ScopedTempDir temp_dir_;
+  testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
+  // Task runner for tasks posted by save session log handler.
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+};
+
 // Validates behavior when log controller is used to generate session log.
-TEST_F(SessionLogHandlerTest, SaveSessionLogFlagEnabled) {
+TEST_F(SessionLogHandlerAshTest, SaveSessionLogFlagEnabled) {
   const std::string expected_log_header = "Diagnostics Log";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ash::features::kEnableLogControllerForDiagnosticsApp);
   base::RunLoop run_loop;
-  std::unique_ptr<ash::diagnostics::DiagnosticsLogController> log_controller =
-      std::make_unique<ash::diagnostics::DiagnosticsLogController>();
 
   // Simulate select file
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");

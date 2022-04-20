@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_DIAGNOSTICS_DIAGNOSTICS_LOG_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "base/files/file_path.h"
 
@@ -15,12 +16,12 @@ namespace diagnostics {
 // DiagnosticsLogController manages the lifetime of Diagnostics log writers such
 // as the RoutineLog and ensures logs are written to the correct directory path
 // for the current user. See go/cros-shared-diagnostics-session-log-dd.
-class ASH_EXPORT DiagnosticsLogController {
+class ASH_EXPORT DiagnosticsLogController : SessionObserver {
  public:
   DiagnosticsLogController();
   DiagnosticsLogController(const DiagnosticsLogController&) = delete;
   DiagnosticsLogController& operator=(const DiagnosticsLogController&) = delete;
-  ~DiagnosticsLogController();
+  ~DiagnosticsLogController() override;
 
   // DiagnosticsLogController is created and destroyed with
   // the ash::Shell. DiagnosticsLogController::Get may be nullptr if accessed
@@ -41,6 +42,12 @@ class ASH_EXPORT DiagnosticsLogController {
   // environment. To be called from DiagnosticsDialog::ShowDialog prior to the
   // Diagnostics app being shown.
   void ResetAndInitializeLogWriters();
+
+  // SessionObserver:
+  // Ensure DiagnosticsLogController is re-configured to match the current
+  // environment when LoginStatus changes. See ash/ash_login_status.h for
+  // description of LoginStatus types.
+  void OnLoginStatusChanged(LoginStatus login_status) override;
 
  private:
   friend class DiagnosticsLogControllerTest;

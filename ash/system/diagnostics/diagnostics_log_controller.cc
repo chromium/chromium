@@ -41,11 +41,13 @@ const char kLogFileContents[] = "Diagnostics Log";
 DiagnosticsLogController::DiagnosticsLogController()
     : log_base_path_(kDiaganosticsTmpDir) {
   DCHECK_EQ(nullptr, g_instance);
+  ash::Shell::Get()->session_controller()->AddObserver(this);
   g_instance = this;
 }
 
 DiagnosticsLogController::~DiagnosticsLogController() {
   DCHECK_EQ(this, g_instance);
+  ash::Shell::Get()->session_controller()->RemoveObserver(this);
   g_instance = nullptr;
 }
 
@@ -105,6 +107,14 @@ void DiagnosticsLogController::ResetLogBasePath() {
 
   // Use diagnostics temporary path for Guest, KioskApp, and no user states.
   g_instance->log_base_path_ = base::FilePath(kDiaganosticsTmpDir);
+}
+
+void DiagnosticsLogController::OnLoginStatusChanged(LoginStatus login_status) {
+  if (!DiagnosticsLogController::IsInitialized()) {
+    return;
+  }
+
+  g_instance->ResetLogBasePath();
 }
 
 }  // namespace diagnostics
