@@ -1446,7 +1446,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
     }
 
-    DCHECK(!flex_item->ng_input_node.IsFloatingOrOutOfFlowPositioned());
     const NGEarlyBreak* early_break_in_child = nullptr;
     if (UNLIKELY(early_break_)) {
       if (!is_column_)
