@@ -3439,14 +3439,6 @@
           'isolated_scripts': 'chromium_web_tests_high_dpi_isolated_scripts',
         },
       },
-      'linux-blink-rel-dummy': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
-        },
-      },
       'linux-blink-v8-sandbox-future-dbg': {
         'mixins': [
           'linux-bionic',

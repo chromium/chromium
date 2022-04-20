@@ -1583,7 +1583,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'Optional Win10 x64 Release (Intel HD 630)',
         'Optional Win10 x64 Release (NVIDIA)',
         # chromium.fyi
-        'linux-blink-rel-dummy',
         'linux-blink-optional-highdpi-rel-dummy',
         'mac10.12-blink-rel-dummy',
         'mac10.13-blink-rel-dummy',
