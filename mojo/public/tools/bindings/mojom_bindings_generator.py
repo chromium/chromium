@@ -57,7 +57,9 @@ _BUILTIN_GENERATORS = {
     "typescript": "mojom_ts_generator",
 }
 
-_BUILTIN_CHECKS = {}
+_BUILTIN_CHECKS = {
+    "restrictions": "mojom_restrictions_check",
+}
 
 
 def LoadGenerators(generators_string):
@@ -313,7 +315,7 @@ def main():
                                "--checks",
                                dest="checks_string",
                                metavar="CHECKS",
-                               default="",
+                               default="restrictions",
                                help="comma-separated list of checks")
   generate_parser.add_argument(
       "--gen_dir", dest="gen_directories", action="append", metavar="directory",

@@ -291,6 +291,8 @@ ATTRIBUTE_SYNC = 'Sync'
 ATTRIBUTE_UNLIMITED_SIZE = 'UnlimitedSize'
 ATTRIBUTE_UUID = 'Uuid'
 ATTRIBUTE_SERVICE_SANDBOX = 'ServiceSandbox'
+ATTRIBUTE_REQUIRE_CONTEXT = 'RequireContext'
+ATTRIBUTE_ALLOWED_CONTEXT = 'AllowedContext'
 
 
 class NamedValue(object):
@@ -1090,6 +1092,11 @@ class Method(object):
     return self.attributes.get(ATTRIBUTE_UNLIMITED_SIZE) \
         if self.attributes else False
 
+  @property
+  def allowed_context(self):
+    return self.attributes.get(ATTRIBUTE_ALLOWED_CONTEXT) \
+        if self.attributes else None
+
   def _tuple(self):
     return (self.mojom_name, self.ordinal, self.parameters,
             self.response_parameters, self.attributes)
@@ -1235,6 +1242,12 @@ class Interface(ReferenceKind):
       raise Exception("ServiceSandbox attribute on %s must be an enum value." %
                       self.module.name)
     return service_sandbox
+
+  @property
+  def require_context(self):
+    if not self.attributes:
+      return None
+    return self.attributes.get(ATTRIBUTE_REQUIRE_CONTEXT, None)
 
   @property
   def stable(self):
