@@ -273,7 +273,14 @@ void InProcessHandler::StartProcessingPendingReports() {
     return;
 
   upload_thread_enabled_ = true;
-  UpdatePruneAndUploadThreads(true);
+
+  // This may be a no-op if IsApplicationActive is false, as it is not safe to
+  // start the upload thread when in the background (due to the potential for
+  // flocked files in shared containers).
+  // TODO(crbug.com/crashpad/400): Consider moving prune and upload thread to
+  // BackgroundTasks and/or NSURLSession. This might allow uploads to continue
+  // in the background.
+  UpdatePruneAndUploadThreads(system_data_.IsApplicationActive());
 }
 
 void InProcessHandler::UpdatePruneAndUploadThreads(bool active) {
