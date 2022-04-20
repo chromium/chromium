@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TabSwitchResult2{TabSwitchingType}"
-    enum="TabSwitchResult" expires_after="2022-04-26">
+    enum="TabSwitchResult" expires_after="2022-07-26">
   <owner>fdoray@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -511,7 +511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TabSwitchResult{TabSwitchingType}"
-    enum="TabSwitchResult" expires_after="2022-04-26">
+    enum="TabSwitchResult" expires_after="2022-07-26">
   <owner>fdoray@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -523,7 +523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration2{TabSwitchingType}"
-    units="ms" expires_after="2022-04-26">
+    units="ms" expires_after="2022-07-26">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration{TabSwitchingType}"
-    units="ms" expires_after="2022-04-26">
+    units="ms" expires_after="2022-07-26">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration2{TabSwitchingType}"
-    units="ms" expires_after="2022-04-26">
+    units="ms" expires_after="2022-07-26">
   <owner>ejoe@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -563,7 +563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration{TabSwitchingType}" units="ms"
-    expires_after="2022-04-26">
+    expires_after="2022-07-26">
   <owner>ejoe@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
