@@ -21,6 +21,11 @@ testComputedValueGreaterOrLowerThan("width", "calc(infinity * 1px)", APPROX_INFI
 testComputedValueGreaterOrLowerThan("width", "calc(infinity * 1cm)", APPROX_INFINITY);
 testComputedValueGreaterOrLowerThan("width", "calc(NaN * 1rem)", APPROX_INFINITY);
 
+testComputedValueGreaterOrLowerThan("width", "max(15px, NaN * 1px)", APPROX_INFINITY);
+testComputedValueGreaterOrLowerThan("width", "max(NaN * 1px, 15px)", APPROX_INFINITY);
+testComputedValueGreaterOrLowerThan("width", "min(15px, NaN * 1px)", APPROX_INFINITY);
+testComputedValueGreaterOrLowerThan("width", "min(NaN * 1px, 15px)", APPROX_INFINITY);
+
 testComputedValueGreaterOrLowerThan("width", "calc(infinity * 1px - infinity * 1%)", APPROX_INFINITY);
 testComputedValueGreaterOrLowerThan("width", "calc(infinity * 1px + infinity * 1%)", APPROX_INFINITY);
 testComputedValueGreaterOrLowerThan("width", "calc(min(NaN * 1px, infinity * 1px) + max(infinity * 1px, -infinity * 1px))", APPROX_INFINITY);

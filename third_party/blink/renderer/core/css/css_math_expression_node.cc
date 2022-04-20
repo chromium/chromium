@@ -957,6 +957,14 @@ double CSSMathExpressionOperation::EvaluateOperator(
     const Vector<double>& operands,
     CSSMathOperator op) {
   // Design doc for infinity and NaN: https://bit.ly/349gXjq
+
+  // Any operation with at least one NaN argument produces NaN
+  // https://drafts.csswg.org/css-values/#calc-type-checking
+  for (double operand : operands) {
+    if (std::isnan(operand))
+      return operand;
+  }
+
   switch (op) {
     case CSSMathOperator::kAdd:
       DCHECK_EQ(operands.size(), 2u);

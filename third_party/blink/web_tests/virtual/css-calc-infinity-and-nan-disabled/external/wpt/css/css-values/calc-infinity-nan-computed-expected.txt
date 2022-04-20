@@ -3,6 +3,10 @@ FAIL Property width value 'calc(NaN * 1px)' assert_true: 'calc(NaN * 1px)' is a 
 FAIL Property width value 'calc(infinity * 1px)' assert_true: 'calc(infinity * 1px)' is a supported value for width. expected true got false
 FAIL Property width value 'calc(infinity * 1cm)' assert_true: 'calc(infinity * 1cm)' is a supported value for width. expected true got false
 FAIL Property width value 'calc(NaN * 1rem)' assert_true: 'calc(NaN * 1rem)' is a supported value for width. expected true got false
+FAIL Property width value 'max(15px, NaN * 1px)' assert_true: 'max(15px, NaN * 1px)' is a supported value for width. expected true got false
+FAIL Property width value 'max(NaN * 1px, 15px)' assert_true: 'max(NaN * 1px, 15px)' is a supported value for width. expected true got false
+FAIL Property width value 'min(15px, NaN * 1px)' assert_true: 'min(15px, NaN * 1px)' is a supported value for width. expected true got false
+FAIL Property width value 'min(NaN * 1px, 15px)' assert_true: 'min(NaN * 1px, 15px)' is a supported value for width. expected true got false
 FAIL Property width value 'calc(infinity * 1px - infinity * 1%)' assert_true: 'calc(infinity * 1px - infinity * 1%)' is a supported value for width. expected true got false
 FAIL Property width value 'calc(infinity * 1px + infinity * 1%)' assert_true: 'calc(infinity * 1px + infinity * 1%)' is a supported value for width. expected true got false
 FAIL Property width value 'calc(min(NaN * 1px, infinity * 1px) + max(infinity * 1px, -infinity * 1px))' assert_true: 'calc(min(NaN * 1px, infinity * 1px) + max(infinity * 1px, -infinity * 1px))' is a supported value for width. expected true got false
