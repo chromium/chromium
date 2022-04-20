@@ -552,6 +552,43 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
   });
 
+  test('reattempts failed photos load on show', async () => {
+    const album = new GooglePhotosAlbum();
+    album.id = '1';
+
+    // Initialize Google Photos data in the |personalizationStore| such as would
+    // occur if photos for an album were previously fetched but failed to load.
+    personalizationStore.data.wallpaper.loading.googlePhotos
+        .photosByAlbumId[album.id] = false;
+    personalizationStore.data.wallpaper.googlePhotos.albums = [album];
+    personalizationStore.data.wallpaper.googlePhotos.enabled =
+        GooglePhotosEnablementState.kEnabled;
+    personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId[album.id] =
+        null;
+
+    // Initialize |googlePhotosPhotosByAlbumIdElement| in hidden state.
+    googlePhotosPhotosByAlbumIdElement =
+        initElement(GooglePhotosPhotosByAlbumId, {hidden: true});
+    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', album.id);
+    await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
+
+    // Verify that showing |googlePhotosPhotosByAlbumIdElement| results in an
+    // automatic reattempt to fetch photos for the selected album.
+    assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+    googlePhotosPhotosByAlbumIdElement.hidden = false;
+    await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
+    assertDeepEquals(
+        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos'),
+        [/*itemId=*/ null, /*albumId=*/ album.id, /*resumeToken=*/ null]);
+
+    // Only placeholders should be present while loading.
+    const selector = 'wallpaper-grid-item:not([hidden]).photo';
+    const photoSelector = `${selector}:not([placeholder])`;
+    const placeholderSelector = `${selector}[placeholder]`;
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+    assertNotEquals(querySelectorAll(placeholderSelector)!.length, 0);
+  });
+
   test('selects photo', async () => {
     personalizationStore.setReducersEnabled(true);
 

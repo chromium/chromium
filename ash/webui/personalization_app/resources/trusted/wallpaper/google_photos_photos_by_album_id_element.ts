@@ -180,6 +180,17 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     // iron-list will render incorrectly. Force relayout by invalidating the
     // iron-list when this element becomes visible.
     afterNextRender(this, () => this.$.grid.fire('iron-resize'));
+
+    // When the user reselects an album that previously failed to load we should
+    // automatically retry loading the selected album. Placeholders should be
+    // shown while loading is in progress.
+    if (this.albumId && this.photosByAlbumId_ && this.photosByAlbumIdLoading_ &&
+        this.photosByAlbumId_[this.albumId] === null &&
+        !this.photosByAlbumIdLoading_[this.albumId]) {
+      fetchGooglePhotosAlbum(
+          this.wallpaperProvider_, this.getStore(), this.albumId);
+      this.album_ = getPlaceholders();
+    }
   }
 
   /** Invoked on changes to |albumId|, |albums_|, or |photosByAlbumId_|. */
