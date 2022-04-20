@@ -39,6 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #endif
 
@@ -175,8 +176,12 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Terminal SWA is not an extension, but runs SSH NaCL with sockets.
-    if (url == chrome::kChromeUIUntrustedTerminalURL)
-      return true;
+    if (url == chrome::kChromeUIUntrustedTerminalURL) {
+      return profile->GetPrefs()
+          ->FindPreference(crostini::prefs::kTerminalSshAllowedByPolicy)
+          ->GetValue()
+          ->GetBool();
+    }
 #endif
   } else {
     // Access to public socket APIs is controlled by extension permissions.

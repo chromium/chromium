@@ -34,7 +34,8 @@ class TerminalSource : public content::URLDataSource {
  private:
   TerminalSource(Profile* profile,
                  std::string source,
-                 std::string default_file);
+                 std::string default_file,
+                 bool ssh_allowed);
 
   // content::URLDataSource:
   std::string GetSource() override;
@@ -54,6 +55,7 @@ class TerminalSource : public content::URLDataSource {
   Profile* profile_;
   std::string source_;
   std::string default_file_;
+  const bool ssh_allowed_;
   ui::TemplateReplacements replacements_;
 };
 

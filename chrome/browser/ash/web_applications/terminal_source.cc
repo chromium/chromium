@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -78,19 +79,27 @@ std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
     default_file = "html/terminal.html";
   }
   return base::WrapUnique(new TerminalSource(
-      profile, chrome::kChromeUIUntrustedCroshURL, default_file));
+      profile, chrome::kChromeUIUntrustedCroshURL, default_file, false));
 }
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
   return base::WrapUnique(new TerminalSource(
-      profile, chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html"));
+      profile, chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html",
+      profile->GetPrefs()
+          ->FindPreference(crostini::prefs::kTerminalSshAllowedByPolicy)
+          ->GetValue()
+          ->GetBool()));
 }
 
 TerminalSource::TerminalSource(Profile* profile,
                                std::string source,
-                               std::string default_file)
-    : profile_(profile), source_(source), default_file_(default_file) {
+                               std::string default_file,
+                               bool ssh_allowed)
+    : profile_(profile),
+      source_(source),
+      default_file_(default_file),
+      ssh_allowed_(ssh_allowed) {
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(profile);
   const url::Origin terminal_origin = url::Origin::Create(GURL(source));
   CHECK(!terminal_origin.opaque());
@@ -154,21 +163,29 @@ const ui::TemplateReplacements* TerminalSource::GetReplacements() {
 
 std::string TerminalSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {
+  // CSP required for SSH.
+  if (ssh_allowed_) {
+    switch (directive) {
+      case network::mojom::CSPDirectiveName::ConnectSrc:
+        return "connect-src 'self' "
+               "https://*.corp.google.com:* wss://*.corp.google.com:* "
+               "https://*.r.ext.google.com:* wss://*.r.ext.google.com:*;";
+      case network::mojom::CSPDirectiveName::FrameAncestors:
+        return "frame-ancestors 'self';";
+      case network::mojom::CSPDirectiveName::FrameSrc:
+        return "frame-src 'self';";
+      case network::mojom::CSPDirectiveName::ObjectSrc:
+        return "object-src 'self';";
+      default:
+        break;
+    }
+  }
+
   switch (directive) {
-    case network::mojom::CSPDirectiveName::ConnectSrc:
-      return "connect-src 'self' "
-             "https://*.corp.google.com:* wss://*.corp.google.com:* "
-             "https://*.r.ext.google.com:* wss://*.r.ext.google.com:*;";
-    case network::mojom::CSPDirectiveName::FrameAncestors:
-      return "frame-ancestors 'self';";
-    case network::mojom::CSPDirectiveName::FrameSrc:
-      return "frame-src 'self';";
     case network::mojom::CSPDirectiveName::ImgSrc:
       return "img-src * data: blob:;";
     case network::mojom::CSPDirectiveName::MediaSrc:
       return "media-src data:;";
-    case network::mojom::CSPDirectiveName::ObjectSrc:
-      return "object-src 'self';";
     case network::mojom::CSPDirectiveName::StyleSrc:
       return "style-src * 'unsafe-inline'; font-src *;";
     case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
