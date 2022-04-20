@@ -64,6 +64,7 @@ chromevox_modules = [
   "common/tree_dumper.js",
   "common/tts_interface.js",
   "injected/api_implementation.js",
+  "injected/extension_bridge.js",
   "injected/loader.js",
   "injected/script_installer.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",

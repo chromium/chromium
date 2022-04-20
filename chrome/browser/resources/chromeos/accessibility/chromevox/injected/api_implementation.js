@@ -10,12 +10,10 @@
 goog.provide('ApiImplementation');
 
 goog.require('ChromeVox');
-goog.require('ExtensionBridge');
+goog.require('ContentExtensionBridge');
 goog.require('ScriptInstaller');
 
 ApiImplementation = class {
-  constructor() {}
-
   /**
    * Inject the API into the page and set up communication with it.
    * @param {function()=} opt_onload A function called when the script is
@@ -32,7 +30,7 @@ ApiImplementation = class {
       console.error('Unable to install api scripts');
     }
 
-    ExtensionBridge.addDisconnectListener(function() {
+    ContentExtensionBridge.addDisconnectListener(function() {
       ApiImplementation.port.postMessage(ApiImplementation.DISCONNECT_MSG);
       ScriptInstaller.uninstallScript('cvoxapi');
     });
@@ -98,7 +96,7 @@ ApiImplementation = class {
       properties
     };
 
-    ExtensionBridge.send(message);
+    ContentExtensionBridge.send(message);
   }
 };
 

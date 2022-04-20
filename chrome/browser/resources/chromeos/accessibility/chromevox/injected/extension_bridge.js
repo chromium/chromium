@@ -1,0 +1,383 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Bridge to aid in communication between a Chrome
+ * background page and content script.
+ *
+ * It automatically figures out where it's being run and initializes itself
+ * appropriately. Then just call send() to send a message from the background
+ * to the page or vice versa, and addMessageListener() to provide a message
+ * listener.  Messages can be any object that can be serialized using JSON.
+ *
+ */
+
+goog.provide('ContentExtensionBridge');
+
+/** @enum {number} */
+const ContentBridgeContext = {
+  BACKGROUND: 0,
+  CONTENT_SCRIPT: 1,
+};
+
+ContentExtensionBridge = class {
+  /** @private */
+  constructor() {
+    /** @private {!Array<!function(Object, Port)>} */
+    this.messageListeners_ = [];
+    /** @private {!Array<!function()>} */
+    this.disconnectListeners_ = [];
+    /** @private {?ContentBridgeContext} */
+    this.context_ = null;
+    /** @private {number} */
+    this.id_ = -1;
+
+    // Used in the background context.
+    /** @private {!Array<!Port>} */
+    this.portCache_ = [];
+    /** @private {number} */
+    this.nextPongId_ = 1;
+
+    // Used in the content script context.
+    /** @private {boolean} */
+    this.connected_ = false;
+    /** @private {number} */
+    this.pingAttempts_ = 0;
+    /** @private {!Array<Object>} */
+    this.queuedMessages_ = [];
+    /** @private {?Port} */
+    this.backgroundPort_ = null;
+  }
+
+  /**
+   * Initialize the extension bridge. Dynamically figure out whether we're in
+   * the background page, content script, or in a page, and call the
+   * corresponding function for more specific initialization.
+   */
+  static init() {
+    ContentExtensionBridge.instance = new ContentExtensionBridge();
+
+    if (/^chrome-extension:\/\/.*background\.html$/.test(
+            window.location.href)) {
+      // This depends on the fact that the background page has a specific url.
+      // We should never be loaded into another extension's background page, so
+      // this is a safe check.
+      ContentExtensionBridge.instance.context_ =
+          ContentBridgeContext.BACKGROUND;
+      ContentExtensionBridge.instance.initBackground_();
+      return;
+    }
+
+    if (chrome && chrome.extension) {
+      ContentExtensionBridge.instance.context_ =
+          ContentBridgeContext.CONTENT_SCRIPT;
+      ContentExtensionBridge.instance.initContentScript_();
+    }
+  }
+
+  /**
+   * Send a message. If the context is a page, sends a message to the
+   * extension background page. If the context is a background page, sends
+   * a message to the current active tab (not all tabs).
+   *
+   * @param {Object} message The message to be sent.
+   */
+  static send(message) {
+    switch (ContentExtensionBridge.instance.context_) {
+      case ContentBridgeContext.BACKGROUND:
+        ContentExtensionBridge.instance.sendBackgroundToContentScript_(message);
+        break;
+      case ContentBridgeContext.CONTENT_SCRIPT:
+        ContentExtensionBridge.instance.sendContentScriptToBackground_(message);
+        break;
+    }
+  }
+
+  /**
+   * Provide a function to listen to messages. In page context, this
+   * listens to messages from the background. In background context,
+   * this listens to messages from all pages.
+   *
+   * The function gets called with two parameters: the message, and a
+   * port that can be used to send replies.
+   *
+   * @param {function(Object, Port)} listener The message listener.
+   */
+  static addMessageListener(listener) {
+    ContentExtensionBridge.instance.messageListeners_.push(listener);
+  }
+
+  /**
+   * Provide a function to be called when the connection is
+   * disconnected.
+   * @param {function()} listener The listener.
+   */
+  static addDisconnectListener(listener) {
+    ContentExtensionBridge.instance.disconnectListeners_.push(listener);
+  }
+
+  /** Removes all message listeners from the extension bridge. */
+  static removeMessageListeners() {
+    ContentExtensionBridge.instance.messageListeners_ = [];
+  }
+
+  /**
+   * Returns a unique id for this instance of the script.
+   * @return {number}
+   */
+  static uniqueId() {
+    return ContentExtensionBridge.instance.id_;
+  }
+
+  /**
+   * Initialize the extension bridge in a background page context by registering
+   * a listener for connections from the content script.
+   * @private
+   */
+  initBackground_() {
+    this.id_ = 0;
+    chrome.extension.onConnect.addListener(
+        (port) => this.backgroundOnConnectHandler_(port));
+  }
+
+  /**
+   * Listens for connections from the content scripts.
+   * @param {!Port} port
+   * @private
+   */
+  backgroundOnConnectHandler_(port) {
+    if (port.name !== ContentExtensionBridge.PORT_NAME) {
+      return;
+    }
+
+    this.portCache_.push(port);
+
+    port.onMessage.addListener(
+        (message) => this.backgroundOnMessage_(message, port));
+
+    port.onDisconnect.addListener(() => this.backgroundOnDisconnect_(port));
+  }
+
+  /**
+   * Listens for messages to the background page from a specific port.
+   * @param {Object} message
+   * @param {!Port} port
+   * @private
+   */
+  backgroundOnMessage_(message, port) {
+    if (message[ContentExtensionBridge.PING_MSG]) {
+      const pongMessage =
+          {[ContentExtensionBridge.PONG_MSG]: this.nextPongId_++};
+      port.postMessage(pongMessage);
+      return;
+    }
+
+    this.messageListeners_.forEach((listener) => listener(message, port));
+  }
+
+  /**
+   * Handles a specific port disconnecting.
+   * @param {!Port} port
+   * @private
+   */
+  backgroundOnDisconnect_(port) {
+    for (let i = 0; i < this.portCache_.length; i++) {
+      if (this.portCache_[i] === port) {
+        this.portCache_.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  /**
+   * Initialize the extension bridge in a content script context, listening
+   * for messages from the background page.
+   * @private
+   */
+  initContentScript_() {
+    // Listen to requests from the background that don't come from
+    // our connection port.
+    chrome.extension.onMessage.addListener(
+        (request, sender, respond) =>
+            this.contentOnMessageHandler_(request, sender, respond));
+
+    this.setupBackgroundPort_();
+
+    this.tryToPingBackgroundPage_();
+  }
+
+  /**
+   * @param {Object} request
+   * @param {*} sender
+   * @param {function(*)} sendResponse
+   * @private
+   */
+  contentOnMessageHandler_(request, sender, sendResponse) {
+    if (request && request['srcFile']) {
+      // TODO (clchen, deboer): Investigate this further and come up with a
+      // cleaner solution. The root issue is that this should never be run on
+      // the background page, but it is in the Chrome OS case.
+      return;
+    }
+    if (request[ContentExtensionBridge.PONG_MSG]) {
+      this.gotPongFromBackgroundPage_(request[ContentExtensionBridge.PONG_MSG]);
+    } else {
+      this.messageListeners_.forEach(
+          (listener) => listener(request, this.backgroundPort_));
+    }
+    sendResponse({});
+  }
+
+  /**
+   * Set up the connection to the background page.
+   * @private
+   */
+  setupBackgroundPort_() {
+    this.backgroundPort_ =
+        chrome.extension.connect({name: ContentExtensionBridge.PORT_NAME});
+    if (!this.backgroundPort_) {
+      return;
+    }
+    this.backgroundPort_.onMessage.addListener(
+        (message) => this.contentOnPortMessage_(message));
+    this.backgroundPort_.onDisconnect.addListener(
+        () => this.contentOnDisconnect_());
+  }
+
+  /**
+   * @param {Object} message
+   * @private
+   */
+  contentOnPortMessage_(message) {
+    if (message[ContentExtensionBridge.PONG_MSG]) {
+      this.gotPongFromBackgroundPage_(message[ContentExtensionBridge.PONG_MSG]);
+    } else {
+      this.messageListeners_.forEach(
+          listener => listener(message, this.backgroundPort_));
+    }
+  }
+
+  /** @private */
+  contentOnDisconnect_() {
+    // If we're not connected yet, don't give up - try again.
+    if (!this.connected_) {
+      this.backgroundPort_ = null;
+      return;
+    }
+
+    this.backgroundPort_ = null;
+    this.connected_ = false;
+    this.disconnectListeners_.forEach(listener => listener());
+  }
+
+  /**
+   * Try to ping the background page.
+   * @private
+   */
+  tryToPingBackgroundPage_() {
+    // If we already got a pong, great - we're done.
+    if (this.connected_) {
+      return;
+    }
+
+    this.pingAttempts_++;
+    if (this.pingAttempts_ > ContentExtensionBridge.MAX_PING_ATTEMPTS) {
+      // Could not connect after several ping attempts. Call the disconnect
+      // handlers, which will disable ChromeVox.
+      this.disconnectListeners_.forEach(listener => listener());
+      return;
+    }
+
+    // Send the ping.
+    const msg = {
+      [ContentExtensionBridge.PING_MSG]: 1,
+    };
+
+    if (!this.backgroundPort_) {
+      this.setupBackgroundPort_();
+    }
+    if (this.backgroundPort_) {
+      this.backgroundPort_.postMessage(msg);
+    }
+
+    // Check again after a short while in case we get no response.
+    window.setTimeout(
+        () => this.tryToPingBackgroundPage_(),
+        ContentExtensionBridge.TIME_BETWEEN_PINGS_MS);
+  }
+
+  /**
+   * Got pong from the background page, now we know the connection was
+   * successful.
+   * @param {number} pongId unique id assigned to us by the background page
+   * @private
+   */
+  gotPongFromBackgroundPage_(pongId) {
+    this.connected_ = true;
+    this.id_ = pongId;
+
+    while (this.queuedMessages_.length > 0) {
+      this.sendContentScriptToBackground_(this.queuedMessages_.shift());
+    }
+  }
+
+  /**
+   * Send a message from the content script to the background page.
+   * @param {Object} message The message to send.
+   * @private
+   */
+  sendContentScriptToBackground_(message) {
+    if (!this.connected_) {
+      // We're not connected to the background page, so queue this message
+      // until we're connected.
+      this.queuedMessages_.push(message);
+      return;
+    }
+
+    if (this.backgroundPort_) {
+      this.backgroundPort_.postMessage(message);
+    } else {
+      chrome.extension.sendMessage(message);
+    }
+  }
+
+  /**
+   * Send a message from the background page to the content script of the
+   * current selected tab.
+   *
+   * @param {Object} message The message to send.
+   * @private
+   */
+  sendBackgroundToContentScript_(message) {
+    this.portCache_.forEach((port) => port.postMessage(message));
+  }
+};
+
+/**
+ * The name of the port between the content script and background page.
+ * @const {string}
+ */
+ContentExtensionBridge.PORT_NAME = 'ExtensionBridge.Port';
+
+/**
+ * The name of the message between the content script and background to
+ * see if they're connected.
+ * @const {string}
+ */
+ContentExtensionBridge.PING_MSG = 'ExtensionBridge.Ping';
+
+/**
+ * The name of the message between the background and content script to
+ * confirm that they're connected.
+ * @const {string}
+ */
+ContentExtensionBridge.PONG_MSG = 'ExtensionBridge.Pong';
+
+/** @const {number} */
+ContentExtensionBridge.MAX_PING_ATTEMPTS = 5;
+
+/** @const {number} */
+ContentExtensionBridge.TIME_BETWEEN_PINGS_MS = 500;
+
+ContentExtensionBridge.init();
