@@ -52,9 +52,11 @@ constexpr CGFloat kButtonCornerRadius = 8;
                         IDS_IOS_FIRST_FOLLOW_TITLE,
                         base::SysNSStringToUTF16(self.followedWebChannel.title))
           textStyle:UIFontTextStyleTitle1];
-  UILabel* subTitleLabel =
-      [self labelWithText:l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_SUBTITLE)
-                textStyle:UIFontTextStyleHeadline];
+  UILabel* subTitleLabel = [self
+      labelWithText:l10n_util::GetNSStringF(
+                        IDS_IOS_FIRST_FOLLOW_SUBTITLE,
+                        base::SysNSStringToUTF16(self.followedWebChannel.title))
+          textStyle:UIFontTextStyleHeadline];
   UILabel* bodyLabel =
       [self labelWithText:l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_BODY)
                 textStyle:UIFontTextStyleBody];

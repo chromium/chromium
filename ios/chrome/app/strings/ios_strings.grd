@@ -937,7 +937,7 @@ See your search engine’s instructions for deleting your search history, if app
         You're following <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph>
       </message>
       <message name="IDS_IOS_FIRST_FOLLOW_SUBTITLE" desc="The subtitle of the first follow surface.">
-        You'll now see stories from it when you open a new tab.
+        You'll now see stories from <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph> when you open a new tab.
       </message>
       <message name="IDS_IOS_FIRST_FOLLOW_BODY" desc="The body of the first follow surface.">
         Sites you follow are saved in your Google account. You can Manage them in Discover Settings.
