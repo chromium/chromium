@@ -18,6 +18,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -119,6 +121,8 @@ std::ostream& operator<<(std::ostream& os, Correction& correction) {
 }
 
 Node::Node() = default;
+
+Node::Node(Node&&) = default;
 
 Node::~Node() = default;
 
@@ -301,10 +305,64 @@ void Node::Log(std::u16string built) const {
   }
 }
 
+// This task class loads URLs considered significant according to
+// `HistoryDatabase::InitURLEnumeratorForSignificant` but there's nothing
+// special about that implementation; we may do something different for
+// fuzzy matching. The goal in general is to load and keep a reasonably sized
+// set of likely relevant host names for fast fuzzy correction.
+class LoadSignificantUrls : public history::HistoryDBTask {
+ public:
+  using Callback = base::OnceCallback<void(Node)>;
+
+  LoadSignificantUrls(base::WaitableEvent* event, Callback callback)
+      : wait_event_(event), callback_(std::move(callback)) {
+    DVLOG(1) << "LoadSignificantUrls ctor thread "
+             << base::PlatformThread::CurrentId();
+  }
+  ~LoadSignificantUrls() override = default;
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    DVLOG(1) << "LoadSignificantUrls run on db thread "
+             << base::PlatformThread::CurrentId() << "; db: " << db;
+    history::URLDatabase::URLEnumerator enumerator;
+    if (db && db->InitURLEnumeratorForSignificant(&enumerator)) {
+      DVLOG(1) << "Got InMemoryDatabase";
+      history::URLRow row;
+      while (enumerator.GetNextURL(&row)) {
+        DVLOG(1) << "url #" << row.id() << ": " << row.url().host();
+        node_.Insert(base::ASCIIToUTF16(row.url().host()), 0);
+      }
+    } else {
+      DVLOG(1) << "No significant InMemoryDatabase";
+    }
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {
+    DVLOG(1) << "Done thread " << base::PlatformThread::CurrentId();
+    std::move(callback_).Run(std::move(node_));
+    wait_event_->Signal();
+  }
+
+ private:
+  Node node_;
+  raw_ptr<base::WaitableEvent> wait_event_;
+  Callback callback_;
+};
+
 }  // namespace fuzzy
 
 HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
-    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {}
+    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {
+  client->GetHistoryService()->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<fuzzy::LoadSignificantUrls>(
+          &urls_loaded_event_,
+          base::BindOnce(&HistoryFuzzyProvider::OnUrlsLoaded,
+                         weak_ptr_factory_.GetWeakPtr())),
+      &task_tracker_);
+}
 
 void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
                                  bool minimal_changes) {
@@ -312,6 +370,10 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
   matches_.clear();
   if (input.focus_type() != OmniboxFocusType::DEFAULT ||
       input.type() == metrics::OmniboxInputType::EMPTY) {
+    return;
+  }
+
+  if (!urls_loaded_event_.IsSignaled()) {
     return;
   }
 
@@ -373,4 +435,8 @@ void HistoryFuzzyProvider::AddMatchForText(std::u16string text) {
   match.contents_class.push_back(
       {0, AutocompleteMatch::ACMatchClassification::DIM});
   matches_.push_back(std::move(match));
+}
+
+void HistoryFuzzyProvider::OnUrlsLoaded(fuzzy::Node node) {
+  root_ = std::move(node);
 }

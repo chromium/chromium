@@ -9,6 +9,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -97,6 +100,8 @@ struct ToleranceSchedule {
 // Nodes form a trie structure used to find potential input corrections.
 struct Node {
   Node();
+  Node(Node&& node);
+  Node& operator=(Node&&) = default;
   ~Node();
 
   // Walk the trie, injecting nodes as necessary to build the given `text`
@@ -177,6 +182,9 @@ class HistoryFuzzyProvider : public HistoryProvider {
   // Adds one match for the given corrected `text`.
   void AddMatchForText(std::u16string text);
 
+  // Main thread callback to receive trie of URLs loaded from database.
+  void OnUrlsLoaded(fuzzy::Node node);
+
   AutocompleteInput autocomplete_input_;
 
   // TODO(orinj): For now this is memory resident for proof of concept, but
@@ -188,6 +196,18 @@ class HistoryFuzzyProvider : public HistoryProvider {
   //  consider skipping them since fuzzy matching somewhat assumes human errors
   //  generated while typing, not copy/pasting, etc.
   fuzzy::Node root_;
+
+  // This provides a thread-safe way to check that loading has completed.
+  // Keeping the event may not be necessary since signal check is done from
+  // same main thread, but having it should provide some robustness in case
+  // we autocomplete from another thread or while db task is running.
+  base::WaitableEvent urls_loaded_event_;
+
+  // Task tracker for URL data loading.
+  base::CancelableTaskTracker task_tracker_;
+
+  // Weak pointer factory for callback binding safety.
+  base::WeakPtrFactory<HistoryFuzzyProvider> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_HISTORY_FUZZY_PROVIDER_H_
