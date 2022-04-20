@@ -151,16 +151,16 @@ bool UnionTraits<media::mojom::CodecMetadataDataView,
     Read(media::mojom::CodecMetadataDataView data,
          media::BitstreamBufferMetadata* out) {
   switch (data.tag()) {
-    case media::mojom::CodecMetadataDataView::Tag::H264: {
+    case media::mojom::CodecMetadataDataView::Tag::kH264: {
       return data.ReadH264(&out->h264);
     }
-    case media::mojom::CodecMetadataDataView::Tag::VP8: {
+    case media::mojom::CodecMetadataDataView::Tag::kVp8: {
       return data.ReadVp8(&out->vp8);
     }
-    case media::mojom::CodecMetadataDataView::Tag::VP9: {
+    case media::mojom::CodecMetadataDataView::Tag::kVp9: {
       return data.ReadVp9(&out->vp9);
     }
-    case media::mojom::CodecMetadataDataView::Tag::AV1: {
+    case media::mojom::CodecMetadataDataView::Tag::kAv1: {
       return data.ReadAv1(&out->av1);
     }
   }

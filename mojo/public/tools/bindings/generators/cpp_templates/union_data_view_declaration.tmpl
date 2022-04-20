@@ -26,7 +26,7 @@ class {{union.name}}DataView {
 {%- for field in union.fields %}
 {%-   set kind = field.kind %}
 {%-   set name = field.name %}
-  bool is_{{name}}() const { return data_->tag == Tag::{{name|upper}}; }
+  bool is_{{name}}() const { return data_->tag == Tag::k{{name|under_to_camel}}; }
 
 {%-   if kind|is_object_kind %}
   inline void Get{{name|under_to_camel}}DataView(

@@ -103,16 +103,16 @@ struct UnionTraits<media::mojom::CodecMetadataDataView,
   static media::mojom::CodecMetadataDataView::Tag GetTag(
       const media::BitstreamBufferMetadata& metadata) {
     if (metadata.h264) {
-      return media::mojom::CodecMetadataDataView::Tag::H264;
+      return media::mojom::CodecMetadataDataView::Tag::kH264;
     } else if (metadata.vp8) {
-      return media::mojom::CodecMetadataDataView::Tag::VP8;
+      return media::mojom::CodecMetadataDataView::Tag::kVp8;
     } else if (metadata.vp9) {
-      return media::mojom::CodecMetadataDataView::Tag::VP9;
+      return media::mojom::CodecMetadataDataView::Tag::kVp9;
     } else if (metadata.av1) {
-      return media::mojom::CodecMetadataDataView::Tag::AV1;
+      return media::mojom::CodecMetadataDataView::Tag::kAv1;
     }
     NOTREACHED();
-    return media::mojom::CodecMetadataDataView::Tag::VP8;
+    return media::mojom::CodecMetadataDataView::Tag::kVp8;
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {

@@ -13,9 +13,9 @@ network::mojom::TransferableDirectoryDataView::Tag UnionTraits<
     network::TransferableDirectory>::GetTag(network::TransferableDirectory&
                                                 input) {
   if (input.HasValidHandle()) {
-    return network::mojom::TransferableDirectoryDataView::Tag::HANDLE_FOR_IPC;
+    return network::mojom::TransferableDirectoryDataView::Tag::kHandleForIpc;
   } else {
-    return network::mojom::TransferableDirectoryDataView::Tag::PATH;
+    return network::mojom::TransferableDirectoryDataView::Tag::kPath;
   }
 }
 
@@ -36,11 +36,11 @@ bool UnionTraits<network::mojom::TransferableDirectoryDataView,
     Read(network::mojom::TransferableDirectoryDataView in,
          network::TransferableDirectory* out) {
   switch (in.tag()) {
-    case network::mojom::TransferableDirectoryDataView::Tag::HANDLE_FOR_IPC:
+    case network::mojom::TransferableDirectoryDataView::Tag::kHandleForIpc:
       *out = network::TransferableDirectory(in.TakeHandleForIpc());
       return true;
 
-    case network::mojom::TransferableDirectoryDataView::Tag::PATH: {
+    case network::mojom::TransferableDirectoryDataView::Tag::kPath: {
       base::FilePath path;
       if (!in.ReadPath(&path)) {
         return false;

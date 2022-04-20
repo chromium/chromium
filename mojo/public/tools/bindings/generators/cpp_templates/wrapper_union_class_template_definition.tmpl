@@ -5,7 +5,7 @@ template <typename UnionPtrType>
   UnionPtrType rv(New());
   switch (tag_) {
 {%- for field in union.fields %}
-    case Tag::{{field.name|upper}}:
+    case Tag::k{{field.name|under_to_camel}}:
 {%-   if field.kind|is_object_kind or
          field.kind|is_any_handle_or_interface_kind %}
       rv->set_{{field.name}}(mojo::Clone(*data_.{{field.name}}));
@@ -27,7 +27,7 @@ bool {{union.name}}::Equals(const T& other) const {
 
   switch (tag_) {
 {%- for field in union.fields %}
-    case Tag::{{field.name|upper}}:
+    case Tag::k{{field.name|under_to_camel}}:
 {%-   if field.kind|is_object_kind or
          field.kind|is_any_handle_or_interface_kind %}
       return mojo::Equals(*(data_.{{field.name}}), *(other.data_.{{field.name}}));

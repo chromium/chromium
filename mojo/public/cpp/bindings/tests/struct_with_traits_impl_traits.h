@@ -168,9 +168,9 @@ struct UnionTraits<test::UnionWithTraitsDataView,
   static test::UnionWithTraitsDataView::Tag GetTag(
       const std::unique_ptr<test::UnionWithTraitsBase>& data) {
     if (data->type() == test::UnionWithTraitsBase::Type::INT32)
-      return test::UnionWithTraitsDataView::Tag::F_INT32;
+      return test::UnionWithTraitsDataView::Tag::kFInt32;
 
-    return test::UnionWithTraitsDataView::Tag::F_STRUCT;
+    return test::UnionWithTraitsDataView::Tag::kFStruct;
   }
 
   static int32_t f_int32(
@@ -186,11 +186,11 @@ struct UnionTraits<test::UnionWithTraitsDataView,
   static bool Read(test::UnionWithTraitsDataView data,
                    std::unique_ptr<test::UnionWithTraitsBase>* out) {
     switch (data.tag()) {
-      case test::UnionWithTraitsDataView::Tag::F_INT32: {
+      case test::UnionWithTraitsDataView::Tag::kFInt32: {
         out->reset(new test::UnionWithTraitsInt32(data.f_int32()));
         return true;
       }
-      case test::UnionWithTraitsDataView::Tag::F_STRUCT: {
+      case test::UnionWithTraitsDataView::Tag::kFStruct: {
         auto* struct_object = new test::UnionWithTraitsStruct();
         out->reset(struct_object);
         return data.ReadFStruct(&struct_object->get_mutable_struct());

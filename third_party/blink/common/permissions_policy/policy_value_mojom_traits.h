@@ -20,17 +20,17 @@ struct BLINK_COMMON_EXPORT
       const blink::PolicyValue& value) {
     switch (value.Type()) {
       case blink::mojom::PolicyValueType::kNull:
-        return blink::mojom::PolicyValueDataView::Tag::NULL_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kNullValue;
       case blink::mojom::PolicyValueType::kBool:
-        return blink::mojom::PolicyValueDataView::Tag::BOOL_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kBoolValue;
       case blink::mojom::PolicyValueType::kDecDouble:
-        return blink::mojom::PolicyValueDataView::Tag::DEC_DOUBLE_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kDecDoubleValue;
       case blink::mojom::PolicyValueType::kEnum:
-        return blink::mojom::PolicyValueDataView::Tag::ENUM_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::kEnumValue;
     }
 
     NOTREACHED();
-    return blink::mojom::PolicyValueDataView::Tag::NULL_VALUE;
+    return blink::mojom::PolicyValueDataView::Tag::kNullValue;
   }
   static bool null_value(const blink::PolicyValue& value) { return false; }
   static bool bool_value(const blink::PolicyValue& value) {

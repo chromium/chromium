@@ -20,13 +20,13 @@ bool UnionTraits<blink::mojom::FrameTokenDataView, blink::FrameToken>::Read(
     blink::FrameToken* output) {
   using Tag = blink::mojom::FrameTokenDataView::Tag;
   switch (input.tag()) {
-    case Tag::LOCAL_FRAME_TOKEN: {
+    case Tag::kLocalFrameToken: {
       blink::LocalFrameToken token;
       bool ret = input.ReadLocalFrameToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::REMOTE_FRAME_TOKEN: {
+    case Tag::kRemoteFrameToken: {
       blink::RemoteFrameToken token;
       bool ret = input.ReadRemoteFrameToken(&token);
       *output = token;
@@ -41,9 +41,9 @@ UnionTraits<blink::mojom::FrameTokenDataView, blink::FrameToken>::GetTag(
     const blink::FrameToken& token) {
   using Tag = blink::mojom::FrameTokenDataView::Tag;
   if (token.Is<blink::LocalFrameToken>())
-    return Tag::LOCAL_FRAME_TOKEN;
+    return Tag::kLocalFrameToken;
   DCHECK(token.Is<blink::RemoteFrameToken>());
-  return Tag::REMOTE_FRAME_TOKEN;
+  return Tag::kRemoteFrameToken;
 }
 
 // static
@@ -72,19 +72,19 @@ bool UnionTraits<blink::mojom::WorkerTokenDataView, blink::WorkerToken>::Read(
     blink::WorkerToken* output) {
   using Tag = blink::mojom::WorkerTokenDataView::Tag;
   switch (input.tag()) {
-    case Tag::DEDICATED_WORKER_TOKEN: {
+    case Tag::kDedicatedWorkerToken: {
       blink::DedicatedWorkerToken token;
       bool ret = input.ReadDedicatedWorkerToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::SERVICE_WORKER_TOKEN: {
+    case Tag::kServiceWorkerToken: {
       blink::ServiceWorkerToken token;
       bool ret = input.ReadServiceWorkerToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::SHARED_WORKER_TOKEN: {
+    case Tag::kSharedWorkerToken: {
       blink::SharedWorkerToken token;
       bool ret = input.ReadSharedWorkerToken(&token);
       *output = token;
@@ -100,11 +100,11 @@ UnionTraits<blink::mojom::WorkerTokenDataView, blink::WorkerToken>::GetTag(
     const blink::WorkerToken& token) {
   using Tag = blink::mojom::WorkerTokenDataView::Tag;
   if (token.Is<blink::DedicatedWorkerToken>())
-    return Tag::DEDICATED_WORKER_TOKEN;
+    return Tag::kDedicatedWorkerToken;
   if (token.Is<blink::ServiceWorkerToken>())
-    return Tag::SERVICE_WORKER_TOKEN;
+    return Tag::kServiceWorkerToken;
   DCHECK(token.Is<blink::SharedWorkerToken>());
-  return Tag::SHARED_WORKER_TOKEN;
+  return Tag::kSharedWorkerToken;
 }
 
 // static
@@ -140,25 +140,25 @@ bool UnionTraits<blink::mojom::WorkletTokenDataView, blink::WorkletToken>::Read(
     blink::WorkletToken* output) {
   using Tag = blink::mojom::WorkletTokenDataView::Tag;
   switch (input.tag()) {
-    case Tag::ANIMATION_WORKLET_TOKEN: {
+    case Tag::kAnimationWorkletToken: {
       blink::AnimationWorkletToken token;
       bool ret = input.ReadAnimationWorkletToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::AUDIO_WORKLET_TOKEN: {
+    case Tag::kAudioWorkletToken: {
       blink::AudioWorkletToken token;
       bool ret = input.ReadAudioWorkletToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::LAYOUT_WORKLET_TOKEN: {
+    case Tag::kLayoutWorkletToken: {
       blink::LayoutWorkletToken token;
       bool ret = input.ReadLayoutWorkletToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::PAINT_WORKLET_TOKEN: {
+    case Tag::kPaintWorkletToken: {
       blink::PaintWorkletToken token;
       bool ret = input.ReadPaintWorkletToken(&token);
       *output = token;
@@ -174,13 +174,13 @@ UnionTraits<blink::mojom::WorkletTokenDataView, blink::WorkletToken>::GetTag(
     const blink::WorkletToken& token) {
   using Tag = blink::mojom::WorkletTokenDataView::Tag;
   if (token.Is<blink::AnimationWorkletToken>())
-    return Tag::ANIMATION_WORKLET_TOKEN;
+    return Tag::kAnimationWorkletToken;
   if (token.Is<blink::AudioWorkletToken>())
-    return Tag::AUDIO_WORKLET_TOKEN;
+    return Tag::kAudioWorkletToken;
   if (token.Is<blink::LayoutWorkletToken>())
-    return Tag::LAYOUT_WORKLET_TOKEN;
+    return Tag::kLayoutWorkletToken;
   DCHECK(token.Is<blink::PaintWorkletToken>());
-  return Tag::PAINT_WORKLET_TOKEN;
+  return Tag::kPaintWorkletToken;
 }
 
 // static
@@ -230,49 +230,49 @@ bool UnionTraits<blink::mojom::ExecutionContextTokenDataView,
          blink::ExecutionContextToken* output) {
   using Tag = blink::mojom::ExecutionContextTokenDataView::Tag;
   switch (input.tag()) {
-    case Tag::LOCAL_FRAME_TOKEN: {
+    case Tag::kLocalFrameToken: {
       blink::LocalFrameToken token;
       bool ret = input.ReadLocalFrameToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::DEDICATED_WORKER_TOKEN: {
+    case Tag::kDedicatedWorkerToken: {
       blink::DedicatedWorkerToken token;
       bool ret = input.ReadDedicatedWorkerToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::SERVICE_WORKER_TOKEN: {
+    case Tag::kServiceWorkerToken: {
       blink::ServiceWorkerToken token;
       bool ret = input.ReadServiceWorkerToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::SHARED_WORKER_TOKEN: {
+    case Tag::kSharedWorkerToken: {
       blink::SharedWorkerToken token;
       bool ret = input.ReadSharedWorkerToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::ANIMATION_WORKLET_TOKEN: {
+    case Tag::kAnimationWorkletToken: {
       blink::AnimationWorkletToken token;
       bool ret = input.ReadAnimationWorkletToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::AUDIO_WORKLET_TOKEN: {
+    case Tag::kAudioWorkletToken: {
       blink::AudioWorkletToken token;
       bool ret = input.ReadAudioWorkletToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::LAYOUT_WORKLET_TOKEN: {
+    case Tag::kLayoutWorkletToken: {
       blink::LayoutWorkletToken token;
       bool ret = input.ReadLayoutWorkletToken(&token);
       *output = token;
       return ret;
     }
-    case Tag::PAINT_WORKLET_TOKEN: {
+    case Tag::kPaintWorkletToken: {
       blink::PaintWorkletToken token;
       bool ret = input.ReadPaintWorkletToken(&token);
       *output = token;
@@ -289,21 +289,21 @@ blink::mojom::ExecutionContextTokenDataView::Tag UnionTraits<
                                               token) {
   using Tag = blink::mojom::ExecutionContextTokenDataView::Tag;
   if (token.Is<blink::LocalFrameToken>())
-    return Tag::LOCAL_FRAME_TOKEN;
+    return Tag::kLocalFrameToken;
   if (token.Is<blink::DedicatedWorkerToken>())
-    return Tag::DEDICATED_WORKER_TOKEN;
+    return Tag::kDedicatedWorkerToken;
   if (token.Is<blink::ServiceWorkerToken>())
-    return Tag::SERVICE_WORKER_TOKEN;
+    return Tag::kServiceWorkerToken;
   if (token.Is<blink::SharedWorkerToken>())
-    return Tag::SHARED_WORKER_TOKEN;
+    return Tag::kSharedWorkerToken;
   if (token.Is<blink::AnimationWorkletToken>())
-    return Tag::ANIMATION_WORKLET_TOKEN;
+    return Tag::kAnimationWorkletToken;
   if (token.Is<blink::AudioWorkletToken>())
-    return Tag::AUDIO_WORKLET_TOKEN;
+    return Tag::kAudioWorkletToken;
   if (token.Is<blink::LayoutWorkletToken>())
-    return Tag::LAYOUT_WORKLET_TOKEN;
+    return Tag::kLayoutWorkletToken;
   DCHECK(token.Is<blink::PaintWorkletToken>());
-  return Tag::PAINT_WORKLET_TOKEN;
+  return Tag::kPaintWorkletToken;
 }
 
 // static

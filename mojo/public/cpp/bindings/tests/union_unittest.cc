@@ -81,129 +81,129 @@ TEST(UnionTest, PlainOldDataGetterSetter) {
   EXPECT_EQ(10, pod->get_f_int8());
   EXPECT_TRUE(pod->is_f_int8());
   EXPECT_FALSE(pod->is_f_int8_other());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT8);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt8);
 
   pod->set_f_uint8(11);
   EXPECT_EQ(11, pod->get_f_uint8());
   EXPECT_TRUE(pod->is_f_uint8());
   EXPECT_FALSE(pod->is_f_int8());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_UINT8);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFUint8);
 
   pod->set_f_int16(12);
   EXPECT_EQ(12, pod->get_f_int16());
   EXPECT_TRUE(pod->is_f_int16());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT16);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt16);
 
   pod->set_f_uint16(13);
   EXPECT_EQ(13, pod->get_f_uint16());
   EXPECT_TRUE(pod->is_f_uint16());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_UINT16);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFUint16);
 
   pod->set_f_int32(14);
   EXPECT_EQ(14, pod->get_f_int32());
   EXPECT_TRUE(pod->is_f_int32());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT32);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt32);
 
   pod->set_f_uint32(uint32_t{15});
   EXPECT_EQ(uint32_t{15}, pod->get_f_uint32());
   EXPECT_TRUE(pod->is_f_uint32());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_UINT32);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFUint32);
 
   pod->set_f_int64(16);
   EXPECT_EQ(16, pod->get_f_int64());
   EXPECT_TRUE(pod->is_f_int64());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT64);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt64);
 
   pod->set_f_uint64(uint64_t{17});
   EXPECT_EQ(uint64_t{17}, pod->get_f_uint64());
   EXPECT_TRUE(pod->is_f_uint64());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_UINT64);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFUint64);
 
   pod->set_f_float(1.5);
   EXPECT_EQ(1.5, pod->get_f_float());
   EXPECT_TRUE(pod->is_f_float());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_FLOAT);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFFloat);
 
   pod->set_f_double(1.9);
   EXPECT_EQ(1.9, pod->get_f_double());
   EXPECT_TRUE(pod->is_f_double());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_DOUBLE);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFDouble);
 
   pod->set_f_bool(true);
   EXPECT_TRUE(pod->get_f_bool());
   pod->set_f_bool(false);
   EXPECT_FALSE(pod->get_f_bool());
   EXPECT_TRUE(pod->is_f_bool());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_BOOL);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFBool);
 
   pod->set_f_enum(AnEnum::SECOND);
   EXPECT_EQ(AnEnum::SECOND, pod->get_f_enum());
   EXPECT_TRUE(pod->is_f_enum());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_ENUM);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFEnum);
 }
 
 TEST(UnionTest, PlainOldDataFactoryFunction) {
   PodUnionPtr pod = PodUnion::NewFInt8(11);
   EXPECT_EQ(11, pod->get_f_int8());
   EXPECT_TRUE(pod->is_f_int8());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT8);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt8);
 
   pod = PodUnion::NewFInt16(12);
   EXPECT_EQ(12, pod->get_f_int16());
   EXPECT_TRUE(pod->is_f_int16());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT16);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt16);
 
   pod = PodUnion::NewFUint16(13);
   EXPECT_EQ(13, pod->get_f_uint16());
   EXPECT_TRUE(pod->is_f_uint16());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_UINT16);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFUint16);
 
   pod = PodUnion::NewFInt32(14);
   EXPECT_EQ(14, pod->get_f_int32());
   EXPECT_TRUE(pod->is_f_int32());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT32);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt32);
 
   pod = PodUnion::NewFUint32(15);
   EXPECT_EQ(uint32_t{15}, pod->get_f_uint32());
   EXPECT_TRUE(pod->is_f_uint32());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_UINT32);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFUint32);
 
   pod = PodUnion::NewFInt64(16);
   EXPECT_EQ(16, pod->get_f_int64());
   EXPECT_TRUE(pod->is_f_int64());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_INT64);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFInt64);
 
   pod = PodUnion::NewFUint64(17);
   EXPECT_EQ(uint64_t{17}, pod->get_f_uint64());
   EXPECT_TRUE(pod->is_f_uint64());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_UINT64);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFUint64);
 
   pod = PodUnion::NewFFloat(1.5);
   EXPECT_EQ(1.5, pod->get_f_float());
   EXPECT_TRUE(pod->is_f_float());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_FLOAT);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFFloat);
 
   pod = PodUnion::NewFDouble(1.9);
   EXPECT_EQ(1.9, pod->get_f_double());
   EXPECT_TRUE(pod->is_f_double());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_DOUBLE);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFDouble);
 
   pod = PodUnion::NewFBool(true);
   EXPECT_TRUE(pod->get_f_bool());
   pod = PodUnion::NewFBool(false);
   EXPECT_FALSE(pod->get_f_bool());
   EXPECT_TRUE(pod->is_f_bool());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_BOOL);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFBool);
 
   pod = PodUnion::NewFEnum(AnEnum::SECOND);
   EXPECT_EQ(AnEnum::SECOND, pod->get_f_enum());
   EXPECT_TRUE(pod->is_f_enum());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_ENUM);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFEnum);
 
   pod = PodUnion::NewFEnum(AnEnum::FIRST);
   EXPECT_EQ(AnEnum::FIRST, pod->get_f_enum());
   EXPECT_TRUE(pod->is_f_enum());
-  EXPECT_EQ(pod->which(), PodUnion::Tag::F_ENUM);
+  EXPECT_EQ(pod->which(), PodUnion::Tag::kFEnum);
 }
 
 TEST(UnionTest, PodEquals) {
@@ -224,7 +224,7 @@ TEST(UnionTest, PodClone) {
   PodUnionPtr pod_clone = pod.Clone();
   EXPECT_EQ(10, pod_clone->get_f_int8());
   EXPECT_TRUE(pod_clone->is_f_int8());
-  EXPECT_EQ(pod_clone->which(), PodUnion::Tag::F_INT8);
+  EXPECT_EQ(pod_clone->which(), PodUnion::Tag::kFInt8);
 }
 
 TEST(UnionTest, PodSerialization) {
@@ -239,7 +239,7 @@ TEST(UnionTest, PodSerialization) {
 
   EXPECT_EQ(10, pod2->get_f_int8());
   EXPECT_TRUE(pod2->is_f_int8());
-  EXPECT_EQ(pod2->which(), PodUnion::Tag::F_INT8);
+  EXPECT_EQ(pod2->which(), PodUnion::Tag::kFInt8);
 }
 
 TEST(UnionTest, EnumSerialization) {
@@ -254,7 +254,7 @@ TEST(UnionTest, EnumSerialization) {
 
   EXPECT_EQ(AnEnum::SECOND, pod2->get_f_enum());
   EXPECT_TRUE(pod2->is_f_enum());
-  EXPECT_EQ(pod2->which(), PodUnion::Tag::F_ENUM);
+  EXPECT_EQ(pod2->which(), PodUnion::Tag::kFEnum);
 }
 
 TEST(UnionTest, PodValidation) {
@@ -372,7 +372,7 @@ TEST(UnionTest, StringGetterSetter) {
 
   EXPECT_EQ(hello, pod->get_f_string());
   EXPECT_TRUE(pod->is_f_string());
-  EXPECT_EQ(pod->which(), ObjectUnion::Tag::F_STRING);
+  EXPECT_EQ(pod->which(), ObjectUnion::Tag::kFString);
 }
 
 TEST(UnionTest, StringFactoryFunction) {
@@ -381,7 +381,7 @@ TEST(UnionTest, StringFactoryFunction) {
 
   EXPECT_EQ(hello, pod->get_f_string());
   EXPECT_TRUE(pod->is_f_string());
-  EXPECT_EQ(pod->which(), ObjectUnion::Tag::F_STRING);
+  EXPECT_EQ(pod->which(), ObjectUnion::Tag::kFString);
 }
 
 TEST(UnionTest, StringEquals) {
@@ -401,7 +401,7 @@ TEST(UnionTest, StringClone) {
   ObjectUnionPtr pod_clone = pod.Clone();
   EXPECT_EQ(hello, pod_clone->get_f_string());
   EXPECT_TRUE(pod_clone->is_f_string());
-  EXPECT_EQ(pod_clone->which(), ObjectUnion::Tag::F_STRING);
+  EXPECT_EQ(pod_clone->which(), ObjectUnion::Tag::kFString);
 }
 
 TEST(UnionTest, StringSerialization) {
@@ -416,7 +416,7 @@ TEST(UnionTest, StringSerialization) {
   mojo::internal::Deserialize<ObjectUnionDataView>(data, &pod2, nullptr);
   EXPECT_EQ(hello, pod2->get_f_string());
   EXPECT_TRUE(pod2->is_f_string());
-  EXPECT_EQ(pod2->which(), ObjectUnion::Tag::F_STRING);
+  EXPECT_EQ(pod2->which(), ObjectUnion::Tag::kFString);
 }
 
 TEST(UnionTest, NullStringValidation) {
@@ -425,7 +425,7 @@ TEST(UnionTest, NullStringValidation) {
   mojo::internal::Buffer& buffer = *message.payload_buffer();
   mojo::internal::MessageFragment<internal::ObjectUnion_Data> fragment(message);
   fragment.Allocate();
-  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
+  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::kFString;
   fragment->data.unknown = 0x0;
   mojo::internal::ValidationContext validation_context(
       fragment.data(), static_cast<uint32_t>(size), 0, 0);
@@ -439,7 +439,7 @@ TEST(UnionTest, StringPointerOverflowValidation) {
   mojo::internal::Buffer& buffer = *message.payload_buffer();
   mojo::internal::MessageFragment<internal::ObjectUnion_Data> fragment(message);
   fragment.Allocate();
-  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
+  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::kFString;
   fragment->data.unknown = 0xFFFFFFFFFFFFFFFF;
   mojo::internal::ValidationContext validation_context(
       fragment.data(), static_cast<uint32_t>(size), 0, 0);
@@ -452,7 +452,7 @@ TEST(UnionTest, StringValidateOOB) {
   mojo::internal::Buffer& buffer = *message.payload_buffer();
   mojo::internal::MessageFragment<internal::ObjectUnion_Data> fragment(message);
   fragment.Allocate();
-  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
+  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::kFString;
 
   fragment->data.f_f_string.offset = 8;
   char* ptr = reinterpret_cast<char*>(&fragment->data.f_f_string);

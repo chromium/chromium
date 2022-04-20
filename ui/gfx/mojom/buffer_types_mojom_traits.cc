@@ -111,19 +111,19 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
 
   switch (platform_handle->which()) {
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::
-        SHARED_MEMORY_HANDLE:
+        kSharedMemoryHandle:
       out->type = gfx::SHARED_MEMORY_BUFFER;
       out->region = std::move(platform_handle->get_shared_memory_handle());
       return true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::
-        NATIVE_PIXMAP_HANDLE:
+        kNativePixmapHandle:
       out->type = gfx::NATIVE_PIXMAP;
       out->native_pixmap_handle =
           std::move(platform_handle->get_native_pixmap_handle());
       return true;
 #elif BUILDFLAG(IS_MAC)
-    case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::MACH_PORT: {
+    case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::kMachPort: {
       out->type = gfx::IO_SURFACE_BUFFER;
       if (!platform_handle->get_mach_port().is_mach_send())
         return false;
@@ -138,7 +138,7 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
       return true;
     }
 #elif BUILDFLAG(IS_WIN)
-    case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::DXGI_HANDLE: {
+    case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::kDxgiHandle: {
       out->type = gfx::DXGI_SHARED_HANDLE;
       auto dxgi_handle = std::move(platform_handle->get_dxgi_handle());
       out->dxgi_handle = dxgi_handle->buffer_handle.TakeHandle();
@@ -148,7 +148,7 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
     }
 #elif BUILDFLAG(IS_ANDROID)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::
-        ANDROID_HARDWARE_BUFFER_HANDLE: {
+        kAndroidHardwareBufferHandle: {
       out->type = gfx::ANDROID_HARDWARE_BUFFER;
       gfx::mojom::AHardwareBufferHandlePtr buffer_handle =
           std::move(platform_handle->get_android_hardware_buffer_handle());

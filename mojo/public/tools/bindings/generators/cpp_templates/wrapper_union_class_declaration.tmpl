@@ -64,11 +64,11 @@ class {{export_attribute}} {{union.name}} {
 
 {%  for field in union.fields %}
   {{ kythe_annotation("%s.%s"|format(union_prefix, field.name)) }}
-  bool is_{{field.name}}() const { return tag_ == Tag::{{field.name|upper}}; }
+  bool is_{{field.name}}() const { return tag_ == Tag::k{{field.name|under_to_camel}}; }
 
   {{ kythe_annotation("%s.%s"|format(union_prefix, field.name)) }}
   {{field.kind|cpp_union_getter_return_type}} get_{{field.name}}() const {
-    CHECK(tag_ == Tag::{{field.name|upper}});
+    CHECK(tag_ == Tag::k{{field.name|under_to_camel}});
 {%-   if field.kind|is_object_kind or
          field.kind|is_any_handle_or_interface_kind %}
     return *(data_.{{field.name}});

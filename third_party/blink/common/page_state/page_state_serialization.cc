@@ -705,22 +705,22 @@ void ReadResourceRequestBody(
   for (const auto& element : mojo_body->elements) {
     mojom::Element::Tag tag = element->which();
     switch (tag) {
-      case mojom::Element::Tag::BYTES:
+      case mojom::Element::Tag::kBytes:
         AppendDataToRequestBody(
             request_body,
             reinterpret_cast<const char*>(element->get_bytes().data()),
             element->get_bytes().size());
         break;
-      case mojom::Element::Tag::FILE: {
+      case mojom::Element::Tag::kFile: {
         mojom::File* file = element->get_file().get();
         AppendFileRangeToRequestBody(request_body, file->path, file->offset,
                                      file->length, file->modification_time);
         break;
       }
-      case mojom::Element::Tag::BLOB_UUID:
+      case mojom::Element::Tag::kBlobUuid:
         // No longer supported.
         break;
-      case mojom::Element::Tag::DEPRECATED_FILE_SYSTEM_FILE:
+      case mojom::Element::Tag::kDeprecatedFileSystemFile:
         // No longer supported.
         break;
     }

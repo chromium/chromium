@@ -33,10 +33,10 @@ bool StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams>::Read(
   gfx::mojom::CALayerContentDataView content_data;
   data.GetContentDataView(&content_data);
   switch (content_data.tag()) {
-    case gfx::mojom::CALayerContentDataView::Tag::CA_CONTEXT_ID:
+    case gfx::mojom::CALayerContentDataView::Tag::kCaContextId:
       out->ca_context_id = content_data.ca_context_id();
       break;
-    case gfx::mojom::CALayerContentDataView::Tag::IO_SURFACE_MACH_PORT:
+    case gfx::mojom::CALayerContentDataView::Tag::kIoSurfaceMachPort:
 #if BUILDFLAG(IS_MAC)
       mojo::PlatformHandle platform_handle =
           content_data.TakeIoSurfaceMachPort();
