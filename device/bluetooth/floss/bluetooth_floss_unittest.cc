@@ -286,7 +286,7 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
   // Simulate adapter enabled event.
   fake_floss_manager_client_->NotifyObservers(
       base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
-        observer->AdapterEnabledChanged(/*hci=*/0, /*enabled=*/true);
+        observer->AdapterEnabledChanged(/*adapter=*/0, /*enabled=*/true);
       }));
   base::RunLoop().RunUntilIdle();
 
@@ -301,6 +301,21 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
   EXPECT_TRUE(device2->IsPaired());
   EXPECT_TRUE(device1->IsConnected());
   EXPECT_FALSE(device2->IsConnected());
+}
+
+TEST_F(BluetoothFlossTest, DisabledAdapterClearsDevices) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  EXPECT_TRUE(adapter_->GetDevices().size() > 0);
+  // Simulate adapter enabled event.
+  fake_floss_manager_client_->NotifyObservers(
+      base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
+        observer->AdapterEnabledChanged(/*adapter=*/0, /*enabled=*/false);
+      }));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(adapter_->GetDevices().empty());
 }
 
 TEST_F(BluetoothFlossTest, RepeatsDiscoverySession) {
