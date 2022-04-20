@@ -95,7 +95,8 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
                                unsigned selector_index,
                                unsigned position,
                                AddRuleFlags,
-                               const ContainerQuery*);
+                               const ContainerQuery*,
+                               const StyleScope*);
 
   RuleData(StyleRule*,
            unsigned selector_index,
@@ -108,6 +109,7 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   unsigned GetPosition() const { return position_; }
   StyleRule* Rule() const { return rule_; }
   const ContainerQuery* GetContainerQuery() const;
+  const StyleScope* GetStyleScope() const;
   const CSSSelector& Selector() const {
     return rule_->SelectorList().SelectorAt(selector_index_);
   }
@@ -181,13 +183,15 @@ class CORE_EXPORT ExtendedRuleData : public RuleData {
                    unsigned selector_index,
                    unsigned position,
                    AddRuleFlags,
-                   const ContainerQuery*);
+                   const ContainerQuery*,
+                   const StyleScope*);
   void TraceAfterDispatch(Visitor*) const;
 
  private:
   friend class RuleData;
 
   Member<const ContainerQuery> container_query_;
+  Member<const StyleScope> style_scope_;
 };
 
 template <>
@@ -412,13 +416,15 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      const MediaQueryEvaluator& medium,
                      AddRuleFlags,
                      const ContainerQuery*,
-                     CascadeLayer*);
+                     CascadeLayer*,
+                     const StyleScope*);
   bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData*);
   void AddRule(StyleRule*,
                unsigned selector_index,
                AddRuleFlags,
                const ContainerQuery*,
-               const CascadeLayer*);
+               const CascadeLayer*,
+               const StyleScope*);
 
   void SortKeyframesRulesIfNeeded();
 

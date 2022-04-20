@@ -70,7 +70,7 @@ class RuleFeatureSetTest : public testing::Test {
     for (unsigned i = 0; i < indices.size(); ++i) {
       RuleData* rule_data = RuleData::MaybeCreate(
           style_rule, indices[i], 0, kRuleHasNoSpecialState,
-          nullptr /* container_query */);
+          nullptr /* container_query */, nullptr /* scope */);
       DCHECK(rule_data);
       if (set.CollectFeaturesFromRuleData(rule_data))
         result = RuleFeatureSet::SelectorPreMatch::kSelectorMayMatch;

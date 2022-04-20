@@ -88,7 +88,8 @@ RuleData* RuleData::MaybeCreate(StyleRule* rule,
                                 unsigned selector_index,
                                 unsigned position,
                                 AddRuleFlags add_rule_flags,
-                                const ContainerQuery* container_query) {
+                                const ContainerQuery* container_query,
+                                const StyleScope* style_scope) {
   // The selector index field in RuleData is only 13 bits so we can't support
   // selectors at index 8192 or beyond.
   // See https://crbug.com/804179
@@ -96,10 +97,10 @@ RuleData* RuleData::MaybeCreate(StyleRule* rule,
     return nullptr;
   if (position >= (1 << RuleData::kPositionBits))
     return nullptr;
-  if (container_query) {
+  if (container_query || style_scope) {
     return MakeGarbageCollected<ExtendedRuleData>(
         base::PassKey<RuleData>(), rule, selector_index, position,
-        add_rule_flags, container_query);
+        add_rule_flags, container_query, style_scope);
   }
   return MakeGarbageCollected<RuleData>(rule, selector_index, position,
                                         add_rule_flags);
@@ -332,9 +333,11 @@ void RuleSet::AddRule(StyleRule* rule,
                       unsigned selector_index,
                       AddRuleFlags add_rule_flags,
                       const ContainerQuery* container_query,
-                      const CascadeLayer* cascade_layer) {
-  RuleData* rule_data = RuleData::MaybeCreate(rule, selector_index, rule_count_,
-                                              add_rule_flags, container_query);
+                      const CascadeLayer* cascade_layer,
+                      const StyleScope* style_scope) {
+  RuleData* rule_data =
+      RuleData::MaybeCreate(rule, selector_index, rule_count_, add_rule_flags,
+                            container_query, style_scope);
   if (!rule_data) {
     // This can happen if selector_index or position is out of range.
     return;
@@ -358,7 +361,7 @@ void RuleSet::AddRule(StyleRule* rule,
   if (rule_data->LinkMatchType() == CSSSelector::kMatchLink) {
     RuleData* visited_dependent = RuleData::MaybeCreate(
         rule, rule_data->SelectorIndex(), rule_data->GetPosition(),
-        add_rule_flags | kRuleIsVisitedDependent, container_query);
+        add_rule_flags | kRuleIsVisitedDependent, container_query, style_scope);
     DCHECK(visited_dependent);
     visited_dependent_rules_.push_back(visited_dependent);
   }
@@ -424,7 +427,8 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                             const MediaQueryEvaluator& medium,
                             AddRuleFlags add_rule_flags,
                             const ContainerQuery* container_query,
-                            CascadeLayer* cascade_layer) {
+                            CascadeLayer* cascade_layer,
+                            const StyleScope* style_scope) {
   for (unsigned i = 0; i < rules.size(); ++i) {
     StyleRuleBase* rule = rules[i].Get();
 
@@ -434,7 +438,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
            selector = selector_list.Next(*selector)) {
         wtf_size_t selector_index = selector_list.SelectorIndex(*selector);
         AddRule(style_rule, selector_index, add_rule_flags, container_query,
-                cascade_layer);
+                cascade_layer, style_scope);
       }
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
       page_rule->SetCascadeLayer(cascade_layer);
@@ -442,7 +446,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
       if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {
         AddChildRules(media_rule->ChildRules(), medium, add_rule_flags,
-                      container_query, cascade_layer);
+                      container_query, cascade_layer, style_scope);
       }
     } else if (auto* font_face_rule = DynamicTo<StyleRuleFontFace>(rule)) {
       font_face_rule->SetCascadeLayer(cascade_layer);
@@ -469,7 +473,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {
         AddChildRules(supports_rule->ChildRules(), medium, add_rule_flags,
-                      container_query, cascade_layer);
+                      container_query, cascade_layer, style_scope);
       }
     } else if (auto* container_rule = DynamicTo<StyleRuleContainer>(rule)) {
       const ContainerQuery* inner_container_query =
@@ -479,16 +483,20 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
             inner_container_query->CopyWithParent(container_query);
       }
       AddChildRules(container_rule->ChildRules(), medium, add_rule_flags,
-                    inner_container_query, cascade_layer);
+                    inner_container_query, cascade_layer, style_scope);
     } else if (auto* layer_block_rule = DynamicTo<StyleRuleLayerBlock>(rule)) {
       CascadeLayer* sub_layer =
           GetOrAddSubLayer(cascade_layer, layer_block_rule->GetName());
       AddChildRules(layer_block_rule->ChildRules(), medium, add_rule_flags,
-                    container_query, sub_layer);
+                    container_query, sub_layer, style_scope);
     } else if (auto* layer_statement_rule =
                    DynamicTo<StyleRuleLayerStatement>(rule)) {
       for (const auto& layer_name : layer_statement_rule->GetNames())
         GetOrAddSubLayer(cascade_layer, layer_name);
+    } else if (auto* scope_rule = DynamicTo<StyleRuleScope>(rule)) {
+      AddChildRules(scope_rule->ChildRules(), medium, add_rule_flags,
+                    container_query, cascade_layer,
+                    &scope_rule->GetStyleScope());
     }
   }
 }
@@ -538,7 +546,7 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
   }
 
   AddChildRules(sheet->ChildRules(), medium, add_rule_flags,
-                nullptr /* container_query */, cascade_layer);
+                nullptr /* container_query */, cascade_layer, nullptr);
 }
 
 void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
@@ -548,7 +556,7 @@ void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
        selector_index =
            rule->SelectorList().IndexOfNextSelectorAfter(selector_index)) {
     AddRule(rule, selector_index, add_rule_flags, nullptr /* container_query */,
-            nullptr /* cascade_layer */);
+            nullptr /* cascade_layer */, nullptr /* scope */);
   }
 }
 
@@ -671,6 +679,12 @@ const ContainerQuery* RuleData::GetContainerQuery() const {
   return nullptr;
 }
 
+const StyleScope* RuleData::GetStyleScope() const {
+  if (auto* extended = DynamicTo<ExtendedRuleData>(this))
+    return extended->style_scope_;
+  return nullptr;
+}
+
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
   if (!layer_intervals_.size() ||
       layer_intervals_[0].start_position > rule.GetPosition())
@@ -702,13 +716,16 @@ ExtendedRuleData::ExtendedRuleData(base::PassKey<RuleData>,
                                    unsigned selector_index,
                                    unsigned position,
                                    AddRuleFlags flags,
-                                   const ContainerQuery* container_query)
+                                   const ContainerQuery* container_query,
+                                   const StyleScope* style_scope)
     : RuleData(Type::kExtended, rule, selector_index, position, flags),
-      container_query_(container_query) {}
+      container_query_(container_query),
+      style_scope_(style_scope) {}
 
 void ExtendedRuleData::TraceAfterDispatch(Visitor* visitor) const {
   RuleData::TraceAfterDispatch(visitor);
   visitor->Trace(container_query_);
+  visitor->Trace(style_scope_);
 }
 
 void RuleSet::PendingRuleMaps::Trace(Visitor* visitor) const {
