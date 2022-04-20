@@ -299,7 +299,7 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
     experiments = {
-        "remove_src_checkout_experiment": 50,
+        "remove_src_checkout_experiment": 10,
     },
 )
 
