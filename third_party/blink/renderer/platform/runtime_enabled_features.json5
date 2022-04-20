@@ -1947,7 +1947,7 @@
       status: "stable",
     },
     // The RTE feature encompasses multiple APIs, including: Attribution
-    // Reporting, FLEDGE, and Topics.
+    // Reporting, FLEDGE, Topics and Fenced Frames.
     {
       name: "PrivacySandboxAdsAPIs",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
