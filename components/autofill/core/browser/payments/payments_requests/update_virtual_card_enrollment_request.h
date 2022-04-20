@@ -45,6 +45,8 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
 
  private:
+  friend class UpdateVirtualCardEnrollmentRequestTest;
+
   // Modifies the base::Value that |request_dict| points to by setting all of
   // the fields needed for an Enroll request.
   void BuildEnrollRequestDictionary(base::Value* request_dict);
