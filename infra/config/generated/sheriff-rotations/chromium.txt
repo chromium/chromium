@@ -49,7 +49,6 @@ ci/Win x64 Builder (dbg)
 ci/Win10 Tests x64
 ci/Win7 (32) Tests
 ci/Win7 Tests (1)
-ci/Win7 Tests (dbg)(1)
 ci/Windows deterministic
 ci/android-archive-dbg
 ci/android-archive-rel
