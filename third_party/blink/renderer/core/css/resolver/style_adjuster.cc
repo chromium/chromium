@@ -424,9 +424,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // the page zoom factor in the effective zoom, which is safe because it
     // comes from user intervention. crbug.com/1285327
     style.SetEffectiveZoom(
-        element.GetDocument().GetFrame() && !element.GetDocument().Printing()
-            ? element.GetDocument().GetFrame()->PageZoomFactor()
-            : 1);
+        element.GetDocument().GetStyleResolver().InitialZoom());
 
     if (!features::IsFencedFramesMPArchBased()) {
       // Force the inside-display to `flow`, but honors the outside-display.

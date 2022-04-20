@@ -1449,16 +1449,21 @@ scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
   return ComputedStyle::Clone(*initial_style_);
 }
 
+float StyleResolver::InitialZoom() const {
+  const Document& document = GetDocument();
+  if (const LocalFrame* frame = document.GetFrame())
+    return !document.Printing() ? frame->PageZoomFactor() : 1;
+  return 1;
+}
+
 scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
-  const LocalFrame* frame = GetDocument().GetFrame();
   StyleEngine& engine = GetDocument().GetStyleEngine();
 
   scoped_refptr<ComputedStyle> initial_style = CreateComputedStyle();
 
   initial_style->SetRtlOrdering(
       GetDocument().VisuallyOrdered() ? EOrder::kVisual : EOrder::kLogical);
-  initial_style->SetZoom(
-      frame && !GetDocument().Printing() ? frame->PageZoomFactor() : 1);
+  initial_style->SetZoom(InitialZoom());
   initial_style->SetEffectiveZoom(initial_style->Zoom());
   initial_style->SetInForcedColorsMode(GetDocument().InForcedColorsMode());
   initial_style->SetTapHighlightColor(

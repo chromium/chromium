@@ -81,6 +81,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // root element style. In addition to initial values things like zoom, font,
   // forced color mode etc. is set.
   scoped_refptr<ComputedStyle> InitialStyleForElement() const;
+  float InitialZoom() const;
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
       Element&,
