@@ -529,7 +529,7 @@ input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-inner-spin-button {
 
 input::-webkit-input-placeholder {
     text-overflow: inherit;
-    line-height: initial;
+    line-height: initial !important;
     white-space: pre;
     word-wrap: normal;
     overflow: hidden;
