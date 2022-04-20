@@ -699,9 +699,6 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
   if (media_log_)
     MEDIA_LOG(INFO, media_log_) << "Starting Initialization of DXVAVDA";
 
-  AddPlaybackSucceededLifetimeStageIfNeeded();
-  AddLifetimeProgressionStage(DXVALifetimeProgression::kInitializeStarted);
-
   if (!get_gl_context_cb_ || !make_context_current_cb_) {
     NOTREACHED() << "GL callbacks are required for this VDA";
     return false;
@@ -839,11 +836,6 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
 
   UMA_HISTOGRAM_ENUMERATION("Media.DXVAVDA.PictureBufferMechanism",
                             GetPictureBufferMechanism());
-
-  AddLifetimeProgressionStage(
-      use_dx11_ ? DXVALifetimeProgression::kDX11InitializeSucceeded
-                : DXVALifetimeProgression::kDX9InitializeSucceeded);
-
   return StartDecoderThread();
 }
 
@@ -1389,9 +1381,6 @@ void DXVAVideoDecodeAccelerator::Reset() {
 
 void DXVAVideoDecodeAccelerator::Destroy() {
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
-
-  AddPlaybackSucceededLifetimeStageIfNeeded();
-
   Invalidate();
   delete this;
 }
@@ -2043,20 +2032,6 @@ void DXVAVideoDecodeAccelerator::StopOnError(
                                   weak_ptr_, error));
     return;
   }
-
-  DXVALifetimeProgression result;
-  if (use_dx11_) {
-    if (decoded_any_frames_)
-      result = DXVALifetimeProgression::kDX11PlaybackFailedAfterFirstFrame;
-    else
-      result = DXVALifetimeProgression::kDX11PlaybackFailedBeforeFirstFrame;
-  } else {
-    if (decoded_any_frames_)
-      result = DXVALifetimeProgression::kDX9PlaybackFailedAfterFirstFrame;
-    else
-      result = DXVALifetimeProgression::kDX9PlaybackFailedBeforeFirstFrame;
-  }
-  AddLifetimeProgressionStage(result);
 
   if (client_)
     client_->NotifyError(error);
@@ -3347,34 +3322,6 @@ bool DXVAVideoDecodeAccelerator::ShouldUseANGLEDevice() const {
 
 ID3D11Device* DXVAVideoDecodeAccelerator::D3D11Device() const {
   return ShouldUseANGLEDevice() ? angle_device_.Get() : d3d11_device_.Get();
-}
-
-void DXVAVideoDecodeAccelerator::AddLifetimeProgressionStage(
-    DXVALifetimeProgression stage) {
-  // If we're starting init, then forget about any previously output frames.
-  if (stage == DXVALifetimeProgression::kInitializeStarted)
-    decoded_any_frames_ = false;
-
-  // If init has succeeded, then we can output a playback success / failure when
-  // we fail / re-init / are destroyed, as needed.
-  already_initialized_ =
-      (stage == DXVALifetimeProgression::kDX11InitializeSucceeded ||
-       stage == DXVALifetimeProgression::kDX9InitializeSucceeded);
-
-  base::UmaHistogramEnumeration("Media.DXVAVDA.DecoderLifetimeProgression",
-                                stage);
-}
-
-void DXVAVideoDecodeAccelerator::AddPlaybackSucceededLifetimeStageIfNeeded() {
-  // If we didn't complete initialization, then we didn't complete playback.
-  // This will also prevent us from sending "playback succeeded" more than once
-  // per init, or after a playback error.
-  if (!already_initialized_)
-    return;
-
-  AddLifetimeProgressionStage(
-      use_dx11_ ? DXVALifetimeProgression::kDX11PlaybackSucceeded
-                : DXVALifetimeProgression::kDX9PlaybackSucceeded);
 }
 
 }  // namespace media

@@ -1983,6 +1983,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.DXVAVDA.DecoderLifetimeProgression"
     enum="DXVALifetimeProgression" expires_after="2022-04-24">
+  <obsolete>
+    Removed 05/2022 due to lack of further need for this data.
+  </obsolete>
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
