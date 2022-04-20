@@ -312,7 +312,8 @@ promise_test(async () => {
     const option2 = document.getElementById("selectMenu9-option2");
     assert_equals(selectMenu.value, "one", "Initial value should be the first option");
 
-    let newListbox = document.createElement("popup");
+    let newListbox = document.createElement("div");
+    newListbox.setAttribute("popup", "popup");
     newListbox.setAttribute("behavior", "listbox");
     let newOption = document.createElement("option");
     newOption.innerText = "three";
@@ -400,7 +401,8 @@ promise_test(async () => {
     await clickOn(selectMenuOption1);
     assert_false(selectMenu.open);
 
-    let newListbox = document.createElement("popup");
+    let newListbox = document.createElement("div");
+    newListbox.setAttribute("popup", "popup");
     newListbox.setAttribute("behavior", "listbox");
     let newOption = document.createElement("option");
     newOption.innerText = "three";
