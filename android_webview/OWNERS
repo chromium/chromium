@@ -5,7 +5,6 @@ ntfschr@chromium.org
 torne@chromium.org
 nator@chromium.org
 peter@chromium.org
-swestphal@chromium.org
 
 # Documentation changes:
 per-file *.md=file://android_webview/docs/OWNERS

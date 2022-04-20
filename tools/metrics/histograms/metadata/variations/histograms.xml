@@ -124,6 +124,7 @@ chromium-metrics-reviews@google.com.
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>swestphal@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The state of the delta-compression when attempting to fetch a variations
