@@ -176,15 +176,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
     std::unique_ptr<StoredPage> stored_page_;
   };
 
-  // UnloadSupportStrategy is possible actions to take against pages with
-  // "unload" handlers.
-  // TODO(crbug.com/1201653): Consider making this private.
-  enum class UnloadSupportStrategy {
-    kAlways,
-    kOptInHeaderRequired,
-    kNo,
-  };
-
   BackForwardCacheImpl();
 
   BackForwardCacheImpl(const BackForwardCacheImpl&) = delete;
@@ -470,8 +461,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // occur in the query of the URL then the page is not eligible for caching.
   // See |IsQueryAllowed|.
   const std::unordered_set<std::string> blocked_cgi_params_;
-
-  const UnloadSupportStrategy unload_strategy_;
 
   // Helper class to iterate through the frame tree in the page and populate the
   // NotRestoredReasons.

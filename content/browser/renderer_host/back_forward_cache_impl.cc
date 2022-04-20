@@ -101,36 +101,6 @@ bool IsContentInjectionSupported() {
   return content_injection_supported.Get();
 }
 
-enum class HeaderPresence {
-  kNotPresent,
-  kPresent,
-  kUnsure,
-};
-
-constexpr base::FeatureParam<BackForwardCacheImpl::UnloadSupportStrategy>::
-    Option kUnloadSupportStrategyOptions[] = {
-        {BackForwardCacheImpl::UnloadSupportStrategy::kAlways, "always"},
-        {BackForwardCacheImpl::UnloadSupportStrategy::kNo, "no"},
-};
-
-BackForwardCacheImpl::UnloadSupportStrategy GetUnloadSupportStrategy() {
-  constexpr auto kDefaultStrategy =
-#if BUILDFLAG(IS_ANDROID)
-      BackForwardCacheImpl::UnloadSupportStrategy::kAlways;
-#else
-      BackForwardCacheImpl::UnloadSupportStrategy::kNo;
-#endif
-
-  if (!IsBackForwardCacheEnabled())
-    return kDefaultStrategy;
-
-  static constexpr base::FeatureParam<
-      BackForwardCacheImpl::UnloadSupportStrategy>
-      unload_support(&features::kBackForwardCache, "unload_support",
-                     kDefaultStrategy, &kUnloadSupportStrategyOptions);
-  return unload_support.Get();
-}
-
 WebSchedulerTrackedFeatures SupportedFeaturesImpl() {
   WebSchedulerTrackedFeatures features;
   if (!IsBackForwardCacheEnabled())
@@ -489,7 +459,6 @@ BackForwardCacheImpl::BackForwardCacheImpl()
     : allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
       blocked_urls_(ParseCommaSeparatedURLs(GetBlockedURLList())),
       blocked_cgi_params_(ParseBlockedCgiParams(GetBlockedCgiParams())),
-      unload_strategy_(GetUnloadSupportStrategy()),
       weak_factory_(this) {}
 
 BackForwardCacheImpl::~BackForwardCacheImpl() {
@@ -845,21 +814,16 @@ void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   const bool has_unload_handler = rfh->has_unload_handler();
-  switch (unload_strategy_) {
-    case BackForwardCacheImpl::UnloadSupportStrategy::kAlways:
-      break;
-    case BackForwardCacheImpl::UnloadSupportStrategy::kOptInHeaderRequired:
-    case BackForwardCacheImpl::UnloadSupportStrategy::kNo:
-      if (has_unload_handler) {
-        result.No(rfh->GetParent()
-                      ? BackForwardCacheMetrics::NotRestoredReason::
-                            kUnloadHandlerExistsInSubFrame
-                      : BackForwardCacheMetrics::NotRestoredReason::
-                            kUnloadHandlerExistsInMainFrame);
-      }
-      break;
+  if (has_unload_handler) {
+    // Note that pages with unload handlers are cached on android.
+    result.No(rfh->GetParent() ? BackForwardCacheMetrics::NotRestoredReason::
+                                     kUnloadHandlerExistsInSubFrame
+                               : BackForwardCacheMetrics::NotRestoredReason::
+                                     kUnloadHandlerExistsInMainFrame);
   }
+#endif
 
   // When it's not the final decision for putting a page in the back-forward
   // cache, we should only consider "sticky" features here - features that

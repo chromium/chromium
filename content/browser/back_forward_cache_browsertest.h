@@ -192,11 +192,16 @@ class BackForwardCacheBrowserTest
     return tree_result_.get();
   }
 
+  void InstallUnloadHandlerOnMainFrame();
+  void InstallUnloadHandlerOnSubFrame();
+  EvalJsResult GetUnloadRunCount();
+
+  bool IsUnloadAllowedToEnterBackForwardCache();
+
   base::HistogramTester histogram_tester_;
 
   bool same_site_back_forward_cache_enabled_ = true;
   bool skip_same_site_if_unload_exists_ = false;
-  std::string unload_support_ = "always";
 
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
