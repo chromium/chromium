@@ -81,8 +81,10 @@ bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
   if (!watch_event_.is_valid())
     return false;
 
-  const DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
-                       REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
+  DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
+                 REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
+  if (base::win::GetVersion() >= base::win::Version::WIN8)
+    filter |= REG_NOTIFY_THREAD_AGNOSTIC;
 
   // Watch the registry key for a change of value.
   LONG result =

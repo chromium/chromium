@@ -10,13 +10,22 @@
 
 #include <cstring>
 #include <iterator>
+#include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/threading/simple_thread.h"
 #include "base/win/windows_version.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -315,6 +324,113 @@ TEST_F(RegistryTest, ChangeCallback) {
       BindOnce(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
   RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate.WasCalled());
+}
+
+namespace {
+
+// A thread that runs tasks from a TestMockTimeTaskRunner.
+class RegistryWatcherThread : public SimpleThread {
+ public:
+  explicit RegistryWatcherThread(
+      scoped_refptr<base::TestMockTimeTaskRunner> task_runner)
+      : SimpleThread("RegistryWatcherThread"),
+        task_runner_(std::move(task_runner)) {}
+
+ private:
+  void Run() override {
+    task_runner_->DetachFromThread();
+    task_runner_->RunUntilIdle();
+  }
+  const scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+};
+
+}  // namespace
+
+TEST_F(RegistryTest, WatcherNotSignaledOnInitiatingThreadExit) {
+  if (base::win::GetVersion() < base::win::Version::WIN8) {
+    // REG_NOTIFY_THREAD_AGNOSTIC is supported on Win8+.
+    return;
+  }
+
+  RegKey key;
+
+  ASSERT_EQ(key.Open(HKEY_CURRENT_USER, root_key().c_str(), KEY_READ),
+            ERROR_SUCCESS);
+
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+      base::TestMockTimeTaskRunner::Type::kBoundToThread);
+  ::testing::StrictMock<base::MockCallback<base::win::RegKey::ChangeCallback>>
+      change_cb;
+
+  test_task_runner->PostTask(FROM_HERE,
+                             BindOnce(IgnoreResult(&RegKey::StartWatching),
+                                      Unretained(&key), change_cb.Get()));
+
+  {
+    // Start the watch on a thread that then goes away.
+    RegistryWatcherThread watcher_thread(test_task_runner);
+    watcher_thread.Start();
+    watcher_thread.Join();
+  }
+
+  // Termination of the thread should not cause a notification to get sent.
+  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(&change_cb));
+  test_task_runner->DetachFromThread();
+  ASSERT_FALSE(test_task_runner->HasPendingTask());
+
+  // Expect that a notification is sent when a change is made. Exit the run loop
+  // when this happens.
+  base::RunLoop run_loop;
+  EXPECT_CALL(change_cb, Run).WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  // Make some change.
+  RegKey key2;
+  ASSERT_EQ(key2.Open(HKEY_CURRENT_USER, root_key().c_str(),
+                      KEY_READ | KEY_SET_VALUE),
+            ERROR_SUCCESS);
+  ASSERT_TRUE(key2.Valid());
+  ASSERT_EQ(key2.WriteValue(L"name", L"data"), ERROR_SUCCESS);
+
+  // Wait for the watcher to be signaled.
+  run_loop.Run();
+}
+
+TEST_F(RegistryTest, WatcherSignaledOnInitiatingThreadExitOnWin7) {
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
+    // REG_NOTIFY_THREAD_AGNOSTIC is used on Win8+; this test
+    // validates the behavior on Win7 where that is not available.
+    return;
+  }
+
+  RegKey key;
+
+  ASSERT_EQ(key.Open(HKEY_CURRENT_USER, root_key().c_str(), KEY_READ),
+            ERROR_SUCCESS);
+
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+      base::TestMockTimeTaskRunner::Type::kBoundToThread);
+  ::testing::StrictMock<base::MockCallback<base::win::RegKey::ChangeCallback>>
+      change_cb;
+
+  test_task_runner->PostTask(FROM_HERE,
+                             BindOnce(IgnoreResult(&RegKey::StartWatching),
+                                      Unretained(&key), change_cb.Get()));
+
+  // Expect that a notification is sent when the thread exits. Exit the run loop
+  // when this happens.
+  base::RunLoop run_loop;
+  EXPECT_CALL(change_cb, Run).WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  {
+    // Start the watch on a thread that then goes away.
+    RegistryWatcherThread watcher_thread(test_task_runner);
+    watcher_thread.Start();
+    watcher_thread.Join();
+  }
+  test_task_runner->DetachFromThread();
+
+  // Wait for the watcher to be signaled.
+  run_loop.Run();
 }
 
 TEST_F(RegistryTest, TestMoveConstruct) {

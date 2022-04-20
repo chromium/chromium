@@ -310,6 +310,10 @@ TimeDelta TestMockTimeTaskRunner::NextPendingTaskDelay() {
                         : tasks_.top().GetTimeToRun() - now_ticks_;
 }
 
+void TestMockTimeTaskRunner::DetachFromThread() {
+  thread_checker_.DetachFromThread();
+}
+
 // TODO(gab): Combine |thread_checker_| with a SequenceToken to differentiate
 // between tasks running in the scope of this TestMockTimeTaskRunner and other
 // task runners sharing this thread. http://crbug.com/631186
