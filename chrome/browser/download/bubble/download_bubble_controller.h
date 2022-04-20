@@ -47,6 +47,10 @@ class DownloadBubbleUIController
   // new downloads, and user action only creates a main view.
   std::vector<DownloadUIModelPtr> GetPartialView();
 
+  // Get all entries that should be displayed in the UI, including downloads and
+  // offline items.
+  std::vector<DownloadUIModelPtr> GetAllItemsToDisplay();
+
   // The list is needed by DownloadDisplayController to check a few things,
   // for example in progress download count, last completed time, and getting
   // progress for animation.

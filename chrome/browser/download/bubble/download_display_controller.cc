@@ -95,10 +95,20 @@ void DownloadDisplayController::HideToolbarButton() {
 }
 
 void DownloadDisplayController::UpdateToolbarButtonState() {
-  const auto& offline_items = bubble_controller_->GetOfflineItems();
-  int in_progress_count = download_manager_->InProgressCount();
-  for (const auto& offline_item : offline_items) {
-    in_progress_count += (offline_item.state == OfflineItemState::IN_PROGRESS);
+  int in_progress_count = 0;
+  bool has_deep_scanning_download = false;
+
+  std::vector<DownloadUIModelPtr> all_models =
+      bubble_controller_->GetAllItemsToDisplay();
+  for (const auto& model : all_models) {
+    if (model->GetDangerType() ==
+            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
+        model->GetState() != download::DownloadItem::CANCELLED) {
+      has_deep_scanning_download = true;
+    }
+    if (model->GetState() == download::DownloadItem::IN_PROGRESS) {
+      in_progress_count++;
+    }
   }
   if (in_progress_count > 0) {
     ShowToolbarButton();
@@ -106,8 +116,9 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
     icon_info_.is_active = true;
   } else {
     icon_info_.icon_state = DownloadIconState::kComplete;
-    if (HasRecentCompleteDownload(kToolbarIconActiveTimeInterval,
-                                  GetLastCompleteTime(offline_items))) {
+    if (HasRecentCompleteDownload(
+            kToolbarIconActiveTimeInterval,
+            GetLastCompleteTime(bubble_controller_->GetOfflineItems()))) {
       icon_info_.is_active = true;
       ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);
     } else {
@@ -115,17 +126,8 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
     }
   }
 
-  // Check for deep scanning state. Only check for downloads because deep
-  // scanning is not supported for offline items.
-  content::DownloadManager::DownloadVector items;
-  download_manager_->GetAllDownloads(&items);
-  for (auto* item : items) {
-    if (item->GetDangerType() ==
-            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
-        item->GetState() != download::DownloadItem::CANCELLED) {
-      icon_info_.icon_state = DownloadIconState::kDeepScanning;
-      break;
-    }
+  if (has_deep_scanning_download) {
+    icon_info_.icon_state = DownloadIconState::kDeepScanning;
   }
 
   display_->UpdateDownloadIcon();
@@ -205,30 +207,17 @@ DownloadDisplayController::GetProgress() {
   int64_t received_bytes = 0;
   int64_t total_bytes = 0;
 
-  content::DownloadManager::DownloadVector items;
-  download_manager_->GetAllDownloads(&items);
-  for (auto* item : items) {
-    if (item->GetState() == download::DownloadItem::IN_PROGRESS) {
+  std::vector<DownloadUIModelPtr> all_models =
+      bubble_controller_->GetAllItemsToDisplay();
+  for (const auto& model : all_models) {
+    if (model->GetState() == download::DownloadItem::IN_PROGRESS) {
       ++progress_info.download_count;
-      if (item->GetTotalBytes() <= 0) {
+      if (model->GetTotalBytes() <= 0) {
         // There may or may not be more data coming down this pipe.
         progress_info.progress_certain = false;
       } else {
-        received_bytes += item->GetReceivedBytes();
-        total_bytes += item->GetTotalBytes();
-      }
-    }
-  }
-
-  for (const auto& item : bubble_controller_->GetOfflineItems()) {
-    if (item.state == OfflineItemState::IN_PROGRESS) {
-      ++progress_info.download_count;
-      if (item.total_size_bytes <= 0) {
-        // There may or may not be more data coming down this pipe.
-        progress_info.progress_certain = false;
-      } else {
-        received_bytes += item.received_bytes;
-        total_bytes += item.total_size_bytes;
+        received_bytes += model->GetCompletedBytes();
+        total_bytes += model->GetTotalBytes();
       }
     }
   }
