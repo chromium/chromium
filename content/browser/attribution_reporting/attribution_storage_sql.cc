@@ -248,10 +248,11 @@ absl::optional<StoredSource::ActiveState> GetSourceActiveState(
 void BindUint64OrNull(sql::Statement& statement,
                       int col,
                       absl::optional<uint64_t> value) {
-  if (value.has_value())
+  if (value.has_value()) {
     statement.BindInt64(col, SerializeUint64(*value));
-  else
+  } else {
     statement.BindNull(col);
+  }
 }
 
 absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
@@ -677,20 +678,17 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // it. We could explicitly check the trigger time here, but it would only
   // be relevant in the case of an ill-behaved clock, in which case the rest of
   // the attribution functionality would probably also break.
-  if (conversion_priority <= min_priority) {
+  if (conversion_priority <= min_priority)
     return MaybeReplaceLowerPriorityEventLevelReportResult::kDropNewReport;
-  }
 
   absl::optional<AttributionReport> replaced =
       GetReport(conversion_id_with_min_priority);
-  if (!replaced.has_value()) {
+  if (!replaced.has_value())
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
-  }
 
   // Otherwise, delete the existing report with the lowest priority.
-  if (!DeleteReportInternal(conversion_id_with_min_priority)) {
+  if (!DeleteReportInternal(conversion_id_with_min_priority))
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
-  }
 
   replaced_report = std::move(replaced);
   return MaybeReplaceLowerPriorityEventLevelReportResult::kReplaceOldReport;
@@ -2492,8 +2490,9 @@ AttributionStorageSql::GetAggregatableContributions(
                           DeserializeUint64(statement.ColumnInt64(1)));
     int64_t value = statement.ColumnInt64(2);
     if (value <= 0 || value > delegate_->GetAggregatableBudgetPerSource() ||
-        value > std::numeric_limits<uint32_t>::max())
+        value > std::numeric_limits<uint32_t>::max()) {
       return {};
+    }
 
     contributions.emplace_back(bucket_key, static_cast<uint32_t>(value));
   }
@@ -2718,9 +2717,8 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
 
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
-  if (!external_report_id.is_valid() || failed_send_attempts < 0) {
+  if (!external_report_id.is_valid() || failed_send_attempts < 0)
     return absl::nullopt;
-  }
 
   std::vector<AggregatableHistogramContribution> contributions =
       GetAggregatableContributions(report_id);
