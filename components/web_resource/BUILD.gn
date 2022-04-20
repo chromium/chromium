@@ -10,26 +10,21 @@ static_library("web_resource") {
     "resource_request_allowed_notifier.h",
     "web_resource_pref_names.cc",
     "web_resource_pref_names.h",
-    "web_resource_service.cc",
-    "web_resource_service.h",
   ]
 
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
-    "//components/google/core/common",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/version_info",
-    "//net",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
-    "//ui/base",
   ]
 }
 
 static_library("test_support") {
+  testonly = true
+
   sources = [
     "resource_request_allowed_notifier_test_util.cc",
     "resource_request_allowed_notifier_test_util.h",
@@ -47,17 +42,14 @@ source_set("unit_tests") {
   sources = [
     "eula_accepted_notifier_unittest.cc",
     "resource_request_allowed_notifier_unittest.cc",
-    "web_resource_service_unittest.cc",
   ]
 
   deps = [
     ":test_support",
     ":web_resource",
     "//base",
+    "//base/test:test_support",
     "//components/prefs:test_support",
-    "//components/version_info",
-    "//net:test_support",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",

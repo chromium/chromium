@@ -206,7 +206,6 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
-#include "chrome/browser/plugins/plugins_resource_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -747,6 +746,15 @@ const char kStabilityExtensionRendererLaunchCount[] =
     "user_experience_metrics.stability.extension_renderer_launch_count";
 const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
 
+// Deprecated 04/2022.
+#if BUILDFLAG(ENABLE_PLUGINS)
+// Dictionary holding plugins metadata.
+const char kPluginsMetadata[] = "plugins.metadata";
+
+// Last update time of plugins resource cache.
+const char kPluginsResourceCacheUpdate[] = "plugins.resource_cache_update";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -787,6 +795,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kStabilityLaunchCount, 0);
 #endif
   registry->RegisterIntegerPref(kStabilityExtensionRendererLaunchCount, 0);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // Deprecated 04/2022.
+  registry->RegisterDictionaryPref(kPluginsMetadata);
+  registry->RegisterStringPref(kPluginsResourceCacheUpdate, "0");
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1048,10 +1062,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   BackgroundModeManager::RegisterPrefs(registry);
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  PluginsResourceService::RegisterPrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1628,6 +1638,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kStabilityLaunchCount);
 #endif
   local_state->ClearPref(kStabilityExtensionRendererLaunchCount);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // Added 04/2022.
+  local_state->ClearPref(kPluginsMetadata);
+  local_state->ClearPref(kPluginsResourceCacheUpdate);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

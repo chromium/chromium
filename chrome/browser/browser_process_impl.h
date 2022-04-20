@@ -53,10 +53,6 @@ class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
 class StartupData;
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-class PluginsResourceService;
-#endif
-
 namespace base {
 class CommandLine;
 }
@@ -394,10 +390,6 @@ class BrowserProcessImpl : public BrowserProcess,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS has a different implementation of SodaInstaller.
   std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  std::unique_ptr<PluginsResourceService> plugins_resource_service_;
 #endif
 
   std::unique_ptr<BrowserProcessPlatformPart> platform_part_;

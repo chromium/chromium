@@ -7040,8 +7040,6 @@ static_library("browser") {
       "plugins/plugin_response_interceptor_url_loader_throttle.h",
       "plugins/plugin_utils.cc",
       "plugins/plugin_utils.h",
-      "plugins/plugins_resource_service.cc",
-      "plugins/plugins_resource_service.h",
       "plugins/reload_plugin_infobar_delegate.cc",
       "plugins/reload_plugin_infobar_delegate.h",
       "renderer_host/pepper/chrome_browser_pepper_host_factory.cc",

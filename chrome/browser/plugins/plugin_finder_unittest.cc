@@ -4,85 +4,44 @@
 
 #include "chrome/browser/plugins/plugin_finder.h"
 
-#include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "content/public/common/webplugininfo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::base::DictionaryValue;
-using ::base::ListValue;
-using ::testing::Optional;
+TEST(PluginFinderTest, BuiltIns) {
+  auto* plugin_finder = PluginFinder::GetInstance();
 
-TEST(PluginFinderTest, JsonSyntax) {
-  std::unique_ptr<base::DictionaryValue> plugin_list =
-      PluginFinder::LoadBuiltInPluginList();
-  ASSERT_TRUE(plugin_list);
-  absl::optional<base::Value> version = plugin_list->ExtractKey("x-version");
-  ASSERT_TRUE(version.has_value());
-  EXPECT_EQ(base::Value::Type::INTEGER, version->type());
+  std::unique_ptr<PluginMetadata> flash;
+  ASSERT_TRUE(plugin_finder->FindPluginWithIdentifier("adobe-flash-player",
+                                                      nullptr, &flash));
+  ASSERT_TRUE(flash);
+  EXPECT_EQ(u"Adobe Flash Player", flash->name());
+  EXPECT_TRUE(flash->url_for_display());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const auto kPluginUrl = GURL("http://get.adobe.com/flashplayer/");
+#else
+  const auto kPluginUrl =
+      GURL("https://support.google.com/chrome/answer/6258784");
+#endif
+  EXPECT_EQ(kPluginUrl, flash->plugin_url());
+  EXPECT_EQ(GURL("https://support.google.com/chrome/?p=plugin_flash"),
+            flash->help_url());
+  EXPECT_EQ("en-US", flash->language());
+  EXPECT_TRUE(flash->plugin_is_deprecated());
+  // Mime types not tested because PluginMetadata::Clone() does not populate
+  // them, which means they are not returned out of FindPluginWithIdentifier().
+  content::WebPluginInfo fake_flash(u"Adobe Flash Player", base::FilePath(),
+                                    u"32.0.0.445", std::u16string());
+  EXPECT_EQ(PluginMetadata::SECURITY_STATUS_DEPRECATED,
+            flash->GetSecurityStatus(fake_flash));
 
-  for (base::DictionaryValue::Iterator plugin_it(*plugin_list);
-       !plugin_it.IsAtEnd(); plugin_it.Advance()) {
-    const base::DictionaryValue* plugin = NULL;
-    ASSERT_TRUE(plugin_it.value().GetAsDictionary(&plugin));
-    if (plugin->FindKey("lang"))
-      EXPECT_TRUE(plugin->FindStringKey("lang"));
-    if (plugin->FindKey("url"))
-      EXPECT_TRUE(plugin->FindStringKey("url"));
-    EXPECT_TRUE(plugin->FindStringKey("name"));
-    if (plugin->FindKey("help_url"))
-      EXPECT_TRUE(plugin->FindStringKey("help_url"));
-    if (plugin->FindKey("displayurl")) {
-      EXPECT_THAT(plugin->FindBoolKey("displayurl"), Optional(true));
-    }
-    if (plugin->FindKey("requires_authorization"))
-      EXPECT_TRUE(plugin->FindBoolKey("requires_authorization").has_value());
-    const base::ListValue* mime_types = NULL;
-    if (plugin->GetList("mime_types", &mime_types)) {
-      for (const auto& mime_type : mime_types->GetListDeprecated()) {
-        EXPECT_TRUE(mime_type.is_string());
-      }
-    }
-
-    const base::ListValue* matching_mime_types = NULL;
-    if (plugin->GetList("matching_mime_types", &matching_mime_types)) {
-      for (const auto& mime_type : matching_mime_types->GetListDeprecated()) {
-        EXPECT_TRUE(mime_type.is_string());
-      }
-    }
-
-    const base::ListValue* versions = NULL;
-    if (!plugin->GetList("versions", &versions))
-      continue;
-
-    for (const auto& version_value : versions->GetListDeprecated()) {
-      const base::DictionaryValue* version_dict = nullptr;
-      ASSERT_TRUE(version_value.GetAsDictionary(&version_dict));
-      EXPECT_TRUE(version_dict->FindStringKey("version"));
-      const std::string* status_str = version_dict->FindStringKey("status");
-      ASSERT_TRUE(status_str);
-      PluginMetadata::SecurityStatus status =
-          PluginMetadata::SECURITY_STATUS_UP_TO_DATE;
-      EXPECT_TRUE(PluginMetadata::ParseSecurityStatus(*status_str, &status))
-          << "Invalid security status \"" << *status_str << "\"";
-    }
-  }
-}
-
-TEST(PluginFinderTest, ReinitializePlugins) {
-  PluginFinder* plugin_finder = PluginFinder::GetInstance();
-
-  plugin_finder->Init();
-
-  std::unique_ptr<base::DictionaryValue> plugin_list =
-      PluginFinder::LoadBuiltInPluginList();
-
-  // Increment the version number by one.
-  const base::Value* version_value = plugin_list->FindKey("x-version");
-  ASSERT_TRUE(version_value);
-  ASSERT_TRUE(version_value->is_int());
-  plugin_list->SetKey("x-version",
-                      base::Value(version_value->GetIfInt().value_or(0) + 1));
-
-  plugin_finder->ReinitializePlugins(plugin_list.get());
+  std::unique_ptr<PluginMetadata> pdf;
+  ASSERT_TRUE(plugin_finder->FindPluginWithIdentifier("google-chrome-pdf",
+                                                      nullptr, &pdf));
+  ASSERT_TRUE(pdf);
+  content::WebPluginInfo fake_pdf(u"Chrome PDF Viewer", base::FilePath(), u"0",
+                                  std::u16string());
+  EXPECT_EQ(PluginMetadata::SECURITY_STATUS_FULLY_TRUSTED,
+            pdf->GetSecurityStatus(fake_pdf));
 }

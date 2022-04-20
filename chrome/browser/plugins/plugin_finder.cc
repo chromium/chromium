@@ -22,8 +22,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-using base::DictionaryValue;
-
 namespace {
 
 // Gets the full path of the plugin file as the identifier.
@@ -46,72 +44,74 @@ static std::u16string GetGroupName(const content::WebPluginInfo& plugin) {
 }
 
 void LoadMimeTypes(bool matching_mime_types,
-                   const base::DictionaryValue* plugin_dict,
+                   const base::Value::Dict& plugin_dict,
                    PluginMetadata* plugin) {
-  const base::ListValue* mime_types = nullptr;
   base::StringPiece list_key =
       matching_mime_types ? "matching_mime_types" : "mime_types";
-  if (!plugin_dict->GetList(list_key, &mime_types))
+  const base::Value::List* mime_types = plugin_dict.FindList(list_key);
+  if (!mime_types)
     return;
 
-  for (const auto& mime_type : mime_types->GetListDeprecated()) {
-    const std::string& mime_type_str = mime_type.GetString();
+  for (const auto& mime_type : *mime_types) {
+    const std::string* mime_type_str = mime_type.GetIfString();
+    if (!mime_type_str)
+      continue;
     if (matching_mime_types)
-      plugin->AddMatchingMimeType(mime_type_str);
+      plugin->AddMatchingMimeType(*mime_type_str);
     else
-      plugin->AddMimeType(mime_type_str);
+      plugin->AddMimeType(*mime_type_str);
   }
 }
 
 std::unique_ptr<PluginMetadata> CreatePluginMetadata(
     const std::string& identifier,
-    const base::DictionaryValue* plugin_dict) {
+    const base::Value::Dict& plugin_dict) {
   std::string url;
-  if (const std::string* ptr = plugin_dict->FindStringKey("url"))
+  if (const std::string* ptr = plugin_dict.FindString("url"))
     url = *ptr;
   std::string help_url;
-  if (const std::string* ptr = plugin_dict->FindStringKey("help_url"))
+  if (const std::string* ptr = plugin_dict.FindString("help_url"))
     help_url = *ptr;
   std::u16string name;
   bool success = true;
-  if (const std::string* ptr = plugin_dict->FindStringKey("name"))
+  if (const std::string* ptr = plugin_dict.FindString("name"))
     name = base::UTF8ToUTF16(*ptr);
   else
     success = false;
   DCHECK(success);
-  bool display_url = plugin_dict->FindBoolKey("displayurl").value_or(true);
+  bool display_url = plugin_dict.FindBool("displayurl").value_or(true);
   std::u16string group_name_matcher;
-  if (const std::string* ptr = plugin_dict->FindStringKey("group_name_matcher"))
+  if (const std::string* ptr = plugin_dict.FindString("group_name_matcher"))
     group_name_matcher = base::UTF8ToUTF16(*ptr);
   else
     success = false;
   DCHECK(success);
   std::string language_str;
-  if (const std::string* ptr = plugin_dict->FindStringKey("lang"))
+  if (const std::string* ptr = plugin_dict.FindString("lang"))
     language_str = *ptr;
   bool plugin_is_deprecated =
-      plugin_dict->FindBoolKey("plugin_is_deprecated").value_or(false);
+      plugin_dict.FindBool("plugin_is_deprecated").value_or(false);
 
   std::unique_ptr<PluginMetadata> plugin = std::make_unique<PluginMetadata>(
       identifier, name, display_url, GURL(url), GURL(help_url),
       group_name_matcher, language_str, plugin_is_deprecated);
-  const base::ListValue* versions = NULL;
-  if (plugin_dict->GetList("versions", &versions)) {
-    for (const auto& entry : versions->GetListDeprecated()) {
-      const base::DictionaryValue* version_dict = nullptr;
-      if (!entry.GetAsDictionary(&version_dict)) {
+  const base::Value::List* versions = plugin_dict.FindList("versions");
+  if (versions) {
+    for (const auto& entry : *versions) {
+      if (!entry.is_dict()) {
         NOTREACHED();
         continue;
       }
+      const base::Value::Dict& version_dict = entry.GetDict();
       std::string version;
       success = true;
-      if (const std::string* ptr = version_dict->FindStringKey("version"))
+      if (const std::string* ptr = version_dict.FindString("version"))
         version = *ptr;
       else
         success = false;
       DCHECK(success);
       std::string status_str;
-      if (const std::string* ptr = version_dict->FindStringKey("status"))
+      if (const std::string* ptr = version_dict.FindString("status"))
         status_str = *ptr;
       else
         success = false;
@@ -137,36 +137,33 @@ PluginFinder* PluginFinder::GetInstance() {
   return instance;
 }
 
-PluginFinder::PluginFinder() : version_(-1) {
+PluginFinder::PluginFinder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
 
-void PluginFinder::Init() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Load the built-in plugin list first. If we have a newer version stored
-  // locally or download one, we will replace this one with it.
-  std::unique_ptr<base::DictionaryValue> plugin_list(LoadBuiltInPluginList());
-
-  // Gracefully handle the case where we couldn't parse the built-in plugin list
-  // for some reason (https://crbug.com/388560). TODO(bauerb): Change back to a
-  // DCHECK once we have gathered more data about the underlying problem.
-  if (!plugin_list)
-    return;
-
-  ReinitializePlugins(plugin_list.get());
-}
-
-// static
-std::unique_ptr<base::DictionaryValue> PluginFinder::LoadBuiltInPluginList() {
+  // Load the built-in plugin list.
   base::StringPiece json_resource(
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           IDR_PLUGIN_DB_JSON));
   absl::optional<base::Value> value = base::JSONReader::Read(json_resource);
+  // Gracefully handle the case where we couldn't parse the built-in plugin list
+  // for some reason (https://crbug.com/388560). TODO(bauerb): Change back to a
+  // DCHECK once we have gathered more data about the underlying problem.
   if (!value)
-    return nullptr;
+    return;
 
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(*value)));
+  base::AutoLock lock(mutex_);
+
+  const base::Value::Dict& plugin_list = value->GetDict();
+  for (const auto [identifier, plugin] : plugin_list) {
+    if (!plugin.is_dict())
+      continue;
+    DCHECK(identifier_plugin_.find(identifier) == identifier_plugin_.end());
+    identifier_plugin_[identifier] =
+        CreatePluginMetadata(identifier, plugin.GetDict());
+
+    if (installers_.find(identifier) == installers_.end())
+      installers_[identifier] = std::make_unique<PluginInstaller>();
+  }
 }
 
 PluginFinder::~PluginFinder() {
@@ -189,33 +186,6 @@ bool PluginFinder::FindPluginWithIdentifier(
     *installer = installer_it->second.get();
   }
   return true;
-}
-
-void PluginFinder::ReinitializePlugins(
-    const base::DictionaryValue* plugin_list) {
-  base::AutoLock lock(mutex_);
-  const char kVersionKey[] = "x-version";
-
-  // If no version is defined, we default to 0.
-  int version = plugin_list->FindIntKey(kVersionKey).value_or(0);
-  if (version <= version_)
-    return;
-
-  version_ = version;
-  identifier_plugin_.clear();
-
-  for (base::DictionaryValue::Iterator plugin_it(*plugin_list);
-      !plugin_it.IsAtEnd(); plugin_it.Advance()) {
-    const base::DictionaryValue* plugin = nullptr;
-    const std::string& identifier = plugin_it.key();
-    if (plugin_list->GetDictionaryWithoutPathExpansion(identifier, &plugin)) {
-      DCHECK(identifier_plugin_.find(identifier) == identifier_plugin_.end());
-      identifier_plugin_[identifier] = CreatePluginMetadata(identifier, plugin);
-
-      if (installers_.find(identifier) == installers_.end())
-        installers_[identifier] = std::make_unique<PluginInstaller>();
-    }
-  }
 }
 
 std::unique_ptr<PluginMetadata> PluginFinder::GetPluginMetadata(

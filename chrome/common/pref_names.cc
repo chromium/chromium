@@ -1259,14 +1259,6 @@ const char kPluginsShowDetails[] = "plugins.show_details";
 // Boolean that indicates whether outdated plugins are allowed or not.
 const char kPluginsAllowOutdated[] = "plugins.allow_outdated";
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Dictionary holding plugins metadata.
-const char kPluginsMetadata[] = "plugins.metadata";
-
-// Last update time of plugins resource cache.
-const char kPluginsResourceCacheUpdate[] = "plugins.resource_cache_update";
-#endif
-
 // Int64 containing the internal value of the time at which the default browser
 // infobar was last dismissed by the user.
 const char kDefaultBrowserLastDeclined[] =
