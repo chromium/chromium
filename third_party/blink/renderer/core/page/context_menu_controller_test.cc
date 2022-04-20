@@ -657,7 +657,7 @@ TEST_P(ContextMenuControllerTest,
   Document* document = GetDocument();
   Element* image_element = document->getElementById("sample_image");
   // Set focus on the image element.
-  image_element->focus();
+  image_element->Focus();
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Simulate Shift + F10 key event.

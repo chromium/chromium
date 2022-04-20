@@ -53,7 +53,7 @@ TEST_F(FrameCaretTest, MAYBE_BlinkAfterTyping) {
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
   GetDocument().body()->setInnerHTML("<textarea>");
   auto* editor = To<Element>(GetDocument().body()->firstChild());
-  editor->focus();
+  editor->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(caret.IsActive());
@@ -88,9 +88,9 @@ TEST_F(FrameCaretTest, ShouldNotBlinkWhenSelectionLooseFocus) {
       "<div id='input' contenteditable>foo</div>"
       "</div>");
   Element* input = GetDocument().QuerySelector("#input");
-  input->focus();
+  input->Focus();
   Element* outer = GetDocument().QuerySelector("#outer");
-  outer->focus();
+  outer->Focus();
   UpdateAllLifecyclePhasesForTest();
   const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
   EXPECT_EQ(selection.Base(), Position::FirstPositionInNode(*input));

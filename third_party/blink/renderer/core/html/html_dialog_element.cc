@@ -73,7 +73,7 @@ static void SetFocusForDialog(HTMLDialogElement* dialog) {
 
   // 3. Run the focusing steps for control.
   if (control->IsFocusable())
-    control->focus();
+    control->Focus();
   else
     dialog->GetDocument().ClearFocusedElement();
 
@@ -155,7 +155,7 @@ void HTMLDialogElement::close(const String& return_value) {
     focus_options->setPreventScroll(true);
     Element* previously_focused_element = previously_focused_element_;
     previously_focused_element_ = nullptr;
-    previously_focused_element->focus(focus_options);
+    previously_focused_element->Focus(focus_options);
   }
 
   if (close_watcher_)

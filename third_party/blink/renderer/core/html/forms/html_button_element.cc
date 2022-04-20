@@ -180,7 +180,7 @@ void HTMLButtonElement::AppendToFormData(FormData& form_data) {
 
 void HTMLButtonElement::AccessKeyAction(
     SimulatedClickCreationScope creation_scope) {
-  focus();
+  Focus();
   DispatchSimulatedClick(nullptr, creation_scope);
 }
 

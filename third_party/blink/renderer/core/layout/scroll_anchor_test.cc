@@ -1181,7 +1181,7 @@ TEST_F(ScrollAnchorFindInPageTest, FocusPrioritizedOverFindInPage) {
   Find(search_text, client);
   ASSERT_EQ(1, client.Count());
 
-  GetDocument().getElementById("focus_target")->focus();
+  GetDocument().getElementById("focus_target")->Focus();
 
   // Save the old bounds for comparison.
   auto* old_focus_bounds =
@@ -1232,7 +1232,7 @@ TEST_F(ScrollAnchorFindInPageTest, FocusedUnderStickyIsSkipped) {
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, 150),
                                     mojom::blink::ScrollType::kUser);
 
-  GetDocument().getElementById("target")->focus();
+  GetDocument().getElementById("target")->Focus();
 
   // Save the old bounds for comparison. Use #check, since sticky won't move
   // regardless of scroll anchoring.

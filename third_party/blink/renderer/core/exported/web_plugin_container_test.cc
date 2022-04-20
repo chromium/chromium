@@ -380,7 +380,7 @@ TEST_F(WebPluginContainerTest, Copy) {
       .Unwrap<Document>()
       ->body()
       ->getElementById("translated-plugin")
-      ->focus();
+      ->Focus();
   EXPECT_TRUE(web_view->MainFrame()->ToWebLocalFrame()->ExecuteCommand("Copy"));
 
   LocalFrame* local_frame = web_view->MainFrameImpl()->GetFrame();

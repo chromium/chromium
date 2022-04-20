@@ -1128,7 +1128,7 @@ bool FocusController::AdvanceFocusInDocumentOrder(
 
   SetFocusedFrame(new_document.GetFrame());
 
-  element->focus(
+  element->Focus(
       FocusParams(SelectionBehaviorOnFocus::kReset, type, source_capabilities));
   return true;
 }

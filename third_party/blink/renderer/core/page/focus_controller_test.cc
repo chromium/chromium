@@ -23,7 +23,7 @@ TEST_F(FocusControllerTest, SetInitialFocus) {
   GetDocument().body()->setInnerHTML("<input><textarea>");
   auto* input = To<Element>(GetDocument().body()->firstChild());
   // Set sequential focus navigation point before the initial focus.
-  input->focus();
+  input->Focus();
   input->blur();
   GetFocusController().SetInitialFocus(mojom::blink::FocusType::kForward);
   EXPECT_EQ(input, GetDocument().FocusedElement())

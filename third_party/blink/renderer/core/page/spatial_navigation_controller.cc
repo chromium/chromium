@@ -216,7 +216,7 @@ bool SpatialNavigationController::HandleEnterKeyboardEvent(
     // convert the Enter key into click on down and press (and up) events.
     if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled() &&
         enter_key_down_seen_ && enter_key_press_seen_) {
-      interest_element->focus(
+      interest_element->Focus(
           FocusParams(SelectionBehaviorOnFocus::kReset,
                       mojom::blink::FocusType::kSpatialNavigation, nullptr));
       // We need enter to activate links, etc. The click should be after the
@@ -497,7 +497,7 @@ void SpatialNavigationController::MoveInterestTo(Node* next_node) {
   LocalFrame* old_frame = page_->GetFocusController().FocusedFrame();
   ClearFocusInExitedFrames(old_frame, next_node->GetDocument().GetFrame());
 
-  element->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+  element->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                              mojom::blink::FocusType::kSpatialNavigation,
                              nullptr));
   // The focused element could be changed due to elm.focus() on focus handlers.
@@ -596,7 +596,7 @@ void SpatialNavigationController::FullscreenStateChanged(Element* element) {
   if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled())
     return;
   if (IsA<HTMLMediaElement>(element)) {
-    element->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+    element->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                                mojom::blink::FocusType::kSpatialNavigation,
                                nullptr));
   }

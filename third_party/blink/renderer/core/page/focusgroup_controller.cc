@@ -573,7 +573,7 @@ Element* FocusgroupController::WrapOrFlowInGrid(
 void FocusgroupController::Focus(Element* element,
                                  FocusgroupDirection direction) {
   DCHECK(element);
-  element->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+  element->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                              utils::IsDirectionForward(direction)
                                  ? mojom::blink::FocusType::kForward
                                  : mojom::blink::FocusType::kBackward,

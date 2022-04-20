@@ -1918,7 +1918,7 @@ TEST_F(
 
   // Forward Navigation in form1 with NEXT
   Element* input1 = document->getElementById("input1");
-  input1->focus();
+  input1->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
   int next_previous_flags;
@@ -1966,7 +1966,7 @@ TEST_F(
   // Setting a non editable element as focus in form1, and ensuring editable
   // navigation is fine in forward and backward.
   Element* button1 = document->getElementById("button1");
-  button1->focus();
+  button1->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
   EXPECT_EQ(kWebTextInputFlagHaveNextFocusableElement |
@@ -1980,7 +1980,7 @@ TEST_F(
       mojom::blink::FocusType::kForward);
   Element* content_editable1 = document->getElementById("contenteditable1");
   EXPECT_EQ(content_editable1, document->FocusedElement());
-  button1->focus();
+  button1->Focus();
   next_focus =
       document->GetPage()->GetFocusController().NextFocusableElementForIME(
           button1, mojom::blink::FocusType::kBackward);
@@ -1990,7 +1990,7 @@ TEST_F(
   EXPECT_EQ(input1, document->FocusedElement());
 
   Element* anchor1 = document->getElementById("anchor1");
-  anchor1->focus();
+  anchor1->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
   // No Next/Previous element for elements outside form.
@@ -2016,7 +2016,7 @@ TEST_F(
   // Navigation of elements which are not a part of any forms. All these
   // elements compose a <form>less form.
   Element* text_area3 = document->getElementById("textarea3");
-  text_area3->focus();
+  text_area3->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
   // Next/Previous elements for an element outside of a form are other
@@ -2044,7 +2044,7 @@ TEST_F(
   // Navigation from an element which is part of a form but not an editable
   // element.
   Element* button2 = document->getElementById("button2");
-  button2->focus();
+  button2->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
   // No Next element for this element, due to last element outside the form.
@@ -2099,7 +2099,7 @@ TEST_F(
 
   // Navigation of elements which is having invalid form attribute and hence
   // is a part of the <form>less form.
-  text_area4->focus();
+  text_area4->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
   // No next element for an element outside of a form because it is the last
@@ -2158,7 +2158,7 @@ TEST_F(
 
   // Forward Navigation in form2 with NEXT
   Element* text_area5 = document->getElementById("textarea5");
-  text_area5->focus();
+  text_area5->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
   int next_previous_flags;
@@ -2206,7 +2206,7 @@ TEST_F(
   // Setting a non editable element as focus in form1, and ensuring editable
   // navigation is fine in forward and backward.
   Element* anchor2 = document->getElementById("anchor2");
-  anchor2->focus();
+  anchor2->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
   // No Next/Previous element for non-form control elements inside form.
@@ -2263,7 +2263,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementForIMEWithTabIndexElements) {
   // Forward Navigation in form with NEXT which has tabindex attribute
   // which differs visual order.
   Element* text_area6 = document->getElementById("textarea6");
-  text_area6->focus();
+  text_area6->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
   int next_previous_flags;
@@ -2312,7 +2312,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementForIMEWithTabIndexElements) {
   // Setting an element which has invalid tabindex and ensuring it is not
   // modifying further navigation.
   Element* content_editable5 = document->getElementById("contenteditable5");
-  content_editable5->focus();
+  content_editable5->Focus();
   Element* input6 = document->getElementById("input6");
   next_focus =
       document->GetPage()->GetFocusController().NextFocusableElementForIME(
@@ -2321,7 +2321,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementForIMEWithTabIndexElements) {
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusForIME(
       mojom::blink::FocusType::kForward);
   EXPECT_EQ(input6, document->FocusedElement());
-  content_editable5->focus();
+  content_editable5->Focus();
   next_focus =
       document->GetPage()->GetFocusController().NextFocusableElementForIME(
           content_editable5, mojom::blink::FocusType::kBackward);
@@ -2357,7 +2357,7 @@ TEST_F(WebViewTest,
   // Forward Navigation in form with NEXT which has has disabled/enabled
   // elements which will gets skipped during navigation.
   Element* content_editable6 = document->getElementById("contenteditable6");
-  content_editable6->focus();
+  content_editable6->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
   int next_previous_flags;
@@ -3984,7 +3984,7 @@ TEST_F(WebViewTest, DispatchesDomFocusOutDomFocusInOnViewToggleFocus) {
 
 static void OpenDateTimeChooser(WebView* web_view,
                                 HTMLInputElement* input_element) {
-  input_element->focus();
+  input_element->Focus();
 
   WebKeyboardEvent key_event(WebInputEvent::Type::kRawKeyDown,
                              WebInputEvent::kNoModifiers,
@@ -5470,7 +5470,7 @@ TEST_F(WebViewTest, SetZoomLevelWhilePluginFocused) {
       To<HTMLObjectElement>(main_frame->GetDocument()->body()->firstChild());
   EXPECT_TRUE(plugin_element->OwnedPlugin());
   // Focus the plugin element, and then change the zoom level on the WebView.
-  plugin_element->focus();
+  plugin_element->Focus();
   EXPECT_FLOAT_EQ(1.0f, main_frame->PageZoomFactor());
   web_view->SetZoomLevel(-1.0);
   // Even though the plugin is focused, the entire frame's zoom factor should

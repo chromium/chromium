@@ -49,7 +49,7 @@ void TextControlElementTest::SetUp() {
       "<body><textarea id=textarea></textarea><input id=input /></body>");
   UpdateAllLifecyclePhases();
   text_control_ = ToTextControl(document_->getElementById("textarea"));
-  text_control_->focus();
+  text_control_->Focus();
   input_ = To<HTMLInputElement>(document_->getElementById("input"));
 }
 
@@ -67,7 +67,7 @@ TEST_F(TextControlElementTest, SetSelectionRange) {
 }
 
 TEST_F(TextControlElementTest, SetSelectionRangeDoesNotCauseLayout) {
-  Input().focus();
+  Input().Focus();
   Input().setValue("Hello, input form.");
   Input().SetSelectionRange(1, 1);
 

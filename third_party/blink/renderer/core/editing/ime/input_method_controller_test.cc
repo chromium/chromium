@@ -53,7 +53,7 @@ Element* InputMethodControllerTest::InsertHTMLElement(const char* element_code,
   GetDocument().write(element_code);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Element* element = GetElementById(element_id);
-  element->focus();
+  element->Focus();
   return element;
 }
 
@@ -71,7 +71,7 @@ void InputMethodControllerTest::CreateHTMLWithCompositionInputEventListeners() {
       "  event => document.title += `compositionend.data:${event.data};`);");
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
-  editable->focus();
+  editable->Focus();
 }
 
 void InputMethodControllerTest::CreateHTMLWithCompositionEndEventListener(
@@ -116,7 +116,7 @@ void InputMethodControllerTest::CreateHTMLWithCompositionEndEventListener(
   }
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
-  editable->focus();
+  editable->Focus();
 }
 
 TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
@@ -1302,7 +1302,7 @@ TEST_F(InputMethodControllerTest, CompositionInputEventIsComposing) {
   ime_text_spans.push_back(ImeTextSpan(
       ImeTextSpan::Type::kComposition, 0, 5, Color(255, 0, 0),
       ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid, 0, 0));
-  editable->focus();
+  editable->Focus();
 
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("foo", ime_text_spans, 0, 3);
@@ -1464,7 +1464,7 @@ TEST_F(InputMethodControllerTest, FinishCompositionRemovedRange) {
   input_a->setOuterHTML("", ASSERT_NO_EXCEPTION);
   EXPECT_EQ(kWebTextInputTypeNone, Controller().TextInputType());
 
-  GetDocument().getElementById("b")->focus();
+  GetDocument().getElementById("b")->Focus();
   EXPECT_EQ(kWebTextInputTypeTelephone, Controller().TextInputType());
 
   Controller().FinishComposingText(InputMethodController::kKeepSelection);
@@ -1604,7 +1604,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* editable =
       InsertHTMLElement("<div id='sample' contenteditable></div>", "sample");
-  editable->focus();
+  editable->Focus();
 
   // Simulate composition in the |contentEditable|.
   Vector<ImeTextSpan> ime_text_spans;
@@ -1635,7 +1635,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
 
   // Focus change finishes composition.
   editable->blur();
-  editable->focus();
+  editable->Focus();
 
   // Make sure that caret is still at the end of the inserted text.
   EXPECT_FALSE(Controller().HasComposition());
@@ -2547,7 +2547,7 @@ TEST_F(InputMethodControllerTest, ClearImeTextSpansByType) {
 // For http://crbug.com/712761
 TEST_F(InputMethodControllerTest, TextInputTypeAtBeforeEditable) {
   GetDocument().body()->setContentEditable("true", ASSERT_NO_EXCEPTION);
-  GetDocument().body()->focus();
+  GetDocument().body()->Focus();
 
   // Set selection before BODY(editable).
   GetFrame().Selection().SetSelectionAndEndTyping(
@@ -2573,10 +2573,10 @@ TEST_F(InputMethodControllerTest, MaxLength) {
 }
 
 TEST_F(InputMethodControllerTest, InputModeOfFocusedElement) {
-  InsertHTMLElement("<input id='a' inputmode='decimal'>", "a")->focus();
+  InsertHTMLElement("<input id='a' inputmode='decimal'>", "a")->Focus();
   EXPECT_EQ(kWebTextInputModeDecimal, Controller().InputModeOfFocusedElement());
 
-  InsertHTMLElement("<input id='b' inputmode='foo'>", "b")->focus();
+  InsertHTMLElement("<input id='b' inputmode='foo'>", "b")->Focus();
   EXPECT_EQ(kWebTextInputModeDefault, Controller().InputModeOfFocusedElement());
 }
 
@@ -3147,7 +3147,7 @@ TEST_F(InputMethodControllerTest,
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
 
-  input->focus();
+  input->Focus();
 
   // Open a composition that's too long for the <input> element..
   Controller().SetComposition("hello", Vector<ImeTextSpan>(), 0, 0);
@@ -3177,7 +3177,7 @@ TEST_F(InputMethodControllerTest,
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
 
-  input->focus();
+  input->Focus();
 
   // Open a composition that's too long for the <input> element..
   Controller().SetComposition("hello", Vector<ImeTextSpan>(), 0, 0);
@@ -3207,7 +3207,7 @@ TEST_F(InputMethodControllerTest,
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
 
-  input->focus();
+  input->Focus();
 
   // Open a composition that's too long for the <input> element..
   Controller().SetComposition("hello", Vector<ImeTextSpan>(), 0, 0);
@@ -3239,7 +3239,7 @@ TEST_F(
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
 
-  input->focus();
+  input->Focus();
 
   // Open a composition that's too long for the <input> element..
   Controller().SetComposition("hello", Vector<ImeTextSpan>(), 0, 0);
@@ -3346,7 +3346,7 @@ TEST_F(InputMethodControllerTest, AutocapitalizeTextInputFlags) {
 
     GetDocument().write(element);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-    To<Element>(GetDocument().body()->lastChild())->focus();
+    To<Element>(GetDocument().body()->lastChild())->Focus();
 
     EXPECT_EQ(expected_flags,
               Controller().TextInputInfo().flags & autocapitalize_mask);
@@ -3376,7 +3376,7 @@ TEST_F(InputMethodControllerTest, SetCompositionAfterNonEditableElement) {
       SetSelectionTextToBody("<div id='sample' contenteditable='true'>"
                              "<span contenteditable='false'>a</span>|b</div>"));
   Element* const div = GetDocument().getElementById("sample");
-  div->focus();
+  div->Focus();
 
   // Open a composition and insert some text.
   Controller().SetComposition(String::FromUTF8("c"), Vector<ImeTextSpan>(), 1,
@@ -3402,7 +3402,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInTableCell) {
           "id='td2'>|</td></tr></table>"),
       SetSelectionOptions());
   Element* const table = GetDocument().getElementById("sample");
-  table->focus();
+  table->Focus();
 
   Controller().SetComposition(String::FromUTF8("c"), Vector<ImeTextSpan>(), 1,
                               1);
@@ -3449,7 +3449,7 @@ TEST_F(InputMethodControllerTest, VirtualKeyboardPolicyOfFocusedElement) {
   EXPECT_EQ(ui::mojom::VirtualKeyboardPolicy::AUTO,
             Controller().VirtualKeyboardPolicyOfFocusedElement());
   InsertHTMLElement("<input id='a' virtualkeyboardpolicy='manual'>", "a")
-      ->focus();
+      ->Focus();
   EXPECT_EQ(ui::mojom::VirtualKeyboardPolicy::MANUAL,
             Controller().VirtualKeyboardPolicyOfFocusedElement());
 }
@@ -3458,7 +3458,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInTibetan) {
   GetFrame().Selection().SetSelectionAndEndTyping(
       SetSelectionTextToBody(u8"<div id='sample' contenteditable>|</div>"));
   Element* const div = GetDocument().getElementById("sample");
-  div->focus();
+  div->Focus();
 
   Vector<ImeTextSpan> ime_text_spans;
   Controller().SetComposition(String(Vector<UChar>{0xF56}), ime_text_spans, 1,
@@ -3490,7 +3490,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInDevanagari) {
   GetFrame().Selection().SetSelectionAndEndTyping(SetSelectionTextToBody(
       u8"<div id='sample' contenteditable>\u0958|</div>"));
   Element* const div = GetDocument().getElementById("sample");
-  div->focus();
+  div->Focus();
 
   Vector<ImeTextSpan> ime_text_spans;
   Controller().SetComposition(String(Vector<UChar>{0x94D}), ime_text_spans, 1,
@@ -3508,7 +3508,7 @@ TEST_F(InputMethodControllerTest, SetCompositionTamil) {
   GetFrame().Selection().SetSelectionAndEndTyping(
       SetSelectionTextToBody(u8"<div id='sample' contenteditable>|</div>"));
   Element* const div = GetDocument().getElementById("sample");
-  div->focus();
+  div->Focus();
 
   Vector<ImeTextSpan> ime_text_spans;
   // Note: region starts out with space.

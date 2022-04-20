@@ -344,7 +344,7 @@ void HTMLSelectMenuElement::OpenListbox() {
       listbox_part_->showPopup();
     }
     if (selectedOption()) {
-      selectedOption()->focus();
+      selectedOption()->Focus();
     }
     selected_option_when_listbox_opened_ = selectedOption();
   }
@@ -353,7 +353,7 @@ void HTMLSelectMenuElement::OpenListbox() {
 void HTMLSelectMenuElement::CloseListbox() {
   if (listbox_part_ && open()) {
     if (button_part_) {
-      button_part_->focus();
+      button_part_->Focus();
     }
     if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
       popup_element->hide();
@@ -817,7 +817,7 @@ void HTMLSelectMenuElement::SelectNextOption() {
       if (element->IsDisabledFormControl())
         continue;
       SetSelectedOption(element);
-      element->focus();
+      element->Focus();
       DispatchInputAndChangeEventsIfNeeded();
       return;
     }
@@ -832,7 +832,7 @@ void HTMLSelectMenuElement::SelectPreviousOption() {
       if (element->IsDisabledFormControl())
         continue;
       SetSelectedOption(element);
-      element->focus();
+      element->Focus();
       DispatchInputAndChangeEventsIfNeeded();
       return;
     }

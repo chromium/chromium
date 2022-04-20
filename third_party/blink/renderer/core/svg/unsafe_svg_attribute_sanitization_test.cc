@@ -69,7 +69,7 @@ void PasteAndVerifySanitization(const char* html_to_paste,
 
   // Make the body editable, and put the caret in it.
   body->setAttribute(html_names::kContenteditableAttr, "true");
-  body->focus();
+  body->Focus();
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   frame.Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().SelectAllChildren(*body).Build());

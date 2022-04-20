@@ -174,7 +174,7 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
       frame_->GetDocument()->GetElementByAccessKey(key.DeprecatedLower());
   if (!elem)
     return false;
-  elem->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+  elem->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                           mojom::blink::FocusType::kAccessKey, nullptr));
   elem->AccessKeyAction(SimulatedClickCreationScope::kFromUserAgent);
   return true;

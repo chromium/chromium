@@ -246,7 +246,7 @@ void TextControlElement::select() {
   setSelectionRangeForBinding(0, std::numeric_limits<unsigned>::max());
   // Avoid SelectionBehaviorOnFocus::Restore, which scrolls containers to show
   // the selection.
-  focus(FocusParams(SelectionBehaviorOnFocus::kNone,
+  Focus(FocusParams(SelectionBehaviorOnFocus::kNone,
                     mojom::blink::FocusType::kNone, nullptr));
   RestoreCachedSelection();
 }

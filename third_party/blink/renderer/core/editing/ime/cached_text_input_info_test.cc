@@ -65,7 +65,7 @@ TEST_F(CachedTextInputInfoTest, PlaceholderBRInTextArea) {
 TEST_F(CachedTextInputInfoTest, PlaceholderBROnlyInTextArea) {
   SetBodyContent("<textarea id=target></textarea>");
   auto& target = *To<TextControlElement>(GetElementById("target"));
-  target.focus();
+  target.Focus();
   GetDocument().execCommand("insertparagraph", false, "", ASSERT_NO_EXCEPTION);
   GetDocument().execCommand("delete", false, "", ASSERT_NO_EXCEPTION);
 

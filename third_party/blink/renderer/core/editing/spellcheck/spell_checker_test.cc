@@ -42,7 +42,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithEmptyInputNoCrash) {
   SetBodyContent("<input placeholder='placeholder'>abc");
   UpdateAllLifecyclePhasesForTest();
   Element* input = GetDocument().QuerySelector("input");
-  input->focus();
+  input->Focus();
   // Do not crash in advanceToNextMisspelling.
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
@@ -56,7 +56,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithImageInTableNoCrash) {
       "</td></tr></table>"
       "zz zz zz"
       "</div>");
-  GetDocument().QuerySelector("div")->focus();
+  GetDocument().QuerySelector("div")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Do not crash in advanceToNextMisspelling.
@@ -68,7 +68,7 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   SetBodyContent("<div contenteditable>  zz zz zz  </div>");
 
   Element* div = GetDocument().QuerySelector("div");
-  div->focus();
+  div->Focus();
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
           .Collapse(Position::LastPositionInNode(*div))
@@ -81,7 +81,7 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
 TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
   auto* input = To<HTMLInputElement>(GetDocument().QuerySelector("input"));
-  input->focus();
+  input->Focus();
   input->setValue("Hello, input field");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 

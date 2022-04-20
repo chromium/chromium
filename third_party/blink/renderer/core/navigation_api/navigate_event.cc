@@ -142,7 +142,7 @@ void NavigateEvent::ResetFocusIfNeeded() {
   }
 
   if (Element* focus_delegate = document->GetAutofocusDelegate()) {
-    focus_delegate->focus();
+    focus_delegate->Focus();
   } else {
     document->ClearFocusedElement();
     document->SetSequentialFocusNavigationStartingPoint(nullptr);

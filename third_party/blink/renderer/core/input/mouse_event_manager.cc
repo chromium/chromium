@@ -610,7 +610,7 @@ bool MouseEventManager::SlideFocusOnShadowHostIfNecessary(
   if (Element* delegated_target = element.GetFocusableArea()) {
     // Use FocusTypeForward instead of FocusTypeMouse here to mean the
     // focus has slided.
-    delegated_target->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+    delegated_target->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                                         mojom::blink::FocusType::kForward,
                                         nullptr));
     return true;

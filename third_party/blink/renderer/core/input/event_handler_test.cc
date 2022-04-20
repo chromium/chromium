@@ -1285,7 +1285,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromScriptDoesntUpdateTooltip) {
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
   Element* element = GetDocument().getElementById("b");
-  element->focus();
+  element->Focus();
 
   EXPECT_TRUE(LastToolTipText().IsNull());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
@@ -1355,7 +1355,7 @@ TEST_F(EventHandlerTooltipTest,
   // But when the Element::Focus() is called outside of a keypress context,
   // no tooltip is shown.
   element = GetDocument().getElementById("b1");
-  element->focus(FocusOptions::Create());
+  element->Focus(FocusOptions::Create());
   EXPECT_TRUE(LastToolTipText().IsNull());
 }
 
@@ -1401,7 +1401,7 @@ TEST_F(EventHandlerTooltipTest,
 
   // Then, programmatically move the focus to another button that has no title
   // text. This should hide the tooltip.
-  element->focus();
+  element->Focus();
 
   EXPECT_TRUE(LastToolTipText().IsNull());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
@@ -1446,7 +1446,7 @@ TEST_F(EventHandlerTooltipTest,
 
   // Then, programmatically move the focus to another element.
   Element* element = GetDocument().getElementById("b2");
-  element->focus();
+  element->Focus();
 
   EXPECT_EQ("tooltip", LastToolTipText());
 }

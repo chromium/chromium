@@ -626,7 +626,7 @@ bool HTMLTextAreaElement::IsValidValue(const String& candidate) const {
 }
 
 void HTMLTextAreaElement::AccessKeyAction(SimulatedClickCreationScope) {
-  focus();
+  Focus();
 }
 
 void HTMLTextAreaElement::setCols(unsigned cols) {

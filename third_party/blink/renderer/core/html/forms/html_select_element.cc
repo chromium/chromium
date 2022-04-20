@@ -410,7 +410,7 @@ void HTMLSelectElement::OptionElementChildrenChanged(
 
 void HTMLSelectElement::AccessKeyAction(
     SimulatedClickCreationScope creation_scope) {
-  focus();
+  Focus();
   DispatchSimulatedClick(nullptr, creation_scope);
 }
 

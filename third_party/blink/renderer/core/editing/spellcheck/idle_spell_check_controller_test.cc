@@ -150,7 +150,7 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
       To<HTMLObjectElement>(GetDocument().QuerySelector("object"));
   html_object_element->RenderFallbackContent(
       HTMLObjectElement::ErrorEventPolicy::kDispatch);
-  GetDocument().QuerySelector("div")->focus();
+  GetDocument().QuerySelector("div")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Advance to cold mode invocation

@@ -6785,7 +6785,7 @@ TEST_F(WebFrameTest, ReplaceMisspelledRange) {
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
       mojom::EditingBehavior::kEditingWindowsBehavior);
 
-  element->focus();
+  element->Focus();
   NonThrowableExceptionState exception_state;
   document->execCommand("InsertText", false, "_wellcome_.", exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -6831,7 +6831,7 @@ TEST_F(WebFrameTest, RemoveSpellingMarkers) {
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
       mojom::EditingBehavior::kEditingWindowsBehavior);
 
-  element->focus();
+  element->Focus();
   NonThrowableExceptionState exception_state;
   document->execCommand("InsertText", false, "_wellcome_.", exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -6882,7 +6882,7 @@ TEST_F(WebFrameTest, RemoveSpellingMarkersUnderWords) {
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
       mojom::EditingBehavior::kEditingWindowsBehavior);
 
-  element->focus();
+  element->Focus();
   NonThrowableExceptionState exception_state;
   document->execCommand("InsertText", false, " wellcome ", exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -6956,7 +6956,7 @@ TEST_F(WebFrameTest, SlowSpellcheckMarkerPosition) {
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
       mojom::EditingBehavior::kEditingWindowsBehavior);
 
-  element->focus();
+  element->Focus();
   NonThrowableExceptionState exception_state;
   document->execCommand("InsertText", false, "wellcome ", exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -6990,7 +6990,7 @@ TEST_F(WebFrameTest, SpellcheckResultErasesMarkers) {
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
       mojom::EditingBehavior::kEditingWindowsBehavior);
 
-  element->focus();
+  element->Focus();
   NonThrowableExceptionState exception_state;
   document->execCommand("InsertText", false, "welcome ", exception_state);
 
@@ -7026,7 +7026,7 @@ TEST_F(WebFrameTest, SpellcheckResultsSavedInDocument) {
   web_view_helper.GetWebView()->GetSettings()->SetEditingBehavior(
       mojom::EditingBehavior::kEditingWindowsBehavior);
 
-  element->focus();
+  element->Focus();
   NonThrowableExceptionState exception_state;
   document->execCommand("InsertText", false, "wellcome ", exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -12810,7 +12810,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
   Compositor().BeginFrame();
 
   Element* input = GetDocument().getElementById("target");
-  input->focus();
+  input->Focus();
 
   ScrollableArea* area = GetDocument().View()->LayoutViewport();
   area->SetScrollOffset(ScrollOffset(0, 0),

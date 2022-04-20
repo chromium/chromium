@@ -876,7 +876,7 @@ TEST_F(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   EXPECT_FALSE(GetDocument().getElementById("textfield")->IsFocusable());
 
   // Calling explicit focus() should also not focus the element.
-  GetDocument().getElementById("textfield")->focus();
+  GetDocument().getElementById("textfield")->Focus();
   EXPECT_FALSE(GetDocument().FocusedElement());
 
   // Now commit the lock and ensure we can focus the input
@@ -899,7 +899,7 @@ TEST_F(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   EXPECT_TRUE(GetDocument().getElementById("textfield")->IsFocusable());
 
   // Calling explicit focus() should focus the element
-  GetDocument().getElementById("textfield")->focus();
+  GetDocument().getElementById("textfield")->Focus();
   EXPECT_EQ(GetDocument().FocusedElement(),
             GetDocument().getElementById("textfield"));
 }
@@ -1055,7 +1055,7 @@ TEST_F(DisplayLockContextTest,
   EXPECT_FALSE(text_field->IsFocusable());
 
   // Calling explicit focus() should also not focus the element.
-  text_field->focus();
+  text_field->Focus();
   EXPECT_FALSE(GetDocument().FocusedElement());
 }
 

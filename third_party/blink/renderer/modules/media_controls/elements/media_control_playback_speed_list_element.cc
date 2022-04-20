@@ -248,7 +248,7 @@ void MediaControlPlaybackSpeedListElement::CenterCheckedItem() {
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   checked_item_->scrollIntoView(arg);
-  checked_item_->focus();
+  checked_item_->Focus();
 }
 
 void MediaControlPlaybackSpeedListElement::Trace(Visitor* visitor) const {

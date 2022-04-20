@@ -1410,7 +1410,7 @@ Response InspectorDOMAgent::focus(Maybe<int> node_id,
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
   if (!element->IsFocusable())
     return Response::ServerError("Element is not focusable");
-  element->focus();
+  element->Focus();
   return Response::Success();
 }
 

@@ -63,7 +63,7 @@ void ImeOnFocusTest::SendGestureTap(WebViewImpl* web_view,
 }
 
 void ImeOnFocusTest::Focus(const AtomicString& element) {
-  document_->body()->getElementById(element)->focus();
+  document_->body()->getElementById(element)->Focus();
 }
 
 void ImeOnFocusTest::RunImeOnFocusTest(

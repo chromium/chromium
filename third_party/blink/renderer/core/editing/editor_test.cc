@@ -62,7 +62,7 @@ TEST_F(EditorTest, copyGeneratedPassword) {
       To<HTMLInputElement>(*GetDocument().getElementById("password"));
 
   const String kPasswordValue = "secret";
-  element.focus();
+  element.Focus();
   element.setValue(kPasswordValue);
   element.SetSelectionRange(0, kPasswordValue.length());
 
@@ -100,7 +100,7 @@ TEST_F(EditorTest, DontCopyHiddenSelections) {
 
   auto& checkbox =
       To<HTMLInputElement>(*GetDocument().getElementById("checkbox"));
-  checkbox.focus();
+  checkbox.Focus();
 
   ExecuteCopy();
 
@@ -128,7 +128,7 @@ TEST_F(EditorTest, ReplaceSelection) {
 TEST_F(EditorTest, RedoWithDisconnectedEditable) {
   SetBodyContent("<p contenteditable id=target></p>");
   auto& target = *GetElementById("target");
-  target.focus();
+  target.Focus();
   GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
                             ASSERT_NO_EXCEPTION);
   ASSERT_EQ("<b>xyz</b>", target.innerHTML());
@@ -149,7 +149,7 @@ TEST_F(EditorTest, RedoWithDisconnectedEditable) {
 TEST_F(EditorTest, RedoWithDisconnectedInput) {
   SetBodyContent("<input id=target>");
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
-  input.focus();
+  input.Focus();
   GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
   ASSERT_EQ("xyz", input.value());
   ASSERT_EQ(0, SizeOfRedoStack());
@@ -169,7 +169,7 @@ TEST_F(EditorTest, RedoWithDisconnectedInput) {
 TEST_F(EditorTest, UndoWithDisconnectedEditable) {
   SetBodyContent("<p contenteditable id=target></p>");
   auto& target = *GetElementById("target");
-  target.focus();
+  target.Focus();
   GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
                             ASSERT_NO_EXCEPTION);
   ASSERT_EQ("<b>xyz</b>", target.innerHTML());
@@ -186,7 +186,7 @@ TEST_F(EditorTest, UndoWithDisconnectedEditable) {
 TEST_F(EditorTest, UndoWithDisconnectedInput) {
   SetBodyContent("<input id=target>");
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
-  input.focus();
+  input.Focus();
   GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
   ASSERT_EQ("xyz", input.value());
   ASSERT_EQ(0, SizeOfRedoStack());

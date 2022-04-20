@@ -711,7 +711,7 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenModifierKeyIsSet) {
   // 1. Set the focus on an item of the focusgroup.
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // 2. Send an "ArrowDown" event from that element.
   auto* event =
@@ -733,7 +733,7 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenItAlreadyMoved) {
   // 1. Set the focus on an item of the focusgroup.
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item2);
-  item2->focus();
+  item2->Focus();
 
   // 2. Create the "ArrowDown" event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, item2);
@@ -741,7 +741,7 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenItAlreadyMoved) {
   // 3. Move the focus to a different element before we send the event.
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // 4. Pass the event we created earlier to our FocusgroupController. The
   // controller shouldn't even try to move the focus since the focus isn't on
@@ -778,7 +778,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   )HTML");
   auto* out = GetElementById("out");
   ASSERT_TRUE(out);
-  out->focus();
+  out->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, out);
@@ -801,7 +801,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   )HTML");
   auto* root = GetElementById("root");
   ASSERT_TRUE(root);
-  root->focus();
+  root->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, root);
@@ -827,7 +827,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   )HTML");
   auto* nonitem1 = GetElementById("nonitem1");
   ASSERT_TRUE(nonitem1);
-  nonitem1->focus();
+  nonitem1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, nonitem1);
@@ -851,7 +851,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, MovesToNextItem) {
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item2);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -873,7 +873,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, DoesntMoveWhenOnlyOneItem) {
   )HTML");
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -896,7 +896,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   )HTML");
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -921,7 +921,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, SkipsNonFocusableItems) {
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -949,7 +949,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, MovesInExtendingFocusgroup) {
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -981,7 +981,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, ExitsExtendingFocusgroup) {
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1013,7 +1013,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item2);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1048,7 +1048,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   }
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1086,7 +1086,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item2);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1128,7 +1128,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, SkipsExtendingFocusgroup) {
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1151,7 +1151,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, DoesntWrapWhenNotSupported) {
   )HTML");
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item2);
-  item2->focus();
+  item2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item2);
@@ -1197,7 +1197,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   }
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1228,7 +1228,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1255,7 +1255,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, WrapsSuccessfully) {
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item2);
-  item2->focus();
+  item2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item2);
@@ -1283,7 +1283,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, WrapsToParentFocusgroup) {
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1331,7 +1331,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, WrapsInInnerFocusgroupOnly) {
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item3);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1385,7 +1385,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest, WrapsInExpectedScope) {
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item3);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1415,7 +1415,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item3->focus();
+  item3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item3);
@@ -1463,7 +1463,7 @@ TEST_P(FocusgroupControllerForwardNavigationTest,
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item3);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1501,7 +1501,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   )HTML");
   auto* out = GetElementById("out");
   ASSERT_TRUE(out);
-  out->focus();
+  out->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, out);
@@ -1524,7 +1524,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   )HTML");
   auto* root = GetElementById("root");
   ASSERT_TRUE(root);
-  root->focus();
+  root->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, root);
@@ -1550,7 +1550,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   )HTML");
   auto* nonitem1 = GetElementById("nonitem1");
   ASSERT_TRUE(nonitem1);
-  nonitem1->focus();
+  nonitem1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, nonitem1);
@@ -1574,7 +1574,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, MovesFocusToPreviousItem) {
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item2);
-  item2->focus();
+  item2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item2);
@@ -1600,7 +1600,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, SkipsNonFocusableItems) {
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item3->focus();
+  item3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item3);
@@ -1623,7 +1623,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, DoesntMoveWhenOnlyOneItem) {
   )HTML");
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1646,7 +1646,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   )HTML");
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -1682,7 +1682,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   }
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item2);
-  item2->focus();
+  item2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item2);
@@ -1721,7 +1721,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   auto* item2 = GetElementById("item2");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item2);
-  item2->focus();
+  item2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item2);
@@ -1753,7 +1753,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item3);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1783,7 +1783,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, SkipsNonFocusgroupSubtree) {
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1835,7 +1835,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, SkipsOrthogonalFocusgroup) {
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1868,7 +1868,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, SkipsRootFocusgroup) {
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1902,7 +1902,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   auto* item4 = GetElementById("item4");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
-  item4->focus();
+  item4->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item4);
@@ -1941,7 +1941,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   auto* item5 = GetElementById("item5");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item5);
-  item5->focus();
+  item5->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item5);
@@ -2005,7 +2005,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   auto* item5 = GetElementById("item5");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item5);
-  item5->focus();
+  item5->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item5);
@@ -2063,7 +2063,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, AscendsToParentFocusgroup) {
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item2);
   ASSERT_TRUE(item3);
-  item3->focus();
+  item3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item3);
@@ -2086,7 +2086,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, DoesntWrapWhenNotSupported) {
   )HTML");
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -2112,7 +2112,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, WrapsSuccessfully) {
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -2152,7 +2152,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, WrapsSuccessfullyInAxis) {
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -2190,7 +2190,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest, DoesntWrapInOrthogonalAxis) {
   }
   auto* item1 = GetElementById("item1");
   ASSERT_TRUE(item1);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -2225,7 +2225,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item4);
   // 1. Validate that we wrap in the right focusgroup.
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -2236,7 +2236,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
 
   // 2. Validate that we only wrap if we're on the first item of the parent
   // focusgroup.
-  item2->focus();
+  item2->Focus();
 
   // Send the key pressed event from that element.
   event = KeyDownEvent(key, item2);
@@ -2273,7 +2273,7 @@ TEST_P(FocusgroupControllerBackwardNavigationTest,
   auto* item3 = GetElementById("item3");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item3);
-  item1->focus();
+  item1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(key, item1);
@@ -2312,7 +2312,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightGoesToNextCol) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r1c2);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c1);
@@ -2332,7 +2332,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownGoesToNextRow) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c1);
@@ -2352,7 +2352,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftGoesToPreviousCol) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r1c2);
 
-  r1c2->focus();
+  r1c2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c2);
@@ -2372,7 +2372,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpGoesToNextRow) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r2c1);
@@ -2412,7 +2412,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightSkipsNonFocusableItem) {
   ASSERT_TRUE(r2c1);
   ASSERT_TRUE(r2c3);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r2c1);
@@ -2432,7 +2432,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownSkipsNonFocusableItem) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r3c2);
 
-  r1c2->focus();
+  r1c2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c2);
@@ -2452,7 +2452,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftSkipsNonFocusableItem) {
   ASSERT_TRUE(r2c3);
   ASSERT_TRUE(r2c1);
 
-  r2c3->focus();
+  r2c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r2c3);
@@ -2472,7 +2472,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpSkipsNonFocusableItem) {
   ASSERT_TRUE(r3c2);
   ASSERT_TRUE(r1c2);
 
-  r3c2->focus();
+  r3c2->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r3c2);
@@ -2490,7 +2490,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightNoWrapNoFlow) {
   auto* r1c3 = GetElementById("r1c3");
   ASSERT_TRUE(r1c3);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -2508,7 +2508,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownNoWrapNoFlow) {
   auto* r2c1 = GetElementById("r2c1");
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -2526,7 +2526,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftNoWrapNoFlow) {
   auto* r1c1 = GetElementById("r1c1");
   ASSERT_TRUE(r1c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -2544,7 +2544,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpNoWrapNoFlow) {
   auto* r1c1 = GetElementById("r1c1");
   ASSERT_TRUE(r1c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -2602,7 +2602,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownGoesToNextRowInAcrossSections) {
   ASSERT_TRUE(r5c1);
   ASSERT_TRUE(r6c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c1);
   SendEvent(event);
@@ -2653,7 +2653,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpGoesToPreviousRowAcrossSections) {
   ASSERT_TRUE(r5c1);
   ASSERT_TRUE(r6c1);
 
-  r6c1->focus();
+  r6c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r6c1);
   SendEvent(event);
@@ -2711,7 +2711,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithRowWrapOnly) {
   ASSERT_TRUE(r1c3);
   ASSERT_TRUE(r1c1);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -2729,7 +2729,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithRowWrapOnly) {
   auto* r2c1 = GetElementById("r2c1");
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -2749,7 +2749,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithRowWrapOnly) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r1c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -2767,7 +2767,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithRowWrapOnly) {
   auto* r1c1 = GetElementById("r1c1");
   ASSERT_TRUE(r1c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -2800,7 +2800,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithColWrapOnly) {
   auto* r1c3 = GetElementById("r1c3");
   ASSERT_TRUE(r1c3);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -2820,7 +2820,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithColWrapOnly) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -2838,7 +2838,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithColWrapOnly) {
   auto* r1c1 = GetElementById("r1c1");
   ASSERT_TRUE(r1c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -2858,7 +2858,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithColWrapOnly) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -2893,7 +2893,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithWrapInBothAxes) {
   ASSERT_TRUE(r1c3);
   ASSERT_TRUE(r1c1);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -2913,7 +2913,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithWrapInBothAxes) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -2933,7 +2933,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithWrapInBothAxes) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r1c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -2953,7 +2953,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithWrapInBothAxes) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -2988,7 +2988,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithRowFlowOnly) {
   ASSERT_TRUE(r1c3);
   ASSERT_TRUE(r2c1);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -3007,7 +3007,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithRowFlowOnly) {
   auto* r2c1 = GetElementById("r2c1");
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -3027,7 +3027,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithRowFlowOnly) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -3046,7 +3046,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithRowFlowOnly) {
   auto* r1c1 = GetElementById("r1c1");
   ASSERT_TRUE(r1c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -3079,7 +3079,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithColFlowOnly) {
   auto* r1c3 = GetElementById("r1c3");
   ASSERT_TRUE(r1c3);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -3099,7 +3099,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithColFlowOnly) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -3118,7 +3118,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithColFlowOnly) {
   auto* r1c1 = GetElementById("r1c1");
   ASSERT_TRUE(r1c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -3138,7 +3138,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithColFlowOnly) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -3174,7 +3174,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithFlowInBothAxes) {
   ASSERT_TRUE(r1c3);
   ASSERT_TRUE(r2c1);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -3195,7 +3195,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithFlowInBothAxes) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -3216,7 +3216,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithFlowInBothAxes) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -3237,7 +3237,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithFlowInBothAxes) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -3273,7 +3273,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithRowWrapColFlow) {
   ASSERT_TRUE(r1c3);
   ASSERT_TRUE(r1c1);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -3293,7 +3293,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithRowWrapColFlow) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -3314,7 +3314,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithRowWrapColFlow) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r1c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -3334,7 +3334,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithRowWrapColFlow) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -3370,7 +3370,7 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithRowFlowColWrap) {
   ASSERT_TRUE(r1c3);
   ASSERT_TRUE(r2c1);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c3);
@@ -3391,7 +3391,7 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithRowFlowColWrap) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c1);
@@ -3411,7 +3411,7 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithRowFlowColWrap) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c3);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
@@ -3432,7 +3432,7 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithRowFlowColWrap) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   // Send the key pressed event from that element.
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
@@ -3470,14 +3470,14 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithColSpan) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r1c4);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c2);
 
-  r1c2->focus();
+  r1c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c2);
   SendEvent(event);
@@ -3507,21 +3507,21 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithColSpan) {
   ASSERT_TRUE(r2c2);
   ASSERT_TRUE(r2c4);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c1);
 
-  r1c2->focus();
+  r1c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r1c4->focus();
+  r1c4->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c4);
   SendEvent(event);
@@ -3541,14 +3541,14 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithColSpan) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r1c4);
 
-  r1c4->focus();
+  r1c4->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c4);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c2);
 
-  r1c2->focus();
+  r1c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c2);
   SendEvent(event);
@@ -3580,28 +3580,28 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithColSpan) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r1c4);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r2c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c1);
 
-  r2c2->focus();
+  r2c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r2c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c2);
 
-  r2c3->focus();
+  r2c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r2c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c2);
 
-  r2c4->focus();
+  r2c4->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r2c4);
   SendEvent(event);
@@ -3657,35 +3657,35 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithRowSpan) {
   ASSERT_TRUE(r5c1);
   ASSERT_TRUE(r5c2);
 
-  r2c1->focus();
+  r2c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r2c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r2c2->focus();
+  r2c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r2c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c3);
 
-  r3c1->focus();
+  r3c1->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r3c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r4c1->focus();
+  r4c1->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r4c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r5c1->focus();
+  r5c1->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r5c1);
   SendEvent(event);
@@ -3715,42 +3715,42 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithRowSpan) {
   ASSERT_TRUE(r5c2);
   ASSERT_TRUE(r5c3);
 
-  r1c2->focus();
+  r1c2->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r1c3->focus();
+  r1c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c3);
 
-  r2c2->focus();
+  r2c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r5c2);
 
-  r2c3->focus();
+  r2c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r3c3);
 
-  r3c3->focus();
+  r3c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r3c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c3);
 
-  r4c3->focus();
+  r4c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r4c3);
   SendEvent(event);
@@ -3778,35 +3778,35 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithRowSpan) {
   ASSERT_TRUE(r5c3);
   ASSERT_TRUE(r5c2);
 
-  r2c3->focus();
+  r2c3->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r2c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r2c2->focus();
+  r2c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r2c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c1);
 
-  r3c3->focus();
+  r3c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r3c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r4c3->focus();
+  r4c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r4c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r5c3->focus();
+  r5c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r5c3);
   SendEvent(event);
@@ -3836,42 +3836,42 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithRowSpan) {
   ASSERT_TRUE(r1c2);
   ASSERT_TRUE(r1c3);
 
-  r5c2->focus();
+  r5c2->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r5c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c2);
 
-  r5c3->focus();
+  r5c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r5c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c3);
 
-  r2c2->focus();
+  r2c2->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r2c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c2);
 
-  r4c3->focus();
+  r4c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r4c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r3c3);
 
-  r3c3->focus();
+  r3c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r3c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r2c3);
 
-  r2c3->focus();
+  r2c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r2c3);
   SendEvent(event);
@@ -3931,28 +3931,28 @@ TEST_F(FocusgroupControllerTest, GridArrowRightWithEmptyCells) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r2c3);
 
-  r3c2->focus();
+  r3c2->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r3c2);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c4);
 
-  r1c4->focus();
+  r1c4->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c4);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c5);
 
-  r4c6->focus();
+  r4c6->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r4c6);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c1);
 
-  r2c3->focus();
+  r2c3->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r2c3);
   SendEvent(event);
@@ -3982,28 +3982,28 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithEmptyCells) {
   ASSERT_TRUE(r1c1);
   ASSERT_TRUE(r1c4);
 
-  r2c3->focus();
+  r2c3->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r2c3);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c1);
 
-  r1c5->focus();
+  r1c5->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c5);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c1);
 
-  r1c6->focus();
+  r1c6->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c6);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c6);
 
-  r1c7->focus();
+  r1c7->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c7);
   SendEvent(event);
@@ -4012,14 +4012,14 @@ TEST_F(FocusgroupControllerTest, GridArrowDownWithEmptyCells) {
   // on the last cell of the last column.
   ASSERT_EQ(GetDocument().FocusedElement(), r1c1);
 
-  r4c6->focus();
+  r4c6->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r4c6);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c7);
 
-  r1c4->focus();
+  r1c4->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN, r1c4);
   SendEvent(event);
@@ -4045,28 +4045,28 @@ TEST_F(FocusgroupControllerTest, GridArrowLeftWithEmptyCells) {
   ASSERT_TRUE(r1c3);
   ASSERT_TRUE(r4c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c6);
 
-  r3c1->focus();
+  r3c1->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r3c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c4);
 
-  r1c4->focus();
+  r1c4->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r1c4);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c3);
 
-  r4c1->focus();
+  r4c1->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT, r4c1);
   SendEvent(event);
@@ -4092,35 +4092,35 @@ TEST_F(FocusgroupControllerTest, GridArrowUpWithEmptyCells) {
   ASSERT_TRUE(r3c1);
   ASSERT_TRUE(r1c1);
 
-  r1c7->focus();
+  r1c7->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c7);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c6);
 
-  r4c6->focus();
+  r4c6->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r4c6);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r1c6);
 
-  r1c6->focus();
+  r1c6->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c6);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r4c1);
 
-  r4c1->focus();
+  r4c1->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r4c1);
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), r3c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   event = KeyDownEvent(ui::DomKey::ARROW_UP, r1c1);
   SendEvent(event);
@@ -4157,7 +4157,7 @@ TEST_F(FocusgroupControllerTest, GridFocusgroupWithCssTable) {
   ASSERT_TRUE(r2c2);
   ASSERT_TRUE(r2c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c1);
   SendEvent(event);
@@ -4201,7 +4201,7 @@ TEST_F(FocusgroupControllerTest, CssTableWithoutGridFocusgroupNotAFocusgroup) {
   auto* r1c1 = GetElementById("r1c1");
   ASSERT_TRUE(r1c1);
 
-  r1c1->focus();
+  r1c1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1c1);
   SendEvent(event);
@@ -4224,7 +4224,7 @@ TEST_F(FocusgroupControllerTest, GridFocusgroupOnNonTableElementIgnored) {
   auto* non_item_1 = GetElementById("nonitem1");
   ASSERT_TRUE(non_item_1);
 
-  non_item_1->focus();
+  non_item_1->Focus();
 
   auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN, non_item_1);
   SendEvent(event);

@@ -116,7 +116,7 @@ TEST_P(CaretDisplayItemClientTest, CaretPaintInvalidation) {
 
   // Focus the body. Should invalidate the new caret.
   GetDocument().View()->SetTracksRasterInvalidations(true);
-  GetDocument().body()->focus();
+  GetDocument().body()->Focus();
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(GetCaretDisplayItemClient().IsValid());
@@ -185,7 +185,7 @@ TEST_P(CaretDisplayItemClientTest, CaretMovesBetweenBlocks) {
   auto* block2 = To<LayoutBlockFlow>(block_element2->GetLayoutObject());
 
   // Focus the body.
-  GetDocument().body()->focus();
+  GetDocument().body()->Focus();
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(GetCaretDisplayItemClient().IsValid());
@@ -259,7 +259,7 @@ TEST_P(CaretDisplayItemClientTest, UpdatePreviousLayoutBlock) {
   auto* block2 = To<LayoutBlock>(block_element2->GetLayoutObject());
 
   // Set caret into block2.
-  GetDocument().body()->focus();
+  GetDocument().body()->Focus();
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
           .Collapse(Position(block_element2, 0))
@@ -320,7 +320,7 @@ TEST_P(CaretDisplayItemClientTest, CaretHideMoveAndShow) {
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
   Text* text = AppendTextNode("Hello, World!");
-  GetDocument().body()->focus();
+  GetDocument().body()->Focus();
   UpdateAllLifecyclePhasesForCaretTest();
   EXPECT_EQ(PhysicalRect(0, 0, 1, 1), CaretLocalRect());
 
@@ -356,7 +356,7 @@ TEST_P(CaretDisplayItemClientTest, BlinkingCaretNoInvalidation) {
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
-  GetDocument().body()->focus();
+  GetDocument().body()->Focus();
   UpdateAllLifecyclePhasesForCaretTest();
   EXPECT_EQ(PhysicalRect(0, 0, 1, 1), CaretLocalRect());
 
@@ -554,7 +554,7 @@ TEST_P(CaretDisplayItemClientTest, FullDocumentPaintingWithCaret) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(text_inline_box->Id(), kForegroundType)));
 
-  div.focus();
+  div.Focus();
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_THAT(ContentDisplayItems(),

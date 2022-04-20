@@ -2453,7 +2453,7 @@ void Element::SetPopupFocusOnShow() {
     return;
 
   // 3. Run the focusing steps for control.
-  control->focus();
+  control->Focus();
 
   // 4. Let topDocument be the active document of control's node document's
   // browsing context's top-level browsing context.
@@ -4908,25 +4908,25 @@ Element* Element::GetAutofocusDelegate() const {
 }
 
 void Element::focusForBindings() {
-  focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+  Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                     mojom::blink::FocusType::kScript, nullptr));
 }
 
 void Element::focusForBindings(const FocusOptions* options) {
-  focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+  Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                     mojom::blink::FocusType::kScript, nullptr, options));
 }
 
-void Element::focus() {
-  focus(FocusParams());
+void Element::Focus() {
+  Focus(FocusParams());
 }
 
-void Element::focus(const FocusOptions* options) {
-  focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+void Element::Focus(const FocusOptions* options) {
+  Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                     mojom::blink::FocusType::kNone, nullptr, options));
 }
 
-void Element::focus(const FocusParams& params) {
+void Element::Focus(const FocusParams& params) {
   if (!isConnected())
     return;
 
@@ -4949,7 +4949,7 @@ void Element::focus(const FocusParams& params) {
     DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
            RuntimeEnabledFeatures::HTMLPopupElementEnabled());
     if (auto* node_to_focus = GetPopupFocusableArea(/*autofocus_only=*/false)) {
-      node_to_focus->focus(params);
+      node_to_focus->Focus(params);
     }
     return;
   }
@@ -4964,7 +4964,7 @@ void Element::focus(const FocusParams& params) {
     if (Element* new_focus_target = GetFocusableArea()) {
       // Unlike the specification, we re-run focus() for new_focus_target
       // because we can't change |this| in a member function.
-      new_focus_target->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
+      new_focus_target->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                                           mojom::blink::FocusType::kForward,
                                           nullptr, params.options));
     }

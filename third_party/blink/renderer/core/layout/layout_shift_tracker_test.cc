@@ -113,7 +113,7 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterChangeEvent) {
   )HTML");
   auto* select = To<HTMLSelectElement>(GetDocument().getElementById("sel"));
   DCHECK(select);
-  select->focus();
+  select->Focus();
   select->SelectOptionByPopup(1);
   GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
                                                   AtomicString("top: 60px"));

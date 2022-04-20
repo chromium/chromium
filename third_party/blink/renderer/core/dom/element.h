@@ -722,13 +722,15 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Element* GetFocusableArea() const;
   Element* GetAutofocusDelegate() const;
   // Element focus function called through IDL (i.e. element.focus() in JS)
+  // Delegates to virtual Focus() with focus type set to kScript
   void focusForBindings();
   void focusForBindings(const FocusOptions*);
   // Element focus function called from outside IDL (user focus,
   // accessibility, etc...)
-  virtual void focus(const FocusParams&);
-  void focus();
-  void focus(const FocusOptions*);
+  virtual void Focus(const FocusParams&);
+  // Delegates to virtual Focus() with focus type set to kNone
+  void Focus();
+  void Focus(const FocusOptions*);
 
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus);
   // This function is called after SetFocused(true) before dispatching 'focus'

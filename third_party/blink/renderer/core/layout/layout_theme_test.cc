@@ -57,7 +57,7 @@ TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
   // Do focus.
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
-  span->focus();
+  span->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Checking focused style.

@@ -774,7 +774,7 @@ void LocalFrameMojoHandler::AdvanceFocusForIME(
     return;
 
   next_element->scrollIntoViewIfNeeded(true /*centerIfNeeded*/);
-  next_element->focus();
+  next_element->Focus();
 }
 
 void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(

@@ -207,7 +207,7 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
       // In case of double click or triple click, selection will be there,
       // so do not focus the control element.
       if (!is_label_text_selected) {
-        element->focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+        element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                                    mojom::blink::FocusType::kMouse, nullptr));
       }
     }
@@ -234,10 +234,10 @@ bool HTMLLabelElement::WillRespondToMouseClickEvents() {
   return HTMLElement::WillRespondToMouseClickEvents();
 }
 
-void HTMLLabelElement::focus(const FocusParams& params) {
+void HTMLLabelElement::Focus(const FocusParams& params) {
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
   if (IsFocusable()) {
-    HTMLElement::focus(params);
+    HTMLElement::Focus(params);
     return;
   }
 
@@ -246,7 +246,7 @@ void HTMLLabelElement::focus(const FocusParams& params) {
 
   // To match other browsers, always restore previous selection.
   if (HTMLElement* element = control()) {
-    element->focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,
+    element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,
                                params.source_capabilities, params.options));
   }
 }

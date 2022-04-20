@@ -3029,7 +3029,7 @@ void LocalFrame::AdvanceFocusForIME(mojom::blink::FocusType focus_type) {
     return;
 
   next_element->scrollIntoViewIfNeeded(true /*centerIfNeeded*/);
-  next_element->focus();
+  next_element->Focus();
 }
 
 void LocalFrame::PostMessageEvent(

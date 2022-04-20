@@ -47,7 +47,7 @@ class HTMLSelectElementTest : public PageTestBase {
 
   bool FirstSelectIsConnectedAfterSelectMultiple(const Vector<int>& indices) {
     auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
-    select->focus();
+    select->Focus();
     select->SelectMultipleOptionsByPopup(indices);
     return select->isConnected();
   }

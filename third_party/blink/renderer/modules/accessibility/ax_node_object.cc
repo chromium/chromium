@@ -4561,7 +4561,7 @@ bool AXNodeObject::OnNativeFocusAction() {
     return OnNativeClickAction();
   }
 
-  element->focus();
+  element->Focus();
   return true;
 }
 

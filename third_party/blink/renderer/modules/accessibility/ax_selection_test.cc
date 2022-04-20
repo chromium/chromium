@@ -744,7 +744,7 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelectionInTextareaWithAffinity) {
   // get an upstream affinity is to send the "end" key which might be unreliable
   // on certain platforms, so we modify the selection using Blink internal
   // functions instead.
-  textarea->focus();
+  textarea->Focus();
   Selection().Modify(SelectionModifyAlteration::kMove,
                      SelectionModifyDirection::kBackward,
                      TextGranularity::kDocumentBoundary, SetSelectionBy::kUser);
@@ -794,7 +794,7 @@ TEST_F(AccessibilitySelectionTest,
   // get an upstream affinity is to send the "end" key which might be unreliable
   // on certain platforms, so we modify the selection using Blink internal
   // functions instead.
-  textarea->focus();
+  textarea->Focus();
   Selection().Modify(SelectionModifyAlteration::kMove,
                      SelectionModifyDirection::kBackward,
                      TextGranularity::kDocumentBoundary, SetSelectionBy::kUser);
@@ -1067,7 +1067,7 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextField) {
   Element* const input = GetDocument().QuerySelector("input");
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
-  input->focus(FocusOptions::Create());
+  input->Focus(FocusOptions::Create());
   ASSERT_TRUE(input->IsFocusedElementInDocument());
 
   const AXObject* ax_input = GetAXObjectByElementId("input");
@@ -1102,7 +1102,7 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextField) {
   Element* const input = GetDocument().QuerySelector("input");
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
-  input->focus(FocusOptions::Create());
+  input->Focus(FocusOptions::Create());
   ASSERT_TRUE(input->IsFocusedElementInDocument());
 
   const AXObject* ax_input = GetAXObjectByElementId("input");
@@ -1378,7 +1378,7 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextarea) {
   Element* const textarea = GetDocument().QuerySelector("textarea");
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
-  textarea->focus(FocusOptions::Create());
+  textarea->Focus(FocusOptions::Create());
   ASSERT_TRUE(textarea->IsFocusedElementInDocument());
 
   const AXObject* ax_textarea = GetAXObjectByElementId("textarea");
@@ -1417,7 +1417,7 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextarea) {
   Element* const textarea = GetDocument().QuerySelector("textarea");
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
-  textarea->focus(FocusOptions::Create());
+  textarea->Focus(FocusOptions::Create());
   ASSERT_TRUE(textarea->IsFocusedElementInDocument());
 
   const AXObject* ax_textarea = GetAXObjectByElementId("textarea");
@@ -1639,7 +1639,7 @@ TEST_F(AccessibilitySelectionTest,
   // get an upstream affinity is to send the "end" key which might be unreliable
   // on certain platforms, so we modify the selection using Blink internal
   // functions instead.
-  contenteditable->focus();
+  contenteditable->Focus();
   Selection().Modify(SelectionModifyAlteration::kMove,
                      SelectionModifyDirection::kBackward,
                      TextGranularity::kDocumentBoundary, SetSelectionBy::kUser);

@@ -229,7 +229,7 @@ TEST_F(AffectedByPseudoTest, AffectedByFocusUpdate) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
-  GetElementById("d")->focus();
+  GetElementById("d")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   unsigned element_count =
@@ -262,7 +262,7 @@ TEST_F(AffectedByPseudoTest, ChildrenOrSiblingsAffectedByFocusUpdate) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
-  GetElementById("d")->focus();
+  GetElementById("d")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   unsigned element_count =
@@ -295,7 +295,7 @@ TEST_F(AffectedByPseudoTest, InvalidationSetFocusUpdate) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
-  GetElementById("d")->focus();
+  GetElementById("d")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   unsigned element_count =
@@ -330,7 +330,7 @@ TEST_F(AffectedByPseudoTest, NoInvalidationSetFocusUpdate) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
-  GetElementById("d")->focus();
+  GetElementById("d")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   unsigned element_count =
@@ -357,7 +357,7 @@ TEST_F(AffectedByPseudoTest, FocusWithinCommonAncestor) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
-  GetElementById("focusme1")->focus();
+  GetElementById("focusme1")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   unsigned element_count =
@@ -367,7 +367,7 @@ TEST_F(AffectedByPseudoTest, FocusWithinCommonAncestor) {
 
   start_count += element_count;
 
-  GetElementById("focusme2")->focus();
+  GetElementById("focusme2")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   element_count = GetStyleEngine().StyleForElementCount() - start_count;

@@ -511,9 +511,9 @@ void ListedElement::ShowValidationMessage() {
   Element& element = ValidationAnchor();
   element.scrollIntoViewIfNeeded(false);
   if (element.IsFocusable())
-    element.focus();
+    element.Focus();
   else
-    ToHTMLElement().focus();
+    ToHTMLElement().Focus();
   UpdateVisibleValidationMessage();
 }
 
