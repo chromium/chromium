@@ -16,7 +16,6 @@ DeepScanningFailureModalDialogTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
 *EyeDropperBrowserTest.*
-FeaturePromoDialogIntentChipTest.*
 FeaturePromoDialogTest.*
 FileSystemAccessUsageBubbleViewTest.*
 FirstRunDialogTest.*
