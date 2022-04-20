@@ -8,11 +8,11 @@
   <app appid='oclffehlkdgibkainkilopaalpdobkan'>
     <updatecheck
         codebase='http://mock.http/extensions/api_test/login_screen_apis/extension.crx'
-        version='1.25' />
+        version='1.26' />
   </app>
   <app appid='ofcpkomnogjenhfajfjadjmjppbegnad'>
     <updatecheck
         codebase='http://mock.http/extensions/api_test/login_screen_apis/in_session_extension.crx'
-        version='0.6' />
+        version='0.7' />
   </app>
 </gupdate>

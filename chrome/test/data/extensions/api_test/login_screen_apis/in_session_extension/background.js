@@ -38,6 +38,18 @@ const tests = {
       chrome.test.succeed();
     });
   },
+  'InSessionLoginNotifyExternalLogoutDone': () => {
+    chrome.login.notifyExternalLogoutDone();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+  'InSessionLoginOnRequestExternalLogout': () => {
+    chrome.login.onRequestExternalLogout.addListener(() => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+    chrome.test.sendMessage('onRequestExternalLogoutInSessionMessage');
+  },
   'InSessionLoginScreenStorageStorePersistentData': () => {
     chrome.loginScreenStorage.storePersistentData(
         [extensionId1, extensionId2], data, () => {

@@ -157,5 +157,24 @@ namespace login {
         DOMString dataForNextLoginAttempt,
         optional VoidCallback callback);
 
+    // Dispatches a $(ref:onRequestExternalLogout) event. Called from the login
+    // screen extension on the lock screen.
+    [supportsPromises] static void requestExternalLogout(
+        optional VoidCallback callback);
+
+    // Dispatches a $(ref:onExternalLogoutDone) event. Called from the
+    // in-session extension.
+    [supportsPromises] static void notifyExternalLogoutDone(
+        optional VoidCallback callback);
+  };
+
+  interface Events {
+    // Event dispatched when an external logout is requested. The in-session
+    // extension listens for this event.
+    static void onRequestExternalLogout();
+
+    // Event dispatched when an external logout is completed. The login screen
+    // extension on the lock screen listens for this event.
+    static void onExternalLogoutDone();
   };
 };

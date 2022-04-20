@@ -28,6 +28,8 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_ash.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/mock_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
@@ -1262,6 +1264,98 @@ TEST_F(LoginApiSharedSessionUnittest, SharedSessionFlow) {
   EXPECT_NE("", baz_salt);
   EXPECT_NE(foo_hash, baz_hash);
   EXPECT_NE(foo_salt, baz_salt);
+}
+
+class LoginApiExternalLogoutRequestUnittest : public ExtensionApiUnittest {
+ public:
+  // A mock around the external logout event handler for tracking method calls.
+  class MockExternalLogoutRequestEventHandler
+      : public ExternalLogoutRequestEventHandler {
+   public:
+    explicit MockExternalLogoutRequestEventHandler(
+        content::BrowserContext* context)
+        : ExternalLogoutRequestEventHandler(context) {}
+    ~MockExternalLogoutRequestEventHandler() = default;
+    MOCK_METHOD0(OnRequestExternalLogout, void());
+  };
+
+  LoginApiExternalLogoutRequestUnittest() = default;
+
+  LoginApiExternalLogoutRequestUnittest(
+      const LoginApiExternalLogoutRequestUnittest&) = delete;
+  LoginApiExternalLogoutRequestUnittest& operator=(
+      const LoginApiExternalLogoutRequestUnittest&) = delete;
+
+  ~LoginApiExternalLogoutRequestUnittest() override = default;
+
+ protected:
+  void SetUp() override {
+    ExtensionApiUnittest::SetUp();
+
+    mock_external_logout_request_event_handler_ =
+        std::make_unique<MockExternalLogoutRequestEventHandler>(profile());
+  }
+
+  std::unique_ptr<MockExternalLogoutRequestEventHandler>
+      mock_external_logout_request_event_handler_;
+};
+
+TEST_F(LoginApiExternalLogoutRequestUnittest, CallsOnRequestExternalLogout) {
+  // Expect the |OnRequestExternalLogout()| method to be called.
+  EXPECT_CALL(*mock_external_logout_request_event_handler_,
+              OnRequestExternalLogout())
+      .Times(1);
+
+  auto function = base::MakeRefCounted<LoginRequestExternalLogoutFunction>();
+  RunFunction(function.get(), "[]");
+}
+
+class LoginApiExternalLogoutDoneUnittest : public ExtensionApiUnittest {
+ public:
+  class MockExternalLogoutDoneEventHandler
+      : public ExternalLogoutDoneEventHandler {
+   public:
+    explicit MockExternalLogoutDoneEventHandler(
+        content::BrowserContext* context)
+        : ExternalLogoutDoneEventHandler(context) {}
+    ~MockExternalLogoutDoneEventHandler() = default;
+    MOCK_METHOD0(OnExternalLogoutDone, void());
+  };
+
+  LoginApiExternalLogoutDoneUnittest() = default;
+
+  LoginApiExternalLogoutDoneUnittest(
+      const LoginApiExternalLogoutDoneUnittest&) = delete;
+  LoginApiExternalLogoutDoneUnittest& operator=(
+      const LoginApiExternalLogoutDoneUnittest&) = delete;
+
+  ~LoginApiExternalLogoutDoneUnittest() override = default;
+
+ protected:
+  void SetUp() override {
+    ExtensionApiUnittest::SetUp();
+
+    mock_external_logout_done_event_handler_ =
+        std::make_unique<MockExternalLogoutDoneEventHandler>(profile());
+  }
+
+  void TearDown() override {
+    mock_external_logout_done_event_handler_.reset();
+
+    ExtensionApiUnittest::TearDown();
+  }
+
+  std::unique_ptr<MockExternalLogoutDoneEventHandler>
+      mock_external_logout_done_event_handler_;
+};
+
+TEST_F(LoginApiExternalLogoutDoneUnittest, CallsOnExternalLogoutDone) {
+  // Expect the |OnExternalLogoutDone()| method to be called.
+  EXPECT_CALL(*mock_external_logout_done_event_handler_, OnExternalLogoutDone())
+      .Times(1);
+
+  auto function = base::MakeRefCounted<LoginNotifyExternalLogoutDoneFunction>();
+  RunFunction(function.get(), "[]");
 }
 
 }  // namespace extensions

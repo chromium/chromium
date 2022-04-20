@@ -58,12 +58,14 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
 #endif
 
@@ -91,6 +93,12 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionManagementFactory::GetInstance();
   extensions::ExtensionSystemFactory::GetInstance();
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  extensions::ExternalLogoutDoneEventHandlerFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  extensions::ExternalLogoutRequestEventHandlerFactory::GetInstance();
+#endif
   extensions::FontSettingsAPI::GetFactoryInstance();
   extensions::HistoryAPI::GetFactoryInstance();
   extensions::IdentityAPI::GetFactoryInstance();

@@ -303,6 +303,46 @@ class LoginSetDataForNextLoginAttemptFunction
   ResponseAction Run() override;
 };
 
+class LoginRequestExternalLogoutFunction : public ExtensionFunction {
+ public:
+  LoginRequestExternalLogoutFunction();
+
+  LoginRequestExternalLogoutFunction(
+      const LoginRequestExternalLogoutFunction&) = delete;
+
+  LoginRequestExternalLogoutFunction& operator=(
+      const LoginRequestExternalLogoutFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("login.requestExternalLogout",
+                             LOGIN_REQUESTEXTERNALLOGOUT)
+
+ protected:
+  ~LoginRequestExternalLogoutFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class LoginNotifyExternalLogoutDoneFunction : public ExtensionFunction {
+ public:
+  LoginNotifyExternalLogoutDoneFunction();
+
+  LoginNotifyExternalLogoutDoneFunction(
+      const LoginNotifyExternalLogoutDoneFunction&) = delete;
+
+  LoginNotifyExternalLogoutDoneFunction& operator=(
+      const LoginNotifyExternalLogoutDoneFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("login.notifyExternalLogoutDone",
+                             LOGIN_NOTIFYEXTERNALLOGOUTDONE)
+
+ protected:
+  ~LoginNotifyExternalLogoutDoneFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_LOGIN_API_H_
