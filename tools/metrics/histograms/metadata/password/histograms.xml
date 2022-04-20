@@ -2343,16 +2343,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.RemoveCompromisedCredentials.RemoveReason"
-    enum="RemoveCompromisedCredentialsReason" expires_after="2022-05-29">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Collects the cause of why remove SQL statement is called on the compromised
-    credentials table.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.RequirementsSpecFetcher.HttpResponseCode"
     enum="HttpResponseCode" expires_after="2022-09-18">
   <owner>kazinova@google.com</owner>
