@@ -95,7 +95,10 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
   startDataCollection(
       issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[]) {
     this.methodCalled(
-        'startDataCollection', [issueDetails, selectedDataCollectors]);
+        'startDataCollection', issueDetails, selectedDataCollectors);
+    // Return result with success for testing.
+    const result = {success: true, errorMessage: ''};
+    return Promise.resolve(result);
   }
 
   cancelDataCollection() {

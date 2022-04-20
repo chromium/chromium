@@ -25,6 +25,11 @@ export type PIIDataItem = {
   expandDetails: boolean,
 };
 
+export type StartDataCollectionResult = {
+  success: boolean,
+  errorMessage: string,
+};
+
 export interface BrowserProxy {
   /**
    * Gets the list of email addresses that are logged in from C++ side.
@@ -36,8 +41,8 @@ export interface BrowserProxy {
   getAllDataCollectors(): Promise<DataCollectorItem[]>;
 
   startDataCollection(
-      issueDetails: IssueDetails,
-      selectedDataCollectors: DataCollectorItem[]): void;
+      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[]):
+      Promise<StartDataCollectionResult>;
 
   cancelDataCollection(): void;
 
@@ -61,7 +66,7 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   startDataCollection(
       issueDetails: IssueDetails, dataCollectors: DataCollectorItem[]) {
-    chrome.send('startDataCollection', [issueDetails, dataCollectors]);
+    return sendWithPromise('startDataCollection', issueDetails, dataCollectors);
   }
 
   cancelDataCollection() {

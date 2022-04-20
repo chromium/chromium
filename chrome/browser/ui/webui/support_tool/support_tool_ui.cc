@@ -221,6 +221,19 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
   return included_data_collectors;
 }
 
+// Returns start data collection result in a structure that Support Tool UI
+// accepts. The returned type is as follow: type StartDataCollectionResult = {
+//   success: boolean,
+//   errorMessage: string,
+// }
+base::Value GetStartDataCollectionResult(bool success,
+                                         std::string error_message) {
+  base::Value::Dict result;
+  result.Set("success", success);
+  result.Set("errorMessage", error_message);
+  return base::Value(std::move(result));
+}
+
 // Returns the human readable name corresponding to `data_collector_type`.
 std::string GetPIITypeDescription(feedback::PIIType type_enum) {
   // This function will return translatable strings in future. For now, return
@@ -473,13 +486,29 @@ void SupportToolMessageHandler::HandleGetAllDataCollectors(
   ResolveJavascriptCallback(callback_id, base::Value(GetAllDataCollectors()));
 }
 
+// Starts data collection with the issue details and selected set of data
+// collectors that are sent from UI. Returns the result to UI in the format UI
+// accepts.
 void SupportToolMessageHandler::HandleStartDataCollection(
     const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
-  const base::Value::Dict* issue_details = args[0].GetIfDict();
+  CHECK_EQ(3U, args.size());
+  const base::Value& callback_id = args[0];
+  const base::Value::Dict* issue_details = args[1].GetIfDict();
   DCHECK(issue_details);
-  const base::Value::List* data_collectors = args[1].GetIfList();
+  const base::Value::List* data_collectors = args[2].GetIfList();
   DCHECK(data_collectors);
+  std::set<support_tool::DataCollectorType> included_data_collectors =
+      GetIncludedDataCollectorTypes(data_collectors);
+  // Send error message to UI if there's no selected data collectors to include.
+  if (included_data_collectors.empty()) {
+    ResolveJavascriptCallback(
+        callback_id,
+        GetStartDataCollectionResult(
+            /*success=*/false,
+            /*error_message=*/"No data collector selected. Please select at "
+                              "least one data collector."));
+    return;
+  }
   this->handler_ =
       GetSupportToolHandler(*issue_details->FindString("caseId"),
                             *issue_details->FindString("emailAddress"),
@@ -491,6 +520,9 @@ void SupportToolMessageHandler::HandleStartDataCollection(
   this->handler_->CollectSupportData(
       base::BindOnce(&SupportToolMessageHandler::OnDataCollectionDone,
                      weak_ptr_factory_.GetWeakPtr()));
+  ResolveJavascriptCallback(
+      callback_id, GetStartDataCollectionResult(
+                       /*success=*/true, /*error_message=*/std::string()));
 }
 
 void SupportToolMessageHandler::OnDataCollectionDone(
