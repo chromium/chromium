@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
@@ -101,27 +102,6 @@ PasswordForm FormWithDisabledAutoSignIn(const PasswordForm& form_to_update) {
   return result;
 }
 
-class FakeLifecycleHelper : public PasswordManagerLifecycleHelper {
- public:
-  FakeLifecycleHelper() {}
-
-  void RegisterObserver(
-      base::RepeatingClosure foregrounding_callback) override {
-    foregrounding_callback_ = std::move(foregrounding_callback);
-  }
-
-  void UnregisterObserver() override { foregrounding_callback_.Reset(); }
-
-  ~FakeLifecycleHelper() override {
-    DCHECK(foregrounding_callback_) << "Did not call UnregisterObserver!";
-  }
-
-  void OnForegroundSessionStart() { foregrounding_callback_.Run(); }
-
- private:
-  base::RepeatingClosure foregrounding_callback_;
-};
-
 class MockPasswordStoreAndroidBackendBridge
     : public PasswordStoreAndroidBackendBridge {
  public:
@@ -155,6 +135,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   }
 
   ~PasswordStoreAndroidBackendTest() override {
+    lifecycle_helper_->UnregisterObserver();
     lifecycle_helper_ = nullptr;
     testing::Mock::VerifyAndClearExpectations(bridge_);
   }
@@ -162,7 +143,9 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   PasswordStoreBackend& backend() { return *backend_; }
   PasswordStoreAndroidBackendBridge::Consumer& consumer() { return *backend_; }
   MockPasswordStoreAndroidBackendBridge* bridge() { return bridge_; }
-  FakeLifecycleHelper* lifecycle_helper() { return lifecycle_helper_; }
+  FakePasswordManagerLifecycleHelper* lifecycle_helper() {
+    return lifecycle_helper_;
+  }
   MockSyncDelegate* sync_delegate() { return sync_delegate_; }
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_;
@@ -197,7 +180,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   }
 
   std::unique_ptr<PasswordManagerLifecycleHelper> CreateFakeLifecycleHelper() {
-    auto new_helper = std::make_unique<FakeLifecycleHelper>();
+    auto new_helper = std::make_unique<FakePasswordManagerLifecycleHelper>();
     lifecycle_helper_ = new_helper.get();
     return new_helper;
   }
@@ -220,7 +203,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
 
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
   raw_ptr<StrictMock<MockPasswordStoreAndroidBackendBridge>> bridge_;
-  raw_ptr<FakeLifecycleHelper> lifecycle_helper_;
+  raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
   raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;
   raw_ptr<MockSyncDelegate> sync_delegate_;
 };
