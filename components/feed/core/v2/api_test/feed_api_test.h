@@ -317,6 +317,9 @@ class TestFeedNetwork : public FeedNetwork {
   int GetListFollowedWebFeedsRequestCount() const {
     return GetApiRequestCount<ListWebFeedsDiscoverApi>();
   }
+  int GetWebFeedListContentsCount() const {
+    return GetApiRequestCount<WebFeedListContentsDiscoverApi>();
+  }
 
   std::vector<NetworkRequestType> sent_request_types() const {
     return sent_request_types_;

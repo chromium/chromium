@@ -146,6 +146,7 @@ class LoadStreamTask : public offline_pages::Task {
   LaunchReliabilityLogger& launch_reliability_logger_;
   int64_t server_receive_timestamp_ns_ = 0l;
   int64_t server_send_timestamp_ns_ = 0l;
+  bool is_web_feed_subscriber_ = false;
   base::WeakPtrFactory<LoadStreamTask> weak_ptr_factory_{this};
 };
 

@@ -312,6 +312,9 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   if (base::FeatureList::IsEnabled(kWebFeed) &&
       result.load_type != LoadType::kManualRefresh) {
     if (result.stream_type.IsForYou()) {
+      // Checking for users without follows.
+      // TODO(b/229143375) - We should rate limit fetches if the server side is
+      // turned off for this locale, and continually fails.
       if (!HasUnreadContent(kWebFeedStream)) {
         LoadStreamTask::Options options;
         options.load_type = LoadType::kBackgroundRefresh;

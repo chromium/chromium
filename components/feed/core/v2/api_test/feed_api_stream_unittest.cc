@@ -320,11 +320,100 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
                        ModelStateFor(GetStreamType(), store_.get()));
 }
 
+TEST_F(FeedApiTest, OnboardingFetchAfterStartup) {
+  // Enable WebFeed and WebFeedOnboarding flags.
+  base::test::ScopedFeatureList features;
+  std::vector<base::Feature> enabled_features = {kWebFeed, kWebFeedOnboarding},
+                             disabled_features = {};
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  features.InitWithFeatures(enabled_features, disabled_features);
+
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // There should have been a fetch, even though there are no subscriptions.
+  ASSERT_TRUE(network_.query_request_sent);
+  ASSERT_EQ(1, network_.GetWebFeedListContentsCount());
+}
+
 TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptions) {
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ("loading -> no-subscriptions", surface.DescribeUpdates());
+}
+
+TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptionsAndOnboarding) {
+  // Turn on the onboarding feature.
+  base::test::ScopedFeatureList features;
+  std::vector<base::Feature> enabled_features = {kWebFeedOnboarding},
+                             disabled_features = {};
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  features.InitWithFeatures(enabled_features, disabled_features);
+
+  // Scopes are to control the lifetime of the surface object.
+  {
+    TestWebFeedSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+  }
+  // The initial fetch should work fine.
+  ASSERT_EQ(1, network_.GetWebFeedListContentsCount());
+
+  // Prepare the next fetch response.
+  response_translator_.InjectResponse(MakeTypicalNextPageState());
+
+  // Make the content a bit less than the stale threshold, and make sure we
+  // don't fetch.
+  task_environment_.FastForwardBy(base::Days(6));
+  {
+    TestWebFeedSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+  }
+  ASSERT_EQ(1, network_.GetWebFeedListContentsCount());
+
+  // Make the content as stale as the threshold, and make sure we do fetch.
+  task_environment_.FastForwardBy(base::Days(2));
+  {
+    TestWebFeedSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+  }
+  ASSERT_EQ(2, network_.GetWebFeedListContentsCount());
+}
+
+TEST_F(FeedApiTest, WebFeedContentExprirationWithNoSubscriptionsAndOnboarding) {
+  // Turn on the onboarding feature.
+  base::test::ScopedFeatureList features;
+  std::vector<base::Feature> enabled_features = {kWebFeedOnboarding},
+                             disabled_features = {};
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  features.InitWithFeatures(enabled_features, disabled_features);
+
+  // Scopes are to control the lifetime of the surface object.
+  {
+    TestWebFeedSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    // The initial fetch should work fine.
+    ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+  }
+
+  // Don't prepare a fetch response to simulate fetch failure.
+
+  // Make the content a bit less than the expired threshold, and make sure we
+  // load the stale, but expired content.
+  task_environment_.FastForwardBy(base::Days(13));
+  {
+    TestWebFeedSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+  }
+
+  // Make the content expired, and make sure we don't load it.
+  task_environment_.FastForwardBy(base::Days(2));
+  {
+    TestWebFeedSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_EQ("loading -> cant-refresh", surface.DescribeUpdates());
+  }
 }
 
 // Test that we use QueryInteractiveFeedDiscoverApi and QueryNextPageDiscoverApi
@@ -517,7 +606,8 @@ TEST_F(FeedApiTest, ForceRefreshIfMissedScheduledRefresh) {
 
 TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsStale_NetworkStaleAge) {
   base::TimeDelta default_staleness_threshold =
-      GetFeedConfig().GetStalenessThreshold(kForYouStream);
+      GetFeedConfig().GetStalenessThreshold(kForYouStream,
+                                            /*is_web_feed_subscriber=*/true);
   base::TimeDelta server_staleness_threshold = default_staleness_threshold / 2;
 
   {
@@ -612,7 +702,8 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
       MakeTypicalInitialModelState(
           /*first_cluster_id=*/0,
           kTestTimeEpoch -
-              GetFeedConfig().GetStalenessThreshold(GetStreamType()) -
+              GetFeedConfig().GetStalenessThreshold(
+                  GetStreamType(), /*is_web_feed_subscriber=*/true) -
               base::Minutes(1)),
       base::DoNothing());
 

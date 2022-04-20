@@ -70,7 +70,8 @@ std::unique_ptr<StreamModelUpdateRequest> StoredModelData(
   };
   LoadStreamFromStoreTask load_task(
       LoadStreamFromStoreTask::LoadType::kFullLoad, nullptr, stream_type, store,
-      /*missed_last_refresh=*/false, base::BindLambdaForTesting(complete));
+      /*missed_last_refresh=*/false, /*is_web_feed_subscriber=*/true,
+      base::BindLambdaForTesting(complete));
   // We want to load the data no matter how stale, or which account.
   load_task.IgnoreStalenessForTesting();
   load_task.IngoreAccountForTesting();

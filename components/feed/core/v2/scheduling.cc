@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/feed_feature_list.h"
 
 namespace feed {
 namespace {
@@ -99,14 +100,15 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
 
 bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
                              const StreamType& stream_type,
-                             base::TimeDelta content_age) {
+                             base::TimeDelta content_age,
+                             bool is_web_feed_subscriber) {
   const feedstore::Metadata::StreamMetadata* stream_metadata =
       feedstore::FindMetadataForStream(metadata, stream_type);
   if (stream_metadata && stream_metadata->is_known_stale())
     return true;
 
-  base::TimeDelta staleness_threshold =
-      GetFeedConfig().GetStalenessThreshold(stream_type);
+  base::TimeDelta staleness_threshold = GetFeedConfig().GetStalenessThreshold(
+      stream_type, is_web_feed_subscriber);
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     staleness_threshold = GetThresholdTime(
         staleness_threshold,
@@ -118,12 +120,18 @@ bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
 
 bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
                            const StreamType& stream_type,
-                           base::TimeDelta content_age) {
+                           base::TimeDelta content_age,
+                           bool is_web_feed_subscriber) {
   const feedstore::Metadata::StreamMetadata* stream_metadata =
       feedstore::FindMetadataForStream(metadata, stream_type);
 
   base::TimeDelta content_expiration_threshold =
       GetFeedConfig().content_expiration_threshold;
+  if (base::FeatureList::IsEnabled(kWebFeedOnboarding) &&
+      !is_web_feed_subscriber && stream_type == kWebFeedStream) {
+    content_expiration_threshold =
+        GetFeedConfig().subscriptionless_content_expiration_threshold;
+  }
   if (stream_metadata && stream_metadata->has_content_lifetime()) {
     content_expiration_threshold = GetThresholdTime(
         content_expiration_threshold,

@@ -50,10 +50,13 @@ void PrefetchImagesTask::Run() {
     return;
   }
 
+  // Web feed subscriber is set to true so we don't use the less restrictive
+  // staleness number for when there are no subscriptions.
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
       LoadStreamFromStoreTask::LoadType::kFullLoad, &stream_, kForYouStream,
       &stream_.GetStore(),
       /*missed_last_refresh=*/false,
+      /*is_web_feed_subscriber=*/true,
       base::BindOnce(&PrefetchImagesTask::LoadStreamComplete,
                      base::Unretained(this)));
 
