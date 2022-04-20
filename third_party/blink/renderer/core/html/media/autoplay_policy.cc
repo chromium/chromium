@@ -103,7 +103,8 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
 
     if (RuntimeEnabledFeatures::
             MediaEngagementBypassAutoplayPoliciesEnabled() &&
-        frame->IsMainFrame() && DocumentHasHighMediaEngagement(document)) {
+        frame->IsOutermostMainFrame() &&
+        DocumentHasHighMediaEngagement(document)) {
       return true;
     }
 
