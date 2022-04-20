@@ -12,6 +12,7 @@
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "content/public/app/content_main.h"
@@ -175,5 +176,7 @@ int ChromeMain(int argc, const char** argv) {
 
   int rv = content::ContentMain(std::move(params));
 
+  if (chrome::IsNormalResultCode(static_cast<chrome::ResultCode>(rv)))
+    return content::RESULT_CODE_NORMAL_EXIT;
   return rv;
 }

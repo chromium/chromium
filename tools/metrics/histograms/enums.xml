@@ -18527,6 +18527,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="32" label="RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED"/>
   <int value="33" label="RESULT_CODE_DOWNGRADE_AND_RELAUNCH"/>
   <int value="34" label="RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"/>
+  <int value="35" label="RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
   <int value="131" label="SIGQUIT"/>
   <int value="132" label="SIGILL"/>
   <int value="133" label="SIGTRAP"/>
@@ -97960,6 +97961,7 @@ Called by update_scheduler_enums.py.-->
   <int value="32" label="chrome::RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED"/>
   <int value="33" label="chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH"/>
   <int value="34" label="chrome::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"/>
+  <int value="35" label="chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
   <int value="259" label="0x103 - STILL_ACTIVE."/>
   <int value="1285" label="ERROR_DELAY_LOAD_FAILED"/>
   <int value="1717" label="RPC_S_UNKNOWN_IF"/>

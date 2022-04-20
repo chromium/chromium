@@ -109,8 +109,10 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
     }
 
     const int early_init_error_code = main_loop_->EarlyInitialization();
-    if (early_init_error_code > 0)
+    if (early_init_error_code > 0) {
+      main_loop_->CreateMessageLoopForEarlyShutdown();
       return early_init_error_code;
+    }
 
     // Must happen before we try to use a message loop or display any UI.
     if (!main_loop_->InitializeToolkit()) {

@@ -113,12 +113,22 @@ enum ResultCode {
   // viz::ExitCode in components/viz/service/gl/gpu_service_impl.h.
   RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST,
 
+  // Chrome detected that there was a new version waiting to launch and renamed
+  // the files and launched the new version. This result code is never returned
+  // from the main process, but is instead used as a signal for early
+  // termination of browser. See `IsNormalResultCode` below.
+  RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED,
+
   // Last return code (keep this last).
   RESULT_CODE_CHROME_LAST_CODE
 };
 
-static_assert(RESULT_CODE_CHROME_LAST_CODE == 35,
+static_assert(RESULT_CODE_CHROME_LAST_CODE == 36,
               "Please make sure the enum values are in sync with enums.xml");
+
+// Returns true if the result code should be treated as a normal exit code i.e.
+// content::RESULT_CODE_NORMAL_EXIT.
+bool IsNormalResultCode(ResultCode code);
 
 }  // namespace chrome
 
