@@ -4,11 +4,16 @@
 
 #include "media/formats/hls/variable_dictionary.h"
 
+#include <utility>
+
 #include "base/location.h"
+#include "base/strings/string_piece.h"
+#include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/test_util.h"
 #include "media/formats/hls/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
 
@@ -49,7 +54,7 @@ void ErrorTest(const VariableDictionary& dict,
 
 }  // namespace
 
-TEST(HlsVariableDictionary, BasicSubstitution) {
+TEST(HlsVariableDictionaryTest, BasicSubstitution) {
   VariableDictionary dict = CreateBasicDictionary();
   OkTest(dict, "The NAME's {$NAME}, {$_0THER-1dent} {$NAME}. Agent {$IDENT}",
          "The NAME's bond, {$james} bond. Agent 007");
@@ -57,7 +62,7 @@ TEST(HlsVariableDictionary, BasicSubstitution) {
          "This $tring {has} ${no} v{}{}ar}}s");
 }
 
-TEST(HlsVariableDictionary, VariableUndefined) {
+TEST(HlsVariableDictionaryTest, VariableUndefined) {
   VariableDictionary dict;
 
   // Names are case-sensitive
@@ -72,7 +77,7 @@ TEST(HlsVariableDictionary, VariableUndefined) {
             ParseStatusCode::kVariableUndefined);
 }
 
-TEST(HlsVariableDictionary, RedefinitionNotAllowed) {
+TEST(HlsVariableDictionaryTest, RedefinitionNotAllowed) {
   VariableDictionary dict;
   EXPECT_TRUE(dict.Insert(CreateVarName("TEST"), "FOO"));
   EXPECT_EQ(dict.Find(CreateVarName("TEST")),
@@ -100,7 +105,7 @@ TEST(HlsVariableDictionary, RedefinitionNotAllowed) {
             absl::make_optional<base::StringPiece>("FOO"));
 }
 
-TEST(HlsVariableDictionary, IgnoreInvalidRefSequence) {
+TEST(HlsVariableDictionaryTest, IgnoreInvalidRefSequence) {
   auto dict = CreateBasicDictionary();
 
   // Variable refs with invalid variable names are ignored
@@ -125,7 +130,7 @@ TEST(HlsVariableDictionary, IgnoreInvalidRefSequence) {
   OkTest(dict, "http://{$ {$NAME}}.com", "http://{$ bond}.com");
 }
 
-TEST(HlsVariableDictionary, ExplosiveVariableDefs) {
+TEST(HlsVariableDictionaryTest, ExplosiveVariableDefs) {
   // Variable substitution is by design not recursive
   VariableDictionary dict;
   EXPECT_TRUE(dict.Insert(CreateVarName("LOL1"), "LOLLOLLOL"));

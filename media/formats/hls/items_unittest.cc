@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "media/formats/hls/items.h"
+
+#include "base/location.h"
 #include "base/strings/string_piece.h"
+#include "media/formats/hls/source_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -13,16 +16,20 @@ namespace {
 
 using LineResult = GetNextLineItemResult;
 
-void CheckSourceString(SourceString expected, SourceString actual) {
-  EXPECT_EQ(expected.Line(), actual.Line());
-  EXPECT_EQ(expected.Column(), actual.Column());
-  EXPECT_EQ(expected.Str(), actual.Str());
+void CheckSourceString(SourceString expected,
+                       SourceString actual,
+                       const base::Location& from) {
+  EXPECT_EQ(expected.Line(), actual.Line()) << from.ToString();
+  EXPECT_EQ(expected.Column(), actual.Column()) << from.ToString();
+  EXPECT_EQ(expected.Str(), actual.Str()) << from.ToString();
 }
 
 // Calls `GetNextLineItem` for each expectation, and verifies that the result
 // matches.
 template <typename T>
-void RunTest(base::StringPiece source, const T& expectations) {
+void RunTest(base::StringPiece source,
+             const T& expectations,
+             const base::Location& from = base::Location::Current()) {
   auto line_iter = SourceLineIterator(source);
 
   for (auto expectation : expectations) {
@@ -31,31 +38,34 @@ void RunTest(base::StringPiece source, const T& expectations) {
     if (expectation.has_value()) {
       auto expected_value = std::move(expectation).value();
 
-      EXPECT_TRUE(result.has_value());
+      EXPECT_TRUE(result.has_value()) << from.ToString();
       auto value = std::move(result).value();
 
       // Ensure that resulting variants are the same
       static_assert(absl::variant_size<LineResult>::value == 2, "");
       if (auto* expected_tag = absl::get_if<TagItem>(&expected_value)) {
         auto tag = absl::get<TagItem>(std::move(value));
-        EXPECT_EQ(expected_tag->GetName(), tag.GetName());
-        EXPECT_EQ(expected_tag->GetLineNumber(), tag.GetLineNumber());
+        EXPECT_EQ(expected_tag->GetName(), tag.GetName()) << from.ToString();
+        EXPECT_EQ(expected_tag->GetLineNumber(), tag.GetLineNumber())
+            << from.ToString();
         EXPECT_EQ(expected_tag->GetContent().has_value(),
-                  tag.GetContent().has_value());
+                  tag.GetContent().has_value())
+            << from.ToString();
         if (expected_tag->GetContent().has_value() &&
             tag.GetContent().has_value()) {
-          CheckSourceString(*expected_tag->GetContent(), *tag.GetContent());
+          CheckSourceString(*expected_tag->GetContent(), *tag.GetContent(),
+                            from);
         }
       } else {
         auto expected_uri = absl::get<UriItem>(std::move(expected_value));
         auto uri = absl::get<UriItem>(std::move(value));
-        CheckSourceString(expected_uri.content, uri.content);
+        CheckSourceString(expected_uri.content, uri.content, from);
       }
     } else {
-      EXPECT_TRUE(result.has_error());
+      EXPECT_TRUE(result.has_error()) << from.ToString();
       auto error = std::move(result).error();
       auto expected_error = std::move(expectation).error();
-      EXPECT_EQ(error.code(), expected_error.code());
+      EXPECT_EQ(error.code(), expected_error.code()) << from.ToString();
     }
   }
 }
@@ -89,7 +99,7 @@ ParseStatus::Or<LineResult> ExpectUri(size_t line,
 
 }  // namespace
 
-TEST(HlsFormatParserTest, GetNextLineItemTest1) {
+TEST(HlsItemsTest, GetNextLineItem1) {
   constexpr base::StringPiece kManifest =
       "#EXTM3U\n"
       "\n"
@@ -135,7 +145,7 @@ TEST(HlsFormatParserTest, GetNextLineItemTest1) {
   RunTest(kManifest, kExpectations);
 }
 
-TEST(HlsFormatParserTest, GetNextLineItemTest2) {
+TEST(HlsItemsTest, GetNextLineItem2) {
   constexpr base::StringPiece kManifest =
       "#EXTM3U\n"
       "https://ww\rw.example.com\n"
@@ -148,7 +158,7 @@ TEST(HlsFormatParserTest, GetNextLineItemTest2) {
   RunTest(kManifest, kExpectations);
 }
 
-TEST(HlsFormatParserTest, GetNextLineItemTest3) {
+TEST(HlsItemsTest, GetNextLineItem3) {
   constexpr base::StringPiece kManifest = "#EXTM3U";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
@@ -157,7 +167,7 @@ TEST(HlsFormatParserTest, GetNextLineItemTest3) {
   RunTest(kManifest, kExpectations);
 }
 
-TEST(HlsFormatParserTest, GetNextLineItemTest4) {
+TEST(HlsItemsTest, GetNextLineItem4) {
   constexpr base::StringPiece kManifest = "#EXTM3U\r";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
@@ -166,7 +176,7 @@ TEST(HlsFormatParserTest, GetNextLineItemTest4) {
   RunTest(kManifest, kExpectations);
 }
 
-TEST(HlsFormatParserTest, GetNextLineItemTest5) {
+TEST(HlsItemsTest, GetNextLineItem5) {
   constexpr base::StringPiece kManifest = "\n";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {

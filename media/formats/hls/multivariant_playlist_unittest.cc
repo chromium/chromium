@@ -8,6 +8,7 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/variant_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
 

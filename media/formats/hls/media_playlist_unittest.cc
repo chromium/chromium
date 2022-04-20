@@ -4,11 +4,17 @@
 
 #include "media/formats/hls/media_playlist.h"
 
+#include <initializer_list>
+#include <string>
+#include <utility>
+
+#include "base/strings/string_piece.h"
 #include "media/formats/hls/media_playlist_test_builder.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace media::hls {
 
