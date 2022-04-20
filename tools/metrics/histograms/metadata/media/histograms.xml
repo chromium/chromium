@@ -5253,10 +5253,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.HasAccessControl" enum="Boolean"
-    expires_after="2022-10-04">
-  <owner>sandersd@chromium.org</owner>
+    expires_after="2023-04-01">
+  <owner>cassew@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
-  <owner>cassew@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
   <summary>
     When an HLS manifest is found during loading (on Android only), and the
     response is CORS cross-origin, this histogram records whether the response
@@ -5266,10 +5266,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin" enum="Boolean"
-    expires_after="2022-10-04">
-  <owner>sandersd@chromium.org</owner>
+    expires_after="2023-04-01">
+  <owner>cassew@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
-  <owner>cassew@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
   <summary>
     When an HLS manifest is found during loading (on Android only), records
     whether the request was CORS cross-origin. These are cases that could not be
@@ -5279,10 +5279,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS.IsMixedContent" enum="Boolean"
-    expires_after="2022-10-04">
-  <owner>sandersd@chromium.org</owner>
+    expires_after="2023-04-01">
+  <owner>cassew@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
-  <owner>cassew@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
   <summary>
     When an HLS manifest is found during loading (on Android only), records
     whether the request would be mixed content. These are cases that could not
@@ -5292,9 +5292,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebMediaPlayerImpl.HLS{Variant}.MimeType"
-    enum="MimeTypeOfHlsManifest" expires_after="2022-06-01">
-  <owner>sandersd@chromium.org</owner>
+    enum="MimeTypeOfHlsManifest" expires_after="2023-04-01">
+  <owner>cassew@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <summary>
     When an HLS manifest is found during loading (on Android only), {Variant}
     then this histogram records the MIME type of the response.
