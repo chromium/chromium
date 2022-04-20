@@ -18,6 +18,7 @@ mojom_component("base") {
     "file_path.mojom",
     "generic_pending_associated_receiver.mojom",
     "generic_pending_receiver.mojom",
+    "int128.mojom",
     "memory_allocator_dump_cross_process_uid.mojom",
     "memory_pressure_level.mojom",
     "message_pump_type.mojom",
@@ -354,6 +355,23 @@ mojom_component("base") {
       traits_public_deps = [
         "//base:i18n",
         "//mojo/public/cpp/base:typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Int128"
+          cpp = "::absl::int128"
+        },
+        {
+          mojom = "mojo_base.mojom.Uint128"
+          cpp = "::absl::uint128"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/int128_mojom_traits.h" ]
+      traits_public_deps = [
+        "//mojo/public/cpp/base:shared_typemap_traits",
+        "//third_party/abseil-cpp:absl",
       ]
     },
   ]

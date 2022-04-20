@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
@@ -42,17 +43,10 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 MATCHER_P(AggregatableKeyIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.key, result_listener);
-}
-
-MATCHER_P(AggregatableKeyHighBitsIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.high_bits, result_listener);
-}
-
-MATCHER_P(AggregatableKeyLowBitsIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.low_bits, result_listener);
 }
 
 MATCHER_P(SourceKeysAre, matcher, "") {
@@ -341,21 +335,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
-  EXPECT_THAT(
-      source_data.front()->aggregatable_source->keys,
-      UnorderedElementsAre(
-          Pair("key1",
-               Pointee(AllOf(
-                   Field(&blink::mojom::AttributionAggregatableKey::high_bits,
-                         0),
-                   Field(&blink::mojom::AttributionAggregatableKey::low_bits,
-                         5)))),
-          Pair("key2",
-               Pointee(AllOf(
-                   Field(&blink::mojom::AttributionAggregatableKey::high_bits,
-                         0),
-                   Field(&blink::mojom::AttributionAggregatableKey::low_bits,
-                         345))))));
+  EXPECT_THAT(source_data.front()->aggregatable_source->keys,
+              UnorderedElementsAre(
+                  Pair("key1", absl::MakeUint128(/*high=*/0, /*low=*/5)),
+                  Pair("key2", absl::MakeUint128(/*high=*/0, /*low=*/345))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -601,12 +584,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       event_trigger_datas.back()->not_filters->filter_values,
       ElementsAre(Pair("d", ElementsAre("e", "f")), Pair("g", IsEmpty())));
 
-  EXPECT_THAT(
-      trigger_data.front()->aggregatable_trigger->trigger_data,
-      ElementsAre(Pointee(
-          AllOf(AggregatableKeyIs(Pointee(AllOf(AggregatableKeyHighBitsIs(0),
-                                                AggregatableKeyLowBitsIs(1)))),
-                SourceKeysAre(ElementsAre("key"))))));
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
+              ElementsAre(Pointee(AllOf(
+                  AggregatableKeyIs(absl::MakeUint128(/*high=*/0, /*low=*/1)),
+                  SourceKeysAre(ElementsAre("key"))))));
 
   EXPECT_THAT(trigger_data.front()->aggregatable_trigger->values,
               ElementsAre(Pair("key", 123)));
@@ -647,16 +628,14 @@ IN_PROC_BROWSER_TEST_F(
       trigger_data.front()->aggregatable_trigger->trigger_data,
       ElementsAre(
           Pointee(AllOf(
-              AggregatableKeyIs(Pointee(AllOf(AggregatableKeyHighBitsIs(0),
-                                              AggregatableKeyLowBitsIs(1)))),
+              AggregatableKeyIs(absl::MakeUint128(/*high=*/0, /*low=*/1)),
               SourceKeysAre(ElementsAre("key1")),
               FiltersAre(Pointee(
                   FilterValuesAre(ElementsAre(Pair("a", ElementsAre("b")))))),
               NotFiltersAre(Pointee(
                   FilterValuesAre(ElementsAre(Pair("c", IsEmpty()))))))),
           Pointee(AllOf(
-              AggregatableKeyIs(Pointee(AllOf(AggregatableKeyHighBitsIs(0),
-                                              AggregatableKeyLowBitsIs(0)))),
+              AggregatableKeyIs(absl::MakeUint128(/*high=*/0, /*low=*/0)),
               SourceKeysAre(IsEmpty()),
               FiltersAre(Pointee(FilterValuesAre(IsEmpty()))),
               NotFiltersAre(Pointee(

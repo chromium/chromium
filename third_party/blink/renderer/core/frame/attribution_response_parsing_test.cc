@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -25,10 +26,8 @@ class AggregatableSourceBuilder {
   AggregatableSourceBuilder() = default;
   ~AggregatableSourceBuilder() = default;
 
-  AggregatableSourceBuilder& AddKey(
-      String key_id,
-      mojom::blink::AttributionAggregatableKeyPtr key) {
-    source_.keys.insert(std::move(key_id), std::move(key));
+  AggregatableSourceBuilder& AddKey(String key_id, absl::uint128 key) {
+    source_.keys.insert(std::move(key_id), key);
     return *this;
   }
 
@@ -117,9 +116,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
        mojom::blink::AttributionAggregatableSource::New()},
       {"One valid key", R"([{"id":"key","key_piece":"0x159"}])", true,
        AggregatableSourceBuilder()
-           .AddKey(/*key_id=*/"key",
-                   mojom::blink::AttributionAggregatableKey::New(
-                       /*high_bits=*/0, /*low_bits=*/345))
+           .AddKey(/*key_id=*/"key", absl::MakeUint128(/*high=*/0, /*low=*/345))
            .Build()},
       {"Two valid keys",
        R"([{"id":"key1","key_piece":"0x159"},
@@ -127,11 +124,9 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
        true,
        AggregatableSourceBuilder()
            .AddKey(/*key_id=*/"key1",
-                   mojom::blink::AttributionAggregatableKey::New(
-                       /*high_bits=*/0, /*low_bits=*/345))
+                   absl::MakeUint128(/*high=*/0, /*low=*/345))
            .AddKey(/*key_id=*/"key2",
-                   mojom::blink::AttributionAggregatableKey::New(
-                       /*high_bits=*/5, /*low_bits=*/345))
+                   absl::MakeUint128(/*high=*/5, /*low=*/345))
            .Build()},
       {"Second key invalid",
        R"([{"id":"key1","key_piece":"0x159"},
@@ -179,8 +174,7 @@ TEST(AttributionResponseParsingTest,
         return builder.Build();
 
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        builder.AddKey(GetKey(i), mojom::blink::AttributionAggregatableKey::New(
-                                      /*high_bits=*/0, /*low_bits=*/1));
+        builder.AddKey(GetKey(i), absl::MakeUint128(/*high=*/0, /*low=*/1));
       }
 
       return builder.Build();
@@ -240,8 +234,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
-                   mojom::blink::AttributionAggregatableKey::New(
-                       /*high_bits=*/0, /*low_bits=*/1024),
+                   absl::MakeUint128(/*high=*/0, /*low=*/1024),
                    /*source_keys=*/Vector<String>{"key"},
                    /*filters=*/mojom::blink::AttributionFilterData::New(),
                    /*not_filters=*/mojom::blink::AttributionFilterData::New()))
@@ -257,8 +250,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
-                   mojom::blink::AttributionAggregatableKey::New(
-                       /*high_bits=*/0, /*low_bits=*/1024),
+                   absl::MakeUint128(/*high=*/0, /*low=*/1024),
                    /*source_keys=*/Vector<String>{"key"},
                    /*filters=*/
                    AttributionFilterDataBuilder()
@@ -276,15 +268,13 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
-                   mojom::blink::AttributionAggregatableKey::New(
-                       /*high_bits=*/0, /*low_bits=*/1024),
+                   absl::MakeUint128(/*high=*/0, /*low=*/1024),
                    /*source_keys=*/Vector<String>{"key1"},
                    /*filters=*/mojom::blink::AttributionFilterData::New(),
                    /*not_filters=*/mojom::blink::AttributionFilterData::New()))
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
-                   mojom::blink::AttributionAggregatableKey::New(
-                       /*high_bits=*/0, /*low_bits=*/2688),
+                   absl::MakeUint128(/*high=*/0, /*low=*/2688),
                    /*source_keys=*/Vector<String>{"key2"},
                    /*filters=*/mojom::blink::AttributionFilterData::New(),
                    /*not_filters=*/mojom::blink::AttributionFilterData::New()))
@@ -350,8 +340,7 @@ TEST(AttributionResponseParsingTest,
       for (wtf_size_t i = 0u; i < trigger_data_count; ++i) {
         builder.AddTriggerData(
             mojom::blink::AttributionAggregatableTriggerData::New(
-                mojom::blink::AttributionAggregatableKey::New(
-                    /*high_bits=*/0, /*low_bits=*/1),
+                absl::MakeUint128(/*high=*/0, /*low=*/1),
                 /*source_keys=*/Vector<String>(key_count, GetKey()),
                 /*filters=*/mojom::blink::AttributionFilterData::New(),
                 /*not_filters=*/mojom::blink::AttributionFilterData::New()));

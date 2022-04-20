@@ -94,6 +94,8 @@ component("shared_typemap_traits") {
     "generic_pending_associated_receiver_mojom_traits.h",
     "generic_pending_receiver_mojom_traits.cc",
     "generic_pending_receiver_mojom_traits.h",
+    "int128_mojom_traits.cc",
+    "int128_mojom_traits.h",
     "read_only_buffer_mojom_traits.cc",
     "read_only_buffer_mojom_traits.h",
     "read_only_file_mojom_traits.cc",
@@ -118,6 +120,7 @@ component("shared_typemap_traits") {
     ":base",
     "//base:i18n",
     "//mojo/public/mojom/base:base_shared",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -130,6 +133,7 @@ source_set("tests") {
     "byte_string_unittest.cc",
     "file_path_unittest.cc",
     "file_unittest.cc",
+    "int128_unittest.cc",
     "memory_allocator_dump_cross_process_uid_unittest.cc",
     "process_id_unittest.cc",
     "read_only_buffer_unittest.cc",
@@ -153,5 +157,6 @@ source_set("tests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/mojom/base",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 }
