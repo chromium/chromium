@@ -31,6 +31,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.ClockSkew.ExpiredWithoutSkew" enum="Boolean"
+    expires_after="2022-11-01">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    For each cookie expiry, logs true if the cookie would have been expired
+    without the addition of the skew time. Otherwise, logs false. This metric is
+    collected during CanonicalCookie::Create() in a helper function that
+    calculates cookie expiry.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ClockSkew.{SkewDirection}" units="minutes"
     expires_after="2022-11-01">
   <owner>kyraseevers@chromium.org</owner>
