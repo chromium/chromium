@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {MockProgressCenter} from '../../background/js/mock_progress_center.js';
@@ -53,6 +53,11 @@ const enumMap = new Map();
 const countMap = new Map();
 
 /**
+ * A map from histogram name to all times recorded for it.
+ */
+const timeMap = new Map();
+
+/**
  * Mock metrics.recordEnum.
  * @param {string} name
  * @param {*} value
@@ -70,6 +75,15 @@ metrics.recordEnum = function(name, value, valid) {
  */
 metrics.recordSmallCount = function(name, value) {
   record(countMap, name, value);
+};
+
+/**
+ * Mock metrics.recordTime.
+ * @param {string} name Short metric name.
+ * @param {number} time Time to be recorded in milliseconds.
+ */
+metrics.recordTime = function(name, time) {
+  record(timeMap, name, time);
 };
 
 /**
@@ -175,6 +189,7 @@ export function setUp() {
   installMockChrome(mockChrome);
   enumMap.clear();
   countMap.clear();
+  timeMap.clear();
 }
 
 /**
@@ -652,6 +667,9 @@ export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
   assertEquals(
       undefined, fileManager.progressCenter.getItemById(errorZipMountPanelId));
 
+  // Check: a zip mount time UMA has been recorded.
+  assertTrue(timeMap.has('ZipMountTime.Other'));
+
   done();
 }
 
@@ -685,6 +703,10 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done) {
   assertEquals(
       ProgressItemState.ERROR,
       fileManager.progressCenter.getItemById(errorZipMountPanelId).state);
+
+  // Check: no zip mount time UMA has been recorded since mounting the archive
+  // failed.
+  assertFalse(timeMap.has('ZipMountTime.Other'));
 
   done();
 }
@@ -724,6 +746,10 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done) {
       fileManager.progressCenter.getItemById(zipMountPanelId).state);
   assertEquals(
       undefined, fileManager.progressCenter.getItemById(errorZipMountPanelId));
+
+  // Check: no zip mount time UMA has been recorded since the mount has been
+  // cancelled.
+  assertFalse(timeMap.has('ZipMountTime.Other'));
 
   done();
 }

@@ -271,6 +271,30 @@ export class FileTasks {
   }
 
   /**
+   * Records the elapsed time for mounting a ZIP file as a ZipMountTime
+   * histogram value.
+   *
+   * @param {?VolumeManagerCommon.RootType} rootType The type of the root where
+   *     the ZIP file has been mounted from.
+   * @param {number} time Time to be recorded in milliseconds.
+   */
+  static recordZipMountTimeUMA_(rootType, time) {
+    let root;
+    switch (rootType) {
+      case VolumeManagerCommon.RootType.MY_FILES:
+      case VolumeManagerCommon.RootType.DOWNLOADS:
+        root = 'MyFiles';
+        break;
+      case VolumeManagerCommon.RootType.DRIVE:
+        root = 'Drive';
+        break;
+      default:
+        root = 'Other';
+    }
+    metrics.recordTime(`ZipMountTime.${root}`, time);
+  }
+
+  /**
    * Records trial of opening Office file grouped by file handlers.
    *
    * @param {!VolumeManager} volumeManager
@@ -958,7 +982,11 @@ export class FileTasks {
    */
   async mountArchiveAndChangeDirectory_(tracker, url) {
     try {
+      const startTime = Date.now();
       const volumeInfo = await this.mountArchive_(url);
+      // On mountArchive_ success, record mount time UMA.
+      FileTasks.recordZipMountTimeUMA_(
+          this.directoryModel_.getCurrentRootType(), Date.now() - startTime);
 
       if (tracker.hasChanged) {
         return;

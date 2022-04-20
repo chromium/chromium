@@ -833,6 +833,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.ZipMountTime.{RootType}" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Tracks the time to mount a ZIP archive. Times are only recorded on success.
+  </summary>
+  <token key="RootType">
+    <variant name="Drive"
+        summary="The archive to mount is located under the Drive root"/>
+    <variant name="MyFiles"
+        summary="The archive to mount is a local archive, located under the
+                 My files or the Downloads root"/>
+    <variant name="Other"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.ZipTask.Time" units="ms" expires_after="M112">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
