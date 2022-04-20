@@ -15,13 +15,10 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
-    # TODO(tandrii): migrate to this gradually (current value of
-    # goma.jobs.MANY_JOBS_FOR_CI is 500).
-    # goma_jobs=goma.jobs.MANY_JOBS_FOR_CI
-    goma_jobs = goma.jobs.J150,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     pool = ci.DEFAULT_POOL,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.ANDROID,
 )
@@ -49,9 +46,6 @@ ci.builder(
     # Higher build timeout since dbg ASAN builds can take a while on a clobber
     # build.
     execution_timeout = 4 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     tree_closing = True,
 )
 
@@ -130,8 +124,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.DEFAULT,
     tree_closing = True,
 )
@@ -145,9 +137,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 7 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     tree_closing = True,
 )
 
@@ -179,9 +168,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 7 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -193,9 +179,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 6 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -207,9 +190,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -223,9 +203,6 @@ ci.builder(
     execution_timeout = 7 * time.hour,
     notifies = ["Deterministic Android"],
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -239,9 +216,7 @@ ci.builder(
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Android"],
     tree_closing = True,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
     ssd = True,
 )
 
@@ -320,9 +295,6 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "10",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -332,9 +304,6 @@ ci.builder(
         short_name = "M proguard",
     ),
     execution_timeout = 6 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -343,9 +312,6 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -358,8 +324,6 @@ ci.builder(
     ),
     executable = "recipe:binary_size_generator_tot",
     ssd = True,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.DEFAULT,
 )
 
@@ -373,9 +337,6 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -388,9 +349,6 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -401,9 +359,6 @@ ci.builder(
     ),
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -414,9 +369,6 @@ ci.builder(
     ),
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -426,9 +378,6 @@ ci.builder(
     ),
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 # Runs on a specific machine with an attached phone
@@ -444,8 +393,6 @@ ci.builder(
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
     os = os.ANDROID,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.DEFAULT,
 )
 
@@ -457,9 +404,6 @@ ci.builder(
     ),
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -536,9 +480,6 @@ ci.builder(
     ),
     notifies = ["cronet"],
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -561,9 +502,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     tree_closing = True,
 )
 
@@ -576,9 +514,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     tree_closing = True,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -587,9 +522,6 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "M_non-cq",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -601,9 +533,6 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 # TODO(crbug/1182468) Remove android coverage bots after coverage is
@@ -614,9 +543,6 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "p-cov",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -630,9 +556,6 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
     tree_closing = True,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -641,9 +564,6 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "P",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 # TODO(crbug.com/1137474): Update the console view config once on CQ
@@ -654,9 +574,6 @@ ci.builder(
         short_name = "11",
     ),
     tree_closing = True,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -666,9 +583,6 @@ ci.builder(
         short_name = "12",
     ),
     execution_timeout = 4 * time.hour,
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -717,6 +631,9 @@ ci.builder(
         category = "builder|weblayer_with_aosp_webview",
         short_name = "x86",
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.J150,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -725,4 +642,7 @@ ci.builder(
         category = "builder|weblayer",
         short_name = "x86",
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.J150,
+    reclient_instance = None,
 )
