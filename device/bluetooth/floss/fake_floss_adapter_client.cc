@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "device/bluetooth/floss/floss_dbus_client.h"
 
 namespace floss {
 
@@ -33,6 +34,16 @@ void FakeFlossAdapterClient::Init(dbus::Bus* bus,
                                   const std::string& adapter_path) {}
 
 void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
+  // Fail fast if we're meant to fail discovery
+  if (fail_discovery_) {
+    fail_discovery_ = absl::nullopt;
+
+    Error error("org.chromium.bluetooth.Bluetooth.FooError", "Foo error");
+    absl::optional<Error> opterror = absl::make_optional(error);
+    std::move(callback).Run(absl::nullopt, opterror);
+    return;
+  }
+
   // Simulate devices being discovered.
 
   for (auto& observer : observers_) {
@@ -148,6 +159,10 @@ void FakeFlossAdapterClient::NotifyObservers(
   for (auto& observer : observers_) {
     notify.Run(&observer);
   }
+}
+
+void FakeFlossAdapterClient::FailNextDiscovery() {
+  fail_discovery_ = absl::make_optional(true);
 }
 
 void FakeFlossAdapterClient::SetPairingConfirmation(

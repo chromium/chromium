@@ -144,6 +144,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                         const absl::optional<Void>& ret,
                         const absl::optional<Error>& error);
 
+  // Handle when discovery is automatically repeated based on active sessions.
+  void OnRepeatedDiscoverySessionResult(
+      bool start_discovery,
+      bool is_error,
+      device::UMABluetoothDiscoverySessionOutcome outcome);
+
   // Called on completion of start discovery and stop discovery
   void OnStartDiscovery(DiscoverySessionResultCallback callback,
                         const absl::optional<Void>& ret,
@@ -182,6 +188,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void DiscoverableChanged(bool discoverable) override;
   void AdapterDiscoveringChanged(bool state) override;
   void AdapterFoundDevice(const FlossDeviceId& device_found) override;
+  void AdapterClearedDevice(const FlossDeviceId& device_found) override;
   void AdapterSspRequest(const FlossDeviceId& remote_device,
                          uint32_t cod,
                          FlossAdapterClient::BluetoothSspVariant variant,

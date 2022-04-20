@@ -61,7 +61,11 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void NotifyObservers(
       const base::RepeatingCallback<void(Observer*)>& notify) const;
 
+  // Fake discovery failure on next call.
+  void FailNextDiscovery();
+
  private:
+  absl::optional<bool> fail_discovery_;
   base::WeakPtrFactory<FakeFlossAdapterClient> weak_ptr_factory_{this};
 };
 

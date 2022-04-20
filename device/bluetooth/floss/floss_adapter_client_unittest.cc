@@ -80,6 +80,11 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
     found_device_ = device_found;
   }
 
+  void AdapterClearedDevice(const FlossDeviceId& device_cleared) override {
+    cleared_device_count_++;
+    cleared_device_ = device_cleared;
+  }
+
   void AdapterSspRequest(const FlossDeviceId& remote_device,
                          uint32_t cod,
                          FlossAdapterClient::BluetoothSspVariant variant,
@@ -96,6 +101,7 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
   bool discoverable_;
   bool discovering_state_ = false;
   FlossDeviceId found_device_;
+  FlossDeviceId cleared_device_;
 
   FlossDeviceId ssp_device_;
   uint32_t cod_ = 0;
@@ -107,6 +113,7 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
   int discoverable_changed_count_ = 0;
   int discovering_changed_count_ = 0;
   int found_device_count_ = 0;
+  int cleared_device_count_ = 0;
   int ssp_request_count_ = 0;
 
  private:
@@ -134,7 +141,7 @@ class FlossAdapterClientTest : public testing::Test {
 
     // Make sure we export all callbacks. This will need to be updated once new
     // callbacks are added.
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(9);
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(10);
 
     // Handle method calls on the object proxy
     ON_CALL(
@@ -345,6 +352,22 @@ class FlossAdapterClientTest : public testing::Test {
     client_->OnDeviceFound(&method_call, std::move(response));
   }
 
+  void SendDeviceClearedCallback(
+      bool error,
+      const FlossDeviceId& device_id,
+      dbus::ExportedObject::ResponseSender response) {
+    dbus::MethodCall method_call(adapter::kCallbackInterface,
+                                 adapter::kOnDeviceFound);
+    method_call.SetSerial(serial_++);
+
+    dbus::MessageWriter writer(&method_call);
+    EncodeFlossDeviceId(&writer, device_id,
+                        /*include_required_keys=*/!error,
+                        /*include_extra_keys=*/true);
+
+    client_->OnDeviceCleared(&method_call, std::move(response));
+  }
+
   void SendSspRequestCallback(bool error,
                               const FlossDeviceId& device_id,
                               uint32_t cod,
@@ -536,6 +559,29 @@ TEST_F(FlossAdapterClientTest, HandlesFoundDevices) {
   EXPECT_EQ(test_observer.found_device_count_, 1);
   EXPECT_EQ(test_observer.found_device_.name, device_id.name);
   EXPECT_EQ(test_observer.found_device_.address, device_id.address);
+}
+
+TEST_F(FlossAdapterClientTest, HandlesClearedDevices) {
+  TestAdapterObserver test_observer(client_.get());
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+  EXPECT_EQ(test_observer.cleared_device_count_, 0);
+
+  FlossDeviceId device_id = {.address = "66:55:44:33:22:11", .name = "First"};
+
+  SendDeviceClearedCallback(
+      /*error=*/true, device_id,
+      base::BindOnce(&FlossAdapterClientTest::ExpectErrorResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(test_observer.cleared_device_count_, 0);
+  SendDeviceClearedCallback(
+      /*error=*/false, device_id,
+      base::BindOnce(&FlossAdapterClientTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(test_observer.cleared_device_count_, 1);
+  EXPECT_EQ(test_observer.cleared_device_.name, device_id.name);
+  EXPECT_EQ(test_observer.cleared_device_.address, device_id.address);
 }
 
 TEST_F(FlossAdapterClientTest, HandlesSsp) {

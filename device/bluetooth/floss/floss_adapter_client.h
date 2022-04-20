@@ -92,6 +92,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     // get the same device twice).
     virtual void AdapterFoundDevice(const FlossDeviceId& device_found) {}
 
+    // Notification sent when a found device is cleared. It will be sent when
+    // a device found during discovery is determined to be stale (was last seen
+    // some amount of time ago).
+    virtual void AdapterClearedDevice(const FlossDeviceId& device_cleared) {}
+
     // Notification sent for Simple Secure Pairing.
     virtual void AdapterSspRequest(const FlossDeviceId& remote_device,
                                    uint32_t cod,
@@ -252,6 +257,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle callback |OnDeviceFound| on exported object path.
   void OnDeviceFound(dbus::MethodCall* method_call,
                      dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDeviceCleared| on exported object path.
+  void OnDeviceCleared(dbus::MethodCall* method_call,
+                       dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnSspRequest| on exported object path.
   void OnSspRequest(dbus::MethodCall* method_call,

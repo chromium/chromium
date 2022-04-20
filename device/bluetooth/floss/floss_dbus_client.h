@@ -57,6 +57,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnNameChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoverableChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceCleared[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoveringChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];
 
