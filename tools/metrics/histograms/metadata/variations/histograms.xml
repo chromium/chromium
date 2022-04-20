@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.DomainOwner" enum="VariationsHeadersOwner"
-    expires_after="2022-04-24">
+    expires_after="2022-10-24">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics</component>
@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.ExperimentCount" units="units"
-    expires_after="2022-09-11">
+    expires_after="2023-03-19">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.RequestContextCategory"
-    enum="VariationsHeadersRequestContextCategory" expires_after="2022-04-24">
+    enum="VariationsHeadersRequestContextCategory" expires_after="2022-10-24">
   <owner>asvitkine@chromium.org</owner>
   <owner>jwd@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>
