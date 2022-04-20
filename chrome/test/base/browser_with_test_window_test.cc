@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/browser_with_test_window_test.h"
 
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -57,6 +59,9 @@ BrowserWithTestWindowTest::~BrowserWithTestWindowTest() {}
 
 void BrowserWithTestWindowTest::SetUp() {
   testing::Test::SetUp();
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized()) {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
