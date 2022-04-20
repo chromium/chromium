@@ -2341,7 +2341,7 @@ bool Animation::Update(TimingUpdateReason reason) {
          // monotonically increasing timelines even if the animation is
          // finished. This is required to accommodate cases where timeline ticks
          // back in time.
-         (!idle && !timeline_->IsMonotonicallyIncreasing());
+         (!idle && timeline_ && !timeline_->IsMonotonicallyIncreasing());
 }
 
 void Animation::QueueFinishedEvent() {
