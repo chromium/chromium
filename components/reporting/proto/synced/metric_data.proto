@@ -296,9 +296,10 @@ message BootPerformanceTelemetry {
 // Data tracking user status information
 message UserStatusTelemetry {
   enum DeviceActivityState {
-    ACTIVE = 0;
-    IDLE = 1;
-    LOCKED = 2;
+    DEVICE_ACTIVITY_STATE_UNKNOWN = 0;
+    ACTIVE = 1;
+    IDLE = 2;
+    LOCKED = 3;
   }
 
   // Device state.
