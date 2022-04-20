@@ -10,8 +10,11 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -22,6 +25,7 @@
 namespace ash {
 
 namespace {
+
 const char kSecureConnectApiGetSecondaryGoogleAccountUsageUrl[] =
     "https://secureconnect-pa.clients6.google.com/"
     "v1:getManagedAccountsSigninRestriction?policy_name="
@@ -32,7 +36,44 @@ const char kFakeEnterpriseAccount[] = "alice@acme.com";
 const char kFakeEnterpriseDomain[] = "acme.com";
 const char kFakeGmailAccount[] = "example@gmail.com";
 const char kFakeNonEnterpriseAccount[] = "alice@nonenterprise.com";
-const char KBadResponseBody[] = "bad-response-body";
+const char kBadResponseBody[] = "bad-response-body";
+
+// A mock access token fetcher. Calls the appropriate error or success callback,
+// depending on the `error` provided in the constructor.
+class MockAccessTokenFetcher : public OAuth2AccessTokenFetcher {
+ public:
+  MockAccessTokenFetcher(OAuth2AccessTokenConsumer* consumer,
+                         const GoogleServiceAuthError& error)
+      : OAuth2AccessTokenFetcher(consumer), error_(error) {}
+
+  MockAccessTokenFetcher(const MockAccessTokenFetcher&) = delete;
+  MockAccessTokenFetcher& operator=(const MockAccessTokenFetcher&) = delete;
+
+  ~MockAccessTokenFetcher() override = default;
+
+  void Start(const std::string& client_id,
+             const std::string& client_secret,
+             const std::vector<std::string>& scopes) override {
+    if (error_ != GoogleServiceAuthError::AuthErrorNone()) {
+      FireOnGetTokenFailure(error_);
+      return;
+    }
+
+    // Send a success response.
+    OAuth2AccessTokenConsumer::TokenResponse::Builder builder;
+    builder.WithAccessToken(kFakeAccessToken);
+    builder.WithRefreshToken(kFakeRefreshToken);
+    builder.WithExpirationTime(base::Time::Now() + base::Hours(1));
+    builder.WithIdToken("id_token");
+    FireOnGetTokenSuccess(builder.build());
+  }
+
+  void CancelRequest() override {}
+
+ private:
+  const GoogleServiceAuthError error_;
+};
+
 }  // namespace
 
 class MockUserCloudSigninRestrictionPolicyFetcherChromeOS
@@ -123,6 +164,10 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOSTest
             kFakeRefreshToken);
   }
 
+  const std::string& oauth_user_info_url() const {
+    return GaiaUrls::GetInstance()->oauth_user_info_url().spec();
+  }
+
   // Check base/test/task_environment.h. This must be the first member /
   // declared before any member that cares about tasks.
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -168,20 +213,18 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
 TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
        FetchingUserInfoFailsForNetworkConnectionErrors) {
   // Create policy fetcher.
-  MockUserCloudSigninRestrictionPolicyFetcherChromeOS restriction_fetcher(
+  UserCloudSigninRestrictionPolicyFetcherChromeOS restriction_fetcher(
       kFakeEnterpriseAccount, GetSharedURLLoaderFactory());
 
   // Create access token fetcher.
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      CreateAccessTokenFetcher(&restriction_fetcher);
+      std::make_unique<MockAccessTokenFetcher>(
+          /*consumer=*/&restriction_fetcher,
+          /*error=*/GoogleServiceAuthError::AuthErrorNone());
 
-  // TODO(b/224754860): Use mocked dependency injection and remove this.
   // Fake a failed UserInfo fetch.
-  EXPECT_CALL(restriction_fetcher, FetchUserInfo())
-      .WillOnce([&restriction_fetcher]() {
-        return restriction_fetcher.OnGetUserInfoFailure(
-            GoogleServiceAuthError::FromConnectionError(0));
-      });
+  url_loader_factory_.AddResponse(oauth_user_info_url(), std::string(),
+                                  net::HTTP_INTERNAL_SERVER_ERROR);
 
   // Try to fetch policy value.
   GetSecondaryGoogleAccountUsageBlocking(&restriction_fetcher,
@@ -277,7 +320,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
 TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
        FetchingPolicyReturnsEmptyPolicyForResponsesNotParsable) {
   url_loader_factory_.AddResponse(
-      kSecureConnectApiGetSecondaryGoogleAccountUsageUrl, KBadResponseBody);
+      kSecureConnectApiGetSecondaryGoogleAccountUsageUrl, kBadResponseBody);
 
   // Create policy fetcher.
   MockUserCloudSigninRestrictionPolicyFetcherChromeOS restriction_fetcher(
@@ -301,7 +344,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
 TEST_F(UserCloudSigninRestrictionPolicyFetcherChromeOSTest,
        FetchingPolicyReturnsEmptyPolicyForNonEnterpriseAccounts) {
   url_loader_factory_.AddResponse(
-      kSecureConnectApiGetSecondaryGoogleAccountUsageUrl, KBadResponseBody);
+      kSecureConnectApiGetSecondaryGoogleAccountUsageUrl, kBadResponseBody);
 
   // Create policy fetcher.
   MockUserCloudSigninRestrictionPolicyFetcherChromeOS restriction_fetcher(

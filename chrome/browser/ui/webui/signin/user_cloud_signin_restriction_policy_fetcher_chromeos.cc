@@ -91,6 +91,8 @@ UserCloudSigninRestrictionPolicyFetcherChromeOS::
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : email_(email), url_loader_factory_(url_loader_factory) {
   DCHECK(url_loader_factory_);
+  user_info_fetcher_ =
+      std::make_unique<policy::UserInfoFetcher>(this, url_loader_factory_);
 }
 
 UserCloudSigninRestrictionPolicyFetcherChromeOS::
@@ -145,9 +147,6 @@ std::string UserCloudSigninRestrictionPolicyFetcherChromeOS::GetConsumerName()
 }
 
 void UserCloudSigninRestrictionPolicyFetcherChromeOS::FetchUserInfo() {
-  // TODO(b/224743604): Inject UserInfoFetcher as a dependency.
-  user_info_fetcher_ =
-      std::make_unique<policy::UserInfoFetcher>(this, url_loader_factory_);
   user_info_fetcher_->Start(access_token_);
 }
 
