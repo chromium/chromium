@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/tween.h"
@@ -406,8 +407,10 @@ std::string CaptureModeCameraController::GetDisplayNameOfSelectedCamera()
   if (selected_camera_.is_valid()) {
     const CameraInfo* camera_info =
         GetCameraInfoById(selected_camera_, available_cameras_);
-    DCHECK(camera_info);
-    return camera_info->display_name;
+    // `camera_info` might not exist in the test even though the
+    // `selected_camera_` is valid.
+    if (camera_info)
+      return camera_info->display_name;
   }
   return std::string();
 }
@@ -428,6 +431,13 @@ void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
 
   for (auto& observer : observers_)
     observer.OnSelectedCameraChanged(selected_camera_);
+
+  const std::string camera_display_name = GetDisplayNameOfSelectedCamera();
+  if (!camera_display_name.empty()) {
+    capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
+        IDS_ASH_SCREEN_CAPTURE_SELECTED_CAMERA_CHANGED,
+        base::UTF8ToUTF16(camera_display_name)));
+  }
 
   RefreshCameraPreview();
 }
@@ -701,6 +711,8 @@ void CaptureModeCameraController::RefreshCameraPreview() {
             (kDisconnectionGracePeriod - remaining_time).InSeconds();
         RecordCameraReconnectDuration(reconnect_duration_in_seconds,
                                       kDisconnectionGracePeriod.InSeconds());
+        capture_mode_util::TriggerAccessibilityAlert(
+            IDS_ASH_SCREEN_CAPTURE_CAMERA_RECONNECTED);
       }
       // When a selected camera becomes available, we stop any grace period
       // timer (if any), and decide whether to show or hide the preview widget
@@ -718,6 +730,9 @@ void CaptureModeCameraController::RefreshCameraPreview() {
 
       if (in_recording_camera_disconnections_)
         ++(*in_recording_camera_disconnections_);
+
+      capture_mode_util::TriggerAccessibilityAlert(
+          IDS_ASH_SCREEN_CAPTURE_CAMERA_DISCONNECTED);
     }
   }
 

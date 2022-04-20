@@ -4016,6 +4016,15 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN" desc="Alert spoken by screen readers when camera preview is hidden.">
         Camera preview hidden
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_DISCONNECTED" desc="Alert spoken by screen readers when the selected camera gets disconnected.">
+        Camera lost, trying to reconnect.
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_RECONNECTED" desc="Alert spoken by screen readers when the selected camera gets reconnected.">
+        Camera reconnected.
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SELECTED_CAMERA_CHANGED" desc="Alert spoken by screen readers when the selected camera gets changed.">
+        Camera input set to <ph name="CAMERA_NAME">$1</ph>.
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_RECORD_MICROPHONE" desc="Alert spoken by screen readers when user tabs to record microphone setting.">
         Record microphone <ph name="CURRENT_STATE">$1<ex>off</ex></ph>, Press enter to turn microphone recording <ph name="NEW_STATE">$2<ex>on</ex></ph>
       </message>
@@ -4027,9 +4036,6 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN" desc="Alert spoken by screen readers on entering capture mode.">
         Capture Mode, default is <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab for keyboard navigation.
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN_WITH_CAMERA" desc="Alert spoken by screen readers on entering capture mode with camera preview shown.">
-        Capture Mode, default is <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Camera input set to <ph name="CAMERA_NAME">$3</ph>, preview on. Press tab for keyboard navigation.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN" desc="Spoken by screen readers for the open alert with the source as full screen.">
         full screen

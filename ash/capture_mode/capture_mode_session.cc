@@ -4,7 +4,6 @@
 
 #include "ash/capture_mode/capture_mode_session.h"
 
-#include <string>
 #include <tuple>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -350,28 +349,6 @@ void UpdateFloatingPanelBoundsIfNeeded() {
   Shell::Get()->accessibility_controller()->UpdateFloatingPanelBoundsIfNeeded();
 }
 
-// Returns true if the camera preview will be shown on entering capture mode.
-bool CameraPreviewWillBeShown(CaptureModeController* controller) {
-  auto* camera_controller = controller->camera_controller();
-  if (!camera_controller || controller->type() != CaptureModeType::kVideo ||
-      !camera_controller->selected_camera().is_valid()) {
-    return false;
-  }
-
-  switch (controller->source()) {
-    // The camera preview will always be shown in `kFullscreen` source with
-    // `kVideo` capture type and valid selected camera.
-    case CaptureModeSource::kFullscreen:
-      return true;
-    case CaptureModeSource::kRegion:
-      return !controller->user_capture_region().IsEmpty();
-    // The camera preview will not be shown for `kWindow` while entering the
-    // capture mode. As the selected window has not been set yet at this point.
-    case CaptureModeSource::kWindow:
-      return false;
-  }
-}
-
 views::Widget* GetCameraPreviewWidget() {
   auto* camera_controller = CaptureModeController::Get()->camera_controller();
   return camera_controller ? camera_controller->camera_preview_widget()
@@ -640,24 +617,14 @@ void CaptureModeSession::Initialize() {
   // Trigger this before creating `capture_mode_bar_widget_` as we want to read
   // out this message before reading out the first view of
   // `capture_mode_bar_widget_`.
-  const std::u16string capture_source =
+  capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
       l10n_util::GetStringUTF16(GetMessageIdForCaptureSource(
-          controller_->source(), /*for_toggle_alert=*/false));
-  const std::u16string capture_type = l10n_util::GetStringUTF16(
-      controller_->type() == CaptureModeType::kImage
-          ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
-          : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING);
-  if (CameraPreviewWillBeShown(controller_)) {
-    const std::string camera_display_name =
-        controller_->camera_controller()->GetDisplayNameOfSelectedCamera();
-    DCHECK(!camera_display_name.empty());
-    capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
-        IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN_WITH_CAMERA, capture_source,
-        capture_type, base::UTF8ToUTF16(camera_display_name)));
-  } else {
-    capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
-        IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN, capture_source, capture_type));
-  }
+          controller_->source(), /*for_toggle_alert=*/false)),
+      l10n_util::GetStringUTF16(
+          controller_->type() == CaptureModeType::kImage
+              ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
+              : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING)));
 
   // A context menu may have input capture when entering a session. Remove
   // capture from it, otherwise subsequent mouse events will cause it to close,
