@@ -347,6 +347,7 @@ void TableView::ToggleSortOrder(int visible_column_index) {
         column.title));
   }
   SetSortDescriptors(sort);
+  UpdateFocusRings();
 }
 
 void TableView::SetSortDescriptors(const SortDescriptors& sort_descriptors) {
