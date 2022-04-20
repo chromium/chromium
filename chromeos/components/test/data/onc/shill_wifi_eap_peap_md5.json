@@ -1,0 +1,11 @@
+{
+  "EAP.EAP": "PEAP",
+  "EAP.Identity": "my_identity",
+  "EAP.InnerEAP": "auth=MD5",
+  "EAP.UseSystemCAs": true,
+  "GUID": "{77db0089-0bc8-4358-929c-123xcv}",
+  "Mode": "managed",
+  "SaveCredentials": true,
+  "SecurityClass": "802_1x",
+  "Type": "wifi"
+}

@@ -7,10 +7,12 @@
 #include <cstddef>
 
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/tether_constants.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 namespace onc {
@@ -329,6 +331,22 @@ const NestedShillDictionaryEntry nested_shill_dictionaries[] = {
     {&kStaticIPConfigSignature, static_ip_config_path_entries},
     {nullptr}};
 
+// Translation of the EAP.Inner field in case of EAP.Outer == PEAP
+const StringTranslationEntry eap_peap_inner_table[] = {
+    {::onc::eap::kGTC, shill::kEapPhase2AuthPEAPGTC},
+    {::onc::eap::kMD5, shill::kEapPhase2AuthPEAPMD5},
+    {::onc::eap::kMSCHAPv2, shill::kEapPhase2AuthPEAPMSCHAPV2},
+    {nullptr}};
+
+// Translation of the EAP.Inner field in case of EAP.Outer == TTLS
+const StringTranslationEntry eap_ttls_inner_table[] = {
+    {::onc::eap::kGTC, shill::kEapPhase2AuthTTLSGTC},
+    {::onc::eap::kMD5, shill::kEapPhase2AuthTTLSMD5},
+    {::onc::eap::kMSCHAP, shill::kEapPhase2AuthTTLSMSCHAP},
+    {::onc::eap::kMSCHAPv2, shill::kEapPhase2AuthTTLSMSCHAPV2},
+    {::onc::eap::kPAP, shill::kEapPhase2AuthTTLSPAP},
+    {nullptr}};
+
 }  // namespace
 
 const StringTranslationEntry kNetworkTypeTable[] = {
@@ -366,22 +384,6 @@ const StringTranslationEntry kEAPOuterTable[] = {
     {::onc::eap::kEAP_TTLS, shill::kEapMethodTTLS},
     {::onc::eap::kLEAP, shill::kEapMethodLEAP},
     {::onc::eap::kMSCHAPv2, shill::kEapMethodMSCHAPV2},
-    {nullptr}};
-
-// Translation of the EAP.Inner field in case of EAP.Outer == PEAP
-const StringTranslationEntry kEAP_PEAP_InnerTable[] = {
-    {::onc::eap::kGTC, shill::kEapPhase2AuthPEAPGTC},
-    {::onc::eap::kMD5, shill::kEapPhase2AuthPEAPMD5},
-    {::onc::eap::kMSCHAPv2, shill::kEapPhase2AuthPEAPMSCHAPV2},
-    {nullptr}};
-
-// Translation of the EAP.Inner field in case of EAP.Outer == TTLS
-const StringTranslationEntry kEAP_TTLS_InnerTable[] = {
-    {::onc::eap::kGTC, shill::kEapPhase2AuthTTLSGTC},
-    {::onc::eap::kMD5, shill::kEapPhase2AuthTTLSMD5},
-    {::onc::eap::kMSCHAP, shill::kEapPhase2AuthTTLSMSCHAP},
-    {::onc::eap::kMSCHAPv2, shill::kEapPhase2AuthTTLSMSCHAPV2},
-    {::onc::eap::kPAP, shill::kEapPhase2AuthTTLSPAP},
     {nullptr}};
 
 const StringTranslationEntry kActivationStateTable[] = {
@@ -467,6 +469,30 @@ const FieldTranslationEntry* GetFieldTranslationTable(
     if (it->onc_signature == &onc_signature)
       return it->field_translation_table;
   }
+  return nullptr;
+}
+
+const StringTranslationEntry* GetEapInnerTranslationTableForShillOuter(
+    base::StringPiece shill_eap_outer) {
+  if (shill_eap_outer == shill::kEapMethodPEAP) {
+    return eap_peap_inner_table;
+  }
+  if (shill_eap_outer == shill::kEapMethodTTLS) {
+    return eap_ttls_inner_table;
+  }
+  LOG(ERROR) << "No translation table for '" << shill_eap_outer << "'";
+  return nullptr;
+}
+
+const StringTranslationEntry* GetEapInnerTranslationTableForOncOuter(
+    base::StringPiece onc_eap_outer) {
+  if (onc_eap_outer == ::onc::eap::kPEAP) {
+    return eap_peap_inner_table;
+  }
+  if (onc_eap_outer == ::onc::eap::kEAP_TTLS) {
+    return eap_ttls_inner_table;
+  }
+  LOG(ERROR) << "No translation table for '" << onc_eap_outer << "'";
   return nullptr;
 }
 

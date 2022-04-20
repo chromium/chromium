@@ -772,8 +772,12 @@ void ShillToONCTranslator::TranslateEap() {
     const std::string* shill_phase2_auth =
         shill_dictionary_->FindStringKey(shill::kEapPhase2AuthProperty);
     if (shill_phase2_auth && !shill_phase2_auth->empty()) {
-      TranslateWithTableAndSet(shill::kEapPhase2AuthProperty,
-                               kEAP_TTLS_InnerTable, ::onc::eap::kInner);
+      const StringTranslationEntry* table =
+          GetEapInnerTranslationTableForShillOuter(*shill_eap_method);
+      if (table) {
+        TranslateWithTableAndSet(shill::kEapPhase2AuthProperty, table,
+                                 ::onc::eap::kInner);
+      }
     }
   }
 

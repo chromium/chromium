@@ -160,6 +160,8 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_wifi_eap_tls.onc"),
         std::make_pair("shill_wifi_eap_ttls.json",
                        "translation_of_shill_wifi_eap_ttls.onc"),
+        std::make_pair("shill_wifi_eap_peap_md5.json",
+                       "translation_of_shill_wifi_eap_peap_md5.onc"),
         std::make_pair("shill_wifi_proxy.json",
                        "translation_of_shill_wifi_proxy.onc"),
         std::make_pair("shill_wifi_proxy_pac.json",

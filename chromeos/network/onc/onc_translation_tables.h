@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
 #include "chromeos/components/onc/onc_signature.h"
 
 namespace chromeos {
@@ -35,10 +36,6 @@ extern const StringTranslationEntry kWiFiSecurityTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kEAPOuterTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-extern const StringTranslationEntry kEAP_PEAP_InnerTable[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
-extern const StringTranslationEntry kEAP_TTLS_InnerTable[];
-COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kActivationStateTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kNetworkTechnologyTable[];
@@ -62,6 +59,18 @@ extern const FieldTranslationEntry kIPsecIKEv2Table[];
 
 const FieldTranslationEntry* GetFieldTranslationTable(
     const OncValueSignature& onc_signature);
+
+// Returns the translation table for EAP.Inner based on the value of EAP.Outer
+// represented in Shill, or nullptr if no translation table is available for
+// the given EAP.Outer value
+const StringTranslationEntry* GetEapInnerTranslationTableForShillOuter(
+    base::StringPiece shill_outer_name);
+
+// Returns the translation table for EAP.Inner based on the value of EAP.Outer
+// represented in ONC, or nullptr if no translation table is available for
+// the given EAP.Outer value
+const StringTranslationEntry* GetEapInnerTranslationTableForOncOuter(
+    base::StringPiece onc_outer_value);
 
 // Returns the path at which the translation of an ONC object will be stored in
 // a Shill dictionary if its signature is |onc_signature|.

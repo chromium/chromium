@@ -373,10 +373,11 @@ void LocalTranslator::TranslateEAP() {
     // ONC's Inner == "Automatic" translates to omitting the Phase2 property in
     // Shill.
     if (inner != ::onc::eap::kAutomatic) {
-      const StringTranslationEntry* table = outer == ::onc::eap::kPEAP
-                                                ? kEAP_PEAP_InnerTable
-                                                : kEAP_TTLS_InnerTable;
-      TranslateWithTableAndSet(inner, table, shill::kEapPhase2AuthProperty);
+      const StringTranslationEntry* table =
+          GetEapInnerTranslationTableForOncOuter(outer);
+      if (table) {
+        TranslateWithTableAndSet(inner, table, shill::kEapPhase2AuthProperty);
+      }
     }
   }
 
