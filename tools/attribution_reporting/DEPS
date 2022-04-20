@@ -1,7 +1,5 @@
 include_rules = [
   "+components/version_info",
   "+content/public/browser",
-  "+content/public/common",
   "+content/public/test",
-  "+mojo/core/embedder",
 ]

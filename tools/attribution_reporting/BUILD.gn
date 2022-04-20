@@ -9,7 +9,6 @@ executable("attribution_reporting_simulator") {
     "//components/version_info",
     "//content/public/browser",
     "//content/test:test_support",
-    "//mojo/core/embedder:embedder",
   ]
   testonly = true
 }

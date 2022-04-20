@@ -1,0 +1,242 @@
+object_value {
+  field {
+    name: "sources"
+    value {
+      array_value {
+        value {
+          object_value {
+            field {
+              name: "timestamp"
+              value {
+                number_value {
+                  integer_value {
+                    value: 1643235573
+                  }
+                }
+              }
+            }
+            field {
+              name: "source_origin"
+              value {
+                string_value {
+                  value: "https://s.test"
+                }
+              }
+            }
+            field {
+              name: "reporting_origin"
+              value {
+                string_value {
+                  value: "https://r.test"
+                }
+              }
+            }
+            field {
+              name: "source_type"
+              value {
+                string_value {
+                  value: "navigation"
+                }
+              }
+            }
+            field {
+              name: "Attribution-Reporting-Register-Source"
+              value {
+                object_value {
+                  field {
+                    name: "destination"
+                    value {
+                      string_value {
+                        value: "https://d.test"
+                      }
+                    }
+                  }
+                  field {
+                    name: "source_event_id"
+                    value {
+                      string_value {
+                        value: "123"
+                      }
+                    }
+                  }
+                  field {
+                    name: "priority"
+                    value {
+                      string_value {
+                        value: "5"
+                      }
+                    }
+                  }
+                  field {
+                    name: "debug_key"
+                    value {
+                      string_value {
+                        value: "12"
+                      }
+                    }
+                  }
+                  field {
+                    name: "filter_data"
+                    value {
+                      object_value {
+                        field {
+                          name: "e"
+                          value {
+                            array_value {
+                              value {
+                                string_value {
+                                  value: "f"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  field {
+    name: "triggers"
+    value {
+      array_value {
+        value {
+          object_value {
+            field {
+              name: "timestamp"
+              value {
+                number_value {
+                  integer_value {
+                    value: 1643235574
+                  }
+                }
+              }
+            }
+            field {
+              name: "reporting_origin"
+              value {
+                string_value {
+                  value: "https://r.test"
+                }
+              }
+            }
+            field {
+              name: "destination_origin"
+              value {
+                string_value {
+                  value: "https://d.test"
+                }
+              }
+            }
+            field {
+              name: "Attribution-Reporting-Trigger-Debug-Key"
+              value {
+                string_value {
+                  value: "6"
+                }
+              }
+            }
+            field {
+              name: "Attribution-Reporting-Filters"
+              value {
+                object_value {
+                  field {
+                    name: "c"
+                    value {
+                      array_value {
+                        value {
+                          string_value {
+                            value: "d"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            field {
+              name: "Attribution-Reporting-Register-Event-Trigger"
+              value {
+                array_value {
+                  value {
+                    object_value {
+                      field {
+                        name: "trigger_data"
+                        value {
+                          string_value {
+                            value: "7"
+                          }
+                        }
+                      }
+                      field {
+                        name: "priority"
+                        value {
+                          string_value {
+                            value: "8"
+                          }
+                        }
+                      }
+                      field {
+                        name: "deduplication_key"
+                        value {
+                          string_value {
+                            value: "9"
+                          }
+                        }
+                      }
+                      field {
+                        name: "filters"
+                        value {
+                          object_value {
+                            field {
+                              name: "e"
+                              value {
+                                array_value {
+                                  value {
+                                    string_value {
+                                      value: "f"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                      field {
+                        name: "not_filters"
+                        value {
+                          object_value {
+                            field {
+                              name: "g"
+                              value {
+                                array_value {
+                                  value {
+                                    string_value {
+                                      value: "h"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

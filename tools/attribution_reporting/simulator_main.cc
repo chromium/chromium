@@ -16,11 +16,8 @@
 #include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/attribution_reporting.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/test/attribution_simulator.h"
-#include "content/public/test/content_test_suite_base.h"
-#include "content/public/test/test_content_client_initializer.h"
-#include "mojo/core/embedder/embedder.h"
+#include "content/public/test/attribution_simulator_environment.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -242,24 +239,6 @@ int ProcessJsonString(const std::string& json_input,
   return true;
 }
 
-// Required for setting up the test environment.
-class TestSuite : public content::ContentTestSuiteBase {
- public:
-  TestSuite(int argc, char** argv) : content::ContentTestSuiteBase(argc, argv) {
-    Initialize();
-    content::ForceInProcessNetworkService(true);
-    // This initialization depends on the call to `Initialize()`, so we use a
-    // `unique_ptr` to defer initialization instead of storing the field
-    // directly.
-    test_content_initializer_ =
-        std::make_unique<content::TestContentClientInitializer>();
-  }
-
- private:
-  std::unique_ptr<content::TestContentClientInitializer>
-      test_content_initializer_;
-};
-
 }  // namespace
 
 int main(int argc, char* argv[]) {
@@ -392,9 +371,7 @@ int main(int argc, char* argv[]) {
           command_line.HasSwitch(kSwitchRemoveAssembledReport),
   });
 
-  // Required for setting up the test environment.
-  TestSuite test_suite(argc, argv);
-  mojo::core::Init();
+  content::AttributionSimulatorEnvironment env(argc, argv);
 
   switch (input_mode) {
     case InputMode::kSingle: {
