@@ -5041,6 +5041,10 @@ const char kLauncherLacrosIntegrationDescription[] =
     "Forces launcher Omnibox search queries to be sent to the lacros browser. "
     "If disabled, queries are sent to the ash browser.";
 
+const char kLauncherPlayStoreSearchName[] = "Launcher Play Store search";
+const char kLauncherPlayStoreSearchDescription[] =
+    "Enables Play Store search in the Launcher";
+
 const char kLimitShelfItemsToActiveDeskName[] =
     "Limit Shelf items to active desk";
 const char kLimitShelfItemsToActiveDeskDescription[] =

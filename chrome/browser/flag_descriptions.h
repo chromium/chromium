@@ -2885,6 +2885,9 @@ extern const char kLacrosSupportDescription[];
 extern const char kLauncherLacrosIntegrationName[];
 extern const char kLauncherLacrosIntegrationDescription[];
 
+extern const char kLauncherPlayStoreSearchName[];
+extern const char kLauncherPlayStoreSearchDescription[];
+
 extern const char kLimitShelfItemsToActiveDeskName[];
 extern const char kLimitShelfItemsToActiveDeskDescription[];
 

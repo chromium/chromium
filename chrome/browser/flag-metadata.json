@@ -3874,6 +3874,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "launcher-play-store-search",
+    "owners": [ "amandadeacon", "tby", "wrong" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "launcher-pulsing-blocks-refresh",
     "owners": [ "anasalazar", "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 105

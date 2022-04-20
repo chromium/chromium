@@ -73,6 +73,7 @@ constexpr size_t kMaxZeroStateDriveResults = 10;
 // TODO(warx): Need UX spec.
 constexpr size_t kMaxAppShortcutResults = 4;
 
+constexpr size_t kMaxPlayStoreResults = 12;
 constexpr size_t kMaxAssistantTextResults = 1;
 
 }  // namespace
@@ -131,6 +132,14 @@ std::unique_ptr<SearchController> CreateSearchController(
     size_t drive_file_group_id = controller->AddGroup(kMaxDriveSearchResults);
     controller->AddProvider(drive_file_group_id,
                             std::make_unique<DriveSearchProvider>(profile));
+  }
+
+  if (app_list_features::IsLauncherPlayStoreSearchEnabled()) {
+    size_t playstore_api_group_id = controller->AddGroup(kMaxPlayStoreResults);
+    controller->AddProvider(
+        playstore_api_group_id,
+        std::make_unique<ArcPlayStoreSearchProvider>(kMaxPlayStoreResults,
+                                                     profile, list_controller));
   }
 
   if (arc::IsArcAllowedForProfile(profile)) {
