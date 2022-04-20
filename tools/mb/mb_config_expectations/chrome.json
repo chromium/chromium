@@ -131,7 +131,7 @@
     }
   },
   "chromeos-reven-chrome": {
-    "args_file": "//build/args/chromeos/reven.gni",
+    "args_file": "//build/args/chromeos/reven-vmtest.gni",
     "gn_args": {
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,

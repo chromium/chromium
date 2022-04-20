@@ -4202,7 +4202,7 @@
     },
 
     'reven': {
-      'args_file': '//build/args/chromeos/reven.gni',
+      'args_file': '//build/args/chromeos/reven-vmtest.gni',
     },
 
     'shared': {
