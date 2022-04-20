@@ -60,6 +60,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   static void IsPowerButtonModeEnabled(
       base::OnceCallback<void(bool is_enabled)> callback);
 
+  // Invokes |callback| with a bool indicating whether u2fd supports WebAuthn
+  // requests from the lacros browser.
+  static void IsLacrosSupported(
+      base::OnceCallback<void(bool supported)> callback);
+
   // FidoAuthenticator
 
   // Calls the u2fd API `GetAlgorithms` and cache the result.
