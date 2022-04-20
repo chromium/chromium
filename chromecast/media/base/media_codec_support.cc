@@ -132,13 +132,17 @@ VideoProfile ToCastVideoProfile(
     case ::media::VP9PROFILE_PROFILE3:
       return kVP9Profile3;
     case ::media::DOLBYVISION_PROFILE0:
-      return kDolbyVisionCompatible_EL_MD;
+      return kDolbyVisionProfile0;
     case ::media::DOLBYVISION_PROFILE4:
-      return kDolbyVisionCompatible_EL_MD;
+      return kDolbyVisionProfile4;
     case ::media::DOLBYVISION_PROFILE5:
-      return kDolbyVisionNonCompatible_BL_MD;
+      return kDolbyVisionProfile5;
     case ::media::DOLBYVISION_PROFILE7:
-      return kDolbyVisionNonCompatible_BL_EL_MD;
+      return kDolbyVisionProfile7;
+    case ::media::DOLBYVISION_PROFILE8:
+      return kDolbyVisionProfile8;
+    case ::media::DOLBYVISION_PROFILE9:
+      return kDolbyVisionProfile9;
     case ::media::AV1PROFILE_PROFILE_MAIN:
       return kAV1ProfileMain;
     case ::media::AV1PROFILE_PROFILE_HIGH:
