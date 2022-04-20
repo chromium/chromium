@@ -5,6 +5,8 @@
 #ifndef MEDIA_FORMATS_HLS_PLAYLIST_COMMON_H_
 #define MEDIA_FORMATS_HLS_PLAYLIST_COMMON_H_
 
+#include <utility>
+
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/tags.h"
@@ -26,7 +28,7 @@ struct CommonParserState {
   // The dictionary of variables defined in the parent playlist. This may remain
   // null if there is no parent playlist (in the case of a multivariant
   // playlist, or a media playlist without other variants).
-  VariableDictionary* parent_variable_dict = nullptr;
+  const VariableDictionary* parent_variable_dict = nullptr;
 
   // Returns the version specified by `version_tag`, or the default version if
   // the playlist did not contain a version tag.
@@ -45,9 +47,10 @@ absl::optional<ParseStatus> ParseCommonTag(TagItem, CommonParserState* state);
 
 // Attempts to parse a tag from the given item, ensuring it has not been
 // already appeared in the playlist.
-template <typename T>
+template <typename T, typename... Args>
 absl::optional<ParseStatus> ParseUniqueTag(TagItem tag,
-                                           absl::optional<T>& out) {
+                                           absl::optional<T>& out,
+                                           Args&&... args) {
   DCHECK(tag.GetName() == ToTagName(T::kName));
 
   // Ensure this tag has not already appeared.
@@ -55,7 +58,7 @@ absl::optional<ParseStatus> ParseUniqueTag(TagItem tag,
     return ParseStatusCode::kPlaylistHasDuplicateTags;
   }
 
-  auto tag_result = T::Parse(tag);
+  auto tag_result = T::Parse(tag, std::forward<Args>(args)...);
   if (tag_result.has_error()) {
     return std::move(tag_result).error();
   }

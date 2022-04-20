@@ -14,6 +14,8 @@
 
 namespace media::hls {
 
+class MultivariantPlaylist;
+
 // Helper for building media playlist test cases that allows writing assertions
 // next to the playlist lines they check, as well as "forking" test cases via
 // copying the builder.
@@ -25,6 +27,9 @@ class MediaPlaylistTestBuilder : public PlaylistTestBuilder<MediaPlaylist> {
   MediaPlaylistTestBuilder(MediaPlaylistTestBuilder&&);
   MediaPlaylistTestBuilder& operator=(const MediaPlaylistTestBuilder&);
   MediaPlaylistTestBuilder& operator=(MediaPlaylistTestBuilder&&);
+
+  // Sets the referring multivariant playlist.
+  void SetParent(const MultivariantPlaylist* parent) { parent_ = parent; }
 
   // Increments the number of segments that are expected to be contained in the
   // playlist.
@@ -41,13 +46,13 @@ class MediaPlaylistTestBuilder : public PlaylistTestBuilder<MediaPlaylist> {
   }
 
   void ExpectOk(const base::Location& from = base::Location::Current()) const {
-    PlaylistTestBuilder::ExpectOk(from);
+    PlaylistTestBuilder::ExpectOk(from, parent_);
   }
 
   void ExpectError(
       ParseStatusCode code,
       const base::Location& from = base::Location::Current()) const {
-    PlaylistTestBuilder::ExpectError(code, from);
+    PlaylistTestBuilder::ExpectError(code, from, parent_);
   }
 
  private:
@@ -66,6 +71,7 @@ class MediaPlaylistTestBuilder : public PlaylistTestBuilder<MediaPlaylist> {
   void VerifyExpectations(const MediaPlaylist& playlist,
                           const base::Location& from) const override;
 
+  const MultivariantPlaylist* parent_ = nullptr;
   std::vector<SegmentExpectations> segment_expectations_;
 };
 

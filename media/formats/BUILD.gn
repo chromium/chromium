@@ -191,6 +191,8 @@ source_set("formats") {
     "hls/media_playlist.h",
     "hls/media_segment.cc",
     "hls/media_segment.h",
+    "hls/multivariant_playlist.cc",
+    "hls/multivariant_playlist.h",
     "hls/parse_status.cc",
     "hls/parse_status.h",
     "hls/playlist.cc",
@@ -207,6 +209,8 @@ source_set("formats") {
     "hls/types.h",
     "hls/variable_dictionary.cc",
     "hls/variable_dictionary.h",
+    "hls/variant_stream.cc",
+    "hls/variant_stream.h",
   ]
   deps += [ "//third_party/re2" ]
   public_deps = [
@@ -327,6 +331,9 @@ source_set("unit_tests") {
     "hls/media_playlist_test_builder.cc",
     "hls/media_playlist_test_builder.h",
     "hls/media_playlist_unittest.cc",
+    "hls/multivariant_playlist_test_builder.cc",
+    "hls/multivariant_playlist_test_builder.h",
+    "hls/multivariant_playlist_unittest.cc",
     "hls/playlist_test_builder.h",
     "hls/tags_unittest.cc",
     "hls/test_util.h",
@@ -356,6 +363,16 @@ fuzzer_test("hls_attribute_list_fuzzer") {
 # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_media_playlist_fuzzer") {
   sources = [ "hls/media_playlist_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//media",
+  ]
+}
+
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_multivariant_playlist_fuzzer") {
+  sources = [ "hls/multivariant_playlist_fuzzer.cc" ]
   deps = [
     "//base",
     "//base:i18n",

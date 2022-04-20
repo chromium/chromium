@@ -5,11 +5,32 @@
 #include "media/formats/hls/media_playlist.h"
 
 #include "media/formats/hls/media_playlist_test_builder.h"
+#include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media::hls {
+
+namespace {
+
+MultivariantPlaylist CreateMultivariantPlaylist(
+    std::initializer_list<base::StringPiece> lines,
+    GURL uri = GURL("http://localhost/multi_playlist.m3u8")) {
+  std::string source;
+  for (auto line : lines) {
+    source.append(line.data(), line.size());
+    source.append("\n");
+  }
+
+  // Parse the given source. Failure here isn't supposed to be part of the test,
+  // so use a CHECK.
+  auto result = MultivariantPlaylist::Parse(source, std::move(uri));
+  CHECK(result.has_value());
+  return std::move(result).value();
+}
+
+}  // namespace
 
 TEST(HlsMediaPlaylistTest, XDiscontinuityTag) {
   MediaPlaylistTestBuilder builder;
@@ -180,7 +201,71 @@ TEST(HlsMediaPlaylistTest, VariableSubstitution) {
     fork.ExpectError(ParseStatusCode::kImportedVariableInParentlessPlaylist);
   }
 
-  // Variables may not be substituted recursively
+  // Test importing variables in a playlist with a parent
+  auto parent = CreateMultivariantPlaylist(
+      {"#EXTM3U", "#EXT-X-VERSION:8",
+       R"(#EXT-X-DEFINE:NAME="IMPORTED",VALUE="HELLO")"});
+  {
+    // Referring to a parent playlist variable without importing it is an error
+    auto fork = builder;
+    fork.SetParent(&parent);
+    fork.AppendLine("#EXTINF:9.9,\t");
+    fork.AppendLine("segments/{$IMPORTED}.ts");
+    fork.ExpectError(ParseStatusCode::kVariableUndefined);
+  }
+  {
+    // Locally overwriting an unimported variable from a parent playlist is NOT
+    // an error
+    auto fork = builder;
+    fork.SetParent(&parent);
+    fork.AppendLine(R"(#EXT-X-DEFINE:NAME="IMPORTED",VALUE="WORLD")");
+    fork.AppendLine("#EXTINF:9.9,\t");
+    fork.AppendLine("segments/{$IMPORTED}.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segments/WORLD.ts"));
+    fork.ExpectOk();
+
+    // Importing a variable once it's been defined is an error
+    fork.AppendLine(R"(#EXT-X-DEFINE:IMPORT="IMPORTED")");
+    fork.ExpectError(ParseStatusCode::kVariableDefinedMultipleTimes);
+  }
+  {
+    // Defining a variable once it's been imported is an error
+    auto fork = builder;
+    fork.SetParent(&parent);
+    fork.AppendLine(R"(#EXT-X-DEFINE:IMPORT="IMPORTED")");
+    fork.AppendLine(R"(#EXT-X-DEFINE:NAME="IMPORTED",VALUE="WORLD")");
+    fork.ExpectError(ParseStatusCode::kVariableDefinedMultipleTimes);
+  }
+  {
+    // Importing the same variable twice is an error
+    auto fork = builder;
+    fork.SetParent(&parent);
+    fork.AppendLine(R"(#EXT-X-DEFINE:IMPORT="IMPORTED")");
+    fork.AppendLine(R"(#EXT-X-DEFINE:IMPORT="IMPORTED")");
+    fork.ExpectError(ParseStatusCode::kVariableDefinedMultipleTimes);
+  }
+  {
+    // Importing a variable that hasn't been defined in the parent playlist is
+    // an error
+    auto fork = builder;
+    fork.SetParent(&parent);
+    fork.AppendLine(R"(#EXT-X-DEFINE:IMPORT="FOO")");
+    fork.ExpectError(ParseStatusCode::kImportedVariableUndefined);
+  }
+  {
+    // Test actually using an imported variable
+    auto fork = builder;
+    fork.SetParent(&parent);
+    fork.AppendLine(R"(#EXT-X-DEFINE:IMPORT="IMPORTED")");
+    fork.AppendLine("#EXTINF:9.9,\t");
+    fork.AppendLine("segments/{$IMPORTED}.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segments/HELLO.ts"));
+    fork.ExpectOk();
+  }
+
+  // Variables are not resolved recursively
   builder.AppendLine(R"(#EXT-X-DEFINE:NAME="BAR",VALUE="BAZ")");
   builder.AppendLine(R"(#EXT-X-DEFINE:NAME="FOO",VALUE="{$BAR}")");
   builder.AppendLine("#EXTINF:9.9,\t");
@@ -260,6 +345,40 @@ TEST(HlsMediaPlaylistTest, MultivariantPlaylistTag) {
     fork.AppendLine(tag_line);
     fork.ExpectError(ParseStatusCode::kMediaPlaylistHasMultivariantPlaylistTag);
   }
+}
+
+TEST(HlsMediaPlaylistTest, XIndependentSegmentsTagInParent) {
+  auto parent1 = CreateMultivariantPlaylist({
+      "#EXTM3U",
+      "#EXT-X-INDEPENDENT-SEGMENTS",
+  });
+
+  // Parent value should carryover to media playlist
+  MediaPlaylistTestBuilder builder;
+  builder.SetParent(&parent1);
+  builder.AppendLine("#EXTM3U");
+  builder.ExpectPlaylist(HasIndependentSegments, true);
+  builder.ExpectOk();
+
+  // It's OK for this tag to reappear in the media playlist
+  builder.AppendLine("#EXT-X-INDEPENDENT-SEGMENTS");
+  builder.ExpectOk();
+
+  // Without that tag in the parent, the value depends entirely on its presence
+  // in the child
+  auto parent2 = CreateMultivariantPlaylist({"#EXTM3U"});
+  builder = MediaPlaylistTestBuilder();
+  builder.SetParent(&parent2);
+  builder.AppendLine("#EXTM3U");
+  {
+    auto fork = builder;
+    fork.ExpectPlaylist(HasIndependentSegments, false);
+    fork.ExpectOk();
+  }
+  builder.AppendLine("#EXT-X-INDEPENDENT-SEGMENTS");
+  builder.ExpectPlaylist(HasIndependentSegments, true);
+  builder.ExpectOk();
+  EXPECT_FALSE(parent2.AreSegmentsIndependent());
 }
 
 }  // namespace media::hls

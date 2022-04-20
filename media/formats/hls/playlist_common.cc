@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "media/formats/hls/playlist_common.h"
+
 #include "base/notreached.h"
+#include "media/formats/hls/playlist.h"
 
 namespace media::hls {
 
@@ -11,7 +13,7 @@ types::DecimalInteger CommonParserState::GetVersion() const {
   if (version_tag.has_value()) {
     return version_tag.value().version;
   } else {
-    return 1;
+    return Playlist::kDefaultVersion;
   }
 }
 

@@ -30,10 +30,13 @@ enum class ParseStatusCode : StatusCodeType {
   kPlaylistHasDuplicateTags,
   kPlaylistHasUnsupportedVersion,
   kMediaPlaylistHasMultivariantPlaylistTag,
+  kMultivariantPlaylistHasMediaPlaylistTag,
   kVariableUndefined,
   kVariableDefinedMultipleTimes,
   kImportedVariableInParentlessPlaylist,
   kImportedVariableUndefined,
+  kXStreamInfTagNotFollowedByUri,
+  kVariantMissingStreamInfTag,
 };
 
 struct ParseStatusTraits {

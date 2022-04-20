@@ -13,6 +13,10 @@ namespace media::hls {
 
 class MEDIA_EXPORT Playlist {
  public:
+  // Unless explicitly specified via the `EXT-X-VERSION` tag, the default
+  // playlist version is `1`.
+  static constexpr types::DecimalInteger kDefaultVersion = 1;
+
   Playlist(const Playlist&) = delete;
   Playlist& operator=(const Playlist&) = delete;
 

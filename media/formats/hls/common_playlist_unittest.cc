@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/formats/hls/media_playlist_test_builder.h"
+#include "media/formats/hls/multivariant_playlist_test_builder.h"
 #include "media/formats/hls/parse_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +17,8 @@ class HlsCommonPlaylistTest : public testing::Test {
   using Builder = BuilderT;
 };
 
-using Implementations = testing::Types<MediaPlaylistTestBuilder>;
+using Implementations =
+    testing::Types<MultivariantPlaylistTestBuilder, MediaPlaylistTestBuilder>;
 TYPED_TEST_SUITE(HlsCommonPlaylistTest, Implementations);
 
 }  // namespace
