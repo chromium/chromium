@@ -40,7 +40,10 @@ constexpr char kAuthorizationHeaderPrefix[] = "Bearer ";
 const char* kUrlAllowlist[] = {
     "https://www.googleapis.com/drive/v3/files/",
     "https://www.googleapis.com/upload/drive/v3/files/",
+    // TODO(b/229792620): Remove this URL prefix once web component is updated
+    // with the base URL that force using primary account credential.
     "https://drive.google.com/get_video_info",
+    "https://drive.google.com/u/0/get_video_info",
     "https://translation.googleapis.com/language/translate/v2"};
 
 // Return true if the url matches the allowed URL prefix.
