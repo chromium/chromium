@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

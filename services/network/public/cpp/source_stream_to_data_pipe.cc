@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 
 #include "base/bind.h"
+#include "base/numerics/checked_math.h"
 #include "net/filter/source_stream.h"
 
 namespace network {

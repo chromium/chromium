@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/check.h"
+
 namespace base {
 namespace trace_event {
 

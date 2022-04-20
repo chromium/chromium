@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "build/chromeos_buildflags.h"

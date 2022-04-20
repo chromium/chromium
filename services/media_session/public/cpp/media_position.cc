@@ -4,6 +4,7 @@
 
 #include "services/media_session/public/cpp/media_position.h"
 
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 
 namespace media_session {

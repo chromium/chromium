@@ -5,6 +5,7 @@
 #include "base/task/thread_pool/initialization_util.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "base/cxx17_backports.h"
 #include "base/system/sys_info.h"

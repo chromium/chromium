@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 

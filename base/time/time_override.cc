@@ -4,6 +4,8 @@
 
 #include "base/time/time_override.h"
 
+#include "base/check.h"
+
 namespace base {
 namespace subtle {
 

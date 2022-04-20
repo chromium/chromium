@@ -12,6 +12,7 @@
 
 #include "base/big_endian.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 
 namespace segmentation_platform {

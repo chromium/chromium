@@ -4,6 +4,8 @@
 
 #include "services/service_manager/public/cpp/service_filter.h"
 
+#include "base/check.h"
+
 namespace service_manager {
 
 ServiceFilter::ServiceFilter() = default;

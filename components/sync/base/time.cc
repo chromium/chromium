@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/common/unicode/utypes.h"

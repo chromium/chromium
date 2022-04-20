@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"

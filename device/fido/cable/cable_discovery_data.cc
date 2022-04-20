@@ -6,6 +6,7 @@
 
 #include <cstring>
 
+#include "base/check_op.h"
 #include "base/i18n/string_compare.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

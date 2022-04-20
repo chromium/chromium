@@ -4,6 +4,7 @@
 
 #include "components/update_client/protocol_serializer.h"
 
+#include <cmath>
 #include <string>
 #include <utility>
 #include <vector>

@@ -7,6 +7,7 @@
 #include "base/hash/legacy_hash.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "components/browsing_topics/util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"

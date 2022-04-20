@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cmath>
 
 #include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"

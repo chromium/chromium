@@ -4,6 +4,8 @@
 
 #include "components/apdu/apdu_command.h"
 
+#include "base/check_op.h"
+
 namespace apdu {
 
 namespace {

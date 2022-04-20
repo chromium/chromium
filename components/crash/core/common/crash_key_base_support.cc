@@ -7,6 +7,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "components/crash/core/common/crash_key.h"
 

@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/check_op.h"
 #include "base/sys_byteorder.h"
 #include "crypto/aead.h"
 #include "crypto/sha2.h"

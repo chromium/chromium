@@ -5,6 +5,7 @@
 #include "media/video/h264_level_limits.h"
 
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "media/video/h264_parser.h"
 
 namespace media {

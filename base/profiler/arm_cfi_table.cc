@@ -4,6 +4,7 @@
 
 #include "base/profiler/arm_cfi_table.h"
 
+#include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

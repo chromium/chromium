@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/clamped_math.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 

@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/files/file_util.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "extensions/browser/extension_creator.h"

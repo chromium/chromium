@@ -6,9 +6,11 @@
 #define CC_METRICS_FRAME_SEQUENCE_METRICS_H_
 
 #include <bitset>
+#include <cmath>
 #include <memory>
 
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"

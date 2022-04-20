@@ -10,6 +10,7 @@
 #include <lib/fidl/cpp/interface_handle.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/check.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/buffer_format_util.h"

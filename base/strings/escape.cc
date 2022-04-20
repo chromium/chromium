@@ -4,6 +4,7 @@
 
 #include "base/strings/escape.h"
 
+#include "base/check_op.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"

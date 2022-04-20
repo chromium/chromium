@@ -4,6 +4,7 @@
 
 #include "components/cast_streaming/public/rpc_call_message_handler.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"

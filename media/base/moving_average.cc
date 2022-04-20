@@ -5,6 +5,9 @@
 #include "media/base/moving_average.h"
 
 #include <algorithm>
+#include <cmath>
+
+#include "base/check_op.h"
 
 namespace media {
 
