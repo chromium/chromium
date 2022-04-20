@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/browser/speech/tts_controller_impl.h"
@@ -285,6 +286,54 @@ class ReportQueryView : public views::Button {
 
 BEGIN_METADATA(ReportQueryView, views::Button)
 END_METADATA
+
+// The lifetime of instances of this class is manually bound to the lifetime of
+// the associated TtsUtterance. See OnTtsEvent.
+class QuickAnswersUtteranceEventDelegate
+    : public content::UtteranceEventDelegate {
+ public:
+  QuickAnswersUtteranceEventDelegate() = default;
+  ~QuickAnswersUtteranceEventDelegate() override = default;
+
+  // UtteranceEventDelegate methods:
+  void OnTtsEvent(content::TtsUtterance* utterance,
+                  content::TtsEventType event_type,
+                  int char_index,
+                  int char_length,
+                  const std::string& error_message) override {
+    // For quick answers, the TTS events of interest are START, END, and ERROR.
+    switch (event_type) {
+      case content::TTS_EVENT_START:
+        quick_answers::RecordTtsEngineEvent(
+            quick_answers::TtsEngineEvent::TTS_EVENT_START);
+        break;
+      case content::TTS_EVENT_END:
+        quick_answers::RecordTtsEngineEvent(
+            quick_answers::TtsEngineEvent::TTS_EVENT_END);
+        break;
+      case content::TTS_EVENT_ERROR:
+        VLOG(1) << __func__ << ": " << error_message;
+        quick_answers::RecordTtsEngineEvent(
+            quick_answers::TtsEngineEvent::TTS_EVENT_ERROR);
+        break;
+      case content::TTS_EVENT_WORD:
+      case content::TTS_EVENT_SENTENCE:
+      case content::TTS_EVENT_MARKER:
+      case content::TTS_EVENT_INTERRUPTED:
+      case content::TTS_EVENT_CANCELLED:
+      case content::TTS_EVENT_PAUSE:
+      case content::TTS_EVENT_RESUME:
+        // Group the remaining TTS events that aren't of interest together
+        // into an unspecified "other" category.
+        quick_answers::RecordTtsEngineEvent(
+            quick_answers::TtsEngineEvent::TTS_EVENT_OTHER);
+        break;
+    }
+
+    if (utterance->IsFinished())
+      delete this;
+  }
+};
 
 }  // namespace
 
@@ -693,6 +742,7 @@ void QuickAnswersView::OnPhoneticsAudioButtonPressed(
   // TtsController will use the default TTS engine if the Google TTS engine
   // is not available.
   tts_utterance->SetEngineId(kGoogleTtsEngineId);
+  tts_utterance->SetEventDelegate(new QuickAnswersUtteranceEventDelegate());
 
   tts_controller->SpeakOrEnqueue(std::move(tts_utterance));
 }

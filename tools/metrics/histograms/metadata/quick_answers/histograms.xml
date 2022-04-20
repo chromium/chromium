@@ -220,6 +220,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickAnswers.TextToSpeech.EngineEvent"
+    enum="QuickAnswersTextToSpeechEngineEvent" expires_after="2023-03-21">
+  <owner>updowndota@chromium.org</owner>
+  <owner>angelaxiao@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Reports the various TTS engine events received by the quick answers TTS
+    utterance event delegate. Records every time TTS audio is used in quick
+    answers results. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="QuickAnswers.V2.Consent" units="impressions"
     expires_after="2022-09-01">
   <owner>updowndota@chromium.org</owner>
