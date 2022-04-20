@@ -120,6 +120,7 @@ class Mediator final
  private:
   void SetFastPairState(bool is_enabled);
   void BindToCrosBluetoothConfig();
+  void CancelPairing();
 
   bool has_at_least_one_discovery_session_ = false;
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;

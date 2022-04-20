@@ -192,12 +192,12 @@ FastPairPairerImpl::FastPairPairerImpl(
 }
 
 FastPairPairerImpl::~FastPairPairerImpl() {
-  std::string device_address = device_->classic_address().value();
-  device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
-  if (bt_device) {
-    bt_device->CancelPairing();
-  }
   adapter_->RemovePairingDelegate(this);
+  device::BluetoothDevice* bt_device = nullptr;
+  if (device_->classic_address())
+    bt_device = adapter_->GetDevice(device_->classic_address().value());
+  if (bt_device)
+    bt_device->CancelPairing();
 }
 
 void FastPairPairerImpl::StartPairing() {

@@ -152,6 +152,14 @@ void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
   // If we already have a discovery session via the Settings pairing dialog,
   // don't start Fast Pair scanning.
   SetFastPairState(is_enabled && !has_at_least_one_discovery_session_);
+
+  // Dismiss all in-progress handshakes which will interfere with discovering
+  // devices later.
+  // TODO(b/229663296): We cancel pairing mid-pair to prevent a crash, but we
+  // shouldn't cancel pairing if pairer_broker_->IsPairing() is true.
+  if (!is_enabled) {
+    CancelPairing();
+  }
 }
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
@@ -182,13 +190,14 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
   scanner_broker_->StopScanning(Protocol::kFastPairInitial);
 
-  // Clear all existing handshakes.
-  FastPairHandshakeLookup::GetInstance()->Clear();
-
-  pairer_broker_->StopPairing();
-
   // Dismiss all UI notifications.
   ui_broker_->RemoveNotifications();
+}
+
+void Mediator::CancelPairing() {
+  QP_LOG(INFO) << __func__ << ": Clearing handshakes and pairiers.";
+  FastPairHandshakeLookup::GetInstance()->Clear();
+  pairer_broker_->StopPairing();
 }
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
@@ -292,6 +301,9 @@ void Mediator::OnAdapterStateChanged() {
       chromeos::bluetooth_config::mojom::BluetoothSystemState::kDisabling) {
     QP_LOG(INFO) << __func__ << ": Adapter disabling, disabling Fast Pair.";
     SetFastPairState(false);
+    // In addition to stopping scanning, we cancel pairing here to prevent a
+    // crash that occurs mid-pair when Bluetooth is disabling.
+    CancelPairing();
   }
 }
 
@@ -305,10 +317,16 @@ void Mediator::OnHasAtLeastOneDiscoverySessionChanged(
 
   // If we have a discovery session via the Settings pairing dialog, stop
   // Fast Pair scanning. Else, start/stop scanning according to the feature
-  // status tracker. Stopping scanning stops all GATT connections that
-  // haven't completed their handshake.
+  // status tracker.
   SetFastPairState(!has_at_least_one_discovery_session_ &&
                    feature_status_tracker_->IsFastPairEnabled());
+
+  // If we haven't begun pairing, dismiss all in-progress handshakes which
+  // will interfere with the discovery session. Note that V1 device Fast Pair
+  // via the Settings pairing dialog, so we also check for that case here.
+  if (has_at_least_one_discovery_session_ && !pairer_broker_->IsPairing()) {
+    CancelPairing();
+  }
 }
 
 }  // namespace quick_pair
