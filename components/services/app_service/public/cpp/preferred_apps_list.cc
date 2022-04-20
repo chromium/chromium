@@ -10,7 +10,6 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "url/gurl.h"
@@ -42,17 +41,15 @@ void PreferredAppsList::Init(PreferredApps& preferred_apps) {
 
 apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
     const std::string& app_id,
-    const apps::mojom::IntentFilterPtr& mojom_intent_filter) {
+    const IntentFilterPtr& intent_filter) {
   auto replaced_app_preferences = apps::mojom::ReplacedAppPreferences::New();
 
-  if (EntryExists(app_id, mojom_intent_filter)) {
+  if (EntryExists(app_id, intent_filter)) {
     return replaced_app_preferences;
   }
 
   auto iter = preferred_apps_.begin();
   auto& replaced_preference_map = replaced_app_preferences->replaced_preference;
-  auto intent_filter =
-      ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter);
 
   // Go through the list and see if there are overlapped intent filters in the
   // list. If there is, add this into the replaced_app_preferences and remove it
@@ -83,20 +80,17 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
   return replaced_app_preferences;
 }
 
-std::vector<apps::mojom::IntentFilterPtr> PreferredAppsList::DeletePreferredApp(
+IntentFilters PreferredAppsList::DeletePreferredApp(
     const std::string& app_id,
-    const apps::mojom::IntentFilterPtr& mojom_intent_filter) {
+    const IntentFilterPtr& intent_filter) {
   // Go through the list and see if there are overlapped intent filters with the
   // same app id in the list. If there are, delete the entry.
-  std::vector<apps::mojom::IntentFilterPtr> out;
-  auto intent_filter =
-      ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter);
+  IntentFilters out;
   auto iter = preferred_apps_.begin();
   while (iter != preferred_apps_.end()) {
     if ((*iter)->app_id == app_id &&
         apps_util::FiltersHaveOverlap((*iter)->intent_filter, intent_filter)) {
-      out.push_back(
-          ConvertIntentFilterToMojomIntentFilter((*iter)->intent_filter));
+      out.push_back(std::move((*iter)->intent_filter));
       iter = preferred_apps_.erase(iter);
     } else {
       iter++;
@@ -112,16 +106,14 @@ std::vector<apps::mojom::IntentFilterPtr> PreferredAppsList::DeletePreferredApp(
   return out;
 }
 
-std::vector<apps::mojom::IntentFilterPtr> PreferredAppsList::DeleteAppId(
-    const std::string& app_id) {
-  std::vector<apps::mojom::IntentFilterPtr> out;
+IntentFilters PreferredAppsList::DeleteAppId(const std::string& app_id) {
+  IntentFilters out;
 
   auto iter = preferred_apps_.begin();
   // Go through the list and delete the entry with requested app_id.
   while (iter != preferred_apps_.end()) {
     if ((*iter)->app_id == app_id) {
-      out.push_back(
-          ConvertIntentFilterToMojomIntentFilter((*iter)->intent_filter));
+      out.push_back(std::move((*iter)->intent_filter));
       iter = preferred_apps_.erase(iter);
     } else {
       iter++;
@@ -135,16 +127,15 @@ std::vector<apps::mojom::IntentFilterPtr> PreferredAppsList::DeleteAppId(
   return out;
 }
 
-std::vector<apps::mojom::IntentFilterPtr>
-PreferredAppsList::DeleteSupportedLinks(const std::string& app_id) {
-  std::vector<apps::mojom::IntentFilterPtr> out;
+IntentFilters PreferredAppsList::DeleteSupportedLinks(
+    const std::string& app_id) {
+  IntentFilters out;
 
   auto iter = preferred_apps_.begin();
   while (iter != preferred_apps_.end()) {
     if ((*iter)->app_id == app_id &&
         apps_util::IsSupportedLinkForApp(app_id, (*iter)->intent_filter)) {
-      out.push_back(
-          ConvertIntentFilterToMojomIntentFilter((*iter)->intent_filter));
+      out.push_back(std::move((*iter)->intent_filter));
       iter = preferred_apps_.erase(iter);
     } else {
       iter++;
@@ -201,7 +192,7 @@ void PreferredAppsList::ApplyBulkUpdate(apps::PreferredAppChangesPtr changes) {
     const std::string& app_id = added_filters.first;
     bool has_supported_link = false;
     for (auto& filter : added_filters.second) {
-      if (EntryExists(app_id, ConvertIntentFilterToMojomIntentFilter(filter))) {
+      if (EntryExists(app_id, filter)) {
         continue;
       }
       has_supported_link = has_supported_link ||
@@ -272,13 +263,10 @@ absl::optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
 }
 
 base::flat_set<std::string> PreferredAppsList::FindPreferredAppsForFilters(
-    const std::vector<apps::mojom::IntentFilterPtr>& mojom_intent_filters)
-    const {
+    const IntentFilters& intent_filters) const {
   base::flat_set<std::string> app_ids;
 
-  for (auto& mojom_intent_filter : mojom_intent_filters) {
-    auto intent_filter =
-        ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter);
+  for (auto& intent_filter : intent_filters) {
     for (auto& entry : preferred_apps_) {
       if (apps_util::FiltersHaveOverlap(intent_filter, entry->intent_filter)) {
         app_ids.insert(entry->app_id);
@@ -290,11 +278,8 @@ base::flat_set<std::string> PreferredAppsList::FindPreferredAppsForFilters(
   return app_ids;
 }
 
-bool PreferredAppsList::EntryExists(
-    const std::string& app_id,
-    const apps::mojom::IntentFilterPtr& mojom_intent_filter) {
-  auto intent_filter =
-      ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter);
+bool PreferredAppsList::EntryExists(const std::string& app_id,
+                                    const IntentFilterPtr& intent_filter) {
   for (auto& entry : preferred_apps_) {
     if (app_id == entry->app_id && *intent_filter == *entry->intent_filter) {
       return true;

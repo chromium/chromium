@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -39,22 +40,19 @@ class PreferredAppsList : public PreferredAppsListHandle {
   // |intent_filters|.
   apps::mojom::ReplacedAppPreferencesPtr AddPreferredApp(
       const std::string& app_id,
-      const apps::mojom::IntentFilterPtr& intent_filter);
+      const IntentFilterPtr& intent_filter);
 
   // Delete a preferred app for an |intent_filter| with the same |app_id|.
   // Returns the deleted filters, if any.
-  std::vector<apps::mojom::IntentFilterPtr> DeletePreferredApp(
-      const std::string& app_id,
-      const apps::mojom::IntentFilterPtr& intent_filter);
+  IntentFilters DeletePreferredApp(const std::string& app_id,
+                                   const IntentFilterPtr& intent_filter);
 
   // Delete all settings for an |app_id|. Returns the deleted filters, if any.
-  std::vector<apps::mojom::IntentFilterPtr> DeleteAppId(
-      const std::string& app_id);
+  IntentFilters DeleteAppId(const std::string& app_id);
 
   // Deletes all stored supported link preferences for an |app_id|.
   // Returns the deleted filters, if any.
-  std::vector<apps::mojom::IntentFilterPtr> DeleteSupportedLinks(
-      const std::string& app_id);
+  IntentFilters DeleteSupportedLinks(const std::string& app_id);
 
   // Applies all of the |changes| in a single bulk update. This method is
   // intended to only be called from |OnPreferredAppsChanged| App Service
@@ -76,13 +74,12 @@ class PreferredAppsList : public PreferredAppsListHandle {
   absl::optional<std::string> FindPreferredAppForIntent(
       const IntentPtr& intent) const override;
   base::flat_set<std::string> FindPreferredAppsForFilters(
-      const std::vector<apps::mojom::IntentFilterPtr>& intent_filters)
-      const override;
+      const IntentFilters& intent_filters) const override;
 
  private:
   // Check if the entry already exists in the preferred app list.
   bool EntryExists(const std::string& app_id,
-                   const apps::mojom::IntentFilterPtr& intent_filter);
+                   const IntentFilterPtr& intent_filter);
 
   PreferredApps preferred_apps_;
   bool initialized_ = false;

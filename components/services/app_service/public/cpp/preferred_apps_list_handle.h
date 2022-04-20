@@ -54,8 +54,7 @@ class PreferredAppsListHandle {
   // Returns a list of app IDs that are set as preferred app to an intent
   // filter in the |intent_filters| list.
   virtual base::flat_set<std::string> FindPreferredAppsForFilters(
-      const std::vector<apps::mojom::IntentFilterPtr>& intent_filters)
-      const = 0;
+      const IntentFilters& intent_filters) const = 0;
 
   class Observer : public base::CheckedObserver {
    public:

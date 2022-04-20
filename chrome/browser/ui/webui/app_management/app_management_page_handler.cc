@@ -116,23 +116,20 @@ bool CanShowDefaultAppAssociationsUi() {
 }
 
 // Returns a list of intent filters that support http/https given an app ID.
-std::vector<apps::mojom::IntentFilterPtr> GetSupportedLinkIntentFilters(
-    Profile* profile,
-    const std::string& app_id) {
-  std::vector<apps::mojom::IntentFilterPtr> intent_filters;
+apps::IntentFilters GetSupportedLinkIntentFilters(Profile* profile,
+                                                  const std::string& app_id) {
+  apps::IntentFilters intent_filters;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .ForOneApp(
-          app_id, [&app_id, &intent_filters](const apps::AppUpdate& update) {
-            if (update.Readiness() == apps::Readiness::kReady) {
-              for (auto& filter : update.IntentFilters()) {
-                if (apps_util::IsSupportedLinkForApp(app_id, filter)) {
-                  intent_filters.emplace_back(
-                      apps::ConvertIntentFilterToMojomIntentFilter(filter));
-                }
-              }
-            }
-          });
+      .ForOneApp(app_id,
+                 [&app_id, &intent_filters](const apps::AppUpdate& update) {
+                   if (update.Readiness() == apps::Readiness::kReady) {
+                     for (auto& filter : update.IntentFilters()) {
+                       if (apps_util::IsSupportedLinkForApp(app_id, filter))
+                         intent_filters.emplace_back(std::move(filter));
+                     }
+                   }
+                 });
   return intent_filters;
 }
 
@@ -140,9 +137,8 @@ std::vector<apps::mojom::IntentFilterPtr> GetSupportedLinkIntentFilters(
 std::vector<std::string> GetSupportedLinks(Profile* profile,
                                            const std::string& app_id) {
   std::set<std::string> supported_links;
-  auto mojom_intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
-  for (auto& mojom_filter : mojom_intent_filters) {
-    auto filter = apps::ConvertMojomIntentFilterToIntentFilter(mojom_filter);
+  auto intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
+  for (auto& filter : intent_filters) {
     for (const auto& link : filter->GetSupportedLinksForAppManagement()) {
       supported_links.insert(link);
     }
