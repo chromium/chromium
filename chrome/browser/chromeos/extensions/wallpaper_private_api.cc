@@ -245,11 +245,13 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
 
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     // When the sync settings categorization is on, the wallpaper sync status is
-    // stored in the kSyncOsWallpaper pref. The pref value essentially means
-    // "themes sync is on" && "apps sync is on".
+    // stored in the kSyncOsWallpaper pref.
+    syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
+    bool all_os_types_enabled = user_settings->IsSyncAllOsTypesEnabled();
     bool os_wallpaper_sync_enabled = profile->GetPrefs()->GetBoolean(
         chromeos::settings::prefs::kSyncOsWallpaper);
-    dict->SetBoolKey(kSyncThemes, os_wallpaper_sync_enabled);
+    dict->SetBoolKey(kSyncThemes,
+                     all_os_types_enabled || os_wallpaper_sync_enabled);
     Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
     return;
   }

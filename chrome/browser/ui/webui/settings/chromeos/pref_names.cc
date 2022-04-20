@@ -12,7 +12,11 @@ namespace prefs {
 // separately from the other OS sync preferences because it's an edge case;
 // wallpaper does not have its own ModelType, so it cannot be part of
 // UserSelectableOsType like the other OS sync types.
-// TODO(https://crbug.com/967987): Break this dependency.
+//
+// Please note that this is only relevant if IsSyncAllOsTypesEnabled() is false,
+// so callers have to check both this pref and IsSyncAllOsTypesEnabled() to
+// verify whether this wallpaper sync is enabled.
+// TODO(https://crbug.com/1318106): Create a helper method that checks both.
 const char kSyncOsWallpaper[] = "sync.os_wallpaper";
 
 }  // namespace prefs

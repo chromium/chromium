@@ -571,9 +571,10 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
   if (!sync_service)
     return false;
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    // If in client use profile otherwise use GetUserPrefServiceSyncable.
-    return profile->GetPrefs()->GetBoolean(
-        chromeos::settings::prefs::kSyncOsWallpaper);
+    syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
+    return user_settings->IsSyncAllOsTypesEnabled() ||
+           profile->GetPrefs()->GetBoolean(
+               chromeos::settings::prefs::kSyncOsWallpaper);
   }
   return sync_service->CanSyncFeatureStart() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
