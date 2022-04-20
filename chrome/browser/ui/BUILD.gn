@@ -224,8 +224,6 @@ static_library("ui") {
     "webui/autofill_and_password_manager_internals/internals_ui_handler.h",
     "webui/autofill_and_password_manager_internals/password_manager_internals_ui.cc",
     "webui/autofill_and_password_manager_internals/password_manager_internals_ui.h",
-    "webui/chrome_untrusted_web_ui_configs.cc",
-    "webui/chrome_untrusted_web_ui_configs.h",
     "webui/chrome_web_ui_controller_factory.cc",
     "webui/chrome_web_ui_controller_factory.h",
     "webui/components/components_handler.cc",
@@ -414,6 +412,7 @@ static_library("ui") {
     "//chrome/browser/resources/omnibox:resources",
     "//chrome/browser/resources/usb_internals:resources",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/download_shelf:mojo_bindings",
     "//chrome/browser/ui/webui/downloads:mojo_bindings",
@@ -665,6 +664,7 @@ static_library("ui") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/profiling_host",
+    "//chrome/browser/ui/webui:configs",
   ]
 
   if (enable_vr && is_win) {
@@ -3024,7 +3024,6 @@ static_library("ui") {
       "//ash/webui/diagnostics_ui",
       "//ash/webui/eche_app_ui",
       "//ash/webui/file_manager:file_manager_ui",
-      "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//ash/webui/firmware_update_ui",
       "//ash/webui/help_app_ui",
       "//ash/webui/help_app_ui/search:mojo_bindings",
