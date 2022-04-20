@@ -208,6 +208,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 // Temporarily insulate Chrome pixel tests from Skia's edge AA -> non-AA checks.
 #define SK_USE_LEGACY_EDGE_AA_DOWNGRADE
 
+// Temporarily insulate Chrome layout tests from change to HW stroking
+#define SK_LEGACY_LINE_TESSELLATION
+
 // Max. verb count for paths rendered by the edge-AA tessellating path renderer.
 #define GR_AA_TESSELLATOR_MAX_VERB_COUNT 100
 
