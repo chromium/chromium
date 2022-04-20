@@ -42,10 +42,21 @@ class DriverContext:
         "caffeinate",
         "-d",  # Prevent the display from sleeping.
     ])
+
+    # Launch a power_sampler whose job is only to simulate an active user. This
+    # is applicable to both profiling and measuring so should always be done.
+    power_sampler_args = [
+        self._power_sample_path, "--no-samplers", "--simulate-user-active"
+    ]
+    self._power_sampler_process = subprocess.Popen(power_sampler_args,
+                                                   stdout=subprocess.PIPE,
+                                                   stdin=subprocess.PIPE)
+
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
     utils.TerminateProcess(self._caffeinate_process)
+    utils.TerminateProcess(self._power_sampler_process)
 
   def SetMainDisplayBrightness(self, brightness_level: int):
     # This function imitates the open-source "brightness" tool at
@@ -179,7 +190,7 @@ class DriverContext:
                                               stdin=subprocess.PIPE)
       power_sampler_battery_args = [
           self._power_sample_path, "--sample-on-notification",
-          "--samplers=battery", "--simulate-user-active",
+          "--samplers=battery",
           f"--timeout={int(scenario_driver.duration.total_seconds())}",
           f"--json-output-file={power_sampler_battery_output}"
       ]
@@ -188,8 +199,6 @@ class DriverContext:
           stdout=subprocess.PIPE,
           stdin=subprocess.PIPE)
 
-      # No need to simulate the user is active from both power_sampler
-      # instances.
       power_sampler_args = [
           self._power_sample_path, "--sample-interval=10",
           "--samplers=smc,user_idle_level,main_display",
