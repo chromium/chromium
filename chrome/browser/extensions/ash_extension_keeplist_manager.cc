@@ -8,9 +8,11 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/hosted_app_util.h"
 #include "chrome/browser/extensions/extension_keeplist_ash.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/app_constants/constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -66,6 +68,12 @@ bool AshExtensionKeeplistManager::ShouldDisable(
   if (extension->is_platform_app() &&
       crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
       !ExtensionAppRunsInAsh(extension->id())) {
+    return true;
+  }
+
+  if (extension->is_hosted_app() &&
+      extension->id() != app_constants::kChromeAppId &&
+      crosapi::IsStandaloneBrowserHostedAppsEnabled()) {
     return true;
   }
 

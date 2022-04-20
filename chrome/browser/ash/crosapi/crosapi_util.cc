@@ -12,10 +12,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
+#include "chrome/browser/ash/crosapi/hosted_app_util.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
@@ -422,7 +422,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->standalone_browser_is_only_browser = !IsAshWebBrowserEnabled();
   params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
-  params->publish_hosted_apps = apps::ShouldHostedAppsRunInLacros();
+  params->publish_hosted_apps = crosapi::IsStandaloneBrowserHostedAppsEnabled();
 
   // Keep-alive mojom API is now used by the current ash-chrome.
   params->initial_keep_alive =

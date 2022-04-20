@@ -26,7 +26,6 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/hosted_app_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
@@ -727,7 +727,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
   //  Lacros.
   if (extension->is_hosted_app() &&
       extension->id() != app_constants::kChromeAppId &&
-      apps::ShouldHostedAppsRunInLacros()) {
+      crosapi::IsStandaloneBrowserHostedAppsEnabled()) {
     return false;
   }
 
