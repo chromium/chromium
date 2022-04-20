@@ -6,49 +6,14 @@
 
 import os
 import argparse
-import logging
-import platform
-import subprocess
 import sys
 
-logging.basicConfig(level=logging.INFO)
+SRC_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+sys.path.append(os.path.join(SRC_DIR, 'testing', 'scripts'))
 
-# ACL might be explicitly set or inherited.
-CORRECT_ACL_VARIANTS = [
-    'APPLICATION PACKAGE AUTHORITY' \
-    '\\ALL RESTRICTED APPLICATION PACKAGES:(OI)(CI)(RX)', \
-    'APPLICATION PACKAGE AUTHORITY' \
-    '\\ALL RESTRICTED APPLICATION PACKAGES:(I)(OI)(CI)(RX)'
-]
-
-
-def set_lpac_acls(acl_dir):
-  """Sets LPAC ACLs on a directory. Windows 10 only."""
-  if platform.release() != '10':
-    return
-  try:
-    existing_acls = subprocess.check_output(['icacls', acl_dir],
-                                            stderr=subprocess.STDOUT,
-                                            universal_newlines=True)
-  except subprocess.CalledProcessError as e:
-    logging.error('Failed to retrieve existing ACLs for directory %s', acl_dir)
-    logging.error('Command output: %s', e.output)
-    sys.exit(e.returncode)
-  acls_correct = False
-  for acl in CORRECT_ACL_VARIANTS:
-    if acl in existing_acls:
-      acls_correct = True
-  if not acls_correct:
-    try:
-      existing_acls = subprocess.check_output(
-          ['icacls', acl_dir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)'],
-          stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-      logging.error(
-          'Failed to retrieve existing ACLs for directory %s', acl_dir)
-      logging.error('Command output: %s', e.output)
-      sys.exit(e.returncode)
+import common
 
 
 def main():
@@ -61,7 +26,7 @@ def main():
   #  parser.add_argument('--fail', required=True, help='Argument to fail.')
   args = parser.parse_args()
 
-  set_lpac_acls(os.path.abspath(args.dir))
+  common.set_lpac_acls(os.path.abspath(args.dir))
   if args.stamp:
     open(args.stamp, 'w').close()  # Update mtime on stamp file.
 

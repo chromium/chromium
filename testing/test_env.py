@@ -39,7 +39,8 @@ def get_sandbox_env(env):
 def trim_cmd(cmd):
   """Removes internal flags from cmd since they're just used to communicate from
   the host machine to this script running on the swarm slaves."""
-  sanitizers = ['asan', 'lsan', 'msan', 'tsan', 'coverage-continuous-mode']
+  sanitizers = ['asan', 'lsan', 'msan', 'tsan', 'coverage-continuous-mode',
+                'skip-set-lpac-acls']
   internal_flags = frozenset('--%s=%d' % (name, value)
                              for name in sanitizers
                              for value in [0, 1])
@@ -346,6 +347,12 @@ def run_executable(cmd, env, stdoutfile=None):
   # Enable clang code coverage continuous mode.
   if '--coverage-continuous-mode=1' in cmd:
     extra_env.update(get_coverage_continuous_mode_env(env))
+
+  if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        'scripts'))
+    import common
+    common.set_lpac_acls(ROOT_DIR, is_test_script=True)
 
   cmd = trim_cmd(cmd)
 
