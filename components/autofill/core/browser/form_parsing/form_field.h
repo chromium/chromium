@@ -50,6 +50,7 @@ class FormField {
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       const LanguageCode& page_language,
       bool is_form_tag,
+      PredictionSource prediction_source,
       LogManager* log_manager = nullptr);
 
   // Looks for a promo code field in |fields|. Each field has a derived unique
@@ -58,6 +59,7 @@ class FormField {
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       const LanguageCode& page_language,
       bool is_form_tag,
+      PredictionSource prediction_source,
       LogManager* log_manager = nullptr);
 
 #if defined(UNIT_TEST)
@@ -137,6 +139,7 @@ class FormField {
   typedef std::unique_ptr<FormField> ParseFunction(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
+      PredictionSource prediction_source,
       LogManager* log_manager);
 
   static bool ParseFieldSpecificsWithNewPatterns(
@@ -189,7 +192,8 @@ class FormField {
                                   const std::vector<AutofillField*>& fields,
                                   FieldCandidatesMap* field_candidates,
                                   const LanguageCode& page_language,
-                                  LogManager* log_manager = nullptr);
+                                  PredictionSource prediction_source,
+                                  LogManager* log_manager);
 };
 
 }  // namespace autofill

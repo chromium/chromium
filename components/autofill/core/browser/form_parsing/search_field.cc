@@ -12,12 +12,14 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> SearchField::Parse(AutofillScanner* scanner,
-                                              const LanguageCode& page_language,
-                                              LogManager* log_manager) {
+std::unique_ptr<FormField> SearchField::Parse(
+    AutofillScanner* scanner,
+    const LanguageCode& page_language,
+    PredictionSource prediction_source,
+    LogManager* log_manager) {
   AutofillField* field;
   base::span<const MatchPatternRef> patterns =
-      GetMatchPatterns(SEARCH_TERM, page_language);
+      GetMatchPatterns(SEARCH_TERM, page_language, prediction_source);
 
   if (ParseFieldSpecifics(scanner, kSearchTermRe,
                           kDefaultMatchParamsWith<MatchFieldType::kSearch,

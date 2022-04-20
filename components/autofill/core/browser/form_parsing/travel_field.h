@@ -21,6 +21,7 @@ class TravelField : public FormField {
 
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
+                                          PredictionSource prediction_source,
                                           LogManager* log_manager);
 
  protected:

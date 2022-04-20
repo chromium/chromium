@@ -20,7 +20,9 @@ class PriceFieldTest : public FormFieldTest {
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("en")) override {
-    return PriceField::Parse(scanner, page_language, nullptr);
+    return PriceField::Parse(scanner, page_language,
+                             PredictionSource::kDefaultHeuristics,
+                             /*log_manager=*/nullptr);
   }
 };
 

@@ -82,12 +82,12 @@ class MatchPatternRef {
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,
     absl::optional<LanguageCode> language,
-    PredictionSource pattern_set = PredictionSource::kDefaultHeuristics);
+    PredictionSource prediction_source);
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     ServerFieldType type,
     absl::optional<LanguageCode> language,
-    PredictionSource pattern_set = PredictionSource::kDefaultHeuristics);
+    PredictionSource prediction_source);
 
 }  // namespace autofill
 

@@ -23,7 +23,9 @@ class AddressFieldTest : public FormFieldTest {
  protected:
   std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                    const LanguageCode& page_language) override {
-    return AddressField::Parse(scanner, page_language, nullptr);
+    return AddressField::Parse(scanner, page_language,
+                               PredictionSource::kDefaultHeuristics,
+                               /*log_manager=*/nullptr);
   }
 };
 

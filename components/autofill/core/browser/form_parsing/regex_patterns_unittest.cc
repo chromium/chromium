@@ -122,15 +122,18 @@ TEST_F(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   // The expected patterns are the patterns of all languages for `kSomeName`.
   std::vector<MatchPatternRef> expected;
   for (const std::string& lang : kLanguagesOfPattern) {
-    const auto& patterns = GetMatchPatterns(kSomeName, LanguageCode(lang));
+    const auto& patterns = GetMatchPatterns(
+        kSomeName, LanguageCode(lang), PredictionSource::kDefaultHeuristics);
     expected.insert(expected.end(), patterns.begin(), patterns.end());
   }
   base::EraseIf(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt,
+                               PredictionSource::kDefaultHeuristics),
               UnorderedElementsAreArray(expected));
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt,
+                               PredictionSource::kDefaultHeuristics),
               Each(Not(IsSupplementary)));
 }
 
@@ -139,8 +142,11 @@ TEST_F(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
 TEST_F(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   const LanguageCode kNonexistingLanguage("foo");
-  EXPECT_THAT(GetMatchPatterns(kSomeName, kNonexistingLanguage),
-              ElementsAreArray(GetMatchPatterns(kSomeName, absl::nullopt)));
+  EXPECT_THAT(
+      GetMatchPatterns(kSomeName, kNonexistingLanguage,
+                       PredictionSource::kDefaultHeuristics),
+      ElementsAreArray(GetMatchPatterns(kSomeName, absl::nullopt,
+                                        PredictionSource::kDefaultHeuristics)));
 }
 
 // Tests that for a given pattern name, the non-English languages are
@@ -148,8 +154,10 @@ TEST_F(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
 TEST_F(RegexPatternsTest,
        EnglishPatternsAreAddedToOtherLanguagesAsSupplementaryPatterns) {
   const std::string kSomeName = "ADDRESS_LINE_1";
-  auto de_patterns = GetMatchPatterns(kSomeName, LanguageCode("de"));
-  auto en_patterns = GetMatchPatterns(kSomeName, LanguageCode("en"));
+  auto de_patterns = GetMatchPatterns(kSomeName, LanguageCode("de"),
+                                      PredictionSource::kDefaultHeuristics);
+  auto en_patterns = GetMatchPatterns(kSomeName, LanguageCode("en"),
+                                      PredictionSource::kDefaultHeuristics);
   ASSERT_FALSE(de_patterns.empty());
   ASSERT_FALSE(en_patterns.empty());
 

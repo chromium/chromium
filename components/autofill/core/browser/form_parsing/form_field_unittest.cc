@@ -129,8 +129,10 @@ TEST(FormFieldTest, ParseFormFields) {
   // Does not parse since there are only field and it's checkable.
   // An empty page_language means the language is unknown and patterns of all
   // languages are used.
-  EXPECT_TRUE(
-      FormField::ParseFormFields(fields, LanguageCode(""), true).empty());
+  EXPECT_TRUE(FormField::ParseFormFields(
+                  fields, LanguageCode(""), /*is_form_tag=*/true,
+                  PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr)
+                  .empty());
 
   // reset |is_checkable| to false.
   field_data.check_status = FormFieldData::CheckStatus::kNotCheckable;
@@ -139,8 +141,11 @@ TEST(FormFieldTest, ParseFormFields) {
   fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // Parse a single address line 1 field.
-  ASSERT_EQ(0u,
-            FormField::ParseFormFields(fields, LanguageCode(""), true).size());
+  ASSERT_EQ(0u, FormField::ParseFormFields(fields, LanguageCode(""),
+                                           /*is_form_tag=*/true,
+                                           PredictionSource::kDefaultHeuristics,
+                                           /*log_manager=*/nullptr)
+                    .size());
 
   // Parses address line 1 and 2.
   field_data.label = u"Address line2";
@@ -149,8 +154,11 @@ TEST(FormFieldTest, ParseFormFields) {
 
   // An empty page_language means the language is unknown and patterns of
   // all languages are used.
-  ASSERT_EQ(0u,
-            FormField::ParseFormFields(fields, LanguageCode(""), true).size());
+  ASSERT_EQ(0u, FormField::ParseFormFields(fields, LanguageCode(""),
+                                           /*is_form_tag=*/true,
+                                           PredictionSource::kDefaultHeuristics,
+                                           /*log_manager=*/nullptr)
+                    .size());
 }
 
 // Test that the minimum number of required fields for the heuristics considers
@@ -171,8 +179,11 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
   // Don't parse forms with 2 fields.
   // An empty page_language means the language is unknown and patterns of all
   // languages are used.
-  EXPECT_EQ(0u,
-            FormField::ParseFormFields(fields, LanguageCode(""), true).size());
+  EXPECT_EQ(0u, FormField::ParseFormFields(fields, LanguageCode(""),
+                                           /*is_form_tag=*/true,
+                                           PredictionSource::kDefaultHeuristics,
+                                           /*log_manager=*/nullptr)
+                    .size());
 
   field_data.label = u"Search";
   field_data.unique_renderer_id = MakeFieldRendererId();
@@ -185,8 +196,11 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
     feature_list.InitAndDisableFeature(kAutofillFixFillableFieldTypes);
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
-    EXPECT_EQ(
-        3u, FormField::ParseFormFields(fields, LanguageCode(""), true).size());
+    EXPECT_EQ(3u,
+              FormField::ParseFormFields(
+                  fields, LanguageCode(""), /*is_form_tag=*/true,
+                  PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr)
+                  .size());
   }
 
   // With the fix, we don't parse the form because search fields are not
@@ -196,10 +210,14 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
     feature_list.InitAndEnableFeature(kAutofillFixFillableFieldTypes);
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
-    const FieldCandidatesMap field_candidates_map =
-        FormField::ParseFormFields(fields, LanguageCode(""), true);
-    EXPECT_EQ(
-        0u, FormField::ParseFormFields(fields, LanguageCode(""), true).size());
+    const FieldCandidatesMap field_candidates_map = FormField::ParseFormFields(
+        fields, LanguageCode(""), /*is_form_tag=*/true,
+        PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr);
+    EXPECT_EQ(0u,
+              FormField::ParseFormFields(
+                  fields, LanguageCode(""), /*is_form_tag=*/true,
+                  PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr)
+                  .size());
   }
 }
 
@@ -243,8 +261,9 @@ TEST(FormFieldTest, ParseFormFieldsForPromoCodes) {
   field_data.unique_renderer_id = MakeFieldRendererId();
   fields.push_back(std::make_unique<AutofillField>(field_data));
 
-  EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(fields,
-                                                        LanguageCode(""), true)
+  EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(
+                    fields, LanguageCode(""), /*is_form_tag=*/true,
+                    PredictionSource::kDefaultHeuristics)
                     .size());
 
   // Don't parse other fields.
@@ -253,8 +272,9 @@ TEST(FormFieldTest, ParseFormFieldsForPromoCodes) {
   fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // Still only the promo code field should be parsed.
-  EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(fields,
-                                                        LanguageCode(""), true)
+  EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(
+                    fields, LanguageCode(""), /*is_form_tag=*/true,
+                    PredictionSource::kDefaultHeuristics)
                     .size());
 }
 }  // namespace autofill

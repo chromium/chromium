@@ -25,6 +25,7 @@ class MerchantPromoCodeField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
+                                          PredictionSource prediction_source,
                                           LogManager* log_manager);
   explicit MerchantPromoCodeField(const AutofillField* field);
 

@@ -211,6 +211,7 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
 // static
 std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
                                              const LanguageCode& page_language,
+                                             PredictionSource prediction_source,
                                              LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -244,8 +245,10 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
               &parsed_fields[kPhoneFieldGrammars[i].phone_part],
               {log_manager, GetRegExpName(kPhoneFieldGrammars[i].regex)},
               is_country_code_field,
-              GetJSONFieldType(kPhoneFieldGrammars[i].regex), page_language))
+              GetJSONFieldType(kPhoneFieldGrammars[i].regex), page_language,
+              prediction_source)) {
         break;
+      }
       if (kPhoneFieldGrammars[i].max_size &&
           (!parsed_fields[kPhoneFieldGrammars[i].phone_part]->max_length ||
            kPhoneFieldGrammars[i].max_size <
@@ -290,12 +293,12 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
                          &phone_field->parsed_phone_fields_[FIELD_SUFFIX],
                          {log_manager, "kPhoneSuffixRe"},
                          /*is_country_code_field=*/false, "PHONE_SUFFIX",
-                         page_language)) {
+                         page_language, prediction_source)) {
       ParsePhoneField(scanner, kPhoneSuffixSeparatorRe,
                       &phone_field->parsed_phone_fields_[FIELD_SUFFIX],
                       {log_manager, "kPhoneSuffixSeparatorRe"},
                       /*is_country_code_field=*/false, "PHONE_SUFFIX_SEPARATOR",
-                      page_language);
+                      page_language, prediction_source);
     }
   }
 
@@ -306,7 +309,7 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
                   &phone_field->parsed_phone_fields_[FIELD_EXTENSION],
                   {log_manager, "kPhoneExtensionRe"},
                   /*is_country_code_field=*/false, "PHONE_EXTENSION",
-                  page_language);
+                  page_language, prediction_source);
 
   return std::move(phone_field);
 }
@@ -453,7 +456,8 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
                                  const RegExLogging& logging,
                                  const bool is_country_code_field,
                                  const std::string& json_field_type,
-                                 const LanguageCode& page_language) {
+                                 const LanguageCode& page_language,
+                                 PredictionSource prediction_source) {
   MatchParams match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
                                                    MatchFieldType::kNumber>;
   // Include the selection boxes too for the matching of the phone country code.
@@ -464,7 +468,7 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
   }
 
   base::span<const MatchPatternRef> patterns =
-      GetMatchPatterns(json_field_type, page_language);
+      GetMatchPatterns(json_field_type, page_language, prediction_source);
 
   return ParseFieldSpecifics(scanner, regex, match_type, patterns, field,
                              logging);

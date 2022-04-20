@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
@@ -695,11 +696,13 @@ void FormStructure::DetermineHeuristicTypes(
   // prediction routines.
   FieldCandidatesMap field_type_map;
   if (ShouldRunHeuristics()) {
-    field_type_map = FormField::ParseFormFields(fields_, current_page_language_,
-                                                is_form_tag_, log_manager);
+    field_type_map = FormField::ParseFormFields(
+        fields_, current_page_language_, is_form_tag_,
+        PredictionSource::kDefaultHeuristics, log_manager);
   } else if (ShouldRunPromoCodeHeuristics()) {
     field_type_map = FormField::ParseFormFieldsForPromoCodes(
-        fields_, current_page_language_, is_form_tag_, log_manager);
+        fields_, current_page_language_, is_form_tag_,
+        PredictionSource::kDefaultHeuristics, log_manager);
   }
   if (!field_type_map.empty()) {
     for (const auto& field : fields_) {
@@ -708,6 +711,7 @@ void FormStructure::DetermineHeuristicTypes(
         const FieldCandidates& candidates = iter->second;
         field->set_heuristic_type(candidates.BestHeuristicType());
 
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
         auto set_hypothetical_type =
             [&field, &candidates](PredictionSource source) -> void {
           absl::optional<ServerFieldType> type =
@@ -717,6 +721,7 @@ void FormStructure::DetermineHeuristicTypes(
         };
         set_hypothetical_type(PredictionSource::kExperimentalHeuristics);
         set_hypothetical_type(PredictionSource::kNextGenHeuristics);
+#endif
       }
     }
   }
