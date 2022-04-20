@@ -353,6 +353,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   AppListControllerImpl* app_list_controller() {
     return app_list_controller_.get();
   }
+  AdaptiveChargingController* adaptive_charging_controller() {
+    return adaptive_charging_controller_.get();
+  }
   AmbientController* ambient_controller() { return ambient_controller_.get(); }
   AssistantControllerImpl* assistant_controller() {
     return assistant_controller_.get();
