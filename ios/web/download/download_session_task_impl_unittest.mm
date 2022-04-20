@@ -79,45 +79,12 @@ class OnDownloadUpdatedWaiter : public DownloadTaskObserver {
   bool download_updated_ = false;
 };
 
-// Mocks DownloadTaskImpl::Delegate's OnTaskUpdated and OnTaskDestroyed methods
-// and stubs DownloadTaskImpl::Delegate::CreateSession with session mock.
+// Mocks DownloadTaskImpl::Delegate's OnTaskDestroyed method.
 class FakeDownloadSessionTaskImplDelegate : public DownloadTaskImpl::Delegate {
  public:
-  FakeDownloadSessionTaskImplDelegate()
-      : configuration_([NSURLSessionConfiguration
-            backgroundSessionConfigurationWithIdentifier:
-                [NSUUID UUID].UUIDString]),
-        session_(OCMStrictClassMock([NSURLSession class])) {
-    OCMStub([session_ configuration]).andReturn(configuration_);
-  }
+  FakeDownloadSessionTaskImplDelegate() {}
 
   MOCK_METHOD1(OnTaskDestroyed, void(DownloadTaskImpl* task));
-
-  // Returns mock, which can be accessed via session() method.
-  NSURLSession* CreateSession(NSString* identifier,
-                              NSArray<NSHTTPCookie*>* cookies,
-                              id<NSURLSessionDataDelegate> delegate,
-                              NSOperationQueue* delegate_queue) {
-    // Make sure this method is called only once.
-    EXPECT_FALSE(session_delegate_);
-    session_delegate_ = delegate;
-    cookies_ = [cookies copy];
-    return session_;
-  }
-
-  // These methods return session objects injected into DownloadTaskImpl.
-  NSURLSessionConfiguration* configuration() { return configuration_; }
-  id session() { return session_; }
-  id<NSURLSessionDataDelegate> session_delegate() { return session_delegate_; }
-
-  // Returns the cookies passed to Create session method.
-  NSArray<NSHTTPCookie*>* cookies() { return cookies_; }
-
- private:
-  id<NSURLSessionDataDelegate> session_delegate_;
-  id configuration_;
-  NSArray<NSHTTPCookie*>* cookies_ = nil;
-  id session_;
 };
 
 }  //  namespace
@@ -133,10 +100,15 @@ class DownloadSessionTaskImplTest : public PlatformTest {
             kContentDisposition,
             /*total_bytes=*/-1,
             kMimeType,
-            task_delegate_.configuration().identifier,
-            &task_delegate_)),
+            [[NSUUID UUID] UUIDString],
+            &task_delegate_,
+            base::BindRepeating(&DownloadSessionTaskImplTest::CreateSession,
+                                base::Unretained(this)))),
         session_delegate_callbacks_queue_(
             dispatch_queue_create(nullptr, DISPATCH_QUEUE_SERIAL)) {
+    DCHECK(!session_);
+    session_ = OCMStrictClassMock([NSURLSession class]);
+
     browser_state_.SetOffTheRecord(true);
     browser_state_.SetCookieStore(std::make_unique<FakeCookieStore>());
     web_state_.SetBrowserState(&browser_state_);
@@ -150,11 +122,9 @@ class DownloadSessionTaskImplTest : public PlatformTest {
     NSURL* url = [NSURL URLWithString:@(kUrl)];
     CRWFakeNSURLSessionTask* session_task =
         [[CRWFakeNSURLSessionTask alloc] initWithURL:url];
-    EXPECT_TRUE(task_delegate_.session());
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod = kHttpMethod;
-    OCMExpect([task_delegate_.session() dataTaskWithRequest:request])
-        .andReturn(session_task);
+    OCMExpect([session_ dataTaskWithRequest:request]).andReturn(session_task);
 
     // Start the download.
     task_->Start(path, destination_hint);
@@ -178,9 +148,10 @@ class DownloadSessionTaskImplTest : public PlatformTest {
   }
 
   // Session and session delegate injected into DownloadTaskImpl for testing.
-  NSURLSession* session() { return task_delegate_.session(); }
-  id<NSURLSessionDataDelegate> session_delegate() {
-    return task_delegate_.session_delegate();
+  NSURLSession* session() { return session_; }
+  id<NSURLSessionDataDelegate> session_delegate() { return session_delegate_; }
+  NSURLSessionConfiguration* session_configuration() {
+    return session_configuration_;
   }
 
   // Updates NSURLSessionTask.countOfBytesReceived and calls
@@ -218,6 +189,18 @@ class DownloadSessionTaskImplTest : public PlatformTest {
     task_->RemoveObserver(&callback_waiter);
   }
 
+  NSURLSession* CreateSession(NSURLSessionConfiguration* configuration,
+                              id<NSURLSessionDataDelegate> delegate) {
+    DCHECK(session_);
+
+    session_configuration_ = configuration;
+    session_delegate_ = delegate;
+
+    OCMStub([session_ configuration]).andReturn(session_configuration_);
+
+    return session_;
+  }
+
   web::WebTaskEnvironment task_environment_;
   FakeBrowserState browser_state_;
   FakeWebState web_state_;
@@ -226,14 +209,16 @@ class DownloadSessionTaskImplTest : public PlatformTest {
   MockDownloadTaskObserver task_observer_;
   // NSURLSessionDataDelegate callbacks are called on background serial queue.
   dispatch_queue_t session_delegate_callbacks_queue_ = 0;
+  __strong id session_ = nil;
+  __strong id<NSURLSessionDataDelegate> session_delegate_ = nil;
+  __strong NSURLSessionConfiguration* session_configuration_ = nil;
 };
 
 // Tests DownloadSessionTaskImpl default state after construction.
 TEST_F(DownloadSessionTaskImplTest, DefaultState) {
   EXPECT_EQ(&web_state_, task_->GetWebState());
   EXPECT_EQ(DownloadTask::State::kNotStarted, task_->GetState());
-  EXPECT_NSEQ(task_delegate_.configuration().identifier,
-              task_->GetIndentifier());
+  EXPECT_NE(@"", task_->GetIndentifier());
   EXPECT_EQ(kUrl, task_->GetOriginalUrl());
   EXPECT_FALSE(task_->IsDone());
   EXPECT_EQ(0, task_->GetErrorCode());
@@ -561,6 +546,7 @@ TEST_F(DownloadSessionTaskImplTest, Cookie) {
           /*secure=*/false,
           /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
           net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+  ASSERT_TRUE(expected_cookie);
   cookie_store()->SetAllCookies({*expected_cookie});
 
   // Start the download and make sure that all cookie from BrowserState were
@@ -568,8 +554,10 @@ TEST_F(DownloadSessionTaskImplTest, Cookie) {
   EXPECT_CALL(task_observer_, OnDownloadUpdated(task_.get()));
   ASSERT_TRUE(Start());
 
-  EXPECT_EQ(1U, task_delegate_.cookies().count);
-  NSHTTPCookie* actual_cookie = task_delegate_.cookies().firstObject;
+  NSArray<NSHTTPCookie*>* cookies =
+      session_configuration().HTTPCookieStorage.cookies;
+  EXPECT_EQ(1U, cookies.count);
+  NSHTTPCookie* actual_cookie = cookies.firstObject;
   EXPECT_NSEQ(@"name", actual_cookie.name);
   EXPECT_NSEQ(@"value", actual_cookie.value);
 

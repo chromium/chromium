@@ -131,22 +131,4 @@ TEST_F(DownloadControllerImplTest, NullDelegate) {
       /*total_bytes=*/-1, kMimeType);
 }
 
-// Tests that DownloadController::CreateSession sets cookies correctly into the
-// session's NSURLSessionConfiguration object.
-TEST_F(DownloadControllerImplTest, SessionCookies) {
-  NSString* identifier = [NSUUID UUID].UUIDString;
-  NSURL* cookie_url = [NSURL URLWithString:@"https://download.test"];
-  NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
-    NSHTTPCookieName : @"name",
-    NSHTTPCookieValue : @"value",
-    NSHTTPCookiePath : cookie_url.path,
-    NSHTTPCookieDomain : cookie_url.host,
-    NSHTTPCookieVersion : @1,
-  }];
-  NSURLSession* session = download_controller_->CreateSession(
-      identifier, @[ cookie ], /*delegate=*/nil, /*delegate_queue=*/nil);
-  NSArray* cookies = session.configuration.HTTPCookieStorage.cookies;
-  EXPECT_EQ(1U, cookies.count);
-  EXPECT_NSEQ(cookie, cookies.firstObject);
-}
 }  // namespace web

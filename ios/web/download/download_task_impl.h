@@ -33,12 +33,6 @@ class DownloadTaskImpl : public DownloadTask {
     // remove all references to the given DownloadTask and stop using it.
     virtual void OnTaskDestroyed(DownloadTaskImpl* task) = 0;
 
-    // Creates background NSURLSession with given |identifier|, |cookies|,
-    // |delegate| and |delegate_queue|.
-    virtual NSURLSession* CreateSession(NSString* identifier,
-                                        NSArray<NSHTTPCookie*>* cookies,
-                                        id<NSURLSessionDataDelegate> delegate,
-                                        NSOperationQueue* delegate_queue) = 0;
     virtual ~Delegate() = default;
   };
 

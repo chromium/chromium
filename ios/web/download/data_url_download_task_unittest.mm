@@ -43,15 +43,6 @@ class DataUrlDownloadTaskTestDelegate : public DownloadTaskImpl::Delegate {
   DataUrlDownloadTaskTestDelegate() {}
 
   void OnTaskDestroyed(DownloadTaskImpl* task) override {}
-
-  // Returns mock, which can be accessed via session() method.
-  NSURLSession* CreateSession(NSString* identifier,
-                              NSArray<NSHTTPCookie*>* cookies,
-                              id<NSURLSessionDataDelegate> delegate,
-                              NSOperationQueue* delegate_queue) override {
-    NOTREACHED();
-    return nil;
-  }
 };
 
 // Fake DownloadTaskObserver used to wait for task completion.

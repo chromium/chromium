@@ -13,11 +13,14 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/sequenced_task_runner_handle.h"
 #import "ios/net/cookies/system_cookie_util.h"
+#import "ios/web/common/user_agent.h"
 #import "ios/web/download/download_result.h"
+#import "ios/web/download/download_session_cookie_storage.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_view/error_translation_util.h"
 #import "net/base/completion_once_callback.h"
@@ -187,7 +190,8 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
     int64_t total_bytes,
     const std::string& mime_type,
     NSString* identifier,
-    Delegate* delegate)
+    Delegate* delegate,
+    SessionFactory session_factory)
     : DownloadTaskImpl(web_state,
                        original_url,
                        http_method,
@@ -195,7 +199,8 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
                        total_bytes,
                        mime_type,
                        identifier,
-                       delegate) {
+                       delegate),
+      session_factory_(std::move(session_factory)) {
   DCHECK(!original_url_.SchemeIs(url::kDataScheme));
 }
 
@@ -305,6 +310,28 @@ NSURLSession* DownloadSessionTaskImpl::CreateSession(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(identifier.length);
 
+  NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
+      backgroundSessionConfigurationWithIdentifier:identifier];
+
+  // Cookies have to be set in the session configuration before the sesion is
+  // created. Once the session is created, the configuration object can't be
+  // edited and configuration property will return a copu of the originally
+  // used configuration.
+  // The cookies are copied from the internal WebSiteDataStore cookie store,
+  // so there will be no duplications or invalid cookies.
+  const NSHTTPCookieAcceptPolicy policy =
+      [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy;
+  configuration.HTTPCookieStorage =
+      [[DownloadSessionCookieStorage alloc] initWithCookies:cookies
+                                         cookieAcceptPolicy:policy];
+
+  const std::string user_agent =
+      GetWebClient()->GetUserAgent(UserAgentType::MOBILE);
+  configuration.HTTPAdditionalHeaders = @{
+    base::SysUTF8ToNSString(net::HttpRequestHeaders::kUserAgent) :
+        base::SysUTF8ToNSString(user_agent),
+  };
+
   base::WeakPtr<DownloadSessionTaskImpl> weak_this = weak_factory_.GetWeakPtr();
   DataCallback data_callback =
       base::BindRepeating(&DownloadSessionTaskImpl::OnTaskData, weak_this);
@@ -315,8 +342,14 @@ NSURLSession* DownloadSessionTaskImpl::CreateSession(
       initWithTaskRunner:base::SequencedTaskRunnerHandle::Get()
             dataCallback:std::move(data_callback)
             doneCallback:std::move(done_callback)];
-  return delegate_->CreateSession(identifier, cookies, session_delegate,
-                                  /*queue=*/nil);
+
+  if (!session_factory_.is_null()) {
+    return session_factory_.Run(configuration, session_delegate);
+  }
+
+  return [NSURLSession sessionWithConfiguration:configuration
+                                       delegate:session_delegate
+                                  delegateQueue:nil];
 }
 
 void DownloadSessionTaskImpl::GetCookies(

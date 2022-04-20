@@ -12,7 +12,6 @@
 #import "ios/web/download/download_session_task_impl.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_controller_delegate.h"
-#import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/http/http_request_headers.h"
 
@@ -116,36 +115,6 @@ void DownloadControllerImpl::OnTaskDestroyed(DownloadTaskImpl* task) {
   auto it = alive_tasks_.find(task);
   DCHECK(it != alive_tasks_.end());
   alive_tasks_.erase(it);
-}
-
-NSURLSession* DownloadControllerImpl::CreateSession(
-    NSString* identifier,
-    NSArray<NSHTTPCookie*>* cookies,
-    id<NSURLSessionDataDelegate> delegate,
-    NSOperationQueue* delegate_queue) {
-  NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
-      backgroundSessionConfigurationWithIdentifier:identifier];
-  configuration.HTTPCookieStorage = [[DownloadSessionCookieStorage alloc] init];
-  configuration.HTTPCookieStorage.cookieAcceptPolicy =
-      [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy;
-  // Cookies have to be set in session configuration before the session is
-  // created. Once the session is created, the configuration object can't be
-  // edited and configuration property will return a copy of the originally used
-  // configuration.
-  for (NSHTTPCookie* cookie in cookies) {
-    // Cookies copied from the internal WebSiteDataStore cookie store, so
-    // there will be no duplications or invalid cookies.
-    [configuration.HTTPCookieStorage setCookie:cookie];
-  }
-  std::string user_agent = GetWebClient()->GetUserAgent(UserAgentType::MOBILE);
-  configuration.HTTPAdditionalHeaders = @{
-    base::SysUTF8ToNSString(net::HttpRequestHeaders::kUserAgent) :
-        base::SysUTF8ToNSString(user_agent),
-  };
-
-  return [NSURLSession sessionWithConfiguration:configuration
-                                       delegate:delegate
-                                  delegateQueue:delegate_queue];
 }
 
 }  // namespace web

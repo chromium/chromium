@@ -43,24 +43,12 @@ class MockDownloadTaskObserver : public DownloadTaskObserver {
   }
 };
 
-// Mocks DownloadTaskImpl::Delegate's OnTaskUpdated and OnTaskDestroyed
-// methods and stubs DownloadTaskImpl::Delegate::CreateSession with session
-// mock.
+// Mocks DownloadTaskImpl::Delegate's OnTaskDestroyed method.
 class FakeDownloadNativeTaskImplDelegate : public DownloadTaskImpl::Delegate {
  public:
   FakeDownloadNativeTaskImplDelegate() {}
 
   MOCK_METHOD1(OnTaskDestroyed, void(DownloadTaskImpl* task));
-
-  // Returns mock, which can be accessed via session() method.
-  NSURLSession* CreateSession(NSString* identifier,
-                              NSArray<NSHTTPCookie*>* cookies,
-                              id<NSURLSessionDataDelegate> delegate,
-                              NSOperationQueue* delegate_queue) {
-    // Make sure this method isn't called at all
-    ADD_FAILURE();
-    return nil;
-  }
 };
 
 }  //  namespace

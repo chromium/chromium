@@ -14,14 +14,25 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation DownloadSessionCookieStorage
-
-@synthesize cookies = _cookies;
-@synthesize cookieAcceptPolicy = _cookieAcceptPolicy;
+@implementation DownloadSessionCookieStorage {
+  __strong NSMutableArray<NSHTTPCookie*>* _cookies;
+  NSHTTPCookieAcceptPolicy _cookieAcceptPolicy;
+}
 
 - (instancetype)init {
-  if (self = [super init]) {
-    _cookies = [[NSMutableArray alloc] init];
+  return [self initWithCookies:nil
+            cookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+}
+
+- (instancetype)initWithCookies:(NSArray<NSHTTPCookie*>*)cookies
+             cookieAcceptPolicy:(NSHTTPCookieAcceptPolicy)cookieAcceptPolicy {
+  if ((self = [super init])) {
+    _cookieAcceptPolicy = cookieAcceptPolicy;
+    if (cookies && _cookieAcceptPolicy != NSHTTPCookieAcceptPolicyNever) {
+      _cookies = [cookies mutableCopy];
+    } else {
+      _cookies = [[NSMutableArray alloc] init];
+    }
   }
   return self;
 }
@@ -39,7 +50,7 @@
   NOTREACHED();
 }
 
-- (nullable NSArray<NSHTTPCookie*>*)cookiesForURL:(NSURL*)URL {
+- (NSArray<NSHTTPCookie*>*)cookiesForURL:(NSURL*)URL {
   NSMutableArray<NSHTTPCookie*>* result = [NSMutableArray array];
   GURL gURL = net::GURLWithNSURL(URL);
   // TODO(crbug.com/1018272): Compute the cookie access semantic, and update
@@ -68,13 +79,9 @@
   return [result copy];
 }
 
-- (nullable NSArray<NSHTTPCookie*>*)cookies {
-  return [_cookies copy];
-}
-
 - (void)setCookies:(NSArray<NSHTTPCookie*>*)cookies
-             forURL:(nullable NSURL*)URL
-    mainDocumentURL:(nullable NSURL*)mainDocumentURL {
+             forURL:(NSURL*)URL
+    mainDocumentURL:(NSURL*)mainDocumentURL {
   if (self.cookieAcceptPolicy == NSHTTPCookieAcceptPolicyNever) {
     return;
   }
@@ -101,6 +108,20 @@
                               completionHandler {
   if (completionHandler)
     completionHandler([self cookiesForURL:task.currentRequest.URL]);
+}
+
+#pragma mark - NSHTTPCookieStorage Properties
+
+- (NSArray<NSHTTPCookie*>*)cookies {
+  return [_cookies copy];
+}
+
+- (NSHTTPCookieAcceptPolicy)cookieAcceptPolicy {
+  return _cookieAcceptPolicy;
+}
+
+- (void)setCookieAcceptPolicy:(NSHTTPCookieAcceptPolicy)cookieAcceptPolicy {
+  _cookieAcceptPolicy = cookieAcceptPolicy;
 }
 
 @end

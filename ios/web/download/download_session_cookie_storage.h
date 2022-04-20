@@ -21,8 +21,18 @@
 // too long blocking UI thread when setting large number of cookies.
 @interface DownloadSessionCookieStorage : NSHTTPCookieStorage
 
-@property(nullable, readonly, copy) NSMutableArray<NSHTTPCookie*>* cookies;
-@property NSHTTPCookieAcceptPolicy cookieAcceptPolicy;
+// Initialises the instance with the `cookies` and `cookieAcceptPolicy`. The
+// `cookies` must be valid and without duplicates. If `cookiAcceptPolicy` is
+// `NSHTTPCookieAcceptPolicyNever`, then no cookies are set.
+- (instancetype)initWithCookies:(NSArray<NSHTTPCookie*>*)cookies
+             cookieAcceptPolicy:(NSHTTPCookieAcceptPolicy)cookieAcceptPolicy
+    NS_DESIGNATED_INITIALIZER;
+
+// Convenience initialiser identical to calling:
+// [DownloadSessionCookieStorage alloc]
+//     initWithCookies:nil
+//  cookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+- (instancetype)init;
 
 @end
 

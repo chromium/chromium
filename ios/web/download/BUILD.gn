@@ -9,6 +9,7 @@ source_set("download") {
     ":download_cookies",
     "//base",
     "//ios/net",
+    "//ios/web/common:user_agent",
     "//ios/web/net/cookies",
     "//ios/web/public",
     "//ios/web/public/download",
