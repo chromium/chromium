@@ -4,6 +4,7 @@
 """Definitions of builders in the tryserver.blink builder group."""
 
 load("//lib/builders.star", "goma", "os")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/branches.star", "branches")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -42,6 +43,22 @@ try_.builder(
 try_.builder(
     name = "linux-blink-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
     goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,

@@ -1,4 +1,42 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "try",
+              "builder": "linux-blink-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "tryserver.blink",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "try",
+          "builder": "linux-blink-rel",
+          "project": "chromium"
+        }
+      ],
+      "retry_failed_shards": false
+    }
+  },
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?prod",
