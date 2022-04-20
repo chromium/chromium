@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
@@ -18,14 +19,18 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   StyleScope(CSSSelectorList from, absl::optional<CSSSelectorList> to);
   StyleScope(const StyleScope&);
 
-  void Trace(blink::Visitor* visitor) const {}
+  void Trace(blink::Visitor* visitor) const { visitor->Trace(parent_); }
+
+  StyleScope* CopyWithParent(const StyleScope*) const;
 
   const CSSSelectorList& From() const { return from_; }
   const absl::optional<CSSSelectorList>& To() const { return to_; }
+  const StyleScope* Parent() const { return parent_.Get(); }
 
  private:
   CSSSelectorList from_;
   absl::optional<CSSSelectorList> to_;
+  Member<const StyleScope> parent_;
 };
 
 }  // namespace blink

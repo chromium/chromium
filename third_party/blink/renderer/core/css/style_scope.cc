@@ -13,4 +13,10 @@ StyleScope::StyleScope(const StyleScope& other)
     : from_(other.from_.Copy()),
       to_(other.to_ ? absl::make_optional(other.to_->Copy()) : absl::nullopt) {}
 
+StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
+  StyleScope* copy = MakeGarbageCollected<StyleScope>(*this);
+  copy->parent_ = parent;
+  return copy;
+}
+
 }  // namespace blink

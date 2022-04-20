@@ -494,9 +494,11 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       for (const auto& layer_name : layer_statement_rule->GetNames())
         GetOrAddSubLayer(cascade_layer, layer_name);
     } else if (auto* scope_rule = DynamicTo<StyleRuleScope>(rule)) {
+      const StyleScope* inner_style_scope = &scope_rule->GetStyleScope();
+      if (style_scope)
+        inner_style_scope = inner_style_scope->CopyWithParent(style_scope);
       AddChildRules(scope_rule->ChildRules(), medium, add_rule_flags,
-                    container_query, cascade_layer,
-                    &scope_rule->GetStyleScope());
+                    container_query, cascade_layer, inner_style_scope);
     }
   }
 }

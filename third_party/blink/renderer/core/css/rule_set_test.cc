@@ -378,6 +378,38 @@ TEST(RuleSetTest, StyleScope) {
   EXPECT_TRUE(rules->at(0)->GetStyleScope());
 }
 
+TEST(RuleSetTest, NestedStyleScope) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(R"CSS(
+    @scope (.a) {
+      #a {}
+      @scope (.b) {
+        #b {}
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* a_rules = rule_set.IdRules("a");
+  const HeapVector<Member<const RuleData>>* b_rules = rule_set.IdRules("b");
+
+  ASSERT_TRUE(a_rules);
+  ASSERT_TRUE(b_rules);
+
+  ASSERT_EQ(1u, a_rules->size());
+  ASSERT_EQ(1u, b_rules->size());
+
+  EXPECT_TRUE(a_rules->at(0)->GetStyleScope());
+  EXPECT_FALSE(a_rules->at(0)->GetStyleScope()->Parent());
+
+  EXPECT_TRUE(b_rules->at(0)->GetStyleScope());
+  EXPECT_EQ(a_rules->at(0)->GetStyleScope(),
+            b_rules->at(0)->GetStyleScope()->Parent());
+
+  ASSERT_TRUE(b_rules->at(0)->GetStyleScope()->Parent());
+  EXPECT_FALSE(b_rules->at(0)->GetStyleScope()->Parent()->Parent());
+}
+
 class RuleSetCascadeLayerTest : public SimTest {
  public:
   using LayerName = StyleRuleBase::LayerName;
