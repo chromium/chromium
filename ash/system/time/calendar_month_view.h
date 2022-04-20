@@ -80,9 +80,6 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // Draw the indicator if our day has events.
   void MaybeDrawEventsIndicator(gfx::Canvas* canvas);
 
-  // Gets the most recent number of events from the model.
-  int GetEventNumber();
-
   // The date used to render this cell view.
   const base::Time date_;
 

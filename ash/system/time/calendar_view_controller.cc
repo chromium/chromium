@@ -202,6 +202,12 @@ SingleDayEventList CalendarViewController::SelectedDateEvents() {
       ApplyTimeDifference(selected_date_.value()));
 }
 
+int CalendarViewController::GetEventNumber(base::Time date) {
+  return Shell::Get()->system_tray_model()->calendar_model()->EventsNumberOfDay(
+      ApplyTimeDifference(date),
+      /*events =*/nullptr);
+}
+
 void CalendarViewController::ShowEventListView(base::Time selected_date,
                                                int row_index) {
   // Do nothing if selecting on the same date.

@@ -128,6 +128,9 @@ class ASH_EXPORT CalendarViewController {
   // The calendar events of the selected date.
   SingleDayEventList SelectedDateEvents();
 
+  // The calendar events number of the `date`.
+  int GetEventNumber(base::Time date);
+
   // A callback passed into the`CalendarDateCellView`, which is called when the
   // cell is clicked to show the event list view.
   void ShowEventListView(base::Time selected_date, int row_index);

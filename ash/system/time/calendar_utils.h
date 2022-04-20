@@ -5,13 +5,13 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_UTILS_H_
 #define ASH_SYSTEM_TIME_CALENDAR_UTILS_H_
 
+#include <set>
+
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
-
-#include <set>
 
 namespace views {
 
@@ -25,6 +25,10 @@ namespace calendar_utils {
 
 // Number of days in one week.
 constexpr int kDateInOneWeek = 7;
+
+// First day of the week index in string, which is returned from the
+// `DateFormat`.
+constexpr char16_t kFirstDayOfWeekString[] = u"1";
 
 // Milliseconds per minute.
 constexpr int kMillisecondsPerMinute = 60000;
@@ -115,6 +119,10 @@ ASH_EXPORT std::u16string GetTwentyFourHourClockTime(const base::Time date);
 // (e.g. Greenwich Mean Time)
 ASH_EXPORT std::u16string GetTimeZone(const base::Time date);
 
+// Gets the index of this day in the week, starts from 1. This number is
+// different for different languages.
+ASH_EXPORT std::u16string GetDayOfWeek(const base::Time date);
+
 // Gets the `date`'s year.
 // (e.g 2022)
 ASH_EXPORT std::u16string GetYear(const base::Time date);
@@ -160,6 +168,9 @@ bool IsActiveUser();
 // Get the time difference to UTC time based on the time passed in and the
 // system timezone. Daylight saving is considered.
 ASH_EXPORT int GetTimeDifferenceInMinutes(base::Time date);
+
+// Gets the first day's local midnight of the week based on the `date`.
+base::Time GetFirstDayOfWeekLocalMidnight(base::Time date);
 
 }  // namespace calendar_utils
 

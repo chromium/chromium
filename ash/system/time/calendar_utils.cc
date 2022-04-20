@@ -117,6 +117,11 @@ std::u16string GetTimeZone(const base::Time date) {
       DateHelper::GetInstance()->time_zone_formatter(), date);
 }
 
+std::u16string GetDayOfWeek(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateHelper::GetInstance()->day_of_week_formatter(), date);
+}
+
 std::u16string GetYear(const base::Time date) {
   return calendar_utils::FormatDate(DateHelper::GetInstance()->year_formatter(),
                                     date);
@@ -195,6 +200,24 @@ bool IsActiveUser() {
 
 int GetTimeDifferenceInMinutes(base::Time date) {
   return DateHelper::GetInstance()->GetTimeDifferenceInMinutes(date);
+}
+
+base::Time GetFirstDayOfWeekLocalMidnight(base::Time date) {
+  base::Time first_day = DateHelper::GetInstance()->GetLocalMidnight(date);
+  std::u16string day_of_week = GetDayOfWeek(first_day);
+  int days = 0;
+  // Find the first day of the week.
+  while (day_of_week != kFirstDayOfWeekString) {
+    // 5 hours ago from midnight should be the previous day.
+    first_day -= base::Hours(5);
+    first_day = DateHelper::GetInstance()->GetLocalMidnight(first_day);
+    day_of_week = GetDayOfWeek(first_day);
+    ++days;
+    // Should already find the first day within 7 times, since there are only 7
+    // days in a week.
+    DCHECK_NE(days, kDateInOneWeek);
+  }
+  return first_day;
 }
 
 }  // namespace calendar_utils

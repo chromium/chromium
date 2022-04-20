@@ -3484,34 +3484,6 @@ This file contains the strings for ash.
         (No title)
       </message>
 
-      <message name="IDS_ASH_CALENDAR_MON" desc="The single character designator for Monday, which is used in the calendar weekday label.">
-        M
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_TUE" desc="The single character designator for Tuesday, which is used in the calendar weekday label.">
-        T
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_WED" desc="The single character designator for Wednesday, which is used in the calendar weekday label.">
-        W
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_THU" desc="The single character designator for Thursday, which is used in the calendar weekday label.">
-        T
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_FRI" desc="The single character designator for Friday, which is used in the calendar weekday label.">
-        F
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_SAT" desc="The single character designator for Saturday, which is used in the calendar weekday label.">
-        S
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_SUN" desc="The single character designator for Sunday, which is used in the calendar weekday label.">
-        S
-      </message>
-
       <message name="IDS_ASH_CALENDAR_NO_EVENTS" desc="Text that appears on the event list when there are no events.">
         Open in Google calendar
       </message>

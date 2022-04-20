@@ -16,6 +16,7 @@
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
+#include "ash/system/time/date_helper.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
@@ -80,12 +81,6 @@ constexpr base::TimeDelta kAnimationDurationForClosingEvents =
 // The cool-down time for enabling animation.
 constexpr base::TimeDelta kAnimationDisablingTimeout = base::Milliseconds(500);
 
-// TODO(https://crbug.com/1236276): for some language it may start from "M".
-constexpr int kDefaultWeekTitles[] = {
-    IDS_ASH_CALENDAR_SUN, IDS_ASH_CALENDAR_MON, IDS_ASH_CALENDAR_TUE,
-    IDS_ASH_CALENDAR_WED, IDS_ASH_CALENDAR_THU, IDS_ASH_CALENDAR_FRI,
-    IDS_ASH_CALENDAR_SAT};
-
 constexpr char kMonthViewScrollOneMonthAnimationHistogram[] =
     "Ash.CalendarView.ScrollOneMonth.MonthView.AnimationSmoothness";
 
@@ -149,9 +144,9 @@ class MonthHeaderView : public views::View {
     calendar_utils::SetUpWeekColumns(layout);
     layout->AddRows(1, views::TableLayout::kFixedSize);
 
-    for (int week_day : kDefaultWeekTitles) {
-      auto label =
-          std::make_unique<CalendarLabel>(l10n_util::GetStringUTF16(week_day));
+    for (const std::u16string& week_day :
+         DateHelper::GetInstance()->week_titles()) {
+      auto label = std::make_unique<CalendarLabel>(week_day);
       label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
       label->SetBorder((views::CreateEmptyBorder(
           gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));

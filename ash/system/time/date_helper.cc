@@ -4,6 +4,7 @@
 
 #include "ash/system/time/date_helper.h"
 
+#include "ash/system/time/calendar_utils.h"
 #include "base/i18n/unicodestring.h"
 #include "base/time/time.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
@@ -55,6 +56,7 @@ std::u16string DateHelper::GetFormattedTime(const icu::DateFormat* formatter,
   return base::i18n::UnicodeStringToString16(date_string);
 }
 
+// TODO(https://crbug.com/1316824): Return TimeDelta instead.
 int DateHelper::GetTimeDifferenceInMinutes(base::Time date) {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
@@ -85,6 +87,12 @@ int DateHelper::GetTimeDifferenceInMinutes(base::Time date) {
   return gmt_offset / kMillisecondsPerMinute;
 }
 
+base::Time DateHelper::GetLocalMidnight(base::Time date) {
+  base::TimeDelta time_difference =
+      base::Minutes(GetTimeDifferenceInMinutes(date));
+  return (date + time_difference).UTCMidnight() - time_difference;
+}
+
 DateHelper::DateHelper()
     : day_of_month_formatter_(CreateSimpleDateFormatter("d")),
       month_day_formatter_(CreateSimpleDateFormatter("MMMMd")),
@@ -94,6 +102,8 @@ DateHelper::DateHelper()
       time_zone_formatter_(CreateSimpleDateFormatter("zzzz")),
       twelve_hour_clock_formatter_(CreateSimpleDateFormatter("h:mm a")),
       twenty_four_hour_clock_formatter_(CreateSimpleDateFormatter("HH:mm")),
+      day_of_week_formatter_(CreateSimpleDateFormatter("ee")),
+      week_title_formatter_(CreateSimpleDateFormatter("EEEEE")),
       year_formatter_(CreateSimpleDateFormatter("YYYY")) {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
@@ -102,6 +112,7 @@ DateHelper::DateHelper()
   gregorian_calendar_ =
       std::make_unique<icu::GregorianCalendar>(time_zone, status);
   DCHECK(U_SUCCESS(status));
+  CalculateLocalWeekTitles();
   time_zone_settings_observer_.Observe(system::TimezoneSettings::GetInstance());
 }
 
@@ -116,7 +127,36 @@ void DateHelper::ResetFormatters() {
   time_zone_formatter_ = CreateSimpleDateFormatter("zzzz");
   twelve_hour_clock_formatter_ = CreateSimpleDateFormatter("h:mm a");
   twenty_four_hour_clock_formatter_ = CreateSimpleDateFormatter("HH:mm");
+  day_of_week_formatter_ = CreateSimpleDateFormatter("ee");
+  week_title_formatter_ = CreateSimpleDateFormatter("EEEEE");
   year_formatter_ = CreateSimpleDateFormatter("YYYY");
+}
+
+void DateHelper::CalculateLocalWeekTitles() {
+  week_titles_.clear();
+  base::Time start_date = base::Time::Now();
+  start_date = GetLocalMidnight(start_date);
+  std::u16string day_of_week =
+      GetFormattedTime(&day_of_week_formatter_, start_date);
+  int safe_index = 0;
+
+  // Find a first day of a week.
+  while (day_of_week != calendar_utils::kFirstDayOfWeekString) {
+    start_date += base::Hours(25);
+    day_of_week = GetFormattedTime(&day_of_week_formatter_, start_date);
+    ++safe_index;
+    // Should already find the first day within 7 times, since there are only 7
+    // days in a week.
+    DCHECK_NE(safe_index, calendar_utils::kDateInOneWeek);
+  }
+
+  int day_index = 0;
+  while (day_index < calendar_utils::kDateInOneWeek) {
+    week_titles_.push_back(
+        GetFormattedTime(&week_title_formatter_, start_date));
+    start_date += base::Hours(25);
+    ++day_index;
+  }
 }
 
 void DateHelper::TimezoneChanged(const icu::TimeZone& timezone) {
