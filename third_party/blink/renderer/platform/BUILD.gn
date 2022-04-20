@@ -634,6 +634,8 @@ component("platform") {
     "fonts/opentype/open_type_math_stretch_data.h",
     "fonts/opentype/open_type_math_support.cc",
     "fonts/opentype/open_type_math_support.h",
+    "fonts/opentype/open_type_math_test_fonts.cc",
+    "fonts/opentype/open_type_math_test_fonts.h",
     "fonts/opentype/open_type_types.h",
     "fonts/opentype/open_type_vertical_data.cc",
     "fonts/opentype/open_type_vertical_data.h",
