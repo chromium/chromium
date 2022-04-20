@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -298,7 +299,8 @@ std::string GetTimestampString(base::Time timestamp) {
                             tex.day_of_month, tex.hour, tex.minute);
 }
 
-base::FilePath GetDefaultFileToExport(const std::string& case_id,
+base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,
+                                      const std::string& case_id,
                                       base::Time timestamp) {
   std::string timestamp_string = GetTimestampString(timestamp);
   std::string filename =
@@ -306,7 +308,7 @@ base::FilePath GetDefaultFileToExport(const std::string& case_id,
           ? base::StringPrintf("support_packet_%s", timestamp_string.c_str())
           : base::StringPrintf("support_packet_%s_%s", case_id.c_str(),
                                timestamp_string.c_str());
-  return base::FilePath::FromASCII(filename);
+  return suggested_path.AppendASCII(filename);
 }
 
 std::set<feedback::PIIType> GetSelectedPIIToKeep(
@@ -527,11 +529,16 @@ void SupportToolMessageHandler::HandleStartDataExport(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
 
+  DownloadPrefs* download_prefs =
+      DownloadPrefs::FromBrowserContext(web_contents->GetBrowserContext());
+  base::FilePath suggested_path = download_prefs->SaveFilePath();
+
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE,
       /*title=*/std::u16string(),
       /*default_path=*/
-      GetDefaultFileToExport(handler_->GetCaseID(), data_collection_time_),
+      GetDefaultFileToExport(suggested_path, handler_->GetCaseID(),
+                             data_collection_time_),
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(), owning_window,
