@@ -839,6 +839,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
 
       page->GetSettings().SetImageAnimationPolicy(
           default_settings.GetImageAnimationPolicy());
+      page->GetSettings().SetPrefersReducedMotion(
+          default_settings.GetPrefersReducedMotion());
 
       // Also copy the preferred-color-scheme to ensure a responsiveness to
       // dark/light color schemes.
