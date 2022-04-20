@@ -875,6 +875,7 @@ TEST_F(DesksTemplatesTest, SaveDeskButtonContainerAligned) {
         save_desk_button_container->GetBoundsInScreen().x());
     EXPECT_EQ(std::round(window_list.front()->target_bounds().y()) - 40,
               save_desk_button_container->GetBoundsInScreen().y());
+    EXPECT_EQ(16, save_desk_button_container->GetBetweenChildSpacing());
   };
 
   verify_save_desk_widget_bounds();

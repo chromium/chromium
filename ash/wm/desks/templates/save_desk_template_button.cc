@@ -4,10 +4,10 @@
 
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
@@ -15,11 +15,9 @@ constexpr int kCornerRadius = 16;
 
 SaveDeskTemplateButton::SaveDeskTemplateButton(base::RepeatingClosure callback,
                                                const std::u16string& text,
-                                               Type button_type)
-    : PillButton(callback,
-                 text,
-                 PillButton::Type::kIcon,
-                 &kSaveDeskAsTemplateIcon),
+                                               Type button_type,
+                                               const gfx::VectorIcon* icon)
+    : PillButton(callback, text, PillButton::Type::kIcon, icon),
       callback_(callback),
       button_type_(button_type) {
   SetBorder(std::make_unique<WmHighlightItemBorder>(kCornerRadius));
