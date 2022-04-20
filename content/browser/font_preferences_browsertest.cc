@@ -76,6 +76,15 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
     const std::string non_default_system_font = "Lucida Console";
 #elif BUILDFLAG(IS_MAC)
     const std::string non_default_system_font = "Monaco";
+#elif BUILDFLAG(IS_FUCHSIA)
+    // Fuchsia platforms don't seem to have many pre-installed fonts besides the
+    // default Roboto families. Let's instead choose the default monospace
+    // family or, if 'monospace' is tested, the default sans-serif family.
+    const char* default_system_font_sans_serif = "Roboto";
+    const char* default_system_font_monospace = "Roboto Mono";
+    const std::string non_default_system_font =
+        generic_family == "monospace" ? default_system_font_sans_serif
+                                      : default_system_font_monospace;
 #else
     const std::string non_default_system_font = "Ahem";
 #endif
@@ -103,14 +112,7 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
   }
 };
 
-// TODO(https://crbug.com/1317381): Re-enable once the test is passing on
-// Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_GenericFamilies DISABLED_GenericFamilies
-#else
-#define MAYBE_GenericFamilies GenericFamilies
-#endif
-IN_PROC_BROWSER_TEST_F(FontPreferencesBrowserTest, MAYBE_GenericFamilies) {
+IN_PROC_BROWSER_TEST_F(FontPreferencesBrowserTest, GenericFamilies) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,BODY_TEXT")));
   Attach();
