@@ -175,7 +175,8 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type)
         "MetricKit", spanpayload,
         {{"ver",
           base::SysNSStringToUTF8(diagnostic.metaData.applicationBuildVersion)},
-         {"metrickit", "true"}});
+         {"metrickit", "true"},
+         {"metrickit_type", type}});
   }
 }
 
