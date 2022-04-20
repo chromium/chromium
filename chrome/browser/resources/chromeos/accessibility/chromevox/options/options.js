@@ -5,12 +5,13 @@
 /**
  * @fileoverview ChromeVox options page.
  */
-import {BluetoothBrailleDisplayUI} from '../background/braille/bluetooth_braille_display_ui.js';
 import {BrailleTable} from '../background/braille/braille_table.js';
 import {ConsoleTts} from '../background/console_tts.js';
 import {TtsBackground} from '../background/tts_background.js';
 
 import {AbstractTts} from '../common/abstract_tts.js';
+
+import {BluetoothBrailleDisplayUI} from './bluetooth_braille_display_ui.js';
 
 /** @const {string} */
 const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';

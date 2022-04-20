@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
-GEN_INCLUDE(['../../testing/fake_objects.js']);
+GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../testing/fake_objects.js']);
 
 /** Test fixture. */
 ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
@@ -13,7 +13,7 @@ ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
     await super.setUpDeferred();
     await importModule(
         'BluetoothBrailleDisplayUI',
-        '/chromevox/background/braille/bluetooth_braille_display_ui.js');
+        '/chromevox/options/bluetooth_braille_display_ui.js');
   }
 
   /** Label of the select. @type {string} */
