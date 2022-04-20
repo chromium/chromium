@@ -93,7 +93,8 @@ def _CountStaticInitializers(so_path, tool_prefix, expect_no_initializers):
   # NOTE: this is very implementation-specific and makes assumptions
   # about how compiler and linker implement global static initializers.
   init_array_size = _ReadInitArray(so_path, tool_prefix, expect_no_initializers)
-  return init_array_size / word_size
+  assert init_array_size % word_size == 0
+  return init_array_size // word_size
 
 
 def _AnalyzeStaticInitializers(apk_or_aab, tool_prefix, dump_sis, out_dir,
