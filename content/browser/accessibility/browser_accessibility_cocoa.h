@@ -146,7 +146,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSString* role;
 @property(nonatomic, readonly) NSArray* rowHeaders;
 @property(nonatomic, readonly) NSValue* rowIndexRange;
-@property(nonatomic, readonly) NSArray* rows;
 @property(nonatomic, readonly) NSArray* selectedChildren;
 @property(nonatomic, readonly) NSString* selectedText;
 @property(nonatomic, readonly) NSValue* selectedTextRange;

@@ -2157,6 +2157,13 @@ bool IsAXSetter(SEL selector) {
   return [ret count] ? ret : nil;
 }
 
+- (NSArray*)accessibilityRows {
+  // TODO(accessibility) accessibilityRows is defined in
+  // browser_accessibility_cocoa.mm eventually that function definition should
+  // be moved here.
+  return nil;
+}
+
 //
 // NSAccessibility protocol: configuring linkage elements.
 //

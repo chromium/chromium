@@ -621,7 +621,7 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityRoleAttribute, @"role"},
       {NSAccessibilityRowHeaderUIElementsAttribute, @"rowHeaders"},
       {NSAccessibilityRowIndexRangeAttribute, @"rowIndexRange"},
-      {NSAccessibilityRowsAttribute, @"rows"},
+      {NSAccessibilityRowsAttribute, @"accessibilityRows"},
       // TODO(aboxhall): expose
       // NSAccessibilityServesAsTitleForUIElementsAttribute
       {NSAccessibilityStartTextMarkerAttribute, @"startTextMarker"},
@@ -1289,7 +1289,7 @@ bool content::IsNSRange(id value) {
   return nil;
 }
 
-- (NSArray*)rows {
+- (NSArray*)accessibilityRows {
   if (![self instanceActive])
     return nil;
   NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
@@ -1665,7 +1665,7 @@ bool content::IsNSRange(id value) {
 - (NSArray*)visibleRows {
   if (![self instanceActive])
     return nil;
-  return [self rows];
+  return [self accessibilityRows];
 }
 
 - (id)window {

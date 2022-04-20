@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   BrowserAccessibility* table = manager->GetRoot()->PlatformGetChild(0);
   base::scoped_nsobject<BrowserAccessibilityCocoa> table_obj(
       [table->GetNativeViewAccessible() retain]);
-  NSArray* row_nodes = [table_obj rows];
+  NSArray* row_nodes = [table_obj accessibilityRows];
 
   EXPECT_EQ(3U, [row_nodes count]);
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_NSEQ(@"AXColumn", [col_obj role]);
   EXPECT_NSEQ(@"column1", [col_obj accessibilityLabel]);
 
-  NSArray* row_nodes = [col_obj rows];
+  NSArray* row_nodes = [col_obj accessibilityRows];
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
   EXPECT_NSEQ(@"row1", [row_nodes[0] accessibilityLabel]);
 

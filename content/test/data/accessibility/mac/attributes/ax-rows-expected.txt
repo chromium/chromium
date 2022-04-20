@@ -1,0 +1,5 @@
+table.accessibilityAttributeNames.has(AXRows)='yes'
+column=:6
+column.accessibilityAttributeNames.has(AXRows)='yes'
+tree.accessibilityAttributeNames.has(AXRows)='yes'
+not_applicable.accessibilityAttributeNames.has(AXRows)='no'
