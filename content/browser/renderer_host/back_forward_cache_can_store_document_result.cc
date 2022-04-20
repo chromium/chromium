@@ -116,8 +116,6 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::RENDERER_PROCESS_KILLED;
     case Reason::kRendererProcessCrashed:
       return ProtoEnum::RENDERER_PROCESS_CRASHED;
-    case Reason::kGrantedMediaStreamAccess:
-      return ProtoEnum::GRANTED_MEDIA_STREAM_ACCESS;
     case Reason::kSchedulerTrackedFeatureUsed:
       return ProtoEnum::SCHEDULER_TRACKED_FEATURE_USED;
     case Reason::kConflictingBrowsingInstance:
@@ -313,8 +311,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "renderer process is killed";
     case Reason::kRendererProcessCrashed:
       return "renderer process crashed";
-    case Reason::kGrantedMediaStreamAccess:
-      return "granted media stream access";
     case Reason::kSchedulerTrackedFeatureUsed:
       return "scheduler tracked feature is used";
     case Reason::kConflictingBrowsingInstance:

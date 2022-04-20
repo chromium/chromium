@@ -1321,9 +1321,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kRendererProcessCrashed:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           RendererProcessCrashed;
-    case Reason::kGrantedMediaStreamAccess:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          GrantedMediaStreamAccess;
     case Reason::kSchedulerTrackedFeatureUsed:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           SchedulerTrackedFeatureUsed;
@@ -1658,7 +1655,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kJavaScriptExecution:
     case Reason::kRendererProcessKilled:
     case Reason::kRendererProcessCrashed:
-    case Reason::kGrantedMediaStreamAccess:
     case Reason::kSchedulerTrackedFeatureUsed:
     case Reason::kConflictingBrowsingInstance:
     case Reason::kCacheFlushed:

@@ -66,7 +66,7 @@ class BackForwardCacheMetrics
     kRendererProcessKilled = 15,
     kRendererProcessCrashed = 16,
     // 17: Dialogs are no longer a reason to exclude from BackForwardCache
-    kGrantedMediaStreamAccess = 18,
+    // 18: GrantedMediaStreamAccess is no longer blocking.
     kSchedulerTrackedFeatureUsed = 19,
     kConflictingBrowsingInstance = 20,
     kCacheFlushed = 21,
