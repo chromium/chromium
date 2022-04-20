@@ -2071,24 +2071,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
-  SCOPED_UMA_AND_UKM_TIMER(View()->EnsureUkmAggregator(),
-                           LocalFrameUkmAggregator::kStyle);
-  FontPerformance::StyleScope font_performance_scope;
-  ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(), GetFrame(),
-                       BlinkState::STYLE);
-
-  // RecalcSlotAssignments should be done before checking
-  // NeedsLayoutTreeUpdateForThisDocument().
-  GetSlotAssignmentEngine().RecalcSlotAssignments();
-
-  // We can call FlatTreeTraversal::AssertFlatTreeNodeDataUpdated just after
-  // calling RecalcSlotAssignments(), however, it would be better to call it at
-  // least after InStyleRecalc() check below in order to avoid superfluous
-  // check, which would be the cause of web tests timeout when dcheck is on.
-
-  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(*this);
-
-  if (!NeedsLayoutTreeUpdateForThisDocument()) {
+  auto advance_to_style_clean = [this]() {
     if (Lifecycle().GetState() < DocumentLifecycle::kStyleClean) {
       // NeedsLayoutTreeUpdateForThisDocument may change to false without any
       // actual layout tree update.  For example, NeedsAnimationTimingUpdate
@@ -2101,8 +2084,46 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     // need a layout tree update, but need to make sure they are not blocking
     // the load event.
     UnblockLoadEventAfterLayoutTreeUpdate();
+  };
+
+  bool needs_slot_assignment = IsSlotAssignmentDirty();
+  bool needs_layout_tree_update = false;
+
+  if (!needs_slot_assignment) {
+    needs_layout_tree_update = NeedsLayoutTreeUpdateForThisDocument();
+    if (!needs_layout_tree_update) {
+      // Early out for no-op calls before the UMA/UKM measurement is set up to
+      // avoid a large number of close-to-zero samples.
+      advance_to_style_clean();
+      return;
+    }
+  }
+
+  SCOPED_UMA_AND_UKM_TIMER(View()->EnsureUkmAggregator(),
+                           LocalFrameUkmAggregator::kStyle);
+  FontPerformance::StyleScope font_performance_scope;
+  ENTER_EMBEDDER_STATE(V8PerIsolateData::MainThreadIsolate(), GetFrame(),
+                       BlinkState::STYLE);
+
+  if (needs_slot_assignment) {
+    // RecalcSlotAssignments should be done before checking
+    // NeedsLayoutTreeUpdateForThisDocument().
+    GetSlotAssignmentEngine().RecalcSlotAssignments();
+    DCHECK(!needs_layout_tree_update) << "Should be postponed above";
+    needs_layout_tree_update = NeedsLayoutTreeUpdateForThisDocument();
+  }
+
+  if (!needs_layout_tree_update) {
+    advance_to_style_clean();
     return;
   }
+
+  // We can call FlatTreeTraversal::AssertFlatTreeNodeDataUpdated just after
+  // calling RecalcSlotAssignments(), however, it would be better to call it at
+  // least after InStyleRecalc() check below in order to avoid superfluous
+  // check, which would be the cause of web tests timeout when dcheck is on.
+
+  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(*this);
 
   if (InStyleRecalc()) {
     NOTREACHED() << "We should not re-enter style recalc for the same document";
