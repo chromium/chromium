@@ -55,7 +55,7 @@ ci.builder(
     tree_closing = True,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Android WebView M (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -66,7 +66,7 @@ ci.builder(
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Android WebView N (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -77,7 +77,7 @@ ci.builder(
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Android WebView O (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -88,7 +88,7 @@ ci.builder(
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Android WebView P (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -245,7 +245,7 @@ ci.builder(
     ssd = True,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Marshmallow 64 bit Tester",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -256,7 +256,7 @@ ci.builder(
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Marshmallow Tablet Tester",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -291,7 +291,7 @@ ci.builder(
     triggered_by = ["ci/Android arm Builder (dbg)"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Nougat Phone Tester",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -302,7 +302,7 @@ ci.builder(
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Oreo Phone Tester",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -592,7 +592,7 @@ ci.builder(
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

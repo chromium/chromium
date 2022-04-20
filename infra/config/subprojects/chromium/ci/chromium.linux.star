@@ -249,7 +249,7 @@ ci.builder(
     reclient_instance = rbe_instance.DEFAULT,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Linux Tests",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -257,7 +257,6 @@ ci.builder(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
     triggered_by = ["ci/Linux Builder"],
     # TODO(crbug.com/1249968): Roll this out more broadly.
     resultdb_bigquery_exports = [
@@ -272,7 +271,7 @@ ci.builder(
     ],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Linux Tests (dbg)(1)",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
@@ -295,12 +294,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["ci/Linux Builder (dbg)"],
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "Linux Tests (Wayland)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -308,7 +304,6 @@ ci.builder(
         short_name = "tst-wl",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
     triggered_by = ["ci/Linux Builder (Wayland)"],
 )
 

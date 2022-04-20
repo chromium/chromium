@@ -499,12 +499,11 @@ ci.builder(
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "linux-lacros-tester-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     triggered_by = ["linux-lacros-builder-fyi-rel"],
 )
 
@@ -516,12 +515,11 @@ ci.builder(
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "linux-lacros-dbg-tests-fyi",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     triggered_by = ["linux-lacros-dbg-fyi"],
 )
 
@@ -588,7 +586,7 @@ ci.builder(
 
 # This is launching & collecting entirely isolated tests.
 # OS shouldn't matter.
-ci.builder(
+ci.thin_tester(
     name = "mac-osxbeta-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -613,9 +611,7 @@ ci.builder(
         category = "mac",
         short_name = "beta",
     ),
-    goma_backend = goma.backend.RBE_PROD,
     main_console_view = None,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     triggered_by = ["ci/Mac Builder"],
 )
 
@@ -695,12 +691,11 @@ ci.builder(
     reclient_instance = rbe_instance.DEFAULT,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win-pixel-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "win10",
     ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     triggered_by = ["win-pixel-builder-rel"],
 )
 
@@ -1454,6 +1449,8 @@ ci.builder(
     ),
     goma_backend = None,
     main_console_view = None,
+    # TODO(gbeaty) Investigate if this needs to run on windows, if not switch to
+    # ci.thin_tester
     os = os.WINDOWS_10,
     triggered_by = ["ci/Win x64 Builder"],
 )

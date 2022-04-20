@@ -534,7 +534,7 @@ ci.builder(
     os = os.LINUX_BIONIC_REMOVE,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "linux-lacros-tester-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -545,7 +545,6 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["linux-lacros-builder-rel"],
     tree_closing = False,
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(

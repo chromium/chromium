@@ -34,6 +34,9 @@ consoles.console_view(
     },
 )
 
+# TODO(gbeaty) Investigate if the testers need to run on windows, if not, switch
+# them to ci.thin_tester
+
 ci.builder(
     name = "WebKit Win10",
     console_view_entry = consoles.console_view_entry(

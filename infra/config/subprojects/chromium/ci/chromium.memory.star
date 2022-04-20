@@ -36,6 +36,9 @@ consoles.console_view(
     },
 )
 
+# TODO(gbeaty) Find a way to switch testers to use ci.thin_tester while ensuring
+# that the builders and testers targeting linux set the necessary notifies
+
 def linux_memory_builder(*, name, **kwargs):
     kwargs["notifies"] = kwargs.get("notifies", []) + ["linux-memory"]
     return ci.builder(name = name, **kwargs)
