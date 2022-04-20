@@ -3372,6 +3372,42 @@ TEST_F(StyleEngineTest, CSSOMMediaConditionUnknownUseCounter) {
   }
 }
 
+TEST_F(StyleEngineTest, AtScopeUseCount) {
+  ScopedCSSScopeForTest scope_feature(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { --x: No @scope rule here; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScope));
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @scope (.a) {
+        body { --x:true; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScope));
+}
+
+TEST_F(StyleEngineTest, AtScopeUseCountWithoutFeature) {
+  ScopedCSSScopeForTest scope_feature(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @scope (.a) {
+        body { --x:true; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScope));
+}
+
 TEST_F(StyleEngineTest, RemoveDeclaredPropertiesEmptyRegistry) {
   EXPECT_FALSE(GetDocument().GetPropertyRegistry());
   PropertyRegistration::RemoveDeclaredProperties(GetDocument());

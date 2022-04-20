@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -56,6 +57,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kNamespace,
     kContainer,
     kCounterStyle,
+    kScope,
     kScrollTimeline,
     kSupports,
     kViewport,
@@ -85,6 +87,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPageRule() const { return GetType() == kPage; }
   bool IsPropertyRule() const { return GetType() == kProperty; }
   bool IsStyleRule() const { return GetType() == kStyle; }
+  bool IsScopeRule() const { return GetType() == kScope; }
   bool IsScrollTimelineRule() const { return GetType() == kScrollTimeline; }
   bool IsSupportsRule() const { return GetType() == kSupports; }
   bool IsViewportRule() const { return GetType() == kViewport; }
@@ -294,6 +297,25 @@ class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
   HeapVector<Member<StyleRuleBase>> child_rules_;
 };
 
+class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
+ public:
+  StyleRuleScope(const StyleScope&,
+                 HeapVector<Member<StyleRuleBase>>& adopt_rules);
+  StyleRuleScope(const StyleRuleScope&);
+  ~StyleRuleScope();
+
+  StyleRuleScope* Copy() const {
+    return MakeGarbageCollected<StyleRuleScope>(*this);
+  }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+  const StyleScope& GetStyleScope() const { return *style_scope_; }
+
+ private:
+  Member<const StyleScope> style_scope_;
+};
+
 // https://www.w3.org/TR/css-cascade-5/#layer-block
 class CORE_EXPORT StyleRuleLayerBlock : public StyleRuleGroup {
  public:
@@ -475,10 +497,18 @@ struct DowncastTraits<StyleRuleScrollTimeline> {
 };
 
 template <>
+struct DowncastTraits<StyleRuleScope> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsScopeRule();
+  }
+};
+
+template <>
 struct DowncastTraits<StyleRuleGroup> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMediaRule() || rule.IsSupportsRule() ||
-           rule.IsContainerRule() || rule.IsLayerBlockRule();
+           rule.IsContainerRule() || rule.IsLayerBlockRule() ||
+           rule.IsScopeRule();
   }
 };
 

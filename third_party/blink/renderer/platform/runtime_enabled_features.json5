@@ -749,6 +749,11 @@
       name: "CSSPseudoPlayingPaused",
       status: "test",
     },
+    {
+      // https://drafts.csswg.org/css-cascade-6/#scoped-styles
+      name: "CSSScope",
+      status: "test",
+    },
     // Scrollbar styling.
     // https://drafts.csswg.org/css-scrollbars/
     {

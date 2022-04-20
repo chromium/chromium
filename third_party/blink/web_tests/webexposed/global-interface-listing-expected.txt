@@ -899,6 +899,9 @@ interface CSSScale : CSSTransformComponent
     setter x
     setter y
     setter z
+interface CSSScopeRule : CSSConditionRule
+    attribute @@toStringTag
+    method constructor
 interface CSSScrollTimelineRule : CSSRule
     attribute @@toStringTag
     getter end

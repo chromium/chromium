@@ -176,6 +176,7 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleProperty* ConsumePropertyRule(CSSParserTokenStream&);
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
   StyleRuleScrollTimeline* ConsumeScrollTimelineRule(CSSParserTokenStream&);
+  StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&);
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream&);
   StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&);
 

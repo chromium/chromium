@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_namespace_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
+#include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_scroll_timeline_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
@@ -93,6 +94,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kScrollTimeline:
       To<StyleRuleScrollTimeline>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kScope:
+      To<StyleRuleScope>(this)->TraceAfterDispatch(visitor);
       return;
     case kSupports:
       To<StyleRuleSupports>(this)->TraceAfterDispatch(visitor);
@@ -154,6 +158,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kScrollTimeline:
       To<StyleRuleScrollTimeline>(this)->~StyleRuleScrollTimeline();
       return;
+    case kScope:
+      To<StyleRuleScope>(this)->~StyleRuleScope();
+      return;
     case kSupports:
       To<StyleRuleSupports>(this)->~StyleRuleSupports();
       return;
@@ -204,6 +211,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleMedia>(this)->Copy();
     case kScrollTimeline:
       return To<StyleRuleScrollTimeline>(this)->Copy();
+    case kScope:
+      return To<StyleRuleScope>(this)->Copy();
     case kSupports:
       return To<StyleRuleSupports>(this)->Copy();
     case kImport:
@@ -265,6 +274,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
     case kScrollTimeline:
       rule = MakeGarbageCollected<CSSScrollTimelineRule>(
           To<StyleRuleScrollTimeline>(self), parent_sheet);
+      break;
+    case kScope:
+      rule = MakeGarbageCollected<CSSScopeRule>(To<StyleRuleScope>(self),
+                                                parent_sheet);
       break;
     case kSupports:
       rule = MakeGarbageCollected<CSSSupportsRule>(To<StyleRuleSupports>(self),
@@ -476,6 +489,21 @@ void StyleRuleScrollTimeline::TraceAfterDispatch(
   visitor->Trace(layer_);
 
   StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+StyleRuleScope::StyleRuleScope(const StyleScope& style_scope,
+                               HeapVector<Member<StyleRuleBase>>& adopt_rules)
+    : StyleRuleGroup(kScope, adopt_rules), style_scope_(&style_scope) {}
+
+StyleRuleScope::StyleRuleScope(const StyleRuleScope& other)
+    : StyleRuleGroup(other),
+      style_scope_(MakeGarbageCollected<StyleScope>(*other.style_scope_)) {}
+
+StyleRuleScope::~StyleRuleScope() = default;
+
+void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(style_scope_);
+  StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
 StyleRuleGroup::StyleRuleGroup(RuleType type,

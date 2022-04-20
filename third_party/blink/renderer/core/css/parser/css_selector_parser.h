@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_SELECTOR_PARSER_H_
 
 #include <memory>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -44,6 +45,19 @@ class CORE_EXPORT CSSSelectorParser {
   // Returns the argument of a parameterized pseudo-element. For example, for
   // '::highlight(foo)' it returns 'foo'.
   static AtomicString ParsePseudoElementArgument(const String&);
+
+  // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
+  // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
+  //
+  // Note that <scope-start> / <scope-end> are *forgiving* selector lists.
+  // Therefore empty lists, represented by !CSSSelectorList::IsValid(), are
+  // allowed.
+  //
+  // Parse errors are signalled by absl::nullopt.
+  static absl::optional<CSSSelectorList> ParseScopeBoundary(
+      CSSParserTokenRange,
+      const CSSParserContext*,
+      StyleSheetContents*);
 
  private:
   CSSSelectorParser(const CSSParserContext*, StyleSheetContents*);

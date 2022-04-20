@@ -37947,6 +37947,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4209" label="LegacyConstraintGoogCpuOveruseDetection"/>
   <int value="4210" label="AudioContextOutputLatency"/>
   <int value="4211" label="V8Window_QueryLocalFonts_Method"/>
+  <int value="4212" label="CSSAtRuleScope"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

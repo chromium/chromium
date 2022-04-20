@@ -610,6 +610,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
         return ConsumePropertyRule(stream);
       case kCSSAtRuleScrollTimeline:
         return ConsumeScrollTimelineRule(stream);
+      case kCSSAtRuleScope:
+        return ConsumeScopeRule(stream);
       case kCSSAtRuleCounterStyle:
         return ConsumeCounterStyleRule(stream);
       default:
@@ -1081,6 +1083,69 @@ StyleRuleScrollTimeline* CSSParserImpl::ConsumeScrollTimelineRule(
       name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
+StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
+  DCHECK(RuntimeEnabledFeatures::CSSScopeEnabled());
+
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
+    return nullptr;
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kScope, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+  }
+
+  absl::optional<CSSSelectorList> from;
+  absl::optional<CSSSelectorList> to;
+
+  prelude.ConsumeWhitespace();
+  if (prelude.Peek().GetType() != kLeftParenthesisToken)
+    return nullptr;
+
+  // <scope-start>
+  {
+    auto block = prelude.ConsumeBlock();
+    from = CSSSelectorParser::ParseScopeBoundary(block, context_, style_sheet_);
+    if (!from)
+      return nullptr;
+  }
+
+  prelude.ConsumeWhitespace();
+
+  // to (<scope-end>)
+  if (css_parsing_utils::ConsumeIfIdent(prelude, "to")) {
+    if (prelude.Peek().GetType() != kLeftParenthesisToken)
+      return nullptr;
+
+    auto block = prelude.ConsumeBlock();
+    to = CSSSelectorParser::ParseScopeBoundary(block, context_, style_sheet_);
+    if (!to)
+      return nullptr;
+  }
+
+  prelude.ConsumeWhitespace();
+
+  if (!prelude.AtEnd())
+    return nullptr;
+
+  if (observer_)
+    observer_->StartRuleBody(stream.Offset());
+
+  HeapVector<Member<StyleRuleBase>> rules;
+  ConsumeRuleList(stream, kRegularRuleList,
+                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+
+  if (observer_)
+    observer_->EndRuleBody(stream.Offset());
+
+  auto* style_scope =
+      MakeGarbageCollected<StyleScope>(std::move(*from), std::move(to));
+  return MakeGarbageCollected<StyleRuleScope>(*style_scope, rules);
+}
+
 StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
@@ -1259,13 +1324,13 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
                                            StyleRule::RuleType rule_type) {
   DCHECK(parsed_properties_.IsEmpty());
 
-  bool is_observer_rule_type = rule_type == StyleRule::kStyle ||
-                               rule_type == StyleRule::kProperty ||
-                               rule_type == StyleRule::kContainer ||
-                               rule_type == StyleRule::kCounterStyle ||
-                               rule_type == StyleRule::kFontPaletteValues ||
-                               rule_type == StyleRule::kScrollTimeline ||
-                               rule_type == StyleRule::kKeyframe;
+  bool is_observer_rule_type =
+      rule_type == StyleRule::kStyle || rule_type == StyleRule::kProperty ||
+      rule_type == StyleRule::kContainer ||
+      rule_type == StyleRule::kCounterStyle ||
+      rule_type == StyleRule::kFontPaletteValues ||
+      rule_type == StyleRule::kScrollTimeline ||
+      rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope;
   bool use_observer = observer_ && is_observer_rule_type;
   if (use_observer) {
     observer_->StartRuleBody(stream.Offset());

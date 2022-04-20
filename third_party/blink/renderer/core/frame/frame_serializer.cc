@@ -496,7 +496,8 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     case CSSRule::kMediaRule:
     case CSSRule::kSupportsRule:
     case CSSRule::kContainerRule:
-    case CSSRule::kLayerBlockRule: {
+    case CSSRule::kLayerBlockRule:
+    case CSSRule::kScopeRule: {
       CSSRuleList* rule_list = rule->cssRules();
       for (unsigned i = 0; i < rule_list->length(); ++i)
         SerializeCSSRule(rule_list->item(i));

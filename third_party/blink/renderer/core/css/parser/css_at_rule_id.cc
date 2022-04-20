@@ -48,6 +48,11 @@ CSSAtRuleID CssAtRuleID(StringView name) {
       return kCSSAtRuleScrollTimeline;
     return kCSSAtRuleInvalid;
   }
+  if (EqualIgnoringASCIICase(name, "scope")) {
+    if (RuntimeEnabledFeatures::CSSScopeEnabled())
+      return kCSSAtRuleScope;
+    return kCSSAtRuleInvalid;
+  }
   if (EqualIgnoringASCIICase(name, "supports"))
     return kCSSAtRuleSupports;
   if (EqualIgnoringASCIICase(name, "viewport"))
@@ -96,6 +101,9 @@ void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
       return;
     case kCSSAtRuleCounterStyle:
       feature = WebFeature::kCSSAtRuleCounterStyle;
+      break;
+    case kCSSAtRuleScope:
+      feature = WebFeature::kCSSAtRuleScope;
       break;
     case kCSSAtRuleScrollTimeline:
       feature = WebFeature::kCSSAtRuleScrollTimeline;

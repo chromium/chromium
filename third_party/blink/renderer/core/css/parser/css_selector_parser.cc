@@ -71,6 +71,23 @@ CSSSelectorList CSSSelectorParser::ConsumeSelector(
 }
 
 // static
+absl::optional<CSSSelectorList> CSSSelectorParser::ParseScopeBoundary(
+    CSSParserTokenRange range,
+    const CSSParserContext* context,
+    StyleSheetContents* style_sheet) {
+  CSSSelectorParser parser(context, style_sheet);
+  DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
+
+  range.ConsumeWhitespace();
+  CSSSelectorList result = parser.ConsumeForgivingComplexSelectorList(range);
+  if (!range.AtEnd())
+    return absl::nullopt;
+
+  parser.RecordUsageAndDeprecations(result);
+  return result;
+}
+
+// static
 bool CSSSelectorParser::SupportsComplexSelector(
     CSSParserTokenRange range,
     const CSSParserContext* context) {

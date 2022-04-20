@@ -1,0 +1,16 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/css/style_scope.h"
+
+namespace blink {
+
+StyleScope::StyleScope(CSSSelectorList from, absl::optional<CSSSelectorList> to)
+    : from_(std::move(from)), to_(std::move(to)) {}
+
+StyleScope::StyleScope(const StyleScope& other)
+    : from_(other.from_.Copy()),
+      to_(other.to_ ? absl::make_optional(other.to_->Copy()) : absl::nullopt) {}
+
+}  // namespace blink

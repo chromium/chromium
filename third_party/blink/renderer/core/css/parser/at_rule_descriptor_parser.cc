@@ -185,6 +185,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kLayerBlock:
     case StyleRule::kLayerStatement:
     case StyleRule::kNamespace:
+    case StyleRule::kScope:
     case StyleRule::kSupports:
     case StyleRule::kViewport:
       // TODO(andruud): Handle other descriptor types here.

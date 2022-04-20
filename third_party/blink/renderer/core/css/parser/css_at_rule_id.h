@@ -25,6 +25,7 @@ enum CSSAtRuleID {
   kCSSAtRuleProperty,
   kCSSAtRuleContainer,
   kCSSAtRuleCounterStyle,
+  kCSSAtRuleScope,
   kCSSAtRuleScrollTimeline,
   kCSSAtRuleSupports,
   kCSSAtRuleViewport,

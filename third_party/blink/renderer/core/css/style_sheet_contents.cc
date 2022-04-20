@@ -543,6 +543,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kContainer:
       case StyleRuleBase::kMedia:
       case StyleRuleBase::kLayerBlock:
+      case StyleRuleBase::kScope:
         if (ChildRulesHaveFailedOrCanceledSubresources(
                 To<StyleRuleGroup>(rule)->ChildRules()))
           return true;
