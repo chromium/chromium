@@ -13,17 +13,15 @@
 #include "base/component_export.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "ipc/ipc_param_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/scheme_host_port.h"
-#include "url/third_party/mozilla/url_parse.h"
-#include "url/url_canon.h"
-#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
