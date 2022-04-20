@@ -517,6 +517,11 @@ int SimpleSynchronousEntry::DeleteEntryFilesInternal(
 int SimpleSynchronousEntry::Doom() {
   BackendFileOperations* file_operations = nullptr;
   ScopedFileOperationsBinding binding(this, &file_operations);
+  return DoomInternal(file_operations);
+}
+
+int SimpleSynchronousEntry::DoomInternal(
+    BackendFileOperations* file_operations) {
   if (entry_file_key_.doom_generation != 0u) {
     // Already doomed.
     return true;
@@ -604,7 +609,7 @@ void SimpleSynchronousEntry::ReadData(const ReadRequest& in_entry_op,
   if (!file.IsOK() || (header_and_key_check_needed_[file_index] &&
                        !CheckHeaderAndKey(file.get(), file_index))) {
     out_result->result = net::ERR_FAILED;
-    Doom();
+    DoomInternal(file_operations);
     return;
   }
   const int64_t file_offset = entry_stat->GetOffsetInFile(
@@ -626,8 +631,8 @@ void SimpleSynchronousEntry::ReadData(const ReadRequest& in_entry_op,
           in_entry_op.offset + bytes_read ==
               entry_stat->data_size(in_entry_op.index)) {
         int checksum_result =
-            CheckEOFRecord(file.get(), in_entry_op.index, *entry_stat,
-                           out_result->updated_crc32);
+            CheckEOFRecord(file_operations, file.get(), in_entry_op.index,
+                           *entry_stat, out_result->updated_crc32);
         if (checksum_result < 0) {
           out_result->result = checksum_result;
           return;
@@ -639,7 +644,7 @@ void SimpleSynchronousEntry::ReadData(const ReadRequest& in_entry_op,
     out_result->result = bytes_read;
   } else {
     out_result->result = net::ERR_CACHE_READ_FAILURE;
-    Doom();
+    DoomInternal(file_operations);
   }
 }
 
@@ -660,7 +665,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
         file_operations, this, SubFileForFileIndex(file_index));
     if (!file.IsOK() || !CheckHeaderAndKey(file.get(), file_index)) {
       out_write_result->result = net::ERR_FAILED;
-      Doom();
+      DoomInternal(file_operations);
       return;
     }
   }
@@ -686,13 +691,13 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
     base::File::Error error;
     if (!MaybeCreateFile(file_operations, file_index, FILE_REQUIRED, &error)) {
       RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_LAZY_CREATE_FAILURE);
-      Doom();
+      DoomInternal(file_operations);
       out_write_result->result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
     if (!InitializeCreatedFile(file_operations, file_index)) {
       RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_LAZY_INITIALIZE_FAILURE);
-      Doom();
+      DoomInternal(file_operations);
       out_write_result->result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
@@ -705,7 +710,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
       file_operations, this, SubFileForFileIndex(file_index));
   if (!file.IsOK()) {
     out_write_result->result = net::ERR_FAILED;
-    Doom();
+    DoomInternal(file_operations);
     return;
   }
 
@@ -715,7 +720,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
         out_entry_stat->GetEOFOffsetInFile(key_.size(), index);
     if (!file->SetLength(file_eof_offset)) {
       RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_PRETRUNCATE_FAILURE);
-      Doom();
+      DoomInternal(file_operations);
       out_write_result->result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
@@ -723,7 +728,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
   if (buf_len > 0) {
     if (file->Write(file_offset, in_buf->data(), buf_len) != buf_len) {
       RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_WRITE_FAILURE);
-      Doom();
+      DoomInternal(file_operations);
       out_write_result->result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
@@ -737,7 +742,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
         out_entry_stat->GetLastEOFOffsetInFile(key_.size(), index);
     if (!file->SetLength(file_eof_offset)) {
       RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_TRUNCATE_FAILURE);
-      Doom();
+      DoomInternal(file_operations);
       out_write_result->result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
@@ -779,7 +784,7 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
   SimpleFileTracker::FileHandle sparse_file = file_tracker_->Acquire(
       file_operations, this, SimpleFileTracker::SubFile::FILE_SPARSE);
   if (!sparse_file.IsOK()) {
-    Doom();
+    DoomInternal(file_operations);
     *out_result = net::ERR_CACHE_READ_FAILURE;
     return;
   }
@@ -806,7 +811,7 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
       int len_to_read = std::min(buf_len, range_len_after_offset);
       if (!ReadSparseRange(sparse_file.get(), found_range, net_offset,
                            len_to_read, buf)) {
-        Doom();
+        DoomInternal(file_operations);
         *out_result = net::ERR_CACHE_READ_FAILURE;
         return;
       }
@@ -826,7 +831,7 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
     int len_to_read = std::min(buf_len - read_so_far, range_len);
     if (!ReadSparseRange(sparse_file.get(), found_range, 0, len_to_read,
                          buf + read_so_far)) {
-      Doom();
+      DoomInternal(file_operations);
       *out_result = net::ERR_CACHE_READ_FAILURE;
       return;
     }
@@ -853,14 +858,14 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
   int appended_so_far = 0;
 
   if (!sparse_file_open() && !CreateSparseFile(file_operations)) {
-    Doom();
+    DoomInternal(file_operations);
     *out_result = net::ERR_CACHE_WRITE_FAILURE;
     return;
   }
   SimpleFileTracker::FileHandle sparse_file = file_tracker_->Acquire(
       file_operations, this, SimpleFileTracker::SubFile::FILE_SPARSE);
   if (!sparse_file.IsOK()) {
-    Doom();
+    DoomInternal(file_operations);
     *out_result = net::ERR_CACHE_WRITE_FAILURE;
     return;
   }
@@ -870,7 +875,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
   if (!base::CheckAdd(sparse_data_size, buf_len)
            .AssignIfValid(&future_sparse_data_size) ||
       future_sparse_data_size < 0) {
-    Doom();
+    DoomInternal(file_operations);
     *out_result = net::ERR_CACHE_WRITE_FAILURE;
     return;
   }
@@ -902,7 +907,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
       int len_to_write = std::min(buf_len, range_len_after_offset);
       if (!WriteSparseRange(sparse_file.get(), found_range, net_offset,
                             len_to_write, buf)) {
-        Doom();
+        DoomInternal(file_operations);
         *out_result = net::ERR_CACHE_WRITE_FAILURE;
         return;
       }
@@ -920,7 +925,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
           static_cast<int>(found_range->offset - (offset + written_so_far));
       if (!AppendSparseRange(sparse_file.get(), offset + written_so_far,
                              len_to_append, buf + written_so_far)) {
-        Doom();
+        DoomInternal(file_operations);
         *out_result = net::ERR_CACHE_WRITE_FAILURE;
         return;
       }
@@ -931,7 +936,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
     int len_to_write = std::min(buf_len - written_so_far, range_len);
     if (!WriteSparseRange(sparse_file.get(), found_range, 0, len_to_write,
                           buf + written_so_far)) {
-      Doom();
+      DoomInternal(file_operations);
       *out_result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
@@ -943,7 +948,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
     int len_to_append = buf_len - written_so_far;
     if (!AppendSparseRange(sparse_file.get(), offset + written_so_far,
                            len_to_append, buf + written_so_far)) {
-      Doom();
+      DoomInternal(file_operations);
       *out_result = net::ERR_CACHE_WRITE_FAILURE;
       return;
     }
@@ -997,10 +1002,12 @@ void SimpleSynchronousEntry::GetAvailableRange(const SparseRequest& in_entry_op,
       start, static_cast<int>(std::min(avail_so_far, len_from_start)));
 }
 
-int SimpleSynchronousEntry::CheckEOFRecord(base::File* file,
-                                           int stream_index,
-                                           const SimpleEntryStat& entry_stat,
-                                           uint32_t expected_crc32) {
+int SimpleSynchronousEntry::CheckEOFRecord(
+    BackendFileOperations* file_operations,
+    base::File* file,
+    int stream_index,
+    const SimpleEntryStat& entry_stat,
+    uint32_t expected_crc32) {
   DCHECK(initialized_);
   SimpleFileEOF eof_record;
   int file_offset = entry_stat.GetEOFOffsetInFile(key_.size(), stream_index);
@@ -1009,14 +1016,14 @@ int SimpleSynchronousEntry::CheckEOFRecord(base::File* file,
       GetEOFRecordData(file, nullptr, file_index, file_offset, &eof_record);
 
   if (rv != net::OK) {
-    Doom();
+    DoomInternal(file_operations);
     return rv;
   }
   if ((eof_record.flags & SimpleFileEOF::FLAG_HAS_CRC32) &&
       eof_record.data_crc32 != expected_crc32) {
     DVLOG(1) << "EOF record had bad crc.";
     RecordCheckEOFResult(cache_type_, CHECK_EOF_RESULT_CRC_MISMATCH);
-    Doom();
+    DoomInternal(file_operations);
     return net::ERR_CACHE_CHECKSUM_MISMATCH;
   }
   RecordCheckEOFResult(cache_type_, CHECK_EOF_RESULT_SUCCESS);
@@ -1077,7 +1084,7 @@ void SimpleSynchronousEntry::Close(
         file_operations.get(), this, SubFileForFileIndex(file_index));
     if (!file.IsOK()) {
       RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
-      Doom();
+      DoomInternal(file_operations.get());
       break;
     }
 
@@ -1088,7 +1095,7 @@ void SimpleSynchronousEntry::Close(
                       entry_stat.data_size(0)) != entry_stat.data_size(0)) {
         RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
         DVLOG(1) << "Could not write stream 0 data.";
-        Doom();
+        DoomInternal(file_operations.get());
       }
       net::SHA256HashValue hash_value;
       CalculateSHA256OfKey(key_, &hash_value);
@@ -1097,7 +1104,7 @@ void SimpleSynchronousEntry::Close(
                       sizeof(hash_value)) != sizeof(hash_value)) {
         RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
         DVLOG(1) << "Could not write stream 0 data.";
-        Doom();
+        DoomInternal(file_operations.get());
       }
 
       // Re-compute stream 0 CRC if the data got changed (we may be here even
@@ -1129,14 +1136,14 @@ void SimpleSynchronousEntry::Close(
     if (stream_index == 0 && !file->SetLength(eof_offset)) {
       RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
       DVLOG(1) << "Could not truncate stream 0 file.";
-      Doom();
+      DoomInternal(file_operations.get());
       break;
     }
     if (file->Write(eof_offset, reinterpret_cast<const char*>(&eof_record),
                     sizeof(eof_record)) != sizeof(eof_record)) {
       RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
       DVLOG(1) << "Could not write eof record.";
-      Doom();
+      DoomInternal(file_operations.get());
       break;
     }
   }
@@ -1148,7 +1155,7 @@ void SimpleSynchronousEntry::Close(
       SimpleFileTracker::FileHandle file = file_tracker_->Acquire(
           file_operations.get(), this, SubFileForFileIndex(i));
       if (!file.IsOK() || !CheckHeaderAndKey(file.get(), i))
-        Doom();
+        DoomInternal(file_operations.get());
     }
     CloseFile(file_operations.get(), i);
   }

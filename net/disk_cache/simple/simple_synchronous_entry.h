@@ -277,7 +277,8 @@ class SimpleSynchronousEntry {
                  net::IOBuffer* in_buf,
                  SimpleEntryStat* out_entry_stat,
                  WriteResult* out_write_result);
-  int CheckEOFRecord(base::File* file,
+  int CheckEOFRecord(BackendFileOperations* file_operations,
+                     base::File* file,
                      int stream_index,
                      const SimpleEntryStat& entry_stat,
                      uint32_t expected_crc32);
@@ -484,6 +485,8 @@ class SimpleSynchronousEntry {
   static bool TruncateFilesForEntryHash(const base::FilePath& path,
                                         uint64_t entry_hash,
                                         BackendFileOperations* file_operations);
+
+  int DoomInternal(BackendFileOperations* file_operations);
 
   base::FilePath GetFilenameFromFileIndex(int file_index) const;
 
