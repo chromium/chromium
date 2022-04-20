@@ -131,6 +131,6 @@ def _ParseClassNode(class_node):
   """
   methods = []
   for child in class_node:
-    if child.tag == 'method':
+    if child.tag == 'method' and child.attrib['visibility'] == 'public':
       methods.append(child.attrib['name'])
   return {'methods': methods, 'superclass': class_node.attrib['extends']}

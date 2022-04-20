@@ -119,13 +119,14 @@ class DexdumpXMLParseTest(unittest.TestCase):
     self.assertEqual(expected, actual)
 
   def testParseClassNode(self):
-    example_xml_string = (
-        '<class name="Class1" extends="java.lang.Object">'
-        '<method name="method1">'
-        '</method>'
-        '<method name="method2">'
-        '</method>'
-        '</class>')
+    example_xml_string = ('<class name="Class1" extends="java.lang.Object">'
+                          '<method name="method1" visibility="public">'
+                          '</method>'
+                          '<method name="method2" visibility="public">'
+                          '</method>'
+                          '<method name="method3" visibility="private">'
+                          '</method>'
+                          '</class>')
 
     actual = dexdump._ParseClassNode(
         ElementTree.fromstring(example_xml_string))
