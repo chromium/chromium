@@ -327,6 +327,10 @@ template("chrome_public_common_apk_or_module_tmpl") {
       deps += [ ":$_unwind_asset_target" ]
     }
 
+    if (defined(_unwind_asset_v2_target)) {
+      deps += [ ":$_unwind_asset_v2_target" ]
+    }
+
     if (!_is_bundle || !(_is_monochrome || _is_trichrome)) {
       deps += [ "//chrome/android:chrome_all_java" ]
     }
