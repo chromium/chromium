@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "url/gurl.h"
 
@@ -103,6 +104,10 @@ class SigninClient : public KeyedService {
   // Returns whether account used to sign into Chrome OS is a child account.
   // Returns nullopt for secondary / non-main profiles in LaCrOS.
   virtual absl::optional<bool> IsInitialPrimaryAccountChild() const = 0;
+
+  // Remove account.
+  virtual void RemoveAccount(
+      const account_manager::AccountKey& account_key) = 0;
 
   // Removes all accounts.
   virtual void RemoveAllAccounts() = 0;

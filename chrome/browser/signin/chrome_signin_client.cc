@@ -336,6 +336,21 @@ absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
   return is_child_session;
 }
 
+void ChromeSigninClient::RemoveAccount(
+    const account_manager::AccountKey& account_key) {
+  absl::optional<account_manager::Account> device_account =
+      GetInitialPrimaryAccount();
+  if (device_account.has_value() && device_account->key == account_key) {
+    DLOG(ERROR)
+        << "The primary account should not be removed from the main profile";
+    return;
+  }
+
+  g_browser_process->profile_manager()
+      ->GetAccountProfileMapper()
+      ->RemoveAccount(profile_->GetPath(), account_key);
+}
+
 void ChromeSigninClient::RemoveAllAccounts() {
   if (GetInitialPrimaryAccount().has_value()) {
     DLOG(ERROR) << "It is not allowed to remove the initial primary account.";

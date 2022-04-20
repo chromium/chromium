@@ -216,12 +216,10 @@ void OnAccountAdded(bool enable_sync,
     return;
   DCHECK_EQ(browser->profile(), profile);
 
-  // TODO(https://crbug.com/1260291): Change SigninAbortedMode to REMOVE_ACCOUNT
-  // once it is supported on Lacros.
   std::move(create_turn_sync_on_helper_callback)
       .Run(profile, browser, access_point, promo_action,
            signin_metrics::Reason::kSigninPrimaryAccount, account_id,
-           TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+           TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

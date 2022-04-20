@@ -104,6 +104,8 @@ class TestSigninClient : public SigninClient {
 
   void SetInitialPrimaryAccountForTests(const account_manager::Account& account,
                                         const absl::optional<bool>& is_child);
+  void RemoveAccount(const account_manager::AccountKey& account_key) override;
+
   void RemoveAllAccounts() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

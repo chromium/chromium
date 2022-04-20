@@ -683,11 +683,6 @@ void TurnSyncOnHelper::AttachToProfile() {
 
 void TurnSyncOnHelper::AbortAndDelete() {
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(https://crbug.com/1260291): Implement or make sure this is
-    // unreachable on lacros.
-    NOTIMPLEMENTED() << "REMOVE_ACCOUNT mode is not supported on lacros";
-#endif
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
         ->ShutdownUserCloudPolicyManager();
     // Revoke the token, and the AccountReconcilor and/or the Gaia server will

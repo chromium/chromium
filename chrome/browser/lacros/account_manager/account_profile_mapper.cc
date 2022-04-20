@@ -213,7 +213,9 @@ void AccountProfileMapper::RemoveAllAccounts(
     return;
   }
 
-  RemoveAccountsInternal(profile_path, entry->GetGaiaIds());
+  base::flat_set<std::string> gaia_ids = entry->GetGaiaIds();
+  if (!gaia_ids.empty())
+    RemoveAccountsInternal(profile_path, gaia_ids);
 }
 
 void AccountProfileMapper::RemoveAccount(

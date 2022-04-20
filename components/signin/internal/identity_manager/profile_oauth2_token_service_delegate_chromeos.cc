@@ -515,8 +515,17 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
     const CoreAccountId& account_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ScopedBatchChange batch(this);
+  AccountInfo account_info =
+      account_tracker_service_->GetAccountInfo(account_id);
+  DCHECK(!account_info.IsEmpty());
+  signin_client_->RemoveAccount(account_manager::AccountKey{
+      account_info.gaia, account_manager::AccountType::kGaia});
+#else
   // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
   NOTREACHED();
+#endif
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentials() {

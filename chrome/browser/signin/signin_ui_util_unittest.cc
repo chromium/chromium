@@ -765,7 +765,7 @@ TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_Signin_EnableSync) {
             mock_create_turn_sync_on_helper.Params().signin_promo_action);
   EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
             mock_create_turn_sync_on_helper.Params().signin_reason);
-  EXPECT_EQ(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+  EXPECT_EQ(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
             mock_create_turn_sync_on_helper.Params().signin_aborted_mode);
 }
 
@@ -905,7 +905,7 @@ TEST_F(MirrorSigninUiUtilTest, ShowSigninPromptAndMaybeEnableSync_Sync) {
             mock_create_turn_sync_on_helper.Params().signin_promo_action);
   EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
             mock_create_turn_sync_on_helper.Params().signin_reason);
-  EXPECT_EQ(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+  EXPECT_EQ(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
             mock_create_turn_sync_on_helper.Params().signin_aborted_mode);
 }
 
