@@ -1237,7 +1237,8 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
 
   // Wait for configuring data types. This is needed to consider proxy types
   // which become known during configuration.
-  if (data_type_manager_->state() != DataTypeManager::CONFIGURED) {
+  if (!data_type_manager_ ||
+      data_type_manager_->state() != DataTypeManager::CONFIGURED) {
     return;
   }
 
