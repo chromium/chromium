@@ -2518,7 +2518,8 @@ AttributionStorageSql::GetAggregatableContributions(
         absl::MakeUint128(DeserializeUint64(statement.ColumnInt64(0)),
                           DeserializeUint64(statement.ColumnInt64(1)));
     int64_t value = statement.ColumnInt64(2);
-    if (value <= 0 || value > std::numeric_limits<uint32_t>::max())
+    if (value <= 0 || value > delegate_->GetAggregatableBudgetPerSource() ||
+        value > std::numeric_limits<uint32_t>::max())
       return {};
 
     contributions.emplace_back(bucket_key, static_cast<uint32_t>(value));
