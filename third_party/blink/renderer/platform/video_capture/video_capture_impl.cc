@@ -39,7 +39,6 @@
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -80,9 +79,9 @@ struct VideoCaptureImpl::BufferContext
       : buffer_type_(buffer_handle->which()),
         media_task_runner_(media_task_runner) {
     switch (buffer_type_) {
-      case VideoFrameBufferHandleType::SHARED_BUFFER_HANDLE:
-        InitializeFromSharedMemory(
-            std::move(buffer_handle->get_shared_buffer_handle()));
+      case VideoFrameBufferHandleType::UNSAFE_SHMEM_REGION:
+        InitializeFromUnsafeShmemRegion(
+            std::move(buffer_handle->get_unsafe_shmem_region()));
         break;
       case VideoFrameBufferHandleType::READ_ONLY_SHMEM_REGION:
         InitializeFromReadOnlyShmemRegion(
@@ -186,23 +185,6 @@ struct VideoCaptureImpl::BufferContext
   }
 
  private:
-  void InitializeFromSharedMemory(mojo::ScopedSharedBufferHandle handle) {
-    DCHECK(handle.is_valid());
-    base::UnsafeSharedMemoryRegion region =
-        mojo::UnwrapUnsafeSharedMemoryRegion(std::move(handle));
-    if (!region.IsValid()) {
-      DLOG(ERROR) << "Unwrapping shared memory failed.";
-      return;
-    }
-    writable_mapping_ = region.Map();
-    if (!writable_mapping_.IsValid()) {
-      DLOG(ERROR) << "Mapping shared memory failed.";
-      return;
-    }
-    data_ = writable_mapping_.GetMemoryAsSpan<uint8_t>().data();
-    data_size_ = writable_mapping_.size();
-  }
-
   void InitializeFromReadOnlyShmemRegion(
       base::ReadOnlySharedMemoryRegion region) {
     DCHECK(region.IsValid());
@@ -304,7 +286,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
   DCHECK(iter != video_capture_impl_.client_buffers_.end());
   buffer_context_ = iter->second;
   switch (buffer_context_->buffer_type()) {
-    case VideoFrameBufferHandleType::SHARED_BUFFER_HANDLE:
+    case VideoFrameBufferHandleType::UNSAFE_SHMEM_REGION:
       // The frame is backed by a writable (unsafe) shared memory handle, but as
       // it is not sent cross-process the region does not need to be attached to
       // the frame. See also the case for READ_ONLY_SHMEM_REGION.

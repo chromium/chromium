@@ -41,11 +41,6 @@ class StubBufferHandleProvider
     return {};
   }
 
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
-    NOTREACHED();
-    return mojo::ScopedSharedBufferHandle();
-  }
-
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
       override {
     return std::make_unique<StubBufferHandle>(mapped_size_, data_);

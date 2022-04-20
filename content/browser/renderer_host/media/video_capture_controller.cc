@@ -28,7 +28,6 @@
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/compositor/image_transport_factory.h"
@@ -230,11 +229,7 @@ void VideoCaptureController::BufferContext::DecreaseConsumerCount() {
 
 media::mojom::VideoBufferHandlePtr
 VideoCaptureController::BufferContext::CloneBufferHandle() {
-  // Unable to use buffer_handle_->Clone(), because shared_buffer does not
-  // support the copy constructor.
-  media::mojom::VideoBufferHandlePtr result =
-      media::mojom::VideoBufferHandle::New();
-  if (buffer_handle_->is_shared_buffer_handle()) {
+  if (buffer_handle_->is_unsafe_shmem_region()) {
     // Buffer handles are always writable as they come from
     // VideoCaptureBufferPool which, among other use cases, provides decoder
     // output buffers.
@@ -242,23 +237,21 @@ VideoCaptureController::BufferContext::CloneBufferHandle() {
     // TODO(crbug.com/793446): BroadcastingReceiver::BufferContext also defines
     // CloneBufferHandle and independently decides on handle permissions. The
     // permissions should be coordinated between these two classes.
-    result->set_shared_buffer_handle(
-        buffer_handle_->get_shared_buffer_handle()->Clone(
-            mojo::SharedBufferHandle::AccessMode::READ_WRITE));
-    DCHECK(result->get_shared_buffer_handle()->is_valid());
+    return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+        buffer_handle_->get_unsafe_shmem_region().Duplicate());
   } else if (buffer_handle_->is_read_only_shmem_region()) {
-    result->set_read_only_shmem_region(
+    return media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
         buffer_handle_->get_read_only_shmem_region().Duplicate());
-    DCHECK(result->get_read_only_shmem_region().IsValid());
   } else if (buffer_handle_->is_mailbox_handles()) {
-    result->set_mailbox_handles(buffer_handle_->get_mailbox_handles()->Clone());
+    return media::mojom::VideoBufferHandle::NewMailboxHandles(
+        buffer_handle_->get_mailbox_handles()->Clone());
   } else if (buffer_handle_->is_gpu_memory_buffer_handle()) {
-    result->set_gpu_memory_buffer_handle(
+    return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
         buffer_handle_->get_gpu_memory_buffer_handle().Clone());
   } else {
     NOTREACHED() << "Unexpected video buffer handle type";
+    return media::mojom::VideoBufferHandlePtr();
   }
-  return result;
 }
 
 VideoCaptureController::FrameDropLogState::FrameDropLogState(

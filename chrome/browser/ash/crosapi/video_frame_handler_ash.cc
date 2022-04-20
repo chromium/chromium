@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "media/base/video_transformation.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -125,13 +126,13 @@ VideoFrameHandlerAsh::ScopedFrameAccessHandlerNotifier::
 void VideoFrameHandlerAsh::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
-  crosapi::mojom::VideoBufferHandlePtr crosapi_handle =
-      crosapi::mojom::VideoBufferHandle::New();
+  crosapi::mojom::VideoBufferHandlePtr crosapi_handle;
 
-  if (buffer_handle->is_shared_buffer_handle()) {
+  if (buffer_handle->is_unsafe_shmem_region()) {
     crosapi_handle->set_shared_buffer_handle(
-        buffer_handle->get_shared_buffer_handle()->Clone(
-            mojo::SharedBufferHandle::AccessMode::READ_WRITE));
+        mojo::WrapPlatformSharedMemoryRegion(
+            base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+                std::move(buffer_handle->get_unsafe_shmem_region()))));
   } else if (buffer_handle->is_gpu_memory_buffer_handle()) {
     crosapi_handle->set_gpu_memory_buffer_handle(ToCrosapiGpuMemoryBufferHandle(
         std::move(buffer_handle->get_gpu_memory_buffer_handle())));

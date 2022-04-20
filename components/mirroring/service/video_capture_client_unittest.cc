@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -90,8 +91,8 @@ class VideoCaptureClientTest : public ::testing::Test,
     const bool use_shared_buffer = GetParam();
     if (use_shared_buffer) {
       client_->OnNewBuffer(
-          buffer_id, media::mojom::VideoBufferHandle::NewSharedBufferHandle(
-                         mojo::SharedBufferHandle::Create(buffer_size)));
+          buffer_id, media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+                         base::UnsafeSharedMemoryRegion::Create(buffer_size)));
     } else {
       client_->OnNewBuffer(
           buffer_id,

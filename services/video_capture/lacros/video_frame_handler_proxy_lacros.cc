@@ -10,6 +10,7 @@
 
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "services/video_capture/public/cpp/video_frame_access_handler.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/mojom/buffer_types.mojom.h"
@@ -159,18 +160,21 @@ VideoFrameHandlerProxyLacros::~VideoFrameHandlerProxyLacros() = default;
 void VideoFrameHandlerProxyLacros::OnNewBuffer(
     int buffer_id,
     crosapi::mojom::VideoBufferHandlePtr buffer_handle) {
-  media::mojom::VideoBufferHandlePtr media_handle =
-      media::mojom::VideoBufferHandle::New();
+  media::mojom::VideoBufferHandlePtr media_handle;
 
   if (buffer_handle->is_shared_buffer_handle()) {
-    media_handle->set_shared_buffer_handle(
-        buffer_handle->get_shared_buffer_handle()->Clone(
-            mojo::SharedBufferHandle::AccessMode::READ_WRITE));
+    // TODO(https://crbug.com/1307959): The LaCrOS interface should be migrated
+    // to use base::UnsafeSharedMemoryRegion as well.
+    media_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+        base::UnsafeSharedMemoryRegion::Deserialize(
+            mojo::UnwrapPlatformSharedMemoryRegion(
+                std::move(buffer_handle->get_shared_buffer_handle()))));
   } else if (buffer_handle->is_gpu_memory_buffer_handle()) {
-    media_handle->set_gpu_memory_buffer_handle(ToGfxGpuMemoryBufferHandle(
-        std::move(buffer_handle->get_gpu_memory_buffer_handle())));
+    media_handle = media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+        ToGfxGpuMemoryBufferHandle(
+            std::move(buffer_handle->get_gpu_memory_buffer_handle())));
   } else if (buffer_handle->is_read_only_shmem_region()) {
-    media_handle->set_read_only_shmem_region(
+    media_handle = media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
         std::move(buffer_handle->get_read_only_shmem_region()));
   } else {
     NOTREACHED() << "Unexpected new buffer type";

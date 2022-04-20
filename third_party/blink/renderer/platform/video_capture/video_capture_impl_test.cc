@@ -19,7 +19,6 @@
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -211,9 +210,8 @@ class VideoCaptureImplTest : public ::testing::Test {
   void SimulateOnBufferCreated(int buffer_id,
                                const base::UnsafeSharedMemoryRegion& region) {
     video_capture_impl_->OnNewBuffer(
-        buffer_id,
-        media::mojom::blink::VideoBufferHandle::NewSharedBufferHandle(
-            mojo::WrapUnsafeSharedMemoryRegion(region.Duplicate())));
+        buffer_id, media::mojom::blink::VideoBufferHandle::NewUnsafeShmemRegion(
+                       region.Duplicate()));
   }
 
   void SimulateReadOnlyBufferCreated(int buffer_id,

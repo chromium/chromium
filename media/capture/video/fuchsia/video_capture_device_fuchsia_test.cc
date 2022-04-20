@@ -71,11 +71,6 @@ class HeapBufferHandleProvider final
     return {};
   }
 
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
-    NOTREACHED();
-    return {};
-  }
-
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
       override {
     return std::make_unique<HeapBufferHandle>(data_.size(), data_.data());

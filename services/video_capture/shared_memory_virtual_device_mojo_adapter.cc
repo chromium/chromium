@@ -87,23 +87,22 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestFrameBuffer(
   if (!base::Contains(known_buffer_ids_, buffer_id)) {
     if (video_frame_handler_.is_bound()) {
       media::mojom::VideoBufferHandlePtr buffer_handle =
-          media::mojom::VideoBufferHandle::New();
-      buffer_handle->set_shared_buffer_handle(
-          buffer_pool_->DuplicateAsMojoBuffer(buffer_id));
+          media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+              buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
       video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     }
     known_buffer_ids_.push_back(buffer_id);
 
     // Share buffer handle with producer.
-    media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
+    media::mojom::VideoBufferHandlePtr buffer_handle;
     if (send_buffer_handles_to_producer_as_raw_file_descriptors_) {
-      buffer_handle->set_shared_memory_via_raw_file_descriptor(
-          buffer_pool_->CreateSharedMemoryViaRawFileDescriptorStruct(
-              buffer_id));
+      buffer_handle =
+          media::mojom::VideoBufferHandle::NewSharedMemoryViaRawFileDescriptor(
+              buffer_pool_->CreateSharedMemoryViaRawFileDescriptorStruct(
+                  buffer_id));
     } else {
-      buffer_handle->set_shared_buffer_handle(
-          buffer_pool_->DuplicateAsMojoBuffer(buffer_id));
+      buffer_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+          buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
     }
     // Invoke the response back only after the producer have acked
     // that it has received the newly created buffer. This is need
@@ -161,9 +160,8 @@ void SharedMemoryVirtualDeviceMojoAdapter::Start(
   // Notify receiver of known buffers */
   for (auto buffer_id : known_buffer_ids_) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_shared_buffer_handle(
-        buffer_pool_->DuplicateAsMojoBuffer(buffer_id));
+        media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+            buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
     video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
   }
 }

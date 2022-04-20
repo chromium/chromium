@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,9 +43,8 @@ class BroadcastingReceiverTest : public ::testing::Test {
         base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize);
     ASSERT_TRUE(shm_region_.IsValid());
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_shared_buffer_handle(
-        mojo::WrapUnsafeSharedMemoryRegion(std::move(shm_region_)));
+        media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+            std::move(shm_region_));
     broadcaster_.OnNewBuffer(kArbitraryBufferId, std::move(buffer_handle));
   }
 
@@ -195,16 +193,13 @@ TEST_F(BroadcastingReceiverTest, ForwardsScaledFrames) {
   mock_video_frame_handler_1_->HoldAccessPermissions();
 
   media::mojom::VideoBufferHandlePtr buffer_handle =
-      media::mojom::VideoBufferHandle::New();
-  buffer_handle->set_shared_buffer_handle(mojo::WrapUnsafeSharedMemoryRegion(
-      base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize)));
+      media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+          base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize));
   broadcaster_.OnNewBuffer(kBufferId, std::move(buffer_handle));
 
   media::mojom::VideoBufferHandlePtr scaled_buffer_handle =
-      media::mojom::VideoBufferHandle::New();
-  scaled_buffer_handle->set_shared_buffer_handle(
-      mojo::WrapUnsafeSharedMemoryRegion(
-          base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize)));
+      media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+          base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize));
   broadcaster_.OnNewBuffer(kScaledBufferId, std::move(scaled_buffer_handle));
 
   // Suspend the second client so that the first client alone controls buffer
@@ -318,9 +313,8 @@ TEST_F(BroadcastingReceiverTest, AccessPermissionsSurviveStop) {
       base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize);
   ASSERT_TRUE(shm_region2.IsValid());
   media::mojom::VideoBufferHandlePtr buffer_handle2 =
-      media::mojom::VideoBufferHandle::New();
-  buffer_handle2->set_shared_buffer_handle(
-      mojo::WrapUnsafeSharedMemoryRegion(std::move(shm_region2)));
+      media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+          std::move(shm_region2));
   broadcaster_.OnNewBuffer(kArbitraryBufferId + 1, std::move(buffer_handle2));
   EXPECT_CALL(*mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _))
       .Times(1);

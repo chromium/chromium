@@ -996,11 +996,6 @@ class MockCaptureHandleProvider
     return base::UnsafeSharedMemoryRegion();
   }
 
-  // Duplicate as a writable (unsafe) mojo buffer.
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
-    return mojo::ScopedSharedBufferHandle();
-  }
-
   // Access a |VideoCaptureBufferHandle| for local, writable memory.
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
       override {

@@ -49,7 +49,7 @@ class BroadcastingReceiver : public mojom::VideoFrameHandler {
     // have to unwrap it before we can clone it. Instead of unwrapping, cloning,
     // and than wrapping back each time we need to clone it, we convert it to
     // a regular shared memory and keep it in this form.
-    void ConvertRawFileDescriptorToSharedBuffer();
+    void ConvertRawFileDescriptorToUnsafeShmemRegion();
 
     int32_t buffer_context_id_;
     int32_t buffer_id_;

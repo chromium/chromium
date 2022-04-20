@@ -52,8 +52,14 @@ struct SharedMemoryViaRawFileDescriptor {
 };
 
 union VideoBufferHandle {
-  handle<shared_buffer> shared_buffer_handle;
+  // TODO(https://crbug.com/1316808): It is extremely confusing that this union
+  // has both an unsafe and a read-only shmem region subtype. This is probably
+  // a sign that this union needs better documentation or to be split apart
+  // into more distinct types.
+  mojo_base.mojom.UnsafeSharedMemoryRegion unsafe_shmem_region;
   mojo_base.mojom.ReadOnlySharedMemoryRegion read_only_shmem_region;
+  // TODO(https://crbug.com/857537): remove this field; it was only needed for
+  // compatibility with older versions of Mojo on ChromeOS.
   SharedMemoryViaRawFileDescriptor shared_memory_via_raw_file_descriptor;
   MailboxBufferHandleSet mailbox_handles;
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;

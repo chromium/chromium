@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/system/sys_info.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -155,9 +157,8 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
  public:
   explicit SharedMemoryBufferHandleHolder(
       media::mojom::VideoBufferHandlePtr buffer_handle)
-      : shared_memory_buffer_handle_(
-            std::move(buffer_handle->get_shared_buffer_handle())) {
-    DCHECK(buffer_handle->is_shared_buffer_handle());
+      : region_(std::move(buffer_handle->get_unsafe_shmem_region())) {
+    DCHECK(buffer_handle->is_unsafe_shmem_region());
     DCHECK(!base::SysInfo::IsRunningOnChromeOS());
   }
   SharedMemoryBufferHandleHolder(const SharedMemoryBufferHandleHolder&) =
@@ -178,7 +179,7 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
     auto frame = media::VideoFrame::WrapExternalData(
         frame_info->pixel_format, frame_info->coded_size,
         frame_info->visible_rect, frame_info->visible_rect.size(),
-        reinterpret_cast<uint8_t*>(mapping_.get()), current_mapping_size_,
+        mapping_.GetMemoryAs<uint8_t>(), mapping_.size(),
         frame_info->timestamp);
 
     return frame;
@@ -189,24 +190,22 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
   // available. Returns true if already mapped, or mapping is successful, false
   // otherwise.
   bool MaybeUpdateMapping(size_t new_mapping_size) {
-    if (mapping_) {
-      DCHECK_EQ(current_mapping_size_, new_mapping_size);
+    if (mapping_.IsValid()) {
+      // TODO(https://crbug.com/1316812): What guarantees that this DCHECK will
+      // hold?
+      DCHECK_EQ(mapping_.size(), new_mapping_size);
       return true;
     }
 
-    mapping_ = shared_memory_buffer_handle_->Map(new_mapping_size);
-    current_mapping_size_ = mapping_ ? new_mapping_size : 0;
-    return !!mapping_;
+    mapping_ = region_.Map();
+    return mapping_.IsValid();
   }
 
-  // The held shared memory buffer handle associated with this object.
-  const mojo::ScopedSharedBufferHandle shared_memory_buffer_handle_;
+  // The held shared memory region associated with this object.
+  base::UnsafeSharedMemoryRegion region_;
 
-  // A shared buffer mapping associated with the held
-  // `shared_memory_buffer_handle_` of size equal to `current_mapping_size_`
-  // bytes. This mapping is valid only if `current_mapping_size_` is non-zero.
-  mojo::ScopedSharedBufferMapping mapping_;
-  size_t current_mapping_size_ = 0;
+  // Shared memory mapping associated with the held `region_`.
+  base::WritableSharedMemoryMapping mapping_;
 };
 
 // -----------------------------------------------------------------------------
@@ -460,7 +459,7 @@ BufferHandleHolder::~BufferHandleHolder() = default;
 // static
 std::unique_ptr<BufferHandleHolder> BufferHandleHolder::Create(
     media::mojom::VideoBufferHandlePtr buffer_handle) {
-  if (buffer_handle->is_shared_buffer_handle()) {
+  if (buffer_handle->is_unsafe_shmem_region()) {
     return std::make_unique<SharedMemoryBufferHandleHolder>(
         std::move(buffer_handle));
   }

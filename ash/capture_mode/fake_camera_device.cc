@@ -149,8 +149,8 @@ class SharedMemoryBufferStrategy : public BufferStrategy {
 
   // BufferStrategy:
   media::mojom::VideoBufferHandlePtr GetHandle() const override {
-    return media::mojom::VideoBufferHandle::NewSharedBufferHandle(
-        mojo::WrapUnsafeSharedMemoryRegion(region_.Duplicate()));
+    return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+        region_.Duplicate());
   }
   void DrawFrameOnBuffer(const gfx::Size& frame_size) override {
     if (!mapping_.IsValid())

@@ -195,14 +195,13 @@ TEST_F(FakeVideoCaptureDeviceTest,
                               &found_unexpected_all_zero_frame](
                                  int32_t buffer_id, int32_t frame_feedback_id,
                                  media::mojom::VideoFrameInfoPtr*) {
-        const mojo::ScopedSharedBufferHandle& handle =
-            buffers_by_id[buffer_id]->get_shared_buffer_handle();
-        mojo::ScopedSharedBufferMapping mapping =
-            handle->Map(handle->GetSize());
-        const uint8_t* data = static_cast<uint8_t*>(mapping.get());
+        const base::UnsafeSharedMemoryRegion& region =
+            buffers_by_id[buffer_id]->get_unsafe_shmem_region();
+        base::WritableSharedMemoryMapping mapping = region.Map();
+        const uint8_t* data = mapping.GetMemoryAs<const uint8_t>();
         // Check that there is at least one non-zero byte in the frame data.
         bool found_non_zero_byte = false;
-        for (uint32_t i = 0; i < handle->GetSize(); i++) {
+        for (uint32_t i = 0; i < mapping.size(); i++) {
           if (data[i] != 0u) {
             found_non_zero_byte = true;
             break;

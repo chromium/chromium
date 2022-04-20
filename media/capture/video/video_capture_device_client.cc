@@ -148,9 +148,6 @@ class BufferPoolBufferHandleProvider
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
     return buffer_pool_->DuplicateAsUnsafeRegion(buffer_id_);
   }
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
-    return buffer_pool_->DuplicateAsMojoBuffer(buffer_id_);
-  }
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override {
     return buffer_pool_->GetGpuMemoryBufferHandle(buffer_id_);
   }
@@ -569,8 +566,6 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
   DCHECK_NE(VideoCaptureBufferPool::kInvalidId, buffer_id);
 
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
-    media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
     VideoCaptureBufferType target_buffer_type = target_buffer_type_;
 #if BUILDFLAG(IS_WIN)
     // If MediaFoundationD3D11VideoCapture fails, a shared memory buffer may be
@@ -580,22 +575,25 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
       target_buffer_type = VideoCaptureBufferType::kSharedMemory;
     }
 #endif
+    media::mojom::VideoBufferHandlePtr buffer_handle;
     switch (target_buffer_type) {
       case VideoCaptureBufferType::kSharedMemory:
-        buffer_handle->set_shared_buffer_handle(
-            buffer_pool_->DuplicateAsMojoBuffer(buffer_id));
+        buffer_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+            buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
         break;
       case VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor:
-        buffer_handle->set_shared_memory_via_raw_file_descriptor(
-            buffer_pool_->CreateSharedMemoryViaRawFileDescriptorStruct(
-                buffer_id));
+        buffer_handle = media::mojom::VideoBufferHandle::
+            NewSharedMemoryViaRawFileDescriptor(
+                buffer_pool_->CreateSharedMemoryViaRawFileDescriptorStruct(
+                    buffer_id));
         break;
       case VideoCaptureBufferType::kMailboxHolder:
         NOTREACHED();
         break;
       case VideoCaptureBufferType::kGpuMemoryBuffer:
-        buffer_handle->set_gpu_memory_buffer_handle(
-            buffer_pool_->GetGpuMemoryBufferHandle(buffer_id));
+        buffer_handle =
+            media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+                buffer_pool_->GetGpuMemoryBufferHandle(buffer_id));
         break;
     }
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));

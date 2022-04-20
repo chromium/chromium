@@ -108,9 +108,6 @@ class CAPTURE_EXPORT VideoCaptureDevice
         // Duplicate as an writable (unsafe) shared memory region.
         virtual base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() = 0;
 
-        // Duplicate as a writable (unsafe) mojo buffer.
-        virtual mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() = 0;
-
         // Access a |VideoCaptureBufferHandle| for local, writable memory.
         virtual std::unique_ptr<VideoCaptureBufferHandle>
         GetHandleForInProcessAccess() = 0;
