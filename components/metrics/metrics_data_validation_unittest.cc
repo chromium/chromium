@@ -17,7 +17,7 @@ TEST(MetricsDataValidationTest, TestGetPseudoMetricsSampleNumeric) {
     base::test::ScopedFeatureList scoped_feature_list;
 
     // When the feature is not enabled, |sample| should not be changed.
-    EXPECT_EQ(GetPseudoMetricsSample(sample), sample);
+    EXPECT_DOUBLE_EQ(GetPseudoMetricsSample(sample), sample);
   }
 
   {
@@ -28,7 +28,7 @@ TEST(MetricsDataValidationTest, TestGetPseudoMetricsSampleNumeric) {
         {{"multiplicative_factor", "1.02"}});
 
     // Added a small effect size. Make sure it relects on the pseudo sample.
-    EXPECT_EQ(GetPseudoMetricsSample(sample), 102);
+    EXPECT_DOUBLE_EQ(GetPseudoMetricsSample(sample), 102);
   }
 
   {
@@ -40,7 +40,7 @@ TEST(MetricsDataValidationTest, TestGetPseudoMetricsSampleNumeric) {
 
     // Added a big effect size and additive factor. Make sure it relects on the
     // pseudo sample.
-    EXPECT_EQ(GetPseudoMetricsSample(sample), 115);
+    EXPECT_DOUBLE_EQ(GetPseudoMetricsSample(sample), 115);
   }
 }
 

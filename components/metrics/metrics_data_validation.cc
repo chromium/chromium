@@ -40,10 +40,9 @@ const base::FeatureParam<double> kLogNormalDelta{
 const base::FeatureParam<double> kLogNormalStdDev{
     &kNonUniformityValidationFeature, "stdDev", 1.238};
 
-int GetPseudoMetricsSample(double sample) {
-  return base::saturated_cast<int>(sample *
-                                       internal::kMultiplicativeFactor.Get() +
-                                   internal::kAdditiveFactor.Get());
+double GetPseudoMetricsSample(double sample) {
+  return sample * internal::kMultiplicativeFactor.Get() +
+         internal::kAdditiveFactor.Get();
 }
 
 base::TimeDelta GetPseudoMetricsSample(base::TimeDelta sample) {
