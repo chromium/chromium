@@ -362,6 +362,6 @@
     <DisplayString>{platform_data_}</DisplayString>
   </Type>
   <Type Name="blink::FontPlatformData">
-    <DisplayString>{*typeface_.ptr_}, {text_size_}px</DisplayString>
+    <DisplayString>{*typeface_.fPtr}, {text_size_}px</DisplayString>
   </Type>
 </AutoVisualizer>
