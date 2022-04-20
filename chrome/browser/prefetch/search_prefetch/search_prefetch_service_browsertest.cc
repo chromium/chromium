@@ -3196,8 +3196,15 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
 }
 
+// TODO(https://crbug.com/1318154): Flaky on Mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigationPrefetchReplacesError \
+  DISABLED_NavigationPrefetchReplacesError
+#else
+#define MAYBE_NavigationPrefetchReplacesError NavigationPrefetchReplacesError
+#endif
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       NavigationPrefetchReplacesError) {
+                       MAYBE_NavigationPrefetchReplacesError) {
   SetDSEWithURL(
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
