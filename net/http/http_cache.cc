@@ -1144,8 +1144,6 @@ void HttpCache::ProcessDoneHeadersQueue(ActiveEntry* entry) {
   ParallelWritingPattern parallel_writing_pattern =
       CanTransactionJoinExistingWriters(transaction);
   if (IsWritingInProgress(entry)) {
-    transaction->MaybeSetParallelWritingPatternForMetrics(
-        parallel_writing_pattern);
     if (parallel_writing_pattern != PARALLEL_WRITING_JOIN) {
       // TODO(shivanisha): Returning from here instead of checking the next
       // transaction in the queue because the FIFO order is maintained
@@ -1172,14 +1170,10 @@ void HttpCache::ProcessDoneHeadersQueue(ActiveEntry* entry) {
         transaction->WriteModeTransactionAboutToBecomeReader();
         auto return_val = entry->readers.insert(transaction);
         DCHECK(return_val.second);
-        transaction->MaybeSetParallelWritingPatternForMetrics(
-            PARALLEL_WRITING_NONE_CACHE_READ);
       }
     } else {  // mode READ
       auto return_val = entry->readers.insert(transaction);
       DCHECK(return_val.second);
-      transaction->MaybeSetParallelWritingPatternForMetrics(
-          PARALLEL_WRITING_NONE_CACHE_READ);
     }
   }
 
@@ -1197,8 +1191,6 @@ void HttpCache::AddTransactionToWriters(
     ParallelWritingPattern parallel_writing_pattern) {
   if (!entry->writers) {
     entry->writers = std::make_unique<Writers>(this, entry);
-    transaction->MaybeSetParallelWritingPatternForMetrics(
-        PARALLEL_WRITING_CREATE);
   } else {
     ParallelWritingPattern writers_pattern;
     DCHECK(entry->writers->CanAddWriters(&writers_pattern));
@@ -1345,15 +1337,8 @@ void HttpCache::OnProcessQueuedTransactions(ActiveEntry* entry) {
   // wait till the response is complete. If the response is not yet started, the
   // done_headers_queue transaction should start writing it.
   if (!entry->done_headers_queue.empty()) {
-    ParallelWritingPattern reason = PARALLEL_WRITING_NONE;
-    if (entry->writers && !entry->writers->CanAddWriters(&reason)) {
-      if (reason != PARALLEL_WRITING_NONE) {
-        for (auto* done_headers_transaction : entry->done_headers_queue) {
-          done_headers_transaction->MaybeSetParallelWritingPatternForMetrics(
-              reason);
-        }
-      }
-    } else {
+    ParallelWritingPattern unused_reason;
+    if (!entry->writers || entry->writers->CanAddWriters(&unused_reason)) {
       ProcessDoneHeadersQueue(entry);
       return;
     }
