@@ -940,8 +940,11 @@ static void JNI_CableAuthenticator_RecordEvent(
   auto server_link_values = ParseServerLinkData(env, server_link_data_java);
   base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileEvent",
                                 static_cast<CableV2MobileEvent>(event));
-  protobuf::LogEvent(env, /*tunnel_id=*/std::get<2>(server_link_values),
-                     protobuf::Type::kEvent, event);
+
+  if (GetGlobalData().metrics_enabled) {
+    protobuf::LogEvent(env, /*tunnel_id=*/std::get<2>(server_link_values),
+                       protobuf::Type::kEvent, event);
+  }
 }
 
 static void JNI_USBHandler_OnUSBData(JNIEnv* env,
