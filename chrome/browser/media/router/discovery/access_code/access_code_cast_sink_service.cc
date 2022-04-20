@@ -224,10 +224,17 @@ void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
   // so check again to see if there's an active route for this sink. Only expire
   // the sink if a new route wasn't established during the pause.
   auto route_id = HasActiveRoute(sink->id());
-  if (!route_id.has_value() && pending_expirations_.count(sink->id())) {
-    // Only remove the sink if there is still no active routes for this sink.
-    RemoveSinkIdFromAllEntries(sink->id());
-    RemoveMediaSinkFromRouter(sink);
+
+  // Only remove the sink if there is still no active routes for this sink.
+  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
+    if (!route_id.has_value() && pending_expirations_.count(sink->id())) {
+      RemoveSinkIdFromAllEntries(sink->id());
+      RemoveMediaSinkFromRouter(sink);
+    }
+  } else {
+    if (!route_id.has_value()) {
+      RemoveMediaSinkFromRouter(sink);
+    }
   }
 }
 

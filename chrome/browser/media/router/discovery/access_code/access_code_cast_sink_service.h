@@ -84,8 +84,12 @@ class AccessCodeCastSinkService : public KeyedService,
     ~AccessCodeMediaRoutesObserver() override;
 
    private:
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             AccessCodeCastDeviceRemovedAfterRouteEnds);
+    FRIEND_TEST_ALL_PREFIXES(
+        AccessCodeCastSinkServiceTest,
+        AccessCodeCastDeviceRemovedAfterRouteEndsExpirationEnabled);
+    FRIEND_TEST_ALL_PREFIXES(
+        AccessCodeCastSinkServiceTest,
+        AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled);
     FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                              AddExistingSinkToMediaRouterWithRoute);
     // media_router::MediaRoutesObserver:
@@ -104,8 +108,12 @@ class AccessCodeCastSinkService : public KeyedService,
   friend class AccessCodeCastSinkServiceTest;
   friend class AccessCodeCastHandlerTest;
   friend class MockAccessCodeCastSinkService;
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           AccessCodeCastDeviceRemovedAfterRouteEnds);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccessCodeCastSinkServiceTest,
+      AccessCodeCastDeviceRemovedAfterRouteEndsExpirationEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccessCodeCastSinkServiceTest,
+      AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            AddExistingSinkToMediaRouter);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
