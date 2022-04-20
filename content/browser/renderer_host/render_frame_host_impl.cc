@@ -5755,28 +5755,6 @@ void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
   GetPage().set_virtual_keyboard_overlays_content(vk_overlays_content);
 }
 
-void RenderFrameHostImpl::NotifyVirtualKeyboardOverlayRect(
-    const gfx::Rect& keyboard_rect) {
-  DCHECK(GetPage().virtual_keyboard_overlays_content());
-
-  // Notify each SiteInstance a single time. Renderer will take care of ensuring
-  // the event is dispatched to all relevant listeners in the grouping of frames
-  // for the SiteInstance.
-  // TODO(snianu): Transform from the main frame's coordinates to each
-  // individual frame client coordinates so that these are more usable from
-  // within iframes.
-  std::set<SiteInstance*> notified_instances;
-  for (RenderFrameHostImpl* node = this; node; node = node->GetParent()) {
-    SiteInstance* site_instance = node->GetSiteInstance();
-    if (base::Contains(notified_instances, site_instance))
-      continue;
-
-    node->GetAssociatedLocalFrame()->NotifyVirtualKeyboardOverlayRect(
-        keyboard_rect);
-    notified_instances.insert(site_instance);
-  }
-}
-
 // Returns the keyboard layout mapping.
 base::flat_map<std::string, std::string>
 RenderFrameHostImpl::GetKeyboardLayoutMap() {

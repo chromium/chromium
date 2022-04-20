@@ -2381,7 +2381,8 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
     keyboard_root_relative_rect.Offset(-root_widget_origin.x(),
                                        -root_widget_origin.y());
   }
-  frame->NotifyVirtualKeyboardOverlayRect(keyboard_root_relative_rect);
+  frame->GetPage().NotifyVirtualKeyboardOverlayRect(
+      keyboard_root_relative_rect);
 }
 
 bool RenderWidgetHostViewAura::IsHTMLFormPopup() const {

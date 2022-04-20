@@ -1536,8 +1536,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForwardMessageFromHost(blink::TransferableMessage message,
                               const url::Origin& source_origin);
 
-  void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
-
   // Returns the keyboard layout mapping.
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 

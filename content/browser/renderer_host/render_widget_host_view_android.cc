@@ -346,7 +346,7 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
     // to the renderer.
     keyboard_rect_copy.Intersect(GetViewBounds());
   }
-  frame_host->NotifyVirtualKeyboardOverlayRect(keyboard_rect_copy);
+  frame_host->GetPage().NotifyVirtualKeyboardOverlayRect(keyboard_rect_copy);
 }
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {

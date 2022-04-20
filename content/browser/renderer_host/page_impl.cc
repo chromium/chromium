@@ -273,4 +273,13 @@ void PageImpl::UpdateEncoding(const std::string& encoding_name) {
       base::GetCanonicalEncodingNameByAliasName(encoding_name);
 }
 
+void PageImpl::NotifyVirtualKeyboardOverlayRect(
+    const gfx::Rect& keyboard_rect) {
+  // TODO(https://crbug.com/1317002): send notification to outer frames if
+  // needed.
+  DCHECK(virtual_keyboard_overlays_content());
+  GetMainDocument().GetAssociatedLocalFrame()->NotifyVirtualKeyboardOverlayRect(
+      keyboard_rect);
+}
+
 }  // namespace content

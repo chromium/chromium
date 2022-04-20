@@ -87,7 +87,8 @@ void RenderFrameHostTestExt::NotifyVirtualKeyboardOverlayRect(
     jint height) {
   gfx::Size size(width, height);
   gfx::Point origin(x, y);
-  render_frame_host_->NotifyVirtualKeyboardOverlayRect(gfx::Rect(origin, size));
+  render_frame_host_->GetPage().NotifyVirtualKeyboardOverlayRect(
+      gfx::Rect(origin, size));
 }
 
 }  // namespace content
