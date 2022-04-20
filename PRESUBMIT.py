@@ -1465,7 +1465,17 @@ def CheckForgettingMAYBEInTests(input_api, output_api):
     # false positives with macros wrapping the actual tests name.
     define_maybe_pattern = input_api.re.compile(
         r'^\#define MAYBE_(?P<test_name>\w*[a-z]\w*)')
-    test_maybe_pattern = r'^\s*\w*TEST[^(]*\(\s*\w+,\s*MAYBE_{test_name}\)'
+    # The test_maybe_pattern needs to handle all of these forms. The standard:
+    #   IN_PROC_TEST_F(SyncTest, MAYBE_Start) {
+    # With a wrapper macro around the test name:
+    #   IN_PROC_TEST_F(SyncTest, E2E_ENABLED(MAYBE_Start)) {
+    # And the odd-ball NACL_BROWSER_TEST_f format:
+    #    NACL_BROWSER_TEST_F(NaClBrowserTest, SimpleLoad, {
+    # The optional E2E_ENABLED-style is handled with (\w*\()?
+    # The NACL_BROWSER_TEST_F pattern is handled by allowing a trailing comma or
+    # trailing ')'.
+    test_maybe_pattern = (
+        r'^\s*\w*TEST[^(]*\(\s*\w+,\s*(\w*\()?MAYBE_{test_name}[\),]')
     suite_maybe_pattern = r'^\s*\w*TEST[^(]*\(\s*MAYBE_{test_name}[\),]'
     warnings = []
 
