@@ -41,7 +41,6 @@
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/load_flags.h"
-#include "net/url_request/url_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"

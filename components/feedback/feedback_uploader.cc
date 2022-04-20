@@ -14,7 +14,6 @@
 #include "components/feedback/feedback_switches.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
-#include "net/url_request/url_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
