@@ -16,8 +16,9 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -56,18 +57,19 @@ void SubFeatureOptInView::InitLayout() {
   SetBorder(views::CreateRoundedRectBorder(
       kBorderThicknessDip, kBorderCornerRadiusDip, border_color));
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  const int kColumnSetId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
 
   // Set up layout row for the text label.
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  text_label_ =
-      layout->AddView(std::make_unique<views::Label>(), 1, 1,
-                      views::GridLayout::CENTER, views::GridLayout::CENTER);
+  text_label_ = AddChildView(std::make_unique<views::Label>());
+  text_label_->SetProperty(views::kCrossAxisAlignmentKey,
+                           views::LayoutAlignment::kCenter);
+  text_label_->SetProperty(views::kMarginsKey, kTextLabelBorderInsets);
+  text_label_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded, true));
   auto text_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   text_label_->SetEnabledColor(text_color);
@@ -78,20 +80,17 @@ void SubFeatureOptInView::InitLayout() {
                                                     default_font.GetFontSize())
                                .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   text_label_->SetLineHeight(kTextLabelLineHeightDip);
-  text_label_->SetBorder(views::CreateEmptyBorder(kTextLabelBorderInsets));
   text_label_->SetMultiLine(/*multi_line=*/true);
   text_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   text_label_->SetText(l10n_util::GetStringFUTF16(description_string_id_,
                                                   ui::GetChromeOSDeviceName()));
 
   // Set up layout row for the buttons.
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
   auto* button_container =
-      layout->AddView(std::make_unique<views::View>(), 1, 1,
-                      views::GridLayout::TRAILING, views::GridLayout::CENTER);
-  button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-      kButtonSpacingDip));
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  button_container->SetProperty(views::kCrossAxisAlignmentKey,
+                                views::LayoutAlignment::kEnd);
+  button_container->SetBetweenChildSpacing(kButtonSpacingDip);
   button_container->SetBorder(
       views::CreateEmptyBorder(kButtonContainerBorderInsets));
   dismiss_button_ = button_container->AddChildView(std::make_unique<PillButton>(
