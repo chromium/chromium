@@ -905,6 +905,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/1317686
     public void testOutOfOrder1() throws TimeoutException {
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -1118,8 +1119,11 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1312473
-    public void testCloseAll() throws TimeoutException {
+    // See crbug.com/1312473 and crbug.com/13176861317686
+    @Restriction(
+            {Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void
+    testCloseAll() throws TimeoutException {
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> sActivityTestRule.getActivity().getTabCreator(false));
@@ -1524,6 +1528,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/1317686
     public void testOpenRecentlyClosedTab() throws TimeoutException {
         TabModelSelector selector = sActivityTestRule.getActivity().getTabModelSelector();
         TabModel model = selector.getModel(false);
