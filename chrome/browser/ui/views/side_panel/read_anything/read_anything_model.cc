@@ -24,8 +24,8 @@ void ReadAnythingModel::SetSelectedFontIndex(int new_index) {
   NotifyFontNameUpdated();
 }
 
-void ReadAnythingModel::SetContent(std::vector<std::string> content) {
-  content_ = content;
+void ReadAnythingModel::SetContent(std::vector<ContentNodePtr> content_nodes) {
+  content_nodes_ = std::move(content_nodes);
   NotifyContentUpdated();
 }
 
@@ -37,7 +37,7 @@ void ReadAnythingModel::NotifyFontNameUpdated() {
 
 void ReadAnythingModel::NotifyContentUpdated() {
   for (Observer& obs : observers_) {
-    obs.OnContentUpdated(content_);
+    obs.OnContentUpdated(content_nodes_);
   }
 }
 

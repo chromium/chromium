@@ -12,6 +12,21 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
+// The type of content node.
+enum ContentType {
+  kHeading,
+  kParagraph,
+};
+
+// A node that contains distilled content. All nodes have type ContentType and
+// text. Some node types have additional values, which are verified in WebUI:
+//   ContentNode with type kHeading must have a heading_level.
+struct ContentNode {
+  ContentType type;
+  string text;
+  uint32 heading_level;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Notify the backend that the UI is ready to be shown.
@@ -20,10 +35,10 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Trigger the frontend to update the current read anything display. Essential
-  // content is a list of paragraphs from a web page, where each paragraph is
-  // considered essential (is part of the main content of the web page).
-  OnEssentialContent(array<string> essential_content);
+  // Trigger the frontend to update the current read anything display. Content
+  // nodes is a list of content nodes from a web page, where each node is part
+  // of the main article for that web page.
+  ShowContent(array<ContentNode> content_nodes);
 
   // Send an updated font name to front end.
   OnFontNameChange(string new_font_name);

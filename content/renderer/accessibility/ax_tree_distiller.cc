@@ -119,7 +119,9 @@ void AXTreeDistiller::SnapshotAXTree() {
   snapshot_ = std::make_unique<ui::AXTreeUpdate>();
 
   // Get page contents (via snapshot of a11y tree) for reader generation.
-  AXTreeSnapshotterImpl snapshotter(render_frame_, ui::AXMode::kWebContents);
+  // |ui::AXMode::kScreenReader| is needed for heading level information.
+  ui::AXMode ax_mode = ui::AXMode::kWebContents | ui::AXMode::kScreenReader;
+  AXTreeSnapshotterImpl snapshotter(render_frame_, ax_mode);
   snapshotter.Snapshot(
       /* exclude_offscreen= */ false, kMaxNodes,
       /* timeout= */ {}, snapshot_.get());

@@ -14,7 +14,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
+using read_anything::mojom::ContentNodePtr;
+using read_anything::mojom::Page;
+using read_anything::mojom::PageHandler;
+
+class ReadAnythingPageHandler : public PageHandler,
                                 public ReadAnythingModel::Observer {
  public:
   class Delegate {
@@ -22,27 +26,27 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
     virtual void OnUIShown() = 0;
   };
 
-  explicit ReadAnythingPageHandler(
-      mojo::PendingRemote<read_anything::mojom::Page> page,
-      mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver);
+  explicit ReadAnythingPageHandler(mojo::PendingRemote<Page> page,
+                                   mojo::PendingReceiver<PageHandler> receiver);
   ReadAnythingPageHandler(const ReadAnythingPageHandler&) = delete;
   ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
   ~ReadAnythingPageHandler() override;
 
-  // read_anything::mojom::PageHandler:
+  // PageHandler:
   void ShowUI() override;
 
   // ReadAnythingModel::Observer:
   void OnFontNameUpdated(const std::string& new_font_name) override;
-  void OnContentUpdated(std::vector<std::string> content) override;
+  void OnContentUpdated(
+      const std::vector<ContentNodePtr>& content_nodes) override;
 
  private:
   raw_ptr<ReadAnythingPageHandler::Delegate> delegate_;
 
   Browser* browser_;
 
-  mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
-  mojo::Remote<read_anything::mojom::Page> page_;
+  mojo::Receiver<PageHandler> receiver_;
+  mojo::Remote<Page> page_;
   base::WeakPtrFactory<ReadAnythingPageHandler> weak_pointer_factory_{this};
 };
 

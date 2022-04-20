@@ -2,7 +2,6 @@
   #container {
     background: var(--google-grey-900);
     color: var(--google-grey-200);
-    font-family: Roboto, Arial, sans-serif;
     font-size: 18px;
     padding:  20px;
   }
@@ -27,8 +26,13 @@
   }
 
 </style>
-<div id="container">
-  <template is="dom-repeat" items="[[paragraphs_]]">
-    <p class$="[[fontName_]]">[[item]]</p>
+<div id="container" class$="[[fontName_]]">
+  <template is="dom-repeat" items="[[content_]]">
+    <template is="dom-if" if="[[isParagraph_(item)]]">
+      <p>[[item.text]]</p>
+    </template>
+    <template is="dom-if" if="[[isHeading_(item)]]">
+      <heading-element content-node="[[item]]"></heading-element>
+    </template>
   </template>
 </div>

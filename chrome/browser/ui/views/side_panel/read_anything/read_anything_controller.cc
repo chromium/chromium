@@ -6,8 +6,41 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
+
+namespace {
+
+using read_anything::mojom::ContentNode;
+using read_anything::mojom::ContentNodePtr;
+using read_anything::mojom::ContentType;
+
+ContentNodePtr GetFromAXNode(ui::AXNode* ax_node) {
+  auto content_node = ContentNode::New();
+
+  // Set ContentNode.type. If ax_node role doesn't map to a ContentType, return
+  // nullptr.
+  if (ui::IsHeading(ax_node->GetRole())) {
+    content_node->type = ContentType::kHeading;
+    content_node->heading_level =
+        ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
+  } else if (ax_node->GetRole() == ax::mojom::Role::kParagraph) {
+    content_node->type = ContentType::kParagraph;
+  } else {
+    return nullptr;
+  }
+
+  // Set ContentNode.text. If ax_node doesn't contain any text, return nullptr.
+  if (!ax_node->GetTextContentLengthUTF8())
+    return nullptr;
+  content_node->text = ax_node->GetTextContentUTF8();
+
+  return content_node;
+}
+
+}  // namespace
 
 ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
                                                Browser* browser)
@@ -47,23 +80,19 @@ void ReadAnythingController::OnAXTreeDistilled(
   if (!success)
     return;
 
-  std::vector<std::string> content;
-  // Iterate through all content node ids.
-  for (auto node_id : content_node_ids) {
-    // Find the node in the tree which has this node id.
-    ui::AXNode* node = tree.GetFromId(node_id);
-    if (!node)
+  std::vector<ContentNodePtr> content_nodes;
+  for (auto ax_node_id : content_node_ids) {
+    ui::AXNode* ax_node = tree.GetFromId(ax_node_id);
+    if (!ax_node)
       continue;
-
-    // Get the complete text content for the node and add it to a vector of
-    // contents.
-    // TODO: Handle links.
-    if (node->GetTextContentLengthUTF8())
-      content.push_back(node->GetTextContentUTF8());
+    auto content_node = GetFromAXNode(ax_node);
+    if (!content_node)
+      continue;
+    content_nodes.push_back(std::move(content_node));
   }
 
   // Update the content in the model.
-  model_->SetContent(content);
+  model_->SetContent(std::move(content_nodes));
 }
 
 ReadAnythingController::~ReadAnythingController() = default;

@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 
 ReadAnythingPageHandler::ReadAnythingPageHandler(
-    mojo::PendingRemote<read_anything::mojom::Page> page,
-    mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
+    mojo::PendingRemote<Page> page,
+    mojo::PendingReceiver<PageHandler> receiver)
     : receiver_(this, std::move(receiver)), page_(std::move(page)) {
   // Register |this| as a |ReadAnythingModel::Observer| with the coordinator
   // for the component. This will allow the IPC to update the front-end web ui.
@@ -42,8 +42,13 @@ void ReadAnythingPageHandler::ShowUI() {
 }
 
 void ReadAnythingPageHandler::OnContentUpdated(
-    std::vector<std::string> content) {
-  page_->OnEssentialContent(content);
+    const std::vector<ContentNodePtr>& content_nodes) {
+  // Make a copy of |content_nodes|, which is stored in the model, before moving
+  // across IPC to the WebUI.
+  std::vector<ContentNodePtr> content_nodes_copy;
+  for (auto it = content_nodes.begin(); it != content_nodes.end(); ++it)
+    content_nodes_copy.push_back(it->Clone());
+  page_->ShowContent(std::move(content_nodes_copy));
 }
 
 void ReadAnythingPageHandler::OnFontNameUpdated(
