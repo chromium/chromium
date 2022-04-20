@@ -3816,7 +3816,6 @@ crbug.com/626703 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDTMF
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCDataChannel-close.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/webrtc/simulcast/vp8.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/protocol/handover-datachannel.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-helper-test.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/protocol/candidate-exchange.https.html [ Skip Timeout ]
@@ -6838,13 +6837,6 @@ crbug.com/1234619 external/wpt/screen-capture/permissions-policy-video.https.sub
 # Sheriff 2021-08-02
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
-# Sheriff 2021-08/05
-crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
-
-# Sheriff 2021-08-10
-crbug.com/1230534 external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
-crbug.com/1230534 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass Timeout ]
-
 # Sheriff 2021-08-12
 crbug.com/1237640 http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Pass Timeout ]
 crbug.com/1239175 http/tests/navigation/same-and-different-back.html [ Failure Pass ]
@@ -6895,10 +6887,6 @@ crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 
 # [CompositeClipPathAnimations] failing test
 crbug.com/1249071 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-filter.html [ Crash Failure Pass ]
-
-# WebRTC simulcast tests contineue to be flaky
-crbug.com/1230534 [ Win ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Timeout ]
-crbug.com/1230534 [ Win ] external/wpt/webrtc/simulcast/h264.https.html [ Pass Timeout ]
 
 # Following tests fail on mac11-arm64
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
@@ -7734,6 +7722,15 @@ crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-ps
 
 crbug.com/1316341 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
 crbug.com/1316341 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
+
+# All of these tests wait for simulcast to ramp up
+# (negotiateSimulcastAndWaitForVideo), which sometimes times out on bots but
+# never locally.
+crbug.com/1230534 external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
+crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Pass Timeout ]
+crbug.com/1230534 external/wpt/webrtc/simulcast/h264.https.html [ Pass Timeout ]
+crbug.com/1230534 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
+crbug.com/1230534 external/wpt/webrtc/simulcast/vp8.https.html [ Pass Timeout ]
 
 # Sheriff 2022-04-18
 crbug.com/1316559 [ Mac11-arm64 ] inspector-protocol/page/set-font-families-generic-names.js [ Failure Pass ]
