@@ -122,9 +122,11 @@ net::Error CacheCreator::Run() {
   static const bool kSimpleBackendIsDefault = false;
 #endif
   if (!retry_ && reset_handling_ == disk_cache::ResetHandling::kReset) {
+    // Pretend that we failed to create a cache, so that we can handle `kReset`
+    // and `kResetOnError` in a unified way, in CacheCreator::OnIOComplete.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&CacheCreator::OnIOComplete,
-                                  base::Unretained(this), net::ERR_IO_PENDING));
+                                  base::Unretained(this), net::ERR_FAILED));
     return net::ERR_IO_PENDING;
   }
   if (backend_type_ == net::CACHE_BACKEND_SIMPLE ||
@@ -204,6 +206,7 @@ void CacheCreator::DoCallback(int result) {
 // If the initialization of the cache fails, and |reset_handling| isn't set to
 // kNeverReset, we will discard the whole cache and create a new one.
 void CacheCreator::OnIOComplete(int result) {
+  DCHECK_NE(result, net::ERR_IO_PENDING);
   if (result == net::OK ||
       reset_handling_ == disk_cache::ResetHandling::kNeverReset || retry_) {
     return DoCallback(result);
@@ -212,8 +215,13 @@ void CacheCreator::OnIOComplete(int result) {
   // We are supposed to try again, so delete the object and all files and do so.
   retry_ = true;
   created_cache_.reset();
-  if (!disk_cache::DelayedCacheCleanup(path_))
+  if (!disk_cache::DelayedCacheCleanup(path_)) {
+    // Cleaning up the cache directory fails, so this operation should be
+    // considered failed.
+    DCHECK_NE(result, net::OK);
+    DCHECK_NE(result, net::ERR_IO_PENDING);
     return DoCallback(result);
+  }
 
   // The worker thread will start deleting files soon, but the original folder
   // is not there anymore... let's create a new set of files.
