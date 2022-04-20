@@ -51,8 +51,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
+                "target_bits": 64
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -136,8 +135,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
+                "target_bits": 64
               },
               "legacy_gclient_config": {
                 "config": "chromium"
