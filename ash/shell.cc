@@ -74,7 +74,6 @@
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login_status.h"
-#include "ash/marker/marker_controller.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
@@ -890,13 +889,10 @@ Shell::~Shell() {
   display_color_manager_.reset();
   projecting_observer_.reset();
 
-  // Depends on MarkerController, LaserPointerController and
-  // PartialMagnifierController.
   projector_controller_.reset();
 
   partial_magnifier_controller_.reset();
 
-  marker_controller_.reset();
   laser_pointer_controller_.reset();
 
   if (display_change_observer_)
@@ -1403,10 +1399,8 @@ void Shell::Init(
         std::make_unique<DisplayAlignmentController>();
   }
 
-  if (chromeos::features::IsProjectorEnabled()) {
-    marker_controller_ = std::make_unique<MarkerController>();
+  if (chromeos::features::IsProjectorEnabled())
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
-  }
 
   if (chromeos::wm::features::IsFloatWindowEnabled())
     float_controller_ = std::make_unique<FloatController>();

@@ -147,7 +147,6 @@ class LockStateController;
 class LogoutConfirmationController;
 class LoginScreenController;
 class LoginUnlockThroughputRecorder;
-class MarkerController;
 class MediaNotificationProviderImpl;
 class TabClusterUIController;
 class TabletModeController;
@@ -482,7 +481,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   LogoutConfirmationController* logout_confirmation_controller() {
     return logout_confirmation_controller_.get();
   }
-  MarkerController* marker_controller() { return marker_controller_.get(); }
   MediaControllerImpl* media_controller() { return media_controller_.get(); }
   MessageCenterAshImpl* message_center_ash_impl() {
     return message_center_ash_impl_.get();
@@ -858,7 +856,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<HighContrastController> high_contrast_controller_;
   std::unique_ptr<FullscreenMagnifierController>
       fullscreen_magnifier_controller_;
-  std::unique_ptr<MarkerController> marker_controller_;
   std::unique_ptr<AutoclickController> autoclick_controller_;
   std::unique_ptr<::wm::FocusController> focus_controller_;
 
