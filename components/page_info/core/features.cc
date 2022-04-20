@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace page_info {
 
@@ -20,10 +21,20 @@ const base::Feature kPageInfoDiscoverability{"PageInfoDiscoverability",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
+  if (l10n_util::GetLanguage(locale) == "en") {
+    return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteEn);
+  } else {
+    return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteNonEn);
+  }
+}
 
-const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSite,
+const base::Feature kPageInfoAboutThisSiteEn{"PageInfoAboutThisSiteEn",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kPageInfoAboutThisSiteNonEn{
+    "PageInfoAboutThisSiteNonEn", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSiteEn,
                                                   "ShowSampleContent", false};
 
 const base::Feature kAboutThisSiteBanner{"AboutThisSiteBanner",

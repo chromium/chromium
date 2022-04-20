@@ -81,7 +81,8 @@ import java.util.concurrent.TimeoutException;
  * Tests for PageInfoAboutThisSite.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)
+@Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
+        ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
@@ -120,6 +121,7 @@ public class PageInfoAboutThisSiteTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        doReturn(true).when(mMockAboutThisSiteJni).isFeatureEnabled();
         mMocker.mock(PageInfoAboutThisSiteControllerJni.TEST_HOOKS, mMockAboutThisSiteJni);
         mTestServerRule.setServerUsesHttps(true);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -181,14 +183,7 @@ public class PageInfoAboutThisSiteTest {
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(isDisplayed()));
         onView(withText(containsString("Some description"))).check(matches(isDisplayed()));
-
         dismissPageInfo();
-        assertEquals(1,
-                mHistogramTester.getHistogramTotalCount(
-                        "Security.PageInfo.TimeOpen.AboutThisSiteShown"));
-        assertEquals(0,
-                mHistogramTester.getHistogramTotalCount(
-                        "Security.PageInfo.TimeOpen.AboutThisSiteNotShown"));
     }
 
     @Test
@@ -207,14 +202,7 @@ public class PageInfoAboutThisSiteTest {
         mockResponse(null);
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
-
         dismissPageInfo();
-        assertEquals(0,
-                mHistogramTester.getHistogramTotalCount(
-                        "Security.PageInfo.TimeOpen.AboutThisSiteShown"));
-        assertEquals(1,
-                mHistogramTester.getHistogramTotalCount(
-                        "Security.PageInfo.TimeOpen.AboutThisSiteNotShown"));
     }
 
     @Test
@@ -277,8 +265,9 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(
-            {ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE, ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
+    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
+            ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
     @DisabledTest(message = "https://crbug.com/1311192")
     public void
     testAboutThisSiteBanner() throws Exception {
@@ -302,8 +291,9 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(
-            {ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE, ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
+    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
+            ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
     @DisabledTest(message = "https://crbug.com/1311192")
     public void
     testAboutThisSiteBannerDismissed() {

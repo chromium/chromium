@@ -445,7 +445,9 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     : public DialogBrowserTest {
  public:
   PageInfoBubbleViewAboutThisSiteDialogBrowserTest() {
-    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSite}, {});
+    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSiteEn,
+                                    page_info::kPageInfoAboutThisSiteNonEn},
+                                   {});
   }
 
   void SetUpOnMainThread() override {

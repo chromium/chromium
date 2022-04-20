@@ -40,6 +40,10 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
 
+    static boolean isFeatureEnabled() {
+        return PageInfoAboutThisSiteControllerJni.get().isFeatureEnabled();
+    }
+
     public PageInfoAboutThisSiteController(PageInfoMainController mainController,
             PageInfoRowView rowView, PageInfoControllerDelegate delegate, WebContents webContents) {
         mMainController = mainController;
@@ -137,6 +141,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     @NativeMethods
     interface Natives {
+        boolean isFeatureEnabled();
         byte[] getSiteInfo(BrowserContextHandle browserContext, GURL url, WebContents webContents);
     }
 }

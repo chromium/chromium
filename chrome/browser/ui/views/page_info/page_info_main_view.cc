@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -115,7 +116,8 @@ PageInfoMainView::PageInfoMainView(
     history_controller->InitRow(AddChildView(CreateContainerView()));
   }
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
+  if (page_info::IsAboutThisSiteFeatureEnabled(
+          g_browser_process->GetApplicationLocale())) {
     about_this_site_section_ = AddChildView(CreateContainerView());
   }
 
@@ -345,7 +347,8 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
     // Show "About this site" section only if connection is secure, because
     // security information has higher priority.
-    if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
+    if (page_info::IsAboutThisSiteFeatureEnabled(
+            g_browser_process->GetApplicationLocale())) {
       auto info = ui_delegate_->GetAboutThisSiteInfo();
       presenter_->SetAboutThisSiteShown(info.has_value());
       if (info.has_value()) {

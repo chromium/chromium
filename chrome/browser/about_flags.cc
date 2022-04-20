@@ -6759,7 +6759,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"page-info-about-this-site", flag_descriptions::kPageInfoAboutThisSiteName,
      flag_descriptions::kPageInfoAboutThisSiteDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSite)},
+     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteEn)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enhanced_clipboard", flag_descriptions::kEnhancedClipboardName,

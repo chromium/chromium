@@ -52839,6 +52839,7 @@ from previous Chrome versions.
   <int value="-1679829698" label="ColorProviderRedirection:disabled"/>
   <int value="-1679624666" label="NtpRealbox:enabled"/>
   <int value="-1677715989" label="UnifiedConsent:disabled"/>
+  <int value="-1677516670" label="PageInfoAboutThisSiteEn:enabled"/>
   <int value="-1676256979"
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:enabled"/>
   <int value="-1675747412"
@@ -56374,6 +56375,7 @@ from previous Chrome versions.
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
+  <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>
   <int value="693545401"
       label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>
   <int value="694016981" label="query-tiles-more-trending"/>

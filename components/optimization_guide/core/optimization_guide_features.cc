@@ -91,14 +91,9 @@ const base::Feature kOptimizationHintsFieldTrials{
 const base::Feature kRemoteOptimizationGuideFetching{
     "OptimizationHintsFetching", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent {
-  "OptimizationHintsFetchingAnonymousDataConsent",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_ANDROID)
-};
+const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent{
+    "OptimizationHintsFetchingAnonymousDataConsent",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables performance info in the context menu and fetching from a remote
 // Optimization Guide Service.

@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/core/about_this_site_validation.h"
+#include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -107,6 +108,16 @@ TEST_F(AboutThisSiteServiceTest, ValidResponse) {
   EXPECT_TRUE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        AboutThisSiteStatus::kValid, 1);
+}
+
+// Tests the language specific feature check.
+TEST_F(AboutThisSiteServiceTest, FeatureCheck) {
+  EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en-US"));
+  EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en-GB"));
+  EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en"));
+
+  EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled("de-DE"));
+  EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled("de"));
 }
 
 // Tests that incorrect proto messages are discarded.

@@ -43,7 +43,8 @@ AboutThisSiteServiceFactory::~AboutThisSiteServiceFactory() = default;
 // BrowserContextKeyedServiceFactory:
 KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  if (!base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite))
+  if (!page_info::IsAboutThisSiteFeatureEnabled(
+          g_browser_process->GetApplicationLocale()))
     return nullptr;
 
   Profile* profile = Profile::FromBrowserContext(browser_context);

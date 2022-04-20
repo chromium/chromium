@@ -324,7 +324,9 @@ class OptimizationGuideKeyedServiceWithoutRegistrationsBrowserTest
     : public OptimizationGuideKeyedServiceBrowserTest {
  public:
   OptimizationGuideKeyedServiceWithoutRegistrationsBrowserTest() {
-    feature_list_.InitWithFeatures({}, {page_info::kPageInfoAboutThisSite});
+    feature_list_.InitWithFeatures({},
+                                   {page_info::kPageInfoAboutThisSiteEn,
+                                    page_info::kPageInfoAboutThisSiteNonEn});
   }
 
  private:
@@ -442,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
 
   int64_t expected_types = 1 << OptimizationType::NOSCRIPT;
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite))
+  if (page_info::IsAboutThisSiteFeatureEnabled(
+          g_browser_process->GetApplicationLocale()))
     expected_types |= 1 << OptimizationType::ABOUT_THIS_SITE;
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,
@@ -482,7 +485,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       entry,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
   int64_t expected_types = 1 << OptimizationType::NOSCRIPT;
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite))
+  if (page_info::IsAboutThisSiteFeatureEnabled(
+          g_browser_process->GetApplicationLocale()))
     expected_types |= 1 << OptimizationType::ABOUT_THIS_SITE;
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,

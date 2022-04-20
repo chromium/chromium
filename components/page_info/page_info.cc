@@ -292,10 +292,6 @@ const char kPageInfoTimePrefix[] = "Security.PageInfo.TimeOpen";
 const char kPageInfoTimeActionPrefix[] = "Security.PageInfo.TimeOpen.Action";
 const char kPageInfoTimeNoActionPrefix[] =
     "Security.PageInfo.TimeOpen.NoAction";
-const char kPageInfoTimeAboutThisShown[] =
-    "Security.PageInfo.TimeOpen.AboutThisSiteShown";
-const char kPageInfoTimeAboutThisNotShown[] =
-    "Security.PageInfo.TimeOpen.AboutThisSiteNotShown";
 
 }  // namespace
 
@@ -367,13 +363,6 @@ PageInfo::~PageInfo() {
         security_state::GetSafetyTipHistogramName(kPageInfoTimeNoActionPrefix,
                                                   safety_tip_info_.status),
         start_time_);
-  }
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
-    if (was_about_this_site_shown_) {
-      LogTimeOpenHistogram(kPageInfoTimeAboutThisShown, start_time_);
-    } else {
-      LogTimeOpenHistogram(kPageInfoTimeAboutThisNotShown, start_time_);
-    }
   }
 }
 

@@ -249,7 +249,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             controllers.add(new PageInfoHistoryController(
                     mainController, historyRow, this, () -> { return tab; }));
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)) {
+        if (PageInfoAboutThisSiteController.isFeatureEnabled()) {
             final PageInfoRowView aboutThisSiteRow =
                     new PageInfoRowView(rowWrapper.getContext(), null);
             aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
