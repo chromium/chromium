@@ -165,7 +165,7 @@ const base::Feature kBatchAnnotationsValidation{
     "BatchAnnotationsValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPreventLongRunningPredictionModels{
-    "PreventLongRunningPredictionModels", base::FEATURE_ENABLED_BY_DEFAULT};
+    "PreventLongRunningPredictionModels", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature
     kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations{
@@ -430,20 +430,12 @@ base::TimeDelta PredictionModelFetchInterval() {
       kOptimizationTargetPrediction, "fetch_interval_hours", 24));
 }
 
-bool IsModelExecutionWatchdogEnabled() {
-  return base::FeatureList::IsEnabled(kPreventLongRunningPredictionModels);
-}
-
-base::TimeDelta ModelExecutionWatchdogDefaultTimeout() {
+absl::optional<base::TimeDelta> ModelExecutionTimeout() {
+  if (!base::FeatureList::IsEnabled(kPreventLongRunningPredictionModels)) {
+    return absl::nullopt;
+  }
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
-      kPreventLongRunningPredictionModels, "model_execution_timeout_ms",
-#if defined(_DEBUG)
-      // Debug builds take a much longer time to run.
-      60 * 1000
-#else
-      2000
-#endif
-      ));
+      kPreventLongRunningPredictionModels, "model_execution_timeout_ms", 2000));
 }
 
 base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch() {

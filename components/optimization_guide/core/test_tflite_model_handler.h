@@ -22,7 +22,6 @@ class TestTFLiteModelHandler
             model_provider,
             background_task_runner,
             std::move(executor),
-            /*model_inference_timeout=*/absl::nullopt,
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
             /*model_metadata=*/absl::nullopt) {}
   ~TestTFLiteModelHandler() override = default;

@@ -52,9 +52,8 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
 class PageTopicsModelExecutorTest : public testing::Test {
  public:
   PageTopicsModelExecutorTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPageContentAnnotations},
-        {features::kPreventLongRunningPredictionModels});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPageContentAnnotations);
   }
   ~PageTopicsModelExecutorTest() override = default;
 

@@ -93,7 +93,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
   // Should be called on the same sequence as the ctor, but once called |this|
   // must only be used from the |execution_task_runner| thread/sequence.
   void InitializeAndMoveToExecutionThread(
-      absl::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
@@ -106,12 +105,10 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     optimization_target_ = optimization_target;
     execution_task_runner_ = execution_task_runner;
     reply_task_runner_ = reply_task_runner;
-    if (features::IsModelExecutionWatchdogEnabled()) {
+    if (features::ModelExecutionTimeout()) {
       watchdog_ = std::make_unique<
           ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>>(
-          optimization_target_,
-          model_inference_timeout.value_or(
-              features::ModelExecutionWatchdogDefaultTimeout()));
+          optimization_target_, *features::ModelExecutionTimeout());
     }
   }
 

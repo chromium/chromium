@@ -121,8 +121,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     // Enable Visibility but disable Entities.
     scoped_feature_list_.InitWithFeatures(
         {features::kPageVisibilityPageContentAnnotations},
-        {features::kPageEntitiesPageContentAnnotations,
-         features::kPreventLongRunningPredictionModels});
+        {features::kPageEntitiesPageContentAnnotations});
   }
   ~PageContentAnnotationsModelManagerTest() override = default;
 
