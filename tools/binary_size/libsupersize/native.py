@@ -65,6 +65,29 @@ class _OutputDirectoryContext:
   thin_archives: list
 
 
+@dataclasses.dataclass
+class ElfInfo:
+  architecture: str  # Results of ArchFromElf().
+  build_id: str  # Result of BuildIdFromElf().
+  section_ranges: dict  # Results of SectionInfoFromElf().
+  size: int  # Result of os.path.getsize().
+
+  def OverheadSize(self):
+    section_sizes_total_without_bss = sum(
+        size for k, (_, size) in self.section_ranges.items()
+        if k not in models.BSS_SECTIONS)
+    ret = self.size - section_sizes_total_without_bss
+    assert ret >= 0, 'Negative ELF overhead {}'.format(ret)
+    return ret
+
+
+def _CreateElfInfo(elf_path):
+  return ElfInfo(architecture=readelf.ArchFromElf(elf_path),
+                 build_id=readelf.BuildIdFromElf(elf_path),
+                 section_ranges=readelf.SectionInfoFromElf(elf_path),
+                 size=os.path.getsize(elf_path))
+
+
 def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
   logging.info('Looking up source paths from ninja files')
   for symbol in raw_symbols:
@@ -622,19 +645,6 @@ def _ParseElfInfo(native_spec, outdir_context=None):
           raw_symbols, object_paths_by_name)
 
 
-def _CalculateElfOverhead(section_ranges, elf_path):
-  if elf_path:
-    section_sizes_total_without_bss = sum(
-        size for k, (address, size) in section_ranges.items()
-        if k not in models.BSS_SECTIONS)
-    elf_overhead_size = (os.path.getsize(elf_path) -
-                         section_sizes_total_without_bss)
-    assert elf_overhead_size >= 0, (
-        'Negative ELF overhead {}'.format(elf_overhead_size))
-    return elf_overhead_size
-  return 0
-
-
 def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
   # Create symbols for ELF sections not covered by existing symbols.
   logging.info('Searching for symbol gaps...')
@@ -727,12 +737,8 @@ def _ParseNinjaFiles(output_directory, elf_path=None):
 
 
 def _ElfInfoFromApk(apk_path, apk_so_path):
-  """Returns a tuple of (build_id, section_ranges, elf_overhead_size)."""
   with zip_util.UnzipToTemp(apk_path, apk_so_path) as temp:
-    build_id = readelf.BuildIdFromElf(temp)
-    section_ranges = readelf.SectionInfoFromElf(temp)
-    elf_overhead_size = _CalculateElfOverhead(section_ranges, temp)
-    return build_id, section_ranges, elf_overhead_size
+    return _CreateElfInfo(temp)
 
 
 def _CountRelocationsFromElf(elf_path):
@@ -743,33 +749,34 @@ def _CountRelocationsFromElf(elf_path):
   return sum([int(i) for i in relocations])
 
 
-def AddMetadata(*, metadata, native_spec, shorten_path):
-  """Adds metadata for the given native_spec."""
-  logging.debug('Constructing metadata')
+def CreateMetadata(*, native_spec, elf_info, shorten_path):
+  """Returns metadata for the given native_spec / elf_info."""
+  logging.debug('Constructing native metadata')
+  native_metadata = {}
+  native_metadata[models.METADATA_ELF_ALGORITHM] = native_spec.algorithm
 
-  metadata[models.METADATA_ELF_ALGORITHM] = native_spec.algorithm
+  if elf_info:
+    native_metadata[models.METADATA_ELF_ARCHITECTURE] = elf_info.architecture
+    native_metadata[models.METADATA_ELF_BUILD_ID] = elf_info.build_id
 
   if native_spec.elf_path:
-    metadata[models.METADATA_ELF_FILENAME] = shorten_path(native_spec.elf_path)
-    architecture = readelf.ArchFromElf(native_spec.elf_path)
-    # TODO(agrieve): We could add these in when elf_path=None and apk_so_path.
-    metadata[models.METADATA_ELF_ARCHITECTURE] = architecture
+    native_metadata[models.METADATA_ELF_FILENAME] = shorten_path(
+        native_spec.elf_path)
     timestamp_obj = datetime.datetime.utcfromtimestamp(
         os.path.getmtime(native_spec.elf_path))
     timestamp = calendar.timegm(timestamp_obj.timetuple())
-    metadata[models.METADATA_ELF_MTIME] = timestamp
-    build_id = readelf.BuildIdFromElf(native_spec.elf_path)
-    metadata[models.METADATA_ELF_BUILD_ID] = build_id
+    native_metadata[models.METADATA_ELF_MTIME] = timestamp
 
     relocations_count = _CountRelocationsFromElf(native_spec.elf_path)
-    metadata[models.METADATA_ELF_RELOCATIONS_COUNT] = relocations_count
+    native_metadata[models.METADATA_ELF_RELOCATIONS_COUNT] = relocations_count
 
   if native_spec.map_path:
-    metadata[models.METADATA_MAP_FILENAME] = shorten_path(native_spec.map_path)
+    native_metadata[models.METADATA_MAP_FILENAME] = shorten_path(
+        native_spec.map_path)
+  return native_metadata
 
 
 def CreateSymbols(*,
-                  metadata,
                   apk_spec,
                   native_spec,
                   output_directory=None,
@@ -777,7 +784,6 @@ def CreateSymbols(*,
   """Creates native symbols for the given native_spec.
 
   Args:
-    metadata: Metadata dict.
     apk_spec: Instance of ApkSpec, or None.
     native_spec: Instance of NativeSpec.
     output_directory: Build output directory. If None, source_paths and symbol
@@ -785,12 +791,12 @@ def CreateSymbols(*,
     pak_id_map: Instance of PakIdMap.
 
   Returns:
-    A tuple of (section_ranges, raw_symbols).
+    A tuple of (section_ranges, raw_symbols, elf_info).
   """
-  apk_elf_result = None
+  apk_elf_info_result = None
   if apk_spec and native_spec.apk_so_path:
     # Extraction takes around 1 second, so do it in parallel.
-    apk_elf_result = parallel.ForkAndCall(
+    apk_elf_info_result = parallel.ForkAndCall(
         _ElfInfoFromApk, (apk_spec.apk_path, native_spec.apk_so_path))
 
   raw_symbols = []
@@ -847,12 +853,17 @@ def CreateSymbols(*,
       logging.debug('Extracting pak IDs from symbol names')
       pak_id_map.Update(object_paths_by_name, ninja_source_mapper)
 
-  if apk_elf_result:
+  elf_info = None
+  if apk_elf_info_result:
     logging.debug('Extracting section sizes from .so within .apk')
-    apk_build_id, section_ranges, elf_overhead_size = apk_elf_result.get()
-    if metadata and models.METADATA_ELF_BUILD_ID in metadata:
-      assert apk_build_id == metadata[models.METADATA_ELF_BUILD_ID], (
-          'BuildID from apk_elf_result did not match')
+    elf_info = apk_elf_info_result.get()
+    if native_spec.elf_path:
+      expected_build_id = readelf.BuildIdFromElf(native_spec.elf_path)
+      assert elf_info.build_id == expected_build_id, (
+          'BuildID of {} != $APK/{}: {} != {}'.format(native_spec.elf_path,
+                                                      native_spec.apk_so_path,
+                                                      expected_build_id,
+                                                      elf_info.build_id))
   elif native_spec.elf_path:
     # Strip ELF before capturing section information to avoid recording
     # debug sections.
@@ -861,19 +872,23 @@ def CreateSymbols(*,
       strip_path = path_util.GetStripPath()
       subprocess.run([strip_path, '-o', f.name, native_spec.elf_path],
                      check=True)
-      section_ranges = readelf.SectionInfoFromElf(f.name)
-      elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
+      elf_info = _CreateElfInfo(f.name)
+
+  if elf_info:
+    section_ranges = elf_info.section_ranges.copy()
 
   source_path = ''
   if native_spec.apk_so_path:
-    # Put section symbols under $APK/lib/abi/libfoo.so.
-    source_path = posixpath.join(models.APK_PREFIX_PATH,
-                                 native_spec.apk_so_path)
+    # Put section symbols under $NATIVE/libfoo.so (abi)/...
+    source_path = '{}/{} ({})'.format(
+        models.NATIVE_PREFIX_PATH, posixpath.basename(native_spec.apk_so_path),
+        elf_info.architecture)
 
   raw_symbols, other_symbols = _AddUnattributedSectionSymbols(
       raw_symbols, section_ranges, source_path)
 
-  if native_spec.elf_path:
+  if elf_info:
+    elf_overhead_size = elf_info.OverheadSize()
     elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
                                         elf_overhead_size,
                                         full_name='Overhead: ELF file',
@@ -904,4 +919,4 @@ def CreateSymbols(*,
     logging.debug('Connecting nm aliases')
     _ConnectNmAliases(raw_symbols)
 
-  return section_ranges, raw_symbols
+  return section_ranges, raw_symbols, elf_info

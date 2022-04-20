@@ -36,8 +36,8 @@ def _NormalizeObjectPath(path):
 
 def _NormalizeSourcePath(path, gen_dir_pattern):
   """Returns (is_generated, normalized_path)"""
-  # For apk other files, source_path is the path within the apk.
-  if path.startswith('$APK'):
+  # Don't change $APK/, or $NATIVE/ paths.
+  if path.startswith('$'):
     return False, path
   if gen_dir_pattern:
     # Non-chromium gen_dir logic.

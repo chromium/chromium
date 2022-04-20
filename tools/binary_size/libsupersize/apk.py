@@ -89,16 +89,15 @@ class _ResourceSourceMapper:
     return ''
 
 
-def CreateApkOtherSymbols(*, metadata, apk_spec, native_spec):
+def CreateApkOtherSymbols(*, apk_spec, native_spec):
   """Creates symbols for resources / assets within the apk.
 
   Args:
-    metadata: Metadata dict from CreateMetadata().
     apk_spec: Instance of ApkSpec or None.
     native_spec: Instance of NativeSpec or None.
 
   Returns:
-    A tuple of (section_ranges, raw_symbols).
+    A tuple of (section_ranges, raw_symbols, apk_metadata).
   """
   logging.info('Creating symbols for other APK entries')
   apk_so_path = native_spec and native_spec.apk_so_path
@@ -144,8 +143,10 @@ def CreateApkOtherSymbols(*, metadata, apk_spec, native_spec):
   # noise in symbol diffs if included as symbols (http://crbug.com/1130754).
   # Might be even better if we had an option in Tiger Viewer to ignore certain
   # symbols, but taking this as a short-cut for now.
-  metadata[models.METADATA_ZIPALIGN_OVERHEAD] = zipalign_total
-  metadata[models.METADATA_SIGNING_BLOCK_SIZE] = signing_block_size
+  apk_metadata = {
+      models.METADATA_ZIPALIGN_OVERHEAD: zipalign_total,
+      models.METADATA_SIGNING_BLOCK_SIZE: signing_block_size,
+  }
 
   # Overhead includes:
   #  * Size of all local zip headers (minus zipalign padding).
@@ -162,4 +163,4 @@ def CreateApkOtherSymbols(*, metadata, apk_spec, native_spec):
   archive_util.ExtendSectionRange(section_ranges, models.SECTION_OTHER,
                                   sum(s.size for s in raw_symbols))
   file_format.SortSymbols(raw_symbols)
-  return section_ranges, raw_symbols
+  return section_ranges, raw_symbols, apk_metadata

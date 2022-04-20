@@ -241,7 +241,7 @@ def CreateBuildConfig(output_directory, source_directory, url=None, title=None):
   return build_config
 
 
-def _CreateMetadata(container_spec):
+def _CreateMetadata(container_spec, elf_info):
   logging.debug('Constructing metadata')
   metadata = {}
   apk_spec = container_spec.apk_spec
@@ -268,9 +268,11 @@ def _CreateMetadata(container_spec):
       metadata[models.METADATA_APK_FILENAME] = shorten_path(apk_spec.apk_path)
 
   if native_specs:
-    native.AddMetadata(metadata=metadata,
-                       native_spec=native_specs[0],
-                       shorten_path=shorten_path)
+    native_metadata = native.CreateMetadata(native_spec=native_specs[0],
+                                            elf_info=elf_info,
+                                            shorten_path=shorten_path)
+    assert not (metadata.keys() & native_metadata.keys())
+    metadata.update(native_metadata)
 
   logging.debug('Constructing metadata (done)')
   return metadata
@@ -307,8 +309,6 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
   source_directory = container_spec.source_directory
 
   logging.info('Starting on container: %s', container_spec)
-
-  metadata = _CreateMetadata(container_spec)
 
   raw_symbols = []
   section_sizes = {}
@@ -352,9 +352,9 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
                                       default_component=default_component)
     raw_symbols.extend(new_raw_symbols)
 
+  elf_info = None
   if native_spec:
-    section_ranges, new_raw_symbols = native.CreateSymbols(
-        metadata=metadata,
+    section_ranges, new_raw_symbols, elf_info = native.CreateSymbols(
         apk_spec=apk_spec,
         native_spec=native_spec,
         output_directory=output_directory,
@@ -379,10 +379,15 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
                                 pak_id_map=pak_id_map,
                                 apk_spec=apk_spec,
                                 output_directory=output_directory))
+  apk_metadata = {}
   if apk_spec:
-    add_syms(*apk.CreateApkOtherSymbols(
-        metadata=metadata, apk_spec=apk_spec, native_spec=native_spec))
+    section_ranges, new_raw_symbols, apk_metadata = apk.CreateApkOtherSymbols(
+        apk_spec=apk_spec, native_spec=native_spec)
+    add_syms(section_ranges, new_raw_symbols)
 
+  metadata = _CreateMetadata(container_spec, elf_info)
+  assert not (metadata.keys() & apk_metadata.keys())
+  metadata.update(apk_metadata)
   container = models.Container(name=container_name,
                                metadata=metadata,
                                section_sizes=section_sizes)
