@@ -42,11 +42,19 @@ class PaintControllerPaintTestBase : public RenderingTest {
         ->GetScrollingBackgroundDisplayItemClient();
   }
 
-  void UpdateAllLifecyclePhasesExceptPaint() {
+  void UpdateAllLifecyclePhasesExceptPaint(bool update_cull_rects = true) {
     GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kTest);
-    // Run CullRectUpdater to ease testing of cull rects and repaint flags of
-    // PaintLayers on cull rect change.
+    if (update_cull_rects) {
+      // Run CullRectUpdater to ease testing of cull rects and repaint flags of
+      // PaintLayers on cull rect change.
+      UpdateCullRects();
+    }
+  }
+
+  void UpdateCullRects() {
+    DCHECK_EQ(GetDocument().Lifecycle().GetState(),
+              DocumentLifecycle::kPrePaintClean);
     CullRectUpdater(*GetLayoutView().Layer()).Update();
   }
 

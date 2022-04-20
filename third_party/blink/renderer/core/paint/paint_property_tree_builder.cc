@@ -2030,12 +2030,6 @@ static MainThreadScrollingReasons GetMainThreadScrollingReasons(
 void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   DCHECK(properties_);
 
-  gfx::Vector2dF old_scroll_offset;
-  if (const auto* old_scroll_translation = properties_->ScrollTranslation()) {
-    DCHECK(full_context_.was_layout_shift_root);
-    old_scroll_offset = old_scroll_translation->Translation2D();
-  }
-
   if (NeedsPaintPropertyUpdate()) {
     if (object_.IsBox() && To<LayoutBox>(object_).NeedsScrollNode(
                                full_context_.direct_compositing_reasons)) {
@@ -2166,6 +2160,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
                                         EBackfaceVisibility::kHidden) {
         state.flags.delegates_to_parent_for_backface = true;
       }
+
       auto effective_change_type = properties_->UpdateScrollTranslation(
           *context_.current.transform, std::move(state));
       // Even if effective_change_type is kUnchanged, we might still need to
@@ -2179,7 +2174,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
           bool updated =
               paint_artifact_compositor->DirectlyUpdateScrollOffsetTransform(
                   *properties_->ScrollTranslation());
-          if (updated) {
+          if (updated &&
+              effective_change_type ==
+                  PaintPropertyChangeType::kChangedOnlySimpleValues) {
             effective_change_type =
                 PaintPropertyChangeType::kChangedOnlyCompositedValues;
             properties_->ScrollTranslation()->CompositorSimpleValuesUpdated();
@@ -2201,43 +2198,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
     // reason of adding ScrollOrigin().
     context_.current.paint_offset +=
         PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
-
-    if (scroll_translation->Translation2D() != old_scroll_offset) {
-      // Scrolling can change overlap relationship for elements fixed to an
-      // overflow: hidden view that programmatically scrolls via script.
-      // In this case the fixed transform doesn't have enough information to
-      // perform the expansion - there is no scroll node to describe the bounds
-      // of the scrollable content.
-      // TODO(crbug.com/1117658): We may need a similar logic for sticky objects
-      // when we support maximum overlap for them, or disable compositing of
-      // sticky objects under an overflow:hidden container.
-      // TODO(crbug.com/1310586): With the optimization proposed in the bug,
-      // we can limit the following condition to IsA<LayoutView>(object_),
-      // i.e. exclude subscrollers.
-      auto* frame_view = object_.GetFrameView();
-      // TODO(crbug.com/1310584): This should be HasFixedPositionObjects().
-      if (frame_view->HasFixedPositionObjects() &&
-          !object_.View()->FirstFragment().PaintProperties()->Scroll()) {
-        frame_view->SetPaintArtifactCompositorNeedsUpdate();
-      } else if (!object_.IsStackingContext() &&
-                 To<LayoutBoxModelObject>(object_)
-                     .Layer()
-                     ->HasSelfPaintingLayerDescendant()) {
-        // If the scroller is not a stacking context but contains stacked
-        // descendants, we need to update compositing because the stacked
-        // descendants may change overlap relationship with other stacked
-        // elements that are not contained by this scroller.
-        // TODO(crbug.com/1310586): We can avoid this if we expand the visual
-        // rect to the bounds of the scroller when we map a visual rect under
-        // the scroller to outside of the scroller.
-        frame_view->SetPaintArtifactCompositorNeedsUpdate();
-      }
-    }
-
     // A scroller creates a layout shift root, so we just calculate one scroll
     // offset delta without accumulation.
     context_.current.scroll_offset_to_layout_shift_root_delta =
-        scroll_translation->Translation2D() - old_scroll_offset;
+        scroll_translation->Translation2D() - full_context_.old_scroll_offset;
   }
 }
 
@@ -3780,6 +3744,14 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   context_.was_layout_shift_root =
       IsLayoutShiftRoot(object_, object_.FirstFragment());
 
+  context_.old_scroll_offset = gfx::Vector2dF();
+  if (const auto* properties = object_.FirstFragment().PaintProperties()) {
+    if (const auto* old_scroll_translation = properties->ScrollTranslation()) {
+      DCHECK(context_.was_layout_shift_root);
+      context_.old_scroll_offset = old_scroll_translation->Translation2D();
+    }
+  }
+
   UpdatePaintingLayer();
 
   if (ObjectTypeMightNeedPaintProperties() ||
@@ -3906,9 +3878,6 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
   if (max_change > PaintPropertyChangeType::kChangedOnlyCompositedValues)
     object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
 
-  if (max_change > PaintPropertyChangeType::kUnchanged)
-    CullRectUpdater::PaintPropertiesChanged(object_, *context_.painting_layer);
-
   if (auto* box = DynamicTo<LayoutBox>(object_)) {
     if (auto* scrollable_area = box->GetScrollableArea()) {
       if (context_.was_main_thread_scrolling !=
@@ -3916,6 +3885,45 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
         scrollable_area->MainThreadScrollingDidChange();
     }
   }
+
+  if (const auto* properties = object_.FirstFragment().PaintProperties()) {
+    if (const auto* scroll_translation = properties->ScrollTranslation()) {
+      if (scroll_translation->Translation2D() != context_.old_scroll_offset) {
+        // Scrolling can change overlap relationship for elements fixed to an
+        // overflow: hidden view that programmatically scrolls via script.
+        // In this case the fixed transform doesn't have enough information to
+        // perform the expansion - there is no scroll node to describe the
+        // bounds of the scrollable content.
+        // TODO(crbug.com/1117658): We may need a similar logic for sticky
+        // objects when we support maximum overlap for them, or disable
+        // compositing of sticky objects under an overflow:hidden container.
+        // TODO(crbug.com/1310586): With the optimization proposed in the bug,
+        // we can limit the following condition to IsA<LayoutView>(object_),
+        // i.e. exclude subscrollers.
+        auto* frame_view = object_.GetFrameView();
+        if (frame_view->HasFixedPositionObjects() &&
+            !object_.View()->FirstFragment().PaintProperties()->Scroll()) {
+          frame_view->SetPaintArtifactCompositorNeedsUpdate();
+        } else if (!object_.IsStackingContext() &&
+                   To<LayoutBoxModelObject>(object_)
+                       .Layer()
+                       ->HasSelfPaintingLayerDescendant()) {
+          // If the scroller is not a stacking context but contains stacked
+          // descendants, we need to update compositing because the stacked
+          // descendants may change overlap relationship with other stacked
+          // elements that are not contained by this scroller.
+          // TODO(crbug.com/1310586): We can avoid this if we expand the visual
+          // rect to the bounds of the scroller when we map a visual rect under
+          // the scroller to outside of the scroller.
+          frame_view->SetPaintArtifactCompositorNeedsUpdate();
+        }
+      }
+    }
+  }
+
+  CullRectUpdater::PaintPropertiesChanged(object_, *context_.painting_layer,
+                                          properties_changed_,
+                                          context_.old_scroll_offset);
 }
 
 }  // namespace blink

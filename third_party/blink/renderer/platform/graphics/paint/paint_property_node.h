@@ -46,10 +46,16 @@ enum class PaintPropertyChangeType : unsigned char {
   // the value changes are 'simple' in that they don't cause cascading changes.
   // For example, they do not cause a new render surface to be created, which
   // may otherwise cause tree changes elsewhere. An example of this is opacity
-  // changing in the [0, 1) range.
+  // changing in the [0, 1) range. PaintPropertyTreeBuilder may try to directly
+  // update the associated compositor node through PaintArtifactCompositor::
+  // DirectlyUpdate*(), and if that's successful, the change will be downgraded
+  // to kChangeOnlyCompositedValues.
   kChangedOnlySimpleValues,
   // We only changed values and not the hierarchy of the tree, but nothing is
-  // known about the kind of value change.
+  // known about the kind of value change. The difference between
+  // kChangedOnlySimpleValues and kChangedOnlyValues is only meaningful in
+  // PaintPropertyTreeBuilder for eligibility of direct update of compositor
+  // node. Otherwise we should never distinguish between them.
   kChangedOnlyValues,
   // We have directly modified the tree topology by adding or removing a node.
   kNodeAddedOrRemoved,

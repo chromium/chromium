@@ -211,6 +211,8 @@ struct PaintPropertyTreeBuilderContext final {
   // fragment where the object first appears.
   const LayoutNGTableSectionInterface* repeating_table_section = nullptr;
 
+  gfx::Vector2dF old_scroll_offset;
+
   // Specifies the reason the subtree update was forced. For simplicity, this
   // only categorizes it into two categories:
   // - Isolation piercing, meaning that the update is required for subtrees

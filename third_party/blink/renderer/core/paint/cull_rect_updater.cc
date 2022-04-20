@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
@@ -346,8 +347,53 @@ bool CullRectUpdater::ShouldProactivelyUpdate(const PaintLayer& layer) const {
   return layer.SelfOrDescendantNeedsRepaint();
 }
 
-void CullRectUpdater::PaintPropertiesChanged(const LayoutObject& object,
-                                             PaintLayer& painting_layer) {
+void CullRectUpdater::PaintPropertiesChanged(
+    const LayoutObject& object,
+    PaintLayer& painting_layer,
+    const PaintPropertiesChangeInfo& properties_changed,
+    const gfx::Vector2dF& old_scroll_offset) {
+  // We don't need to update cull rect for kChangedOnlyCompositedValues (except
+  // for some paint translation changes, see below) because we expect no repaint
+  // or PAC update for performance.
+  // Clip nodes and scroll nodes don't have kChangedOnlyCompositedValues, so we
+  // don't need to check ShouldUseInfiniteCullRect before the early return
+  // below.
+  DCHECK_NE(properties_changed.clip_changed,
+            PaintPropertyChangeType::kChangedOnlyCompositedValues);
+  DCHECK_NE(properties_changed.scroll_changed,
+            PaintPropertyChangeType::kChangedOnlyCompositedValues);
+  // Cull rects depend on transforms, clip rects and scroll contents sizes.
+  bool needs_cull_rect_update =
+      properties_changed.transform_changed >=
+          PaintPropertyChangeType::kChangedOnlySimpleValues ||
+      properties_changed.clip_changed >=
+          PaintPropertyChangeType::kChangedOnlySimpleValues ||
+      properties_changed.scroll_changed >=
+          PaintPropertyChangeType::kChangedOnlySimpleValues;
+
+  if (!needs_cull_rect_update) {
+    if (const auto* properties = object.FirstFragment().PaintProperties()) {
+      if (const auto* scroll_translation = properties->ScrollTranslation()) {
+        // TODO(wangxianzhu): We can avoid cull rect update on scroll
+        // - if the scroll delta is not big enough to cause cull rect update, or
+        // - if the current contents cull rect is infinite and no descendants
+        //   need cull rect update.
+        needs_cull_rect_update =
+            scroll_translation->Translation2D() != old_scroll_offset;
+      }
+    }
+  }
+
+  if (!needs_cull_rect_update) {
+    // For cases that the transform change can be directly updated, we should
+    // use infinite cull rect to avoid cull rect change and repaint.
+    DCHECK(properties_changed.transform_changed !=
+               PaintPropertyChangeType::kChangedOnlyCompositedValues ||
+           object.IsSVGChild() ||
+           PaintLayerPainter(painting_layer).ShouldUseInfiniteCullRect());
+    return;
+  }
+
   if (object.HasLayer()) {
     To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
     if (object.IsLayoutView() &&

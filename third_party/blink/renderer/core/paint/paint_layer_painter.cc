@@ -147,8 +147,6 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRect() {
   // Cull rects and clips can't be propagated across a filter which moves
   // pixels, since the input of the filter may be outside the cull rect /
   // clips yet still result in painted output.
-  // TODO(wangxianzhu): We can let CullRect support mapping for pixel moving
-  // filters to avoid this infinite cull rect.
   if (paint_layer_.HasFilterThatMovesPixels() &&
       // However during printing, we don't want filter outset to cross page
       // boundaries. This also avoids performance issue because the PDF renderer
