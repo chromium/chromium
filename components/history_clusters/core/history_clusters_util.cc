@@ -136,13 +136,17 @@ std::string ComputeURLKeywordForLookup(const GURL& url) {
       ComputeURLForDeduping(url));
 }
 
-std::u16string ComputeURLForDisplay(const GURL& url) {
+std::u16string ComputeURLForDisplay(const GURL& url, bool trim_after_host) {
   // Use URL formatting options similar to the omnibox popup. The url_formatter
   // component does IDN hostname conversion as well.
   url_formatter::FormatUrlTypes format_types =
       url_formatter::kFormatUrlOmitDefaults |
       url_formatter::kFormatUrlOmitHTTPS |
       url_formatter::kFormatUrlOmitTrivialSubdomains;
+
+  if (trim_after_host)
+    format_types |= url_formatter::kFormatUrlTrimAfterHost;
+
   return url_formatter::FormatUrl(url, format_types, net::UnescapeRule::SPACES,
                                   nullptr, nullptr, nullptr);
 }

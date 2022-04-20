@@ -4,10 +4,13 @@
 
 #include "components/history_clusters/core/label_cluster_finalizer.h"
 
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -36,13 +39,14 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
 
   // If we haven't found a label yet, use hostnames if the flag is enabled.
   if (GetConfig().labels_from_hostnames && !current_highest_scoring_label) {
-    base::flat_map<std::string, float> hostname_to_score;
+    base::flat_map<std::u16string, float> hostname_to_score;
     for (const auto& visit : cluster.visits) {
-      std::string host = url_formatter::StripWWW(visit.normalized_url.host());
+      std::u16string host =
+          ComputeURLForDisplay(visit.normalized_url, /*trim_after_host=*/true);
       float& hostname_score = hostname_to_score[host];
       hostname_score += visit.score;
       if (hostname_score > max_label_score) {
-        current_highest_scoring_label = base::UTF8ToUTF16(host);
+        current_highest_scoring_label = host;
         max_label_score = hostname_score;
       }
     }
