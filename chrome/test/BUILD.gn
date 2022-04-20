@@ -3239,6 +3239,7 @@ if (!is_android) {
         "../browser/ui/views/tabs/tab_hover_card_bubble_view_browsertest.cc",
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_browsertest.cc",
+        "../browser/ui/views/user_education/feature_promo_dialog_browsertest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_views_browsertest.cc",
         "../browser/ui/views/user_education/tip_marquee_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
@@ -3285,6 +3286,7 @@ if (!is_android) {
       }
       deps += [
         ":test_support_ui",
+        "//components/live_caption:utils",
         "//components/page_info/core:proto",
         "//components/send_tab_to_self",
         "//components/send_tab_to_self:test_support",
@@ -9181,7 +9183,6 @@ if (!is_android) {
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/user_education/browser_feature_promo_controller_interactive_uitest.cc",
-        "../browser/ui/views/user_education/feature_promo_dialog_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_snooze_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_registry_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_views_interactive_uitest.cc",

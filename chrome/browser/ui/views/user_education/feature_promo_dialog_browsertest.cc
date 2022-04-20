@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
@@ -306,8 +307,17 @@ class FeaturePromoDialogIntentChipTest : public FeaturePromoDialogTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1317479): Browser tests on LaCrOS currently do not run in Ash,
+// but this test requires Ash on ChromeOS. Therefore, disable it for now until
+// the bug can be resolved.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_InvokeUi_IPH_IntentChip DISABLED_InvokeUi_IPH_IntentChip
+#else
+#define MAYBE_InvokeUi_IPH_IntentChip InvokeUi_IPH_IntentChip
+#endif
+
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogIntentChipTest,
-                       InvokeUi_IPH_IntentChip) {
+                       MAYBE_InvokeUi_IPH_IntentChip) {
   set_baseline("3564824");
 
   ASSERT_TRUE(embedded_test_server()->Start());
