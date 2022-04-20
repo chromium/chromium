@@ -43,6 +43,10 @@ DeflateTransformer::DeflateTransformer(ScriptState* script_state,
       err = deflateInit2(&stream_, level, Z_DEFLATED, kWindowBits + kUseGzip, 8,
                          Z_DEFAULT_STRATEGY);
       break;
+    case CompressionFormat::kDeflateRaw:
+      err = deflateInit2(&stream_, level, Z_DEFLATED, -kWindowBits, 8,
+                         Z_DEFAULT_STRATEGY);
+      break;
   }
   DCHECK_EQ(Z_OK, err);
 }

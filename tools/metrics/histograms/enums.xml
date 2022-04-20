@@ -15605,6 +15605,7 @@ Called by update_net_error_codes.py.-->
 <enum name="CompressionStreamsFormat">
   <int value="0" label="gzip"/>
   <int value="1" label="deflate"/>
+  <int value="2" label="deflate-raw"/>
 </enum>
 
 <enum name="ComputeCurrentSigninStatus">

@@ -17,7 +17,8 @@ class ExceptionState;
 enum class CompressionFormat {
   kGzip = 0,
   kDeflate = 1,
-  kMaxValue = kDeflate,
+  kDeflateRaw = 2,
+  kMaxValue = kDeflateRaw,
 };
 
 // Converts the JavaScript name |format| to the equivalent enum value. If the

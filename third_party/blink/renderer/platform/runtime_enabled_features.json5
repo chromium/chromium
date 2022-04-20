@@ -844,6 +844,10 @@
       // The status is managed by the corresponding base::Feature.
     },
     {
+      name: "DeflateRawCompressionFormat",
+      status: "experimental",
+    },
+    {
       name: "DelegatedInkTrails",
       status: "stable",
     },

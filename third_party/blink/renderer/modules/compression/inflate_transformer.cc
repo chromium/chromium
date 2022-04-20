@@ -41,6 +41,9 @@ InflateTransformer::InflateTransformer(ScriptState* script_state,
     case CompressionFormat::kGzip:
       err = inflateInit2(&stream_, kWindowBits + kUseGzip);
       break;
+    case CompressionFormat::kDeflateRaw:
+      err = inflateInit2(&stream_, -kWindowBits);
+      break;
   }
   DCHECK_EQ(Z_OK, err);
 }
