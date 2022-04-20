@@ -86,8 +86,9 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
 }
 
 void RemoteWindowProxy::Initialize() {
-  TRACE_EVENT1("v8", "RemoteWindowProxy::initialize", "isMainWindow",
-               GetFrame()->IsMainFrame());
+  TRACE_EVENT2("v8", "RemoteWindowProxy::Initialize", "IsMainFrame",
+               GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+               GetFrame()->IsOutermostMainFrame());
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
   v8::HandleScope handle_scope(GetIsolate());
