@@ -325,8 +325,8 @@ class WaylandWindow : public PlatformWindow,
 
   void set_ui_scale(float ui_scale) { ui_scale_ = ui_scale; }
 
-  // Calls set_opaque_region for this window.
-  virtual void UpdateWindowMask();
+  // Updates mask for this window.
+  virtual void UpdateWindowMask() = 0;
 
   // Processes the pending bounds in dip.
   void ProcessPendingBoundsDip(uint32_t serial);
@@ -395,8 +395,6 @@ class WaylandWindow : public PlatformWindow,
 
   // Additional initialization of derived classes.
   virtual bool OnInitialize(PlatformWindowInitProperties properties) = 0;
-
-  virtual void UpdateWindowShape();
 
   // WaylandWindowDragController might need to take ownership of the wayland
   // surface whether the window that originated the DND session gets destroyed

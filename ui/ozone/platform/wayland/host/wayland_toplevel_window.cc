@@ -16,6 +16,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/gtk_surface1.h"
@@ -282,6 +283,10 @@ bool WaylandToplevelWindow::CanSetDecorationInsets() const {
 
 void WaylandToplevelWindow::SetOpaqueRegion(
     const std::vector<gfx::Rect>* region_px) {
+  if (region_px)
+    opaque_region_px_ = *region_px;
+  else
+    opaque_region_px_ = absl::nullopt;
   root_surface()->SetOpaqueRegion(region_px);
 }
 
@@ -913,10 +918,13 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
 void WaylandToplevelWindow::UpdateWindowMask() {
   // TODO(http://crbug.com/1158733): When supporting PlatformWindow::SetShape,
   // update window region with the given |shape|.
-  WaylandWindow::UpdateWindowMask();
-  gfx::Rect region(visual_size_px());
+  UpdateWindowShape();
+  std::vector<gfx::Rect> region{gfx::Rect({}, visual_size_px())};
+  root_surface()->SetOpaqueRegion(opaque_region_px_.has_value()
+                                      ? &*opaque_region_px_
+                                      : (IsOpaqueWindow() ? &region : nullptr));
   root_surface()->SetInputRegion(input_region_px_ ? &*input_region_px_
-                                                  : &region);
+                                                  : &*region.begin());
 }
 
 void WaylandToplevelWindow::UpdateWindowShape() {

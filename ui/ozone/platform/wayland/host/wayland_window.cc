@@ -519,14 +519,6 @@ absl::optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
   return absl::nullopt;
 }
 
-void WaylandWindow::UpdateWindowMask() {
-  UpdateWindowShape();
-  std::vector<gfx::Rect> region{gfx::Rect{visual_size_px()}};
-  root_surface_->SetOpaqueRegion(&region);
-}
-
-void WaylandWindow::UpdateWindowShape() {}
-
 void WaylandWindow::OnDragEnter(const gfx::PointF& point,
                                 std::unique_ptr<OSExchangeData> data,
                                 int operation) {

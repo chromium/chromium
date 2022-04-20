@@ -188,6 +188,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
 
   if (window->IsTranslucentWindowOpacitySupported()) {
     // Set the opaque region.
+    std::vector<gfx::Rect> opaque_region;
     if (showing_frame) {
       // The opaque region is a list of rectangles that contain only fully
       // opaque pixels of the window.  We need to convert the clipping
@@ -226,13 +227,13 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
       }
 
       // Convert the region to a list of rectangles.
-      std::vector<gfx::Rect> opaque_region;
       for (SkRegion::Iterator i(region); !i.done(); i.next())
         opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
-      window->SetOpaqueRegion(&opaque_region);
     } else {
-      window->SetOpaqueRegion(nullptr);
+      // Set the entire window as opaque.
+      opaque_region.push_back({{}, widget_size});
     }
+    window->SetOpaqueRegion(&opaque_region);
   }
 
   SizeConstraintsChanged();

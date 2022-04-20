@@ -43,6 +43,7 @@ class WaylandPopup : public WaylandWindow {
   void AckConfigure(uint32_t serial) override;
   void UpdateVisualSize(const gfx::Size& size_px, float scale_factor) override;
   void ApplyPendingBounds() override;
+  void UpdateWindowMask() override;
 
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();

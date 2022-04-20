@@ -208,6 +208,12 @@ void WaylandPopup::ApplyPendingBounds() {
   WaylandWindow::ApplyPendingBounds();
 }
 
+void WaylandPopup::UpdateWindowMask() {
+  // Popup doesn't have a shape. Update the opaqueness.
+  std::vector<gfx::Rect> region{gfx::Rect{visual_size_px()}};
+  root_surface()->SetOpaqueRegion(IsOpaqueWindow() ? &region : nullptr);
+}
+
 void WaylandPopup::OnCloseRequest() {
   // Before calling OnCloseRequest, the |shell_popup_| must become hidden and
   // only then call OnCloseRequest().

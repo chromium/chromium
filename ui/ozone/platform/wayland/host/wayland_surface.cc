@@ -213,12 +213,7 @@ void WaylandSurface::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {
   pending_state_.opaque_region_px.clear();
   if (!root_window_)
     return;
-  bool is_primary_or_root =
-      root_window_->root_surface() == this ||
-      (root_window()->primary_subsurface() &&
-       root_window()->primary_subsurface()->wayland_surface() == this);
-  if (is_primary_or_root && !root_window_->IsOpaqueWindow())
-    return;
+
   if (region_px)
     pending_state_.opaque_region_px = *region_px;
 

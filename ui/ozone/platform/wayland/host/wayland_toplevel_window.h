@@ -133,11 +133,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   static void StartThrottle(void* data, zaura_surface* surface);
   static void EndThrottle(void* data, zaura_surface* surface);
 
-  // Calls UpdateWindowShape, set_input_region and set_opaque_region
-  // for this toplevel window.
+  // Calls UpdateWindowShape, set_input_region and set_opaque_region for this
+  // toplevel window.
   void UpdateWindowMask() override;
   // Update the window shape using the window mask of PlatformWindowDelegate.
-  void UpdateWindowShape() override;
+  void UpdateWindowShape();
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
@@ -254,6 +254,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   absl::optional<std::vector<gfx::Rect>> window_shape_in_dips_;
 
+  absl::optional<std::vector<gfx::Rect>> opaque_region_px_;
   absl::optional<gfx::Rect> input_region_px_;
 
   // Tracks how many the window show state requests by made by the Browser
