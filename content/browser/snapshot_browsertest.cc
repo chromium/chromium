@@ -251,9 +251,11 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, SingleWindowTest) {
 //   Linux Chromium OS ASAN LSAN Tests (1)
 //   Linux TSAN Tests
 // See crbug.com/771119
+// TODO(https://crbug.com/1317446): Fix and enable on Fuchsia.
 #if (BUILDFLAG(IS_WIN) && !defined(NDEBUG)) || (BUILDFLAG(IS_CHROMEOS_ASH)) || \
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                        \
-     defined(THREAD_SANITIZER))
+     defined(THREAD_SANITIZER)) ||                                             \
+    BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_SyncMultiWindowTest DISABLED_SyncMultiWindowTest
 #define MAYBE_AsyncMultiWindowTest DISABLED_AsyncMultiWindowTest
 #else
