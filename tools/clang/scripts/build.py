@@ -892,6 +892,7 @@ def main():
   ]
   if sys.platform == 'darwin':
     compiler_rt_args.extend([
+        '-DSANITIZER_MIN_OSX_VERSION=10.7'
         '-DCOMPILER_RT_ENABLE_IOS=ON',
         '-DCOMPILER_RT_ENABLE_WATCHOS=OFF',
         '-DCOMPILER_RT_ENABLE_TVOS=OFF',
@@ -967,13 +968,10 @@ def main():
   if sys.platform == 'win32':
     cmake_args.append('-DLLVM_ENABLE_ZLIB=FORCE_ON')
 
-  if sys.platform == 'darwin':
-    cmake_args += ['-DCOMPILER_RT_ENABLE_IOS=ON',
-                   '-DSANITIZER_MIN_OSX_VERSION=10.7']
-    if args.build_mac_arm:
-      assert platform.machine() != 'arm64', 'build_mac_arm for cross build only'
-      cmake_args += ['-DCMAKE_OSX_ARCHITECTURES=arm64',
-                     '-DLLVM_USE_HOST_TOOLS=ON']
+  if sys.platform == 'darwin' and args.build_mac_arm:
+    assert platform.machine() != 'arm64', 'build_mac_arm for cross build only'
+    cmake_args += ['-DCMAKE_OSX_ARCHITECTURES=arm64',
+                   '-DLLVM_USE_HOST_TOOLS=ON']
 
   # The default LLVM_DEFAULT_TARGET_TRIPLE depends on the host machine.
   # Set it explicitly to make the build of clang more hermetic, and also to
