@@ -22,8 +22,12 @@
 //   class MyClass {
 //    public:
 //     void StartDoingStuff() {
-//       timer_.Start(FROM_HERE, Seconds(1),
+//       timer_.Start(FROM_HERE, base::Seconds(1),
 //                    this, &MyClass::DoStuff);
+//       // Alternative form if the callback is not bound to `this` or
+//       // requires arguments:
+//       //    timer_.Start(FROM_HERE, base::Seconds(1),
+//       //                 base::BindRepeating(&MyFunction, 42));
 //     }
 //     void StopDoingStuff() {
 //       timer_.Stop();
