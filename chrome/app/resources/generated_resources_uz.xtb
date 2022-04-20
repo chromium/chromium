@@ -366,7 +366,6 @@
 <translation id="1363585519747660921">USB printer sozlanishi kerak</translation>
 <translation id="1367951781824006909">Fayl tanlang</translation>
 <translation id="1369149969991017342">Switch access (kompyuterni belgilangan tugmalar birikmasi orqali boshqarish) taʼminotini yoqish</translation>
-<translation id="1371863479305430391">Telefon bildirishnomalarini ochish, yopish va ularga javob berish imkonini beradi Mobil xabar almashish ilovalaridagi kontentni translatsiya qilish imkonini beradi.</translation>
 <translation id="1372841398847029212">Hisobingizga sinxronlash</translation>
 <translation id="1373176046406139583">Qurilmangiz ochiqligi sozlamalarida ekraningiz ochiq ekanligida sizga kimlar fayl yuborishi mumkinligi boshqariladi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021"><ph name="NETWORK_NAME" /> tarmog‘i talab qilayotgan sertifikat o‘rnatilmagan yoki eskirgan. Yangisini olish uchun qaytadan ulanib ko‘ring.</translation>
@@ -419,7 +418,6 @@
 <translation id="1415708812149920388">Klipborddan o‘qishga ruxsat berilmagan</translation>
 <translation id="1415990189994829608">“<ph name="EXTENSION_NAME" />” (identifikatori: <ph name="EXTENSION_ID" />) kengaytmasidan bu turdagi seanslarda foydalanish taqiqlanadi</translation>
 <translation id="1418954524306642206">Printeringiz PPD faylini tanlang</translation>
-<translation id="1420732223884894666">Telefoningizdagi oxirgi rasmlar va media fayllarni <ph name="DEVICE_TYPE" /> qurilmasida oching</translation>
 <translation id="1420834118113404499">Media litsenziyalar</translation>
 <translation id="1420920093772172268">Ulanishga ruxsat berish uchun <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421934779300263861">Google serverlariga xatoliklar hisoboti, shuningdek, diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS tizimini takomillashtirishga yordam bering. Ayrim jamlangan axborotlar Android ilovalari va Google hamkorlariga yordam beradi. Google hisobingiz uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari Google hisobingizda saqlanadi.</translation>
@@ -718,7 +716,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1682548588986054654">Yangi inkognito oyna</translation>
 <translation id="1682867089915960590">Faol kursor rejimi yoqilsinmi?</translation>
 <translation id="1684279041537802716">Aksent rangi</translation>
-<translation id="168511795252678620">Oxirgi rasmlar va xabarlar</translation>
 <translation id="1686550358074589746">Qoʻl uzmasdan yozish mumkin</translation>
 <translation id="168715261339224929">Brauzer varaqlarini barcha qurilmalaringizda ko‘rish uchun sinxronizatsiyani yoqing.</translation>
 <translation id="1688867105868176567">Sayt ma’lumotlari tozalansinmi?</translation>
@@ -2599,7 +2596,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3526034519184079374">Sayt axborotini ochish yoki tahrirlash imkonsiz</translation>
 <translation id="3527085408025491307">Jild</translation>
 <translation id="3528498924003805721">Yorliq manzillari</translation>
-<translation id="3531383404180922673">Telefoningizdagi oxirgi rasmlar va bildirishnomalarni oching Mobil xabar almashish ilovalaridagi kontentni translatsiya qilish imkonini beradi.</translation>
 <translation id="3532273508346491126">Sinxronizatsiya boshqaruvi</translation>
 <translation id="3532521178906420528">Tarmoqqa ulanmoqda...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – ovozsiz qilindi</translation>
@@ -4371,7 +4367,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5315738755890845852">Oʻng figurali qavs ortiqcha: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5319359161174645648">Google Chrome brauzerini  tavsiya qiladi</translation>
-<translation id="5319712128756744240">Yangi qurilmani ulash</translation>
+<translation id="5319712128756744240">Yangi qurilmani juftlash</translation>
 <translation id="5320135788267874712">Yangi qurilma nomi</translation>
 <translation id="532247166573571973">Server bilan aloqa o‘rnatib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="5324300749339591280">Ilovalar roʻyxati</translation>
@@ -5229,7 +5225,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6185132558746749656">Qurilma joylashuvi</translation>
 <translation id="6188346519670155113">Chrome brauzeri bilan sinxronizatsiya yoqildi</translation>
 <translation id="6190953336330058278">Phone Hub ilovalari</translation>
-<translation id="619279033188484792">Telefoningizdagi oxirgi rasmlar, media va bildirishnomalarni <ph name="DEVICE_TYPE" /> qurilmasida koʻring</translation>
 <translation id="6195005504600220730">Brauzer, OT va qurilmangiz haqidagi axborotni oʻqish</translation>
 <translation id="6195693561221576702">Bu qurilmani oflayn demo rejimda sozlab boʻlmaydi.</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
@@ -6202,7 +6197,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7152478047064750137">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi</translation>
 <translation id="7154130902455071009">Boshlash sahifani quyidagisiga almashtirish: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Kamera yoki galereyadan olingan surat</translation>
-<translation id="7155352398126583949">Bildirishnomalar va xabarlar</translation>
 <translation id="7163202347044721291">Aktivatsiya kodi tasdiqlanmoqda…</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />” kengaytmasi belgilangan jildlardan rasm, audio va video fayllarni o‘qishi mumkin.</translation>
 <translation id="7167486101654761064">&amp;Bu turdagi fayllar har doim ochilsin</translation>
@@ -7213,7 +7207,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8141725884565838206">Parollarni boshqarish</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# ta video}}</translation>
 <translation id="8143442547342702591">Yaroqsiz dastur</translation>
-<translation id="8143475123634606318">Telefonning xabar almashinuv ilovalarini translatsiya qilish</translation>
 <translation id="8143609395536282994">Maʼlumotlaringizni qanday boshqarish mumkin:</translation>
 <translation id="8143951647992294073">Tanlash: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Bu qurilmada ro‘yxatdan o‘tgan bo‘lsangiz, <ph name="LINK2_START" />mavjud foydalanuvchi sifatida tizimga kirishingiz<ph name="LINK2_END" /> mumkin.</translation>
@@ -7504,7 +7497,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8439506636278576865">Bu tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
 <translation id="8440630305826533614">Linux ilovalari</translation>
 <translation id="8443795068008423036">Qurilma eng oxirgi tizimda ekanini tekshiring va qaytadan urining</translation>
-<translation id="8445046761938045900">Oxirgi rasmlar, bildirishnomalar va xabarlar</translation>
 <translation id="8446884382197647889">Batafsil</translation>
 <translation id="8447409163267621480">Tugmalar birikmasi Ctrl yoki Alt tugmasi bilan boshlanishi lozim</translation>
 <translation id="844850004779619592">Buyruqlar topilmadi</translation>
@@ -7836,7 +7828,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8780443667474968681">Ovozli qidiruv o‘chiq.</translation>
 <translation id="8781834595282316166">Joriy guruhda yangi varaq ochish</translation>
 <translation id="8782565991310229362">Kiosk ilovasi ishga tushirilishi bekor qilindi.</translation>
-<translation id="8783526165720272136">Xabarlar</translation>
 <translation id="8783834180813871000">Bluetooth ulanish kodini kiriting va keyin Return yoki Enter tugmasini bosing.</translation>
 <translation id="8784626084144195648">Guruhlar bo‘yicha o‘rtachasi</translation>
 <translation id="8785622406424941542">Stilus</translation>
@@ -8248,7 +8239,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9186963452600581158">Farzandingizning Google hisobi bilan kiring</translation>
 <translation id="9187967020623675250">Kalitlar mos emas. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
 <translation id="9188732951356337132">Foydalanish va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Agar farzandingiz uchun Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Telefoningizdagi oxirgi mediafayl va suratlarni oching. Mobil xabar almashish ilovalaridagi kontentni translatsiya qilish imkonini beradi.</translation>
 <translation id="919686179725692564">Ilovalar zaxiralanishi haqida batafsil</translation>
 <translation id="9198090666959937775">Telefonni elektron kalit sifatida ishlatish</translation>
 <translation id="9199503643457729322">Maxfiylik qoʻllanmasidan chiqish uchun bosing.</translation>

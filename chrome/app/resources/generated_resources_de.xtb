@@ -366,7 +366,6 @@
 <translation id="1363585519747660921">USB-Drucker muss konfiguriert werden</translation>
 <translation id="1367951781824006909">Datei auswählen</translation>
 <translation id="1369149969991017342">Schalterzugriff (zum Steuern des Computers mit nur einem oder zwei Schaltern)</translation>
-<translation id="1371863479305430391">Smartphone-Benachrichtigungen ansehen, schließen und beantworten. Messaging-Apps von deinem Smartphone streamen.</translation>
 <translation id="1372841398847029212">Mit meinem Konto synchronisieren</translation>
 <translation id="1373176046406139583">Über die Sichtbarkeit deines Geräts legst du fest, wer Dateien mit dir teilen kann, während dein Display entsperrt ist. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Das vom Netzwerk „<ph name="NETWORK_NAME" />“ benötigte Zertifikat ist entweder nicht installiert oder nicht mehr gültig. Bitte fordere ein neues Zertifikat an und versuche es erneut.</translation>
@@ -419,7 +418,6 @@
 <translation id="1415708812149920388">Lesezugriff auf Zwischenablage verweigert</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID "<ph name="EXTENSION_ID" />") ist bei diesem Sitzungstyp nicht zulässig.</translation>
 <translation id="1418954524306642206">Dateien durchsuchen und PPD für den Drucker auswählen</translation>
-<translation id="1420732223884894666">Letzte Fotos und Medien von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
 <translation id="1420834118113404499">Medienlizenzen</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, um eine Kopplung zu ermöglichen</translation>
 <translation id="1421934779300263861">Lasse Absturzberichte, Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS zu verbessern. Bestimmte aggregierte Daten sind auch für Android-Apps und Google Partner nützlich. Wenn die Einstellung „Web- &amp; App-Aktivitäten“ in deinem Google-Konto aktiviert ist, werden deine Android-Daten möglicherweise in deinem Google-Konto gespeichert.</translation>
@@ -717,7 +715,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1682548588986054654">Neues &amp;Inkognitofenster</translation>
 <translation id="1682867089915960590">Tastaturnavigation aktivieren?</translation>
 <translation id="1684279041537802716">Akzentfarbe</translation>
-<translation id="168511795252678620">Letzte Fotos und Messaging-Apps</translation>
 <translation id="1686550358074589746">Glide Typing aktivieren</translation>
 <translation id="168715261339224929">Aktiviere die Synchronisierung, um deine Lesezeichen auf allen deinen Geräten zu sehen.</translation>
 <translation id="1688867105868176567">Websitedaten löschen?</translation>
@@ -2592,7 +2589,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3526034519184079374">Daten der Website können nicht gelesen oder geändert werden</translation>
 <translation id="3527085408025491307">Ordner</translation>
 <translation id="3528498924003805721">Verknüpfungsziele</translation>
-<translation id="3531383404180922673">Letzte Fotos, Medien und Benachrichtigungen von deinem Smartphone ansehen. Messaging-Apps von deinem Smartphone streamen.</translation>
 <translation id="3532273508346491126">Synchronisierungsverwaltung</translation>
 <translation id="3532521178906420528">Netzwerkverbindung wird hergestellt…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – stummgeschaltet</translation>
@@ -5216,7 +5212,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6185132558746749656">Gerätestandort</translation>
 <translation id="6188346519670155113">Chrome-Browsersynchronisierung ist aktiviert</translation>
 <translation id="6190953336330058278">Phone Hub-Apps</translation>
-<translation id="619279033188484792">Letzte Fotos, Medien und Benachrichtigungen von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
 <translation id="6195005504600220730">Informationen zu deinem Browser, Betriebssystem und Gerät abrufen</translation>
 <translation id="6195693561221576702">Dieses Gerät kann nicht im Offlinedemomodus eingerichtet werden.</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
@@ -6189,7 +6184,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7152478047064750137">Diese Erweiterung erfordert keine speziellen Berechtigungen</translation>
 <translation id="7154130902455071009">Startseite in <ph name="START_PAGE" /> ändern</translation>
 <translation id="7155171745945906037">Vorhandenes Foto von der Kamera oder als Datei</translation>
-<translation id="7155352398126583949">Benachrichtigungen und Messaging-Apps</translation>
 <translation id="7163202347044721291">Aktivierungscode wird geprüft…</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" kann Bilder, Video- und Sounddateien an den geprüften Orten lesen.</translation>
 <translation id="7167486101654761064">Dateien dieses Typs &amp;immer öffnen</translation>
@@ -7201,7 +7195,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8141725884565838206">Passwörter verwalten</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ein Video}other{# Videos}}</translation>
 <translation id="8143442547342702591">Ungültige Anwendung</translation>
-<translation id="8143475123634606318">Messaging-Apps von deinem Smartphone streamen</translation>
 <translation id="8143609395536282994">So kannst du deine Daten verwalten:</translation>
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8146177459103116374">Wenn du bereits auf diesem Gerät registriert bist, kannst du dich <ph name="LINK2_START" />als vorhandener Nutzer anmelden<ph name="LINK2_END" />.</translation>
@@ -7492,7 +7485,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8439506636278576865">Übersetzung für Seiten in dieser Sprache anbieten</translation>
 <translation id="8440630305826533614">Linux-Apps</translation>
 <translation id="8443795068008423036">Achte darauf, dass dein Gerät auf dem neuesten Stand ist, und versuche es noch einmal</translation>
-<translation id="8445046761938045900">Letzte Fotos, Benachrichtigungen und Messaging-Apps</translation>
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8447409163267621480">Entweder Strg oder Alt integrieren</translation>
 <translation id="844850004779619592">Keine Befehle gefunden</translation>
@@ -7824,7 +7816,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8780443667474968681">Die Sprachsuche wurde deaktiviert.</translation>
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
 <translation id="8782565991310229362">Start der Kiosk-App abgebrochen</translation>
-<translation id="8783526165720272136">Messaging-Apps</translation>
 <translation id="8783834180813871000">Gib den Kopplungscode ein und tippe dann auf die Eingabetaste.</translation>
 <translation id="8784626084144195648">Gruppendurchschnitt</translation>
 <translation id="8785622406424941542">Eingabestift</translation>
@@ -8236,7 +8227,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
 <translation id="9187967020623675250">Die Tasten stimmen nicht überein. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="9188732951356337132">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Die letzten Fotos und Medien von deinem Smartphone ansehen. Messaging-Apps von deinem Smartphone streamen.</translation>
 <translation id="919686179725692564">Weitere Informationen zum Sichern von Apps</translation>
 <translation id="9198090666959937775">Android-Smartphone als Sicherheitsschlüssel verwenden</translation>
 <translation id="9199503643457729322">Klicke hier, um den Datenschutz-Leitfaden zu verlassen.</translation>

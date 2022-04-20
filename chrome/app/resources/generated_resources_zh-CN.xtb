@@ -366,7 +366,6 @@
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
 <translation id="1367951781824006909">选择文件</translation>
 <translation id="1369149969991017342">开关控制（只需 1-2 个开关即可控制计算机）</translation>
-<translation id="1371863479305430391">查看、关闭和回复手机中收到的通知。实时同步手机中的即时通讯应用。</translation>
 <translation id="1372841398847029212">同步到您的帐号中</translation>
 <translation id="1373176046406139583">您可指定设备的公开范围，从而控制哪些人员能在您的屏幕处于解锁状态时与您分享内容。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">网络“<ph name="NETWORK_NAME" />”所需的证书尚未安装或已无效。请获取新的证书并尝试重新连接。</translation>
@@ -419,7 +418,6 @@
 <translation id="1415708812149920388">已被禁止读取剪贴板</translation>
 <translation id="1415990189994829608">这类会话不允许使用“<ph name="EXTENSION_NAME" />”（扩展程序 ID 为“<ph name="EXTENSION_ID" />”）。</translation>
 <translation id="1418954524306642206">浏览以指定您的打印机 PPD</translation>
-<translation id="1420732223884894666">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片和播放的媒体</translation>
 <translation id="1420834118113404499">媒体许可</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允许配对</translation>
 <translation id="1421934779300263861">自动向 Google 发送崩溃报告以及诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。部分汇总数据还会对 Android 应用和 Google 合作伙伴有所帮助。如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。</translation>
@@ -715,7 +713,6 @@
 <translation id="1682548588986054654">打开新的无痕式窗口</translation>
 <translation id="1682867089915960590">要开启光标浏览模式吗？</translation>
 <translation id="1684279041537802716">强调色</translation>
-<translation id="168511795252678620">近期拍摄的照片和使用的即时通讯应用</translation>
 <translation id="1686550358074589746">启用滑行输入</translation>
 <translation id="168715261339224929">要想将您的书签同步到您的所有设备上，请开启同步功能。</translation>
 <translation id="1688867105868176567">要清除网站数据吗？</translation>
@@ -2586,7 +2583,6 @@
 <translation id="3526034519184079374">无法读取或更改网站的数据</translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3528498924003805721">快捷方式目标</translation>
-<translation id="3531383404180922673">查看手机中近期拍摄的照片、播放的媒体和收到的通知。实时同步手机中的即时通讯应用。</translation>
 <translation id="3532273508346491126">同步管理</translation>
 <translation id="3532521178906420528">正在建立网络连接…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 音频已静音</translation>
@@ -5207,7 +5203,6 @@
 <translation id="6185132558746749656">设备位置</translation>
 <translation id="6188346519670155113">Chrome 浏览器同步已开启</translation>
 <translation id="6190953336330058278">Phone Hub 应用</translation>
-<translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片、播放的媒体和收到的通知</translation>
 <translation id="6195005504600220730">读取您的浏览器、操作系统和设备的相关信息</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
@@ -6180,7 +6175,6 @@
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">相机或文件中的现有照片</translation>
-<translation id="7155352398126583949">通知和即时通讯应用</translation>
 <translation id="7163202347044721291">正在验证激活码…</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />”对于选中位置中的图片、视频及声音文件具有读取权限。</translation>
 <translation id="7167486101654761064">总是打开此类文件(&amp;A)</translation>
@@ -7192,7 +7186,6 @@
 <translation id="8141725884565838206">管理您的密码</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 个视频}other{# 个视频}}</translation>
 <translation id="8143442547342702591">无效的应用</translation>
-<translation id="8143475123634606318">实时同步手机中的即时通讯应用</translation>
 <translation id="8143609395536282994">您可以如何管理自己的数据：</translation>
 <translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">如果您已在此设备上注册，就能<ph name="LINK2_START" />以现有用户的身份登录<ph name="LINK2_END" />。</translation>
@@ -7483,7 +7476,6 @@
 <translation id="8439506636278576865">询问是否翻译此语言的网页</translation>
 <translation id="8440630305826533614">Linux 应用</translation>
 <translation id="8443795068008423036">请确保您的设备已更新到最新版本，然后重试</translation>
-<translation id="8445046761938045900">近期拍摄的照片、收到的通知和使用的即时通讯应用</translation>
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8447409163267621480">必须以 Ctrl 键或 Alt 键开头</translation>
 <translation id="844850004779619592">找不到任何命令</translation>
@@ -7815,7 +7807,6 @@
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
 <translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
-<translation id="8783526165720272136">即时通讯应用</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>
 <translation id="8784626084144195648">按区段计算的平均值</translation>
 <translation id="8785622406424941542">触控笔</translation>
@@ -8227,7 +8218,6 @@
 <translation id="9186963452600581158">使用孩子的 Google 帐号登录</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="9188732951356337132">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">查看手机中近期拍摄的照片和播放的媒体。实时同步手机中的即时通讯应用。</translation>
 <translation id="919686179725692564">详细了解如何备份您的应用</translation>
 <translation id="9198090666959937775">使用您的 Android 手机作为安全密钥</translation>
 <translation id="9199503643457729322">点击即可退出“隐私保护指南”。</translation>

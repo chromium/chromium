@@ -371,7 +371,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1363585519747660921">Tiskalnik USB je treba konfigurirati</translation>
 <translation id="1367951781824006909">Izberite datoteko</translation>
 <translation id="1369149969991017342">Stikalni dostop (upravljanje računalnika z enim ali dvema stikaloma)</translation>
-<translation id="1371863479305430391">Oglejte si obvestila telefona, jih opustite ali odgovorite nanje. Pretočno predvajajte aplikacije za sporočanje telefona.</translation>
 <translation id="1372841398847029212">Sinhroniziraj z računom</translation>
 <translation id="1373176046406139583">Z nastavitvijo vidnosti naprave določite, kdo lahko deli vsebino z vami, medtem ko je zaslon odklenjen. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Omrežja, ki ga zahteva omrežje »<ph name="NETWORK_NAME" />« ni nameščeno ali ni več veljavno. Prenesite novega in znova poskusite vzpostaviti povezavo.</translation>
@@ -424,7 +423,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1415708812149920388">Dostop za branje odložišča je zavrnjen</translation>
 <translation id="1415990189994829608">Razširitev <ph name="EXTENSION_NAME" /> (ID razširitve »<ph name="EXTENSION_ID" />«) ni dovoljena v seji te vrste.</translation>
 <translation id="1418954524306642206">Brskajte, če želite določiti datoteko PPD za tiskalnik</translation>
-<translation id="1420732223884894666">Oglejte si nedavne fotografije in predstavnost telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1420834118113404499">Predstavnostne licence</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, če želite omogočiti seznanjanje</translation>
 <translation id="1421934779300263861">Pomagajte izboljšati funkcije Chroma in sistema Chrome OS ter njuno delovanje s samodejnim pošiljanjem poročil o zrušitvah, diagnostičnih podatkov in podatkov o uporabi Googlu. Nekateri združeni podatki bodo prav tako v pomoč aplikacijam za Android in Googlovim partnerjem. Če ste za račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo podatki naprave Android morda shranjeni v računu Google.</translation>
@@ -726,7 +724,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1682548588986054654">Novo anonimno &amp;okno</translation>
 <translation id="1682867089915960590">Želite vklopiti brskanje s kazalko?</translation>
 <translation id="1684279041537802716">Barva poudarka</translation>
-<translation id="168511795252678620">Nedavne fotografije in aplikacije za sporočanje</translation>
 <translation id="1686550358074589746">Omogoči pisanje z drsenjem</translation>
 <translation id="168715261339224929">Če želite dostopati do zaznamkov v vseh napravah, vklopite sinhronizacijo.</translation>
 <translation id="1688867105868176567">Ali želite izbrisati podatke spletnega mesta?</translation>
@@ -922,6 +919,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
     <ph name="BEGIN_PARAGRAPH2" />Napravo TPM lahko tudi v celoti izklopite. Vaši podatki bodo še vedno varno shranjeni s šifriranjem programske opreme, vendar bodo onemogočene nekatere varnostne funkcije, kot so potrdila, podprta s strojno opremo.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Nastavitve TPM lahko spremenite tako, da napravo znova zaženete in odprete nastavitve za sistemski BIOS/UEFI. Postopek se razlikuje glede na model naprave. Če želite več informacij, odprite dokumentacijo za <ph name="DEVICE_OS" /> v ločeni napravi, preden znova zaženete: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Iskanje škodljive programske opreme</translation>
+<translation id="1852322248807969514">Gesla se shranjujejo v orodju <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">Pri poskusu branja datoteke je prišlo do napake: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Nadaljujte, kjer ste končali. V nastavitvah lahko nastavite, da se aplikacije ob zagonu vedno obnovijo, ali pa izklopite obnovitev.</translation>
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
@@ -1881,6 +1879,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2783829359200813069">Izberite vrste šifriranja</translation>
 <translation id="2783952358106015700">Uporaba varnostnega ključa z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Deskriptorji datotek</translation>
+<translation id="2787022501752539710">Ohrani lokalne podatke o brskanju (zaznamke, gesla, zgodovino ipd.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Številka skupine</translation>
@@ -2613,7 +2612,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3526034519184079374">Podatkov spletnega mesta ni mogoče prebrati ali spremeniti</translation>
 <translation id="3527085408025491307">Mapa</translation>
 <translation id="3528498924003805721">Cilji bližnjic</translation>
-<translation id="3531383404180922673">Oglejte si nedavne fotografije, predstavnost in obvestila telefona. Pretočno predvajajte aplikacije za sporočanje telefona.</translation>
 <translation id="3532273508346491126">Upravljanje sinhronizacije</translation>
 <translation id="3532521178906420528">Vzpostavljanje omrežne povezave …</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – zvok utišan</translation>
@@ -3154,6 +3152,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4044612648082411741">Vnesite geslo za potrdilo</translation>
 <translation id="4044708573046946214">Geslo za zaklepanje zaslona</translation>
 <translation id="404493185430269859">Privzeti iskalnik</translation>
+<translation id="4045180775310929593">Dodaj opombo …</translation>
 <translation id="4046013316139505482">Tem razširitve si ni treba ogledati podatkov na tem spletnem mestu in jih spreminjati.</translation>
 <translation id="4046123991198612571">Naslednja skladba</translation>
 <translation id="4047345532928475040">Ni na voljo</translation>
@@ -5119,6 +5118,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6057381398996433816">Temu spletnemu mestu je preprečena uporaba tipal gibanja in svetlobe.</translation>
 <translation id="6059276912018042191">Nedavni Chromovi zavihki</translation>
 <translation id="6059652578941944813">Hierarhija potrdil</translation>
+<translation id="6063284707309177505">Ustvari kodo QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> S podobnim glasom ali posnetkom bi bilo morda mogoče dostopati do osebnih rezultatov otroka <ph name="SUPERVISED_USER_NAME" />. Zaradi varčevanja z baterijo lahko v nastavitvah Pomočnika otroka <ph name="SUPERVISED_USER_NAME" /> izberete, da je sprožilna besedna zveza »Hey Google« vklopljena samo, ko je ta naprava priključena na vir napajanja.</translation>
 <translation id="6064217302520318294">Zaklepanje zaslona</translation>
 <translation id="6065289257230303064">Atributi imenika subjekta potrdila</translation>
@@ -5243,7 +5243,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6185132558746749656">Lokacija naprave</translation>
 <translation id="6188346519670155113">Sinhronizacija brskalnika Chrome je vklopljena</translation>
 <translation id="6190953336330058278">Aplikacije telefonskega središča</translation>
-<translation id="619279033188484792">Oglejte si nedavne fotografije, predstavnost in obvestila telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6195005504600220730">Branje podatkov o brskalniku, operacijskem sistemu in napravi</translation>
 <translation id="6195693561221576702">Te naprave ni mogoče nastaviti v predstavitvenem načinu brez povezave.</translation>
 <translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
@@ -6216,7 +6215,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7152478047064750137">Za to razširitev niso potrebna posebna dovoljenja</translation>
 <translation id="7154130902455071009">Sprememba začetne strani na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Obstoječa fotografija iz fotoaparata ali datoteke</translation>
-<translation id="7155352398126583949">Obvestila in aplikacije za sporočanje</translation>
 <translation id="7163202347044721291">Preverjanje kode za aktiviranje …</translation>
 <translation id="716640248772308851">Razširitev »<ph name="EXTENSION" />« lahko prebere slike ter videodatoteke in zvočne datoteke na označenih lokacijah.</translation>
 <translation id="7167486101654761064">&amp;Vedno odpri to vrsto datotek</translation>
@@ -7229,7 +7227,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8141725884565838206">Upravljanje gesel</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{videoposnetek}one{# videoposnetek}two{# videoposnetka}few{# videoposnetki}other{# videoposnetkov}}</translation>
 <translation id="8143442547342702591">Neveljavna aplikacija</translation>
-<translation id="8143475123634606318">Pretočno predvajajte aplikacije za sporočanje telefona.</translation>
 <translation id="8143609395536282994">Kako lahko upravljate podatke:</translation>
 <translation id="8143951647992294073">Izberite: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Če ste se v tej napravi že registrirali, se lahko <ph name="LINK2_START" />prijavite kot obstoječi uporabnik<ph name="LINK2_END" />.</translation>
@@ -7520,7 +7517,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8439506636278576865">Ponudi prevajanje strani v tem jeziku</translation>
 <translation id="8440630305826533614">Aplikacije za Linux</translation>
 <translation id="8443795068008423036">Preverite, ali je naprava posodobljena, in poskusite znova.</translation>
-<translation id="8445046761938045900">Nedavne fotografije, obvestila in aplikacije za sporočanje</translation>
 <translation id="8446884382197647889">Več o tem</translation>
 <translation id="8447409163267621480">Vključevati morajo ali Ctrl ali Alt</translation>
 <translation id="844850004779619592">Najden ni bil noben ukaz</translation>
@@ -7855,7 +7851,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8780443667474968681">Glasovno iskanje je izklopljeno.</translation>
 <translation id="8781834595282316166">Novi zavihek v skupini</translation>
 <translation id="8782565991310229362">Zagon aplikacije Kiosk je preklican.</translation>
-<translation id="8783526165720272136">Aplikacije za sporočanje</translation>
 <translation id="8783834180813871000">Vnesite kodo za seznanjanje za Bluetooth in nato pritisnite Return ali Enter.</translation>
 <translation id="8784626084144195648">Kvantizacijsko povprečje</translation>
 <translation id="8785622406424941542">Pisalo</translation>
@@ -8267,7 +8262,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9186963452600581158">Prijavite se z otrokovim računom Google</translation>
 <translation id="9187967020623675250">Tipki se ne ujemata. Pritisnite poljubno tipko, če želite narediti to: <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu za Google. <ph name="BEGIN_LINK2" />Več o tem<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Oglejte si nedavne fotografije in predstavnost telefona. Pretočno predvajajte aplikacije za sporočanje telefona.</translation>
 <translation id="919686179725692564">Preberite več o varnostnem kopiranju podatkov</translation>
 <translation id="9198090666959937775">Uporaba telefona Android kot varnostnega ključa</translation>
 <translation id="9199503643457729322">Kliknite, če se želite odmakniti od vodnika po zasebnosti.</translation>

@@ -274,6 +274,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7651907282515937834">Chrome Enterprise ‑logo</translation>
 <translation id="7655455401911432608">Selaushistoriaasi eli tietoa sivuista, jotka olet avannut Chromessa tällä laitteella</translation>
 <translation id="7747138024166251722">Asennusohjelma ei pystynyt luomaan väliaikaista hakemistoa. Tarkista, että käytettävissä on riittävästi levytilaa ja että sinulla on oikeus asentaa ohjelmia.</translation>
+<translation id="7748512868279796735">Seuraavat tilit ovat käytettävissä tällä Chrome-profiililla</translation>
 <translation id="7761834446675418963">Avaa Chrome klikkaamalla nimeäsi ja aloita selaaminen.</translation>
 <translation id="7777080907402804672">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="7781002470561365167">Google Chromen uusi versio on saatavilla.</translation>
@@ -293,7 +294,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8013993649590906847">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
-<translation id="822971176939352383">Näillä tileillä ei ole kirjauduttu sisään Chrome-profiileille. Jos haluat käyttää tiliä toisella profiililla, poista ensin kyseinen profiili.</translation>
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="8286862437124483331">Google Chrome yrittää näyttää salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="828798499196665338">Vanhempasi ovat laittaneet Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>

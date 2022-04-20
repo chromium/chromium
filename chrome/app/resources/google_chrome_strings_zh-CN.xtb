@@ -272,6 +272,7 @@
 <translation id="7651907282515937834">Chrome 企业版徽标</translation>
 <translation id="7655455401911432608">您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
+<translation id="7748512868279796735">这份 Chrome 个人资料可以使用下列帐号</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>
 <translation id="7777080907402804672">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>
 <translation id="7781002470561365167">Google Chrome 浏览器现已推出新版本。</translation>
@@ -291,7 +292,6 @@
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">关于 Google Chrome(&amp;G)</translation>
-<translation id="822971176939352383">以下帐号未登录任何 Chrome 个人资料。如果您要使用某个帐号登录另一份个人资料，请先移除这份个人资料。</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的摄像头和麦克风。</translation>
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="828798499196665338">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>

@@ -280,6 +280,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7651907282515937834">Chrome 企業標誌</translation>
 <translation id="7655455401911432608">您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
+<translation id="7748512868279796735">可在此 Chrome 設定檔使用以下帳戶</translation>
 <translation id="7761834446675418963">按一下您的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>
 <translation id="7781002470561365167">Google Chrome 已推出新版本。</translation>
@@ -299,7 +300,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
-<translation id="822971176939352383">以下帳戶未登入任何 Chrome 設定檔。如要將帳戶用於其他設定檔，請先移除該設定檔。</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的相機和麥克風。</translation>
 <translation id="8286862437124483331">Google Chrome 正在嘗試顯示密碼。如果您同意，請輸入您的 Windows 密碼。</translation>
 <translation id="828798499196665338">您的家長已停用 Chrome 的「網站、應用程式和擴充程式權限」設定，因此您無法啟用此<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>

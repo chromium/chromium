@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB-printer vajab seadistamist</translation>
 <translation id="1367951781824006909">Vali fail</translation>
 <translation id="1369149969991017342">Lülitiga juurdepääs (arvuti juhtimine vaid ühe või kahe lülitiga)</translation>
-<translation id="1371863479305430391">Telefoni märguannete vaatamine, neist loobumine ja neile vastamine. Telefoni sõnumsiderakenduste voogesitamine.</translation>
 <translation id="1372841398847029212">Sünkrooni minu kontoga</translation>
 <translation id="1373176046406139583">Teie seadme nähtavus määrab, kes saavad teiega jagada, kui teie ekraanikuva on avatud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Võrk „<ph name="NETWORK_NAME" />” nõuab sertifikaati, mis on installimata või kehtetu. Hankige uus sertifikaat ja proovige uuesti ühendust luua.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Juurdepääsu lõikelaua lugemiseks ei antud</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (laienduse ID „<ph name="EXTENSION_ID" />”) ei ole seda tüüpi seansi puhul lubatud.</translation>
 <translation id="1418954524306642206">Sirvige printeri PPD-faili määramiseks</translation>
-<translation id="1420732223884894666">Seadmes <ph name="DEVICE_TYPE" /> telefoni hiljutiste fotode ja meedia vaatamine</translation>
 <translation id="1420834118113404499">Meedialitsentsid</translation>
 <translation id="1420920093772172268">Sidumise lubamiseks <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421934779300263861">Aidake Chrome'i ja Chrome OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt krahhiaruandeid ning ka diagnostika- ja kasutusandmeid. Mõningaid koondandmeid kasutatakse ka Androidi rakenduste ja Google'i partnerite aitamiseks. Kui veebi- ja rakendustegevused on teie Google'i kontol sisse lülitatud, võidakse teie Androidi andmed salvestada teie Google'i kontole.</translation>
@@ -723,7 +721,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1682548588986054654">Uus inkognito aken</translation>
 <translation id="1682867089915960590">Kas soovite sisestusmärgiga sirvimise sisse lülitada?</translation>
 <translation id="1684279041537802716">Aktsentvärv</translation>
-<translation id="168511795252678620">Hiljutised fotod ja sõnumsiderakendused</translation>
 <translation id="1686550358074589746">Luba libistamisega sisestamine</translation>
 <translation id="168715261339224929">Järjehoidjate hankimiseks kõigisse oma seadmetesse lülitage sünkroonimine sisse.</translation>
 <translation id="1688867105868176567">Kas soovite saidi andmed kustutada?</translation>
@@ -2601,7 +2598,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3526034519184079374">Saidi andmeid ei saa lugeda ega muuta</translation>
 <translation id="3527085408025491307">Kaust</translation>
 <translation id="3528498924003805721">Otsetee sihtmärgid</translation>
-<translation id="3531383404180922673">Telefoni hiljutiste fotode, meedia ja märguannete vaatamine. Telefoni sõnumsiderakenduste voogesitamine.</translation>
 <translation id="3532273508346491126">Sünkroonimise haldamine</translation>
 <translation id="3532521178906420528">Võrguühenduse loomine …</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – heli on vaigistatud</translation>
@@ -5228,7 +5224,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6185132558746749656">Seadme asukoht</translation>
 <translation id="6188346519670155113">Chrome'i brauseri sünkroonimine on sisse lülitatud</translation>
 <translation id="6190953336330058278">Phone Hubi rakendused</translation>
-<translation id="619279033188484792">Seadmes <ph name="DEVICE_TYPE" /> oma telefoni hiljutiste fotode, meedia ja märguannete vaatamine</translation>
 <translation id="6195005504600220730">Lugege teavet oma brauseri, OS-i ja seadme kohta</translation>
 <translation id="6195693561221576702">Seadet ei saa võrguühenduseta demorežiimis seadistada.</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
@@ -6201,7 +6196,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7152478047064750137">Selle laienduse jaoks pole erilube vaja</translation>
 <translation id="7154130902455071009">Määrake avaleheks <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Olemasolev foto kaamerast või failist</translation>
-<translation id="7155352398126583949">Märguanded ja sõnumsiderakendused</translation>
 <translation id="7163202347044721291">Aktiveerimiskoodi kinnitamine …</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />” saab loa märgitud asukohtade pildi-, video- ja helifaile lugeda.</translation>
 <translation id="7167486101654761064">&amp;Ava alati seda tüüpi failid</translation>
@@ -7214,7 +7208,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8141725884565838206">Paroolide haldamine</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# videot}}</translation>
 <translation id="8143442547342702591">Sobimatu rakendus</translation>
-<translation id="8143475123634606318">Telefoni sõnumsiderakenduste voogesitamine</translation>
 <translation id="8143609395536282994">Kuidas saate oma andmeid hallata?</translation>
 <translation id="8143951647992294073">Vali „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”</translation>
 <translation id="8146177459103116374">Kui olete seadmes juba registreeritud, siis võite <ph name="LINK2_START" />logida sisse olemasoleva kasutajana<ph name="LINK2_END" />.</translation>
@@ -7505,7 +7498,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8439506636278576865">Paku selles keeles olevate lehtede tõlkimist</translation>
 <translation id="8440630305826533614">Linuxi rakendused</translation>
 <translation id="8443795068008423036">Veenduge, et teie seade oleks ajakohane, ja proovige uuesti</translation>
-<translation id="8445046761938045900">Hiljutised fotod, märguanded ja sõnumsiderakendused</translation>
 <translation id="8446884382197647889">Lisateave</translation>
 <translation id="8447409163267621480">Kaasake Ctrl või Alt</translation>
 <translation id="844850004779619592">Käske ei leitud</translation>
@@ -7837,7 +7829,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8780443667474968681">Häälotsing on välja lülitatud.</translation>
 <translation id="8781834595282316166">Uus vaheleht grupis</translation>
 <translation id="8782565991310229362">Kioski rakenduse käivitamine tühistati.</translation>
-<translation id="8783526165720272136">Sõnumsiderakendused</translation>
 <translation id="8783834180813871000">Sisestage Bluetoothi sidumiskood ja vajutage seejärel sisestusklahvi.</translation>
 <translation id="8784626084144195648">Rühmitatud keskmine</translation>
 <translation id="8785622406424941542">Elektronpliiats</translation>
@@ -8249,7 +8240,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9186963452600581158">Logige sisse oma lapse Google'i kontoga</translation>
 <translation id="9187967020623675250">Klahvid ei ühti. Vajutage mis tahes klahvi, et <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Saada kasutus- ja diagnostikaandmeid. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja  diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Telefoni hiljutiste fotode ja meedia vaatamine. Telefoni sõnumsiderakenduste voogesitamine.</translation>
 <translation id="919686179725692564">Lisateave rakenduste varundamise kohta</translation>
 <translation id="9198090666959937775">Kasutage oma Android-telefoni turvavõtmena</translation>
 <translation id="9199503643457729322">Klõpsake privaatsusjuhendist väljumiseks.</translation>

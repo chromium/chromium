@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">Printer USB membutuhkan konfigurasi</translation>
 <translation id="1367951781824006909">Pilih file</translation>
 <translation id="1369149969991017342">Tombol Akses (mengontrol komputer hanya menggunakan satu atau dua tombol)</translation>
-<translation id="1371863479305430391">Lihat, tutup, dan balas notifikasi dari ponsel Anda. Streaming aplikasi pesan ponsel Anda.</translation>
 <translation id="1372841398847029212">Sinkronkan ke akun Anda</translation>
 <translation id="1373176046406139583">Visibilitas perangkat akan mengontrol siapa saja yang dapat berbagi dengan Anda saat kunci layar terbuka. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Sertifikat yang dibutuhkan oleh jaringan "<ph name="NETWORK_NAME" />" belum dipasang ataupun tidak lagi valid. Dapatkan sertifikat baru dan cobalah menyambung lagi.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Akses baca papan klip ditolak</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ekstensi "<ph name="EXTENSION_ID" />") tidak diizinkan dalam jenis sesi ini.</translation>
 <translation id="1418954524306642206">Jelajahi untuk menentukan PPD printer</translation>
-<translation id="1420732223884894666">Lihat foto terbaru dan media dari ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Lisensi media</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> untuk mengizinkan penyandingan</translation>
 <translation id="1421934779300263861">Bantu tingkatkan fitur dan performa Chrome dan ChromeOS dengan mengirimkan laporan kerusakan serta diagnostik dan data penggunaan secara otomatis ke Google. Beberapa data gabungan juga akan membantu aplikasi Android dan partner Google. Jika setelan Aktivitas Web &amp; Aplikasi diaktifkan untuk Akun Google Anda, data Android Anda mungkin akan disimpan ke Akun Google tersebut.</translation>
@@ -723,7 +721,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1682548588986054654">Jendela Samaran Baru</translation>
 <translation id="1682867089915960590">Aktifkan Penjelajahan dengan Keyboard?</translation>
 <translation id="1684279041537802716">Warna aksen</translation>
-<translation id="168511795252678620">Foto terbaru dan aplikasi pesan</translation>
 <translation id="1686550358074589746">Aktifkan ketik geser</translation>
 <translation id="168715261339224929">Agar bookmark tersedia di semua perangkat Anda, aktifkan sinkronisasi.</translation>
 <translation id="1688867105868176567">Hapus data situs?</translation>
@@ -2610,7 +2607,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3526034519184079374">Tidak Dapat Membaca atau Mengubah Data Situs</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3528498924003805721">Target pintasan</translation>
-<translation id="3531383404180922673">Lihat foto terbaru, media, dan notifikasi dari ponsel Anda. Streaming aplikasi pesan ponsel Anda.</translation>
 <translation id="3532273508346491126">Pengelolaan sinkronisasi</translation>
 <translation id="3532521178906420528">Membuat koneksi jaringan ...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Audio dinonaktifkan</translation>
@@ -5238,7 +5234,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6185132558746749656">Lokasi Perangkat</translation>
 <translation id="6188346519670155113">Sinkronisasi browser Chrome aktif</translation>
 <translation id="6190953336330058278">Aplikasi Phone Hub</translation>
-<translation id="619279033188484792">Lihat foto terbaru, media, dan notifikasi dari ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Membaca informasi tentang browser, OS, dan perangkat Anda</translation>
 <translation id="6195693561221576702">Perangkat ini tidak dapat disiapkan dalam mode demo offline.</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
@@ -6211,7 +6206,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7152478047064750137">Ekstensi ini tidak memerlukan izin khusus</translation>
 <translation id="7154130902455071009">Ubah halaman awal Anda menjadi: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto yang sudah ada dari kamera atau file</translation>
-<translation id="7155352398126583949">Notifikasi dan aplikasi pesan</translation>
 <translation id="7163202347044721291">Memverifikasi kode aktivasi ...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" dapat membaca file gambar, video, dan suara di lokasi yang dicentang.</translation>
 <translation id="7167486101654761064">Sel&amp;alu buka file jenis ini</translation>
@@ -7224,7 +7218,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8141725884565838206">Kelola sandi Anda</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 video}other{# video}}</translation>
 <translation id="8143442547342702591">Aplikasi tidak valid</translation>
-<translation id="8143475123634606318">Streaming aplikasi pesan ponsel Anda</translation>
 <translation id="8143609395536282994">Cara Anda dapat mengelola data Anda:</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Jika Anda telah terdaftar di perangkat ini, Anda dapat <ph name="LINK2_START" />login sebagai pengguna yang ada<ph name="LINK2_END" />.</translation>
@@ -7515,7 +7508,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8439506636278576865">Tawarkan penerjemahan halaman ke dalam bahasa ini</translation>
 <translation id="8440630305826533614">Aplikasi Linux</translation>
 <translation id="8443795068008423036">Pastikan perangkat sudah diupdate dan coba lagi</translation>
-<translation id="8445046761938045900">Foto terbaru, notifikasi, dan aplikasi pesan</translation>
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8447409163267621480">Sertakan Ctrl atau Alt</translation>
 <translation id="844850004779619592">Perintah tidak ditemukan</translation>
@@ -7847,7 +7839,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8780443667474968681">Penelusuran suara telah dinonaktifkan.</translation>
 <translation id="8781834595282316166">Tab Baru di Grup</translation>
 <translation id="8782565991310229362">Peluncuran aplikasi kios dibatalkan.</translation>
-<translation id="8783526165720272136">Aplikasi pesan</translation>
 <translation id="8783834180813871000">Ketik kode penyambungan Bluetooth lalu tekan tombol Kembali atau Enter.</translation>
 <translation id="8784626084144195648">Rata-rata dalam Sampah</translation>
 <translation id="8785622406424941542">Stilus</translation>
@@ -8259,7 +8250,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9186963452600581158">Login dengan Akun Google anak</translation>
 <translation id="9187967020623675250">Kunci tidak cocok. Tekan sembarang kunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Kirim data penggunaan dan diagnostik. Perangkat ini saat ini otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda serta akan membantu sistem dan stabilitas aplikasi serta peningkatan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke Akun Google miliknya. <ph name="BEGIN_LINK2" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Lihat foto terbaru dan media dari ponsel Anda. Streaming aplikasi pesan ponsel Anda.</translation>
 <translation id="919686179725692564">Pelajari lebih lanjut cara mencadangkan aplikasi</translation>
 <translation id="9198090666959937775">Gunakan ponsel Anda sebagai kunci keamanan</translation>
 <translation id="9199503643457729322">Klik untuk keluar dari Panduan Privasi.</translation>

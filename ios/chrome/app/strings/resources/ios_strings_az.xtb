@@ -218,7 +218,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2848086008667475748">Ayarlarda Defolt edin…</translation>
 <translation id="2858204748079866344">Chrome məxfiliyi qorumaq üçün parolu bu sahədə avtomatik doldurmayacaq.</translation>
 <translation id="285960592395650245">Endirməyə Yenidən cəhd edin</translation>
-<translation id="2866378026651742652">İndi yeni tab açdığınız zaman oradan hekayələri görəcəksiniz.</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2871695793448672541">Gizli, Parol</translation>
 <translation id="2876369937070532032">Təhlükəsizliyiniz risk altında olduqda Google'a daxil olduğunuz bəzi səhifələrin linklərini göndərin</translation>
@@ -788,6 +787,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7671141431838911305">QURAŞDIRIN</translation>
+<translation id="7687508192620387263">Təqvim Faylı Əlçatandır</translation>
 <translation id="7701040980221191251">Heç bir</translation>
 <translation id="7720410380936703141">YENİDƏN SINAYIN</translation>
 <translation id="7726702057919861819">Menyu → Tarixçə → Brauzer Datasını Silin</translation>
@@ -892,6 +892,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8588404856427128947">Deaktiv</translation>
 <translation id="8590913940444621808">Heç vaxt soruşmayın</translation>
 <translation id="8591976964826315682">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
+<translation id="8592752150819985187">Parollar avtomatik doldurun</translation>
 <translation id="8605219856220328675">Paneli qapadın.</translation>
 <translation id="8620640915598389714">Redaktə edin</translation>
 <translation id="8626393685701737946">Ayarlar &gt; Məzmun Ayarlarında defolt sayt görünüşünü masaüstünə dəyişə bilərsiniz</translation>
@@ -910,6 +911,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> bölməsində Google Hesabının axtarış tarixçəsinin digər formaları ola bilər.</translation>
 <translation id="8750037785291841318">Tabları burada tapa bilərsiniz</translation>
 <translation id="8756969031206844760">Parol yenilənsin?</translation>
+<translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> kanalını izləməyin</translation>
 <translation id="8775144690796719618">Yanlış URL</translation>
 <translation id="8787968206789828143">Vebdə axtarış</translation>
 <translation id="8803639129939845298">Güvənli</translation>

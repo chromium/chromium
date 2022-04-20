@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">Tiskárnu USB je potřeba nakonfigurovat</translation>
 <translation id="1367951781824006909">Vybrat soubor</translation>
 <translation id="1369149969991017342">Přístup pomocí přepínačů (ovládání počítače pouze jedním nebo dvěma přepínači)</translation>
-<translation id="1371863479305430391">Zobrazovat oznámení z telefonu, zavírat je a odpovídat na ně. Streamovat aplikace na odesílání zpráv v telefonu.</translation>
 <translation id="1372841398847029212">Synchronizovat do vašeho účtu</translation>
 <translation id="1373176046406139583">Nastavení viditelnosti určuje, kdo s vámi může sdílet obsah, když je obrazovka odemknutá. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Certifikát vyžadovaný sítí „<ph name="NETWORK_NAME" />“ není nainstalován, nebo je neplatný. Nainstalujte nový certifikát a zkuste se připojit znovu.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Byl odmítnut přístup ke čtení obsahu schránky</translation>
 <translation id="1415990189994829608">Rozšíření <ph name="EXTENSION_NAME" /> (ID <ph name="EXTENSION_ID" />) není pro tento typ návštěvy povoleno.</translation>
 <translation id="1418954524306642206">Procházením zadejte PPD tiskárny</translation>
-<translation id="1420732223884894666">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky a média z telefonu</translation>
 <translation id="1420834118113404499">Licence médií</translation>
 <translation id="1420920093772172268">Chcete-li povolit párování, <ph name="TURN_ON_BLUETOOTH_LINK" />.</translation>
 <translation id="1421934779300263861">Pomozte se zlepšováním funkcí a výkonu prohlížeče Chrome a systému ChromeOS tím, že budete do Googlu automaticky odesílat zprávy o selhání a údaje o využití. Některá souhrnná data pomohou také partnerům společnosti Google a při vylepšování aplikací pro Android. Pokud je pro váš účet Google zapnuté nastavení Aktivita na webu a v aplikacích, mohou se data ze zařízení se systémem Android ukládat do vašeho účtu Google.</translation>
@@ -722,7 +720,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1682548588986054654">Nové anonymní okno</translation>
 <translation id="1682867089915960590">Zapnout procházení pomocí kurzoru?</translation>
 <translation id="1684279041537802716">Barva zvýraznění</translation>
-<translation id="168511795252678620">Nejnovější fotky a aplikace na odesílání zpráv</translation>
 <translation id="1686550358074589746">Aktivovat psaní jedním tahem</translation>
 <translation id="168715261339224929">Chcete-li mít záložky ve všech zařízeních, zapněte synchronizaci.</translation>
 <translation id="1688867105868176567">Vymazat data webu?</translation>
@@ -2596,7 +2593,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3526034519184079374">Nelze přečíst či změnit data webu</translation>
 <translation id="3527085408025491307">Složka</translation>
 <translation id="3528498924003805721">Cíle zástupců</translation>
-<translation id="3531383404180922673">Zobrazovat nejnovější fotky, média a oznámení v telefonu. Streamovat aplikace na odesílání zpráv v telefonu.</translation>
 <translation id="3532273508346491126">Správa synchronizace</translation>
 <translation id="3532521178906420528">Navazování připojení k síti...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – zvuk je vypnutý</translation>
@@ -5219,7 +5215,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6185132558746749656">Poloha zařízení</translation>
 <translation id="6188346519670155113">Synchronizace prohlížeče Chrome je zapnutá</translation>
 <translation id="6190953336330058278">Aplikace Telefonního centra</translation>
-<translation id="619279033188484792">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky, média a oznámení z telefonu</translation>
 <translation id="6195005504600220730">Přečtěte si informace o svém prohlížeči, operačním systému a zařízení</translation>
 <translation id="6195693561221576702">Toto zařízení nelze nastavit v offline ukázkovém režimu.</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
@@ -6192,7 +6187,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7152478047064750137">Toto rozšíření nevyžaduje žádná speciální oprávnění.</translation>
 <translation id="7154130902455071009">Změnit úvodní stránku na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Stávající fotka z fotoaparátu nebo souboru</translation>
-<translation id="7155352398126583949">Oznámení a aplikace na odesílání zpráv</translation>
 <translation id="7163202347044721291">Ověřování aktivačního kódu…</translation>
 <translation id="716640248772308851">Rozšíření <ph name="EXTENSION" /> může číst obrázky, video a zvukové soubory v povolených umístěních.</translation>
 <translation id="7167486101654761064">Vždy otevírat soubory tohoto typu</translation>
@@ -7204,7 +7198,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8141725884565838206">Správa hesel</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}few{# videa}many{# videa}other{# videí}}</translation>
 <translation id="8143442547342702591">Neplatná aplikace</translation>
-<translation id="8143475123634606318">Streamovat aplikace na odesílání zpráv v telefonu</translation>
 <translation id="8143609395536282994">Jak můžete své údaje spravovat:</translation>
 <translation id="8143951647992294073">Vybrat možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">V tomto zařízení jste již zaregistrováni. Můžete se <ph name="LINK2_START" />přihlásit jako stávající uživatel<ph name="LINK2_END" />.</translation>
@@ -7495,7 +7488,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8439506636278576865">Nabízet překlad stránek v tomto jazyce</translation>
 <translation id="8440630305826533614">Aplikace pro Linux</translation>
 <translation id="8443795068008423036">Aktualizujte zařízení a zkuste to znovu</translation>
-<translation id="8445046761938045900">Nejnovější fotky, oznámení a aplikace na odesílání zpráv</translation>
 <translation id="8446884382197647889">Další informace</translation>
 <translation id="8447409163267621480">Zahrňte klávesu Ctrl nebo Alt</translation>
 <translation id="844850004779619592">Nebyly nalezeny žádné příkazy</translation>
@@ -7829,7 +7821,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8780443667474968681">Hlasové vyhledávání bylo vypnuto.</translation>
 <translation id="8781834595282316166">Nová karta ve skupině</translation>
 <translation id="8782565991310229362">Spouštění aplikací pro režim veřejného terminálu bylo zrušeno.</translation>
-<translation id="8783526165720272136">Aplikace na odesílání zpráv</translation>
 <translation id="8783834180813871000">Zadejte párovací kód Bluetooth a poté stiskněte Return nebo Enter.</translation>
 <translation id="8784626084144195648">Vyhlazený průměr</translation>
 <translation id="8785622406424941542">Dotykové pero</translation>
@@ -8241,7 +8232,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9186963452600581158">Přihlásit se pomocí účtu Google dítěte</translation>
 <translation id="9187967020623675250">Klávesy se neshodují. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
 <translation id="9188732951356337132">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a využití. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. <ph name="BEGIN_LINK2" />Další informace<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Zobrazovat nejnovější fotky a média z telefonu. Streamovat aplikace na odesílání zpráv v telefonu.</translation>
 <translation id="919686179725692564">Další informace o zálohování aplikací</translation>
 <translation id="9198090666959937775">Použití telefonu Android jako bezpečnostního klíče</translation>
 <translation id="9199503643457729322">Kliknutím opustíte Průvodce ochranou soukromí.</translation>

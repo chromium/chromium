@@ -273,6 +273,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7651907282515937834">Logo von Chrome Enterprise</translation>
 <translation id="7655455401911432608">Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
+<translation id="7748512868279796735">Die folgenden Konten sind für dieses Chrome-Profil verfügbar</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="7781002470561365167">Eine neue Version von Google Chrome ist verfügbar.</translation>
@@ -292,7 +293,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
-<translation id="822971176939352383">Folgende Konten sind nicht in einem Chrome-Profil angemeldet. Wenn du ein Konto in einem anderen Profil verwenden möchtest, entferne zuerst dieses Profil.</translation>
 <translation id="8255190535488645436">Google Chrome verwendet deine Kamera und dein Mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="828798499196665338">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Aktivieren dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>

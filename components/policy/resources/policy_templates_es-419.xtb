@@ -5624,14 +5624,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7266471712301230894">Esta política se quitó a partir de la versión 64 de <ph name="PRODUCT_NAME" />.
 
       Ya no son compatibles la búsqueda automática ni la instalación de complementos faltantes.</translation>
-<translation id="7266868915753562724">Esta política controla la visibilidad de las exploraciones en la página del historial de Chrome.
-
-      Si habilitas la política, las exploraciones podrán verse en chrome://history/journeys.
-
-      Si inhabilitas la política, las exploraciones no podrán verse en chrome://history/journeys.
-
-      Si no estableces la política, las exploraciones podrán verse en chrome://history/journeys de forma predeterminada, y los usuarios podrán cambiar la visibilidad de las exploraciones.
-      </translation>
 <translation id="7267809745244694722">Teclas multimedia predeterminadas para teclas de funciones</translation>
 <translation id="7269263983506766969">Usa la prioridad predeterminada para el proceso de audio</translation>
 <translation id="7270001383428188269">El identificador para este certificado de cliente.</translation>

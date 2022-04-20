@@ -218,7 +218,6 @@
 <translation id="2848086008667475748">Settings-এ এটিকে ডিফল্ট হিসেবে সেট করুন…</translation>
 <translation id="2858204748079866344">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রে আপনার পাসওয়ার্ডটি নিজে থেকে পূরণ করবে না।</translation>
 <translation id="285960592395650245">আবার ডাউনলোডের চেষ্টা করুন</translation>
-<translation id="2866378026651742652">এখন আপনি নতুন কোনও ট্যাব খুললেই, এর থেকে গল্প পড়তে পারবেন।</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2871695793448672541">লুকানো, পাসওয়ার্ড</translation>
 <translation id="2876369937070532032">নিরাপত্তা সংক্রান্ত কোনও ঝুঁকি থাকলে, আপনার দেখা কিছু পৃষ্ঠার ইউআরএল Google-কে পাঠায়</translation>
@@ -789,6 +788,7 @@
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7671141431838911305">ইনস্টল করুন</translation>
+<translation id="7687508192620387263">ক্যালেন্ডার ফাইল উপলভ্য</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
 <translation id="7726702057919861819">মেনু → ইতিহাস → ব্রাউজ করা ডেটা মুছুন</translation>

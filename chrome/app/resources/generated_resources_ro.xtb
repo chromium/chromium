@@ -367,7 +367,6 @@
 <translation id="1363585519747660921">Imprimanta USB necesită configurare</translation>
 <translation id="1367951781824006909">Alege un fișier</translation>
 <translation id="1369149969991017342">Accesul prin comutare (controlează computerul cu numai un comutator sau două)</translation>
-<translation id="1371863479305430391">Afișează notificările telefonului, respinge-le și răspunde la ele. Redă în stream aplicațiile pentru mesaje ale telefonului.</translation>
 <translation id="1372841398847029212">Sincronizează cu contul tău</translation>
 <translation id="1373176046406139583">Vizibilitatea dispozitivului controlează cine îți poate trimite conținut atunci când ecranul este deblocat. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Certificatul solicitat de rețeaua „<ph name="NETWORK_NAME" />” nu este instalat sau nu mai este valabil. Obțineți un certificat nou și reîncercați să vă conectați.</translation>
@@ -420,7 +419,6 @@
 <translation id="1415708812149920388">Accesul de citire la clipboard este interzis</translation>
 <translation id="1415990189994829608">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) nu este permisă în acest tip de sesiune.</translation>
 <translation id="1418954524306642206">Răsfoiește pentru a indica PPD-ul imprimantei</translation>
-<translation id="1420732223884894666">Vezi fotografiile și elementele media recente ale telefonului tău pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Licențe media</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pentru a permite asocierea</translation>
 <translation id="1421934779300263861">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome și a sistemului de operare Chrome, trimițând automat la Google rapoarte de blocare, precum și date de diagnosticare și de utilizare. Anumite date agregate vor fi utile atât pentru aplicațiile pentru Android, cât și pentru partenerii Google. Dacă setarea Activitatea de pe web și din aplicații este activată pentru Contul Google, datele de pe Android pot fi salvate în Contul tău Google.</translation>
@@ -721,7 +719,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1682548588986054654">Fereastră &amp;incognito nouă</translation>
 <translation id="1682867089915960590">Activezi navigarea cu tastatura?</translation>
 <translation id="1684279041537802716">Culoarea de evidențiere</translation>
-<translation id="168511795252678620">Fotografiile și aplicațiile pentru mesaje recente</translation>
 <translation id="1686550358074589746">Activează tastarea prin glisare</translation>
 <translation id="168715261339224929">Pentru a accesa marcajele pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="1688867105868176567">Ștergi datele site-ului?</translation>
@@ -2596,7 +2593,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3526034519184079374">Nu se pot citi sau modifica datele site-ului</translation>
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3528498924003805721">Țintele comenzilor rapide</translation>
-<translation id="3531383404180922673">Afișează fotografiile, elementele media și notificările recente ale telefonului. Redă în stream aplicațiile pentru mesaje ale telefonului.</translation>
 <translation id="3532273508346491126">Gestionarea sincronizării</translation>
 <translation id="3532521178906420528">Se stabilește conexiunea la rețea...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – sunetul a fost dezactivat</translation>
@@ -5223,7 +5219,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6185132558746749656">Locația dispozitivului</translation>
 <translation id="6188346519670155113">Sincronizarea browserului Chrome este activată</translation>
 <translation id="6190953336330058278">Aplicații Phone Hub</translation>
-<translation id="619279033188484792">Afișează fotografiile, elementele media și notificările recente ale telefonului pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Citește informații despre browserul, sistemul de operare și dispozitivul tău</translation>
 <translation id="6195693561221576702">Acest dispozitiv nu poate fi configurat în modul demo offline.</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
@@ -6196,7 +6191,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7152478047064750137">Această extensie nu necesită permisiuni speciale</translation>
 <translation id="7154130902455071009">Schimbați pagina de start la: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
-<translation id="7155352398126583949">Notificările și aplicațiile pentru mesaje</translation>
 <translation id="7163202347044721291">Este verificat codul de activare...</translation>
 <translation id="716640248772308851">Extensia „<ph name="EXTENSION" />” poate citi imagini, videoclipuri și fișiere audio în locațiile indicate.</translation>
 <translation id="7167486101654761064">&amp;Deschide întotdeauna fișierele de acest tip</translation>
@@ -7208,7 +7202,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8141725884565838206">Gestionați parolele</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{un videoclip}few{# videoclipuri}other{# de videoclipuri}}</translation>
 <translation id="8143442547342702591">Aplicație nevalidă</translation>
-<translation id="8143475123634606318">Redă în stream aplicațiile pentru mesaje ale telefonului</translation>
 <translation id="8143609395536282994">Cum îți poți gestiona datele:</translation>
 <translation id="8143951647992294073">Selectează <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Dacă v-ați înregistrat deja pe acest dispozitiv, puteți să vă <ph name="LINK2_START" />conectați ca utilizator existent<ph name="LINK2_END" />.</translation>
@@ -7499,7 +7492,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8439506636278576865">Oferă-te să traduci paginile în această limbă</translation>
 <translation id="8440630305826533614">Aplicații Linux</translation>
 <translation id="8443795068008423036">Asigură-te că dispozitivul este actualizat și încearcă din nou</translation>
-<translation id="8445046761938045900">Fotografiile, notificările și aplicațiile pentru mesaje recente</translation>
 <translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8447409163267621480">Include Ctrl sau Alt</translation>
 <translation id="844850004779619592">Nu s-a găsit nicio comandă</translation>
@@ -7832,7 +7824,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8780443667474968681">Căutarea vocală a fost dezactivată.</translation>
 <translation id="8781834595282316166">Filă nouă în grup</translation>
 <translation id="8782565991310229362">Lansarea aplicațiilor de tip chioșc a fost anulată.</translation>
-<translation id="8783526165720272136">Aplicații pentru mesaje</translation>
 <translation id="8783834180813871000">Introdu codul de asociere prin Bluetooth, apoi apasă pe Revino sau pe Enter.</translation>
 <translation id="8784626084144195648">Medie limitată</translation>
 <translation id="8785622406424941542">Creion</translation>
@@ -8244,7 +8235,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9186963452600581158">Conectează-te cu Contul Google al unui copil</translation>
 <translation id="9187967020623675250">Tastele nu corespund. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Vezi fotografiile și elementele media recente ale telefonului. Redă în stream aplicațiile pentru mesaje ale telefonului.</translation>
 <translation id="919686179725692564">Află mai multe despre cum să faci backup pentru aplicații</translation>
 <translation id="9198090666959937775">Folosește telefonul Android ca pe o cheie de securitate</translation>
 <translation id="9199503643457729322">Dă clic pentru a închide Ghidul privind confidențialitatea.</translation>

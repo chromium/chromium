@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Finnisch</translation>
 <translation id="1942765061641586207">Bildauflösung</translation>
 <translation id="1972984168337863910">Erweiterte Dateiinformationen maximieren</translation>
-<translation id="1984456723671657197">Dieser Dateityp wird nicht unterstützt. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="1995337122023280937">Zum Dateispeicherort</translation>
 <translation id="2001796770603320721">In Drive verwalten</translation>
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">Bulgarisch</translation>
 <translation id="6973630695168034713">Ordner</translation>
 <translation id="6976795442547527108">Löwe</translation>
-<translation id="6978611942794658017">Diese Datei wurde für Computer entwickelt, die mit Windows-Software betrieben werden. Die Datei ist nicht kompatibel mit deinem Chrome OS-Gerät. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Schwedisch</translation>
 <translation id="6990081529015358884">Du hast keinen freien Speicherplatz mehr.</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">Französisch (Schweiz)</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7980421588063892270">Englisch (USA) mit Colemak-Tastatur</translation>
-<translation id="79907182588096956">Diese Datei wurde für Computer mit Windows-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="8000066093800657092">Kein Netzwerk</translation>
 <translation id="8008366997883261463">Jack Russell</translation>
 <translation id="8028993641010258682">Größe</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Hund, der mit dem Schwanz wedelt</translation>
 <translation id="8919081441417203123">Dänisch</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
-<translation id="8970501467542182729">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="9003940392834790328">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="9017798300203431059">Russisch – phonetisch</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">Mitglieder von "<ph name="DESTINATION_NAME" />" erhalten Zugriff auf diese Dateien.</translation>
 <translation id="9131598836763251128">Eine oder mehrere Dateien auswählen</translation>
 <translation id="9133055936679483811">Fehler beim Zippen. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Diese Datei wurde für Computer entwickelt, die mit Macintosh-Software betrieben werden. Die Datei ist nicht kompatibel mit deinem Chrome OS-Gerät. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="9144340019284012223">Katalanisch</translation>
 <translation id="914873105831852105">Ungültige PIN. Du hast noch 1 Versuch.</translation>
 <translation id="9153934054460603056">Identität und Passwort speichern</translation>

@@ -218,7 +218,6 @@
 <translation id="2848086008667475748">Тохиргоо хэсэгт өгөгдмөл болгох…</translation>
 <translation id="2858204748079866344">Таны нууцлалыг хамгаалахын тулд Chrome таны нууц үгийг энэ талбарт автоматаар бөглөхгүй.</translation>
 <translation id="285960592395650245">Татаж авах үйлдлийг дахин хийх</translation>
-<translation id="2866378026651742652">Та одоо шинэ таб нээх үедээ үүнээс стори харна.</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2871695793448672541">Нуусан, Нууц үг</translation>
 <translation id="2876369937070532032">Таны аюулгүй байдал эрсдэлд орох үед таны зочилдог зарим хуудсын URL-г Google-д илгээдэг</translation>
@@ -892,6 +891,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8588404856427128947">Унтраах</translation>
 <translation id="8590913940444621808">Хэзээ ч бүү асуу</translation>
 <translation id="8591976964826315682">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
+<translation id="8592752150819985187">Автоматаар бөглөх нууц үгнүүд</translation>
 <translation id="8605219856220328675">Цонхыг хаах.</translation>
 <translation id="8620640915598389714">Засах</translation>
 <translation id="8626393685701737946">Та сайтын өгөгдмөл харагдах байдлыг Тохиргоо &gt; Контентын тохиргоо хэсэгт дэлгэц болгож өөрчлөх боломжтой</translation>
@@ -910,6 +910,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8741995161408053644">Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="8750037785291841318">Та табуудаа эндээс олох болно</translation>
 <translation id="8756969031206844760">Нууц үгийг шинэчлэх үү?</translation>
+<translation id="8764015330924122850"><ph name="DOMAIN_NAME" />-г дагахаа болих</translation>
 <translation id="8775144690796719618">Хүчингүй URL</translation>
 <translation id="8787968206789828143">Веб дээр хайх</translation>
 <translation id="8803639129939845298">Аюулгүй</translation>

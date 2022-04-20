@@ -851,6 +851,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3295444047715739395">Ikusi eta kudeatu pasahitzak Chrome-ren ezarpenetan</translation>
 <translation id="3303855915957856445">Ez da aurkitu bilaketa-emaitzarik</translation>
 <translation id="3304073249511302126">Bluetooth bidezko gailuen bilaketa</translation>
+<translation id="33073482541490531">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Google-ren pasahitz-kudeatzaileak pasahitza orain aldatzea gomendatzen du.</translation>
 <translation id="3308006649705061278">Erakundeko unitatea</translation>
 <translation id="3308738399950580893">iragarkiak</translation>
 <translation id="3320021301628644560">Gehitu fakturazio-helbidea</translation>
@@ -984,6 +985,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
 <translation id="3667704023705708645">Arrisku-kapitala</translation>
+<translation id="367108335512738711">Chrome-ko laster-markak</translation>
 <translation id="3671540257457995106">Tamaina aldatzeko baimena ematen duzu?</translation>
 <translation id="3675563144891642599">Hirugarren arrabola</translation>
 <translation id="3676592649209844519">Gailuaren IDa:</translation>
@@ -1475,6 +1477,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5040262127954254034">Pribatutasuna</translation>
 <translation id="5043480802608081735">Kopiatu duzun esteka</translation>
+<translation id="5044545992476246592">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Google-ren Laguntzailea zerbitzuak automatikoki alda dezake pasahitza.</translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
 <translation id="5051305769747448211">Zuzeneko komedia</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Fitxategia Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}other{Fitxategiak Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}}</translation>
@@ -1487,6 +1490,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proxyaren helbidea egiaztatu<ph name="END_LINK" />.</translation>
 <translation id="5070838744279127212">Hamargarren arrabola</translation>
 <translation id="507130231501693183">4. postontzia</translation>
+<translation id="5078060223219502807">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, pasahitz-kudeatzaileak pasahitza orain aldatzea gomendatzen du, eta gero gordeta dauzkazun pasahitzak seguruak direla egiaztatzea.</translation>
 <translation id="5086225927071063542">Informatika banatua eta hodeiko informatika</translation>
 <translation id="5087286274860437796">Une honetan ez du balio zerbitzariaren ziurtagiriak.</translation>
 <translation id="5087580092889165836">Gehitu txartel bat</translation>
@@ -2002,6 +2006,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6579630537141957243">MIDI gailua konektatu nahi duzu?</translation>
 <translation id="6579990219486187401">Arrosa argia</translation>
 <translation id="6583674473685352014">B6 (gutun-azala)</translation>
+<translation id="6585526963651937128">Chrome-ko historia</translation>
 <translation id="6587182488465657433">Chrome-k erabili berri duzun pasahitza aurkitu du datuen isilpekotasunaren urratze batean. Zure kontuak babesteko, pasahitz hori aldatzea eta gordeta dauzkazun pasahitzak egiaztatzea gomendatzen dizugu.</translation>
 <translation id="6587923378399804057">Kopiatu duzun esteka</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> gailuak ez du kudeatzailerik</translation>
@@ -2110,6 +2115,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="691024665142758461">Hainbat fitxategi deskargatu.</translation>
 <translation id="6915804003454593391">Erabiltzailea:</translation>
 <translation id="6916954549222464607">Finantzen planifikazioa eta kudeaketa</translation>
+<translation id="6917795328362592458">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, pasahitz-kudeatzaileak gordeta dauzkazun pasahitzak seguruak direla egiaztatzea gomendatzen du.</translation>
 <translation id="6934672428414710184">Izen hori Google-ko kontukoa da</translation>
 <translation id="6939469646605424232">Telesaio dramatikoak</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> erakundeak kudeatzen ez duen webgune batean idatzi duzu pasahitza. Kontua babesteko, ez erabili berriro pasahitz hori beste aplikazio eta webguneetan.</translation>
@@ -2786,6 +2792,7 @@ Xehetasun gehiago:
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" zerrenda-sarrera: sarrerari ez ikusi egin zaio, SpellcheckLanguage gidalerroan ere agertzen delako.</translation>
 <translation id="8806285662264631610">Bainugelarako eta gorputzerako produktuak</translation>
 <translation id="8807160976559152894">Moztu orri bakoitzaren amaieran</translation>
+<translation id="8808828119384186784">Chrome-ren ezarpenak</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
 <translation id="8820817407110198400">Laster-markak</translation>
 <translation id="882338992931677877">Eskuzko erretilua</translation>

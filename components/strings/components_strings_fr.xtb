@@ -858,6 +858,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3295444047715739395">Affichez et gérez vos mots de passe dans les paramètres Chrome</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
 <translation id="3304073249511302126">Recherche Bluetooth</translation>
+<translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Le Gestionnaire de mots de passe vous recommande de le modifier immédiatement.</translation>
 <translation id="3308006649705061278">Unité d'organisation (OU)</translation>
 <translation id="3308738399950580893">annonces</translation>
 <translation id="3320021301628644560">Ajouter une adresse de facturation</translation>
@@ -992,6 +993,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3664782872746246217">Mots-clés :</translation>
 <translation id="3667704023705708645">Capital-risque</translation>
+<translation id="367108335512738711">Favoris Chrome</translation>
 <translation id="3671540257457995106">Autoriser le redimensionnement ?</translation>
 <translation id="3675563144891642599">3e rouleau</translation>
 <translation id="3676592649209844519">ID de l'appareil :</translation>
@@ -1488,6 +1490,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="5043480802608081735">Lien copié</translation>
+<translation id="5044545992476246592">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. L'Assistant Google peut le modifier automatiquement.</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="5051305769747448211">Spectacles comiques</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour partager ces fichiers à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
@@ -1500,6 +1503,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Vérifier l'adresse du proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">10e rouleau</translation>
 <translation id="507130231501693183">Boîte aux lettres 4</translation>
+<translation id="5078060223219502807">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe vous recommande de le modifier immédiatement, puis de vérifier vos mots de passe enregistrés.</translation>
 <translation id="5086225927071063542">Calcul distribué et cloud computing</translation>
 <translation id="5087286274860437796">Le certificat actuel du serveur n'est pas valide.</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
@@ -2016,6 +2020,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6579630537141957243">Connecter un appareil MIDI ?</translation>
 <translation id="6579990219486187401">Rose clair</translation>
 <translation id="6583674473685352014">B6 (enveloppe)</translation>
+<translation id="6585526963651937128">Historique Chrome</translation>
 <translation id="6587182488465657433">Chrome a trouvé le mot de passe que vous venez d'utiliser lors d'une violation de données. Pour la sécurité de vos comptes, nous vous recommandons de le modifier immédiatement, puis de vérifier vos mots de passe enregistrés.</translation>
 <translation id="6587923378399804057">Lien copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
@@ -2124,6 +2129,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="691024665142758461">Télécharger plusieurs fichiers</translation>
 <translation id="6915804003454593391">Utilisateur : </translation>
 <translation id="6916954549222464607">Planification et gestion financière</translation>
+<translation id="6917795328362592458">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe vous recommande de vérifier vos mots de passe enregistrés.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
 <translation id="6939469646605424232">Drames (films TV)</translation>
 <translation id="6944692733090228304">Vous avez saisi votre mot de passe sur un site qui n'est pas géré par <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pour protéger votre compte, ne réutilisez pas ce mot de passe dans d'autres applications ni sur d'autres sites.</translation>
@@ -2801,6 +2807,7 @@ Informations supplémentaires :
 <translation id="8805819170075074995">Entrée de la liste "<ph name="LANGUAGE_ID" />" : entrée ignorée, car elle est aussi incluse dans la règle SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Produits pour le bain et le corps</translation>
 <translation id="8807160976559152894">Couper après chaque page</translation>
+<translation id="8808828119384186784">Paramètres de Chrome</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="882338992931677877">Emplacement manuel</translation>

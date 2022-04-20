@@ -273,6 +273,7 @@
 <translation id="7651907282515937834">Logotip de Chrome Enterprise</translation>
 <translation id="7655455401911432608">El teu historial de navegació, que és un registre dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
 <translation id="7747138024166251722">L'instal·lador no ha pogut crear un directori temporal. Comprova que hi ha espai lliure al disc i que tens permís per instal·lar el programari.</translation>
+<translation id="7748512868279796735">Els comptes següents estan disponibles per a aquest perfil de Chrome</translation>
 <translation id="7761834446675418963">Feu clic al vostre nom per obrir Chrome i començar a navegar.</translation>
 <translation id="7777080907402804672">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
 <translation id="7781002470561365167">Hi ha disponible una versió nova de Google Chrome.</translation>
@@ -292,7 +293,6 @@
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
-<translation id="822971176939352383">Els següents comptes no tenen la sessió iniciada en cap perfil de Chrome. Si vols utilitzar un compte en un altre perfil, primer has de suprimir aquest perfil.</translation>
 <translation id="8255190535488645436">Google Chrome està utilitzant la càmera i el micròfon.</translation>
 <translation id="8286862437124483331">Google Chrome està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="828798499196665338">Els teus pares han desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chrome. No es permet activar aquesta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

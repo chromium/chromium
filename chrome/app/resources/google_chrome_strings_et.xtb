@@ -277,6 +277,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7651907282515937834">Chrome Enterprise'i logo</translation>
 <translation id="7655455401911432608">Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
+<translation id="7748512868279796735">Järgmised kontod on selle Chrome'i profiili jaoks saadaval</translation>
 <translation id="7761834446675418963">Chrome'i avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
 <translation id="7777080907402804672">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>
 <translation id="7781002470561365167">Saadaval on uus Google Chrome'i versioon.</translation>
@@ -296,7 +297,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8013993649590906847">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Teave &amp;Google Chrome'i kohta</translation>
-<translation id="822971176939352383">Järgmised kontod pole ühelegi Chrome'i profiilile sisse logitud. Kui soovite kasutada teisel profiilil olevat kontot, eemaldage esmalt see profiil.</translation>
 <translation id="8255190535488645436">Google Chrome kasutab kaamerat ja mikrofoni.</translation>
 <translation id="8286862437124483331">Google Chrome proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="828798499196665338">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chrome'i puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>

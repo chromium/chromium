@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Bahasa Finland</translation>
 <translation id="1942765061641586207">Peleraian imej</translation>
 <translation id="1972984168337863910">Kembangkan panel maklum balas fail</translation>
-<translation id="1984456723671657197">Jenis fail ini tidak disokong. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada OS Chrome.</translation>
 <translation id="1995337122023280937">Pergi ke lokasi fail</translation>
 <translation id="2001796770603320721">Urus dalam Drive</translation>
 <translation id="2009067268969781306">Memformatkan pemacu akan memadamkan semua data yang disimpan di dalamnya. Tindakan ini tidak boleh dibuat asal.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">Bahasa Bulgaria</translation>
 <translation id="6973630695168034713">Folder</translation>
 <translation id="6976795442547527108">Singa</translation>
-<translation id="6978611942794658017">Fail ini direka untuk sebuah komputer yang menggunakan perisian Windows. Ini tidak serasi dengan peranti anda yang menjalankan OS Chrome. Sila cari di Kedai Web Chrome untuk mendapatkan apl ganti yang sesuai.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sweden</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">Perancis (Switzerland)</translation>
 <translation id="7973962044839454485">Pengesahan PPP gagal disebabkan oleh nama pengguna atau kata laluan yang salah</translation>
 <translation id="7980421588063892270">Inggeris (AS) dengan papan kekunci Colemak</translation>
-<translation id="79907182588096956">Fail ini direka bentuk untuk PC yang menggunakan perisian Windows. Fail ini tidak serasi dengan peranti anda yang menjalankan OS Chrome. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada OS Chrome.</translation>
 <translation id="8000066093800657092">Tiada rangkaian</translation>
 <translation id="8008366997883261463">Anjing Jack Russel Terrier</translation>
 <translation id="8028993641010258682">Saiz</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Anjing menggoyang-goyangkan ekor</translation>
 <translation id="8919081441417203123">Bahasa Denmark</translation>
 <translation id="8965697826696209160">Tiada ruang yang mencukupi.</translation>
-<translation id="8970501467542182729">Fail ini direka untuk komputer yang menggunakan perisian Macintosh. Fail ini tidak serasi dengan peranti anda yang menjalankan OS Chrome. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada OS Chrome.</translation>
 <translation id="8997962250644902079">Pinyin Cina (Tradisional)</translation>
 <translation id="9003940392834790328">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>
 <translation id="9017798300203431059">Fonetik bahasa Rusia</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">Ahli '<ph name="DESTINATION_NAME" />' akan mendapat akses ke item ini.</translation>
 <translation id="9131598836763251128">Pilih satu fail atau lebih</translation>
 <translation id="9133055936679483811">Gagal mengezip. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Fail ini direka untuk komputer yang menggunakan perisian Macintosh. Ini tidak serasi dengan peranti anda yang menjalankan OS Chrome. Sila buat carian di Kedai Web Chrome untuk apl penggantian yang sesuai.</translation>
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">PIN tidak sah. Anda mempunyai 1 percubaan lagi.</translation>
 <translation id="9153934054460603056">Simpan identiti dan kata laluan</translation>

@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Ffineg</translation>
 <translation id="1942765061641586207">Cydraniad llun</translation>
 <translation id="1972984168337863910">Ehangu paneli adborth ffeiliau</translation>
-<translation id="1984456723671657197">Ni chefnogir y math hwn o ffeil. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /> am agor ffeiliau ar Chrome OS.</translation>
 <translation id="1995337122023280937">Mynd i leoliad y ffeil</translation>
 <translation id="2001796770603320721">Rheoli yn Drive</translation>
 <translation id="2009067268969781306">Bydd fformatio gyriant yn dileu'r holl ddata sydd wedi'u cadw arno. Ni ellir dadwneud y weithred hon.</translation>
@@ -701,7 +700,6 @@
 <translation id="6970230597523682626">Bwlgaraidd</translation>
 <translation id="6973630695168034713">Ffolderi</translation>
 <translation id="6976795442547527108">Llew</translation>
-<translation id="6978611942794658017">Mae'r ffeil hon wedi'i chynllunio ar gyfer cyfrifiadur personol sy'n defnyddio meddalwedd Windows. Nid yw hyn yn gydnaws â'ch dyfais sy'n rhedeg Chrome OS. Chwiliwch yn Chrome Web Store am ap addas arall.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Swedeg</translation>
 <translation id="6990081529015358884">Rydych wedi rhedeg allan o le storio</translation>
@@ -823,7 +821,6 @@
 <translation id="7972920761225148017">Ffrangeg (Y Swistir)</translation>
 <translation id="7973962044839454485">Mae dilysu PPP wedi methu oherwydd enw defnyddiwr neu gyfrinair anghywir</translation>
 <translation id="7980421588063892270">Saesneg (UDA) gyda bysellfwrdd Colemak</translation>
-<translation id="79907182588096956">Mae'r ffeil hon wedi'i dylunio ar gyfer cyfrifiadur personol sy'n defnyddio meddalwedd Windows. Nid yw hyn yn gydnaws â'ch dyfais sy'n rhedeg Chrome OS. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /> am agor ffeiliau ar Chrome OS.</translation>
 <translation id="8000066093800657092">Dim rhwydwaith</translation>
 <translation id="8008366997883261463">Daeargi Jack Russell</translation>
 <translation id="8028993641010258682">Maint</translation>
@@ -934,7 +931,6 @@
 <translation id="8912078710089354287">Ci yn siglo'i gynffon</translation>
 <translation id="8919081441417203123">Daneg</translation>
 <translation id="8965697826696209160">Nid oes digon o le.</translation>
-<translation id="8970501467542182729">Mae'r ffeil hon wedi'i dylunio ar gyfer cyfrifiadur sy'n defnyddio meddalwedd Macintosh. Nid yw hyn yn gydnaws â'ch dyfais sy'n rhedeg Chrome OS. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /> am agor ffeiliau ar Chrome OS.</translation>
 <translation id="8997962250644902079">Pinyin Tseinëeg (Traddodiadol)</translation>
 <translation id="9003940392834790328">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rheolir gan eich Gweinyddwr, Manylion</translation>
 <translation id="9017798300203431059">Rwseg ffonetig</translation>
@@ -953,7 +949,6 @@
 <translation id="9130775360844693113">Bydd aelodau '<ph name="DESTINATION_NAME" />' yn cael mynediad at yr eitemau hyn.</translation>
 <translation id="9131598836763251128">Dewiswch un ffeil neu ragor</translation>
 <translation id="9133055936679483811">Wedi methu â sipio. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Mae'r ffeil hon wedi'i dylunio ar gyfer cyfrifiadur gan ddefnyddio meddalwedd Macintosh. Nid yw hyn yn gydnaws â'ch dyfais sy'n rhedeg Chrome OS. Chwiliwch yn Chrome Web Store am ap addas arall.</translation>
 <translation id="9144340019284012223">Catalaneg</translation>
 <translation id="914873105831852105">PIN annilys. Mae gennych 1 ymgais ar ôl.</translation>
 <translation id="9153934054460603056">Cadw hunaniaeth a chyfrinair</translation>

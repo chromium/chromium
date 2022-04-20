@@ -268,11 +268,11 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7828947555739565424">Este dispositivo já tem um perfil do Chromium com essa conta</translation>
 <translation id="7867198900892795913">Não foi possível atualizar o Chromium para a versão mais recente. Com isso, você está perdendo novos recursos e correções de segurança.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Você também pode remover interesses que não quer que o Chromium considere.</translation>
+<translation id="788352880609666695">As seguintes contas estão disponíveis neste perfil do Chromium</translation>
 <translation id="7937630085815544518">Você estava conectado ao Chromium como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7975919845073681630">Como esta é uma instalação secundária do Chromium, ele não pode se tornar seu navegador padrão.</translation>
 <translation id="7997934263947464652">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chromium recomenda os instalar apenas pela <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os sites poderão solicitar acesso.</translation>
-<translation id="8045118833343856403">As seguintes contas não estão conectadas a nenhum perfil do Chromium. Se você quiser usar uma conta em outro perfil, remova-o primeiro.</translation>
 <translation id="8105840573057009683">O Chromium precisa da permissão de localização para este site</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="81770708095080097">Esse arquivo é perigoso, por isso ele foi bloqueado pelo Chromium.</translation>

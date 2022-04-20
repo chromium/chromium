@@ -135,7 +135,6 @@
 <translation id="1708345662127501511">ਡੈਸਕ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1715293566947629045">ਪ੍ਰੋਫਾਈਲ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">ਲਾਈਵ ਸੁਰਖੀਆਂ ਚਾਲੂ ਹਨ।</translation>
 <translation id="1720011244392820496">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨੂੰ ਦਿਸ ਰਿਹਾ ਹੈ।</translation>
@@ -200,6 +199,7 @@
 <translation id="2107914222138020205">ਤੁਹਾਡੀ USB-C ਕੇਬਲ Thunderbolt ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2108303511227308752">Alt + ਬੈਕਸਪੇਸ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Delete ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਬੈਕਸਪੇਸ ਦਬਾਓ।</translation>
 <translation id="211328683600082144">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="2123115117533398272">ChromeOS ਪੜਚੋਲ ਕਰਨ ਲਈ ਨਵੀਂ ਸਮੱਗਰੀ ਦੇ ਸੁਝਾਅ ਦਿਖਾਉਂਦਾ ਹੈ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੋਂ ਡਾਟੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਚੋਣ ਕੀਤੇ ਜਾਣ 'ਤੇ ਹੀ ਕੁਆਲਿਟੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਅੰਕੜੇ ਭੇਜੇ ਜਾਂਦੇ ਹਨ। <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">ਨਵਾਂ ਡੈਸਕ</translation>
 <translation id="2127372758936585790">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ</translation>
 <translation id="2132302418721800944">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
@@ -270,6 +270,7 @@
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
 <translation id="2621713457727696555">ਸੁਰੱਖਿਅਤ</translation>
 <translation id="263399434338050016">"ਸਭ ਚੁਣੋ"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ਵਿੰਡੋ ਕੈਪਚਰ</translation>
 <translation id="2653659639078652383">ਪ੍ਰਸਤੁਤ ਕਰੋ</translation>
 <translation id="2658778018866295321">ਕਲਿੱਕ ਕਰਕੇ ਘਸੀਟੋ</translation>
@@ -395,6 +396,7 @@
 <translation id="3375634426936648815">ਕਨੈਕਟ ਹੈ</translation>
 <translation id="3378442621503952303">ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="3386978599540877378">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">ਵਾਧੂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3410336247007142655">ਗੂੜ੍ਹੇ ਥੀਮ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="3413817803639110246">ਅਜੇ ਦੇਖਣ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
@@ -528,7 +530,6 @@
 <translation id="4129129681837227511">ਆਪਣੀ ਲਾਕ ਸਕ੍ਰੀਨ 'ਤੇ ਸੂਚਨਾਵਾਂ ਦੇਖਣ ਲਈ, ਅਣਲਾਕ ਕਰਕੇ ਸੈਟਿੰਗ ਬਦਲੋ</translation>
 <translation id="4146833061457621061">ਸੰਗੀਤ ਚਲਾਓ</translation>
 <translation id="4165275524535002941">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੇਬਲ ਡਿਸਪਲੇਆਂ ਦਾ ਸਮਰਥਨ ਨਾ ਕਰੇ</translation>
-<translation id="4173958948577803258">ਵੀ</translation>
 <translation id="4177913004758410636">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4181841719683918333">ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="4192112279662688596">ਜਾਂ</translation>
@@ -949,7 +950,6 @@
 <translation id="6751826523481687655">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਚਾਲੂ ਹੈ</translation>
 <translation id="6752912906630585008">ਡੈਸਕ <ph name="REMOVED_DESK" /> ਨੂੰ ਹਟਾ ਕੇ ਡੈਸਕ <ph name="RECEIVE_DESK" /> ਵਿੱਚ ਵਿਲੀਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6753390234084146956">ਟੈਬਾਂ</translation>
-<translation id="6754441615189976839">ਸ਼</translation>
 <translation id="6757237461819837179">ਕੋਈ ਮੀਡੀਆ ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6777216307882431711">ਕਨੈਕਟ ਕੀਤੇ USB-C ਡੀਵਾਈਸਾਂ ਨੂੰ ਪਾਵਰ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="6786750046913594791">ਫੋਲਡਰ ਬੰਦ ਕਰੋ</translation>
@@ -998,7 +998,6 @@
 <translation id="7045033600005038336">ਕੀ ਟੈਮਪਲੇਟ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="7045595904618419789">ਵੱਡਦਰਸ਼ੀ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ</translation>
-<translation id="7055381872777910864">ਬੁੱ</translation>
 <translation id="7055910611768509537">ਸਟਾਈਲਸ ਨੂੰ ਇੱਕ ਹਫ਼ਤੇ ਤੋਂ ਵੱਧ ਸਮੇਂ ਤੋਂ ਵਰਤਿਆ ਨਹੀਂ ਗਿਆ</translation>
 <translation id="7066646422045619941">ਇਹ ਨੈੱਟਵਰਕ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="7067196344162293536">ਸਵੈ ਘੁੰਮਾਓ</translation>
@@ -1082,7 +1081,6 @@
 <translation id="7579778809502851308">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="7590883480672980941">ਇਨਪੁੱਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7593891976182323525">Search ਜਾਂ Shift</translation>
-<translation id="7595633564847427181">ਸੋ</translation>
 <translation id="7600875258240007829">ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਦੇਖੋ</translation>
 <translation id="7607002721634913082">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>

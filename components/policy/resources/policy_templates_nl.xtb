@@ -2784,6 +2784,13 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="4025500273782820766">Sta toe dat gebruikers 'Altijd toestaan' selecteren als een dialoogvenster voor externe protocollen wordt getoond om toekomstige bevestigingsprompts over te slaan</translation>
 <translation id="402759845255257575">Niet toestaan dat sites JavaScript uitvoeren</translation>
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
+<translation id="4027904270588278067">Als je het beleid instelt, wordt de map ingesteld die Chrome gebruikt voor het downloaden van bestanden. Chrome gebruikt de opgegeven map, ongeacht of de gebruiker een map heeft gespecificeerd of heeft aangegeven dat er elke keer om een downloadlocatie moet worden gevraagd.
+
+      Dit beleid overschrijft het beleid <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Als je het beleid niet instelt, gebruikt Chrome de standaard downloadmap en kunnen gebruikers deze wijzigen.
+
+      Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4041577849977347218">Als je het beleid toepast of niet instelt, worden gedownloade bestanden voor analyse gestuurd naar Safe Browsing, zelfs als deze van een vertrouwde bron afkomstig zijn.
 
       Als je het beleid niet toepast, worden gedownloade bestanden niet voor analyse naar Safe Browsing gestuurd als deze van een vertrouwde bron afkomstig zijn.
@@ -5530,14 +5537,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7266471712301230894">Dit beleid is verwijderd vanaf <ph name="PRODUCT_NAME" /> 64.
 
       Er wordt geen ondersteuning meer geboden voor het automatisch zoeken en installeren van ontbrekende plug-ins.</translation>
-<translation id="7266868915753562724">Dit beleid bepaalt de zichtbaarheid van Trajecten op de Chrome-geschiedenispagina.
-
-      Als je het beleid toepast, zijn Trajecten zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet toepast, zijn Trajecten niet zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet instelt, zijn trajecten standaard zichtbaar op chrome://history/journeys en kunnen gebruikers de zichtbaarheid van trajecten wijzigen.
-      </translation>
 <translation id="7267809745244694722">Mediatoetsen worden standaard ingesteld op functietoetsen</translation>
 <translation id="7269263983506766969">Standaardprioriteit gebruiken voor audioproces</translation>
 <translation id="7270001383428188269">De ID voor dit clientcertificaat.</translation>
@@ -5950,6 +5949,13 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen opslagstatistieken rapporteren.
       Uitzondering: schijfgrootte en vrije schijfruimte worden beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
+<translation id="7719175048012980445">Als je het beleid instelt, wordt de standaardmap gewijzigd waarnaar Chrome bestanden downloadt maar kunnen gebruikers deze map wijzigen.
+
+      Als je het beleid niet instelt, gebruikt Chrome de platformspecifieke standaardmap.
+
+      Dit beleid heeft geen effect als het beleid <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> is ingesteld.
+
+      Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="7721944091689270995">Gebruikers-ID voor <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Als je het beleid instelt op 1, kunnen websites pop-ups bekijken. Als je het beleid instelt op 2, worden pop-ups geblokkeerd.
 

@@ -135,7 +135,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Şəbəkə Ayarları</translation>
 <translation id="1715293566947629045">Profil deaktiv edilir. Bir neçə dəqiqə gözləyin.</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Canlı Altyazı aktivdir.</translation>
 <translation id="1720011244392820496">Wi-Fi Sinxronlaşdırmasını aktiv edin</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth cihazlarına görünür.</translation>
@@ -200,6 +199,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2107914222138020205">USB-C kabeliniz Thunderbolt'u dəstəkləmir. Cihazın performansı məhdud ola bilər.</translation>
 <translation id="2108303511227308752">Alt + Geri klaviatura qısayolu dəyişib. Silmə düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + geri düyməsini basın.</translation>
 <translation id="211328683600082144">MİKROFONU YANDIRIN</translation>
+<translation id="2123115117533398272">ChromeOS yeni məzmun üçün təklifləri göstərir. Yalnız istifadə datasını paylaşmağı seçdiyiniz zaman keyfiyyəti yaxşılaşdırmaq üçün statistika göndərir. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Yeni iş masası</translation>
 <translation id="2127372758936585790">Gücü az şarjer</translation>
 <translation id="2132302418721800944">Tam ekranı çəkin</translation>
@@ -270,6 +270,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Güvənli</translation>
 <translation id="263399434338050016">"Hamısını seçin"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Pəncərə çəkimi</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2658778018866295321">Klikləyin və çəkin</translation>
@@ -395,6 +396,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3375634426936648815">Qoşulub</translation>
 <translation id="3378442621503952303">Profilə qoşulur. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="3386978599540877378">tam ekranlı böyüdücü</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Əlavə ayarlar</translation>
 <translation id="3410336247007142655">Tünd tema ayarlarını göstərin</translation>
 <translation id="3413817803639110246">Göstərmək üçün bildiriş yoxdur</translation>
@@ -528,7 +530,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4129129681837227511">Bildirişlərin kilid ekranında görünməsini istəyirsinizsə, ayarı dəyişmək üçün cihazı kiliddən çıxarın</translation>
 <translation id="4146833061457621061">Musiqini oxudun</translation>
 <translation id="4165275524535002941">Kabel displeyləri dəstəkləməyə bilər</translation>
-<translation id="4173958948577803258">C.a.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cihazı bir gün ərzində güncəlləyin}other{Cihazı # gün ərzində güncəlləyin}}</translation>
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4192112279662688596">Və ya</translation>
@@ -948,7 +949,6 @@ Yeni quraşdırma</translation>
 <translation id="6751826523481687655">Performansın izlənməsi aktiv edildi</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> silinərək Masa <ph name="RECEIVE_DESK" /> ilə birləşdirildi</translation>
 <translation id="6753390234084146956">tablar</translation>
-<translation id="6754441615189976839">Ş</translation>
 <translation id="6757237461819837179">Oxudulan media yoxdur</translation>
 <translation id="6777216307882431711">Qoşulmuş USB-C cihazları qidalandırılır</translation>
 <translation id="6786750046913594791">Qovluğu qapadın</translation>
@@ -997,7 +997,6 @@ Yeni quraşdırma</translation>
 <translation id="7045033600005038336">Şablon əvəz edilsin?</translation>
 <translation id="7045595904618419789">Böyüdücünü başladın</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> şəbəkədən ayrıldı</translation>
-<translation id="7055381872777910864">Ç</translation>
 <translation id="7055910611768509537">Qələm bir həftədən çoxdur ki, istifadə edilməyib</translation>
 <translation id="7066646422045619941">Bu şəbəkə administratorunuz tərəfindən deaktiv edilib.</translation>
 <translation id="7067196344162293536">Avtodönüş</translation>
@@ -1081,7 +1080,6 @@ Yeni quraşdırma</translation>
 <translation id="7579778809502851308">Ekran çəkimi</translation>
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7593891976182323525">Axtarın və ya Dəyişin</translation>
-<translation id="7595633564847427181">B.e.</translation>
 <translation id="7600875258240007829">Bütün bildirişlərə baxın</translation>
 <translation id="7607002721634913082">Durduruldu</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>

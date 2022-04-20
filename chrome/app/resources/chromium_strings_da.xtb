@@ -274,11 +274,11 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7828947555739565424">Der findes allerede en Chromium-profil med denne konto på enheden</translation>
 <translation id="7867198900892795913">Chromium kunne ikke opdatere til den nyeste version, så du går glip af nye funktioner og sikkerhedsrettelser.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Sådan kan du administrere dine data:<ph name="END_BOLD" /> Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dine personlige oplysninger Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chromium skal tage med i betragtning.</translation>
+<translation id="788352880609666695">Følgende konti er tilgængelige for denne Chromium-profil</translation>
 <translation id="7937630085815544518">Du loggede ind på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installation af Chromium, og den kan ikke gøres til din standardbrowser.</translation>
 <translation id="7997934263947464652">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chromium anbefaler, at de kun installeres via <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Når Chromium har adgang, kan websites bede dig om adgang.</translation>
-<translation id="8045118833343856403">Følgende konti er ikke logget ind på nogen Chromium-profiler. Hvis du vil bruge en konto på en anden profil, skal du først fjerne den pågældende profil.</translation>
 <translation id="8105840573057009683">Chromium skal have adgangstilladelse til lokation for at bruge dette website</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="81770708095080097">Denne fil er farlig, så Chromium har blokeret den.</translation>

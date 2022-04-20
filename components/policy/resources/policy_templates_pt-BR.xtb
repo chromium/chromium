@@ -2821,6 +2821,13 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
+<translation id="4027904270588278067">Se a política for definida, o diretório usado para salvar arquivos de download no Chrome vai ser configurado. O diretório fornecido será usado, ainda que o usuário tenha especificado outro diretório ou ativado a sinalização de sempre perguntar o local de download.
+
+      Esta política substitui a política <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Se a política não for definida, o Chrome vai usar o diretório de download padrão e o usuário poderá modificar isso.
+
+      Observação: veja uma lista com as variáveis que podem ser usadas: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês).</translation>
 <translation id="4041577849977347218">Se a política for definida como "Ativada" ou não for definida, os arquivos transferidos por download serão enviados para análise pelo "Navegação segura", mesmo que sejam de uma fonte confiável.
 
       Se a política for definida como "Desativada", os arquivos transferidos por download não serão enviados para análise pelo "Navegação segura" quando forem de uma fonte confiável.
@@ -5616,14 +5623,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7266471712301230894">Esta política foi removida a partir da versão 64 do <ph name="PRODUCT_NAME" />.
 
       A pesquisa e a instalação automáticas de plug-ins ausentes não são mais compatíveis.</translation>
-<translation id="7266868915753562724">Esta política controla a visibilidade de jornadas na página do histórico do Chrome.
-
-      Se ela for ativada, as jornadas ficarão visíveis em chrome://history/journeys.
-
-      Se for desativada, as jornadas não ficarão visíveis nessa página.
-
-      Se a política for deixada sem definição, as jornadas ficarão visíveis em chrome://history/journeys por padrão e os usuários poderão mudar a visibilidade.
-      </translation>
 <translation id="7267809745244694722">Teclas de mídia padrão para teclas de função</translation>
 <translation id="7269263983506766969">Usar a prioridade padrão para o processo de áudio</translation>
 <translation id="7270001383428188269">Identificador para este certificado do cliente.</translation>
@@ -6035,6 +6034,13 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
       Se a política for desativada, os dispositivos registrados não vão informar estatísticas de armazenamento.
       Exceção: no M95 e em versões anteriores, o tamanho e espaço livre do disco são controlados por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
+<translation id="7719175048012980445">Se a política for definida, o diretório padrão do Chrome para salvar arquivos de download vai ser alterado, mas o usuário poderá mudar isso.
+
+      Se a política não for definida, o Chrome usará o diretório padrão específico da plataforma.
+
+      Esta política não tem efeito se a política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> estiver definida.
+
+      Observação: veja uma lista com as variáveis que podem ser usadas: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês).</translation>
 <translation id="7721944091689270995">ID do usuário do <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se a política for definida como 1, os sites poderão exibir pop-ups. Se ela for definida como 2, os pop-ups serão negados.
 

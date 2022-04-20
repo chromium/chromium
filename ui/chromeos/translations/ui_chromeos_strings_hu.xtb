@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">finn</translation>
 <translation id="1942765061641586207">Képfelbontás</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
-<translation id="1984456723671657197">Ez a fájltípus nem támogatott. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok Chrome OS-en való megnyitásáról.</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
 <translation id="2001796770603320721">Kezelés a Drive-ban</translation>
 <translation id="2009067268969781306">A meghajtó formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">bolgár</translation>
 <translation id="6973630695168034713">Mappák</translation>
 <translation id="6976795442547527108">Oroszlán</translation>
-<translation id="6978611942794658017">Ezt a fájlt Windows-szoftvereket használó számítógéphez készítették. Nem kompatibilis az Ön Chrome OS-t futtató eszközével. A Chrome Internetes áruházban kereshet megfelelő helyettesítő alkalmazást.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">svéd</translation>
 <translation id="6990081529015358884">Elfogyott a hely</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">francia (Svájc)</translation>
 <translation id="7973962044839454485">Nem sikerült a PPP-hitelesítés helytelen felhasználónév vagy jelszó miatt</translation>
 <translation id="7980421588063892270">angol (USA) billentyűzet Colemak kiosztással</translation>
-<translation id="79907182588096956">Ez a fájl Windows rendszert futtató számítógéphez készült. Az Ön Chrome OS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok Chrome OS-en való megnyitásáról.</translation>
 <translation id="8000066093800657092">Nincs hálózat</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Méret</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Kutya csóválja a farkát</translation>
 <translation id="8919081441417203123">dán</translation>
 <translation id="8965697826696209160">Nincs elég tárhely.</translation>
-<translation id="8970501467542182729">A fájl Macintosh-szoftvert használó számítógéphez készült. Az Ön Chrome OS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok Chrome OS-en való megnyitásáról.</translation>
 <translation id="8997962250644902079">kínai (hagyományos) pinjin</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
 <translation id="9017798300203431059">orosz fonetikus</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">A(z) „<ph name="DESTINATION_NAME" />” tagjai hozzá fognak férni ezekhez az elemekhez.</translation>
 <translation id="9131598836763251128">Válasszon ki egy vagy több fájlt</translation>
 <translation id="9133055936679483811">A tömörítés sikertelen. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">A fájl Macintosh-szoftvert használó számítógéphez készült. Chrome OS-t futtató eszközével nem kompatibilis. Keressen a Chrome Internetes áruházban megfelelő helyettesítő alkalmazást.</translation>
 <translation id="9144340019284012223">katalán</translation>
 <translation id="914873105831852105">Érvénytelen PIN-kód. 1 próbálkozási lehetősége maradt.</translation>
 <translation id="9153934054460603056">Azonosítás és jelszó mentése</translation>

@@ -5585,14 +5585,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7266471712301230894">Bu politika, <ph name="PRODUCT_NAME" /> 64 itibarıyla kaldırılmıştır.
 
       Eksik eklentilerin otomatik olarak aranması ve yüklenmesi artık desteklenmemektedir.</translation>
-<translation id="7266868915753562724">Bu politika, Chrome geçmişi sayfasında arama yolculuklarının görünürlüğünü kontrol eder.
-
-      Politika, Etkin değerine ayarlanırsa arama yolculukları chrome://history/journeys adresinde görülebilir.
-
-      Politika, Devre Dışı değerine ayarlanırsa arama yolculukları chrome://history/journeys adresinde görülemez.
-
-      Politika ayarlanmadan bırakılırsa arama yolculukları varsayılan olarak chrome://history/journeys adresinde görülebilir ve kullanıcılar, arama yolculuklarının görünürlüğünü değiştirebilir.
-      </translation>
 <translation id="7267809745244694722">Medya tuşları varsayılan olarak işlev tuşlarına ayarlanır</translation>
 <translation id="7269263983506766969">Ses işlemi için varsayılan önceliği kullan</translation>
 <translation id="7270001383428188269">Bu istemci sertifikasının tanımlayıcısı.</translation>

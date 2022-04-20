@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Prentresolusie</translation>
 <translation id="1972984168337863910">Vou lêersterugvoerpanele uit</translation>
-<translation id="1984456723671657197">Hierdie lêertipe word nie gesteun nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="1995337122023280937">Gaan na lêerligging toe</translation>
 <translation id="2001796770603320721">Bestuur in Drive</translation>
 <translation id="2009067268969781306">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word. Hierdie handeling kan nie ontdoen word nie.</translation>
@@ -701,7 +700,6 @@
 <translation id="6970230597523682626">Bulgaars</translation>
 <translation id="6973630695168034713">Vouers</translation>
 <translation id="6976795442547527108">Leeu</translation>
-<translation id="6978611942794658017">Hierdie lêer is ontwerp vir 'n rekenaar met Windows-sagteware. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel laat loop nie. Deursoek asseblief die Chrome-webwinkel vir 'n geskikte plaasvervangerprogram.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sweeds</translation>
 <translation id="6990081529015358884">Jy het nie meer spasie nie</translation>
@@ -823,7 +821,6 @@
 <translation id="7972920761225148017">Frans (Switserland)</translation>
 <translation id="7973962044839454485">PPP-stawing het misluk as gevolg van 'n verkeerde gebruikernaam of wagwoord</translation>
 <translation id="7980421588063892270">Engels (VSA) met Colemak-sleutelbord</translation>
-<translation id="79907182588096956">Hierdie lêer is ontwerp vir 'n rekenaar met Windows-sagteware. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="8000066093800657092">Geen netwerk nie</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
@@ -934,7 +931,6 @@
 <translation id="8912078710089354287">Hond waai stert</translation>
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Daar is nie genoeg spasie nie.</translation>
-<translation id="8970501467542182729">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="8997962250644902079">Chinees- (tradisioneel) Pinjin</translation>
 <translation id="9003940392834790328">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="9017798300203431059">Russiese fonetiek</translation>
@@ -953,7 +949,6 @@
 <translation id="9130775360844693113">Lede van "<ph name="DESTINATION_NAME" />" sal toegang tot hierdie items kry.</translation>
 <translation id="9131598836763251128">Kies een of meer lêers</translation>
 <translation id="9133055936679483811">Kon nie kompakteer nie. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel laat loop nie. Soek asseblief in die Chrome Webwinkel vir 'n geskikte plaasvervangerprogram.</translation>
 <translation id="9144340019284012223">Katalaans</translation>
 <translation id="914873105831852105">Ongeldige PIN. Jy het 1 poging oor.</translation>
 <translation id="9153934054460603056">Stoor identiteit en wagwoord</translation>

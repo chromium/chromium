@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB-drukker moet opgestel word</translation>
 <translation id="1367951781824006909">Kies 'n lêer</translation>
 <translation id="1369149969991017342">Skakelaartoegang (beheer die rekenaar met net een of twee skakelaars)</translation>
-<translation id="1371863479305430391">Bekyk, antwoord op en maak jou foon se kennisgewings toe. Stroom jou foon se boodskapprogramme.</translation>
 <translation id="1372841398847029212">Sinkroniseer met jou rekening</translation>
 <translation id="1373176046406139583">Jou toestelsigbaarheid beheer wie met jou kan deel terwyl jou skerm ontsluit is. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Die sertifikaat wat deur netwerk "<ph name="NETWORK_NAME" />" vereis word, is óf nie geïnstalleer nie, óf dis nie meer geldig nie. Kry asseblief 'n nuwe sertifikaat en probeer weer koppel.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Knipbord-leestoegang is geweier</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (uitbreiding-ID "<ph name="EXTENSION_ID" />") word nie in hierdie tipe sessie toegelaat nie.</translation>
 <translation id="1418954524306642206">Blaai om jou drukker-PPD te spesifiseer</translation>
-<translation id="1420732223884894666">Bekyk jou foon se onlangse foto's en media op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Medialisensies</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om saambinding moontlik te maak</translation>
 <translation id="1421934779300263861">Help om Chrome- en Chrome-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties omvalverslae en diagnostiese en gebruiksdata na Google toe te stuur. Sekere aggregaatdata sal Android-programme en Google-vennote ook help. As die Web- en Programaktiwiteit-instelling vir jou Google-rekening aangeskakel is, kan jou Android-data in jou Google-rekening gestoor word.</translation>
@@ -723,7 +721,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1682548588986054654">Nuwe incognito-venster</translation>
 <translation id="1682867089915960590">Skakel karetblaai aan?</translation>
 <translation id="1684279041537802716">Aksentkleur</translation>
-<translation id="168511795252678620">Onlangse foto's en boodskapprogramme</translation>
 <translation id="1686550358074589746">Aktiveer glytik</translation>
 <translation id="168715261339224929">Skakel sinkronisering aan om jou boekmerke op al jou toestelle te kry.</translation>
 <translation id="1688867105868176567">Vee werfdata uit?</translation>
@@ -2612,7 +2609,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3526034519184079374">Kan nie werf se data lees of verander nie</translation>
 <translation id="3527085408025491307">Vouer</translation>
 <translation id="3528498924003805721">Kortpadteikens</translation>
-<translation id="3531383404180922673">Bekyk jou foon se onlangse foto's, media en kennisgewings. Stroom jou foon se boodskapprogramme.</translation>
 <translation id="3532273508346491126">Bestuur sinkronisering</translation>
 <translation id="3532521178906420528">Vestig tans netwerkverbinding …</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Oudio is gedemp</translation>
@@ -5243,7 +5239,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6185132558746749656">Toestelligging</translation>
 <translation id="6188346519670155113">Chrome-blaaiersinkronisering is aan</translation>
 <translation id="6190953336330058278">Foonsentrum-programme</translation>
-<translation id="619279033188484792">Bekyk jou foon se onlangse foto's, media en kennisgewings op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Lees inligting oor jou blaaier, bedryfstelsel en toestel</translation>
 <translation id="6195693561221576702">Hierdie toestel kan nie in vanlyn demonstrasiemodus opgestel word nie.</translation>
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
@@ -6216,7 +6211,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
 <translation id="7154130902455071009">Verander jou beginblad na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Bestaande foto in kamera of lêer</translation>
-<translation id="7155352398126583949">Kennisgewings en boodskapprogramme</translation>
 <translation id="7163202347044721291">Verifieer tans aktiveringkode …</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" kan prente, video en klanklêers in die gemerkte liggings lees.</translation>
 <translation id="7167486101654761064">Maak altyd hierdie tipe lêers oop</translation>
@@ -7228,7 +7222,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8141725884565838206">Bestuur jou wagwoorde</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{'n video}other{# video's}}</translation>
 <translation id="8143442547342702591">Ongeldige program</translation>
-<translation id="8143475123634606318">Stroom jou foon se boodskapprogramme</translation>
 <translation id="8143609395536282994">Hoe jy jou data kan bestuur:</translation>
 <translation id="8143951647992294073">Kies <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">As jy reeds op hierdie toestel geregistreer is, kan jy <ph name="LINK2_START" />as 'n bestaande gebruiker aanmeld<ph name="LINK2_END" />.</translation>
@@ -7519,7 +7512,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8439506636278576865">Bied aan om bladsye in hierdie taal te vertaal</translation>
 <translation id="8440630305826533614">Linux-programme</translation>
 <translation id="8443795068008423036">Maak asseblief seker dat jou toestel bygewerk is en probeer weer</translation>
-<translation id="8445046761938045900">Onlangse foto's, kennisgewings en boodskapprogramme</translation>
 <translation id="8446884382197647889">Kom meer te wete</translation>
 <translation id="8447409163267621480">Sluit óf Ctrl óf Alt in</translation>
 <translation id="844850004779619592">Geen opdragte gekry nie</translation>
@@ -7851,7 +7843,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8780443667474968681">Stemsoektog is afgeskakel.</translation>
 <translation id="8781834595282316166">Nuwe oortjie in groep</translation>
 <translation id="8782565991310229362">Kioskprogram se begin is gekanselleer.</translation>
-<translation id="8783526165720272136">Boodskapprogramme</translation>
 <translation id="8783834180813871000">Voer die saambindkode in en druk dan Return of Enter.</translation>
 <translation id="8784626084144195648">Geklasseerde gemiddeld</translation>
 <translation id="8785622406424941542">Stilus</translation>
@@ -8263,7 +8254,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
 <translation id="9187967020623675250">Sleutels stem nie ooreen nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As die bykomende Web- en Programaktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Kom meer te wete<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Bekyk jou foon se onlangse foto's en media. Stroom jou foon se boodskapprogramme.</translation>
 <translation id="919686179725692564">Kom meer te wete oor die rugsteun van jou programme</translation>
 <translation id="9198090666959937775">Gebruik jou Android-foon as 'n sekuriteitsleutel</translation>
 <translation id="9199503643457729322">Klik om weg van Privaatheidgids af te navigeer.</translation>

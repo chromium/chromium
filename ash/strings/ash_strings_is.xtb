@@ -135,7 +135,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1708345662127501511">Skjár: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Netkerfisstillingar</translation>
 <translation id="1715293566947629045">Slekkur á prófíl. Hinkraðu í nokkrar mínútur.</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Kveikt er á skjátextum í rauntíma.</translation>
 <translation id="1720011244392820496">Kveikja á Wi-Fi-samstillingu</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ er sýnilegt Bluetooth-tækjum.</translation>
@@ -528,7 +527,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4129129681837227511">Ef þú vilt sjá tilkynningar á lásskjánum skaltu taka úr lás til að breyta stillingunni</translation>
 <translation id="4146833061457621061">Spila tónlist</translation>
 <translation id="4165275524535002941">Ekki er víst að snúran styðji skjái</translation>
-<translation id="4173958948577803258">F</translation>
 <translation id="4177913004758410636">{0,plural, =1{Uppfærðu tækið innan eins dags}one{Uppfærðu tækið innan # dags}other{Uppfærðu tækið innan # daga}}</translation>
 <translation id="4181841719683918333">Tungumál</translation>
 <translation id="4192112279662688596">Eða</translation>
@@ -948,7 +946,6 @@ Ný uppsetning</translation>
 <translation id="6751826523481687655">Kveikt er á afkastarakningu</translation>
 <translation id="6752912906630585008">Skjáborð <ph name="REMOVED_DESK" /> fjarlægt og sameinað skjáborði <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">flipar</translation>
-<translation id="6754441615189976839">L</translation>
 <translation id="6757237461819837179">Ekkert efni í spilun</translation>
 <translation id="6777216307882431711">Knýr tengd USB-C tæki</translation>
 <translation id="6786750046913594791">Loka möppu</translation>
@@ -997,7 +994,6 @@ Ný uppsetning</translation>
 <translation id="7045033600005038336">Skipta út sniðmáti?</translation>
 <translation id="7045595904618419789">Ræsa stækkun</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" />: aftengt</translation>
-<translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Penninn hefur ekki verið notaður í meira en viku</translation>
 <translation id="7066646422045619941">Þetta netkerfi hefur verið gert óvirkt af stjórnanda.</translation>
 <translation id="7067196344162293536">Sjálfvirkur snúningur</translation>
@@ -1081,7 +1077,6 @@ Ný uppsetning</translation>
 <translation id="7579778809502851308">Skjámyndataka</translation>
 <translation id="7590883480672980941">Inntaksstillingar</translation>
 <translation id="7593891976182323525">Leit eða Shift</translation>
-<translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Sjá allar tilkynningar</translation>
 <translation id="7607002721634913082">Hlé</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>

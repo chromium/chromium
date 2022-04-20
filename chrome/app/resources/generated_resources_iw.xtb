@@ -370,7 +370,6 @@
 <translation id="1363585519747660921">‏יש להגדיר מדפסת USB</translation>
 <translation id="1367951781824006909">בחירת קובץ</translation>
 <translation id="1369149969991017342">גישה באמצעות מתג (שליטה במחשב בעזרת מתג אחד או שניים בלבד)</translation>
-<translation id="1371863479305430391">אפשרות להציג ולסגור את ההתראות בטלפון ולהשיב להן. סטרימינג של אפליקציות להעברת ההודעות בטלפון.</translation>
 <translation id="1372841398847029212">סנכרון עם החשבון שלך</translation>
 <translation id="1373176046406139583">הרשאות הגישה של המכשיר קובעות מי יכול לשתף איתך כשהמסך לא נעול. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">האישור הנדרש על ידי הרשת "<ph name="NETWORK_NAME" />" אינו מותקן או שכבר אינו חוקי. יש לקבל אישור חדש ולנסות להתחבר שוב.</translation>
@@ -423,7 +422,6 @@
 <translation id="1415708812149920388">גישת הקריאה אל הלוח נדחתה</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") אסור בסוג ההפעלה הזה.</translation>
 <translation id="1418954524306642206">‏חיפוש במחשב לציון ה-PPD של המדפסת באופן ידני</translation>
-<translation id="1420732223884894666">הצגת המדיה והתמונות שבטלפון מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">רישיונות מדיה</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> כדי לאפשר התאמה</translation>
 <translation id="1421934779300263861">‏שליחה אוטומטית של דוחות קריסה ושל נתוני אבחון ונתוני שימוש במכשיר אל Google תעזור לשפר את התכונות ואת הביצועים של Chrome ושל ChromeOS. חלק מהנתונים הנצברים יעזרו גם לאפליקציות של Android ולשותפים של Google אם ההגדרה 'פעילות באתרי אינטרנט ובאפליקציות' הופעלה בחשבון Google שלך, יכול להיות שהנתונים של Android יישמרו בחשבון Google שלך.</translation>
@@ -722,7 +720,6 @@
 <translation id="1682548588986054654">חלון אנונימי חדש</translation>
 <translation id="1682867089915960590">להפעיל את הגלישה באמצעות סמן הטקסט?</translation>
 <translation id="1684279041537802716">צבע משני</translation>
-<translation id="168511795252678620">אפליקציות להעברת הודעות ותמונות מהזמן האחרון</translation>
 <translation id="1686550358074589746">הפעלה של הקלדה בהחלקה</translation>
 <translation id="168715261339224929">כדי שהסימניות שלך יופיעו בכל המכשירים, יש להפעיל סנכרון.</translation>
 <translation id="1688867105868176567">למחוק את נתוני האתר?</translation>
@@ -918,6 +915,7 @@
     <ph name="BEGIN_PARAGRAPH2" />אפשר גם לכבות לגמרי את מכשיר ה-TPM. הנתונים שלך עדיין יישמרו באופן מאובטח באמצעות הצפנת תוכנה, אבל חלק מתכונות האבטחה, כמו אישורים בגיבוי חומרה, יושבתו.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />אפשר לשנות את הגדרות ה-TPM על ידי הפעלה מחדש וכניסה להגדרות ה-BIOS/‏UEFI של המערכת. השלבים משתנים בהתאם לדגם של המכשיר. למידע נוסף, עליך לפתוח את התיעוד לגבי <ph name="DEVICE_OS" /> במכשיר אחר לפני ההפעלה מחדש: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">חיפוש תוכנה מזיקה</translation>
+<translation id="1852322248807969514">הסיסמאות נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">אירעה שגיאה בעת ניסיון לקרוא את הקובץ: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">רוצה להמשיך מאיפה שהפסקת? יש לך אפשרות להגדיר שחזור לאפליקציות בתהליך ההפעלה או להשבית את השחזור ב'הגדרות'.</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
@@ -1878,6 +1876,7 @@
 <translation id="2783829359200813069">בחירת סוגי הצפנה</translation>
 <translation id="2783952358106015700">שימוש במפתח האבטחה באפליקציה <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">מתארי קבצים</translation>
+<translation id="2787022501752539710">שמירת נתוני הגלישה המקומיים (סימניות, סיסמאות, היסטוריה וכו')</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">מספר הקבוצה</translation>
@@ -2610,7 +2609,6 @@
 <translation id="3526034519184079374">אי אפשר לקרוא את נתוני האתר או לשנות אותם</translation>
 <translation id="3527085408025491307">תיקייה</translation>
 <translation id="3528498924003805721">יעדים של קיצורי דרך</translation>
-<translation id="3531383404180922673">הצגת התראות, מדיה ותמונות מהזמן האחרון. סטרימינג של אפליקציות להעברת ההודעות בטלפון.</translation>
 <translation id="3532273508346491126">ניהול סנכרון</translation>
 <translation id="3532521178906420528">מתבצע חיבור לרשת...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - האודיו הושתק</translation>
@@ -3151,6 +3149,7 @@
 <translation id="4044612648082411741">יש להזין את סיסמת האישור</translation>
 <translation id="4044708573046946214">סיסמת נעילת מסך</translation>
 <translation id="404493185430269859">מנוע החיפוש המוגדר כברירת מחדל</translation>
+<translation id="4045180775310929593">כאן מוסיפים הערות…</translation>
 <translation id="4046013316139505482">לתוספים האלה לא דרושה יכולת לראות את המידע באתר הזה ולשנות אותו.</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="4047345532928475040">לא זמין</translation>
@@ -5114,6 +5113,7 @@
 <translation id="6057381398996433816">נחסמה היכולת של האתר הזה להשתמש בחיישני התנועה והתאורה.</translation>
 <translation id="6059276912018042191">‏כרטיסיות Chrome אחרונות</translation>
 <translation id="6059652578941944813">היררכיית אישורים</translation>
+<translation id="6063284707309177505">‏יצירת קוד QR</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות של <ph name="SUPERVISED_USER_NAME" /> גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לבחור בהגדרות Assistant של <ph name="SUPERVISED_USER_NAME" /> שהפקודה “Hey Google” תפעל רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="6064217302520318294">נעילת מסך</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
@@ -5238,7 +5238,6 @@
 <translation id="6185132558746749656">מיקום מכשיר</translation>
 <translation id="6188346519670155113">‏הסנכרון של דפדפן Chrome פועל</translation>
 <translation id="6190953336330058278">‏אפליקציות של Phone Hub</translation>
-<translation id="619279033188484792">הצגת התראות, מדיה ותמונות מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">קריאת מידע על הדפדפן, מערכת ההפעלה והמכשיר שלך</translation>
 <translation id="6195693561221576702">אי אפשר להגדיר את המכשיר הזה במצב הדגמה אופליין.</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
@@ -6211,7 +6210,6 @@
 <translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
 <translation id="7154130902455071009">שינוי דף הפתיחה ל: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">תמונה קיימת ממצלמה או מקובץ</translation>
-<translation id="7155352398126583949">אפליקציות להעברת הודעות והתראות</translation>
 <translation id="7163202347044721291">מתבצע אימות של קוד הפעלה...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" יכול לקרוא קובצי תמונות, וידאו ואודיו במיקומים המסומנים.</translation>
 <translation id="7167486101654761064">&amp;פתיחה תמיד של קבצים מסוג זה</translation>
@@ -7225,7 +7223,6 @@
 <translation id="8141725884565838206">ניהול הסיסמאות שלך</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{סרטון}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>
 <translation id="8143442547342702591">יישום לא חוקי</translation>
-<translation id="8143475123634606318">סטרימינג של האפליקציות להעברת ההודעות בטלפון</translation>
 <translation id="8143609395536282994">איך אפשר לנהל את הנתונים שלך:</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">אם נרשמת כבר במכשיר זה, יהיה באפשרותך <ph name="LINK2_START" />להתחבר כמשתמש קיים<ph name="LINK2_END" />.</translation>
@@ -7516,7 +7513,6 @@
 <translation id="8439506636278576865">הצעות לתרגום דפים שנכתבו בשפה זו</translation>
 <translation id="8440630305826533614">‏אפליקציות Linux</translation>
 <translation id="8443795068008423036">צריך לוודא שהמכשיר מעודכן ולנסות שוב</translation>
-<translation id="8445046761938045900">אפליקציות להעברת הודעות, התראות ותמונות מהזמן האחרון</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
 <translation id="8447409163267621480">‏יש לכלול את Ctrl או Alt</translation>
 <translation id="844850004779619592">לא נמצאו פקודות</translation>
@@ -7850,7 +7846,6 @@
 <translation id="8780443667474968681">החיפוש הקולי הושבת.</translation>
 <translation id="8781834595282316166">כרטיסייה חדשה בקבוצה</translation>
 <translation id="8782565991310229362">ההפעלה של יישום קיוסק בוטלה.</translation>
-<translation id="8783526165720272136">אפליקציות להעברת הודעות</translation>
 <translation id="8783834180813871000">‏עליך להקליד את קוד ההתאמה ל-Bluetooth ולאחר מכן ללחוץ על Return או Enter.</translation>
 <translation id="8784626084144195648">ממוצע צבור</translation>
 <translation id="8785622406424941542">סטיילוס</translation>
@@ -8262,7 +8257,6 @@
 <translation id="9186963452600581158">‏כניסה באמצעות חשבון Google של ילד או ילדה</translation>
 <translation id="9187967020623675250">המקשים לא תואמים. צריך להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">‏שליחה של נתוני אבחון ונתונים על השימוש. המכשיר הזה שולח עכשיו אל Google באופן אוטומטי נתוני אבחון ונתונים לגבי השימוש במכשיר ובאפליקציות. נתונים אלה לא ישמשו כדי לזהות את הילד/ה שלך, והם יעזרו לשמור על יציבות המערכת והאפליקציות, כמו גם לביצוע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ולשותפים של Google, כמו מפתחי Android. אם הופעלה בשביל הילד/ה שלך האפשרות 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלו/ה. <ph name="BEGIN_LINK2" />מידע נוסף<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">הצגת המדיה והתמונות מהזמן האחרון. סטרימינג של אפליקציות להעברת ההודעות בטלפון.</translation>
 <translation id="919686179725692564">מידע נוסף על גיבוי האפליקציות שלך</translation>
 <translation id="9198090666959937775">‏שימוש בטלפון Android כמפתח אבטחה</translation>
 <translation id="9199503643457729322">אפשר ללחוץ על הלחצן הזה כדי לצאת מהמדריך בנושא פרטיות.</translation>

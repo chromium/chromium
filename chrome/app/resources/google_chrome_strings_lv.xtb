@@ -278,6 +278,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7651907282515937834">Chrome Enterprise logotips</translation>
 <translation id="7655455401911432608">Jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chrome.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
+<translation id="7748512868279796735">Šim Chrome profilam ir pieejami tālāk norādītie konti.</translation>
 <translation id="7761834446675418963">Noklikšķiniet uz sava vārda, lai atvērtu pārlūku Chrome un sāktu pārlūkošanu.</translation>
 <translation id="7777080907402804672">Ja attēlam nav vērtīga apraksta, pārlūks Chrome mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google. Jebkurā brīdī iestatījumos varat izslēgt šo iespēju.</translation>
 <translation id="7781002470561365167">Pieejama jauna Google Chrome versija.</translation>
@@ -297,7 +298,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8013993649590906847">Ja attēlam nav vērtīga apraksta, pārlūks Chrome mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Par &amp;Google Chrome</translation>
-<translation id="822971176939352383">Nevienā Chrome profilā nav veikta pierakstīšanās tālāk norādījos kontos. Ja vēlaties izmantot kādu kontu citā profilā, vispirms noņemiet attiecīgo profilu.</translation>
 <translation id="8255190535488645436">Pārlūkā Google Chrome tiek izmantota kamera un mikrofons.</translation>
 <translation id="8286862437124483331">Google Chrome mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="828798499196665338">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chrome. Nav atļauts iespējot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

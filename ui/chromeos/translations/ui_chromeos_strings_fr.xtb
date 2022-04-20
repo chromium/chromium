@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Finnois</translation>
 <translation id="1942765061641586207">Résolution de l'image</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
-<translation id="1984456723671657197">Ce type de fichier n'est pas compatible. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="1995337122023280937">Accéder à l'emplacement du fichier</translation>
 <translation id="2001796770603320721">Gérer dans Drive</translation>
 <translation id="2009067268969781306">Le formatage d'une clé entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">Bulgare</translation>
 <translation id="6973630695168034713">Dossiers</translation>
 <translation id="6976795442547527108">Lion</translation>
-<translation id="6978611942794658017">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une application de remplacement appropriée sur le Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Suédois</translation>
 <translation id="6990081529015358884">Vous avez utilisé tout l'espace de stockage.</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">Français (Suisse)</translation>
 <translation id="7973962044839454485">Échec de l'authentification PPP en raison de la saisie d'un nom d'utilisateur ou d'un mot de passe erronés.</translation>
 <translation id="7980421588063892270">Anglais (États-Unis) avec clavier Colemak</translation>
-<translation id="79907182588096956">Ce fichier est conçu pour un ordinateur Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="8000066093800657092">Aucun réseau détecté</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Taille</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Chien remuant la queue</translation>
 <translation id="8919081441417203123">Danois</translation>
 <translation id="8965697826696209160">Espace disponible insuffisant.</translation>
-<translation id="8970501467542182729">Ce fichier est conçu pour un ordinateur Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="9017798300203431059">Phonétique russe</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">Les membres de "<ph name="DESTINATION_NAME" />" auront accès à ces éléments.</translation>
 <translation id="9131598836763251128">Sélectionnez un ou plusieurs fichiers</translation>
 <translation id="9133055936679483811">Échec de la compression au format .zip. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez rechercher une application de remplacement appropriée sur le Chrome Web Store.</translation>
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">Code PIN incorrect. Il vous reste 1 tentative.</translation>
 <translation id="9153934054460603056">Enregistrer le nom d'utilisateur et le mot de passe</translation>

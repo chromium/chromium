@@ -2806,6 +2806,13 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4025500273782820766">Zulassen, dass Nutzer „Immer öffnen“ auswählen, wenn ein Dialog für ein externes Protokoll angezeigt wird, sodass das Protokoll in Zukunft ohne die Bestätigung geöffnet wird</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
+<translation id="4027904270588278067">Wenn die Richtlinie konfiguriert ist, wird das Verzeichnis festgelegt, das Chrome zum Herunterladen von Dateien verwendet. Das angegebene Verzeichnis wird unabhängig davon verwendet, ob der Nutzer selbst eines angegeben oder festgelegt hat, dass er den Downloadpfad jedes Mal selbst angeben möchte.
+
+      Diese Richtlinie überschreibt die Richtlinie <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Ist die Richtlinie nicht konfiguriert, verwendet Chrome das Standard-Downloadverzeichnis, wobei dieses vom Nutzer geändert werden kann.
+
+      Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="4041577849977347218">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden heruntergeladene Dateien von Safe Browsing analysiert, selbst wenn sie aus einer vertrauenswürdigen Quelle stammen.
 
       Ist diese Richtlinie deaktiviert, werden heruntergeladene Dateien nicht von Safe Browsing analysiert, wenn sie aus einer vertrauenswürdigen Quelle stammen.
@@ -5557,14 +5564,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7266471712301230894">Diese Richtlinie ist ab <ph name="PRODUCT_NAME" /> 64 nicht mehr verfügbar.
 
       Die automatische Suche und Installation von fehlenden Plug-ins wird nicht mehr unterstützt.</translation>
-<translation id="7266868915753562724">Diese Richtlinie legt die Sichtbarkeit von Onlinerecherchen auf der Chrome-Verlaufsseite fest.
-
-      Ist die Richtlinie aktiviert, sind Onlinerecherchen unter chrome://history/journeys sichtbar.
-
-      Wenn die Richtlinie deaktiviert ist, sind Onlinerecherchen nicht unter chrome://history/journeys sichtbar.
-
-      Ist die Richtlinie nicht konfiguriert, sind Onlinerecherchen standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.
-      </translation>
 <translation id="7267809745244694722">Medientasten standardmäßig als Funktionstasten verwenden</translation>
 <translation id="7269263983506766969">Standardpriorität für den Audioprozess verwenden</translation>
 <translation id="7270001383428188269">ID für dieses Clientzertifikat</translation>
@@ -5974,6 +5973,13 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 
       Ist die Richtlinie deaktiviert, melden angemeldete Geräte keine Speicherstatistiken.
       Ausnahme: Laufwerkgröße und freier Speicherplatz werden für M95 und niedriger von <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> gesteuert.</translation>
+<translation id="7719175048012980445">Wenn die Richtlinie konfiguriert ist, wird das Standardverzeichnis festgelegt, das Chrome zum Herunterladen von Dateien verwendet. Nutzer können das Verzeichnis jedoch ändern.
+
+      Ist die Richtlinie nicht konfiguriert, verwendet Chrome das plattformspezifische Standardverzeichnis.
+
+      Diese Richtlinie hat keine Auswirkungen, wenn die Richtlinie <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> konfiguriert ist.
+
+      Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" />-Nutzer-ID</translation>
 <translation id="7724161903134898864">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Pop-ups anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Pop-ups blockiert.
 

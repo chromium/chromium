@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB-skrivaren behöver konfigureras</translation>
 <translation id="1367951781824006909">Välj fil</translation>
 <translation id="1369149969991017342">Brytarstyrning (styr datorn med bara en eller två brytare)</translation>
-<translation id="1371863479305430391">Visa, ignorera eller svara på aviseringar från telefonen. Streama telefonens meddelandeappar.</translation>
 <translation id="1372841398847029212">Synkronisera till ditt konto</translation>
 <translation id="1373176046406139583">Synlighetsinställningarna på enheten styr vem som kan dela filer med dig när skärmen är upplåst. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Det certifikat som krävs av nätverket <ph name="NETWORK_NAME" /> är inte installerat eller inte längre giltigt. Hämta ett nytt certifikat och försök ansluta igen.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Läsbehörighet till Urklipp nekades</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (tilläggs-id <ph name="EXTENSION_ID" />) får inte användas i den här typen av session.</translation>
 <translation id="1418954524306642206">Bläddra för att ange PPD-fil för skrivaren</translation>
-<translation id="1420732223884894666">Visa de senaste bilderna och mediefilerna från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Medielicenser</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> för koppling</translation>
 <translation id="1421934779300263861">Skicka felrapporter samt diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chrome och Chrome OS. Viss samlad data används även till att förbättra Android-appar och produkter från Googles partner. Om inställningen Webb- och appaktivitet har aktiverats för ditt Google-konto kan Android-datan sparas i Google-kontot.</translation>
@@ -723,7 +721,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1682548588986054654">Nytt inkognitofönster</translation>
 <translation id="1682867089915960590">Vill du aktivera textmarkörläge?</translation>
 <translation id="1684279041537802716">Accentfärg</translation>
-<translation id="168511795252678620">Nya bilder och meddelandeappar</translation>
 <translation id="1686550358074589746">Aktivera svepskrivning</translation>
 <translation id="168715261339224929">Aktivera synkronisering om du vill få tillgång till dina bokmärken på alla enheter</translation>
 <translation id="1688867105868176567">Vill du ta bort webbplatsdata?</translation>
@@ -2610,7 +2607,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3526034519184079374">Kan inte läsa eller ändra webbplatsens data</translation>
 <translation id="3527085408025491307">Mapp</translation>
 <translation id="3528498924003805721">Mål för genvägar</translation>
-<translation id="3531383404180922673">Visa de senaste bilderna, mediefilerna och aviseringarna från telefonen. Streama telefonens meddelandeappar.</translation>
 <translation id="3532273508346491126">Hantera synkronisering</translation>
 <translation id="3532521178906420528">Nätverksanslutning upprättas …</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – ljud av</translation>
@@ -5238,7 +5234,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6185132558746749656">Enhetsplats</translation>
 <translation id="6188346519670155113">Webbläsaren Chrome synkroniseras</translation>
 <translation id="6190953336330058278">Phone Hub-appar</translation>
-<translation id="619279033188484792">Visa de senaste bilderna, mediefilerna och aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Läsa information om webbläsaren, operativsystemet och enheten</translation>
 <translation id="6195693561221576702">Den här enheten kan inte konfigureras i offlinedemoläge.</translation>
 <translation id="6196640612572343990">Blockera cookies från tredje part</translation>
@@ -6211,7 +6206,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7152478047064750137">Det här tillägget kräver inga särskilda behörigheter</translation>
 <translation id="7154130902455071009">Ändra startsida till: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Befintligt foto från kamera eller fil</translation>
-<translation id="7155352398126583949">Aviseringar och meddelandeappar</translation>
 <translation id="7163202347044721291">Aktiveringskoden verifieras …</translation>
 <translation id="716640248772308851"><ph name="EXTENSION" /> kan läsa bilder, video och ljudfiler på de markerade platserna.</translation>
 <translation id="7167486101654761064">Öppna &amp;alltid filer av denna typ</translation>
@@ -7224,7 +7218,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8141725884565838206">Hantera dina lösenord</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{en video}other{# videor}}</translation>
 <translation id="8143442547342702591">Ogiltig app</translation>
-<translation id="8143475123634606318">Streama telefonens meddelandeappar</translation>
 <translation id="8143609395536282994">Så här kan du hantera din data:</translation>
 <translation id="8143951647992294073">Välj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Om du redan är registrerad på den här enheten kan du <ph name="LINK2_START" />logga in som en befintlig användare<ph name="LINK2_END" />.</translation>
@@ -7515,7 +7508,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8439506636278576865">Erbjud att översätta sidor på detta språk</translation>
 <translation id="8440630305826533614">Linux-appar</translation>
 <translation id="8443795068008423036">Kontrollera att enheten är uppdaterad och försök igen.</translation>
-<translation id="8445046761938045900">Nya bilder, aviseringar och meddelandeappar</translation>
 <translation id="8446884382197647889">Läs mer</translation>
 <translation id="8447409163267621480">Ctrl- eller alt-tangenten måste finnas med</translation>
 <translation id="844850004779619592">Inga kommandon hittades</translation>
@@ -7847,7 +7839,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8780443667474968681">Röstsökning har inaktiverats.</translation>
 <translation id="8781834595282316166">Ny flik i grupp</translation>
 <translation id="8782565991310229362">Starten av kioskappen avbröts.</translation>
-<translation id="8783526165720272136">Meddelandeappar</translation>
 <translation id="8783834180813871000">Ange kopplingskoden för Bluetooth och tryck på Retur.</translation>
 <translation id="8784626084144195648">Fackmedelvärde</translation>
 <translation id="8785622406424941542">E-penna</translation>
@@ -8259,7 +8250,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9186963452600581158">Logga in med ett barns Google-konto</translation>
 <translation id="9187967020623675250">Tangenterna matchar inte. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Visa de senaste bilderna och mediefilerna från telefonen. Streama telefonens meddelandeappar.</translation>
 <translation id="919686179725692564">Läs mer om hur du säkerhetskopierar appar</translation>
 <translation id="9198090666959937775">Använd Android-telefonen som säkerhetsnyckel</translation>
 <translation id="9199503643457729322">Klicka för att navigera bort från Integritetsguide.</translation>

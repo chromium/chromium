@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">فنلاندی</translation>
 <translation id="1942765061641586207">وضوح تصویر</translation>
 <translation id="1972984168337863910">بزرگ کردن پانل‌های بازخورد فایل‌ها</translation>
-<translation id="1984456723671657197">‏این نوع فایل پشتیبانی نمی‌شود. درباره باز کردن فایل‌ها در Chrome OS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">رفتن به محل فایل</translation>
 <translation id="2001796770603320721">مدیریت در درایو</translation>
 <translation id="2009067268969781306">با قالب‌بندی درایو همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">بلغاری</translation>
 <translation id="6973630695168034713">پوشه‌ها</translation>
 <translation id="6976795442547527108">شیر</translation>
-<translation id="6978611942794658017">‏این فایل برای رایانه‌ای که از نرم‌افزار Windows استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که Chrome OS را اجرا می‌کند، سازگار نیست. لطفاً «نت‌بازار Chrome» را برای یک برنامه جایگزین مناسب جستجو کنید.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">سوئدی</translation>
 <translation id="6990081529015358884">فضای شما تمام شده است</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">فرانسوی (سوئیس)</translation>
 <translation id="7973962044839454485">‏اصالت‌سنجی PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
 <translation id="7980421588063892270">‏انگلیسی (آمریکایی) با صفحه‌کلید Colemak</translation>
-<translation id="79907182588096956">‏این فایل برای رایانه‌ای که از نرم‌افزار Windows استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که سیستم‌عامل Chrome را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در Chrome OS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
 <translation id="8000066093800657092">بدون شبکه</translation>
 <translation id="8008366997883261463">جک راسل تریر</translation>
 <translation id="8028993641010258682">اندازه</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">سگ درحال تکان دادن دم</translation>
 <translation id="8919081441417203123">دانمارکی</translation>
 <translation id="8965697826696209160">فضای کافی وجود ندارد.</translation>
-<translation id="8970501467542182729">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که سیستم‌عامل Chrome را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در Chrome OS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">چینی پین‌یین (سنتی)</translation>
 <translation id="9003940392834790328">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، جزئیات</translation>
 <translation id="9017798300203431059">آوایی روسیه</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">اعضای «<ph name="DESTINATION_NAME" />» به این موارد دسترسی پیدا می‌کنند.</translation>
 <translation id="9131598836763251128">انتخاب یک یا چند فایل</translation>
 <translation id="9133055936679483811">فشرده‌سازی انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. با دستگاه شما که Chrome OS را اجرا می‌کند، سازگار نیست. لطفاً به «نت‌بازار Chrome» بروید تا برنامه جایگزین مناسبی پیدا کنید.</translation>
 <translation id="9144340019284012223">کاتالان</translation>
 <translation id="914873105831852105">پین نامعتبر است. ۱ تلاش دیگر دارید.</translation>
 <translation id="9153934054460603056">ذخیره شناسه و رمز عبور</translation>

@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1369149969991017342">按鈕控制 (使用一或兩個按鈕就能操控電腦)</translation>
-<translation id="1371863479305430391">查看、關閉和回覆手機的通知。串流播放手機的訊息應用程式。</translation>
 <translation id="1372841398847029212">同步至您的帳戶</translation>
 <translation id="1373176046406139583">您可使用裝置分享設定來控制哪些人可在螢幕解鎖時與您分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">網絡「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">已禁止讀取剪貼簿</translation>
 <translation id="1415990189994829608">這個工作階段類型不允許使用 <ph name="EXTENSION_NAME" /> (擴充功能 ID 為「<ph name="EXTENSION_ID" />」)。</translation>
 <translation id="1418954524306642206">選擇打印機嘅 PPD 檔案</translation>
-<translation id="1420732223884894666">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片和媒體。</translation>
 <translation id="1420834118113404499">媒體授權</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允許配對</translation>
 <translation id="1421934779300263861">將當機報告、診斷和使用情況資料自動傳送給 Google，協助改善 Chrome 和 Chrome OS 的功能和效能。部分彙整資料亦能協助 Android 應用程式和 Google 合作夥伴改善產品和服務。如果您為 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您的 Android 資料可能會儲存至您的 Google 帳戶。</translation>
@@ -723,7 +721,6 @@
 <translation id="1682548588986054654">新增無痕式視窗</translation>
 <translation id="1682867089915960590">要開啟「鍵盤瀏覽」功能嗎？</translation>
 <translation id="1684279041537802716">強調色</translation>
-<translation id="168511795252678620">最近的相片和訊息應用程式</translation>
 <translation id="1686550358074589746">啟用滑動輸入功能</translation>
 <translation id="168715261339224929">如要將書籤同步到所有裝置，請開啟同步處理功能。</translation>
 <translation id="1688867105868176567">要清除網站資料嗎？</translation>
@@ -2610,7 +2607,6 @@
 <translation id="3526034519184079374">無法讀取或變更網站資料</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3528498924003805721">捷徑目標</translation>
-<translation id="3531383404180922673">查看手機最近的相片、媒體和通知。串流播放手機的訊息應用程式。</translation>
 <translation id="3532273508346491126">同步管理</translation>
 <translation id="3532521178906420528">正在建立網絡連線…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 靜音</translation>
@@ -5236,7 +5232,6 @@
 <translation id="6185132558746749656">裝置位置</translation>
 <translation id="6188346519670155113">Chrome 瀏覽器同步功能已開啟</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
-<translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片、媒體和通知</translation>
 <translation id="6195005504600220730">讀取您的瀏覽器、作業系統和裝置相關資料</translation>
 <translation id="6195693561221576702">無法在此裝置上設定離線示範模式。</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
@@ -6209,7 +6204,6 @@
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">相機或檔案中的現有照片</translation>
-<translation id="7155352398126583949">通知和訊息應用程式</translation>
 <translation id="7163202347044721291">正在驗證啟動碼…</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和音效檔案具有讀取權限。</translation>
 <translation id="7167486101654761064">保持開啟這類檔案(&amp;A)</translation>
@@ -7222,7 +7216,6 @@
 <translation id="8141725884565838206">管理您的密碼</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 部影片}other{# 部影片}}</translation>
 <translation id="8143442547342702591">無效的應用程式</translation>
-<translation id="8143475123634606318">串流播放手機的訊息應用程式</translation>
 <translation id="8143609395536282994">您可透過哪些方式管理資料：</translation>
 <translation id="8143951647992294073">揀「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」</translation>
 <translation id="8146177459103116374">如果您已在這部裝置上註冊，您可以<ph name="LINK2_START" />用現有的使用者身分登入<ph name="LINK2_END" />。</translation>
@@ -7513,7 +7506,6 @@
 <translation id="8439506636278576865">翻譯這個語言的網頁</translation>
 <translation id="8440630305826533614">Linux 應用程式</translation>
 <translation id="8443795068008423036">請確保裝置為最新版本，然後再試一次</translation>
-<translation id="8445046761938045900">最近的相片、通知和訊息應用程式</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8447409163267621480">必須以 Ctrl 或 Alt 鍵開頭</translation>
 <translation id="844850004779619592">找不到指令</translation>
@@ -7845,7 +7837,6 @@
 <translation id="8780443667474968681">語音搜尋功能已關閉。</translation>
 <translation id="8781834595282316166">在群組中新增分頁</translation>
 <translation id="8782565991310229362">Kiosk 應用程式已取消執行。</translation>
-<translation id="8783526165720272136">訊息應用程式</translation>
 <translation id="8783834180813871000">輸入藍牙配對碼，然後按返回鍵或 Enter 鍵。</translation>
 <translation id="8784626084144195648">二進位化平均</translation>
 <translation id="8785622406424941542">觸控筆</translation>
@@ -8257,7 +8248,6 @@
 <translation id="9186963452600581158">使用子女的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="9188732951356337132">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">查看手機最近的相片和媒體。串流播放手機的訊息應用程式。</translation>
 <translation id="919686179725692564">進一步瞭解如何備份應用程式</translation>
 <translation id="9198090666959937775">使用您的 Android 手機作為安全密鑰</translation>
 <translation id="9199503643457729322">㩒一下就可以離開私隱權指南。</translation>

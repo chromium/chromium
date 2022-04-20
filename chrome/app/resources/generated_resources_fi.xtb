@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB-tulostin on määritettävä</translation>
 <translation id="1367951781824006909">Valitse tiedosto</translation>
 <translation id="1369149969991017342">Kytkimen käyttö (ohjaa tietokonetta yhdellä tai kahdella kytkimellä)</translation>
-<translation id="1371863479305430391">Katso ja hylkää puhelimen ilmoituksia ja vastaa niihin. Striimaa puhelimesi viestisovelluksia.</translation>
 <translation id="1372841398847029212">Synkronoi tilillesi</translation>
 <translation id="1373176046406139583">Laitteen näkyvyysasetus määrittää, kuka voi jakaa sinulle, kun näyttösi ei ole lukittuna. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Verkon <ph name="NETWORK_NAME" /> vaatimaa varmennetta ei ole asennettu tai varmenne ei ole enää voimassa. Hanki uusi varmenne ja yritä muodostaa yhteys uudelleen.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Leikepöydän lukuoikeus evätty</translation>
 <translation id="1415990189994829608">Laajennusta <ph name="EXTENSION_NAME" /> (laajennustunnus <ph name="EXTENSION_ID" />) ei sallita tämäntyyppisessä ístunnossa.</translation>
 <translation id="1418954524306642206">Valitse tulostimen PPD:n määritys</translation>
-<translation id="1420732223884894666">Katsele puhelimesi viimeisimpiä kuvia ja mediaa tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Median käyttöluvat</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, jotta laiteparin muodostus onnistuu</translation>
 <translation id="1421934779300263861">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä automaattisesti virheraportteja sekä diagnostiikka- ja käyttödataa Googlelle. Kootusta datasta on hyötyä myös Android-sovelluksille ja Googlen kumppaneille. Jos Verkko‑ ja sovellustoiminta ‑asetus on päällä Google-tililläsi, Android-dataa voidaan tallentaa tilillesi.</translation>
@@ -723,7 +721,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1682548588986054654">Uusi incognito-ikkuna</translation>
 <translation id="1682867089915960590">Laitetaanko näppäimistöselaaminen päälle?</translation>
 <translation id="1684279041537802716">Korostusväri</translation>
-<translation id="168511795252678620">Viimeksi käytetyt kuvat ja viestisovellukset</translation>
 <translation id="1686550358074589746">Ota liukukirjoitus käyttöön</translation>
 <translation id="168715261339224929">Ota synkronointi käyttöön, niin voit käyttää kirjanmerkkejä kaikilla laitteillasi.</translation>
 <translation id="1688867105868176567">Tyhjennetäänkö sivustotiedot?</translation>
@@ -2609,7 +2606,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3526034519184079374">Sivuston dataa ei voi lukea tai muuttaa</translation>
 <translation id="3527085408025491307">Kansio</translation>
 <translation id="3528498924003805721">Pikakuvakekohteet</translation>
-<translation id="3531383404180922673">Katsele puhelimesi viimeisimpiä kuvia, mediaa ja ilmoituksia. Striimaa puhelimesi viestisovelluksia.</translation>
 <translation id="3532273508346491126">Synkronoinnin ylläpito</translation>
 <translation id="3532521178906420528">Muodostetaan verkkoyhteyttä...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – ääni mykistetty</translation>
@@ -5234,7 +5230,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6185132558746749656">Laitteen sijainti</translation>
 <translation id="6188346519670155113">Chrome-selaimen synkronointi on päällä</translation>
 <translation id="6190953336330058278">Puhelinhubi-sovellukset</translation>
-<translation id="619279033188484792">Katsele puhelimesi viimeisimpiä kuvia, mediaa ja ilmoituksia <ph name="DEVICE_TYPE" />-laitteella</translation>
 <translation id="6195005504600220730">Lue tietoja selaimesta, käyttöjärjestelmästä ja laitteesta</translation>
 <translation id="6195693561221576702">Tätä laitetta ei voi määrittää offline-demotilassa.</translation>
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
@@ -6207,7 +6202,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7152478047064750137">Tämä laajennus ei vaadi erityisiä käyttöoikeuksia.</translation>
 <translation id="7154130902455071009">Vaihda aloitussivuksi <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Olemassa oleva kuva kamerasta tai tiedostosta</translation>
-<translation id="7155352398126583949">Ilmoitukset ja viestisovellukset</translation>
 <translation id="7163202347044721291">Aktivointikoodia vahvistetaan…</translation>
 <translation id="716640248772308851"><ph name="EXTENSION" /> voi lukea kuva-, video- ja äänitiedostoja valituissa sijainneissa.</translation>
 <translation id="7167486101654761064">&amp;Avaa aina tämäntyyppiset tiedostot</translation>
@@ -7219,7 +7213,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8141725884565838206">Hallinnoi salasanoja</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# videota}}</translation>
 <translation id="8143442547342702591">Virheellinen sovellus</translation>
-<translation id="8143475123634606318">Striimaa puhelimesi viestisovelluksia</translation>
 <translation id="8143609395536282994">Miten voit vaikuttaa dataasi:</translation>
 <translation id="8143951647992294073">Valitse <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Jos olet jo rekisteröitynyt tällä laitteella, voit <ph name="LINK2_START" />kirjautua sisään olemassa olevana käyttäjänä<ph name="LINK2_END" />.</translation>
@@ -7510,7 +7503,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8439506636278576865">Tarjoudu kääntämään sivuja tälle kielelle</translation>
 <translation id="8440630305826533614">Linux-sovellukset</translation>
 <translation id="8443795068008423036">Varmista, että laite on ajan tasalla, ja yritä uudelleen</translation>
-<translation id="8445046761938045900">Viimeksi käytetyt kuvat, ilmoitukset ja viestisovellukset</translation>
 <translation id="8446884382197647889">Lisätietoja</translation>
 <translation id="8447409163267621480">Lisää alkuun joko Ctrl tai Alt</translation>
 <translation id="844850004779619592">Komentoja ei löydy</translation>
@@ -7842,7 +7834,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8780443667474968681">Puhehaku on poistettu käytöstä.</translation>
 <translation id="8781834595282316166">Uusi välilehti ryhmässä</translation>
 <translation id="8782565991310229362">Kioskisovelluksen käynnistäminen peruutettiin.</translation>
-<translation id="8783526165720272136">Viestisovellukset</translation>
 <translation id="8783834180813871000">Kirjoita Bluetooth-yhdistämiskoodi ja paina sitten Return tai Enter.</translation>
 <translation id="8784626084144195648">Rajoitetun joukon keskiarvo</translation>
 <translation id="8785622406424941542">Näyttökynä</translation>
@@ -8254,7 +8245,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9186963452600581158">Kirjaudu sisään lapsen Google-tilillä</translation>
 <translation id="9187967020623675250">Näppäimet eivät täsmää. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="9188732951356337132">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Jos muun verkko- ja sovellustoiminnan asetus on lapsella käytössä, tätä dataa voidaan tallentaa hänen Google-tililleen. <ph name="BEGIN_LINK2" />Lue lisää<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Katsele puhelimesi viimeisimpiä kuvia ja mediaa. Striimaa puhelimesi viestisovelluksia.</translation>
 <translation id="919686179725692564">Lue lisää sovellusten varmuuskopioinnista</translation>
 <translation id="9198090666959937775">Käytä Android-puhelinta suojausavaimena</translation>
 <translation id="9199503643457729322">Klikkaa siirtyäksesi pois yksityisyysoppaasta.</translation>

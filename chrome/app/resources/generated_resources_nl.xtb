@@ -366,7 +366,6 @@
 <translation id="1363585519747660921">USB-printer moet worden geconfigureerd</translation>
 <translation id="1367951781824006909">Een bestand selecteren</translation>
 <translation id="1369149969991017342">Toegang via schakelaar (de computer bedienen met slechts één of twee schakelaars)</translation>
-<translation id="1371863479305430391">Meldingen van je telefoon bekijken, sluiten en beantwoorden. Berichten-apps van je telefoon streamen.</translation>
 <translation id="1372841398847029212">Synchroniseren met je account</translation>
 <translation id="1373176046406139583">Je apparaatzichtbaarheid bepaalt wie content met je kan delen terwijl je scherm ontgrendeld is. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Het certificaat dat wordt vereist door het netwerk '<ph name="NETWORK_NAME" />', is niet geïnstalleerd of is niet meer geldig. Haal een nieuw certificaat op en probeer opnieuw verbinding te maken.</translation>
@@ -419,7 +418,6 @@
 <translation id="1415708812149920388">Leestoegang voor klembord geweigerd</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (extensie-ID '<ph name="EXTENSION_ID" />') is niet toegestaan in dit type sessie.</translation>
 <translation id="1418954524306642206">Browsen om de PPD van je printer op te geven</translation>
-<translation id="1420732223884894666">Recente foto's en media van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Medialicenties</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om te koppelen</translation>
 <translation id="1421934779300263861">Help de functies en prestaties van Chrome en Chrome OS te verbeteren door automatisch crashrapporten en diagnostische en gebruiksgegevens naar Google te sturen. Daarnaast zijn sommige verzamelde gegevens nuttig voor Android-apps en Google-partners. Als de instelling Web- en app-activiteit is aangezet voor je Google-account, kunnen je Android-gegevens worden opgeslagen in je Google-account.</translation>
@@ -720,7 +718,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1682548588986054654">Nieuw incognitovenster</translation>
 <translation id="1682867089915960590">Browsen met navigatietoetsen aanzetten?</translation>
 <translation id="1684279041537802716">Accentkleur</translation>
-<translation id="168511795252678620">Recente foto's en berichten-apps</translation>
 <translation id="1686550358074589746">Typen door te swipen aanzetten</translation>
 <translation id="168715261339224929">Zet de synchronisatie aan om al je bookmarks op al je apparaten te bekijken.</translation>
 <translation id="1688867105868176567">Sitegegevens wissen?</translation>
@@ -2594,7 +2591,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3526034519184079374">Kan sitegegevens niet lezen of wijzigen</translation>
 <translation id="3527085408025491307">Map</translation>
 <translation id="3528498924003805721">Snelkoppelingsdoelen</translation>
-<translation id="3531383404180922673">Recente foto's, media en meldingen van je telefoon bekijken. Berichten-apps van je telefoon streamen.</translation>
 <translation id="3532273508346491126">Synchronisatiebeheer</translation>
 <translation id="3532521178906420528">Verbinding met netwerk maken...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: audio uitgezet</translation>
@@ -5215,7 +5211,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6185132558746749656">Apparaatlocatie</translation>
 <translation id="6188346519670155113">Chrome-browsersynchronisatie staat aan</translation>
 <translation id="6190953336330058278">Telefoonhub-apps</translation>
-<translation id="619279033188484792">Recente foto's, media en meldingen van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Informatie over je browser, OS en apparaat lezen</translation>
 <translation id="6195693561221576702">Dit apparaat kan niet worden ingesteld in de offline demomodus.</translation>
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
@@ -6188,7 +6183,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7152478047064750137">De extensie vereist geen speciale rechten</translation>
 <translation id="7154130902455071009">Je homepage wijzigen in: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
-<translation id="7155352398126583949">Meldingen en berichten-apps</translation>
 <translation id="7163202347044721291">Activeringscode verifiëren...</translation>
 <translation id="716640248772308851">'<ph name="EXTENSION" />' kan afbeeldingen, video- en geluidsbestanden lezen op de gecontroleerde locaties.</translation>
 <translation id="7167486101654761064">&amp;Altijd bestanden van dit type openen</translation>
@@ -7198,7 +7192,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8141725884565838206">Je wachtwoorden beheren</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{een video}other{# video's}}</translation>
 <translation id="8143442547342702591">Ongeldige app</translation>
-<translation id="8143475123634606318">Berichten-apps van je telefoon streamen</translation>
 <translation id="8143609395536282994">Hoe je je gegevens kunt beheren:</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecteren</translation>
 <translation id="8146177459103116374">Als je al bent geregistreerd op dit apparaat, kun je <ph name="LINK2_START" />inloggen als een bestaande gebruiker<ph name="LINK2_END" />.</translation>
@@ -7489,7 +7482,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8439506636278576865">Aanbieden pagina's te vertalen in deze taal</translation>
 <translation id="8440630305826533614">Linux-apps</translation>
 <translation id="8443795068008423036">Zorg dat je apparaat up-to-date is en probeer het opnieuw</translation>
-<translation id="8445046761938045900">Recente foto's, meldingen en berichten-apps</translation>
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8447409163267621480">Neem Ctrl of Alt op</translation>
 <translation id="844850004779619592">Geen opdrachten gevonden</translation>
@@ -7822,7 +7814,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8780443667474968681">Gesproken zoekopdracht is uitgezet.</translation>
 <translation id="8781834595282316166">Nieuw tabblad in groep</translation>
 <translation id="8782565991310229362">Starten van kiosk-app geannuleerd.</translation>
-<translation id="8783526165720272136">Berichten-apps</translation>
 <translation id="8783834180813871000">Typ de bluetooth-koppelingscode en druk op Return of Enter.</translation>
 <translation id="8784626084144195648">Gemiddelde van gegroepeerde gegevens</translation>
 <translation id="8785622406424941542">Stylus</translation>
@@ -8234,7 +8225,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9186963452600581158">Inloggen met het Google-account van een kind</translation>
 <translation id="9187967020623675250">Toetsen komen niet overeen. Druk op een willekeurige toets om te <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. <ph name="BEGIN_LINK2" />Meer informatie<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Recente foto's en media van je telefoon bekijken. Berichten-apps van je telefoon streamen.</translation>
 <translation id="919686179725692564">Meer informatie over hoe je back-ups van je apps maakt</translation>
 <translation id="9198090666959937775">Je Android-telefoon gebruiken als beveiligingssleutel</translation>
 <translation id="9199503643457729322">Klik om de Privacygids te verlaten.</translation>

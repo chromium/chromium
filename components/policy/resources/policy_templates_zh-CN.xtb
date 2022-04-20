@@ -5530,14 +5530,6 @@
 <translation id="7266471712301230894">自 <ph name="PRODUCT_NAME" /> 64 起，此政策已被撤消。
 
       系统不再支持自动搜索和安装缺失插件。</translation>
-<translation id="7266868915753562724">此政策用于控制是否将历程显示在“Chrome 历史记录”页面上。
-
-      如果此政策已启用，历程将会显示在 chrome://history/journeys 页面上。
-
-      如果此政策已停用，历程将不会显示在 chrome://history/journeys 页面上。
-
-      如果此政策未设置，历程将会默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的可见性设置。
-      </translation>
 <translation id="7267809745244694722">媒体键默认为功能键</translation>
 <translation id="7269263983506766969">对音频进程使用默认优先级</translation>
 <translation id="7270001383428188269">此客户端证书的标识符。</translation>

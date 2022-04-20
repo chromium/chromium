@@ -218,7 +218,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2848086008667475748">Configurer par défaut dans les réglages…</translation>
 <translation id="2858204748079866344">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement le champ du mot de passe.</translation>
 <translation id="285960592395650245">Relancer téléchargement</translation>
-<translation id="2866378026651742652">Vous verrez désormais les stories de cette chaîne quand vous ouvrirez un nouvel onglet.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871695793448672541">Masqué, Mot de passe</translation>
 <translation id="2876369937070532032">Envoyer à Google les URL des pages que vous consultez présentant un risque pour votre sécurité</translation>
@@ -610,6 +609,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6232736989810857397">Cela vous permet de créer facilement des événements d'agenda avec Google Lens.</translation>
 <translation id="6254066287920239840">Ouvrir les liens dans l'application et non dans le navigateur.</translation>
 <translation id="6255097610484507482">Modifier la carte de paiement</translation>
+<translation id="6277426346321820595">Aucune protection</translation>
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Vous ne suivez plus <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et appuyez sur "Navigation sécurisée".</translation>
@@ -809,6 +809,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7884694604461143138">Rechercher dans l'historique (nombre de résultats : <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement de champ.</translation>
 <translation id="7911190106180361398">Votre organisation ne vous permet pas de tout synchroniser.</translation>
+<translation id="7920949005883349320">Confidentialité et sécurité</translation>
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export mots de passe…</translation>
@@ -967,4 +968,5 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="988141524645182168">Autres appareils</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>
 <translation id="994757059139821576">Suggestions d'articles</translation>
+<translation id="997742718232442409">Ce site Web essaie de télécharger un fichier d'agenda.</translation>
 </translationbundle>

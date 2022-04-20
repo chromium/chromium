@@ -369,7 +369,6 @@
 <translation id="1363585519747660921">USB-printeren skal konfigureres</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
 <translation id="1369149969991017342">Kontaktadgang (styr computeren med blot én eller to kontakter)</translation>
-<translation id="1371863479305430391">Se, afvis og reager på notifikationer fra din telefon. Stream beskedapps fra din telefon.</translation>
 <translation id="1372841398847029212">Synkroniser med din konto</translation>
 <translation id="1373176046406139583">Din enheds synlighed styrer, hvem der kan dele indhold med dig, når din skærm er låst op. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Det certifikat, som netværket "<ph name="NETWORK_NAME" />" kræver, er enten ikke installeret eller ikke længere gyldigt.  Få fat i et nyt certifikat, og prøv at oprette forbindelse igen.</translation>
@@ -422,7 +421,6 @@
 <translation id="1415708812149920388">Læseadgang til udklipsholderen blev afvist</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (udvidelses-id'et "<ph name="EXTENSION_ID" />") er ikke tilladt i denne sessionstype.</translation>
 <translation id="1418954524306642206">Gennemse for at angive PPD-filen for printeren</translation>
-<translation id="1420732223884894666">Se de seneste billeder og mediefiler fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Medielicenser</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> for at tillade parring</translation>
 <translation id="1421934779300263861">Vær med til at forbedre funktionerne og ydeevnen i Chrome og Chrome OS ved automatisk at sende nedbrudsrapporter samt diagnostik- og brugsdata til Google. Nogle samlede data er også nyttige for Android-apps og Google-partnere. Hvis indstillingen Web- og appaktivitet er aktiveret for din Google-konto, gemmes dine Android-data muligvis på din Google-konto.</translation>
@@ -724,7 +722,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1682548588986054654">Nyt inkognitovindue</translation>
 <translation id="1682867089915960590">Vil du aktivere tastenavigation?</translation>
 <translation id="1684279041537802716">Kontrastfarve</translation>
-<translation id="168511795252678620">Seneste billeder og beskedapps</translation>
 <translation id="1686550358074589746">Aktivér glidende indtastning</translation>
 <translation id="168715261339224929">Aktivér synkronisering for at se dine bogmærker på alle dine enheder.</translation>
 <translation id="1688867105868176567">Ville du rydde websitets data?</translation>
@@ -2611,7 +2608,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3526034519184079374">Kan hverken læse eller ændre websitedata</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3528498924003805721">Målene for genveje</translation>
-<translation id="3531383404180922673">Se de seneste billeder, mediefiler og notifikationer fra din telefon. Stream beskedapps fra din telefon.</translation>
 <translation id="3532273508346491126">Administration af synkronisering</translation>
 <translation id="3532521178906420528">Opretter netværksforbindelse...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – lyden er slået fra</translation>
@@ -5239,7 +5235,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6185132558746749656">Enhedslokation</translation>
 <translation id="6188346519670155113">Synkronisering af din Chrome-browser er aktiveret</translation>
 <translation id="6190953336330058278">Phone Hub-apps</translation>
-<translation id="619279033188484792">Se de seneste billeder, mediefiler og notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Læs oplysninger om din browser, dit operativsystem og din enhed</translation>
 <translation id="6195693561221576702">Enheden kan ikke konfigureres i offlinedemotilstand.</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
@@ -6212,7 +6207,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7152478047064750137">Denne udvidelse kræver ikke nogen særlige tilladelser</translation>
 <translation id="7154130902455071009">Skifte din startside til: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Eksisterende billede fra kamera eller fil</translation>
-<translation id="7155352398126583949">Notifikationer og beskedapps</translation>
 <translation id="7163202347044721291">Bekræfter aktiveringskode...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" har læserettigheder til billed-, video- og lydfiler på de markerede placeringer.</translation>
 <translation id="7167486101654761064">&amp;Åbn altid filer af denne type</translation>
@@ -7224,7 +7218,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8141725884565838206">Administrer dine adgangskoder</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{en video}one{# video}other{# videoer}}</translation>
 <translation id="8143442547342702591">Ugyldig app</translation>
-<translation id="8143475123634606318">Stream beskedapps fra din telefon</translation>
 <translation id="8143609395536282994">Sådan kan du administrere dine data</translation>
 <translation id="8143951647992294073">Vælg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Hvis du allerede har registreret dig på denne enhed, kan du <ph name="LINK2_START" />logge ind som eksisterende bruger<ph name="LINK2_END" />.</translation>
@@ -7515,7 +7508,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8439506636278576865">Tilbyd at oversætte sider på dette sprog</translation>
 <translation id="8440630305826533614">Linux-apps</translation>
 <translation id="8443795068008423036">Tjek, at din enhed er opdateret, og prøv igen</translation>
-<translation id="8445046761938045900">Seneste billeder, notifikationer og beskedapps</translation>
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8447409163267621480">Skal indeholde enten Ctrl eller Alt</translation>
 <translation id="844850004779619592">Der blev ikke fundet nogen kommandoer</translation>
@@ -7849,7 +7841,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8780443667474968681">Talesøgning er deaktiveret.</translation>
 <translation id="8781834595282316166">Ny fane i gruppe</translation>
 <translation id="8782565991310229362">Start af kioskapplikationen blev annulleret.</translation>
-<translation id="8783526165720272136">Beskedapps</translation>
 <translation id="8783834180813871000">Angiv Bluetooth-parringskoden, og tryk derefter på Enter.</translation>
 <translation id="8784626084144195648">Kasseret gennemsnit</translation>
 <translation id="8785622406424941542">Styluspen</translation>
@@ -8261,7 +8252,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9187967020623675250">Tasterne stemmer ikke overens. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Se de seneste billeder og mediefiler fra din telefon. Stream beskedapps fra din telefon.</translation>
 <translation id="919686179725692564">Få flere oplysninger om, hvordan du sikkerhedskopierer dine apps</translation>
 <translation id="9198090666959937775">Brug din Android-telefon som sikkerhedsnøgle</translation>
 <translation id="9199503643457729322">Klik for at forlade Privatlivsguide.</translation>

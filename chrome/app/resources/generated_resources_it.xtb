@@ -366,7 +366,6 @@
 <translation id="1363585519747660921">La stampante USB deve essere configurata</translation>
 <translation id="1367951781824006909">Scegli un file</translation>
 <translation id="1369149969991017342">Switch Access (consente l'utilizzo del computer semplicemente mediante uno o due sensori)</translation>
-<translation id="1371863479305430391">Visualizza, ignora e rispondi alle notifiche del tuo telefono. Riproduci in streaming le app di messaggistica del tuo telefono.</translation>
 <translation id="1372841398847029212">Sincronizza con il tuo account</translation>
 <translation id="1373176046406139583">L'impostazione Visibilità del dispositivo ti consente di stabilire chi può condividere file con te mentre il tuo schermo è sbloccato. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Il certificato richiesto dalla rete "<ph name="NETWORK_NAME" />" non è installato o non è più valido. Richiedi un nuovo certificato e riprova a connetterti.</translation>
@@ -419,7 +418,6 @@
 <translation id="1415708812149920388">Accesso alla lettura degli appunti negato</translation>
 <translation id="1415990189994829608">L'estensione <ph name="EXTENSION_NAME" /> (ID estensione "<ph name="EXTENSION_ID" />") non è consentita in questo tipo di sessione.</translation>
 <translation id="1418954524306642206">Sfoglia per specificare il file PPD della stampante</translation>
-<translation id="1420732223884894666">Visualizza le foto e i contenuti multimediali recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Licenze multimediali</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> per consentire l'accoppiamento</translation>
 <translation id="1421934779300263861">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome e Chrome OS inviando automaticamente a Google report sugli arresti anomali e dati diagnostici e sull'utilizzo. Alcuni dati aggregati saranno utili anche alle app per Android e ai partner di Google. Se l'impostazione Attività web e app viene attivata per il tuo Account Google, i tuoi dati Android potrebbero venire salvati sul tuo Account Google.</translation>
@@ -720,7 +718,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1682548588986054654">Nuova finestra di navigazione in incognito</translation>
 <translation id="1682867089915960590">Attivare navigazione con cursore?</translation>
 <translation id="1684279041537802716">Colore intenso</translation>
-<translation id="168511795252678620">Foto e app di messaggistica recenti</translation>
 <translation id="1686550358074589746">Attiva digitazione a scorrimento</translation>
 <translation id="168715261339224929">Attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi.</translation>
 <translation id="1688867105868176567">Cancellare i dati del sito?</translation>
@@ -2595,7 +2592,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3526034519184079374">Impossibile leggere i dati del sito o modificarli</translation>
 <translation id="3527085408025491307">Cartella</translation>
 <translation id="3528498924003805721">Target scorciatoie</translation>
-<translation id="3531383404180922673">Visualizza le foto, i contenuti multimediali e le notifiche recenti del tuo telefono. Riproduci in streaming le app di messaggistica del tuo telefono.</translation>
 <translation id="3532273508346491126">Gestione sincronizzazione</translation>
 <translation id="3532521178906420528">Creazione di una connessione di rete…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Audio disattivato</translation>
@@ -5219,7 +5215,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6185132558746749656">Posizione del dispositivo</translation>
 <translation id="6188346519670155113">Sincronizzazione del browser Chrome attiva</translation>
 <translation id="6190953336330058278">App di Phone Hub</translation>
-<translation id="619279033188484792">Visualizza le foto, i contenuti multimediali e le notifiche recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Lettura di informazioni sul browser, sul sistema operativo e sul dispositivo in uso</translation>
 <translation id="6195693561221576702">Impossibile configurare il dispositivo in modalità demo offline.</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
@@ -6192,7 +6187,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7152478047064750137">Questa estensione non richiede autorizzazioni speciali</translation>
 <translation id="7154130902455071009">Cambio della pagina iniziale con: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
-<translation id="7155352398126583949">Notifiche e app di messaggistica recenti</translation>
 <translation id="7163202347044721291">Verifica del codice di attivazione in corso…</translation>
 <translation id="716640248772308851">L'estensione "<ph name="EXTENSION" />" può leggere file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="7167486101654761064">&amp;Apri sempre file di questo tipo</translation>
@@ -7205,7 +7199,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8141725884565838206">Gestisci le tue password</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{un video}other{# video}}</translation>
 <translation id="8143442547342702591">Applicazione non valida</translation>
-<translation id="8143475123634606318">Riproduci in streaming le app di messaggistica del tuo telefono</translation>
 <translation id="8143609395536282994">Come puoi gestire i tuoi dati:</translation>
 <translation id="8143951647992294073">Seleziona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Se sei già registrato sul dispositivo in uso, puoi <ph name="LINK2_START" />accedere come utente esistente<ph name="LINK2_END" />.</translation>
@@ -7496,7 +7489,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8439506636278576865">Proponi di tradurre pagine in questa lingua</translation>
 <translation id="8440630305826533614">App Linux</translation>
 <translation id="8443795068008423036">Assicurati che il dispositivo sia aggiornato e riprova</translation>
-<translation id="8445046761938045900">Foto, notifiche e app di messaggistica recenti</translation>
 <translation id="8446884382197647889">Ulteriori informazioni</translation>
 <translation id="8447409163267621480">Includi CTRL o ALT</translation>
 <translation id="844850004779619592">Nessun comando trovato</translation>
@@ -7828,7 +7820,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8780443667474968681">La ricerca vocale è stata disattivata.</translation>
 <translation id="8781834595282316166">Nuova scheda nel gruppo</translation>
 <translation id="8782565991310229362">Avvio dell'applicazione kiosk annullato.</translation>
-<translation id="8783526165720272136">App di messaggistica</translation>
 <translation id="8783834180813871000">Digita il codice di accoppiamento Bluetooth e premi Invio</translation>
 <translation id="8784626084144195648">Media raccolta</translation>
 <translation id="8785622406424941542">Stilo</translation>
@@ -8240,7 +8231,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
 <translation id="9187967020623675250">I tasti non corrispondono. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Invia dati diagnostici e sull'utilizzo. Questo dispositivo attualmente invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Ulteriori informazioni<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Visualizza le foto e i contenuti multimediali recenti del tuo telefono. Riproduci in streaming le app di messaggistica del tuo telefono.</translation>
 <translation id="919686179725692564">Scopri di più sul backup delle tue app</translation>
 <translation id="9198090666959937775">Utilizza il tuo telefono Android come token di sicurezza</translation>
 <translation id="9199503643457729322">Fai clic per uscire dalla Guida alla privacy.</translation>

@@ -272,6 +272,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7651907282515937834">Sigla Chrome Enterprise</translation>
 <translation id="7655455401911432608">istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv;</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
+<translation id="7748512868279796735">Următoarele conturi sunt disponibile pentru acest profil Chrome</translation>
 <translation id="7761834446675418963">Dați clic pe numele dvs. pentru a deschide Chrome și a începe să navigați.</translation>
 <translation id="7777080907402804672">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>
 <translation id="7781002470561365167">Este disponibilă o nouă versiune a browserului Google Chrome.</translation>
@@ -291,7 +292,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="8064015586118426197">Sistemul de operare Chrome Flex</translation>
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
-<translation id="822971176939352383">Următoarele conturi nu sunt conectate la niciun profil Chrome. Dacă vrei să folosești un cont într-un alt profil, mai întâi elimină profilul respectiv.</translation>
 <translation id="8255190535488645436">Google Chrome utilizează camera foto și microfonul.</translation>
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="828798499196665338">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chrome. Activarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>

@@ -274,11 +274,11 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7828947555739565424">Tämän tilin Chromium-profiili on jo tällä laitteella</translation>
 <translation id="7867198900892795913">Chromiumia ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Voit myös poistaa kiinnostuksen kohteet, joita et halua Chromiumin ottavan huomioon.</translation>
+<translation id="788352880609666695">Seuraavat tilit ovat käytettävissä tällä Chromium-profiililla</translation>
 <translation id="7937630085815544518">Chromiumiin kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
 <translation id="7975919845073681630">Tämä on Chromiumin toissijainen asennus, eikä sitä voi asettaa oletusselaimeksi.</translation>
 <translation id="7997934263947464652">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chromium suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kun Chromiumilla on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
-<translation id="8045118833343856403">Näillä tileillä ei ole kirjauduttu sisään Chromium-profiileille. Jos haluat käyttää tiliä toisella profiililla, poista ensin kyseinen profiili.</translation>
 <translation id="8105840573057009683">Chromium tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="81770708095080097">Tämä tiedosto on vaarallinen, joten Chromium on estänyt sen.</translation>

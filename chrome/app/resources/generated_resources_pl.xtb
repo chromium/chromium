@@ -368,7 +368,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1363585519747660921">Drukarka USB wymaga konfiguracji</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
 <translation id="1369149969991017342">Switch Access (sterowanie komputerem za pomocą jednego lub dwóch przełączników)</translation>
-<translation id="1371863479305430391">Wyświetlaj powiadomienia z telefonu, odpowiadaj na nie i zamykaj je. Przesyłaj strumieniowo aplikacje do obsługi wiadomości dostępne na telefonie.</translation>
 <translation id="1372841398847029212">Zsynchronizuj ze swoim kontem</translation>
 <translation id="1373176046406139583">Od widoczności urządzenia zależy, kto może udostępniać Ci dane, gdy ekran jest odblokowany. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Certyfikat wymagany przez sieć „<ph name="NETWORK_NAME" />” nie jest zainstalowany lub utracił ważność. Pobierz nowy certyfikat i spróbuj ponownie się połączyć.</translation>
@@ -421,7 +420,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1415708812149920388">Brak uprawnień do odczytu zawartości schowka</translation>
 <translation id="1415990189994829608">Rozszerzenie <ph name="EXTENSION_NAME" /> (identyfikator rozszerzenia „<ph name="EXTENSION_ID" />”) jest niedozwolone w tym typie sesji.</translation>
 <translation id="1418954524306642206">Przeglądaj, by określić plik PPD dla drukarki</translation>
-<translation id="1420732223884894666">Wyświetlaj najnowsze zdjęcia i pliki multimedialne z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Licencje multimediów</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, by umożliwić sparowanie</translation>
 <translation id="1421934779300263861">Pomóż ulepszać funkcje i działanie Chrome OS, automatycznie wysyłając do Google raporty o awariach, dane diagnostyczne i dane o korzystaniu. Niektóre dane zbiorcze pomagają również w opracowywaniu lepszych aplikacji na Androida i usług partnerów Google. Jeśli na swoim koncie Google włączysz ustawienie Aktywność w internecie i aplikacjach, dane Androida mogą być zapisywane na tym koncie.</translation>
@@ -722,7 +720,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1682548588986054654">Nowe okno incognito</translation>
 <translation id="1682867089915960590">Włączyć przeglądanie przy użyciu kursora?</translation>
 <translation id="1684279041537802716">Kolor uzupełniający</translation>
-<translation id="168511795252678620">Najnowsze zdjęcia i aplikacje do obsługi wiadomości</translation>
 <translation id="1686550358074589746">Włącz pisanie gestami</translation>
 <translation id="168715261339224929">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, włącz synchronizację.</translation>
 <translation id="1688867105868176567">Wyczyścić dane witryn?</translation>
@@ -2592,7 +2589,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3526034519184079374">Nie udało się odczytać ani zmienić danych strony internetowej</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3528498924003805721">Elementy docelowe skrótów</translation>
-<translation id="3531383404180922673">Wyświetlaj najnowsze zdjęcia, pliki multimedialne i powiadomienia z telefonu. Przesyłaj strumieniowo aplikacje do obsługi wiadomości dostępne na telefonie.</translation>
 <translation id="3532273508346491126">Zarządzanie synchronizacją</translation>
 <translation id="3532521178906420528">Nawiązuję połączenie sieciowe…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – dźwięk wyciszony</translation>
@@ -5218,7 +5214,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6185132558746749656">Lokalizacja urządzenia</translation>
 <translation id="6188346519670155113">Synchronizacja przeglądarki Chrome jest włączona</translation>
 <translation id="6190953336330058278">Aplikacje do sterowania telefonem</translation>
-<translation id="619279033188484792">Wyświetlaj najnowsze zdjęcia, pliki multimedialne i powiadomienia z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Odczytywanie informacji o przeglądarce, systemie operacyjnym i urządzeniu</translation>
 <translation id="6195693561221576702">Na tym urządzeniu nie można skonfigurować trybu demonstracyjnego offline.</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
@@ -6191,7 +6186,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7152478047064750137">To rozszerzenie nie wymaga specjalnych uprawnień</translation>
 <translation id="7154130902455071009">Zmiana strony startowej na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Istniejące zdjęcie z kamery lub pliku</translation>
-<translation id="7155352398126583949">Powiadomienia i aplikacje do obsługi wiadomości</translation>
 <translation id="7163202347044721291">Sprawdzam kod aktywacyjny...</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />” może odczytywać pliki graficzne, wideo i dźwiękowe ze sprawdzonych lokalizacji.</translation>
 <translation id="7167486101654761064">&amp;Zawsze otwieraj pliki tego typu</translation>
@@ -7204,7 +7198,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8141725884565838206">Zarządzaj hasłami</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{film}few{# filmy}many{# filmów}other{# filmu}}</translation>
 <translation id="8143442547342702591">Nieprawidłowa aplikacja</translation>
-<translation id="8143475123634606318">Przesyłaj strumieniowo aplikacje do obsługi wiadomości dostępne na telefonie</translation>
 <translation id="8143609395536282994">W jaki sposób możesz zarządzać swoimi danymi:</translation>
 <translation id="8143951647992294073">Wybierz <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8146177459103116374">Jeśli zarejestrowałeś się już na tym urządzeniu, możesz <ph name="LINK2_START" />zalogować się jako istniejący użytkownik<ph name="LINK2_END" />.</translation>
@@ -7495,7 +7488,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8439506636278576865">Proponuj tłumaczenie stron w tym języku</translation>
 <translation id="8440630305826533614">Aplikacje na Linuksa</translation>
 <translation id="8443795068008423036">Sprawdź, czy urządzenie jest aktualne, i spróbuj ponownie</translation>
-<translation id="8445046761938045900">Najnowsze zdjęcia, powiadomienia i aplikacje do obsługi wiadomości</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8447409163267621480">Uwzględnij Ctrl lub Alt</translation>
 <translation id="844850004779619592">Nie znaleziono poleceń</translation>
@@ -7829,7 +7821,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8780443667474968681">Wyszukiwanie głosowe zostało wyłączone.</translation>
 <translation id="8781834595282316166">Nowa karta w grupie</translation>
 <translation id="8782565991310229362">Uruchamianie aplikacji kiosku zostało anulowane.</translation>
-<translation id="8783526165720272136">Aplikacje do obsługi wiadomości</translation>
 <translation id="8783834180813871000">Wpisz kod parowania Bluetooth i naciśnij Return lub Enter.</translation>
 <translation id="8784626084144195648">Średnia w przedziale</translation>
 <translation id="8785622406424941542">Rysik</translation>
@@ -8238,7 +8229,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
 <translation id="9187967020623675250">Klawisze są niezgodne. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Wyświetlaj najnowsze zdjęcia i pliki multimedialne z telefonu. Przesyłaj strumieniowo aplikacje do obsługi wiadomości dostępne na telefonie.</translation>
 <translation id="919686179725692564">Więcej informacji o tworzeniu kopii zapasowej danych aplikacji</translation>
 <translation id="9198090666959937775">Używaj telefonu z Androidem jako klucza bezpieczeństwa</translation>
 <translation id="9199503643457729322">Kliknij, aby opuścić Przewodnik po prywatności.</translation>

@@ -135,7 +135,6 @@
 <translation id="1708345662127501511">ഡെസ്‌ക്: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">നെറ്റ്‌വർക്ക് ക്രമീകരണം</translation>
 <translation id="1715293566947629045">പ്രൊഫൈൽ പ്രവർത്തനരഹിതമാക്കുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">തത്സമയ ക്യാപ്ഷൻ ഓണാണ്.</translation>
 <translation id="1720011244392820496">വൈഫൈ സമന്വയം ഓണാക്കുക</translation>
 <translation id="1736898441010944794">Bluetooth ഉപകരണങ്ങൾക്ക് "<ph name="NAME" />" ദൃശ്യമാണ്.</translation>
@@ -200,6 +199,7 @@
 <translation id="2107914222138020205">നിങ്ങളുടെ USB-C കേബിൾ, Thunderbolt-നെ പിന്തുണയ്ക്കുന്നില്ല. ഉപകരണ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം.</translation>
 <translation id="2108303511227308752">'Alt + Backspace' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Delete കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + Backspace അമർത്തുക.</translation>
 <translation id="211328683600082144">മൈക്രോഫോൺ ഓണാക്കുക</translation>
+<translation id="2123115117533398272">പുത്തൻ ഉള്ളടക്കം അടുത്തറിയേണ്ടതിന് ChromeOS നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു. ഉപയോഗ ഡാറ്റ പങ്കിടാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തിട്ടുണ്ടെങ്കിൽ മാത്രം, നിലവാരം മെച്ചപ്പെടുത്തുന്നതിന് സ്ഥിതിവിവരക്കണക്കുകൾ അയയ്ക്കുന്നു. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">പുതിയ ഡെസ്‌ക്</translation>
 <translation id="2127372758936585790">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ</translation>
 <translation id="2132302418721800944">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
@@ -270,6 +270,7 @@
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2621713457727696555">സുരക്ഷിതമാക്കി</translation>
 <translation id="263399434338050016">"എല്ലാം തിരഞ്ഞെടുക്കുക"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">വിൻഡോ ക്യാപ്‌ചർ</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
 <translation id="2658778018866295321">ക്ലിക്ക് ചെയ്‌ത് വലിച്ചിടുക</translation>
@@ -395,6 +396,7 @@
 <translation id="3375634426936648815">കണക്റ്റ് ചെയ്‌തു</translation>
 <translation id="3378442621503952303">പ്രൊഫൈലിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="3386978599540877378">പൂര്‍‌ണ്ണ-സ്‌ക്രീൻ മാഗ്‌നിഫയർ</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">അധിക ക്രമീകരണങ്ങൾ</translation>
 <translation id="3410336247007142655">ഡാർക്ക് തീം ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="3413817803639110246">ഇതുവരെ കാണാൻ ഒന്നുമില്ല</translation>
@@ -528,7 +530,6 @@
 <translation id="4129129681837227511">നിങ്ങളുടെ ലോക്ക് സ്‌ക്രീനിൽ അറിയിപ്പുകൾ കാണാൻ, ക്രമീകരണം മാറ്റാനായി അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="4146833061457621061">സംഗീതം പ്ലേ ചെയ്യുക</translation>
 <translation id="4165275524535002941">കേബിൾ, ഡിസ്പ്ലേകളെ പിന്തുണച്ചേക്കില്ല</translation>
-<translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{ഒരു ദിവസത്തിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# ദിവസത്തിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
 <translation id="4192112279662688596">അല്ലെങ്കിൽ</translation>
@@ -948,7 +949,6 @@
 <translation id="6751826523481687655">പ്രകടനം പിന്തുടരൽ ഓണാണ്</translation>
 <translation id="6752912906630585008">ഡെസ്‌ക് <ph name="REMOVED_DESK" /> നീക്കം ചെയ്‌ത്, ഡെസ്‌ക് <ph name="RECEIVE_DESK" />-മായി ലയിപ്പിച്ചു</translation>
 <translation id="6753390234084146956">ടാബുകൾ</translation>
-<translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">മീഡിയയൊന്നും പ്ലേ ചെയ്യുന്നില്ല</translation>
 <translation id="6777216307882431711">കണക്റ്റ് ചെയ്‍ത USB-C ഉപകരണങ്ങൾ ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="6786750046913594791">ഫോൾഡർ അടയ്ക്കുക</translation>
@@ -997,7 +997,6 @@
 <translation id="7045033600005038336">ടെംപ്ലേറ്റ് മാറ്റണോ?</translation>
 <translation id="7045595904618419789">മാഗ്നിഫയർ ഉപയോഗിക്കാൻ ആരംഭിക്കുക</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> വിച്ഛേദിച്ചു</translation>
-<translation id="7055381872777910864">W</translation>
 <translation id="7055910611768509537">ഒരാഴ്‌ചയിലധികമായി സ്റ്റൈലസ് ഉപയോഗിച്ചിട്ടില്ല</translation>
 <translation id="7066646422045619941">നിങ്ങളുടെ അഡ്‌മിൻ ഈ നെറ്റ്‌വർക്ക് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="7067196344162293536">സ്വയമേവ തിരിക്കുക</translation>
@@ -1081,7 +1080,6 @@
 <translation id="7579778809502851308">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>
 <translation id="7590883480672980941">ഇൻപുട്ട് ക്രമീകരണം</translation>
 <translation id="7593891976182323525">തിരയൽ അല്ലെങ്കിൽ Shift</translation>
-<translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">എല്ലാ അറിയിപ്പുകളും കാണുക</translation>
 <translation id="7607002721634913082">അല്പംനിര്‍ത്തി</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>

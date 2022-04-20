@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB printer needs configuration</translation>
 <translation id="1367951781824006909">Choose a file</translation>
 <translation id="1369149969991017342">Switch Access (control the computer with just one or two switches)</translation>
-<translation id="1371863479305430391">View, dismiss and reply to your phone’s notifications. Stream your phone’s messaging apps.</translation>
 <translation id="1372841398847029212">Sync to your account</translation>
 <translation id="1373176046406139583">Your device visibility controls who can share with you while your screen is unlocked. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">The certificate required by network "<ph name="NETWORK_NAME" />" is either not installed or is no longer valid.  Please get a new certificate and try connecting again.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Clipboard read access denied</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed in this type of session.</translation>
 <translation id="1418954524306642206">Browse to specify your printer PPD</translation>
-<translation id="1420732223884894666">View your phone's recent photos and media on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Media licences</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> to allow pairing</translation>
 <translation id="1421934779300263861">Help improve Chrome and Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google Partners. If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account.</translation>
@@ -723,7 +721,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1682548588986054654">New Incognito Window</translation>
 <translation id="1682867089915960590">Turn on caret browsing?</translation>
 <translation id="1684279041537802716">Accent colour</translation>
-<translation id="168511795252678620">Recent photos and messaging apps</translation>
 <translation id="1686550358074589746">Enable glide typing</translation>
 <translation id="168715261339224929">To get your bookmarks on all your devices, turn on sync.</translation>
 <translation id="1688867105868176567">Clear site data?</translation>
@@ -2656,7 +2653,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3526034519184079374">Can't Read or Change Site's Data</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3528498924003805721">Shortcut targets</translation>
-<translation id="3531383404180922673">View your phone's recent photos, media and notifications. Stream your phone’s messaging apps.</translation>
 <translation id="3532273508346491126">Sync management</translation>
 <translation id="3532521178906420528">Establishing network connection…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Audio muted</translation>
@@ -5295,7 +5291,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6185132558746749656">Device Location</translation>
 <translation id="6188346519670155113">Chrome browser sync is on</translation>
 <translation id="6190953336330058278">Phone Hub apps</translation>
-<translation id="619279033188484792">View your phone's recent photos, media and notifications on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Read information about your browser, OS and device</translation>
 <translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
@@ -6277,7 +6272,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Existing photo from camera or file</translation>
-<translation id="7155352398126583949">Notifications and messaging apps</translation>
 <translation id="7163202347044721291">Verifying activation code…</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" can read images, video and sound files in the ticked locations.</translation>
 <translation id="7167486101654761064">&amp;Always open files of this type</translation>
@@ -7293,7 +7287,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8141725884565838206">Manage your passwords</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{a video}other{# videos}}</translation>
 <translation id="8143442547342702591">Invalid application</translation>
-<translation id="8143475123634606318">Stream your phone’s messaging apps</translation>
 <translation id="8143609395536282994">How you can manage your data:</translation>
 <translation id="8143951647992294073">Select <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">If you've already registered on this device, you can <ph name="LINK2_START" />sign in as an existing user<ph name="LINK2_END" />.</translation>
@@ -7586,7 +7579,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8439506636278576865">Offer to translate pages in this language</translation>
 <translation id="8440630305826533614">Linux apps</translation>
 <translation id="8443795068008423036">Please ensure that your device is up to date and try again</translation>
-<translation id="8445046761938045900">Recent photos, notifications and messaging apps</translation>
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8447409163267621480">Include either Ctrl or Alt</translation>
 <translation id="844850004779619592">No commands found</translation>
@@ -7919,7 +7911,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8780443667474968681">Voice search has been turned off.</translation>
 <translation id="8781834595282316166">New Tab in Group</translation>
 <translation id="8782565991310229362">Kiosk application launch cancelled.</translation>
-<translation id="8783526165720272136">Messaging apps</translation>
 <translation id="8783834180813871000">Type the pairing code then press Return or Enter</translation>
 <translation id="8784626084144195648">Binned Average</translation>
 <translation id="8785622406424941542">Stylus</translation>
@@ -8333,7 +8324,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9187967020623675250">Keys don’t match. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">View your phone's recent photos and media. Stream your phone’s messaging apps.</translation>
 <translation id="919686179725692564">Find out more about backing up your apps</translation>
 <translation id="9198090666959937775">Use your Android phone as a security key</translation>
 <translation id="9199503643457729322">Click to navigate away from Privacy Guide.</translation>

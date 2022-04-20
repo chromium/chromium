@@ -366,7 +366,6 @@
 <translation id="1363585519747660921">La impressora USB s'ha de configurar</translation>
 <translation id="1367951781824006909">Trieu un fitxer</translation>
 <translation id="1369149969991017342">Accés amb interruptors (controla l'ordinador amb només un o dos interruptors)</translation>
-<translation id="1371863479305430391">Consulta les notificacions del telèfon, ignora-les o respon-hi. Reprodueix en continu les aplicacions de missatgeria del telèfon.</translation>
 <translation id="1372841398847029212">Sincronitza amb el meu compte</translation>
 <translation id="1373176046406139583">La visibilitat del dispositiu determina qui pot compartir contingut amb tu quan tens la pantalla desbloquejada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">El certificat necessari per a la xarxa "<ph name="NETWORK_NAME" />" no està instal·lat o ja no és vàlid. Obtingueu un certificat nou i proveu de tornar-vos a connectar.</translation>
@@ -419,7 +418,6 @@
 <translation id="1415708812149920388">S'ha denegat l'accés de lectura al porta-retalls</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (amb identificador d'extensió "<ph name="EXTENSION_ID" />") no es permet en aquest tipus de sessions.</translation>
 <translation id="1418954524306642206">Navega per especificar el fitxer PPD de la impressora</translation>
-<translation id="1420732223884894666">Consulta els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Llicències de contingut multimèdia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> per permetre la vinculació</translation>
 <translation id="1421934779300263861">Ajuda a millorar les funcions i el rendiment de Chrome i Chrome OS enviant automàticament informes d'error i dades de diagnòstic i d'ús a Google. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google. Si l'opció de configuració Activitat al web i en aplicacions està activada per al teu Compte de Google, és possible que les teves dades d'Android es desin al teu Compte de Google.</translation>
@@ -720,7 +718,6 @@
 <translation id="1682548588986054654">Finestra d'incògnit nova</translation>
 <translation id="1682867089915960590">Vols activar la navegació amb cursor de text?</translation>
 <translation id="1684279041537802716">Color d'èmfasi</translation>
-<translation id="168511795252678620">Aplicacions de missatgeria i fotos recents</translation>
 <translation id="1686550358074589746">Activa l'escriptura fent lliscar el dit</translation>
 <translation id="168715261339224929">Per accedir a les adreces d'interès des de tots els dispositius, activa la sincronització.</translation>
 <translation id="1688867105868176567">Vols esborrar les dades del lloc web?</translation>
@@ -2595,7 +2592,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3526034519184079374">No es poden llegir o canviar les dades del lloc web</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3528498924003805721">Dreceres</translation>
-<translation id="3531383404180922673">Consulta les notificacions, els fitxers multimèdia i les fotos recents del telèfon. Reprodueix-ne en continu les aplicacions de missatgeria.</translation>
 <translation id="3532273508346491126">Gestió de la sincronització</translation>
 <translation id="3532521178906420528">S'està establint la connexió a la xarxa...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: l'àudio està desactivat</translation>
@@ -5220,7 +5216,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6185132558746749656">Ubicació del dispositiu</translation>
 <translation id="6188346519670155113">La sincronització del navegador Chrome està activada</translation>
 <translation id="6190953336330058278">Aplicacions d'El meu telèfon</translation>
-<translation id="619279033188484792">Consulta les notificacions, els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Llegeix informació sobre el navegador, el SO i el dispositiu</translation>
 <translation id="6195693561221576702">Aquest dispositiu no es pot configurar en mode de demostració sense connexió.</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
@@ -6193,7 +6188,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7152478047064750137">Aquesta extensió no requereix cap permís especial</translation>
 <translation id="7154130902455071009">Canvia la pàgina d'inici per: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
-<translation id="7155352398126583949">Aplicacions de missatgeria i notificacions</translation>
 <translation id="7163202347044721291">S'està verificant el codi d'activació...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pot llegir imatges, vídeos i fitxers d'àudio de les ubicacions marcades.</translation>
 <translation id="7167486101654761064">&amp;Obre sempre els fitxers d'aquest tipus</translation>
@@ -7206,7 +7200,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8141725884565838206">Gestiona les contrasenyes</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 vídeo}other{# vídeos}}</translation>
 <translation id="8143442547342702591">Aplicació no vàlida</translation>
-<translation id="8143475123634606318">Reprodueix en continu les aplicacions de missatgeria del telèfon</translation>
 <translation id="8143609395536282994">Com pots gestionar les teves dades:</translation>
 <translation id="8143951647992294073">Selecciona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Si ja esteu registrat en aquest dispositiu, podeu <ph name="LINK2_START" />iniciar la sessió com a usuari existent<ph name="LINK2_END" />.</translation>
@@ -7498,7 +7491,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8439506636278576865">Proposa'm traduir pàgines en aquest idioma</translation>
 <translation id="8440630305826533614">Aplicacions per a Linux</translation>
 <translation id="8443795068008423036">Comprova que el dispositiu estigui actualitzat i torna-ho a provar</translation>
-<translation id="8445046761938045900">Aplicacions de missatgeria, notificacions i fotos recents</translation>
 <translation id="8446884382197647889">Més informació</translation>
 <translation id="8447409163267621480">Inclou la tecla Ctrl o Alt</translation>
 <translation id="844850004779619592">No s'ha trobat cap ordre</translation>
@@ -7830,7 +7822,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8780443667474968681">La cerca per veu s'ha desactivat.</translation>
 <translation id="8781834595282316166">Pestanya nova al grup</translation>
 <translation id="8782565991310229362">S'ha cancel·lat l'inici de l'aplicació de quiosc.</translation>
-<translation id="8783526165720272136">Aplicacions de missatgeria</translation>
 <translation id="8783834180813871000">Escriu el codi de vinculació per Bluetooth i, a continuació, prem Retorn.</translation>
 <translation id="8784626084144195648">Mitjana descartada</translation>
 <translation id="8785622406424941542">Llapis òptic</translation>
@@ -8242,7 +8233,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9186963452600581158">Inicia la sessió amb el Compte de Google d'un nen</translation>
 <translation id="9187967020623675250">Les tecles no coincideixen. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Consulta els fitxers multimèdia i les fotos recents del telèfon. Reprodueix-ne en continu les aplicacions de missatgeria.</translation>
 <translation id="919686179725692564">Més informació sobre com es crea una còpia de seguretat de les aplicacions</translation>
 <translation id="9198090666959937775">Fes servir el telèfon Android com a clau de seguretat</translation>
 <translation id="9199503643457729322">Fes-hi clic per sortir de la Guia de privadesa.</translation>

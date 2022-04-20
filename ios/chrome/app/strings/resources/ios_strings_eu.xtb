@@ -218,7 +218,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2848086008667475748">Ezarri aukera lehenetsi gisa Ezarpenak atalean…</translation>
 <translation id="2858204748079866344">Zure pribatutasuna babesteko, Chrome-k ez du automatikoki idatziko pasahitza eremu honetan.</translation>
 <translation id="285960592395650245">Saiatu berriro deskargatzen</translation>
-<translation id="2866378026651742652">Aurrerantzean, bertako istorioak ikusiko dituzu fitxa berri bat irekitzean.</translation>
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2871695793448672541">Ezkutatutako pasahitza</translation>
 <translation id="2876369937070532032">Segurtasuna arriskuan dagoenean, ireki dituzun URLetako batzuk bidaltzen dizkio Google-ri</translation>
@@ -610,6 +609,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6232736989810857397">Horrela, egutegiko gertaerak sortu ahal izango dituzu Google Lens-ekin.</translation>
 <translation id="6254066287920239840">Ireki estekak aplikazioan eta ez arakatzailean.</translation>
 <translation id="6255097610484507482">Editatu kreditu-txartela</translation>
+<translation id="6277426346321820595">Babesik gabe</translation>
 <translation id="6284652193729350524">Eskaini <ph name="LANGUAGE" /> itzultzea</translation>
 <translation id="6289501276895392862">Utzi diozu <ph name="CHANNEL_NAME" /> kanalari jarraitzeari</translation>
 <translation id="6293101329759844770">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu Arakatze segurua.</translation>
@@ -808,6 +808,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7884694604461143138">Bilatu historian (<ph name="COUNT" /> aurkitu dira)</translation>
 <translation id="7887198238286927132">Zure pribatutasuna babesteko, Chrome-k ez du automatikoki beteko eremu hau.</translation>
 <translation id="7911190106180361398">Erakundeak ez dizu eman baimenik guztia sinkronizatzeko.</translation>
+<translation id="7920949005883349320">Pribatutasuna eta segurtasuna</translation>
 <translation id="7930998711684428189">Abisatu egiten dizu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esportatu pasahitzak…</translation>

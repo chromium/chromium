@@ -2833,6 +2833,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando un diálogo de protocolo externo aparezca para así saltarse futuras solicitudes de confirmación</translation>
 <translation id="402759845255257575">No permitir que ningún sitio ejecute JavaScript</translation>
 <translation id="4027608872760987929">Habilitar proveedor de búsquedas predeterminadas</translation>
+<translation id="4027904270588278067">Si se le asigna un valor a esta política, se configurará el directorio donde Chrome guardará los archivos descargados. Chrome utilizará este directorio, aunque los usuarios especifiquen otro o activen la marca para que siempre se les pregunte dónde quieren descargar un archivo.
+
+      Esta política anula la política <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Si no se le asigna ningún valor a la política, Chrome utilizará el directorio de descargas predeterminado y los usuarios podrán cambiarlo.
+
+      Nota: Consulta una lista de las variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="4041577849977347218">Si la política se habilita o no se define, Navegación segura analizará los archivos que se descarguen, aunque provengan de una fuente de confianza.
 
       Si la política se inhabilita, Navegación segura no analizará los archivos que se descarguen si provienen de una fuente de confianza.
@@ -5639,14 +5646,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7266471712301230894">Esta política está obsoleta desde <ph name="PRODUCT_NAME" /> 64.
 
       Ya no están disponibles la búsqueda y la instalación automáticas de complementos que falten.</translation>
-<translation id="7266868915753562724">Esta política controla la visibilidad de los recorridos en la página del historial de Chrome.
-
-      Si se habilita esta política, los recorridos serán visibles en chrome://history/journeys.
-
-      Si se inhabilita esta política, los recorridos no serán visibles en chrome://history/journeys.
-
-      Si no se establece esta política, los recorridos serán visibles en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de los recorridos.
-      </translation>
 <translation id="7267809745244694722">Teclas multimedia predeterminadas para teclas de funciones</translation>
 <translation id="7269263983506766969">Utiliza la prioridad predeterminada para el proceso de audio</translation>
 <translation id="7270001383428188269">El identificador de este certificado de cliente.</translation>
@@ -6061,6 +6060,13 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si se inhabilita la política, los dispositivos registrados no informarán sobre estadísticas de almacenamiento.
       Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla el tamaño y el espacio libre del disco en M95 y versiones anteriores.</translation>
+<translation id="7719175048012980445">Si se le asigna un valor a esta política, se modificará el directorio predeterminado donde Chrome descarga los archivos, pero los usuarios podrán cambiarlo.
+
+      Si no se le asigna ningún valor, Chrome usará su directorio predeterminado específico de la plataforma.
+
+      Esta política no tendrá efecto si se establece la política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+
+      Nota: Consulta una lista de las variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="7721944091689270995">ID de usuario de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar ventanas emergentes. Si se le asigna el valor 2, se denegarán las ventanas emergentes.
 

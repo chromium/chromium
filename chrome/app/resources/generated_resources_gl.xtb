@@ -366,7 +366,6 @@
 <translation id="1363585519747660921">É necesario configurar a impresora USB</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
 <translation id="1369149969991017342">Acceso con interruptores (controla o ordenador cun ou dous interruptores)</translation>
-<translation id="1371863479305430391">Consulta as notificacións do teu teléfono, ignóraas ou respóndeas. Accede ás aplicacións de mensaxaría do teléfono en tempo real.</translation>
 <translation id="1372841398847029212">Sincronizar coa túa conta</translation>
 <translation id="1373176046406139583">A visibilidade do dispositivo permíteche controlar quen pode compartir contido contigo cando a pantalla estea desbloqueada. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">O certificado requirido pola rede "<ph name="NETWORK_NAME" />" non está instalado ou xa non é válido. Obtén un novo certificado e tenta conectarte de novo.</translation>
@@ -419,7 +418,6 @@
 <translation id="1415708812149920388">Rexeitouse o acceso de lectura ao portapapeis</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (o ID da extensión "<ph name="EXTENSION_ID" />") non se permite neste tipo de sesión.</translation>
 <translation id="1418954524306642206">Busca un ficheiro para especificar o PPD da impresora</translation>
-<translation id="1420732223884894666">Accede ao contido multimedia e ás fotos recentes do teu teléfono desde o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Licenzas multimedia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir a sincronización</translation>
 <translation id="1421934779300263861">Se queres axudar a mellorar as funcións e o rendemento de Chrome e de ChromeOS, permite que se lle envíen a Google de forma automática os informes de fallos, así como os datos de uso e de diagnóstico. Algúns datos agregados tamén serán útiles para os socios de Google e as aplicacións Android. Se tes activada a opción Actividade web e das aplicacións na Conta de Google, pódense gardar nela os teus datos de Android.</translation>
@@ -719,7 +717,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1682548588986054654">Nova ventá de incógnito</translation>
 <translation id="1682867089915960590">Queres activar a navegación por cursor de texto?</translation>
 <translation id="1684279041537802716">Cor de énfase</translation>
-<translation id="168511795252678620">Aplicacións de mensaxaría e fotos recentes</translation>
 <translation id="1686550358074589746">Activar escritura sen levantar o dedo</translation>
 <translation id="168715261339224929">Activa a sincronización para acceder aos marcadores desde todos os teus dispositivos.</translation>
 <translation id="1688867105868176567">Queres borrar os datos do sitio?</translation>
@@ -2593,7 +2590,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3526034519184079374">Non se puideron ler ou cambiar os datos do sitio</translation>
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3528498924003805721">Atallos</translation>
-<translation id="3531383404180922673">Consulta as notificacións, o contido multimedia e as fotos recentes do teu teléfono. Accede ás aplicacións de mensaxaría do teléfono en tempo real.</translation>
 <translation id="3532273508346491126">Xestión da sincronización</translation>
 <translation id="3532521178906420528">Establecendo conexión de rede...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: audio silenciado</translation>
@@ -5217,7 +5213,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6185132558746749656">Localización do dispositivo</translation>
 <translation id="6188346519670155113">A sincronización do navegador Chrome está activada</translation>
 <translation id="6190953336330058278">Aplicacións de O meu teléfono</translation>
-<translation id="619279033188484792">Accede ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono desde o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Consultar información sobre o teu navegador, sistema operativo e dispositivo</translation>
 <translation id="6195693561221576702">Este dispositivo non se pode configurar no modo de demostración sen conexión.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
@@ -6190,7 +6185,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7152478047064750137">Esta extensión non necesita permisos especiais</translation>
 <translation id="7154130902455071009">Cambiar a páxina de inicio a: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente da cámara ou do ficheiro</translation>
-<translation id="7155352398126583949">Aplicacións de mensaxaría e notificacións</translation>
 <translation id="7163202347044721291">Verificando código de activación…</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pode ler ficheiros de imaxes, vídeo e son nas localizacións marcadas.</translation>
 <translation id="7167486101654761064">&amp;Abrir sempre ficheiros deste tipo</translation>
@@ -7201,7 +7195,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8141725884565838206">Xestionar os teus contrasinais</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 vídeo}other{# vídeos}}</translation>
 <translation id="8143442547342702591">Aplicación non válida</translation>
-<translation id="8143475123634606318">Accede ás aplicacións de mensaxaría do teléfono en tempo real</translation>
 <translation id="8143609395536282994">Como podes xestionar os teus datos?</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Se xa te rexistraches neste dispositivo, podes <ph name="LINK2_START" />iniciar sesión como usuario existente<ph name="LINK2_END" />.</translation>
@@ -7492,7 +7485,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8439506636278576865">Ofrecer a tradución de páxinas neste idioma</translation>
 <translation id="8440630305826533614">Aplicacións de Linux</translation>
 <translation id="8443795068008423036">Asegúrate de que o dispositivo estea actualizado e téntao de novo</translation>
-<translation id="8445046761938045900">Aplicacións de mensaxaría, notificacións e fotos recentes</translation>
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8447409163267621480">Utiliza a tecla Ctrl ou Alt</translation>
 <translation id="844850004779619592">Non se atoparon comandos</translation>
@@ -7824,7 +7816,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8780443667474968681">Desactivouse a busca por voz.</translation>
 <translation id="8781834595282316166">Nova pestana no grupo</translation>
 <translation id="8782565991310229362">Cancelouse o inicio da aplicación de quiosco.</translation>
-<translation id="8783526165720272136">Aplicacións de mensaxaría</translation>
 <translation id="8783834180813871000">Escribe o código de sincronización por Bluetooth e, a continuación, preme Intro.</translation>
 <translation id="8784626084144195648">Media agrupada</translation>
 <translation id="8785622406424941542">Lapis óptico</translation>
@@ -8236,7 +8227,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9186963452600581158">Iniciar sesión cunha Conta de Google infantil</translation>
 <translation id="9187967020623675250">As teclas non coinciden. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Enviar datos de uso e de diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa Conta de Google <ph name="BEGIN_LINK2" />Máis información<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Consulta o contido multimedia e as fotos recentes do teu teléfono. Accede ás aplicacións de mensaxaría do teléfono en tempo real.</translation>
 <translation id="919686179725692564">Máis información sobre a realización de copias de seguranza das aplicacións</translation>
 <translation id="9198090666959937775">Utilizar o teléfono Android como chave de seguranza</translation>
 <translation id="9199503643457729322">Fai clic para saír da Guía de privacidade.</translation>

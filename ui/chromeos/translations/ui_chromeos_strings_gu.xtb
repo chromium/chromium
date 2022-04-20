@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">હીબ્રુ લિપ્યંતર</translation>
 <translation id="1747761757048858544">ડચ (નેધરલૅન્ડ)</translation>
 <translation id="174937106936716857">કુલ ફાઇલની સંખ્યા</translation>
+<translation id="1755345808328621801">આ ફાઇલ Windows સૉફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. તમારું ડિવાઇસ જે ChromeOS પર ચાલે છે તેની સાથે આ સુસંગત નથી. તેના બદલે કૃપા કરીને Chrome વેબ સ્ટોર પર યોગ્ય ઍપ શોધો.</translation>
 <translation id="1773212559869067373">પ્રમાણીકરણ પ્રમાણપત્રને સ્થાનિક રૂપે નકારવામાં આવ્યું છે</translation>
 <translation id="1775381402323441512">વીડિયોની માહિતી</translation>
 <translation id="180035236176489073">આ ફાઇલો ઍક્સેસ કરવા માટે તમારું ઑનલાઇન હોવું જરૂરી છે.</translation>
@@ -117,7 +118,6 @@
 <translation id="1936717151811561466">ફિનિશ</translation>
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
-<translation id="1984456723671657197">આ પ્રકારની ફાઇલ સપોર્ટેડ નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">ફાઇલના સ્થાન પર જાઓ</translation>
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
@@ -226,6 +226,7 @@
 <translation id="2943503720238418293">વધુ ટૂંકા નામનો ઉપયોગ કરો</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી રહ્યાં છીએ…</translation>
 <translation id="2951236788251446349">જેલીફીશ</translation>
+<translation id="2977940621473452797">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરતા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. તમારું ડિવાઇસ જે ChromeOS પર ચાલે છે તેની સાથે આ સુસંગત નથી. તેના બદલે કૃપા કરીને Chrome વેબ સ્ટોર પર યોગ્ય ઍપ શોધો.</translation>
 <translation id="2984337792991268709">આજે <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> આઇટમ રિસ્ટોર કરી રહ્યાં છીએ…</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />નો બૅકઅપ લઈ શક્યા નથી</translation>
@@ -423,6 +424,7 @@
 <translation id="4694604912444486114">વાનર</translation>
 <translation id="469612310041132144">ચાઇનીઝ ક્વિક</translation>
 <translation id="4697043402264950621">ફાઇલ સૂચિને <ph name="COLUMN_NAME" /> દ્વારા ચઢતા ક્રમમાં સૉર્ટ કરેલી છે.</translation>
+<translation id="469897186246626197">આ ફાઇલ Windows સૉફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. ChromeOS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. ChromeOS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">તમિળ, ટાઇપરાઇટર કીબોર્ડ સાથે</translation>
 <translation id="4711094779914110278">ટર્કીશ</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ખોલી રહ્યાં છીએ</translation>
@@ -544,6 +546,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">બલ્ગેરિયન, ફોનેટિક કીબોર્ડ સાથે</translation>
 <translation id="5605830556594064952">યુએસ ડ્વોરેક</translation>
+<translation id="5618330573454123917">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરતા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. ChromeOS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. ChromeOS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">તમિળ, તમિળ99 કીબોર્ડ સાથે</translation>
 <translation id="5633226425545095130">આ આઇટમ ખસેડવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
@@ -702,7 +705,6 @@
 <translation id="6970230597523682626">બલ્ગેરિયન</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
 <translation id="6976795442547527108">સિંહ</translation>
-<translation id="6978611942794658017">આ ફાઇલ Windows સૉફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. આ તમારું ડિવાઇસ જે Chrome OS પર ચાલે છે તેની સાથે સુસંગત નથી. કૃપા કરીને યોગ્ય અવેજી ઍપ માટે Chrome વેબ સ્ટોરમાં શોધો.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">સ્વીડિશ</translation>
 <translation id="6990081529015358884">તમારી પાસે સ્થાન નથી</translation>
@@ -740,6 +742,7 @@
 <translation id="7309413087278791451">જર્મન (બેલ્જિયમ)</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
 <translation id="7343393116438664539">વિયેતનામીઝ ટેલેક્સ</translation>
+<translation id="7357762654218998920">આ પ્રકારની ફાઇલને સપોર્ટ આપવામાં આવતો નથી. ChromeOS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કૉપિ કરી રહ્યું છે...</translation>
 <translation id="7375951387215729722">ફાઇલ સૂચિને <ph name="COLUMN_NAME" /> દ્વારા ઉતરતા ક્રમમાં સૉર્ટ કરેલી છે.</translation>
 <translation id="7402503521691663770">ChromeOS Flex ડિવાઇસ</translation>
@@ -822,7 +825,6 @@
 <translation id="7972920761225148017">ફ્રેન્ચ (સ્વિટ્ઝર્લૅન્ડ)</translation>
 <translation id="7973962044839454485">ખોટા વપરાશકર્તાનામ અથવા પાસવર્ડને કારણે PPP પ્રમાણીકરણ નિષ્ફળ થયું</translation>
 <translation id="7980421588063892270">અંગ્રેજી (યુએસ), Colemak કીબોર્ડ સાથે</translation>
-<translation id="79907182588096956">આ ફાઇલ Windows સૉફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. Chrome OS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="8000066093800657092">નેટવર્ક નથી</translation>
 <translation id="8008366997883261463">કૂતરો</translation>
 <translation id="8028993641010258682">કદ</translation>
@@ -933,7 +935,6 @@
 <translation id="8912078710089354287">પૂંછડી હલાવી રહેલો કૂતરો</translation>
 <translation id="8919081441417203123">ડેનિશ</translation>
 <translation id="8965697826696209160">પર્યાપ્ત સ્થાન નથી.</translation>
-<translation id="8970501467542182729">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરી રહેલા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. Chrome OS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">ચાઇનીઝ (પરંપરાગત) પિનયિન</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="9017798300203431059">રશિયન ધ્વન્યાત્મક</translation>
@@ -952,7 +953,6 @@
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />'ના સભ્યો આ આઇટમનો ઍક્સેસ મેળવશે.</translation>
 <translation id="9131598836763251128">એક અથવા વધુ ફાઇલ પસંદ કરો</translation>
 <translation id="9133055936679483811">ઝિપ કરવાનું નિષ્ફળ: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">આ ફાઇલની રચના Macintosh સૉફ્ટવેરનો ઉપયોગ કરી રહેલા કમ્પ્યુટર માટે કરી છે. આ Chrome OS ચલાવે છે તેવા તમારા ડિવાઇસ સાથે સુસંગત નથી. કૃપા કરીને અનુકૂળ અવેજી ઍપ માટે Chrome વેબ સ્ટોર પર શોધો.</translation>
 <translation id="9144340019284012223">કૅટલેન</translation>
 <translation id="914873105831852105">અમાન્ય પિન. તમારો 1 પ્રયાસ બાકી છે.</translation>
 <translation id="9153934054460603056">ઓળખાણ અને પાસવર્ડ સાચવો</translation>

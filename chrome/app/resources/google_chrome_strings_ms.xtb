@@ -46,6 +46,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome sudah usang</translation>
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
+<translation id="1952239763774043237">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan macOS 10.13 atau yang lebih baharu. Komputer ini menggunakan macOS 10.12.</translation>
 <translation id="2018528049276128029">Setiap profil menyimpan maklumat Chrome profil itu sendiri seperti penanda halaman, sejarah, kata laluan dan pelbagai lagi</translation>
 <translation id="207902854391093810">Apabila percubaan sedang berlangsung, pengukuran iklan membenarkan laman yang anda lawati meminta maklumat daripada Chrome yang membantu laman tersebut mengukur prestasi iklan mereka. Pengukuran iklan mengehadkan penjejakan rentas laman dengan memindahkan maklumat antara laman sedikit yang mungkin.</translation>
 <translation id="2094648590148273905">Syarat Chrome OS Flex</translation>
@@ -179,6 +180,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="4969674060580488087">Chrome OS Flex tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="4970761609246024540">Selamat datang ke profil Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5037581483200764584">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan macOS 10.13 atau yang lebih baharu. Komputer ini menggunakan OS X 10.11.</translation>
 <translation id="5132929315877954718">Temui apl, permainan, sambungan dan tema hebat untuk Google Chrome.</translation>
 <translation id="5139423532931106058">Sesuaikan profil Chrome anda</translation>
 <translation id="5163087008893166964">Selamat datang ke Chrome; tetingkap penyemak imbas baharu dibuka</translation>
@@ -274,6 +276,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
+<translation id="7748512868279796735">Akaun berikut tersedia untuk profil Chrome ini</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
 <translation id="7777080907402804672">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="7781002470561365167">Terdapat versi Google Chrome baharu yang tersedia.</translation>
@@ -293,7 +296,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8013993649590906847">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Mengenai &amp;Google Chrome</translation>
-<translation id="822971176939352383">Akaun berikut tidak dilog masuk ke mana-mana profil Chrome. Jika anda ingin menggunakan akaun dalam profil lain, alih keluar profil tersebut dahulu.</translation>
 <translation id="8255190535488645436">Google Chrome menggunakan kamera dan mikrofon anda.</translation>
 <translation id="8286862437124483331">Google Chrome cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="828798499196665338">Ibu/bapa anda telah mematikan "Kebenaran untuk laman web, apl dan sambungan" untuk Chrome. Tindakan mendayakan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>

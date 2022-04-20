@@ -369,7 +369,6 @@
 <translation id="1363585519747660921">Stilla þarf USB-prentarann</translation>
 <translation id="1367951781824006909">Velja skrá</translation>
 <translation id="1369149969991017342">Rofaaðgangur (stjórnaðu tölvunni með aðeins einum eða tveimur rofum)</translation>
-<translation id="1371863479305430391">Skoðaðu, hunsaðu og svaraðu tilkynningum símans. Streymdu skilaboðaforritum símans.</translation>
 <translation id="1372841398847029212">Samstilla við reikninginn þinn</translation>
 <translation id="1373176046406139583">Sýnileiki tækisins stýrir því hverjir geta deilt efni með þér þegar skjárinn er ekki læstur. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Vottorðið sem netið „<ph name="NETWORK_NAME" />“ krefst er annaðhvort ekki uppsett eða ekki lengur í gildi. Fáðu nýtt vottorð og reyndu aftur að tengjast.</translation>
@@ -422,7 +421,6 @@
 <translation id="1415708812149920388">Lesaðgangi að klippiborði var hafnað</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) er ekki leyfð í þessari gerð lotu.</translation>
 <translation id="1418954524306642206">Skoðaðu til að tilgreina PPD prentarans</translation>
-<translation id="1420732223884894666">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Margmiðlunarleyfi</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> til að leyfa pörun</translation>
 <translation id="1421934779300263861">Hjálpaðu til við að bæta eiginleika og afköst Chrome og ChromeOS með því að senda hrunskýrslur ásamt greiningar- og notkunargögnum sjálfkrafa til Google. Einnig kunna tiltekin samantekin gögn að gagnast Android forritum og samstarfsaðilum Google. Ef kveikt er á vef- og forritavirkni á Google reikningnum þínum verða Android gögnin þín hugsanlega vistuð á Google reikningnum þínum.</translation>
@@ -724,7 +722,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1682548588986054654">Nýr huliðsgluggi</translation>
 <translation id="1682867089915960590">Viltu kveikja á skoðun með textabendli?</translation>
 <translation id="1684279041537802716">Áherslulitur</translation>
-<translation id="168511795252678620">Nýlegar myndir og skilaboðaforrit</translation>
 <translation id="1686550358074589746">Kveikja á bendingainnslætti</translation>
 <translation id="168715261339224929">Kveiktu á samstillingu til að fá aðgang að bókamerkjunum þínum í öllum tækjum.</translation>
 <translation id="1688867105868176567">Viltu hreinsa vefsvæðagögn?</translation>
@@ -2610,7 +2607,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3526034519184079374">Ekki er hægt að lesa eða breyta gögnum vefsvæðis</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3528498924003805721">Áfangastaðir flýtileiða</translation>
-<translation id="3531383404180922673">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans. Streymdu skilaboðaforritum símans.</translation>
 <translation id="3532273508346491126">Stjórnun samstillinga</translation>
 <translation id="3532521178906420528">Kemur á nettengingu…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – slökkt á hljóði</translation>
@@ -5238,7 +5234,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6185132558746749656">Staðsetning tækis</translation>
 <translation id="6188346519670155113">Kveikt er á samstillingu Chrome vafra</translation>
 <translation id="6190953336330058278">Forrit símstöðvar</translation>
-<translation id="619279033188484792">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Lestu upplýsingar um vafrann, stýrikerfið og tækið</translation>
 <translation id="6195693561221576702">Ekki er hægt að setja þetta tæki upp í ótengdri prufustillingu.</translation>
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
@@ -6211,7 +6206,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7152478047064750137">Þessi viðbót þarf engar sérstakar heimildir</translation>
 <translation id="7154130902455071009">Breyta upphafssíðunni í: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Fyrirliggjandi mynd úr myndavél eða skrá</translation>
-<translation id="7155352398126583949">Tilkynningar og skilaboðaforrit</translation>
 <translation id="7163202347044721291">Staðfestir virkjunarkóða...</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ getur lesið myndir, myndskeið og hljóðskrár á merktu stöðunum.</translation>
 <translation id="7167486101654761064">Opna &amp;alltaf skrár af þessari tegund</translation>
@@ -7223,7 +7217,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8141725884565838206">Stjórna aðgangsorðunum þínum</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{myndskeið}one{# myndskeið}other{# myndskeið}}</translation>
 <translation id="8143442547342702591">Ógilt forrit</translation>
-<translation id="8143475123634606318">Streymdu skilaboðaforritum símans</translation>
 <translation id="8143609395536282994">Svona geturðu stjórnað gögnunum þínum:</translation>
 <translation id="8143951647992294073">Velja <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Ef þú hefur þegar skráð þig í þessu tæki geturðu <ph name="LINK2_START" />skráð þig inn sem fyrirliggjandi notandi<ph name="LINK2_END" />.</translation>
@@ -7514,7 +7507,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8439506636278576865">Bjóðast til að þýða síður á þessu tungumáli</translation>
 <translation id="8440630305826533614">Linux-forrit</translation>
 <translation id="8443795068008423036">Gakktu úr skugga um að tækið sé uppfært og reyndu aftur</translation>
-<translation id="8445046761938045900">Nýlegar myndir, tilkynningar og skilaboðaforrit</translation>
 <translation id="8446884382197647889">Frekari upplýsingar</translation>
 <translation id="8447409163267621480">Hafðu Ctrl eða Alt með</translation>
 <translation id="844850004779619592">Engar skipanir fundust</translation>
@@ -7847,7 +7839,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8780443667474968681">Slökkt hefur verið á raddleit.</translation>
 <translation id="8781834595282316166">Nýr flipi í hópi</translation>
 <translation id="8782565991310229362">Hætt við að ræsa sjálfsalaforrit.</translation>
-<translation id="8783526165720272136">Skilaboðaforrit</translation>
 <translation id="8783834180813871000">Sláðu inn Bluetooth-pörunarkóðann og ýttu svo á Return eða Enter.</translation>
 <translation id="8784626084144195648">Uppsafnað meðaltal</translation>
 <translation id="8785622406424941542">Penni</translation>
@@ -8259,7 +8250,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9186963452600581158">Skráðu þig inn með Google reikningi barnsins</translation>
 <translation id="9187967020623675250">Lyklarnir passa ekki saman. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Senda notkunar- og greiningargögn. Þetta tæki sendir núna sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta verður ekki notað til að bera kennsl á barnið þitt og mun stuðla að því að bæta stöðugleika kerfa og forrita auk annarra endurbóta. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins. <ph name="BEGIN_LINK2" />Frekari upplýsingar<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Skoðaðu nýlegar myndir og margmiðlunarefni símans. Streymdu skilaboðaforritum símans.</translation>
 <translation id="919686179725692564">Nánar um að taka afrit af forritum</translation>
 <translation id="9198090666959937775">Notaðu Android símann sem öryggislykil</translation>
 <translation id="9199503643457729322">Smelltu til að fara úr leiðbeiningum um persónuvernd.</translation>

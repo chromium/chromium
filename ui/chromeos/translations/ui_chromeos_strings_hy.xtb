@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">եբրայերեն (տառադարձություն)</translation>
 <translation id="1747761757048858544">հոլանդերեն (Նիդեռլանդներ)</translation>
 <translation id="174937106936716857">Ֆայլերի ընդհանուր թիվը</translation>
+<translation id="1755345808328621801">Այս ֆայլը նախատեսված է Windows-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ձեր ChromeOS-ով աշխատող սարքի հետ։ Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում։</translation>
 <translation id="1773212559869067373">Իսկորոշման վկայագիրը մերժվեց տեղում</translation>
 <translation id="1775381402323441512">Տեղեկություններ տեսանյութի մասին</translation>
 <translation id="180035236176489073">Այս ֆայլերն օգտագործելու համար դուք պետք է առցանց լինեք:</translation>
@@ -117,7 +118,6 @@
 <translation id="1936717151811561466">Ֆիննական</translation>
 <translation id="1942765061641586207">Պատկերի լուծաչափը</translation>
 <translation id="1972984168337863910">Ծավալել ֆայլերի մասին կարծիք հայտնելու վահանակները</translation>
-<translation id="1984456723671657197">Ֆայլի այս տեսակը չի աջակցվում: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>
 <translation id="1995337122023280937">Անցնել ֆայլի տեղադրություն</translation>
 <translation id="2001796770603320721">Կառավարել Drive-ում</translation>
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
@@ -226,6 +226,7 @@
 <translation id="2943503720238418293">Նշեք ավելի կարճ անուն</translation>
 <translation id="2949781154072577687">«<ph name="DRIVE_NAME" />» կրիչը ձևաչափվում է…</translation>
 <translation id="2951236788251446349">Մեդուզա</translation>
+<translation id="2977940621473452797">Այս ֆայլը նախատեսված է Macintosh-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ձեր ChromeOS-ով աշխատող սարքի հետ։ Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում։</translation>
 <translation id="2984337792991268709">Այսօր <ph name="TODAY_DAYTIME" />-ին</translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> տարր վերականգնվում է…</translation>
 <translation id="2994669386200004489">Չհաջողվեց պահուստավորել <ph name="FILE_NAME" /> ֆայլը</translation>
@@ -423,6 +424,7 @@
 <translation id="4694604912444486114">Կապիկ</translation>
 <translation id="469612310041132144">չինարեն (արագ գիր)</translation>
 <translation id="4697043402264950621">Ֆայլերի ցանկը տեսակավորված է ըստ «<ph name="COLUMN_NAME" />» ցուցանիշի՝ աճման կարգով։</translation>
+<translation id="469897186246626197">Այս ֆայլը նախատեսված է Windows-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ChromeOS-ով աշխատող ձեր սարքի հետ։ <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել ChromeOS-ում։</translation>
 <translation id="4706042980341760088">թամիլերեն (գրամեքենայի ստեղնաշար)</translation>
 <translation id="4711094779914110278">Թուրքական</translation>
 <translation id="4712283082407695269">«<ph name="PATH" />» արխիվը բացվում է</translation>
@@ -543,6 +545,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">բուլղարերեն (հնչյունային ստեղնաշար)</translation>
 <translation id="5605830556594064952">ԱՄՆ Դվորակ</translation>
+<translation id="5618330573454123917">Այս ֆայլը նախատեսված է Macintosh-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ChromeOS-ով աշխատող ձեր սարքի հետ։ <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել ChromeOS-ում։</translation>
 <translation id="5625294776298156701">թամիլերեն (Tamil99 ստեղնաշար)</translation>
 <translation id="5633226425545095130">Այս տարրը տեղափոխելու դեպքում այն հասանելի կդառնա բոլորին, ում տեսանելի է «<ph name="DESTINATION_NAME" />» ընդհանուր պանակը։</translation>
 <translation id="5649768706273821470">Լսել</translation>
@@ -701,7 +704,6 @@
 <translation id="6970230597523682626">Բուլղարական</translation>
 <translation id="6973630695168034713">Պանակներ</translation>
 <translation id="6976795442547527108">Առյուծ</translation>
-<translation id="6978611942794658017">Այս ֆայլը նախատեսված է Windows ծրագրակազմ օգտագործող համակարգիչների համար: Այն համատեղելի չէ ձեր Chrome OS-ով աշխատող սարքի հետ: Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում:</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">շվեդերեն</translation>
 <translation id="6990081529015358884">Ազատ տարածք չունեք</translation>
@@ -739,6 +741,7 @@
 <translation id="7309413087278791451">գերմաներեն (Բելգիա)</translation>
 <translation id="7339898014177206373">Նոր պատուհան</translation>
 <translation id="7343393116438664539">վիետնամերեն (տելեքս)</translation>
+<translation id="7357762654218998920">Ֆայլի այս տեսակը չի աջակցվում։ <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել ChromeOS-ում։</translation>
 <translation id="7359359531237882347">Պատճենվում է <ph name="NUMBER_OF_ITEMS" /> տարր...</translation>
 <translation id="7375951387215729722">Ֆայլերի ցանկը տեսակավորված է ըստ «<ph name="COLUMN_NAME" />» ցուցանիշի՝ նվազման կարգով։</translation>
 <translation id="7402503521691663770">ChromeOS Flex սարքեր</translation>
@@ -823,7 +826,6 @@
 <translation id="7972920761225148017">ֆրանսերեն (Շվեյցարիա)</translation>
 <translation id="7973962044839454485">PPP իսկորոշումը չհաջողվեց: Օգտանունը կամ գաղտնաբառը սխալ են</translation>
 <translation id="7980421588063892270">անգլերեն (ԱՄՆ)՝ Colemak ստեղնաշարով</translation>
-<translation id="79907182588096956">Այս ֆայլը նախատեսված է Windows ծրագրակազմով համակարգչի համար։ Այն համատեղելի չէ Chrome OS-ով աշխատող ձեր սարքի հետ: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>
 <translation id="8000066093800657092">Ցանց չկա</translation>
 <translation id="8008366997883261463">Շուն</translation>
 <translation id="8028993641010258682">Չափ</translation>
@@ -934,7 +936,6 @@
 <translation id="8912078710089354287">Պոչը թափահարող շուն</translation>
 <translation id="8919081441417203123">Դանիական</translation>
 <translation id="8965697826696209160">Բավարար տարածք չկա:</translation>
-<translation id="8970501467542182729">Այս ֆայլը նախատեսված է Macintosh ծրագրակազմով համակարգչի համար։ Այն համատեղելի չէ Chrome OS-ով աշխատող ձեր սարքի հետ: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>
 <translation id="8997962250644902079">չինարեն փինյին (ավանդական)</translation>
 <translation id="9003940392834790328">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="9017798300203431059">Ռուսական հնչյունային</translation>
@@ -953,7 +954,6 @@
 <translation id="9130775360844693113">«<ph name="DESTINATION_NAME" />»-ի անդամներին այս տարրերը հասանելի կդառնան։</translation>
 <translation id="9131598836763251128">Ընտրեք մեկ կամ ավելի ֆայլեր</translation>
 <translation id="9133055936679483811">Արխիվացումը չհաջողվեց: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Այս ֆայլը նախատեսված է Macintosh ծրագրակազմ օգտագործող համակարգիչների համար: Այն համատեղելի չէ ձեր Chrome OS-ով աշխատող սարքի հետ: Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում:</translation>
 <translation id="9144340019284012223">կատալաներեն</translation>
 <translation id="914873105831852105">PIN կոդն անվավեր է։ Մնաց 1 փորձ։</translation>
 <translation id="9153934054460603056">Պահել նույնականացման տվյալներն ու գաղտնաբառը</translation>

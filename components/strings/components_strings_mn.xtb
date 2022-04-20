@@ -512,6 +512,7 @@
 <translation id="2298855485018661510">Күүки удирдах товч. Chrome-н тохиргоонд күүкиний сонголтоо удирдахын тулд Enter дээр дарна уу</translation>
 <translation id="2300306941146563769">Байршуулаагүй</translation>
 <translation id="2310021320168182093">Chou2 (Дугтуй)</translation>
+<translation id="2316159751672436664">ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгоно уу</translation>
 <translation id="2316887270356262533">1 MB-с бага зай гаргана. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> хэрэглэгчийн нэр, нууц үгийг шаардаж байна.</translation>
 <translation id="2318594867107319532">Бодлогын сүүлийн хугацаа тэмдэглэгч:</translation>
@@ -1670,6 +1671,7 @@
 <translation id="5518670652865028077">Урлаг, энтертэйнмент</translation>
 <translation id="5519516356611866228">Таны өөрчилснөөр</translation>
 <translation id="5523118979700054094">Тохиргооны нэр</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="5528532273234423708">Гэрийн автоматжуулалт</translation>
 <translation id="55293785478302737">Ирмэгийг нь нийлүүлж үдэх</translation>
 <translation id="553484882784876924">Prc6 (Дугтуй)</translation>
@@ -2247,6 +2249,7 @@
 <translation id="722454870747268814">Нууцлалын шинэ таб</translation>
 <translation id="7233592378249864828">Хэвлэхийг баталгаажуулсан хүснэгт</translation>
 <translation id="7234638337680728591">Шатахууны үнэ, тээврийн хэрэгслийн түлш</translation>
+<translation id="7237492777898608035">Энэ сайтад уг мессежийг дахин бүү харуул</translation>
 <translation id="7238585580608191973">SHA-256 Хурууны хээ</translation>
 <translation id="7240120331469437312">Гэрчилгээний субъектийн хувилбар нэр</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2629,6 +2632,7 @@
 <translation id="8242426110754782860">Үргэлжлүүлнэ үү</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="8249463483885748674">Стандартчлагдсан, элсэлтийн шалгалт</translation>
+<translation id="8252991034201168845">Хандалтын тохиргоог удирдах товчлуур, ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд Enter дээр дарна уу</translation>
 <translation id="8253091569723639551">Тооцооны хаяг шаардлагатай</translation>
 <translation id="8257387598443225809">Энэ апп нь мобайлд зориулагдсан</translation>
 <translation id="825929999321470778">Бүх хадгалсан нууц үгийг харуулах</translation>

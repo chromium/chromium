@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB štampač treba da se konfiguriše</translation>
 <translation id="1367951781824006909">Izaberi datoteku</translation>
 <translation id="1369149969991017342">Pristup pomoću prekidača (kontrolišite računar pomoću samo jednog ili dva prekidača)</translation>
-<translation id="1371863479305430391">Pregledajte i odbacite obaveštenja na telefonu ili odgovorite na njih. Strimujte aplikacije za razmenu poruka sa telefona.</translation>
 <translation id="1372841398847029212">Sinhronizujte sa nalogom</translation>
 <translation id="1373176046406139583">Podešavanje vidljivosti kontroliše ko može da deli sadržaj sa vama dok je ekran otključan. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Sertifikat koji zahteva mreža „<ph name="NETWORK_NAME" />“ ili nije instaliran ili više nije važeći. Nabavite novi sertifikat i pokušajte ponovo da se povežete.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Pristup za čitanje privremene memorije je odbijen</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID dodatka „<ph name="EXTENSION_ID" />“) nije dozvoljen u ovom tipu sesije.</translation>
 <translation id="1418954524306642206">Pregledajte da biste naveli PPD štampača</translation>
-<translation id="1420732223884894666">Pregledajte nedavne slike i medijski sadržaj sa telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Licence za medije</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da biste omogućili uparivanje</translation>
 <translation id="1421934779300263861">Automatski šaljite Google-u izveštaje o otkazivanju, kao i dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chrome OS-a. Android aplikacijama i Google partnerima će pomoći i neki zbirni podaci. Ako uključite podešavanje aktivnosti na vebu i u aplikacijama za Google nalog, Android podaci mogu da se čuvaju na Google nalogu.</translation>
@@ -719,7 +717,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1682548588986054654">Novi prozor bez arhiviranja</translation>
 <translation id="1682867089915960590">Želite da uključite navigaciju kursorom?</translation>
 <translation id="1684279041537802716">Boja za naglašavanje</translation>
-<translation id="168511795252678620">Nedavne slike i aplikacije za razmenu poruka</translation>
 <translation id="1686550358074589746">Omogući unos prevlačenjem</translation>
 <translation id="168715261339224929">Da bi vam obeleživači bili dostupni na svim uređajima, uključite sinhronizaciju.</translation>
 <translation id="1688867105868176567">Želite li da obrišete podatke sajta?</translation>
@@ -2640,7 +2637,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3526034519184079374">Čitanje ili menjanje podataka sajta nije uspelo</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3528498924003805721">Ciljevi prečica</translation>
-<translation id="3531383404180922673">Pregledajte nedavne slike, medijski sadržaj i obaveštenja sa telefona. Strimujte aplikacije za razmenu poruka sa telefona.</translation>
 <translation id="3532273508346491126">Upravljanje sinhronizacijom</translation>
 <translation id="3532521178906420528">Mrežna veza se uspostavlja...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – Zvuk je isključen</translation>
@@ -5278,7 +5274,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6185132558746749656">Lokacija uređaja</translation>
 <translation id="6188346519670155113">Sinhronizacija Chrome pregledača je uključena</translation>
 <translation id="6190953336330058278">Phone Hub aplikacije</translation>
-<translation id="619279033188484792">Pregledajte nedavne slike, medijski sadržaj i obaveštenja telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Čitanje informacija o pregledaču, OS-u i uređaju</translation>
 <translation id="6195693561221576702">Ovaj uređaj ne može da se podesi u oflajn režimu demonstracije.</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
@@ -6260,7 +6255,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7152478047064750137">Ovaj dodatak ne zahteva nikakve specijalne dozvole</translation>
 <translation id="7154130902455071009">Promenite početnu stranicu u: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Postojeća fotografija iz kamere ili datoteke</translation>
-<translation id="7155352398126583949">Obaveštenja i aplikacije za razmenu poruka</translation>
 <translation id="7163202347044721291">Verifikuje se aktivacioni kôd…</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ može da čita slike, video i audio datoteke na navedenim lokacijama.</translation>
 <translation id="7167486101654761064">&amp;Uvek otvori datoteke ovog tipa</translation>
@@ -7275,7 +7269,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8141725884565838206">Upravljajte lozinkama</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}one{# video}few{# video snimka}other{# video snimaka}}</translation>
 <translation id="8143442547342702591">Nevažeća aplikacija</translation>
-<translation id="8143475123634606318">Strimujte aplikacije za razmenu poruka sa telefona</translation>
 <translation id="8143609395536282994">Kako možete da upravljate podacima:</translation>
 <translation id="8143951647992294073">Izaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Ako ste se već registrovali na ovom uređaju, možete da <ph name="LINK2_START" />se prijavite kao postojeći korisnik<ph name="LINK2_END" />.</translation>
@@ -7568,7 +7561,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8439506636278576865">Ponudi prevod stranica na ovom jeziku</translation>
 <translation id="8440630305826533614">Linux aplikacije</translation>
 <translation id="8443795068008423036">Proverite da li je uređaj ažuran i probajte ponovo</translation>
-<translation id="8445046761938045900">Nedavne slike, obaveštenja i aplikacije za razmenu poruka</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8447409163267621480">Koristite ili Ctrl ili Alt</translation>
 <translation id="844850004779619592">Nije pronađena nijedna komanda</translation>
@@ -7903,7 +7895,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8780443667474968681">Glasovna pretraga je isključena.</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8782565991310229362">Pokretanje kiosk aplikacije je otkazano.</translation>
-<translation id="8783526165720272136">Aplikacije za razmenu poruka</translation>
 <translation id="8783834180813871000">Unesite kôd za uparivanje za Bluetooth, pa pritisnite Return ili Enter.</translation>
 <translation id="8784626084144195648">Prosek agregacije</translation>
 <translation id="8785622406424941542">Pisaljka</translation>
@@ -8317,7 +8308,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9186963452600581158">Prijavite se pomoću Google naloga deteta</translation>
 <translation id="9187967020623675250">Tasteri se ne podudaraju. Pritisnite bilo koji taster da biste <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. Te informacije se neće koristiti za identifikaciju deteta i pomoći će u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako za dete uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Pregledajte nedavne slike, medijski sadržaj sa telefona. Strimujte aplikacije za razmenu poruka sa telefona.</translation>
 <translation id="919686179725692564">Saznajte više o pravljenju rezervnih kopija aplikacija</translation>
 <translation id="9198090666959937775">Koristite Android telefon kao bezbednosni ključ</translation>
 <translation id="9199503643457729322">Kliknite da biste napustili Vodič za privatnost.</translation>

@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Hebrew transliteration</translation>
 <translation id="1747761757048858544">Dutch (Netherlands)</translation>
 <translation id="174937106936716857">Total file count</translation>
+<translation id="1755345808328621801">This file is designed for a PC using Windows software. This is not compatible with your device running Chrome OS. Please search the Chrome Web Store for a suitable replacement app.</translation>
 <translation id="1773212559869067373">Authentication certificate rejected locally</translation>
 <translation id="1775381402323441512">Video info</translation>
 <translation id="180035236176489073">You must be online to access these files.</translation>
@@ -117,7 +118,6 @@
 <translation id="1936717151811561466">Finnish</translation>
 <translation id="1942765061641586207">Image resolution</translation>
 <translation id="1972984168337863910">Expand files feedback panels</translation>
-<translation id="1984456723671657197">This file type is not supported. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="1995337122023280937">Go to file location</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
@@ -226,6 +226,7 @@
 <translation id="2943503720238418293">Use a shorter name</translation>
 <translation id="2949781154072577687">Formatting <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Jellyfish</translation>
+<translation id="2977940621473452797">This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. Please search the Chrome Web Store for a suitable replacement app.</translation>
 <translation id="2984337792991268709">Today <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Restoring <ph name="COUNT" /> items…</translation>
 <translation id="2994669386200004489">Couldn't back up <ph name="FILE_NAME" /></translation>
@@ -423,6 +424,7 @@
 <translation id="4694604912444486114">Monkey</translation>
 <translation id="469612310041132144">Chinese Quick</translation>
 <translation id="4697043402264950621">File list sorted by <ph name="COLUMN_NAME" /> in ascending order.</translation>
+<translation id="469897186246626197">This file is designed for a PC using Windows software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="4706042980341760088">Tamil with Typewriter keyboard</translation>
 <translation id="4711094779914110278">Turkish</translation>
 <translation id="4712283082407695269">Opening '<ph name="PATH" />'</translation>
@@ -544,6 +546,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Bulgarian with phonetic keyboard</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="5618330573454123917">This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="5625294776298156701">Tamil with Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Moving this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Listen</translation>
@@ -702,7 +705,6 @@
 <translation id="6970230597523682626">Bulgarian</translation>
 <translation id="6973630695168034713">Folders</translation>
 <translation id="6976795442547527108">Lion</translation>
-<translation id="6978611942794658017">This file is designed for a PC using Windows software. This is not compatible with your device running Chrome OS. Please search the Chrome Web Store for a suitable replacement app.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Swedish</translation>
 <translation id="6990081529015358884">You have run out of space</translation>
@@ -740,6 +742,7 @@
 <translation id="7309413087278791451">German (Belgium)</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7343393116438664539">Vietnamese Telex</translation>
+<translation id="7357762654218998920">This file type is not supported. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="7359359531237882347">Copying <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="7375951387215729722">File list sorted by <ph name="COLUMN_NAME" /> in descending order.</translation>
 <translation id="7402503521691663770">Chrome OS Flex devices</translation>
@@ -824,7 +827,6 @@
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7973962044839454485">PPP authentication failed due to an incorrect username or password</translation>
 <translation id="7980421588063892270">English (US) with Colemak keyboard</translation>
-<translation id="79907182588096956">This file is designed for a PC using Windows software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="8000066093800657092">No network</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Size</translation>
@@ -935,7 +937,6 @@
 <translation id="8912078710089354287">Dog wagging tail</translation>
 <translation id="8919081441417203123">Danish</translation>
 <translation id="8965697826696209160">There is not enough space.</translation>
-<translation id="8970501467542182729">This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
 <translation id="9017798300203431059">Russian phonetic</translation>
@@ -954,7 +955,6 @@
 <translation id="9130775360844693113">Members of '<ph name="DESTINATION_NAME" />' will gain access to these items.</translation>
 <translation id="9131598836763251128">Select one or more files</translation>
 <translation id="9133055936679483811">Zipping failed. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. Please search the Chrome Web Store for a suitable replacement app.</translation>
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">Invalid PIN. You have one remaining attempt.</translation>
 <translation id="9153934054460603056">Save identity and password</translation>

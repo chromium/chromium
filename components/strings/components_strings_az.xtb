@@ -512,6 +512,7 @@
 <translation id="2298855485018661510">"Kukiləri idarə edin" düyməsi, Chrome ayarlarında kuki tərcihlərinizi idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="2300306941146563769">Yüklənməyib</translation>
 <translation id="2310021320168182093">Chou2 (Zərf)</translation>
+<translation id="2316159751672436664">ChromeOS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="2316887270356262533">Maksimum 1 MB boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> istifadəçi adı və parol tələb edir.</translation>
 <translation id="2318594867107319532">Son siyasət vaxt nişanı:</translation>
@@ -1664,6 +1665,7 @@
 <translation id="5518670652865028077">İncəsənət və əyləncə</translation>
 <translation id="5519516356611866228">Dəyişikliklərlə</translation>
 <translation id="5523118979700054094">Siyasət adı</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq ChromeOS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="5528532273234423708">Məişət avtomatlaşdırılması</translation>
 <translation id="55293785478302737">Kənar tikişi vurun</translation>
 <translation id="553484882784876924">Prc6 (Zərf)</translation>
@@ -2242,6 +2244,7 @@
 <translation id="722454870747268814">Yeni Gizli Panel</translation>
 <translation id="7233592378249864828">Təsdiq vərəqini çap edin</translation>
 <translation id="7234638337680728591">Yanacaq qiymətləri və avtomobillərin yanacağı</translation>
+<translation id="7237492777898608035">Bu saytda bu mesajı bir daha göstərmə</translation>
 <translation id="7238585580608191973">SHA-256 Barmaqizi</translation>
 <translation id="7240120331469437312">Sertifikat Subyekti Alternativ Adı</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2624,6 +2627,7 @@
 <translation id="8242426110754782860">Davam edin</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
 <translation id="8249463483885748674">Standartlaşmış və qəbul testləri</translation>
+<translation id="8252991034201168845">"Əlçatımlılıq ayarlarını idarə edin" düyməsi, Enter düyməsinə basaraq ChromeOS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="8253091569723639551">Faktura ünvanı tələb olunur</translation>
 <translation id="8257387598443225809">Bu tətbiq mobil üçün nəzərdə tutulmuşdur</translation>
 <translation id="825929999321470778">Yadda Saxlanmış Bütün Parolları Göstərin</translation>

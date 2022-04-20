@@ -135,7 +135,6 @@
 <translation id="1708345662127501511">டெஸ்க்: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="1715293566947629045">சுயவிவரத்தை முடக்குகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">'உடனடி வசனம்' இயக்கப்பட்டது.</translation>
 <translation id="1720011244392820496">வைஃபை ஒத்திசைவை இயக்குங்கள்</translation>
 <translation id="1736898441010944794">புளூடூத் சாதனங்களுக்கு "<ph name="NAME" />" காட்டப்படும்.</translation>
@@ -528,7 +527,6 @@
 <translation id="4129129681837227511">பூட்டுத் திரையில் அறிவிப்புகளைப் பார்க்க, அமைப்பை மாற்றுவதற்குச் சாதனத்தை அன்லாக் செய்யவும்</translation>
 <translation id="4146833061457621061">இசையை இயக்கு</translation>
 <translation id="4165275524535002941">டிஸ்ப்ளேக்களுக்கான சிக்னல்களைக் கேபிள் ஆதரிக்காமல் இருக்கக்கூடும்</translation>
-<translation id="4173958948577803258">செவ்</translation>
 <translation id="4177913004758410636">{0,plural, =1{ஒரு நாளுக்குள் சாதனத்தை மீண்டும் தொடங்குங்கள்}other{# நாட்களுக்குள் சாதனத்தை மீண்டும் தொடங்குங்கள்}}</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
 <translation id="4192112279662688596">அல்லது</translation>
@@ -948,7 +946,6 @@
 <translation id="6751826523481687655">செயல்திறன் டிரேஸிங் இயக்கத்தில் உள்ளது</translation>
 <translation id="6752912906630585008">டெஸ்க் <ph name="REMOVED_DESK" /> அகற்றப்பட்டு டெஸ்க் <ph name="RECEIVE_DESK" /> உடன் சேர்க்கப்பட்டது</translation>
 <translation id="6753390234084146956">பக்கங்கள்</translation>
-<translation id="6754441615189976839">ஞாயி</translation>
 <translation id="6757237461819837179">மீடியா எதுவும் பிளேயாகவில்லை</translation>
 <translation id="6777216307882431711">இணைக்கப்பட்ட USB-C சாதனங்களுக்கு சார்ஜ் ஏற்றப்படுகிறது</translation>
 <translation id="6786750046913594791">ஃபோல்டரை மூடு</translation>
@@ -997,7 +994,6 @@
 <translation id="7045033600005038336">டெம்ப்ளேட்டை மாற்றியமைக்கவா?</translation>
 <translation id="7045595904618419789">பெரிதாக்கியை இயக்கு</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> துண்டிக்கப்பட்டது</translation>
-<translation id="7055381872777910864">புத</translation>
 <translation id="7055910611768509537">ஒரு வாரத்திற்கும் மேலாக ஸ்டைலஸ் பயன்படுத்தப்படவில்லை</translation>
 <translation id="7066646422045619941">இந்த நெட்வொர்க் உங்கள் நிர்வாகியால் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="7067196344162293536">தானியங்கு சுழற்றல்</translation>
@@ -1081,7 +1077,6 @@
 <translation id="7579778809502851308">திரையைப் படமெடு</translation>
 <translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7593891976182323525">தேடல் அல்லது Shift</translation>
-<translation id="7595633564847427181">திங்</translation>
 <translation id="7600875258240007829">எல்லா அறிவிப்புகளையும் காட்டு</translation>
 <translation id="7607002721634913082">இடைநிறுத்தப்பட்டது</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>

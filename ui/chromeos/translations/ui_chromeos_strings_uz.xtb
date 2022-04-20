@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Fin tili</translation>
 <translation id="1942765061641586207">Tasvirning piksellar sig‘imi</translation>
 <translation id="1972984168337863910">Fayllar holat panelini yoyish</translation>
-<translation id="1984456723671657197">Bunday fayl turi ochilmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">Fayl joylashuviga kirish</translation>
 <translation id="2001796770603320721">Google Drive orqali ochish</translation>
 <translation id="2009067268969781306">Xotira formatlansa, undagi barcha maʼlumotlar oʻchib ketadi. Bu amal bekor qilinmaydi.</translation>
@@ -701,7 +700,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6970230597523682626">Balgar tili</translation>
 <translation id="6973630695168034713">Jildlar</translation>
 <translation id="6976795442547527108">Sher</translation>
-<translation id="6978611942794658017">Ushbu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan va qurilmangizdagi Chrome OS’da ishga tushmaydi. Uni ochishga mos ilova topish uchun Chrome internet-do‘koniga tashrif buyuring.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Shved</translation>
 <translation id="6990081529015358884">Bo‘sh joy juda kam qoldi</translation>
@@ -823,7 +821,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7972920761225148017">Fransuz (Shveytsariya)</translation>
 <translation id="7973962044839454485">PPP haqiqiyligini tekshirib bo‘lmadi: foydalanuvchi nomi yoki parol noto‘g‘ri</translation>
 <translation id="7980421588063892270">Ingliz (AQSH) va Colemak klaviaturasi</translation>
-<translation id="79907182588096956">Bu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan. U qurilmangizdagi Chrome OS da ishga tushmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="8000066093800657092">Tarmoq topilmadi</translation>
 <translation id="8008366997883261463">It</translation>
 <translation id="8028993641010258682">Hajm</translation>
@@ -934,7 +931,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8912078710089354287">Dumini likkillatayotgan it</translation>
 <translation id="8919081441417203123">Datcha</translation>
 <translation id="8965697826696209160">Bo‘sh joy yetarli emas.</translation>
-<translation id="8970501467542182729">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmangizdagi Chrome OS da ishga tushmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">Xitoycha Pinyin (odatiy)</translation>
 <translation id="9003940392834790328">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Batafsil</translation>
 <translation id="9017798300203431059">Rus (fonetik)</translation>
@@ -953,7 +949,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9130775360844693113">“<ph name="DESTINATION_NAME" />” foydalanuvchilari bu elemntlardan foydalana olishadi.</translation>
 <translation id="9131598836763251128">Fayllarni tanlang</translation>
 <translation id="9133055936679483811">Arxivlashda xatolik yuz berdi. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Bu fayl Mac platformasi uchun ishlab chiqilgan va Chrome OS qurilmangizda ishga tushmaydi. Ochadigan kerakli ilovani topish uchun Chrome internet-do‘koniga tashrif buyuring.</translation>
 <translation id="9144340019284012223">Katalan</translation>
 <translation id="914873105831852105">PIN kod xato. Sizda 1 ta urinish qoldi.</translation>
 <translation id="9153934054460603056">Identifikatsiya ma’lumotlari va parolni saqlash</translation>

@@ -280,6 +280,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
+<translation id="7748512868279796735">As seguintes contas están dispoñibles para este perfil de Chrome</translation>
 <translation id="7761834446675418963">Fai clic no teu nome para abrir Chrome e comezar a navegar.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="7781002470561365167">Hai unha nova versión de Google Chrome dispoñible.</translation>
@@ -299,7 +300,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8013993649590906847">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
-<translation id="822971176939352383">As seguintes contas non teñen a sesión iniciada en ningún perfil de Chrome. Se queres usar unha conta noutro perfil, primeiro elimina ese perfil.</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="828798499196665338">O teu pai ou nai desactivou esta opción en Chrome: Permisos para sitios, aplicacións e extensións. Non está permitido activar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

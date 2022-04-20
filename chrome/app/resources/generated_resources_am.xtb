@@ -367,7 +367,6 @@
 <translation id="1363585519747660921">ዩኤስቢ አታሚ ውቅረት ያስፈልገዋል</translation>
 <translation id="1367951781824006909">ፋይል ይምረጡ</translation>
 <translation id="1369149969991017342">የማብሪያ/ማጥፊያ መዳረሻ (ኮምፒውተሩን በአንድ ወይም ሁለት ማብሪያ ማጥፊያዎች ይቆጣጠሩ)</translation>
-<translation id="1371863479305430391">የስልክዎን ማሳወቂያዎች ይመልከቱ፣ ያሰናብቱ እና ምላሽ ይስጡ። የስልክዎን የመልዕክት መላኪያ መተግበሪያዎች በዥረት ይልቀቁ።</translation>
 <translation id="1372841398847029212">ከመለያዎ ጋር ያስምሩ</translation>
 <translation id="1373176046406139583">የእርስዎ የመሣሪያ ታይነት ማያ ገጽዎ ተከፍቶ ሳለ ማን ለእርስዎ ማጋራት እንደሚችል ይቆጣጠራል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">በ«<ph name="NETWORK_NAME" />» አውታረ መረብ የተፈለገው የእውቅና ማረጋገጫ ወይም አልተጫነም ወይም ከአሁን በኋላ እሴት ያለው አይደለም። እባክዎ አዲስ የእውቅና ማረጋገጫ ያግኙና እንደገና ለመገናኘት ይሞክሩ።</translation>
@@ -420,7 +419,6 @@
 <translation id="1415708812149920388">የቅንጥብ ሰሌዳ መዳረሻ ተከልክሏል</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (የቅጥያ መታወቂያ «<ph name="EXTENSION_ID" />») በዚህ የክፍለ-ጊዜ አይነት ላይ አይፈቀድም።</translation>
 <translation id="1418954524306642206">የእርስዎን አታሚ PPD ለመጥቀስ አሰሳ ያድርጉ</translation>
-<translation id="1420732223884894666">የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="1420834118113404499">የማህደረመረጃ ፈቃዶች</translation>
 <translation id="1420920093772172268">ማጣመርን ለመፈቀድ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421934779300263861">የስንክል ሪፖርቶችንና እንዲሁም የምርመራ እና የአጠቃቀም ውሂብን በራስ-ሰር ወደ Google በመላክ የChromeOS ባህሪያትን እና አፈጻጸምን እንዲሻሻል ያግዙ። አንዳንድ ውሑድ ውሂብ እንዲሁም የAndroid መተግበሪያዎችን እና የGoogle አጋሮችን ያግዛል። የGoogle መለያዎ የድር እና የመተግበሪያ እንቅስቃሴ ቅንብር ከበራ የAndroid ውሂብዎ ወደ የGoogle መለያዎ ሊቀመጥ ይችላል።</translation>
@@ -721,7 +719,6 @@
 <translation id="1682548588986054654">አዲስ ማንነትን የማያሳውቅ መስኮት</translation>
 <translation id="1682867089915960590">የጽሑፍ ጠቋሚ አሰሳ ይብራ?</translation>
 <translation id="1684279041537802716">የአጽንዖት ቀለም</translation>
-<translation id="168511795252678620">የቅርብ ጊዜ ፎቶዎች እና የመልዕክት መላኪያ መተግበሪያዎች</translation>
 <translation id="1686550358074589746">የሸርተቴ ትየባን አንቃ</translation>
 <translation id="168715261339224929">የእርስዎን ዕልባቶች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ስምረትን ያብሩ።</translation>
 <translation id="1688867105868176567">የጣቢያ ውሂብ ይጸዳ?</translation>
@@ -916,6 +913,7 @@
     <ph name="BEGIN_PARAGRAPH2" />እንዲሁም የTPM መሣሪያውን ሙሉ በሙሉ ማጥፋት ይችላሉ። የእርስዎ ውሂብ አሁንም በሶፍትዌር ምስጠራ አማካኝነት ደህንነቱ በተጠበቀ ሁኔታ ይቀመጣል፣ ነገር ግን እንደ በሃርድዌር የሚደገፉ የዕውቅና ማረጋገጫዎች ያሉ የተወሰኑ የደህንነት ባህሪዎች ይሰናከላሉ።<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ዳግም በማስነሳት እና የስርዓቱን የBIOS/UEFI ቅንብሮችን በመግባት የTPM ቅንብሮችን መለወጥ ይችላሉ። ደረጃዎች በመሣሪያው ሞዴል ላይ ተመስርተው ይለያያሉ። ለተጨማሪ መረጃ ዳግም ከማስነሳትዎ በፊት የ<ph name="DEVICE_OS" /> ሰነዳን በተለየ መሣሪያ ላይ ይክፈቱ፦ g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" />።</translation>
 <translation id="1852141627593563189">ጎጂ ሶፍትዌርን አግኝ</translation>
+<translation id="1852322248807969514">የይለፍ ቃሎች ወደ <ph name="GOOGLE_PASSWORD_MANAGER" /> ተቀምጠዋል</translation>
 <translation id="1852799913675865625">ይህን ፋይል ለማንበብ በመሞከር ላይ ሳለ ስህተት ነበር፦ <ph name="ERROR_TEXT" />።</translation>
 <translation id="1854049213067042715">ካቆሙበት ይቀጥሉ። መተግበሪያዎች ጅምር ላይ ሁልጊዜ ወደነበሩበት እንዲመለሱ ማቀናበር ወይም በቅንብሮች ውስጥ ወደነበረበት መመለስን ማጥፋት ይችላሉ።</translation>
 <translation id="1854180393107901205">መውሰድ አቁም</translation>
@@ -1872,6 +1870,7 @@
 <translation id="2783829359200813069">የምሥጠራ ዓይነቶችን ይምረጡ</translation>
 <translation id="2783952358106015700">የእርስዎን የደህንነት ቁልፍ በ<ph name="APP_NAME" /> ይጠቀሙ</translation>
 <translation id="2785873697295365461">የፋይል ገላጮች</translation>
+<translation id="2787022501752539710">አካባቢያዊ የአሰሳ ውሂብን አቆይ (ዕልባቶች፣ የይለፍ ቃሎች፣ ታሪክ፣ ወዘተ)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">የቡድን ቁጥር</translation>
@@ -2604,7 +2603,6 @@
 <translation id="3526034519184079374">የጣቢያውን ውሂብ ማንበብ ወይም መቀየር አልተቻለም</translation>
 <translation id="3527085408025491307">አቃፊ</translation>
 <translation id="3528498924003805721">የአቋራጭ ዒላማዎች</translation>
-<translation id="3531383404180922673">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ይመልከቱ። የስልክዎን የመልዕክት መላኪያ መተግበሪያዎች በዥረት ይልቀቁ።</translation>
 <translation id="3532273508346491126">የስምረት አስተዳደር</translation>
 <translation id="3532521178906420528">የአውታረ መረብ ግንኙነትን በመመስረት ላይ ...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ኦዲዮ ድምፀ-ከል ተደርጎበታል</translation>
@@ -3145,6 +3143,7 @@
 <translation id="4044612648082411741">የእርስዎን የዕውቅና ማረጋገጫ ይለፍ ቃል ያስገቡ</translation>
 <translation id="4044708573046946214">ማያ ገጽ መቆለፊያ የይለፍ ቃል</translation>
 <translation id="404493185430269859">ነባሪ የፍለጋ ፕሮግራም</translation>
+<translation id="4045180775310929593">ማስታወሻ አክል...</translation>
 <translation id="4046013316139505482">እነዚህ ቅጥያዎች በዚህ ጣቢያ ላይ ያለውን መረጃ መመልከትና መቀየር አያስፈልጋቸውም።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
 <translation id="4047345532928475040">አይተግበሬ</translation>
@@ -5105,6 +5104,7 @@
 <translation id="6057381398996433816">ይህ ጣቢያ የእንቅስቃሴ እና የብርሃን ዳሳሾችን እንዳይጠቀም ታግዷል።</translation>
 <translation id="6059276912018042191">የቅርብ ጊዜ Chrome ትሮች</translation>
 <translation id="6059652578941944813">የሰርቲፊኬት ተዋረድ</translation>
+<translation id="6063284707309177505">የQR ኮድ ፍጠር</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቀረጻ የ<ph name="SUPERVISED_USER_NAME" />ን የግል ውጤቶች ሊደርስበት ይችል ይሆናል። ባትሪ ለመቆጠብ ይህ መሣሪያ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ «Hey Google» እንዲበራ በ<ph name="SUPERVISED_USER_NAME" />ረዳት ቅንብሮች ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="6064217302520318294">ማያ ገጽ መቆለፊያ</translation>
 <translation id="6065289257230303064">የሰርቲፊኬት ርዕስ የማውጫ አይነታዎች</translation>
@@ -5229,7 +5229,6 @@
 <translation id="6185132558746749656">የመሣሪያ አካባቢ</translation>
 <translation id="6188346519670155113">የChrome አሳሽ ስምረት በርቷል</translation>
 <translation id="6190953336330058278">የስልክ ሃብ መተግበሪያዎች</translation>
-<translation id="619279033188484792">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="6195005504600220730">ስለእርስዎ አሳሽ፣ ስርዓተ ክወና እና መሣሪያ መረጃውን ያንብቡ</translation>
 <translation id="6195693561221576702">ይህ መሣሪያ በመስመር ውጭ የቅንጭብ ማሳያ ሁነታ ላይ ሊቀናበር አይችልም።</translation>
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
@@ -6202,7 +6201,6 @@
 <translation id="7152478047064750137">ይህ ቅጥያ ምንም ልዩ ፈቃዶችን አይፈልግም</translation>
 <translation id="7154130902455071009">የመጀመሪያ ገጽዎን ወደሚከተለው ይቀይሩ፦ <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">ነባር ፎቶ ከካሜራ ወይም ከፋይል</translation>
-<translation id="7155352398126583949">ማሳወቂያዎች እና የመልዕክት መላኪያ መተግበሪያዎች</translation>
 <translation id="7163202347044721291">የማግበሪያ ኮድን በማረጋገጥ ላይ...</translation>
 <translation id="716640248772308851">«<ph name="EXTENSION" />» ምልክት በተደረገባቸው አካባቢዎች ውስጥ ምስሎችን፣ ቪዲዮ እና የድምጽ ፋይሎችን ማንበብ ይችላል።</translation>
 <translation id="7167486101654761064">&amp;ሁልጊዜ እንዲህ አይነት ፋይሎችን ክፈት</translation>
@@ -7220,7 +7218,6 @@ nil</translation>
 <translation id="8141725884565838206">የይለፍ ቃልዎችዎን ያስተዳድሩ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{አንድ ቪዲዮ}one{# ቪዲዮዎች}other{# ቪዲዮዎች}}</translation>
 <translation id="8143442547342702591">ልክ ያልሆነ መተግበሪያ</translation>
-<translation id="8143475123634606318">የስልክዎን የመልዕክት መላኪያ መተግበሪያዎች በዥረት ይልቀቁ</translation>
 <translation id="8143609395536282994">የእርስዎን ውሂብ እንዴት ማቀናበር እንደሚችሉ፦</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ን ምረጥ</translation>
 <translation id="8146177459103116374">አስቀድመው በዚህ መሣሪያ ላይ ከተመዘገቡ <ph name="LINK2_START" />እንደ ነባር ተጠቃሚ መግባት ይችላሉ<ph name="LINK2_END" />።</translation>
@@ -7511,7 +7508,6 @@ nil</translation>
 <translation id="8439506636278576865">በዚህ ቋንቋ ውስጥ ያሉ ገጾችን ለመተርጎም ያቅርቡ</translation>
 <translation id="8440630305826533614">Linux መተግበሪያዎች</translation>
 <translation id="8443795068008423036">እባክዎ መሣሪያዎ የተዘመነ መሆኑን ያረጋግጡ እና እንደገና ይሞክሩ</translation>
-<translation id="8445046761938045900">የቅርብ ጊዜ ፎቶዎች፣ ማሳወቂያዎች እና የመልዕክት መላኪያ መተግበሪያዎች</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8447409163267621480">Ctrl ወይም Alt ያካትቱ</translation>
 <translation id="844850004779619592">ምንም ትዕዛዞች አልተገኙም</translation>
@@ -7844,7 +7840,6 @@ nil</translation>
 <translation id="8780443667474968681">የድምጽ ፍለጋ ጠፍቷል።</translation>
 <translation id="8781834595282316166">በቡድን ውስጥ አዲስ ትር</translation>
 <translation id="8782565991310229362">የኪዮስክ መተግበሪያ ማስጀመር ተሰርዟል።</translation>
-<translation id="8783526165720272136">የመልዕክት መላኪያ መተግበሪያዎች</translation>
 <translation id="8783834180813871000">የብሉቱዝ ማጣመሪያ ኮድ ይተይቡና ከዚያም Return ወይም Enter የሚለውን ይጫኑ።</translation>
 <translation id="8784626084144195648">የቢን አማካኝ</translation>
 <translation id="8785622406424941542">ስቲለስ</translation>
@@ -8256,7 +8251,6 @@ nil</translation>
 <translation id="9186963452600581158">በልጅ Google መለያ ይግቡ</translation>
 <translation id="9187967020623675250">ቁልፎች አይዛመዱም። ለ<ph name="RESPONSE" /> ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="9188732951356337132">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ ልጅዎን ለመለየት ስራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ ይመልከቱ። የስልክዎን የመልዕክት መላኪያ መተግበሪያዎች በዥረት ይልቀቁ።</translation>
 <translation id="919686179725692564">የእርስዎን መተግበሪያዎች ምትኬ ስለማስቀመጥ የበለጠ ይወቁ</translation>
 <translation id="9198090666959937775">የ Android ስልክዎን እንደ ደህንነት ቁልፍ ይጠቀሙበት</translation>
 <translation id="9199503643457729322">ከግላዊነት መመሪያ ለማሰስ ጠቅ ያድርጉ።</translation>

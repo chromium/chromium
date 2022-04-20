@@ -135,7 +135,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1708345662127501511">Skrivebord: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nettverksinnstillinger</translation>
 <translation id="1715293566947629045">Deaktiverer profil. Vent i noen minutter.</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Direkteteksting er på.</translation>
 <translation id="1720011244392820496">Slå på Wi-Fi-synkronisering</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» er synlig for Bluetooth-enheter.</translation>
@@ -528,7 +527,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4129129681837227511">For å se varsler på låseskjermen, lås opp for å endre innstillingen</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4165275524535002941">Kabelen støtter kanskje ikke skjermer</translation>
-<translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{Oppdater enheten innen en dag}other{Oppdater enheten innen # dager}}</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4192112279662688596">eller</translation>
@@ -948,7 +946,6 @@ Nylig installert</translation>
 <translation id="6751826523481687655">Ytelsessporing er slått på</translation>
 <translation id="6752912906630585008">Skrivebord <ph name="REMOVED_DESK" /> ble fjernet og slått sammen med skrivebord <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">faner</translation>
-<translation id="6754441615189976839">L</translation>
 <translation id="6757237461819837179">Ingen medier spilles av</translation>
 <translation id="6777216307882431711">Gir strøm til tilkoblede USB-C-enheter</translation>
 <translation id="6786750046913594791">Lukk mappen</translation>
@@ -997,7 +994,6 @@ Nylig installert</translation>
 <translation id="7045033600005038336">Vil du erstatte malen?</translation>
 <translation id="7045595904618419789">Start forstørrelsesglass</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> er koblet fra</translation>
-<translation id="7055381872777910864">O</translation>
 <translation id="7055910611768509537">Pekepennen har ikke vært brukt på over en uke</translation>
 <translation id="7066646422045619941">Administratoren din har slått av dette nettverket.</translation>
 <translation id="7067196344162293536">Automatisk retning</translation>
@@ -1081,7 +1077,6 @@ Nylig installert</translation>
 <translation id="7579778809502851308">Skjermdump</translation>
 <translation id="7590883480672980941">Inndatainnstillinger</translation>
 <translation id="7593891976182323525">Søk eller Shift</translation>
-<translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Se alle varslene</translation>
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>

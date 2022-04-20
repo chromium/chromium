@@ -281,6 +281,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7651907282515937834">Logoja e Chrome Enterprise</translation>
 <translation id="7655455401911432608">Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chrome në këtë pajisje.</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
+<translation id="7748512868279796735">Llogaritë e mëposhtme janë të disponueshme për këtë profil të Chrome</translation>
 <translation id="7761834446675418963">Kliko tek emri yt për të hapur Chrome dhe fillo shfletimin.</translation>
 <translation id="7777080907402804672">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="7781002470561365167">Ofrohet një version i ri i Google Chrome.</translation>
@@ -300,7 +301,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Informacion rreth &amp;Google Chrome</translation>
-<translation id="822971176939352383">Llogaritë e mëposhtme nuk janë të identifikuara në ndonjë profil të Chrome. Nëse do të përdorësh një llogari në një profil tjetër, hiq atë profil përpara.</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="8286862437124483331">Google Chrome po përpiqet të shfaqë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="828798499196665338">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet aktivizimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

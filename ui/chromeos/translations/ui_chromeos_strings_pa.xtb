@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">ਹਿਬਰੂ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="1747761757048858544">ਡੱਚ (ਨੀਦਰਲੈਂਡ)</translation>
 <translation id="174937106936716857">ਫ਼ਾਈਲਾਂ ਦੀ ਕੁੱਲ ਗਿਣਤੀ</translation>
+<translation id="1755345808328621801">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ChromeOS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="1773212559869067373">ਪ੍ਰਮਾਣਿਕਤਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਸਥਾਨਕ ਰੂਪ ਵਿਚ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1775381402323441512">ਵੀਡੀਓ ਜਾਣਕਾਰੀ</translation>
 <translation id="180035236176489073">ਤੁਹਾਨੂੰ ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਣਾ ਪਵੇਗਾ।</translation>
@@ -117,7 +118,6 @@
 <translation id="1936717151811561466">ਫਿਨਿਸ਼</translation>
 <translation id="1942765061641586207">ਚਿੱਤਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="1972984168337863910">ਫ਼ਾਈਲਾਂ ਦੇ ਪ੍ਰਤੀਕਰਮ ਪੈਨਲਾਂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
-<translation id="1984456723671657197">ਇਹ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। Chrome OS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">ਫ਼ਾਈਲ ਟਿਕਾਣੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="2001796770603320721">'ਡਰਾਈਵ' ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2009067268969781306">ਕਿਸੇ ਡਰਾਈਵ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
@@ -226,6 +226,7 @@
 <translation id="2943503720238418293">ਵਧੇਰੇ ਛੋਟਾ ਨਾਮ ਵਰਤੋ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="2951236788251446349">ਜੈਲੀਫ਼ਿਸ਼</translation>
+<translation id="2977940621473452797">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ChromeOS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="2984337792991268709">ਅੱਜ <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> ਦਾ ਬੈਕਅੱਪ ਨਹੀਂ ਲਿਆ ਜਾ ਸਕਿਆ</translation>
@@ -423,6 +424,7 @@
 <translation id="4694604912444486114">ਬਾਂਦਰ</translation>
 <translation id="469612310041132144">ਚੀਨੀ ਕਵਿੱਕ</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> ਮੁਤਾਬਕ ਵੱਧਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤੀ ਫ਼ਾਈਲ ਸੂਚੀ।</translation>
+<translation id="469897186246626197">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ChromeOS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। ChromeOS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />।</translation>
 <translation id="4706042980341760088">ਟਾਈਪਰਾਈਟਰ ਕੀ-ਬੋਰਡ ਨਾਲ ਤਮਿਲ</translation>
 <translation id="4711094779914110278">Turki</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ਨੂੰ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -543,6 +545,7 @@
 <translation id="5583640892426849032">ਬੈਕਸਪੇਸ</translation>
 <translation id="5602622065581044566">ਧੁਨੀਆਤਮਿਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਬੁਲਗਾਰੀਆਈ</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="5618330573454123917">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ChromeOS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। ChromeOS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">ਤਮਿਲ99 ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਤਮਿਲ</translation>
 <translation id="5633226425545095130">ਇਸ ਆਈਟਮ ਦੀ ਜਗ੍ਹਾ ਬਦਲਣ ਨਾਲ ਇਸਨੂੰ ਹਰ ਉਸ ਵਿਅਕਤੀ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ ਜੋ ਸਾਂਝਾ ਕੀਤੇ ਫੋਲਡਰ '<ph name="DESTINATION_NAME" />' ਨੂੰ ਦੇਖ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5649768706273821470">ਸੁਣਿਆ</translation>
@@ -701,7 +704,6 @@
 <translation id="6970230597523682626">Bulgarian</translation>
 <translation id="6973630695168034713">ਫੋਲਡਰ</translation>
 <translation id="6976795442547527108">ਸ਼ੇਰ</translation>
-<translation id="6978611942794658017">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ਸਵੀਡਿਸ਼</translation>
 <translation id="6990081529015358884">ਤੁਹਾਡਾ ਸਪੇਸ ਖ਼ਤਮ ਹੋਣ ਵਾਲਾ ਹੈ</translation>
@@ -739,6 +741,7 @@
 <translation id="7309413087278791451">ਜਰਮਨ (ਬੈਲਜੀਅਮ)</translation>
 <translation id="7339898014177206373">ਨਵੀਂ window</translation>
 <translation id="7343393116438664539">ਵੀਅਤਨਾਮੀ ਟੈਲੈਕਸ</translation>
+<translation id="7357762654218998920">ਇਹ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ChromeOS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ਮੁਤਾਬਕ ਘੱਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤੀ ਫ਼ਾਈਲ ਸੂਚੀ।</translation>
 <translation id="7402503521691663770">ChromeOS Flex ਡੀਵਾਈਸ</translation>
@@ -823,7 +826,6 @@
 <translation id="7972920761225148017">ਫਰਾਂਸੀਸੀ (ਸਵਿਟਜ਼ਰਲੈਂਡ)</translation>
 <translation id="7973962044839454485">ਕਿਸੇ ਗਲਤ ਵਰਤੋਂਕਾਰ ਨਾਮ ਜਾਂ ਪਾਸਵਰਡ ਕਰਕੇ PPP ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ ਹੋ ਗਿਆ</translation>
 <translation id="7980421588063892270">ਕੋਲਮੈਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
-<translation id="79907182588096956">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। Chrome OS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />.</translation>
 <translation id="8000066093800657092">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="8008366997883261463">ਜੈਕ ਰੂਸੈਲ ਟੈਰੀਅਰ</translation>
 <translation id="8028993641010258682">ਆਕਾਰ</translation>
@@ -934,7 +936,6 @@
 <translation id="8912078710089354287">ਪੂਛ ਹਿਲਾਉਂਦਾ ਹੋਇਆ ਕੁੱਤਾ</translation>
 <translation id="8919081441417203123">ਡੈਨਿਸ਼</translation>
 <translation id="8965697826696209160">ਕਾਫ਼ੀ ਸਪੇਸ ਨਹੀਂ ਹੈ।</translation>
-<translation id="8970501467542182729">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। Chrome OS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">ਚੀਨੀ (ਰਵਾਇਤੀ) ਪਿਨਯਿਨ</translation>
 <translation id="9003940392834790328">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਵੇਰਵੇ</translation>
 <translation id="9017798300203431059">ਰੂਸੀ ਧੁਨੀਆਤਮਿਕ</translation>
@@ -953,7 +954,6 @@
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' ਦੇ ਮੈਂਬਰ ਇਹਨਾਂ ਆਈਟਮਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨਗੇ।</translation>
 <translation id="9131598836763251128">ਇੱਕ ਜਾਂ ਵੱਧ ਫਾਈਲਾਂ ਚੁਣੋ</translation>
 <translation id="9133055936679483811">ਜ਼ਿਪ ਕਰਨਾ ਅਸਫਲ। <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="9144340019284012223">ਕਾਤਾਲਾਨ</translation>
 <translation id="914873105831852105">ਅਵੈਧ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ 1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ।</translation>
 <translation id="9153934054460603056">ਪਛਾਣ ਅਤੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>

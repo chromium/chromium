@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">finščina</translation>
 <translation id="1942765061641586207">Ločljivost slike</translation>
 <translation id="1972984168337863910">Razširitev datotek podoken povratnih informacij</translation>
-<translation id="1984456723671657197">Ta vrsta datoteke ni podprta. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="1995337122023280937">Na lokacijo datoteke</translation>
 <translation id="2001796770603320721">Upravljanje v Googlu Drive</translation>
 <translation id="2009067268969781306">Če formatirate pogon, se izbrišejo vsi podatki, shranjeni na njem. Tega dejanja ni mogoče razveljaviti.</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">bolgarščina</translation>
 <translation id="6973630695168034713">Mape</translation>
 <translation id="6976795442547527108">Lev</translation>
-<translation id="6978611942794658017">Ta datoteka je namenjena za računalnike s programsko opremo Windows in ni združljiva z vašo napravo, ki uporablja Chrome OS. V Spletni trgovini Chrome poiščite ustrezno nadomestno aplikacijo.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">švedščina</translation>
 <translation id="6990081529015358884">Zmanjkalo vam je prostora</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">francoščina (Švica)</translation>
 <translation id="7973962044839454485">Preverjanje pristnosti PPP ni uspelo zaradi napačnega uporabniškega imena ali gesla</translation>
 <translation id="7980421588063892270">angleščina (ZDA) s tipkovnico Colemak</translation>
-<translation id="79907182588096956">Ta datoteka je namenjena za računalnike s programsko opremo Windows in ni združljiva z vašo napravo, ki uporablja sistem Chrome OS. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="8000066093800657092">Ni omrežja</translation>
 <translation id="8008366997883261463">Pes</translation>
 <translation id="8028993641010258682">Velikost</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">Kuža, ki maha z repom</translation>
 <translation id="8919081441417203123">danščina</translation>
 <translation id="8965697826696209160">Na voljo ni dovolj prostora.</translation>
-<translation id="8970501467542182729">Ta datoteka je zasnovana za računalnike s programsko opremo Macintosh, in ni združljiva z vašo napravo, ki uporablja sistem Chrome OS. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="8997962250644902079">kitajščina (tradicionalna), pinjin</translation>
 <translation id="9003940392834790328">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="9017798300203431059">ruščina (fonetična)</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">Člani skupine »<ph name="DESTINATION_NAME" />« bodo imeli dostop do teh elementov.</translation>
 <translation id="9131598836763251128">Izberite eno ali več datotek</translation>
 <translation id="9133055936679483811">Ustvarjanje datoteke zip ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Ta datoteka je namenjena za računalnike s programsko opremo Macintosh in ni združljiva z vašo napravo, ki uporablja Chrome OS. V Spletni trgovini Chrome poiščite ustrezno nadomestno aplikacijo.</translation>
 <translation id="9144340019284012223">katalonščina</translation>
 <translation id="914873105831852105">Neveljavna koda PIN. Imate še 1 poskus.</translation>
 <translation id="9153934054460603056">Shrani identiteto in geslo</translation>

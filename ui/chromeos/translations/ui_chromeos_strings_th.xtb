@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">ฟินแลนด์</translation>
 <translation id="1942765061641586207">ความละเอียดของรูปภาพ</translation>
 <translation id="1972984168337863910">ขยายแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
-<translation id="1984456723671657197">ไม่รองรับไฟล์ประเภทนี้ <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="1995337122023280937">ไปยังตำแหน่งที่ตั้งไฟล์</translation>
 <translation id="2001796770603320721">จัดการใน Google ไดรฟ์</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">บัลแกเรีย</translation>
 <translation id="6973630695168034713">โฟลเดอร์</translation>
 <translation id="6976795442547527108">สิงโต</translation>
-<translation id="6978611942794658017">ไฟล์นี้ออกแบบมาสำหรับพีซีที่ใช้ซอฟต์แวร์ Windows ไฟล์นี้เข้ากันไม่ได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS โปรดค้นหาแอปทดแทนที่เหมาะสมใน Chrome เว็บสโตร์</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6989942356279143254">สวีเดน</translation>
 <translation id="6990081529015358884">คุณไม่มีพื้นที่เหลือแล้ว</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">ฝรั่งเศส (สวิตเซอร์แลนด์)</translation>
 <translation id="7973962044839454485">การตรวจสอบสิทธิ์ PPP ล้มเหลวเนื่องจากชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</translation>
 <translation id="7980421588063892270">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Colemak</translation>
-<translation id="79907182588096956">ไฟล์นี้ออกแบบมาสำหรับพีซีที่ใช้ซอฟต์แวร์ Windows จึงเข้ากันไม่ได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="8000066093800657092">ไม่มีเครือข่าย</translation>
 <translation id="8008366997883261463">สุนัข</translation>
 <translation id="8028993641010258682">ขนาด</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">สุนัขกำลังกระดิกหาง</translation>
 <translation id="8919081441417203123">เดนมาร์ก</translation>
 <translation id="8965697826696209160">พื้นที่ไม่เพียงพอ</translation>
-<translation id="8970501467542182729">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์ Macintosh จึงเข้ากันไม่ได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="8997962250644902079">พินอินภาษาจีน (ตัวเต็ม)</translation>
 <translation id="9003940392834790328">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
 <translation id="9017798300203431059">การออกเสียงภาษารัสเซีย</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">สมาชิกของ "<ph name="DESTINATION_NAME" />" จะได้รับสิทธิ์เข้าถึงรายการเหล่านี้</translation>
 <translation id="9131598836763251128">โปรดเลือกอย่างน้อยหนึ่งไฟล์</translation>
 <translation id="9133055936679483811">การซิปล้มเหลว <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์ Macintosh ไฟล์นี้เข้ากันไม่ได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS โปรดค้นหาแอปทดแทนที่เหมาะสมใน Chrome เว็บสโตร์</translation>
 <translation id="9144340019284012223">คาตาลัน</translation>
 <translation id="914873105831852105">PIN ไม่ถูกต้อง คุณลองได้อีก 1 ครั้ง</translation>
 <translation id="9153934054460603056">บันทึกข้อมูลประจำตัวและรหัสผ่าน</translation>

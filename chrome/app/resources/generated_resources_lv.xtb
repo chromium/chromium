@@ -368,7 +368,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1363585519747660921">USB printerim ir nepieciešama konfigurācija</translation>
 <translation id="1367951781824006909">Izvēlēties failu</translation>
 <translation id="1369149969991017342">Slēdžu piekļuve (kontrolējiet datoru ar vienu vai diviem slēdžiem)</translation>
-<translation id="1371863479305430391">Skatiet un noraidiet tālruņa paziņojumus, kā arī atbildiet uz tiem. Straumējiet tālruņa ziņojumapmaiņas lietotnes.</translation>
 <translation id="1372841398847029212">Sinhronizēt ar jūsu kontu</translation>
 <translation id="1373176046406139583">Jūsu ierīces redzamības iestatījums nosaka, kas var kopīgot saturu ar jums, kamēr jūsu ierīces ekrāns ir atbloķēts. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="1374844444528092021">Sertifikāts, kas tiek pieprasīts tīklā <ph name="NETWORK_NAME" />, nav instalēts vai vairs nav derīgs. Lūdzu, iegūstiet jaunu sertifikātu un mēģiniet izveidot savienojumu vēlreiz.</translation>
@@ -421,7 +420,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1415708812149920388">Liegta piekļuve starpliktuves satura lasīšanai</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (paplašinājuma ID “<ph name="EXTENSION_ID" />”) nav atļauts šāda veida sesijā.</translation>
 <translation id="1418954524306642206">Pārlūkot, lai noteiktu printera PPD</translation>
-<translation id="1420732223884894666">Skatiet tālruņa jaunākos fotoattēlus un multivides saturu savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1420834118113404499">Multivides licences</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, lai atļautu savienošanu pārī</translation>
 <translation id="1421934779300263861">Palīdziet uzlabot Chrome un Chrome OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem avāriju pārskatus, kā arī diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Android lietotņu izstrādātāji un Google partneri. Ja jūsu Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, jūsu Android dati var tikt saglabāti jūsu Google kontā.</translation>
@@ -722,7 +720,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1682548588986054654">Jauns inkognito režīma logs</translation>
 <translation id="1682867089915960590">Vai ieslēgt taustiņpārlūkošanu?</translation>
 <translation id="1684279041537802716">Izcēluma krāsa</translation>
-<translation id="168511795252678620">Jaunākie fotoattēli un ziņojumapmaiņas lietotnes</translation>
 <translation id="1686550358074589746">Iespējot ievadi ar vilkšanu</translation>
 <translation id="168715261339224929">Lai grāmatzīmes būtu pieejamas visās jūsu ierīcēs, ieslēdziet sinhronizāciju.</translation>
 <translation id="1688867105868176567">Vai notīrīt vietnes datus?</translation>
@@ -2599,7 +2596,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3526034519184079374">Nevar lasīt vai mainīt vietnes datus</translation>
 <translation id="3527085408025491307">Mape</translation>
 <translation id="3528498924003805721">Saīšņu mērķi</translation>
-<translation id="3531383404180922673">Skatiet tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus. Straumējiet tālruņa ziņojumapmaiņas lietotnes.</translation>
 <translation id="3532273508346491126">Sinhronizācijas pārvaldība</translation>
 <translation id="3532521178906420528">Notiek tīkla savienojuma izveide...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> — izslēgta skaņa</translation>
@@ -5225,7 +5221,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6185132558746749656">Ierīces atrašanās vieta</translation>
 <translation id="6188346519670155113">Chrome pārlūka sinhronizācija ir ieslēgta</translation>
 <translation id="6190953336330058278">Tālruņa centrmezgla lietotnes</translation>
-<translation id="619279033188484792">Skatiet tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6195005504600220730">Lasīt informāciju par jūsu pārlūku, OS un ierīci</translation>
 <translation id="6195693561221576702">Šo ierīci nevar iestatīt bezsaistes demonstrēšanas režīmā.</translation>
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
@@ -6198,7 +6193,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7152478047064750137">Šim paplašinājumam nav nepieciešamas īpašas atļaujas.</translation>
 <translation id="7154130902455071009">Mainiet savu sākumlapu uz šo: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Esošs fotoattēls no kameras vai faila</translation>
-<translation id="7155352398126583949">Paziņojumi un ziņojumapmaiņas lietotnes</translation>
 <translation id="7163202347044721291">Notiek aktivizācijas koda verifikācija…</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />” var lasīt attēlus, videoklipus un skaņu failus atzīmētajās vietās.</translation>
 <translation id="7167486101654761064">Vienmēr atvērt šī veida failus</translation>
@@ -7210,7 +7204,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8141725884565838206">Pārvaldīt savas paroles</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{videoklips}zero{# videoklipu}one{# videoklips}other{# videoklipi}}</translation>
 <translation id="8143442547342702591">Nederīga lietojumprogramma</translation>
-<translation id="8143475123634606318">Straumējiet tālruņa ziņojumapmaiņas lietotnes.</translation>
 <translation id="8143609395536282994">Datu pārvaldības iespējas</translation>
 <translation id="8143951647992294073">Atlasīt <ph name="TOPIC_SOURCE" /> vienumu <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Ja esat jau reģistrējies šajā ierīcē, varat <ph name="LINK2_START" />pierakstīties kā esošs lietotājs<ph name="LINK2_END" />.</translation>
@@ -7501,7 +7494,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8439506636278576865">Piedāvāt tulkot lapas šajā valodā</translation>
 <translation id="8440630305826533614">Linux lietotnes</translation>
 <translation id="8443795068008423036">Gādājiet, lai ierīce būtu atjaunināta, un mēģiniet vēlreiz.</translation>
-<translation id="8445046761938045900">Jaunākie fotoattēli, paziņojumi un ziņojumapmaiņas lietotnes</translation>
 <translation id="8446884382197647889">Uzziniet vairāk</translation>
 <translation id="8447409163267621480">Jāiekļauj “Ctrl” vai “Alt”</translation>
 <translation id="844850004779619592">Netika atrasta neviena komanda</translation>
@@ -7835,7 +7827,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8780443667474968681">Meklēšana ar balsi ir izslēgta.</translation>
 <translation id="8781834595282316166">Jauna cilne grupā</translation>
 <translation id="8782565991310229362">Kioska lietojumprogrammas palaišana tika atcelta.</translation>
-<translation id="8783526165720272136">Ziņojumapmaiņas lietotnes</translation>
 <translation id="8783834180813871000">Ierakstiet kodu Bluetooth savienošanai pārī un pēc tam nospiediet ievadīšanas taustiņu.</translation>
 <translation id="8784626084144195648">Apkopotais vidējais</translation>
 <translation id="8785622406424941542">Skārienekrāna pildspalva</translation>
@@ -8247,7 +8238,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9186963452600581158">Pierakstīties bērna Google kontā</translation>
 <translation id="9187967020623675250">Taustiņi neatbilst. Nospiediet jebkuru taustiņu, lai veiktu darbību <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Lietojuma un diagnostikas datu sūtīšana. Pašlaik dati par šo ierīci un ierīces diagnostikas un lietotņu lietojuma dati tiek automātiski sūtīti uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja jūsu bērnam ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā. <ph name="BEGIN_LINK2" />Uzzināt vairāk<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Skatiet tālruņa jaunākos fotoattēlus un multivides saturu. Straumējiet tālruņa ziņojumapmaiņas lietotnes.</translation>
 <translation id="919686179725692564">Uzzināt vairāk par datu dublēšanu</translation>
 <translation id="9198090666959937775">Izmantojiet savu Android tālruni kā drošības atslēgu</translation>
 <translation id="9199503643457729322">Noklikšķiniet, lai izietu no konfidencialitātes ceļveža.</translation>

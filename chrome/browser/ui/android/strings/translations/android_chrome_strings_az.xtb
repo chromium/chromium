@@ -30,6 +30,7 @@
 <translation id="1146678959555564648">VR daxil edin</translation>
 <translation id="114825011539563458">Ən vacib məxfilik və təhlükəsizlik nizamlayıcılarını bir yerdə</translation>
 <translation id="1149401351239820326">Bitmə ayı</translation>
+<translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'da açılacaq. Davam etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız.</translation>
 <translation id="1154704303112745282">Səhifə oflayn əlçatan deyil: <ph name="VIOLATED_URL" /></translation>
 <translation id="1171770572613082465">"Popluyar saytlar" seçiminə klikləyin və məşhur saytlara baxın</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
@@ -208,6 +209,7 @@ Axtarmaq üçün istənilən sözə toxunun. Axtarışı dəqiqləşdirmək üç
 <translation id="2126426811489709554">Chrome Powered by</translation>
 <translation id="2132122640199389833">Bütün əlaqəli cihazları silin</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> qapadıldı</translation>
+<translation id="2134927169889348449">Chrome'u istifadə etməklə, <ph name="BEGIN_TOS_LINK" />Google Xidmət Şərtləri<ph name="END_TOS_LINK" /> və <ph name="BEGIN_ATOS_LINK" />Google Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_ATOS_LINK" /> ilə razılaşırsınız.</translation>
 <translation id="2139186145475833000">Əsas ekrana əlavə edin</translation>
 <translation id="2141396931810938595">İstifadənizə əsasən</translation>
 <translation id="214888715418183969">Chrome ilə nəyi paylaşmağa hazır olduğunuzu seçin. Paylaşdığınız göstəricilər Chrome funksiyaları, məhsuldarlığı və stabilliyini yaxşılaşdırmaq üçün istifadə ediləcək.</translation>
@@ -391,6 +393,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="3062802207422175757">Chrome'da maraqlarınıza dair məqalələr</translation>
 <translation id="3066573403916685335">Aşağıya</translation>
 <translation id="3070005020161560471">Avtomatik tərcümə edin</translation>
+<translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome'da açılacaq. Davam etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız. <ph name="BEGIN_LINK3" />Məxfilik Siyasəti<ph name="END_LINK3" /> də tətbiq edilir.</translation>
 <translation id="3091010850649238832">Mübadilə buferindəki kontenti göstərin</translation>
 <translation id="3098745985164956033">Sizin üçün təsvirləri yaxşılaşdırmaq üçün bəzi şəkillər Google'a göndərilir</translation>
 <translation id="3114507951000454849">Bugünün <ph name="NEWS_ICON" /> xəbərlərini oxuyun</translation>
@@ -582,10 +585,10 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
 <translation id="4290281343757112331">Daha sonra endirilsin?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ayarlarında ekran kilidini aktiv edin<ph name="END_LINK" /></translation>
+<translation id="4293476595220860475">Chrome'u istifadə etməklə, <ph name="BEGIN_TOS_LINK" />Google Xidmət Şərtləri<ph name="END_TOS_LINK" /> və <ph name="BEGIN_ATOS_LINK" />Google Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_ATOS_LINK" /> ilə razılaşırsınız. <ph name="BEGIN_PRIVACY_LINK" />Məxfilik Siyasəti<ph name="END_PRIVACY_LINK" /> də tətbiq edilir.</translation>
 <translation id="4296252229500326964">Yeni Anonim tab</translation>
 <translation id="4298388696830689168">Əlaqədar saytlar</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4304713468139749426">Parol Meneceri</translation>
 <translation id="4307992518367153382">Əsaslar</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yoxdur</translation>
 <translation id="4321739720395210191">Kameranı açmaq olmur. Cihazı yenidən başladıb təkrar cəhd edin.</translation>
@@ -1044,6 +1047,7 @@ Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuz
 <translation id="6767294960381293877">Yarı hündürlükdə açılan tabı paylaşa biləcəyiniz cihazların siyahısı.</translation>
 <translation id="6770602306803890733">Siz və vebdəki hər kəs üçün təhlükəsizliyi artırır</translation>
 <translation id="6783942555455976443">Bu səhifəyə daha sonra baxmaq üçün yadda saxlayın və xatırladıcı qəbul edin</translation>
+<translation id="6785476624617658922">Chrome və ChromeOS Əlavə Xidmət Şərtləri</translation>
 <translation id="6795633245022906657">Cəld yeni tab açın. Bu qısayolu redaktə etmək üçün Ayarlara keçin.</translation>
 <translation id="6802555630140434547">Bu pəncərə bağlanacaq</translation>
 <translation id="6811034713472274749">Səhifəyə baxa bilərsiniz</translation>

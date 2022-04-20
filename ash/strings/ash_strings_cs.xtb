@@ -135,7 +135,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1708345662127501511">Plocha: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nastavení sítě</translation>
 <translation id="1715293566947629045">Profil se deaktivuje. Několik minut počkejte.</translation>
-<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Živý přepis je zapnutý</translation>
 <translation id="1720011244392820496">Zapnutí Synchronizace Wi-Fi</translation>
 <translation id="1736898441010944794">Adaptér <ph name="NAME" /> je viditelný pro zařízení Bluetooth.</translation>
@@ -528,7 +527,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
 <translation id="4165275524535002941">Kabel možná nepodporuje displeje</translation>
-<translation id="4173958948577803258">Č</translation>
 <translation id="4177913004758410636">{0,plural, =1{Do jednoho dne zařízení aktualizujte}few{Do # dní zařízení aktualizujte}many{Do # dne zařízení aktualizujte}other{Do # dní zařízení aktualizujte}}</translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4192112279662688596">nebo</translation>
@@ -948,7 +946,6 @@ Nová instalace</translation>
 <translation id="6751826523481687655">Trasování výkonu je zapnuté</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> byla odstraněna a sloučena s plochou <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">karty</translation>
-<translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Nepřehrává se žádný mediální obsah</translation>
 <translation id="6777216307882431711">Napájení připojených zařízení USB-C</translation>
 <translation id="6786750046913594791">Zavřít složku</translation>
@@ -997,7 +994,6 @@ Nová instalace</translation>
 <translation id="7045033600005038336">Nahradit šablonu?</translation>
 <translation id="7045595904618419789">Zapnout lupu</translation>
 <translation id="7051244143160304048">Zařízení <ph name="DEVICE_NAME" /> je odpojeno</translation>
-<translation id="7055381872777910864">S</translation>
 <translation id="7055910611768509537">Dotykové pero nebylo použito více než týden</translation>
 <translation id="7066646422045619941">Tato síť je zakázána vaším administrátorem.</translation>
 <translation id="7067196344162293536">Automatické otáčení</translation>
@@ -1081,7 +1077,6 @@ Nová instalace</translation>
 <translation id="7579778809502851308">Snímky obrazovky</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
 <translation id="7593891976182323525">Vyhledávání nebo Shift</translation>
-<translation id="7595633564847427181">P</translation>
 <translation id="7600875258240007829">Zobrazit všechna oznámení</translation>
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>

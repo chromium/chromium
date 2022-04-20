@@ -367,7 +367,6 @@
 <translation id="1363585519747660921">L'imprimante USB doit être configurée</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
 <translation id="1369149969991017342">Switch Access (contrôler l'ordinateur avec uniquement un ou deux commutateurs)</translation>
-<translation id="1371863479305430391">Affichez et ignorez les notifications de votre téléphone, et répondez-y. Diffusez les applications de messagerie de votre téléphone.</translation>
 <translation id="1372841398847029212">Synchroniser vers votre compte</translation>
 <translation id="1373176046406139583">La visibilité de votre appareil détermine qui peut partager du contenu avec vous lorsque l'écran est déverrouillé. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Le certificat requis par le réseau « <ph name="NETWORK_NAME" /> » n'est pas installé ou n'est plus valide. Veuillez obtenir un nouveau certificat et réessayer de vous connecter.</translation>
@@ -420,7 +419,6 @@
 <translation id="1415708812149920388">Accès en lecture au presse-papiers refusé</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (identifiant d'extension « <ph name="EXTENSION_ID" /> ») n'est pas autorisé dans ce type de session.</translation>
 <translation id="1418954524306642206">Naviguez pour sélectionner le fichier PPD de votre imprimante</translation>
-<translation id="1420732223884894666">Affichez les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Licences multimédia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pour autoriser l'association</translation>
 <translation id="1421934779300263861">Aidez-nous à améliorer les fonctionnalités et les performances de Chrome et de Chrome OS en envoyant automatiquement les rapports de plantage ainsi que les données de diagnostic et d'utilisation à Google. Certaines données agrégées seront également utiles aux applications Android et aux partenaires Google. Si le paramètre Activité sur le Web et dans les applications est activé pour votre compte Google, vos données Android peuvent être enregistrées dans votre compte Google.</translation>
@@ -721,7 +719,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1682548588986054654">Nouvelle fenêtre de navigation privée</translation>
 <translation id="1682867089915960590">Activer la navigation au clavier?</translation>
 <translation id="1684279041537802716">Couleur de l'accent</translation>
-<translation id="168511795252678620">Photos et applications de messagerie récentes</translation>
 <translation id="1686550358074589746">Activer l'écriture en glissé</translation>
 <translation id="168715261339224929">Pour synchroniser vos favoris sur tous vos appareils, activez la synchronisation.</translation>
 <translation id="1688867105868176567">Effacer les données du site?</translation>
@@ -2597,7 +2594,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3526034519184079374">Impossible de lire ou de modifier les données du site</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3528498924003805721">Cibles des raccourcis</translation>
-<translation id="3531383404180922673">Affichez les notifications, les photos et les fichiers multimédias récents de votre téléphone. Diffusez les applications de messagerie de votre téléphone.</translation>
 <translation id="3532273508346491126">Gestion de la synchronisation</translation>
 <translation id="3532521178906420528">Établissement de la connexion réseau en cours…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Audio désactivé</translation>
@@ -5224,7 +5220,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
 <translation id="6188346519670155113">La synchronisation du navigateur Chrome est activée</translation>
 <translation id="6190953336330058278">Applications de la fonctionnalité Phone Hub</translation>
-<translation id="619279033188484792">Affichez les notifications, les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Lire de l'information à propos de votre navigateur, votre appareil et son SE</translation>
 <translation id="6195693561221576702">Cet appareil ne peut pas être configuré en mode Démo hors ligne.</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
@@ -6197,7 +6192,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7152478047064750137">Cette extension fonctionne sans autorisation spéciale</translation>
 <translation id="7154130902455071009">Utiliser l'adresse <ph name="START_PAGE" /> comme page de démarrage?</translation>
 <translation id="7155171745945906037">Photo existante de l'appareil photo ou du fichier</translation>
-<translation id="7155352398126583949">Notifications et applications de messagerie</translation>
 <translation id="7163202347044721291">Vérification du code d'activation en cours…</translation>
 <translation id="716640248772308851">« <ph name="EXTENSION" /> » dispose d'un droit d'accès en lecture aux images, aux vidéos et aux fichiers audio figurant dans les dossiers sélectionnés.</translation>
 <translation id="7167486101654761064">&amp;Toujours ouvrir les fichiers de ce type</translation>
@@ -7209,7 +7203,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8141725884565838206">Gérer les mots de passe</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{une vidéo}one{# vidéo}other{# vidéos}}</translation>
 <translation id="8143442547342702591">Application non valide</translation>
-<translation id="8143475123634606318">Diffusez les applications de messagerie de votre téléphone</translation>
 <translation id="8143609395536282994">Comment gérer vos données :</translation>
 <translation id="8143951647992294073">Sélectionner <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8146177459103116374">Si vous êtes déjà enregistré sur ​​cet appareil, vous pouvez <ph name="LINK2_START" />vous connecter à l'aide de votre compte<ph name="LINK2_END" />.</translation>
@@ -7500,7 +7493,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8439506636278576865">Me proposer de traduire les pages dans cette langue</translation>
 <translation id="8440630305826533614">Applications Linux</translation>
 <translation id="8443795068008423036">Veuillez vous assurer que votre appareil est à jour et réessayez</translation>
-<translation id="8445046761938045900">Photos, notifications et applications de messagerie récentes</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8447409163267621480">Vous devez inclure la touche Ctrl ou Alt</translation>
 <translation id="844850004779619592">Aucune commande trouvée</translation>
@@ -7833,7 +7825,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8780443667474968681">La recherche vocale a été désactivée.</translation>
 <translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>
 <translation id="8782565991310229362">Lancement de l'application de kiosque annulé.</translation>
-<translation id="8783526165720272136">Applications de messagerie</translation>
 <translation id="8783834180813871000">Entrez le code d'association Bluetooth, puis appuyez sur Retour ou Entrée</translation>
 <translation id="8784626084144195648">Moyenne de l'intervalle</translation>
 <translation id="8785622406424941542">Stylet</translation>
@@ -8245,7 +8236,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9186963452600581158">Se connecter avec un compte Google pour enfant</translation>
 <translation id="9187967020623675250">Les touches ne correspondent pas. Appuyez sur n'importe quelle touche pour <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Affichez les photos et les fichiers multimédias récents de votre téléphone. Diffusez les applications de messagerie de votre téléphone.</translation>
 <translation id="919686179725692564">En savoir plus sur la sauvegarde de vos applications</translation>
 <translation id="9198090666959937775">Utiliser votre téléphone Android comme clé de sécurité</translation>
 <translation id="9199503643457729322">Cliquez pour quitter le Guide sur la confidentialité.</translation>

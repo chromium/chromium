@@ -218,7 +218,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2848086008667475748">Beállítás alapértelmezettként a Beállításokban</translation>
 <translation id="2858204748079866344">Adatai védelme érdekében a Chrome nem tölti ki automatikusan a jelszavát ebben a mezőben.</translation>
 <translation id="285960592395650245">Letöltés újrapróbálása</translation>
-<translation id="2866378026651742652">Új lap megnyitásakor látni fogja a webhely történeteit.</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2871695793448672541">Jelszó (rejtett)</translation>
 <translation id="2876369937070532032">Elküldi egyes felkeresett oldalak URL-jét a Google-nak, ha veszélyben van az Ön biztonsága</translation>
@@ -788,6 +787,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7671141431838911305">TELEPÍTÉS</translation>
+<translation id="7687508192620387263">Rendelkezésre áll egy naptárfájl</translation>
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7720410380936703141">ÚJRA</translation>
 <translation id="7726702057919861819">Menü → Előzmények → Böngészési adatok törlése</translation>

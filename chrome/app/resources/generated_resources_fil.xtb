@@ -369,7 +369,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1363585519747660921">Kailangan ng pag-configure ng USB printer</translation>
 <translation id="1367951781824006909">Pumili ng isang file</translation>
 <translation id="1369149969991017342">Switch Access (kontrolin ang computer gamit lang ang isa o dalawang switch)</translation>
-<translation id="1371863479305430391">Tingnan, i-dismiss, at sagutin ang mga notification ng iyong telepono. I-stream ang mga app sa pagmemensahe ng iyong telepono.</translation>
 <translation id="1372841398847029212">I-sync sa iyong account</translation>
 <translation id="1373176046406139583">Kinokontrol ng pagiging visible ng device mo kung sino ang puwedeng magbahagi sa iyo habang naka-unlock ang screen mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Ang certificate na kinakailangan ng network na "<ph name="NETWORK_NAME" />" ay maaaring hindi naka-install o wala nang bisa.  Mangyaring kumuha ng isang bagong certificate at subukang kumonekta muli.</translation>
@@ -422,7 +421,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1415708812149920388">Tinanggihan ang read access sa clipboard</translation>
 <translation id="1415990189994829608">Ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") ay hindi pinapayagan sa ganitong uri ng session.</translation>
 <translation id="1418954524306642206">Mag-browse para matukoy ang PPD ng iyong printer</translation>
-<translation id="1420732223884894666">Tingnan ang mga kamakailang larawan at media ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="1420834118113404499">Mga lisensya ng media</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> upang payagan ang pagpapares</translation>
 <translation id="1421934779300263861">Tumulong na pahusayin ang mga feature at performance ng Chrome at ChromeOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng mga ulat ng pag-crash pati na rin ng data ng diagnostic at paggamit. Makakatulong din ang ilang pinagsama-samang data sa mga Android app at Google partner. Kung naka-on ang setting ng Aktibidad sa Web at App para sa iyong Google Account, posibleng ma-save sa Google Account mo ang iyong data sa Android.</translation>
@@ -724,7 +722,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1682548588986054654">New Incognito Window</translation>
 <translation id="1682867089915960590">I-on ang Caret Browsing?</translation>
 <translation id="1684279041537802716">Kulay ng accent</translation>
-<translation id="168511795252678620">Mga kamakailang larawan at app sa pagmemensahe</translation>
 <translation id="1686550358074589746">I-enable ang pag-type nang pa-glide</translation>
 <translation id="168715261339224929">Para mailagay ang iyong mga bookmark sa lahat ng device mo, i-on ang sync.</translation>
 <translation id="1688867105868176567">I-clear ang data ng site?</translation>
@@ -920,6 +917,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
     <ph name="BEGIN_PARAGRAPH2" />Puwede mo ring tuluyang i-off ang TPM device. Ligtas na maso-store ang iyong data sa tulong ng pag-encrypt ng software, pero madi-disable ang ilang partikular na panseguridad na feature gaya ng mga hardware-backed na certificate.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puwede mong baguhin ang mga setting ng iyong TPM sa pamamagitan ng pag-reboot at paglalagay ng mga setting ng BIOS/UEFI ng system. Nag-iiba ang mga hakbang batay sa modelo ng device. Para sa higit pang impormasyon, buksan ang dokumentasyon ng <ph name="DEVICE_OS" /> sa hiwalay na device bago ka mag-reboot: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">Maghanap ng mapaminsalang software</translation>
+<translation id="1852322248807969514">Sine-save ang mga password sa <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">Nagkaroon ng error habang sinusubukang basahin ang file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Magpatuloy mula sa kung saan ka huminto. Puwede mong itakda na palaging mag-restore ang mga app sa startup o i-off ang pag-restore sa Mga Setting.</translation>
 <translation id="1854180393107901205">Ihinto ang pagka-cast</translation>
@@ -1879,6 +1877,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2783829359200813069">Pumili ng mga uri ng pag-encrypt</translation>
 <translation id="2783952358106015700">Gamitin ang iyong security key sa <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Mga descriptor ng file</translation>
+<translation id="2787022501752539710">Panatilihin ang lokal na data sa pag-browse (mga bookmark, password, history, atbp.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">Numero ng grupo</translation>
@@ -2611,7 +2610,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3526034519184079374">Hindi Mabasa o Mapalitan ang Data ng Site</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3528498924003805721">Mga target ng shortcut</translation>
-<translation id="3531383404180922673">Tingnan ang mga kamakailang larawan, media, at notification ng iyong telepono. I-stream ang mga app sa pagmemensahe ng iyong telepono.</translation>
 <translation id="3532273508346491126">I-sync ang pamamahala</translation>
 <translation id="3532521178906420528">Kumokonekta sa network ...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Naka-mute ang audio</translation>
@@ -3152,6 +3150,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4044612648082411741">Ilagay ang password ng iyong certificate</translation>
 <translation id="4044708573046946214">Password ng lock ng screen</translation>
 <translation id="404493185430269859">Default na search engine</translation>
+<translation id="4045180775310929593">Magdagdag ng tala...</translation>
 <translation id="4046013316139505482">Hindi kailangang makita at baguhin ng mga extension na ito ang impormasyon sa site na ito.</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -5115,6 +5114,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6057381398996433816">Na-block ang site na ito sa paggamit ng sensor ng paggalaw at liwanag.</translation>
 <translation id="6059276912018042191">Mga kamakailang tab ng Chrome</translation>
 <translation id="6059652578941944813">Pagkakasunud-sunod ng Certificate</translation>
+<translation id="6063284707309177505">Gumawa ng QR Code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang mga personal na resulta ni <ph name="SUPERVISED_USER_NAME" />. Para makatipid ng baterya, puwede mong piliin sa mga setting ng Assistant ni <ph name="SUPERVISED_USER_NAME" /> na i-on lang ang “Hey Google” kapag nakakonekta ang device na ito sa isang power source.</translation>
 <translation id="6064217302520318294">Lock ng screen</translation>
 <translation id="6065289257230303064">Mga Katangian ng Direktoryo ng Paksa ng Certificate</translation>
@@ -5239,7 +5239,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6185132558746749656">Lokasyon ng Device</translation>
 <translation id="6188346519670155113">Naka-on ang pag-sync sa Chrome browser</translation>
 <translation id="6190953336330058278">Mga Phone Hub app</translation>
-<translation id="619279033188484792">Tingnan ang mga kamakailang larawan, media, at notification ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="6195005504600220730">Basahin ang impormasyon tungkol sa iyong browser, OS, at device</translation>
 <translation id="6195693561221576702">Hindi ma-set up ang device na ito sa offline na demo mode.</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
@@ -6212,7 +6211,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7152478047064750137">Hindi nangangailangan ang extension na ito ng mga espesyal na pahintulot</translation>
 <translation id="7154130902455071009">Gawing ito ang iyong panimulang pahina: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Kasalukuyang larawan mula sa camera o file</translation>
-<translation id="7155352398126583949">Mga notification at app sa pagmemensahe</translation>
 <translation id="7163202347044721291">Vine-verify ang code sa pag-activate...</translation>
 <translation id="716640248772308851">Ang "<ph name="EXTENSION" />" ay nakakabasa ng mga larawan, video, at file ng tunog sa mga may check na lokasyon.</translation>
 <translation id="7167486101654761064">&amp;Laging buksan ang uri ng mga file na ito</translation>
@@ -7225,7 +7223,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8141725884565838206">Pamahalaan ang iyong mga password</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{isang video}one{# video}other{# na video}}</translation>
 <translation id="8143442547342702591">Invalid ang application</translation>
-<translation id="8143475123634606318">I-stream ang mga app sa pagmemensahe ng iyong telepono</translation>
 <translation id="8143609395536282994">Paano mo mapapamahalaan ang iyong data</translation>
 <translation id="8143951647992294073">Piliin ang <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Kung nakarehistro ka na sa device na ito, maaari kang <ph name="LINK2_START" />mag-sign in bilang isang umiiral nang user<ph name="LINK2_END" />.</translation>
@@ -7517,7 +7514,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 </translation>
 <translation id="8440630305826533614">Mga Linux app</translation>
 <translation id="8443795068008423036">Pakitiyak na up to date ang iyong device at pakisubukan ulit</translation>
-<translation id="8445046761938045900">Mga kamakailang larawan, notification, at app sa pagmemensahe</translation>
 <translation id="8446884382197647889">Matuto Pa</translation>
 <translation id="8447409163267621480">Isama ang Ctrl o Alt</translation>
 <translation id="844850004779619592">Walang nakitang command</translation>
@@ -7850,7 +7846,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8780443667474968681">Na-off na ang paghahanap gamit ang boses.</translation>
 <translation id="8781834595282316166">Bagong Tab sa Grupo</translation>
 <translation id="8782565991310229362">Kinansela ang paglulunsad sa kiosk application.</translation>
-<translation id="8783526165720272136">Mga app sa pagmemensahe</translation>
 <translation id="8783834180813871000">I-type ang code ng pagpapares ng bluetooth pagkatapos ay pindutin ang Return o Enter.</translation>
 <translation id="8784626084144195648">Binned na Average</translation>
 <translation id="8785622406424941542">Stylus</translation>
@@ -8263,7 +8258,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9186963452600581158">Mag-sign in gamit ang Google Account ng isang bata</translation>
 <translation id="9187967020623675250">Hindi magkatugma ang mga key. Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Magpadala ng data ng paggamit at diagnostic na data. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, maaaring ma-save ang data na ito sa kanyang Google Account. <ph name="BEGIN_LINK2" />Matuto Pa<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Tingnan ang mga kamakailang larawan at media ng iyong telepono. I-stream ang mga app sa pagmemensahe ng iyong telepono.</translation>
 <translation id="919686179725692564">Matuto pa tungkol sa pag-back up ng iyong mga app.</translation>
 <translation id="9198090666959937775">Gamitin ang iyong Android phone bilang security key</translation>
 <translation id="9199503643457729322">I-click para mag-navigate paalis sa Gabay sa Privacy.</translation>

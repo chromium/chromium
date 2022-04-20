@@ -371,7 +371,6 @@
 <translation id="1363585519747660921">Reikia konfigūruoti USB spausdintuvą</translation>
 <translation id="1367951781824006909">Pasirinkti failą</translation>
 <translation id="1369149969991017342">Prieiga jungikliu (valdykite kompiuterį tik vienu ar dviem jungikliais)</translation>
-<translation id="1371863479305430391">Peržiūrėkite telefono pranešimus, atsisakykite jų ir atsakykite į juos. Srautu perduokite telefono pranešimų programas.</translation>
 <translation id="1372841398847029212">Sinchronizuoti paskyroje</translation>
 <translation id="1373176046406139583">Įrenginio matomumo nustatymais valdoma, kas gali bendrinti su jumis, kai jūsų ekranas atrakintas. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Sertifikatas, kurio reikalauja „<ph name="NETWORK_NAME" />“ tinklas, neįdiegtas arba nebegalioja. Gaukite naują sertifikatą ir pabandykite prisijungti dar kartą.</translation>
@@ -424,7 +423,6 @@
 <translation id="1415708812149920388">Iškarpinės skaitymo prieiga atmesta</translation>
 <translation id="1415990189994829608">„<ph name="EXTENSION_NAME" />“ (plėtinio ID „<ph name="EXTENSION_ID" />“) neleidžiamas vykstant šio tipo seansui.</translation>
 <translation id="1418954524306642206">Naršyti siekiant nurodyti spausdintuvo PPD</translation>
-<translation id="1420732223884894666">Peržiūrėkite telefono naujausias nuotraukas ir mediją „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="1420834118113404499">Medijos licencijos</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, kad leistumėte susieti</translation>
 <translation id="1421934779300263861">Padėkite tobulinti „Chrome“ ir „Chrome“ OS funkcijas bei našumą automatiškai siųsdami strigčių ataskaitas ir diagnostikos bei naudojimo duomenis į sistemą „Google“. Be to, tam tikri sukaupti duomenys bus naudingi „Android“ programoms ir „Google“ partneriams. Jei Žiniatinklio ir programų veiklos nustatymas įjungtas „Google“ paskyroje, „Android“ duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
@@ -726,7 +724,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1682548588986054654">Naujas inkognito langas</translation>
 <translation id="1682867089915960590">Įjungti „Caret Browsing“?</translation>
 <translation id="1684279041537802716">Paryškinimo spalva</translation>
-<translation id="168511795252678620">Naujausios nuotraukos ir pranešimų programos</translation>
 <translation id="1686550358074589746">Įgalinti įvestį gestais</translation>
 <translation id="168715261339224929">Jei norite gauti žymes visuose įrenginiuose, įjunkite sinchronizavimą.</translation>
 <translation id="1688867105868176567">Išvalyti svetainės duomenis?</translation>
@@ -2613,7 +2610,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3526034519184079374">Nepavyko nuskaityti arba pakeisti svetainės duomenų</translation>
 <translation id="3527085408025491307">Aplankas</translation>
 <translation id="3528498924003805721">Tiksliniai spartieji klavišai</translation>
-<translation id="3531383404180922673">Peržiūrėkite telefono naujausias nuotraukas, mediją ir pranešimus. Srautu perduokite telefono pranešimų programas.</translation>
 <translation id="3532273508346491126">Sinchronizuoti valdymą</translation>
 <translation id="3532521178906420528">Užmezgamas tinklo ryšys...</translation>
 <translation id="353316712352074340">„<ph name="WINDOW_TITLE" />“ – garso įrašas nutildytas</translation>
@@ -5242,7 +5238,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6185132558746749656">Įrenginio vietovė</translation>
 <translation id="6188346519670155113">„Chrome“ naršyklės sinchronizavimas įjungtas</translation>
 <translation id="6190953336330058278">„Phone Hub“ programos</translation>
-<translation id="619279033188484792">Peržiūrėkite telefono naujausias nuotraukas, mediją ir pranešimus „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="6195005504600220730">Skaityti informaciją apie jūsų naršyklę, OS ir įrenginį</translation>
 <translation id="6195693561221576702">Šis įrenginys negali būti nustatytas, kai įjungtas neprisijungus pasiekiamas demonstracinis režimas.</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
@@ -6215,7 +6210,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7152478047064750137">Šiam plėtiniui nereikia specialių leidimų</translation>
 <translation id="7154130902455071009">Pakeiskite pradžios puslapį į: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Esama nuotrauka iš fotoaparato arba failo</translation>
-<translation id="7155352398126583949">Pranešimai ir pranešimų programos</translation>
 <translation id="7163202347044721291">Patvirtinamas aktyvinimo kodas...</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ patikrintose vietose gali nuskaityti vaizdus, vaizdo įrašus ir garso failus.</translation>
 <translation id="7167486101654761064">&amp;Visada atidaryti tokio tipo failus</translation>
@@ -7228,7 +7222,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8141725884565838206">Tvarkykite slaptažodžius</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{vaizdo įrašą}one{# vaizdo įrašą}few{# vaizdo įrašus}many{# vaizdo įrašo}other{# vaizdo įrašų}}</translation>
 <translation id="8143442547342702591">Netinkama programa</translation>
-<translation id="8143475123634606318">Srautu perduokite telefono pranešimų programas</translation>
 <translation id="8143609395536282994">Kaip galite tvarkyti savo duomenis</translation>
 <translation id="8143951647992294073">Pasirinkite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Jei jau esate užsiregistravę šiame įrenginyje, galite <ph name="LINK2_START" />prisijungti kaip esamas naudotojas<ph name="LINK2_END" />.</translation>
@@ -7519,7 +7512,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8439506636278576865">Siūlyti versti puslapius šia kalba</translation>
 <translation id="8440630305826533614">„Linux“ programos</translation>
 <translation id="8443795068008423036">Įsitikinkite, kad įrenginys atnaujintas, ir bandykite dar kartą</translation>
-<translation id="8445046761938045900">Naujausios nuotraukos, pranešimai ir pranešimų programos</translation>
 <translation id="8446884382197647889">Sužinokite daugiau</translation>
 <translation id="8447409163267621480">Naudokite „Ctrl“ arba „Alt“</translation>
 <translation id="844850004779619592">Komandų nerasta</translation>
@@ -7854,7 +7846,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8780443667474968681">Paieška balsu išjungta.</translation>
 <translation id="8781834595282316166">Naujas skirtukas grupėje</translation>
 <translation id="8782565991310229362">Atšauktas viešojo terminalo programos paleidimas.</translation>
-<translation id="8783526165720272136">Pranešimų programos</translation>
 <translation id="8783834180813871000">Įveskite „Bluetooth“ susiejimo kodą ir paspauskite „Return“ arba „Enter“.</translation>
 <translation id="8784626084144195648">Intervalo vidurkis</translation>
 <translation id="8785622406424941542">Rašiklis</translation>
@@ -8266,7 +8257,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="9186963452600581158">Prisijungti naudojant vaiko „Google“ paskyrą</translation>
 <translation id="9187967020623675250">Klavišai neatitinka. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>
 <translation id="9188732951356337132">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas „Žiniatinklio ir programų veiklos“ nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje. <ph name="BEGIN_LINK2" />Sužinokite daugiau<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Peržiūrėkite telefono naujausias nuotraukas ir mediją. Srautu perduokite telefono pranešimų programas.</translation>
 <translation id="919686179725692564">Sužinokite daugiau apie programų atsarginių kopijų kūrimą</translation>
 <translation id="9198090666959937775">„Android“ telefono naudojimas kaip saugos rakto</translation>
 <translation id="9199503643457729322">Spustelėkite, kad išeitumėte iš privatumo vadovo.</translation>

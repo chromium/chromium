@@ -5637,14 +5637,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7266471712301230894">Kebijakan ini telah dihapus mulai <ph name="PRODUCT_NAME" /> 64.
 
       Penelusuran dan penginstalan otomatis untuk plugin yang tidak ada, tidak didukung lagi.</translation>
-<translation id="7266868915753562724">Kebijakan ini mengontrol visibilitas Perjalanan di halaman histori Chrome.
-
-      Jika kebijakan disetel ke Aktif, Perjalanan akan dapat dilihat di chrome://history/journeys.
-
-      Jika kebijakan disetel ke Nonaktif, Perjalanan tidak akan dapat dilihat di chrome://history/journeys.
-
-      Jika kebijakan tidak disetel, Perjalanan akan dapat dilihat di chrome://history/journeys secara default dan pengguna dapat mengubah visibilitas Perjalanan.
-      </translation>
 <translation id="7267809745244694722">Default tombol media ke tombol fungsi</translation>
 <translation id="7269263983506766969">Gunakan prioritas default untuk proses audio</translation>
 <translation id="7270001383428188269">ID untuk sertifikat klien ini.</translation>

@@ -119,7 +119,6 @@
 </translation>
 <translation id="1942765061641586207">Ανάλυση εικόνας</translation>
 <translation id="1972984168337863910">Ανάπτυξη πλαισίων σχολίων αρχείων</translation>
-<translation id="1984456723671657197">Δεν υποστηρίζεται αυτός ο τύπος αρχείου. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="1995337122023280937">Μετάβαση στην τοποθεσία αρχείου</translation>
 <translation id="2001796770603320721">Διαχείριση στο Drive</translation>
 <translation id="2009067268969781306">Η διαμόρφωση ενός δίσκου θα διαγράψει όλα τα δεδομένα που έχουν αποθηκευτεί σε αυτόν. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
@@ -716,7 +715,6 @@
 <translation id="6970230597523682626">Βουλγαρικά</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
 <translation id="6976795442547527108">Λιοντάρι</translation>
-<translation id="6978611942794658017">Αυτό το αρχείο έχει σχεδιαστεί για έναν υπολογιστή ο οποίος χρησιμοποιεί λογισμικό Windows. Δεν είναι συμβατό με τη συσκευή σας η οποία χρησιμοποιεί Chrome OS. Αναζήτηστε μια κατάλληλη εφαρμογή αντικατάστασης στο Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Σουηδικά</translation>
 <translation id="6990081529015358884">Δεν υπάρχει ελεύθερος χώρος</translation>
@@ -841,7 +839,6 @@
 <translation id="7972920761225148017">Γαλλικά (Ελβετία)</translation>
 <translation id="7973962044839454485">Αποτυχία ελέγχου ταυτότητας PPP λόγω εσφαλμένου ονόματος χρήστη ή κωδικού πρόσβασης</translation>
 <translation id="7980421588063892270">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Colemak</translation>
-<translation id="79907182588096956">Αυτό το αρχείο έχει σχεδιαστεί για έναν υπολογιστή ο οποίος χρησιμοποιεί λογισμικό Windows. Δεν είναι συμβατό με τη συσκευή σας η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="8000066093800657092">Κανένα δίκτυο</translation>
 <translation id="8008366997883261463">Τεριέ Τζακ Ράσελ</translation>
 <translation id="8028993641010258682">Μέγεθος</translation>
@@ -958,7 +955,6 @@
 <translation id="8919081441417203123">Δανικά
 </translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>
-<translation id="8970501467542182729">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστές που χρησιμοποιούν λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="8997962250644902079">Κινεζικά (Παραδοσιακά) Pinyin</translation>
 <translation id="9003940392834790328">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή, Λεπτομέρειες</translation>
 <translation id="9017798300203431059">Φωνητικό Ρωσικά</translation>
@@ -977,7 +973,6 @@
 <translation id="9130775360844693113">Τα μέλη του "<ph name="DESTINATION_NAME" />" θα αποκτήσουν πρόσβαση σε αυτά τα στοιχεία.</translation>
 <translation id="9131598836763251128">Επιλέξτε ένα ή περισσότερα αρχεία</translation>
 <translation id="9133055936679483811">Αποτυχία συμπίεσης. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Αυτό το αρχείο έχει σχεδιαστεί για έναν υπολογιστή ο οποίος χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας η οποία χρησιμοποιεί Chrome OS. Αναζητήστε μια κατάλληλη εφαρμογή αντικατάστασης στο Chrome Web Store.</translation>
 <translation id="9144340019284012223">Καταλανικά</translation>
 <translation id="914873105831852105">Μη έγκυρο PIN. Απομένει 1 ακόμη προσπάθεια.</translation>
 <translation id="9153934054460603056">Αποθήκευση ταυτότητας και κωδικού πρόσβασης</translation>

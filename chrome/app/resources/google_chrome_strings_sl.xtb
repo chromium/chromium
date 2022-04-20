@@ -50,6 +50,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastarel</translation>
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
+<translation id="1952239763774043237">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete macOS 10.13 ali novejšega. V tem računalniku je nameščen macOS 10.12.</translation>
 <translation id="2018528049276128029">Vsak profil ima svoje podatke v Chromu, kot so zaznamki, zgodovina, gesla in drugo.</translation>
 <translation id="207902854391093810">Če so preizkusi vklopljeni, merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
 <translation id="2094648590148273905">Pogoji za ChromeOS Flex</translation>
@@ -183,6 +184,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4969674060580488087">ChromeOS Flex ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="4970761609246024540">Pozdravljeni v profilih v Chromu</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5037581483200764584">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete macOS 10.13 ali novejšega. V tem računalniku je nameščen OS X 10.11.</translation>
 <translation id="5132929315877954718">Odkrijte zanimive aplikacije, igre, razširitve in teme za Google Chrome.</translation>
 <translation id="5139423532931106058">Prilagajanje profila v Chromu</translation>
 <translation id="5163087008893166964">Pozdravljeni v Chromu; odprlo se je novo okno brskalnika</translation>
@@ -282,6 +284,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7651907282515937834">Logotip za Chrome Enterprise</translation>
 <translation id="7655455401911432608">Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
+<translation id="7748512868279796735">Za ta profil v Chromu so na voljo ti računi.</translation>
 <translation id="7761834446675418963">Kliknite ime, da odprete Chrome in začnete brskati.</translation>
 <translation id="7777080907402804672">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="7781002470561365167">Na voljo je nova različica brskalnika Google Chrome.</translation>
@@ -301,7 +304,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8013993649590906847">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">O &amp;Google Chromu</translation>
-<translation id="822971176939352383">Naslednji računi niso prijavljeni v noben profil v Chromu. Če želite uporabiti račun v drugem profilu, najprej odstranite ta profil.</translation>
 <translation id="8255190535488645436">Google Chrome uporablja vašo kamero in mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="828798499196665338">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Omogočanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

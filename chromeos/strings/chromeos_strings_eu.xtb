@@ -95,6 +95,7 @@
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
 <translation id="1947737735496445907">Inprimatuta</translation>
 <translation id="1951012854035635156">Laguntzailea</translation>
+<translation id="1977994649430373166">Google-ko profileko argazkia</translation>
 <translation id="1979103255016296513">Pasahitza iraungita dago eta aldatu egin behar da</translation>
 <translation id="1999615961760456652">Sare-zerbitzuaren ataria</translation>
 <translation id="2006864819935886708">Konexioa</translation>
@@ -121,6 +122,7 @@
 <translation id="222447520299472966">Arte-galeria kategoriako album bat gutxienez hautatu behar da</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Teklatuaren atzeko argiztapenaren etengailua</translation>
 <translation id="2240366984605217732">Diseinua aldatzeko etengailua</translation>
 <translation id="225692081236532131">Aktibazioaren egoera</translation>
 <translation id="2287186687001756809">Ez dago irudirik. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
@@ -626,6 +628,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Gaitu kolore automatikoaren modua</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
+<translation id="8045012663542226664">Mikrofonoa desaktibatzeko botoia</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="8082366717211101304">Ezin da ebatzi DNS Android-erako aplikazioetatik</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>

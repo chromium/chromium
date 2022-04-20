@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Еврей галиг</translation>
 <translation id="1747761757048858544">Голланд (Нидерланд)</translation>
 <translation id="174937106936716857">Нийт файлын тоо</translation>
+<translation id="1755345808328621801">Энэ файл Windows программ хангамжийг ашиглаж буй PC-нд зориулагдсан. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome Веб Дэлгүүрээс орлуулж болох тохирох аппыг хайна уу.</translation>
 <translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
 <translation id="180035236176489073">Та эдгээр файлуудад хандахын тулд онлайн байх ёстой.</translation>
@@ -117,7 +118,6 @@
 <translation id="1936717151811561466">Финланд</translation>
 <translation id="1942765061641586207">Зургийн нягтрал</translation>
 <translation id="1972984168337863910">Файлын cанал хүсэлтийн түр зуурын самбарыг дэлгэх</translation>
-<translation id="1984456723671657197">Энэ файлын төрлийг дэмждэггүй. Chrome үйлдлийн систем дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
@@ -226,6 +226,7 @@
 <translation id="2943503720238418293">Богино нэр ашиглах</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />-г форматалж байна...</translation>
 <translation id="2951236788251446349">Далайн мөгөөрс</translation>
+<translation id="2977940621473452797">Энэ файл нь Macintosh программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome Веб Дэлгүүрээс орлуулж болох тохирох аппыг хайна уу.</translation>
 <translation id="2984337792991268709">Өнөөдөр <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> зүйлийг сэргээж байна...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />-г нөөцөлж чадсангүй</translation>
@@ -423,6 +424,7 @@
 <translation id="4694604912444486114">Сармагчин</translation>
 <translation id="469612310041132144">Хятад квик</translation>
 <translation id="4697043402264950621">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу өсөх дарааллаар эрэмбэлсэн.</translation>
+<translation id="469897186246626197">Энэ файл нь Windows программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">Бичгийн машины гартай тамил</translation>
 <translation id="4711094779914110278">Турк хэл</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />"-г нээж байна</translation>
@@ -541,6 +543,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Авиа зүйн гартай болгар</translation>
 <translation id="5605830556594064952">АНУ-ын Дворак</translation>
+<translation id="5618330573454123917">Энэ файл нь Macintosh программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil99 гартай тамил</translation>
 <translation id="5633226425545095130">Энэ зүйлийг зөөснөөр үүнийг '<ph name="DESTINATION_NAME" />' хуваалцсан фолдерыг харах боломжтой бүх хүнтэй хуваалцана.</translation>
 <translation id="5649768706273821470">Сонсох</translation>
@@ -699,7 +702,6 @@
 <translation id="6970230597523682626">Болгар хэл</translation>
 <translation id="6973630695168034713">Хавтас</translation>
 <translation id="6976795442547527108">Арслан</translation>
-<translation id="6978611942794658017">Энэ файлыг Windows үйлдлийн системтэй PC-нд зориулсан байна. Иймээс энэхүү файл нь Chrome OS системтэй төхөөрөмжтэй тохирохгүй юм. Та Chrome Web Store-оос өөр тохирох апликейшн олно уу.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Таны хангалттай зай алга байна.</translation>
@@ -737,6 +739,7 @@
 <translation id="7309413087278791451">Герман (Бельги)</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="7343393116438664539">Вьетнам телекс</translation>
+<translation id="7357762654218998920">Энэ файлын төрлийг дэмждэггүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулж байна...</translation>
 <translation id="7375951387215729722">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу буурах дарааллаар эрэмбэлсэн.</translation>
 <translation id="7402503521691663770">ChromeOS Flex төхөөрөмжүүд</translation>
@@ -821,7 +824,6 @@
 <translation id="7972920761225148017">Франц (Швейцар)</translation>
 <translation id="7973962044839454485">Хэрэглэгчийн нэр эсвэл нууц үг буруу орсноос PPP баталгаажуулалт амжилтгүй боллоо.</translation>
 <translation id="7980421588063892270">Colemak гартай англи (АНУ)</translation>
-<translation id="79907182588096956">Энэ файл нь Windows программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны Chrome үйлдлийн системийг ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome үйлдлийн систем дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="8000066093800657092">Ямар ч сүлжээ алга байна</translation>
 <translation id="8008366997883261463">Жак Рассел Терриер</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
@@ -932,7 +934,6 @@
 <translation id="8912078710089354287">Сүүлээ годолзуулж буй нохой</translation>
 <translation id="8919081441417203123">Дани хэл</translation>
 <translation id="8965697826696209160">Хангалттай багтаамж байхгүй байна.</translation>
-<translation id="8970501467542182729">Энэ файл нь Macintosh программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны Chrome үйлдлийн системийг ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome үйлдлийн систем дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">Хятад (уламжлалт) пиньинь</translation>
 <translation id="9003940392834790328">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="9017798300203431059">Орос хэлний авиа зүй</translation>
@@ -951,7 +952,6 @@
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />'-н гишүүд эдгээр зүйлд хандах эрхтэй болно.</translation>
 <translation id="9131598836763251128">Нэг буюу хэд хэдэн файлуудыг сонгох</translation>
 <translation id="9133055936679483811">Файл нэгтгэлт амжилтгүй боллоо. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Энэ файл нь Macintosh-ийн программ хангамжийг ашигладаг компьютерт зориулагдсан байна. Энэ нь Chrome OS ажиллуулдаг таны төхөөрөмжтэй тохирохгүй тул та Chrome Web Store-оос таны төхөөрөмжтэй тохирох өөр апликейшнийг олно уу.</translation>
 <translation id="9144340019284012223">Каталан</translation>
 <translation id="914873105831852105">ПИН буруу байна. Танд 1 оролдлого үлдсэн байна.</translation>
 <translation id="9153934054460603056">Таних тэмдэг болон нууц үгийг хадгалах</translation>

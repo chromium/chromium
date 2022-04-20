@@ -368,7 +368,6 @@
 <translation id="1363585519747660921">USB-skriveren må konfigureres</translation>
 <translation id="1367951781824006909">Velg en fil</translation>
 <translation id="1369149969991017342">Brytertilgang (kontrollér datamaskinen med bare én eller to brytere)</translation>
-<translation id="1371863479305430391">Se, skjul og svar på varslene på telefonen din. Strøm meldingsappene på telefonen din.</translation>
 <translation id="1372841398847029212">Synkroniser til kontoen din</translation>
 <translation id="1373176046406139583">Synligheten til enheten din kontrollerer hvem som kan dele med deg mens skjermen er låst opp. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Sertifikatet som kreves av nettverket «<ph name="NETWORK_NAME" />» mangler eller er ikke gyldig lenger. Hent et nytt sertifikat og prøv å koble til på nytt.</translation>
@@ -421,7 +420,6 @@
 <translation id="1415708812149920388">Lesetilgang til utklippstavlen er avvist</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») tillates ikke i denne typen økt.</translation>
 <translation id="1418954524306642206">Bla gjennom for å spesifisere PPD for skriveren</translation>
-<translation id="1420732223884894666">Se nylige bilder og medier fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Medielisenser</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> for å tillate sammenkobling.</translation>
 <translation id="1421934779300263861">Bidra til å gjøre funksjonene og ytelsen til Chrome og ChromeOS bedre ved å sende programstopprapporter, diagnostikk og bruksdata automatisk til Google. Noen samlede data hjelper også Android-apper og Google-partnere. Hvis innstillingen for Nett- og appaktivitet er påslått for Google-kontoen din, kan Android-data bli lagret i Google-kontoen.</translation>
@@ -720,7 +718,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1682548588986054654">Nytt inkognitovindu</translation>
 <translation id="1682867089915960590">Vil du slå på markørsurfing?</translation>
 <translation id="1684279041537802716">Markeringsfarge</translation>
-<translation id="168511795252678620">Nylige bilder og meldingsapper</translation>
 <translation id="1686550358074589746">Slå på sveipeskriving</translation>
 <translation id="168715261339224929">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering.</translation>
 <translation id="1688867105868176567">Vil du fjerne nettstedsdata?</translation>
@@ -2604,7 +2601,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3526034519184079374">Kan ikke lese eller endre data på nettstedet</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3528498924003805721">Snarveimål</translation>
-<translation id="3531383404180922673">Se nylige bilder, medier og varsler fra telefonen din. Strøm meldingsappene på telefonen din.</translation>
 <translation id="3532273508346491126">Synkroniseringsadministrasjon</translation>
 <translation id="3532521178906420528">Etablerer nettverkstilkobling …</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – lyden er kuttet</translation>
@@ -5228,7 +5224,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6185132558746749656">Enhetsposisjon</translation>
 <translation id="6188346519670155113">Chrome-nettlesersynkronisering er påslått</translation>
 <translation id="6190953336330058278">Telefonstyring-apper</translation>
-<translation id="619279033188484792">Se nylige bilder, medier og varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">lese informasjon om nettleseren din, OS-et ditt og enheten din</translation>
 <translation id="6195693561221576702">Denne enheten kan ikke konfigureres i demomodus uten nett.</translation>
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
@@ -6201,7 +6196,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
 <translation id="7154130902455071009">endre startsiden din til: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
-<translation id="7155352398126583949">Varsler og meldingsapper</translation>
 <translation id="7163202347044721291">Bekrefter aktiveringskoden …</translation>
 <translation id="716640248772308851">«<ph name="EXTENSION" />» kan lese bilder, videofiler og lydfiler i mappene som står oppført.</translation>
 <translation id="7167486101654761064">Åpne &amp;alltid filer av denne typen</translation>
@@ -7213,7 +7207,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8141725884565838206">Administrer passordene dine</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{en video}other{# videoer}}</translation>
 <translation id="8143442547342702591">Ugyldig app</translation>
-<translation id="8143475123634606318">Strøm meldingsappene på telefonen din</translation>
 <translation id="8143609395536282994">Slik kan du administrere dataene dine:</translation>
 <translation id="8143951647992294073">Velg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Hvis du allerede er registrert på denne enheten, kan du <ph name="LINK2_START" />logge deg på som en eksisterende bruker<ph name="LINK2_END" />.</translation>
@@ -7504,7 +7497,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8439506636278576865">Tilby å oversette nettsider på dette språket</translation>
 <translation id="8440630305826533614">Linux-apper</translation>
 <translation id="8443795068008423036">Sørg for at enheten er oppdatert, og prøv på nytt</translation>
-<translation id="8445046761938045900">Nylige bilder, varsler og meldingsapper</translation>
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8447409163267621480">Inkluder enten Ctrl eller Alt</translation>
 <translation id="844850004779619592">Fant ingen kommandoer</translation>
@@ -7836,7 +7828,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8780443667474968681">Talesøk er slått av.</translation>
 <translation id="8781834595282316166">Ny fane i gruppen</translation>
 <translation id="8782565991310229362">Oppstart av kiosk-appen er avbrutt.</translation>
-<translation id="8783526165720272136">Meldingsapper</translation>
 <translation id="8783834180813871000">Skriv inn Bluetooth-sammenkoblingskoden, og trykk på Retur eller Enter.</translation>
 <translation id="8784626084144195648">Gjennomsnitt av grupperte data</translation>
 <translation id="8785622406424941542">Pekepenn</translation>
@@ -8248,7 +8239,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9186963452600581158">Logg på med Google-kontoen til et barn</translation>
 <translation id="9187967020623675250">Tastene stemmer ikke overens. Trykk på en tast for å <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK2" />Finn ut mer<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Se nylige bilder og medier fra telefonen din. Strøm meldingsappene på telefonen din.</translation>
 <translation id="919686179725692564">Finn ut mer om sikkerhetskopiering av appene dine</translation>
 <translation id="9198090666959937775">Bruk Android-telefonen din som sikkerhetsnøkkel</translation>
 <translation id="9199503643457729322">Klikk for å navigere bort fra personvernveiledningen.</translation>

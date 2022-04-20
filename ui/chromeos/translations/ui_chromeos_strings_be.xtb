@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">Фінская</translation>
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
-<translation id="1984456723671657197">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
 <translation id="2001796770603320721">Кіраваць на Дыску</translation>
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
@@ -701,7 +700,6 @@
 <translation id="6970230597523682626">Балгарская</translation>
 <translation id="6973630695168034713">Папкі</translation>
 <translation id="6976795442547527108">Леў</translation>
-<translation id="6978611942794658017">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай на Chrome OS. Пашукайце ў Вэб-краме Chrome адпаведную праграму на замену.</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6989942356279143254">Шведская</translation>
 <translation id="6990081529015358884">У вас скончылася месца</translation>
@@ -823,7 +821,6 @@
 <translation id="7972920761225148017">Французская (Швейцарыя)</translation>
 <translation id="7973962044839454485">Не ўдалося выканаць аўтэнтыфікацыю PPP: няправільнае імя карыстальніка ці пароль</translation>
 <translation id="7980421588063892270">Англійская (ЗША) з раскладкай Colemak</translation>
-<translation id="79907182588096956">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="8000066093800657092">Няма сеткі</translation>
 <translation id="8008366997883261463">Сабака</translation>
 <translation id="8028993641010258682">Памер</translation>
@@ -934,7 +931,6 @@
 <translation id="8912078710089354287">Сабака віляе хвастом</translation>
 <translation id="8919081441417203123">Дацкая</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
-<translation id="8970501467542182729">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="9017798300203431059">Руская фанетычная</translation>
@@ -953,7 +949,6 @@
 <translation id="9130775360844693113">Да гэтых элементаў атрымаюць доступ удзельнікі дыска "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="9131598836763251128">Выберыце адзін або некалькі файлаў</translation>
 <translation id="9133055936679483811">Збой архівавання. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён не сумяшчальны з вашай прыладай, на якой працуе Chrome OS. Пашукайце ў Вэб-краме Chrome адпаведную праграму на замену.</translation>
 <translation id="9144340019284012223">Каталанская</translation>
 <translation id="914873105831852105">Няправільны PIN-код. У вас засталася 1 спроба.</translation>
 <translation id="9153934054460603056">Захаваць уліковыя даныя і пароль</translation>

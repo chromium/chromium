@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">समाप्त गर्नुहोस्</translation>
 <translation id="1942765061641586207">छविको रिजोल्युसन</translation>
 <translation id="1972984168337863910">फाइलका प्रतिक्रियाका प्यानलहरू विस्तृत गर्नुहोस्</translation>
-<translation id="1984456723671657197">यो प्रकारको फाइल प्रयोग गर्न मिल्दैन। Chrome OS मा फाइल खोल्ने तरिकाबारे <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
 <translation id="1995337122023280937">फाइल रहेको स्थानमा जानुहोस्</translation>
 <translation id="2001796770603320721">ड्राइभमा व्यवस्थित गर्नुहोस्</translation>
 <translation id="2009067268969781306">ड्राइभ फर्म्याट गर्नुले यसमा भण्डार गरिएका सम्पूर्ण डेटा मेट्ने छ। यो कार्य उल्टाउन सकिँदैन।</translation>
@@ -701,7 +700,6 @@
 <translation id="6970230597523682626">बुल्गेरियन</translation>
 <translation id="6973630695168034713">फोल्डरहरू</translation>
 <translation id="6976795442547527108">सिंह</translation>
-<translation id="6978611942794658017">यो फाइल Windows सफ्वेयर प्रयोग गर्ने पिसीको लागि डिजाइन गरिएको हो। यो तपाइँको यन्त्रसँग मिल्दो छैन जसले Chrome OS चालू गर्छ। कृपया एक मिल्दो एपको लागि Chrome Web Store मा खोज्नुहोस्।</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6989942356279143254">स्विडिस</translation>
 <translation id="6990081529015358884">तपाईंको खाली स्थान समाप्त भएको छ</translation>
@@ -823,7 +821,6 @@
 <translation id="7972920761225148017">फ्रान्सेली (स्विजरल्यान्ड)</translation>
 <translation id="7973962044839454485">गलत एक-पटके टेक्स्ट म्यासेज वा पासवर्डको कारणले गर्दा PPP प्रमाणीकरण असफल भयो</translation>
 <translation id="7980421588063892270">अङ्ग्रेजी (सं. रा. अमेरिकी) कोलमाक किबोर्ड</translation>
-<translation id="79907182588096956">यो फाइल Windows सफ्टवेयर प्रयोग गर्ने PC का लागि डिजाइन गरिएको हो। यो फाइल Chrome OS प्रयोग गर्ने तपाईंको यन्त्रसँग कम्प्याटिबल छैन। Chrome OS मा फाइल खोल्ने तरिकाबारे <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
 <translation id="8000066093800657092">कुनै नेटवर्क छैन</translation>
 <translation id="8008366997883261463">ज्याक रसल टेरियर</translation>
 <translation id="8028993641010258682">आकार</translation>
@@ -934,7 +931,6 @@
 <translation id="8912078710089354287">पुच्छर हल्लाइरहेको कुकुर</translation>
 <translation id="8919081441417203123">ड्यानिस</translation>
 <translation id="8965697826696209160">त्यहाँ उपयुक्त ठाउँ छैन।</translation>
-<translation id="8970501467542182729">यो फाइल Macintosh सफ्टवेयर प्रयोग गर्ने कम्प्युटरका लागि तयार पारिएको हो। यो फाइल Chrome OS प्रयोग गर्ने तपाईंको यन्त्रसँग कम्प्याटिबल छैन। Chrome OS मा फाइल खोल्ने तरिकाबारे <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
 <translation id="8997962250644902079">चिनियाँ (परम्परागत) पिनयिन</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क<ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="9017798300203431059">रसियन फोनेटिक</translation>
@@ -953,7 +949,6 @@
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' का सदस्यहरूले यी वस्तुहरूको प्रतिलिपिमाथिको पहुँच पाउनुहुनेछ।</translation>
 <translation id="9131598836763251128">एक वा बढी फाइलहरू चयन गर्नुहोस्</translation>
 <translation id="9133055936679483811">जिप गर्ने कार्य असफल भयो। <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">यो फाइल म्याकिन्टस सफ्टवेयर प्रयोग गर्ने कम्प्युटरको लागि डिजाइन गरिएको हो। यो तपाइँको यन्त्रसँग मिल्दो छैन जसले Chrome OS प्रयोग गर्छ। कृपया एक मिल्दो एपको लागि Chrome Web Store मा खोज्नुहोस्।</translation>
 <translation id="9144340019284012223">क्याटालन</translation>
 <translation id="914873105831852105">PIN अवैध छ। तपाईं अझै १ पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="9153934054460603056">परिचय र पासवर्ड बचत गर्नुहोस्</translation>

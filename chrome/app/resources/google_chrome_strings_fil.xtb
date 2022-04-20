@@ -50,6 +50,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
+<translation id="1952239763774043237">Para makakuha ng mga update sa Google Chrome sa hinaharap, kakailanganin mo ng macOS 10.13 o mas bago. Gumagamit ang computer na ito ng macOS 10.12.</translation>
 <translation id="2018528049276128029">Ang bawat profile ay may sariling impormasyon sa Chrome tulad ng mga bookmark, history, mga password, at iba pa</translation>
 <translation id="207902854391093810">Kapag naka-on ang mga trial, nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chrome na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
 <translation id="2094648590148273905">Mga tuntunin ng ChromeOS Flex</translation>
@@ -183,6 +184,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4969674060580488087">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="4970761609246024540">Welcome sa mga profile sa Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5037581483200764584">Para makakuha ng mga update sa Google Chrome sa hinaharap, kakailanganin mo ng macOS 10.13 o mas bago. Gumagamit ang computer na ito ng OS X 10.11.</translation>
 <translation id="5132929315877954718">Tumuklas ng mahuhusay na app, laro, extension at tema para sa Google Chrome.</translation>
 <translation id="5139423532931106058">I-customize ang iyong profile sa Chrome</translation>
 <translation id="5163087008893166964">Welcome sa Chrome; binuksan ang bagong window ng browser</translation>
@@ -282,6 +284,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7651907282515937834">Logo ng Chrome Enterprise</translation>
 <translation id="7655455401911432608">Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chrome sa device na ito.</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
+<translation id="7748512868279796735">Available ang mga sumusunod na account para sa profile sa Chrome na ito</translation>
 <translation id="7761834446675418963">I-click ang iyong pangalan upang buksan ang Chrome at simulan ang pagba-browse.</translation>
 <translation id="7777080907402804672">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="7781002470561365167">May magagamit na bagong bersyon ng Google Chrome.</translation>
@@ -301,7 +304,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8013993649590906847">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Tungkol sa &amp;Google Chrome</translation>
-<translation id="822971176939352383">Hindi naka-sign in sa anumang profile sa Chrome ang mga sumusunod na account. Kung gusto mong gumamit ng account sa ibang profile, alisin muna ang profile na iyon.</translation>
 <translation id="8255190535488645436">Ginagamit ng Google Chrome ang iyong camera at mikropono.</translation>
 <translation id="8286862437124483331">Sinusubukan ng Google Chrome na ipakita ang mga password. I-type ang iyong password sa Windows upang payagan ito.</translation>
 <translation id="828798499196665338">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chrome. Hindi pinapayagan ang pag-enable sa <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>

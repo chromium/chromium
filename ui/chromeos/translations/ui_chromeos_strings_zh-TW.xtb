@@ -117,7 +117,6 @@
 <translation id="1936717151811561466">芬蘭文</translation>
 <translation id="1942765061641586207">影像解析度</translation>
 <translation id="1972984168337863910">展開檔案意見回饋面板</translation>
-<translation id="1984456723671657197">系統不支援這種檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="1995337122023280937">前往檔案位置</translation>
 <translation id="2001796770603320721">在雲端硬碟中管理</translation>
 <translation id="2009067268969781306">若將硬碟格式化，其中儲存的所有資料都將遭到刪除。這項操作無法復原。</translation>
@@ -702,7 +701,6 @@
 <translation id="6970230597523682626">保加利亞文</translation>
 <translation id="6973630695168034713">資料夾</translation>
 <translation id="6976795442547527108">獅子</translation>
-<translation id="6978611942794658017">這個檔案是專為使用 Windows 軟體的 PC 電腦所設計，與搭載 Chrome 作業系統的裝置不相容。請前往 Chrome 線上應用程式商店尋找適合的替代應用程式。</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6989942356279143254">瑞典文</translation>
 <translation id="6990081529015358884">沒有可用的空間</translation>
@@ -824,7 +822,6 @@
 <translation id="7972920761225148017">法文 (瑞士)</translation>
 <translation id="7973962044839454485">使用者名稱或密碼錯誤，導致 PPP 驗證失敗</translation>
 <translation id="7980421588063892270">英文 (美國) 搭配 Colemak 鍵盤</translation>
-<translation id="79907182588096956">這個檔案是專為使用 Windows 軟體的個人電腦所設計，與搭載 Chrome 作業系統的裝置不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="8000066093800657092">沒有網路</translation>
 <translation id="8008366997883261463">傑克羅素梗</translation>
 <translation id="8028993641010258682">大小</translation>
@@ -935,7 +932,6 @@
 <translation id="8912078710089354287">搖尾巴的狗</translation>
 <translation id="8919081441417203123">丹麥文</translation>
 <translation id="8965697826696209160">空間不足。</translation>
-<translation id="8970501467542182729">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome 作業系統的裝置不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="8997962250644902079">中文 (繁體拼音)</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，詳細資料</translation>
 <translation id="9017798300203431059">俄文 (拼音)</translation>
@@ -954,7 +950,6 @@
 <translation id="9130775360844693113">「<ph name="DESTINATION_NAME" />」的成員將可存取這些項目。</translation>
 <translation id="9131598836763251128">選取一或多個檔案</translation>
 <translation id="9133055936679483811">壓縮失敗。<ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome 作業系統的裝置不相容。請前往 Chrome 線上應用程式商店尋找適合的替代應用程式。</translation>
 <translation id="9144340019284012223">加泰隆尼亞文</translation>
 <translation id="914873105831852105">PIN 碼無效，你只剩 1 次重試機會。</translation>
 <translation id="9153934054460603056">儲存身分與密碼</translation>

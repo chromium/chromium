@@ -372,7 +372,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1363585519747660921">Mae angen ffurfweddu'r argraffydd USB</translation>
 <translation id="1367951781824006909">Dewis ffeil</translation>
 <translation id="1369149969991017342">Mynediad Switsh (rheoli'r cyfrifiadur gyda dim ond un neu ddau switsh)</translation>
-<translation id="1371863479305430391">Gweld, gwrthod, ac ymateb i hysbysebion eich ffôn. Ffrydio apiau negeseuon eich ffôn.</translation>
 <translation id="1372841398847029212">Cysoni i'ch cyfrif</translation>
 <translation id="1373176046406139583">Mae gwelededd eich dyfais yn rheoli pwy all rannu â chi tra bod eich sgrîn wedi'i datgloi. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Nid yw'r dystysgrif sy'n ofynnol gan y rhwydwaith "<ph name="NETWORK_NAME" />" naill ai wedi'i gosod neu nid yw bellach yn ddilys.  Cewch dystysgrif newydd a rhowch gynnig arall ar gysylltu.</translation>
@@ -425,7 +424,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1415708812149920388">Gwrthodwyd mynediad darllen y clipfwrdd</translation>
 <translation id="1415990189994829608">Ni chaniateir <ph name="EXTENSION_NAME" /> (rhif adnabod yr estyniad "<ph name="EXTENSION_ID" />") yn y math hwn o sesiwn.</translation>
 <translation id="1418954524306642206">Porwch i nodi PPD eich argraffydd</translation>
-<translation id="1420732223884894666">Gweld lluniau a chyfryngau diweddar eich ffôn ar <ph name="DEVICE_TYPE" /></translation>
 <translation id="1420834118113404499">Trwyddedau cyfryngau</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> i ganiatáu paru</translation>
 <translation id="1421934779300263861">Helpu i wella nodweddion a pherfformiad Chrome a ChromeOS drwy anfon adroddiadau toriadau yn awtomatig ynghyd â data diagnostig a defnydd at Google. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau Android a phartneriaid Google. Os yw'r gosodiad Gweithgarwch ar y We ac Apiau wedi'i droi ymlaen ar gyfer eich Cyfrif Google, gellir cadw eich data Android i'ch Cyfrif Google.</translation>
@@ -725,7 +723,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1682548588986054654">Ffenestr Anhysbys Newydd</translation>
 <translation id="1682867089915960590">Troi Pori Caret Ymlaen?</translation>
 <translation id="1684279041537802716">Lliw arlliw</translation>
-<translation id="168511795252678620">Lluniau diweddar ac apiau negeseuon</translation>
 <translation id="1686550358074589746">Galluogi llithrdeipio</translation>
 <translation id="168715261339224929">I gael eich nodau tudalen ar eich holl ddyfeisiau, trowch gysoni ymlaen.</translation>
 <translation id="1688867105868176567">Clirio data'r wefan?</translation>
@@ -2611,7 +2608,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3526034519184079374">Methu â Darllen na Newid Data Gwefan</translation>
 <translation id="3527085408025491307">Ffolder</translation>
 <translation id="3528498924003805721">Targedau llwybrau byr</translation>
-<translation id="3531383404180922673">Gweld lluniau, cyfryngau, a hysbysebion diweddar eich ffôn. Ffrydio apiau negeseuon eich ffôn.</translation>
 <translation id="3532273508346491126">Rheoli cysoni</translation>
 <translation id="3532521178906420528">Wrthi'n sefydlu cysylltiad rhwydwaith ...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Sain wedi'i ddistewi</translation>
@@ -5237,7 +5233,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6185132558746749656">Lleoliad Dyfais</translation>
 <translation id="6188346519670155113">Mae cysoni porwr Chrome ymlaen</translation>
 <translation id="6190953336330058278">Apiau Phone Hub</translation>
-<translation id="619279033188484792">Gweld lluniau, cyfryngau, a hysbysebion diweddar eich ffôn ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="6195005504600220730">Darllen gwybodaeth am eich porwr, eich OS a'ch dyfais</translation>
 <translation id="6195693561221576702">Ni ellir gosod y ddyfais hon yn y modd demo all-lein.</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
@@ -6210,7 +6205,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="7152478047064750137">Nid oes angen caniatadau arbennig ar gyfer yr estyniad hwn</translation>
 <translation id="7154130902455071009">Newid eich tudalen gychwynnol i: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Llun presennol o'r camera neu ffeil</translation>
-<translation id="7155352398126583949">Hysbysebion ac apiau negeseuon</translation>
 <translation id="7163202347044721291">Wrthi'n dilysu cod gweithredu...</translation>
 <translation id="716640248772308851">Gall "<ph name="EXTENSION" />" ddarllen ffeiliau llun, fideo a sain yn y lleoliadau sydd wedi'u ticio.</translation>
 <translation id="7167486101654761064">&amp;Agor ffeiliau o'r math hwn bob tro</translation>
@@ -7222,7 +7216,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8141725884565838206">Rheoli eich cyfrineiriau</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{fideo}zero{# fideo}two{# fideo}few{# fideo}many{# fideo}other{# fideo}}</translation>
 <translation id="8143442547342702591">Ap annilys</translation>
-<translation id="8143475123634606318">Ffrydio apiau negeseuon eich ffôn</translation>
 <translation id="8143609395536282994">Sut allwch chi reoli'ch data:</translation>
 <translation id="8143951647992294073">Dewiswch <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Os ydych eisoes wedi cofrestru ar y ddyfais hon, gallwch <ph name="LINK2_START" />fewngofnodi fel defnyddiwr presennol<ph name="LINK2_END" />.</translation>
@@ -7513,7 +7506,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8439506636278576865">Cynnig cyfieithu tudalennau yn yr iaith hon</translation>
 <translation id="8440630305826533614">Apiau Linux</translation>
 <translation id="8443795068008423036">Gwnewch yn siŵr bod eich dyfais yn gyfredol a rhowch gynnig arall arni</translation>
-<translation id="8445046761938045900">Lluniau diweddar, hysbysebion, ac apiau negeseuon</translation>
 <translation id="8446884382197647889">Dysgu rhagor</translation>
 <translation id="8447409163267621480">Cynnwys naill ai Ctrl neu Alt</translation>
 <translation id="844850004779619592">Heb ganfod unrhyw orchmynion</translation>
@@ -7849,7 +7841,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8780443667474968681">Mae chwilio â llais wedi'i ddiffodd.</translation>
 <translation id="8781834595282316166">Mae Tab newydd yn y Grŵp</translation>
 <translation id="8782565991310229362">Mae lansio'r ap Kiosk wedi'i ganslo.</translation>
-<translation id="8783526165720272136">Apiau negeseuon</translation>
 <translation id="8783834180813871000">Teipiwch y cod paru Bluetooth yna pwyswch Return neu Enter.</translation>
 <translation id="8784626084144195648">Cyfartaledd ar ôl Grwpio</translation>
 <translation id="8785622406424941542">Pwyntil</translation>
@@ -8260,7 +8251,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9186963452600581158">Mewngofnodi gyda Chyfrif Google plentyn</translation>
 <translation id="9187967020623675250">Nid yw'r bysellau'n cyfateb. Pwyswch unrhyw fysell i <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Anfon data defnydd a diagnostig. Ar hyn o bryd mae'r ddyfais hon yn anfon data diagnostig, dyfais ac ap yn awtomatig at Google. Ni ddefnyddir hwn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Os yw'r gosodiad Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w Gyfrif Google. <ph name="BEGIN_LINK2" />Dysgu rhagor<ph name="END_LINK2" /></translation>
-<translation id="919679265671373777">Gweld lluniau a chyfryngau diweddar eich ffôn. Ffrydio apiau negeseuon eich ffôn.</translation>
 <translation id="919686179725692564">Dysgu rhagor am wneud copïau wrth gefn o'ch apiau</translation>
 <translation id="9198090666959937775">Defnyddio'ch ffôn Android fel allwedd ddiogelwch</translation>
 <translation id="9199503643457729322">Cliciwch i lywio i ffwrdd o'r Canllaw Preifatrwydd.</translation>
