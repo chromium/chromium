@@ -33,6 +33,7 @@ non_web_component_files = [
   "trusted/iframe_api.ts",
   "trusted/personalization_actions.ts",
   "trusted/personalization_app.ts",
+  "trusted/personalization_metrics_logger.ts",
   "trusted/personalization_reducers.ts",
   "trusted/personalization_state.ts",
   "trusted/personalization_store.ts",

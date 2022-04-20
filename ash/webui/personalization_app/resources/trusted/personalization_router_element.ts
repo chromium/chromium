@@ -15,6 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personalization_app.mojom-webui.js';
+import {logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
 
 export enum Paths {
@@ -178,6 +179,9 @@ export class PersonalizationRouter extends PolymerElement {
       this.setProperties({path_: Paths.Root, queryParams_: {}});
     }
 
+    if (isPathValid(path)) {
+      logPersonalizationPathUMA(path as Paths);
+    }
     // Update the page title when the path changes.
     // TODO(b/228967523): Wallpaper related pages have been handled in their
     // specific Polymer elements so they are skipped here. See if we can move

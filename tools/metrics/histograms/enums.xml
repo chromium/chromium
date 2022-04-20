@@ -72459,6 +72459,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Serialization error"/>
 </enum>
 
+<enum name="PersonalizationPath">
+  <int value="0" label="Screensaver"/>
+  <int value="1" label="Screensaver Albums"/>
+  <int value="2" label="Wallpaper Online Collection"/>
+  <int value="3" label="Wallpaper"/>
+  <int value="4" label="Wallpaper Google Photos Collection"/>
+  <int value="5" label="Wallpaper Local Collection"/>
+  <int value="6" label="Root"/>
+  <int value="7" label="Avatar"/>
+</enum>
+
 <enum name="PersonalizationThemeColorMode">
   <int value="0" label="Light mode"/>
   <int value="1" label="Dark mode"/>
