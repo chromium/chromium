@@ -206,7 +206,7 @@
 
     <style name="TextAppearance.Button.Text.Blue" parent="TextAppearance.TextAccentMediumThick"
         tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/blue_when_enabled</item>
+        <item name="android:textColor">@color/blue_when_enabled_list</item>
     </style>
     <style name="TextAppearance.Button.Text.Blue.Dark" parent="TextAppearance.TextAccentMediumThick"
         tools:ignore="UnusedResources">

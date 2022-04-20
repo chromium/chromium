@@ -41,7 +41,7 @@ public class AssistantStepProgressBar {
     // animation starts scaling and after a while the alpha changes.
     private static final int PULSING_ALPHA_CHANGE_DELAY_MS = 300;
     private static final int PULSING_RESTART_DELAY_MS = 2_000;
-    private static final int COLOR_LIST = R.color.blue_when_enabled;
+    private static final int COLOR_LIST = R.color.blue_when_enabled_list;
     private static final int ERROR_COLOR_LIST = R.color.default_red;
 
     private static class IconViewHolder {

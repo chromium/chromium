@@ -44,7 +44,7 @@
             android:id="@+id/chevron"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:tint="@color/blue_when_enabled"
+            android:tint="@color/blue_when_enabled_list"
             app:srcCompat="@drawable/ic_expand_more_black_24dp"
             tools:ignore="ContentDescription"/>
     </LinearLayout>

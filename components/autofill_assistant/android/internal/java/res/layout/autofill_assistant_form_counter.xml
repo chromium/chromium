@@ -36,7 +36,7 @@
         android:layout_width="@dimen/autofill_assistant_minimum_touch_target_size"
         android:layout_height="@dimen/autofill_assistant_minimum_touch_target_size"
         android:padding="@dimen/autofill_assistant_form_counter_button_padding"
-        android:tint="@color/blue_when_enabled"
+        android:tint="@color/blue_when_enabled_list"
         android:contentDescription="@string/autofill_assistant_decrease_value"
         app:srcCompat="@drawable/ic_remove_outline_white_24dp"/>
     <TextView
@@ -50,7 +50,7 @@
         android:layout_width="@dimen/autofill_assistant_minimum_touch_target_size"
         android:layout_height="@dimen/autofill_assistant_minimum_touch_target_size"
         android:padding="@dimen/autofill_assistant_form_counter_button_padding"
-        android:tint="@color/blue_when_enabled"
+        android:tint="@color/blue_when_enabled_list"
         android:contentDescription="@string/autofill_assistant_increase_value"
         app:srcCompat="@drawable/ic_add_outline_white_24dp"/>
 </LinearLayout>

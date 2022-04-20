@@ -5,5 +5,5 @@
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-  <solid android:color="@color/blue_when_enabled"/>
+  <solid android:color="@color/blue_when_enabled_list"/>
 </shape>

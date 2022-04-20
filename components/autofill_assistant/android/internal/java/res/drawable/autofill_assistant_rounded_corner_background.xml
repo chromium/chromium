@@ -7,5 +7,5 @@
     <corners
         android:radius="4dp" />
     <solid
-        android:color="@color/blue_when_enabled" />
+        android:color="@color/blue_when_enabled_list" />
 </shape>

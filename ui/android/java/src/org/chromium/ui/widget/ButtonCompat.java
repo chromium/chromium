@@ -65,8 +65,8 @@ public class ButtonCompat extends AppCompatButton {
 
         TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.ButtonCompat, android.R.attr.buttonStyle, 0);
-        int buttonColorId =
-                a.getResourceId(R.styleable.ButtonCompat_buttonColor, R.color.blue_when_enabled);
+        int buttonColorId = a.getResourceId(
+                R.styleable.ButtonCompat_buttonColor, R.color.blue_when_enabled_list);
         int rippleColorId = a.getResourceId(
                 R.styleable.ButtonCompat_rippleColor, R.color.filled_button_ripple_color);
         int borderColorId =
