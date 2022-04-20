@@ -659,14 +659,8 @@ def main():
   build_utils.InitLogging('PROGUARD_DEBUG')
   options = _ParseOptions()
 
-  logging.debug('Preparing configs')
-  # Temporarily skip failing proguard config until r8 is rolled: b/206957373
-  proguard_configs = [
-      cfg for cfg in options.proguard_configs if not cfg.endswith(
-          'java_com_google_privacy_one_psl_annotation_proguard.pgcfg')
-  ]
-
   # ProGuard configs that are derived from flags.
+  logging.debug('Preparing configs')
   dynamic_config_data = _CreateDynamicConfig(options)
 
   logging.debug('Looking for embedded configs')
@@ -685,7 +679,7 @@ def main():
     _ExtractEmbeddedConfigs(jar_path, embedded_configs)
 
   # ProGuard configs that are derived from flags.
-  merged_configs = _CombineConfigs(proguard_configs,
+  merged_configs = _CombineConfigs(options.proguard_configs,
                                    dynamic_config_data,
                                    embedded_configs,
                                    exclude_generated=True)
@@ -715,8 +709,9 @@ def main():
   }
   dynamic_config_data += '\n' + _CombineConfigs([], None, tools_configs)
 
-  split_contexts_by_name = _OptimizeWithR8(options, proguard_configs, libraries,
-                                           dynamic_config_data, print_stdout)
+  split_contexts_by_name = _OptimizeWithR8(options, options.proguard_configs,
+                                           libraries, dynamic_config_data,
+                                           print_stdout)
 
   if not options.disable_checks:
     logging.debug('Running tracereferences')
