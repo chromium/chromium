@@ -27,6 +27,8 @@ source_set("swift_interop_tests_support_files") {
     "namespace/namespace.h",
     "pointer/pointer_returner.cc",
     "pointer/pointer_returner.h",
+    "pointer/unique_ptr.cc",
+    "pointer/unique_ptr.h",
   ]
 }
 
@@ -40,6 +42,7 @@ swift_source_set("swift_interop_tests") {
     "enum/enum_xctest.swift",
     "namespace/namespace_xctest.swift",
     "pointer/pointer_xctest.swift",
+    "pointer/unique_ptr_xctest.swift",
   ]
   frameworks = [ "UIKit.framework" ]
   deps = [
