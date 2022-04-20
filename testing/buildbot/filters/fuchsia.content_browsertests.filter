@@ -25,14 +25,6 @@
 -WebContentsViewAuraTest.RepeatedQuickOverscrollGestures
 -WebRtcVideoCaptureServiceBrowserTest.FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
 
-# TODO(crbug.com/1306610): crbug.com/1306610: Enable once PDF rendering can be
-# enabled without PPAPI.
--All/BlockedSchemeNavigationBrowserTest.PDF_BrowserInitiatedNavigation_Allow/*
--All/BlockedSchemeNavigationBrowserTest.PDF_FormPost_Block/*
--All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_Block/*
--All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block/*
--All/BlockedSchemeNavigationBrowserTest.PDF_Navigation_Block/*
-
 # crbug.com/1280308: Tests are passing on a NUC but failing on the ARM64 bots.
 -MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
 -MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_VP9Profile2/0
