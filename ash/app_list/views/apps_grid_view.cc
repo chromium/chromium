@@ -199,16 +199,6 @@ int CompareHorizontalPointPositionToRect(gfx::Point point, gfx::Rect bounds) {
 
 }  // namespace
 
-bool GridIndex::IsValid() const {
-  return page >= 0 && slot >= 0;
-}
-
-std::string GridIndex::ToString() const {
-  std::stringstream ss;
-  ss << "Page: " << page << ", Slot: " << slot;
-  return ss.str();
-}
-
 // static
 constexpr int AppsGridView::kDefaultAnimationDuration;
 
@@ -1399,12 +1389,12 @@ void AppsGridView::CalculateIdealBounds() {
       view_model_.view_size() + pulsing_blocks_model_.view_size();
   int slot_index = 0;
   for (int i = 0; i < total_views; ++i) {
-    if (i < view_model_.view_size() && view_model_.view_at(i) == drag_view_) {
+    AppListItemView* item_view = view_model_.view_at(i);
+    if (i < view_model_.view_size() && item_view == drag_view_) {
       continue;
     }
 
-    if (i < view_model_.view_size() &&
-        view_model_.view_at(i) == view_with_locked_position) {
+    if (i < view_model_.view_size() && item_view == view_with_locked_position) {
       SetIdealBoundsForViewToGridIndex(i, open_folder_info_->grid_index);
       continue;
     }
@@ -1417,6 +1407,7 @@ void AppsGridView::CalculateIdealBounds() {
       view_index = view_structure_.GetIndexFromModelIndex(slot_index);
     }
 
+    item_view->SetMostRecentGridIndex(view_index, cols_);
     SetIdealBoundsForViewToGridIndex(i, view_index);
     ++slot_index;
   }
@@ -1465,6 +1456,9 @@ void AppsGridView::CalculateIdealBoundsForPageStructureWithPartialPages() {
 
       gfx::Rect tile_slot = GetExpectedTileBounds(GridIndex(i, j));
       tile_slot.Offset(CalculateTransitionOffset(i));
+      view_model()
+          ->view_at(model_index)
+          ->SetMostRecentGridIndex(GridIndex(i, j), cols_);
       view_model()->set_ideal_bounds(model_index, tile_slot);
       ++model_index;
     }
@@ -1504,14 +1498,12 @@ void AppsGridView::AnimateToIdealBounds() {
                          !IsViewHiddenForDrag(view) &&
                          (current_visible || target_visible);
 
-    const int y_diff = target.y() - current.y();
-    const int tile_size_height =
-        GetTotalTileSize(view_structure_.GetIndexFromModelIndex(i).page)
-            .height();
-    if (visible && y_diff && y_diff % tile_size_height == 0) {
+    if (visible && view->has_pending_row_change()) {
+      view->reset_has_pending_row_change();
       AnimationBetweenRows(view, current_visible, current, target_visible,
                            target);
     } else if (visible || bounds_animator_->IsAnimating(view)) {
+      view->EnsureLayer();
       bounds_animator_->AnimateViewTo(view, target);
       bounds_animator_->SetAnimationDelegate(view, nullptr);
     } else {

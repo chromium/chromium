@@ -31,6 +31,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -623,7 +624,8 @@ TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
       reorder_undo_toast_container->GetBoundsInScreen()));
 }
 
-// Test tapping on the close button to dismiss the reorder toast.
+// Test tapping on the close button to dismiss the reorder toast. Also make sure
+// that items animate upward to take the place of the closed toast.
 TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
   ui::ScopedAnimationDurationScaleMode scope_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -648,6 +650,29 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
   // Wait for the toast to finish fade out animation.
   EXPECT_EQ(toast_container->toast_view()->layer()->GetTargetOpacity(), 0.0f);
   LayerAnimationStoppedWaiter().Wait(toast_container->toast_view()->layer());
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      GetPagedAppsGridView()->view_model();
+
+  // Item views should animate upwards to take the place of the closed reorder
+  // toast.
+  for (int i = 1; i < view_model->view_size(); i++) {
+    AppListItemView* item_view = view_model->view_at(i);
+    // The items off screen on the second page should not animate.
+    if (i >= grid_test_api_->TilesPerPage(0)) {
+      EXPECT_FALSE(GetPagedAppsGridView()->IsAnimatingView(item_view));
+      continue;
+    }
+
+    // Make sure that no between rows animation is occurring by checking that
+    // all items are animating upward vertically and not horizontally.
+    EXPECT_TRUE(GetPagedAppsGridView()->IsAnimatingView(item_view));
+    gfx::Rect target_bounds =
+        GetPagedAppsGridView()->bounds_animator_for_testing()->GetTargetBounds(
+            item_view);
+    EXPECT_GT(item_view->bounds().y(), target_bounds.y());
+    EXPECT_EQ(item_view->bounds().x(), target_bounds.x());
+  }
 
   // Verify that another row appears once the toast is closed.
   EXPECT_EQ(3, GetPagedAppsGridView()->GetFirstPageRowsForTesting());

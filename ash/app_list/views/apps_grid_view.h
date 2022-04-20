@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/grid_index.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/paged_view_structure.h"
@@ -61,32 +62,6 @@ class PulsingBlockView;
 class GhostImageView;
 class AppsGridViewTest;
 class ScrollableAppsGridViewTest;
-
-// Represents the index to an item view in the grid.
-struct ASH_EXPORT GridIndex {
-  GridIndex() = default;
-  GridIndex(int page, int slot) : page(page), slot(slot) {}
-
-  bool operator==(const GridIndex& other) const {
-    return page == other.page && slot == other.slot;
-  }
-  bool operator!=(const GridIndex& other) const {
-    return page != other.page || slot != other.slot;
-  }
-  bool operator<(const GridIndex& other) const {
-    return std::tie(page, slot) < std::tie(other.page, other.slot);
-  }
-
-  // Whether the grid index is a valid index, i.e. whether page and slot are
-  // non-negative. This method does *not* check whether the index exists in an
-  // apps grid.
-  bool IsValid() const;
-
-  std::string ToString() const;
-
-  int page = -1;  // Which page an item view is on.
-  int slot = -1;  // Which slot in the page an item view is in.
-};
 
 // AppsGridView displays a grid of app icons. It is used for:
 // - The main grid of apps in the launcher

@@ -71,6 +71,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -960,6 +961,71 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseAnimation) {
   // The item should be repositioned immediately when the widget is not visible.
   EXPECT_FALSE(apps_grid_view_->IsAnimatingView(view0));
   EXPECT_EQ(view0->bounds(), GetItemRectOnCurrentPageAt(1, 2));
+}
+
+// Test that when dragging an item between pages/rows, the apps grid items
+// animate between rows correctly. Items should not animate vertically when the
+// reorder placeholder is changed during drag.
+TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+  model_->PopulateApps(GetTilesPerPage(0) + 15);
+  UpdateLayout();
+
+  GetPaginationModel()->SelectPage(1 /*page*/, false /*animate*/);
+  EXPECT_EQ(1, GetSelectedPage(paged_apps_grid_view_));
+
+  // Begin dragging the third item of the second page.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 2,
+                                     apps_grid_view_);
+
+  // Drag the current item to flip to the first page.
+  gfx::Point point_in_page_flip_buffer =
+      gfx::Point(paged_apps_grid_view_->bounds().width() / 2, 0);
+  UpdateDrag(AppsGridView::MOUSE, point_in_page_flip_buffer,
+             paged_apps_grid_view_, 10 /*steps*/);
+  while (HasPendingPageFlip(paged_apps_grid_view_)) {
+    page_flip_waiter_->Wait();
+  }
+  EXPECT_EQ(0, GetSelectedPage(paged_apps_grid_view_));
+
+  // Move dragged item to the second slot on the first page.
+  gfx::Point to;
+  if (is_rtl_) {
+    to = GetItemRectOnCurrentPageAt(0, 0).left_center();
+  } else {
+    to = GetItemRectOnCurrentPageAt(0, 0).right_center();
+  }
+  UpdateDrag(AppsGridView::MOUSE, to, paged_apps_grid_view_, 5 /*steps*/);
+
+  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view_->view_model();
+
+  // The reorder placeholder should be after the first item. This will cause the
+  // following items to animate one slot over, overflowing to the second page.
+  EXPECT_EQ(GridIndex(0, 1), paged_apps_grid_view_->reorder_placeholder());
+
+  for (int i = 1; i < view_model->view_size(); i++) {
+    AppListItemView* item_view = view_model->view_at(i);
+    // The first item and items off screen on the second page should not
+    // animate.
+    if (i == 0 || i > GetTilesPerPage(0) + 1) {
+      EXPECT_FALSE(apps_grid_view_->IsAnimatingView(item_view));
+      continue;
+    }
+
+    // Check that none of the items are animating vertically, because any items
+    // moving vertically should instead use a between rows animation, which is
+    // purely horizontal.
+    EXPECT_TRUE(apps_grid_view_->IsAnimatingView(item_view));
+    gfx::Rect target_bounds =
+        apps_grid_view_->bounds_animator_for_testing()->GetTargetBounds(
+            item_view);
+    EXPECT_EQ(item_view->bounds().y(), target_bounds.y());
+    EXPECT_NE(item_view->bounds().x(), target_bounds.x());
+  }
 }
 
 // Tests that control + arrow while a suggested chip is focused does not crash.

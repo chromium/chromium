@@ -1105,6 +1105,31 @@ void AppListItemView::SetContextMenuShownCallbackForTest(
   context_menu_shown_callback_ = std::move(closure);
 }
 
+void AppListItemView::SetMostRecentGridIndex(GridIndex new_grid_index,
+                                             int columns) {
+  if (new_grid_index == most_recent_grid_index_) {
+    has_pending_row_change_ = false;
+    return;
+  }
+
+  if (most_recent_grid_index_.IsValid()) {
+    // Set row change only for items which move to a new row and a new column.
+    // This is done because row change animations should not be shown when
+    // animating items up from the next page into a new row but on the same
+    // column, which could happen when closing a reorder toast.
+    if ((most_recent_grid_index_.slot / columns !=
+         new_grid_index.slot / columns) &&
+        (most_recent_grid_index_.slot % columns !=
+         new_grid_index.slot % columns)) {
+      has_pending_row_change_ = true;
+    } else {
+      has_pending_row_change_ = false;
+    }
+  }
+
+  most_recent_grid_index_ = new_grid_index;
+}
+
 void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {
   DCHECK(!is_folder_);
 
