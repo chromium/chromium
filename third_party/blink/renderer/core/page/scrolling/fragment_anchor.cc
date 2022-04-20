@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/fragment_directive/css_selector_fragment_anchor.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"

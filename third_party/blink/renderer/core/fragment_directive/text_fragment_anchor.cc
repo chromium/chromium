@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"

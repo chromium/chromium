@@ -28,6 +28,7 @@
 #include <stdio.h>
 
 #include "base/auto_reset.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"

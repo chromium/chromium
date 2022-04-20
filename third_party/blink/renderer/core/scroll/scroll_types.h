@@ -27,10 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_TYPES_H_
 
 #include "base/notreached.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/mojom/input/scroll_direction.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
-#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {

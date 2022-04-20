@@ -43,6 +43,7 @@
 
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"

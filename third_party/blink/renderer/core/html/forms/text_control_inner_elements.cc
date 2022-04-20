@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
