@@ -232,18 +232,8 @@ class HttpCache::WorkItem {
 
 //-----------------------------------------------------------------------------
 
-HttpCache::HttpCache(HttpNetworkSession* session,
-                     std::unique_ptr<BackendFactory> backend_factory,
-                     bool is_main_cache)
-    : HttpCache(std::make_unique<HttpNetworkLayer>(session),
-                std::move(backend_factory),
-                is_main_cache) {
-  g_init_cache = true;
-}
-
 HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
-                     std::unique_ptr<BackendFactory> backend_factory,
-                     bool is_main_cache)
+                     std::unique_ptr<BackendFactory> backend_factory)
     : net_log_(nullptr),
       backend_factory_(std::move(backend_factory)),
       building_backend_(false),
@@ -262,8 +252,6 @@ HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
     return;
 
   net_log_ = session->net_log();
-  if (!is_main_cache)
-    return;
 
   session->SetServerPushDelegate(
       std::make_unique<HttpCacheLookupManager>(this));

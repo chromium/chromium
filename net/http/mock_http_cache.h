@@ -290,11 +290,6 @@ class MockHttpCache {
   MockHttpCache();
   explicit MockHttpCache(
       std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory);
-  // |is_main_cache| if set, will set a quic server info factory.
-  explicit MockHttpCache(bool is_main_cache);
-
-  MockHttpCache(std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory,
-                bool is_main_cache);
 
   HttpCache* http_cache() { return &http_cache_; }
 

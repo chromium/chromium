@@ -54,8 +54,7 @@ class TestHttpCache : public HttpCache {
  public:
   TestHttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
                 std::unique_ptr<BackendFactory> backend_factory)
-      : HttpCache(std::move(network_layer), std::move(backend_factory), false) {
-  }
+      : HttpCache(std::move(network_layer), std::move(backend_factory)) {}
 
   void WritersDoneWritingToEntry(ActiveEntry* entry,
                                  bool success,

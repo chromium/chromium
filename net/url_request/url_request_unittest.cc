@@ -9056,8 +9056,7 @@ TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
         network_layer->OnSuspend();
         std::unique_ptr<HttpTransactionFactory> factory =
             std::make_unique<HttpCache>(std::move(network_layer),
-                                        HttpCache::DefaultBackend::InMemory(0),
-                                        /*is_main_cache=*/false);
+                                        HttpCache::DefaultBackend::InMemory(0));
         return factory;
       }));
   auto context = context_builder->Build();

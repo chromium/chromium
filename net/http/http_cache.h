@@ -164,26 +164,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // again without validation.
   static const int kPrefetchReuseMins = 5;
 
-  // The disk cache is initialized lazily (by CreateTransaction) in this case.
-  // Provide an existing HttpNetworkSession, the cache can construct a
-  // network layer with a shared HttpNetworkSession in order for multiple
-  // network layers to share information (e.g. authentication data). The
-  // HttpCache takes ownership of the |backend_factory|.
-  //
-  // The HttpCache must be destroyed before the HttpNetworkSession.
-  //
-  // If |is_main_cache| is true, configures the cache to track
-  // information about servers supporting QUIC.
-  // TODO(zhongyi): remove |is_main_cache| when we get rid of cache split.
-  HttpCache(HttpNetworkSession* session,
-            std::unique_ptr<BackendFactory> backend_factory,
-            bool is_main_cache);
-
   // Initialize the cache from its component parts. |network_layer| and
   // |backend_factory| will be destroyed when the HttpCache is.
   HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
-            std::unique_ptr<BackendFactory> backend_factory,
-            bool is_main_cache);
+            std::unique_ptr<BackendFactory> backend_factory);
 
   HttpCache(const HttpCache&) = delete;
   HttpCache& operator=(const HttpCache&) = delete;

@@ -682,21 +682,13 @@ int MockBackendFactory::CreateBackend(
 
 //-----------------------------------------------------------------------------
 
-MockHttpCache::MockHttpCache() : MockHttpCache(false) {}
+MockHttpCache::MockHttpCache()
+    : MockHttpCache(std::make_unique<MockBackendFactory>()) {}
 
 MockHttpCache::MockHttpCache(
     std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory)
-    : MockHttpCache(std::move(disk_cache_factory), false) {}
-
-MockHttpCache::MockHttpCache(bool is_main_cache)
-    : MockHttpCache(std::make_unique<MockBackendFactory>(), is_main_cache) {}
-
-MockHttpCache::MockHttpCache(
-    std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory,
-    bool is_main_cache)
     : http_cache_(std::make_unique<MockNetworkLayer>(),
-                  std::move(disk_cache_factory),
-                  is_main_cache) {}
+                  std::move(disk_cache_factory)) {}
 
 disk_cache::Backend* MockHttpCache::backend() {
   TestCompletionCallback cb;

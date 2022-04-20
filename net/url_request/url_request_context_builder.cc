@@ -617,9 +617,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
         http_cache_params_.app_status_listener);
 #endif
 
-    http_transaction_factory =
-        std::make_unique<HttpCache>(std::move(http_transaction_factory),
-                                    std::move(http_cache_backend), true);
+    http_transaction_factory = std::make_unique<HttpCache>(
+        std::move(http_transaction_factory), std::move(http_cache_backend));
   }
   storage->set_http_transaction_factory(std::move(http_transaction_factory));
 
