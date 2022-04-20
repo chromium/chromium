@@ -2334,32 +2334,6 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
   }
 }
 
-TEST_P(PaintLayerTest,
-       ChangeAlphaNeedsCompositingInputsAndPaintPropertyUpdate) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      #target {
-        background: white;
-        width: 100px;
-        height: 100px;
-        position: relative;
-      }
-    </style>
-    <div id='target'>
-    </div>
-  )HTML");
-  PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(target->GetLayoutObject().NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(target->Parent()->GetLayoutObject().NeedsPaintPropertyUpdate());
-
-  StyleDifference diff;
-  diff.SetHasAlphaChanged();
-  target->StyleDidChange(diff, target->GetLayoutObject().Style());
-  EXPECT_TRUE(target->GetLayoutObject().NeedsPaintPropertyUpdate());
-  // See the TODO in PaintLayer::SetNeedsCompositingInputsUpdate().
-  EXPECT_TRUE(target->Parent()->GetLayoutObject().NeedsPaintPropertyUpdate());
-}
-
 TEST_P(PaintLayerTest, PaintLayerCommonAncestor) {
   SetBodyInnerHTML(R"HTML(
     <style>

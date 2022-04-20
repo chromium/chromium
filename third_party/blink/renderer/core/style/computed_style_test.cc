@@ -252,39 +252,6 @@ TEST_F(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST_F(ComputedStyleTest, UpdateBackgroundColorDifferencesHasAlpha) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-
-  StyleDifference diff;
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_FALSE(diff.HasAlphaChanged());
-
-  style->SetBackgroundColor(StyleColor(Color(255, 255, 255, 255)));
-  other->SetBackgroundColor(StyleColor(Color(255, 255, 255, 128)));
-
-  EXPECT_FALSE(
-      style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).HasAlpha());
-  EXPECT_TRUE(
-      other->VisitedDependentColor(GetCSSPropertyBackgroundColor()).HasAlpha());
-
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_TRUE(diff.HasAlphaChanged());
-}
-
-TEST_F(ComputedStyleTest, UpdateBackgroundLayerDifferencesHasAlpha) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-
-  StyleDifference diff;
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_FALSE(diff.HasAlphaChanged());
-
-  other->AccessBackgroundLayers().EnsureNext();
-  style->AdjustDiffForBackgroundVisuallyEqual(*other, diff);
-  EXPECT_TRUE(diff.HasAlphaChanged());
-}
-
 TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   EXPECT_FALSE(style->HasOutline());

@@ -911,24 +911,12 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
     StyleDifference& diff) const {
   if (BackgroundColorInternal() != other.BackgroundColorInternal()) {
     diff.SetNeedsPaintInvalidation();
-    if (BackgroundColorInternal()
-            .Resolve(GetCurrentColor(), UsedColorScheme())
-            .HasAlpha() !=
-        other.BackgroundColorInternal()
-            .Resolve(other.GetCurrentColor(), other.UsedColorScheme())
-            .HasAlpha()) {
-      diff.SetHasAlphaChanged();
-      return;
-    }
+    return;
   }
   if (!BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
     diff.SetNeedsPaintInvalidation();
-    // Changes of background fill layers, such as images, may have
-    // changed alpha.
-    diff.SetHasAlphaChanged();
     return;
   }
-
   // If the background image depends on currentColor
   // (e.g., background-image: linear-gradient(currentColor, #fff)), and the
   // color has changed, we need to recompute it even though VisuallyEqual()
@@ -938,7 +926,6 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
        GetInternalVisitedCurrentColor() !=
            other.GetInternalVisitedCurrentColor())) {
     diff.SetNeedsPaintInvalidation();
-    diff.SetHasAlphaChanged();
   }
 }
 

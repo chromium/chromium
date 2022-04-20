@@ -29,8 +29,6 @@ class StyleDifference {
     kTextDecorationOrColorChanged = 1 << 5,
     kBlendModeChanged = 1 << 6,
     kMaskChanged = 1 << 7,
-    // Whether background-color changed alpha to or from 1.
-    kHasAlphaChanged = 1 << 8,
     // If you add a value here, be sure to update kPropertyDifferenceCount.
   };
 
@@ -152,13 +150,6 @@ class StyleDifference {
   }
   void SetMaskChanged() { property_specific_differences_ |= kMaskChanged; }
 
-  bool HasAlphaChanged() const {
-    return property_specific_differences_ & kHasAlphaChanged;
-  }
-  void SetHasAlphaChanged() {
-    property_specific_differences_ |= kHasAlphaChanged;
-  }
-
   bool ScrollAnchorDisablingPropertyChanged() const {
     return scroll_anchor_disabling_property_changed_;
   }
@@ -177,7 +168,7 @@ class StyleDifference {
   }
 
  private:
-  static constexpr int kPropertyDifferenceCount = 9;
+  static constexpr int kPropertyDifferenceCount = 8;
 
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const StyleDifference&);
