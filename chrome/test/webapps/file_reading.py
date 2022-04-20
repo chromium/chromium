@@ -304,8 +304,10 @@ def read_actions_file(
 
             # If the action has arguments, then modify the output actions,
             # and cpp method.
-            joined_cpp_arguments = ", ".join(
-                [f"\"{arg}\"" for arg in arg_combination])
+            joined_cpp_arguments = ", ".join([
+                f"{arg_types[i].type_name}::k{arg}"
+                for i, arg in enumerate(arg_combination)
+            ])
 
             # Convert the `cpp_method` to Pascal-case
             cpp_method = ''.join(word.title()

@@ -29,7 +29,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | set_app_badge | Site |  | 6 | Not Implemented | Set the app badge for the given site to a value. |  |
 | # Manifest Update |
 | accept_app_id_update_dialog |  |  | 91 | Implemented | Click Accept in the App Identity Update dialog | finnur@ |
-| manifest_update_scope_site_a_foo_to | Site |  | 8 | Implemented | Update the scope of site a/foo/, to the given scope |  |
+| manifest_update_scope_site_a_foo_to | Scope |  | 8 | Implemented | Update the scope of site a/foo/, to the given scope |  |
 | manifest_update_display_browser | Site |  | 70 | Implemented | Updates the display property of the manifest to 'browser' on the given site's manifest | cliffordcheng@, P1 |
 | manifest_update_display_minimal | Site |  | 36 | Implemented | Updates the display property of the manifest to 'minimal' on the given site's manifest |  |
 | manifest_update_icon | Site |  | 68 | Implemented | Updates the launcher icon in the manifest of the website. | finnur@ |
@@ -38,7 +38,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | manifest_update_display | Site, Display |  | 116 | WIP |  |  |
 | await_manifest_update | Site |  | 117 | WIP | Does any actions necessary (like closing browser windows) and blocks the execution of the test until the manifest has been updated for the given site. |  |
 | check_update_dialog_not_shown |  |  | 92 | WIP |  | finnur@ |
-| deny_app_update_dialog |  |  | 93 | WIP |  | finnue@ |
+| deny_app_update_dialog |  |  | 93 | WIP |  | finnur@ |
 | # Run on OS Login |
 | apply_run_on_os_login_policy_allowed | Site |  | 100 | Implemented | Apply WebAppSettings policy for run_on_os_login to be allowed | phillis@ |
 | apply_run_on_os_login_policy_blocked | Site |  | 101 | Implemented | Apply WebAppSettings policy for run_on_os_login to be blocked | phillis@ |

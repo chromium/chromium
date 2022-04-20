@@ -10,7 +10,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "services/network/public/cpp/network_switches.h"
 
-namespace web_app {
+namespace web_app::integration_tests {
 
 TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
     : WebAppsSyncTestBase(TWO_CLIENT), helper_(this) {}
@@ -91,4 +91,4 @@ void TwoClientWebAppsIntegrationTestBase::SetUpCommandLine(
   command_line->AppendSwitch("disable-fake-server-failure-output");
 }
 
-}  // namespace web_app
+}  // namespace web_app::integration_tests

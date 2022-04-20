@@ -5,7 +5,7 @@
 #include "chrome/browser/sync/test/integration/two_client_web_apps_integration_test_base.h"
 #include "content/public/test/browser_test.h"
 
-namespace web_app {
+namespace web_app::integration_tests {
 namespace {
 
 // This test is a part of the web app integration test suite, which is
@@ -19,4 +19,4 @@ namespace {
 using TwoClientWebAppsIntegrationTest = TwoClientWebAppsIntegrationTestBase;
 
 }  // namespace
-}  // namespace web_app
+}  // namespace web_app::integration_tests

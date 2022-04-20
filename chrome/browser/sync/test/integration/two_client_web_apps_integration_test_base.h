@@ -13,10 +13,10 @@ namespace base {
 class CommandLine;
 }
 
-namespace web_app {
+namespace web_app::integration_tests {
 
 class TwoClientWebAppsIntegrationTestBase
-    : public WebAppsSyncTestBase,
+    : public ::web_app::WebAppsSyncTestBase,
       public WebAppIntegrationTestDriver::TestDelegate {
  public:
   TwoClientWebAppsIntegrationTestBase();
@@ -43,6 +43,6 @@ class TwoClientWebAppsIntegrationTestBase
   WebAppIntegrationTestDriver helper_;
 };
 
-}  // namespace web_app
+}  // namespace web_app::integration_tests
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_

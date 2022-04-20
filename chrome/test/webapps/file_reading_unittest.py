@@ -133,10 +133,14 @@ class TestAnalysisTest(unittest.TestCase):
             self.assertEqual(len(actions), 13)
             self.assertEqual(len(action_base_name_to_default_param), 3)
 
+            # Check Cpp methods
+            self.assertIn('check_b_Chicken_Green', actions)
+            self.assertEqual("CheckB(Animal::kChicken, Color::kGreen)",
+                             actions['check_b_Chicken_Green'].cpp_method)
+
             # Check parameterized action state.
             self.assertIn('changes_Chicken', actions)
             self.assertIn('changes_Dog', actions)
-
             self.assertTrue('checks' in actions)
             checks_output_actions = actions['checks'].output_actions
             self.assertEqual(len(checks_output_actions), 2)

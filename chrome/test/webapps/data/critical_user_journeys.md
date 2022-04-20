@@ -199,13 +199,13 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_by_user_windowed | close_pwa | manifest_update_display_browser | launch | check_window_created | 
 | WMLC | install_by_user_windowed | close_pwa | manifest_update_display_browser | launch | check_window_display_minimal | 
 | WMLC | install_by_user_windowed | close_pwa | manifest_update_display_minimal | launch | check_window_display_minimal | 
-| WMLC | install_by_user_windowed(SiteAFoo) | manifest_update_scope_site_a_foo_to(SiteA) | close_pwa | launch_from_platform_shortcut(SiteAFoo) | close_pwa | navigate_browser(SiteA) | check_install_icon_not_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | manifest_update_scope_site_a_foo_to(SiteA) | close_pwa | launch_from_platform_shortcut(SiteAFoo) | close_pwa | navigate_browser(SiteA) | check_launch_icon_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteA) | launch(SiteAFoo) | navigate_pwa_site_a_foo_to(SiteABar) | check_no_toolbar |
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteA) | navigate_browser(SiteABar) | check_install_icon_not_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteA) | navigate_browser(SiteABar) | check_launch_icon_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteA) | navigate_browser(SiteAFoo) | check_install_icon_not_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteA) | navigate_browser(SiteAFoo) | check_launch_icon_shown | 
+| WMLC | install_by_user_windowed(SiteAFoo) | manifest_update_scope_site_a_foo_to(SiteARoot) | close_pwa | launch_from_platform_shortcut(SiteAFoo) | close_pwa | navigate_browser(SiteA) | check_install_icon_not_shown | 
+| WMLC | install_by_user_windowed(SiteAFoo) | manifest_update_scope_site_a_foo_to(SiteARoot) | close_pwa | launch_from_platform_shortcut(SiteAFoo) | close_pwa | navigate_browser(SiteA) | check_launch_icon_shown | 
+| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | launch(SiteAFoo) | navigate_pwa_site_a_foo_to(SiteABar) | check_no_toolbar |
+| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteABar) | check_install_icon_not_shown | 
+| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteABar) | check_launch_icon_shown | 
+| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteAFoo) | check_install_icon_not_shown | 
+| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteAFoo) | check_launch_icon_shown | 
 
 ## Browser UX with edge cases
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |

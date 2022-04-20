@@ -20,15 +20,16 @@ The tables in this file are parsed as action templates for critical user journey
 
 | #Enum Name | Values (* = default) |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Site | SiteA* | SiteB | SiteC | SiteAFoo | SiteABar | SiteWCO |  |  |
-| InstallableSite | SiteA* | SiteB | SiteAFoo | SiteABar | SiteWCO |  |  |
+| Site | SiteA* | SiteB | SiteC | SiteAFoo | SiteABar | SiteWco | kSiteIsolatedApp |  |
+| InstallableSite | SiteA* | SiteB | SiteAFoo | SiteABar | SiteWco |  |  |
+| Scope | SiteARoot |  |  |  |
 | Title | SiteA | SiteAUpdated |  |  |  |  |  |
 | Color | Red | Green |  |  |  |  |  |
 | ProfileClient | Client2* | Client1 |  |  |  |  |  |
 | UserDisplayPreference | Standalone | Browser |  |  |  |  |  |
 | IsShown | Shown | NotShown |  |  |  |  |  |
 | IsOn | On | Off |  |  |  |  |  |
-| Display | Standalone | Minimal | WCO |  |  |  |  |
+| Display | Standalone | Minimal | Wco |  |  |  |  |
 | FileExtension | Txt | Png |  |  |  |  |  |
 | Location | StartUrl | FileHandleUrlForTxt | FileHandleUrlForPng |  |  |  |  |
 | Number | One | Two |  |  |  |  |  |
