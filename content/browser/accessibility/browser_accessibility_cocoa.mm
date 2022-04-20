@@ -625,7 +625,6 @@ bool content::IsNSRange(id value) {
       // TODO(aboxhall): expose
       // NSAccessibilityServesAsTitleForUIElementsAttribute
       {NSAccessibilityStartTextMarkerAttribute, @"startTextMarker"},
-      {NSAccessibilitySelectedAttribute, @"selected"},
       {NSAccessibilitySelectedChildrenAttribute, @"selectedChildren"},
       {NSAccessibilitySelectedTextAttribute, @"selectedText"},
       {NSAccessibilitySelectedTextRangeAttribute, @"selectedTextRange"},
@@ -1313,12 +1312,6 @@ bool content::IsNSRange(id value) {
   }
 
   return ret;
-}
-
-- (NSNumber*)selected {
-  if (![self instanceActive])
-    return nil;
-  return @(_owner->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
 - (NSArray*)selectedChildren {
@@ -2450,7 +2443,6 @@ bool content::IsNSRange(id value) {
                        NSAccessibilityPositionAttribute,
                        NSAccessibilityRoleAttribute,
                        NSAccessibilityRoleDescriptionAttribute,
-                       NSAccessibilitySelectedAttribute,
                        NSAccessibilitySelectedTextMarkerRangeAttribute,
                        NSAccessibilitySizeAttribute,
                        NSAccessibilityStartTextMarkerAttribute,
@@ -2542,9 +2534,6 @@ bool content::IsNSRange(id value) {
       // NSAccessibilityValueAutofillTypeAttribute
     ]];
   }
-
-  if (_owner->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
-    [ret addObject:NSAccessibilitySelectedAttribute];
 
   if (GetState(_owner, ax::mojom::State::kExpanded) ||
       GetState(_owner, ax::mojom::State::kCollapsed)) {

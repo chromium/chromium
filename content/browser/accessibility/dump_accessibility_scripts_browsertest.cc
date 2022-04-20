@@ -333,6 +333,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
   RunTypedTest<kMacAction>("ax-press-button.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelected) {
+  RunTypedTest<kMacAttributes>("ax-selected.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXRequired) {
   RunTypedTest<kMacAttributes>("ax-required.html");
 }
@@ -417,6 +421,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityRoleDescription) {
   RunTypedTest<kMacMethods>("accessibility-role-description.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilitySelected) {
+  RunTypedTest<kMacMethods>("accessibility-selected.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,

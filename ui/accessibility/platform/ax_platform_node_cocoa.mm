@@ -758,6 +758,7 @@ bool IsAXSetter(SEL selector) {
     NSAccessibilityDescriptionAttribute, NSAccessibilityElementBusyAttribute,
     NSAccessibilityParentAttribute, NSAccessibilityPositionAttribute,
     NSAccessibilityRoleAttribute, NSAccessibilitySizeAttribute,
+    NSAccessibilitySelectedAttribute, NSAccessibilitySizeAttribute,
     NSAccessibilitySubroleAttribute,
     // Title is required for most elements. Cocoa asks for the value even if it
     // is omitted here, but won't present it to accessibility APIs without this.
@@ -864,8 +865,6 @@ bool IsAXSetter(SEL selector) {
     default:
       break;
   }
-  if (_node->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
-    [axAttributes addObject:NSAccessibilitySelectedAttribute];
   if (ui::IsMenuItem(role))
     [axAttributes addObject:@"AXMenuItemMarkChar"];
   if (ui::IsItemLike(role))
@@ -1354,6 +1353,10 @@ bool IsAXSetter(SEL selector) {
   return [self accessibilityRoleDescription];
 }
 
+- (NSNumber*)AXSelected {
+  return [self accessibilitySelected];
+}
+
 - (NSString*)AXSubrole {
   ax::mojom::Role role = _node->GetRole();
   switch (role) {
@@ -1490,10 +1493,6 @@ bool IsAXSetter(SEL selector) {
 }
 
 // Misc attributes.
-
-- (NSNumber*)AXSelected {
-  return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-}
 
 - (NSString*)AXPlaceholderValue {
   return [self accessibilityPlaceholderValue];
@@ -2025,6 +2024,13 @@ bool IsAXSetter(SEL selector) {
 //
 // NSAccessibility protocol: setting content and values.
 //
+
+- (NSNumber*)accessibilitySelected {
+  if (![self instanceActive])
+    return nil;
+
+  return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
 
 - (NSURL*)accessibilityURL {
   TRACE_EVENT1("accessibility", "accessibilityURL",
