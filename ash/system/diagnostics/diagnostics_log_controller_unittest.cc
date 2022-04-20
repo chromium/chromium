@@ -8,11 +8,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -22,14 +24,23 @@ namespace {
 
 const char kLogFileContents[] = "Diagnostics Log";
 const char kTestSessionLogFileName[] = "test_session_log.txt";
+const char kDiangosticsDirName[] = "diagnostics";
+const char kDefaultUserDir[] = "/fake/user-dir";
+const char kTmpDiagnosticsDir[] = "/tmp/diagnostics";
+const char kTestUserEmail[] = "test-user@gmail.com";
 
 // Fake delegate used to set the expected user directory path.
 class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
  public:
-  FakeDiagnosticsBrowserDelegate() = default;
+  explicit FakeDiagnosticsBrowserDelegate(
+      const base::FilePath path = base::FilePath(kDefaultUserDir))
+      : active_user_dir_(path) {}
   ~FakeDiagnosticsBrowserDelegate() override = default;
 
-  base::FilePath GetActiveUserProfileDir() override { return base::FilePath(); }
+  base::FilePath GetActiveUserProfileDir() override { return active_user_dir_; }
+
+ private:
+  base::FilePath active_user_dir_;
 };
 
 }  // namespace
@@ -55,6 +66,25 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
     return save_dir_.GetPath().Append(kTestSessionLogFileName);
   }
 
+  void ResetLogBasePath() {
+    return DiagnosticsLogController::Get()->ResetLogBasePath();
+  }
+
+  base::FilePath log_base_path() {
+    return DiagnosticsLogController::Get()->log_base_path_;
+  }
+
+  void SetBrowserDelegate(
+      std::unique_ptr<DiagnosticsBrowserDelegate> delegate) {
+    DiagnosticsLogController::Get()->delegate_ = std::move(delegate);
+  }
+
+  void InitializeWithFakeDelegate() {
+    std::unique_ptr<DiagnosticsBrowserDelegate> delegate =
+        std::make_unique<FakeDiagnosticsBrowserDelegate>();
+    DiagnosticsLogController::Initialize(std::move(delegate));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir save_dir_;
@@ -69,8 +99,8 @@ TEST_F(DiagnosticsLogControllerTest,
 TEST_F(DiagnosticsLogControllerTest, IsInitializedAfterDelegateProvided) {
   EXPECT_NE(nullptr, DiagnosticsLogController::Get());
   EXPECT_FALSE(DiagnosticsLogController::IsInitialized());
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>());
+
+  InitializeWithFakeDelegate();
   EXPECT_TRUE(DiagnosticsLogController::IsInitialized());
 }
 
@@ -83,6 +113,56 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(save_file_path, &contents));
   EXPECT_EQ(kLogFileContents, contents);
+}
+
+TEST_F(DiagnosticsLogControllerTest,
+       ResetAndInitializeShouldNotLookupProfilePath) {
+  const base::FilePath expected_path_not_regular_user =
+      base::FilePath(kTmpDiagnosticsDir);
+  // Simulate called before delegate configured.
+  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+  InitializeWithFakeDelegate();
+
+  // Simulate sign-in user.
+  ClearLogin();
+  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+
+  SimulateGuestLogin();
+  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+
+  SimulateKioskMode(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+
+  SimulateKioskMode(user_manager::UserType::USER_TYPE_ARC_KIOSK_APP);
+  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+}
+
+TEST_F(DiagnosticsLogControllerTest,
+       ResetAndInitializeShouldLookupProfileUserEmptyPath) {
+  const base::FilePath expected_path_not_regular_user =
+      base::FilePath(kTmpDiagnosticsDir);
+  // Simulate DiagnosticsBrowserDelegate returning empty path.
+  std::unique_ptr<DiagnosticsBrowserDelegate> delegate_with_empty_file_path =
+      std::make_unique<FakeDiagnosticsBrowserDelegate>(base::FilePath());
+  SetBrowserDelegate(std::move(delegate_with_empty_file_path));
+  SimulateUserLogin(kTestUserEmail);
+  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
+}
+
+TEST_F(DiagnosticsLogControllerTest,
+       ResetAndInitializeForShouldLookupProfileUserNonEmptyPath) {
+  InitializeWithFakeDelegate();
+  const base::FilePath expected_path_regular_user =
+      base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
+  SimulateUserLogin(kTestUserEmail);
+  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
+  EXPECT_EQ(expected_path_regular_user, log_base_path());
 }
 
 }  // namespace diagnostics

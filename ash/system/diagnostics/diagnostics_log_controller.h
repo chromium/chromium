@@ -37,8 +37,19 @@ class ASH_EXPORT DiagnosticsLogController {
   // whether file creation is successful.
   bool GenerateSessionLogOnBlockingPool(const base::FilePath& save_file_path);
 
+  // Ensures DiagnosticsLogController is configured to match the current
+  // environment. To be called from DiagnosticsDialog::ShowDialog prior to the
+  // Diagnostics app being shown.
+  void ResetAndInitializeLogWriters();
+
  private:
+  friend class DiagnosticsLogControllerTest;
+
+  // Ensure log_base_path_ set based on current session and ash::LoginStatus.
+  void ResetLogBasePath();
+
   std::unique_ptr<DiagnosticsBrowserDelegate> delegate_;
+  base::FilePath log_base_path_;
 };
 
 }  // namespace diagnostics
