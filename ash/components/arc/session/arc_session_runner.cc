@@ -259,9 +259,10 @@ void ArcSessionRunner::SetDemoModeDelegate(
   demo_mode_delegate_ = std::move(delegate);
 }
 
-void ArcSessionRunner::TrimVmMemory(TrimVmMemoryCallback callback) {
+void ArcSessionRunner::TrimVmMemory(TrimVmMemoryCallback callback,
+                                    int page_limit) {
   if (arc_session_) {
-    arc_session_->TrimVmMemory(std::move(callback));
+    arc_session_->TrimVmMemory(std::move(callback), page_limit);
     return;
   }
   LOG(WARNING) << "TrimVmMemory is called when no ARC session is running";

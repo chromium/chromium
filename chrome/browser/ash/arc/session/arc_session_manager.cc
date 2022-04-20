@@ -829,8 +829,9 @@ void ArcSessionManager::SetUserInfo() {
   arc_session_runner_->SetUserInfo(cryptohome_id, user_id_hash, serialno);
 }
 
-void ArcSessionManager::TrimVmMemory(TrimVmMemoryCallback callback) {
-  arc_session_runner_->TrimVmMemory(std::move(callback));
+void ArcSessionManager::TrimVmMemory(TrimVmMemoryCallback callback,
+                                     int page_limit) {
+  arc_session_runner_->TrimVmMemory(std::move(callback), page_limit);
 }
 
 std::string ArcSessionManager::GetSerialNumber() const {

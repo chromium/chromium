@@ -130,7 +130,9 @@ void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
     std::move(callback).Run(false, "ArcSessionManager unavailable");
     return;
   }
-  arc_session_manager->TrimVmMemory(std::move(callback));
+  // TODO(raging): compute and pass down a proper page_limit
+  arc_session_manager->TrimVmMemory(std::move(callback),
+                                    arc::ArcSession::NoPageLimit);
 }
 
 bool WorkingSetTrimmerChromeOS::TrimWorkingSet(

@@ -2184,7 +2184,8 @@ TEST_F(ArcSessionManagerTest, TrimVmMemory) {
   arc_session_manager()->TrimVmMemory(
       base::BindLambdaForTesting([&callback_called](bool, const std::string&) {
         callback_called = true;
-      }));
+      }),
+      0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }

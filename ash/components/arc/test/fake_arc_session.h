@@ -38,7 +38,7 @@ class FakeArcSession : public ArcSession {
                    const std::string& serial_number) override;
   void SetDemoModeDelegate(
       ArcClientAdapter::DemoModeDelegate* delegate) override;
-  void TrimVmMemory(TrimVmMemoryCallback callback) override;
+  void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) override;
   void SetDefaultDeviceScaleFactor(float scale_factor) override;
 
   // To emulate unexpected stop, such as crash.

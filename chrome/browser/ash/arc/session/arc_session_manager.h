@@ -241,10 +241,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // A helper function that calls ArcSessionRunner's SetUserInfo.
   void SetUserInfo();
 
-  // Trims VM's memory by moving it to zram. |callback| is called when the
-  // operation is done.
+  // Trims VM's memory by moving it to zram.
+  // When the operation is done |callback| is called.
+  // If nonzero, |page_limit| defines the max number of pages to reclaim.
   using TrimVmMemoryCallback = ArcSessionRunner::TrimVmMemoryCallback;
-  void TrimVmMemory(TrimVmMemoryCallback callback);
+  void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit);
 
   // Returns the time when ARC was pre-started (mini-ARC start), or a null time
   // if ARC has not been pre-started yet.

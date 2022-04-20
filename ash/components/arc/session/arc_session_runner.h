@@ -112,11 +112,12 @@ class ArcSessionRunner : public ArcSession::Observer {
   void SetDemoModeDelegate(
       std::unique_ptr<ArcClientAdapter::DemoModeDelegate> delegate);
 
-  // Trims VM's memory by moving it to zram. |callback| is called when the
-  // operation is done.
+  // Trims VM's memory by moving it to zram.
+  // When the operation is done |callback| is called.
+  // If nonzero, |page_limit| defines the max number of pages to reclaim.
   using TrimVmMemoryCallback =
       base::OnceCallback<void(bool success, const std::string& failure_reason)>;
-  void TrimVmMemory(TrimVmMemoryCallback callback);
+  void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit);
 
   void set_default_device_scale_factor(float scale_factor) {
     default_device_scale_factor_ = scale_factor;

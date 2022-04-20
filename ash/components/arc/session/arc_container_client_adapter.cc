@@ -206,7 +206,7 @@ class ArcContainerClientAdapter
   void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
 
   // The interface is only for ARCVM.
-  void TrimVmMemory(TrimVmMemoryCallback callback) override {
+  void TrimVmMemory(TrimVmMemoryCallback callback, int) override {
     NOTREACHED();
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

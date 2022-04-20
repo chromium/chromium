@@ -48,7 +48,8 @@ void FakeArcSession::SetUserInfo(
 void FakeArcSession::SetDemoModeDelegate(
     ArcClientAdapter::DemoModeDelegate* delegate) {}
 
-void FakeArcSession::TrimVmMemory(TrimVmMemoryCallback callback) {
+void FakeArcSession::TrimVmMemory(TrimVmMemoryCallback callback,
+                                  int page_limit) {
   std::move(callback).Run(true, std::string());
 }
 

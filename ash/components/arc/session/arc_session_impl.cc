@@ -876,9 +876,10 @@ void ArcSessionImpl::SetDemoModeDelegate(
   client_->SetDemoModeDelegate(delegate);
 }
 
-void ArcSessionImpl::TrimVmMemory(TrimVmMemoryCallback callback) {
+void ArcSessionImpl::TrimVmMemory(TrimVmMemoryCallback callback,
+                                  int page_limit) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->TrimVmMemory(std::move(callback));
+  client_->TrimVmMemory(std::move(callback), page_limit);
 }
 
 void ArcSessionImpl::SetDefaultDeviceScaleFactor(float scale_factor) {
