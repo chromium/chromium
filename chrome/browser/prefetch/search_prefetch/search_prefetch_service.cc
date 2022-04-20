@@ -13,7 +13,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
-#include "chrome/browser/prefetch/search_prefetch/back_forward_search_prefetch_url_loader.h"
+#include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
@@ -407,9 +407,9 @@ SearchPrefetchService::TakePrefetchResponseFromDiskCache(
     return nullptr;
   }
 
-  return std::make_unique<BackForwardSearchPrefetchURLLoader>(
+  return std::make_unique<CacheAliasSearchPrefetchURLLoader>(
       profile_, BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch(),
-      prefetch_cache_[navigation_url].first);
+      prefetch_cache_[navigation_url].first, nullptr);
 }
 
 void SearchPrefetchService::ClearPrefetches() {

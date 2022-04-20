@@ -55,6 +55,18 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // recorded when |navigation_prefetch_| is true.
   void RecordNavigationURLHistogram(const GURL& navigation_url);
 
+  // Informs |this| that only determining headers is needed. When headers are
+  // determined, |this| can stop receiving messages from the network service.
+  void SetHeadersReceivedCallback(base::OnceClosure headers_received_callback);
+
+  // Whether a successful status code has been received with the headers.
+  // |false| when headers have not been received.
+  bool ReadyToServe();
+
+  // Whether an error status code has been received with the headers. |false|
+  // when headers have not been received.
+  bool ReceivedError();
+
  private:
   // mojo::DataPipeDrainer::Client:
   void OnDataAvailable(const void* data, size_t num_bytes) override;
@@ -210,6 +222,12 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   bool marked_as_servable_ = false;
 
   raw_ptr<Profile> profile_;
+
+  // If not null, called when headers are received.
+  base::OnceClosure headers_received_callback_;
+
+  // Whether the response can be served to the user (based on status code).
+  absl::optional<bool> can_be_served_;
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 

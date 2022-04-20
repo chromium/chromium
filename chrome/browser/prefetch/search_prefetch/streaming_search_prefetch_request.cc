@@ -4,8 +4,10 @@
 
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
 
+#include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
+#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
-#include "streaming_search_prefetch_request.h"
+#include "net/base/load_flags.h"
 
 StreamingSearchPrefetchRequest::StreamingSearchPrefetchRequest(
     const GURL& prefetch_url,
@@ -22,6 +24,15 @@ void StreamingSearchPrefetchRequest::StartPrefetchRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::OnceCallback<void(bool)> report_error_callback) {
+  profile_ = profile;
+  network_traffic_annotation_ =
+      std::make_unique<net::NetworkTrafficAnnotationTag>(
+          network_traffic_annotation);
+  prefetch_url_ = resource_request->url;
+  if (SearchPrefetchUsesNetworkCache()) {
+    resource_request->load_flags =
+        resource_request->load_flags | net::LOAD_PREFETCH;
+  }
   streaming_url_loader_ = std::make_unique<StreamingSearchPrefetchURLLoader>(
       this, profile, navigation_prefetch_, std::move(resource_request),
       network_traffic_annotation, std::move(report_error_callback));
@@ -30,6 +41,12 @@ void StreamingSearchPrefetchRequest::StartPrefetchRequestInternal(
 std::unique_ptr<SearchPrefetchURLLoader>
 StreamingSearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
   streaming_url_loader_->ClearOwnerPointer();
+  if (SearchPrefetchUsesNetworkCache()) {
+    auto loader = std::make_unique<CacheAliasSearchPrefetchURLLoader>(
+        profile_, *network_traffic_annotation_, prefetch_url_,
+        std::move(streaming_url_loader_));
+    return std::move(loader);
+  }
   return std::move(streaming_url_loader_);
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BACK_FORWARD_SEARCH_PREFETCH_URL_LOADER_H_
-#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BACK_FORWARD_SEARCH_PREFETCH_URL_LOADER_H_
+#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
+#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
 
 #include <vector>
 
@@ -12,7 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
-#include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
+#include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,18 +26,19 @@
 // This class tries to fetch a prefetch response from cache, and if one is not
 // available, it fetches the non-prefetch URL directly. This case is only
 // triggered when cache doesn't need to be revalidated (i.e., back/forward).
-class BackForwardSearchPrefetchURLLoader
+class CacheAliasSearchPrefetchURLLoader
     : public network::mojom::URLLoader,
       public network::mojom::URLLoaderClient,
       public SearchPrefetchURLLoader {
  public:
   // Creates and stores state needed to do the cache lookup.
-  BackForwardSearchPrefetchURLLoader(
+  CacheAliasSearchPrefetchURLLoader(
       Profile* profile,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      const GURL& prefetch_url);
+      const GURL& prefetch_url,
+      std::unique_ptr<StreamingSearchPrefetchURLLoader> prefetch_loader);
 
-  ~BackForwardSearchPrefetchURLLoader() override;
+  ~CacheAliasSearchPrefetchURLLoader() override;
 
  private:
   // SearchPrefetchURLLoader:
@@ -92,6 +94,13 @@ class BackForwardSearchPrefetchURLLoader
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
 
+  // Starts the cache only request to |prefetch_url_|.
+  void StartPrefetchRequest();
+
+  // Passed as a callback to the underlying fetching mechanism to inform |this|
+  // that headers have arrived.
+  void HeadersReceived();
+
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_receiver_{this};
@@ -113,11 +122,15 @@ class BackForwardSearchPrefetchURLLoader
   // The URL for the prefetch response stored in cache.
   GURL prefetch_url_;
 
+  // The underlying prefetch loader that is fetching/fetched the prefetch
+  // request.
+  std::unique_ptr<StreamingSearchPrefetchURLLoader> prefetch_loader_;
+
   // Forwarding client receiver.
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
 
-  base::WeakPtrFactory<BackForwardSearchPrefetchURLLoader> weak_factory_{this};
+  base::WeakPtrFactory<CacheAliasSearchPrefetchURLLoader> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BACK_FORWARD_SEARCH_PREFETCH_URL_LOADER_H_
+#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_

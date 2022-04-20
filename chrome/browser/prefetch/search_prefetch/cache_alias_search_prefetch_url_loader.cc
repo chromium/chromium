@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/search_prefetch/back_forward_search_prefetch_url_loader.h"
+#include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 
 #include <string>
 #include <utility>
@@ -27,26 +27,28 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "url/gurl.h"
 
-BackForwardSearchPrefetchURLLoader::BackForwardSearchPrefetchURLLoader(
+CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     Profile* profile,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    const GURL& prefetch_url)
+    const GURL& prefetch_url,
+    std::unique_ptr<StreamingSearchPrefetchURLLoader> prefetch_loader)
     : profile_(profile),
       network_traffic_annotation_(network_traffic_annotation),
-      prefetch_url_(prefetch_url) {}
+      prefetch_url_(prefetch_url),
+      prefetch_loader_(std::move(prefetch_loader)) {}
 
-BackForwardSearchPrefetchURLLoader::~BackForwardSearchPrefetchURLLoader() =
+CacheAliasSearchPrefetchURLLoader::~CacheAliasSearchPrefetchURLLoader() =
     default;
 
 SearchPrefetchURLLoader::RequestHandler
-BackForwardSearchPrefetchURLLoader::ServingResponseHandler(
+CacheAliasSearchPrefetchURLLoader::ServingResponseHandler(
     std::unique_ptr<SearchPrefetchURLLoader> loader) {
   return base::BindOnce(
-      &BackForwardSearchPrefetchURLLoader::SetUpForwardingClient,
+      &CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient,
       weak_factory_.GetWeakPtr(), std::move(loader));
 }
 
-void BackForwardSearchPrefetchURLLoader::SetUpForwardingClient(
+void CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient(
     std::unique_ptr<SearchPrefetchURLLoader> loader,
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -54,6 +56,40 @@ void BackForwardSearchPrefetchURLLoader::SetUpForwardingClient(
   resource_request_ =
       std::make_unique<network::ResourceRequest>(resource_request);
 
+  // Bind to the content/ navigation code.
+  DCHECK(!receiver_.is_bound());
+
+  // At this point, we are bound to the mojo receiver, so we can release
+  // |loader|, which points to |this|.
+  receiver_.Bind(std::move(receiver));
+  loader.release();
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
+      weak_factory_.GetWeakPtr()));
+  forwarding_client_.Bind(std::move(forwarding_client));
+
+  // The prefetch is already in the disk cache when there is no prefetch loader.
+  if (!prefetch_loader_) {
+    StartPrefetchRequest();
+    return;
+  }
+
+  prefetch_loader_->RecordNavigationURLHistogram(resource_request_->url);
+
+  // Either use the prefetch, restart to the direct URL, or wait for headers to
+  // complete.
+  if (prefetch_loader_->ReadyToServe()) {
+    StartPrefetchRequest();
+  } else if (prefetch_loader_->ReceivedError()) {
+    RestartDirect();
+  } else {
+    prefetch_loader_->SetHeadersReceivedCallback(
+        base::BindOnce(&CacheAliasSearchPrefetchURLLoader::HeadersReceived,
+                       base::Unretained(this)));
+  }
+}
+
+void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
   network::ResourceRequest prefetch_request = *resource_request_;
 
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;
@@ -70,23 +106,22 @@ void BackForwardSearchPrefetchURLLoader::SetUpForwardingClient(
           base::ThreadTaskRunnerHandle::Get()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
-      &BackForwardSearchPrefetchURLLoader::MojoDisconnectForPrefetch,
+      &CacheAliasSearchPrefetchURLLoader::MojoDisconnectForPrefetch,
       base::Unretained(this)));
-
-  // Bind to the content/ navigation code.
-  DCHECK(!receiver_.is_bound());
-
-  // At this point, we are bound to the mojo receiver, so we can release
-  // |loader|, which points to |this|.
-  receiver_.Bind(std::move(receiver));
-  loader.release();
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &BackForwardSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
-      weak_factory_.GetWeakPtr()));
-  forwarding_client_.Bind(std::move(forwarding_client));
 }
 
-void BackForwardSearchPrefetchURLLoader::RestartDirect() {
+void CacheAliasSearchPrefetchURLLoader::HeadersReceived() {
+  DCHECK(receiver_.is_bound());
+
+  if (prefetch_loader_->ReadyToServe()) {
+    StartPrefetchRequest();
+  } else {
+    DCHECK(prefetch_loader_->ReceivedError());
+    RestartDirect();
+  }
+}
+
+void CacheAliasSearchPrefetchURLLoader::RestartDirect() {
   network_url_loader_.reset();
   url_loader_receiver_.reset();
   can_fallback_ = false;
@@ -110,20 +145,20 @@ void BackForwardSearchPrefetchURLLoader::RestartDirect() {
           base::ThreadTaskRunnerHandle::Get()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation_));
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
-      &BackForwardSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
+      &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
       base::Unretained(this)));
   if (paused_) {
     network_url_loader_->PauseReadingBodyFromNet();
   }
 }
 
-void BackForwardSearchPrefetchURLLoader::OnReceiveEarlyHints(
+void CacheAliasSearchPrefetchURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   DCHECK(forwarding_client_);
   forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
 }
 
-void BackForwardSearchPrefetchURLLoader::OnReceiveResponse(
+void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(forwarding_client_);
@@ -140,7 +175,7 @@ void BackForwardSearchPrefetchURLLoader::OnReceiveResponse(
       return;
     }
     url_loader_receiver_.set_disconnect_handler(base::BindOnce(
-        &BackForwardSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
+        &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
         weak_factory_.GetWeakPtr()));
 
     SearchPrefetchService* service =
@@ -153,7 +188,7 @@ void BackForwardSearchPrefetchURLLoader::OnReceiveResponse(
   forwarding_client_->OnReceiveResponse(std::move(head), std::move(body));
 }
 
-void BackForwardSearchPrefetchURLLoader::OnReceiveRedirect(
+void CacheAliasSearchPrefetchURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   DCHECK(forwarding_client_);
@@ -165,7 +200,7 @@ void BackForwardSearchPrefetchURLLoader::OnReceiveRedirect(
   forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
 }
 
-void BackForwardSearchPrefetchURLLoader::OnUploadProgress(
+void CacheAliasSearchPrefetchURLLoader::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback callback) {
@@ -173,25 +208,25 @@ void BackForwardSearchPrefetchURLLoader::OnUploadProgress(
   NOTREACHED();
 }
 
-void BackForwardSearchPrefetchURLLoader::OnReceiveCachedMetadata(
+void CacheAliasSearchPrefetchURLLoader::OnReceiveCachedMetadata(
     mojo_base::BigBuffer data) {
   // Do nothing. This is not supported for navigation loader.
 }
 
-void BackForwardSearchPrefetchURLLoader::OnTransferSizeUpdated(
+void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   DCHECK(forwarding_client_);
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void BackForwardSearchPrefetchURLLoader::OnStartLoadingResponseBody(
+void CacheAliasSearchPrefetchURLLoader::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(forwarding_client_);
   forwarding_client_->OnStartLoadingResponseBody(std::move(body));
   return;
 }
 
-void BackForwardSearchPrefetchURLLoader::OnComplete(
+void CacheAliasSearchPrefetchURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK && can_fallback_) {
     RestartDirect();
@@ -203,7 +238,7 @@ void BackForwardSearchPrefetchURLLoader::OnComplete(
   network_url_loader_.reset();
 }
 
-void BackForwardSearchPrefetchURLLoader::FollowRedirect(
+void CacheAliasSearchPrefetchURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
@@ -212,7 +247,7 @@ void BackForwardSearchPrefetchURLLoader::FollowRedirect(
   NOTREACHED();
 }
 
-void BackForwardSearchPrefetchURLLoader::SetPriority(
+void CacheAliasSearchPrefetchURLLoader::SetPriority(
     net::RequestPriority priority,
     int32_t intra_priority_value) {
   // Pass through.
@@ -222,25 +257,25 @@ void BackForwardSearchPrefetchURLLoader::SetPriority(
   resource_request_->priority = priority;
 }
 
-void BackForwardSearchPrefetchURLLoader::PauseReadingBodyFromNet() {
+void CacheAliasSearchPrefetchURLLoader::PauseReadingBodyFromNet() {
   // Pass through.
   if (network_url_loader_)
     network_url_loader_->PauseReadingBodyFromNet();
   paused_ = true;
 }
 
-void BackForwardSearchPrefetchURLLoader::ResumeReadingBodyFromNet() {
+void CacheAliasSearchPrefetchURLLoader::ResumeReadingBodyFromNet() {
   // Pass through.
   if (network_url_loader_)
     network_url_loader_->ResumeReadingBodyFromNet();
   paused_ = false;
 }
 
-void BackForwardSearchPrefetchURLLoader::MojoDisconnectForPrefetch() {
+void CacheAliasSearchPrefetchURLLoader::MojoDisconnectForPrefetch() {
   if (can_fallback_)
     RestartDirect();
 }
 
-void BackForwardSearchPrefetchURLLoader::MojoDisconnectWithNoFallback() {
+void CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback() {
   delete this;
 }

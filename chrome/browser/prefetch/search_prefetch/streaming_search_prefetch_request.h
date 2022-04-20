@@ -49,6 +49,13 @@ class StreamingSearchPrefetchRequest : public BaseSearchPrefetchRequest {
  private:
   // The ongoing prefetch request. Null before and after the fetch.
   std::unique_ptr<StreamingSearchPrefetchURLLoader> streaming_url_loader_;
+
+  base::raw_ptr<Profile> profile_;
+
+  std::unique_ptr<net::NetworkTrafficAnnotationTag> network_traffic_annotation_;
+
+  // The URL of the prefetch request.
+  GURL prefetch_url_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_REQUEST_H_
