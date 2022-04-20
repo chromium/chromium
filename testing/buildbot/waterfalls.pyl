@@ -1981,6 +1981,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'mixins': [
+          'linux-bionic',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_gtests',
         },
