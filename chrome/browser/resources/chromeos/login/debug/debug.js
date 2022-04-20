@@ -1301,6 +1301,50 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'assistant-optin-flow',
       kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'loading',
+          trigger: (screen) => {
+            (screen.$).card.showStep('loading');
+          },
+        },
+        {
+          id: 'related_info skip_activity_control=true',
+          trigger: (screen) => {
+            ((screen.$).card.$).relatedInfo.skipActivityControl_ = true;
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'related_info skip_activity_control=false',
+          trigger: (screen) => {
+            ((screen.$).card.$).relatedInfo.skipActivityControl_ = false;
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'voice_match_begin',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+          },
+        },
+        {
+          id: 'voice_match_listen',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('recording');
+            ((screen.$).card.$).voiceMatch.listenForHotword();
+          },
+        },
+        {
+          id: 'voice_match_done',
+          trigger: (screen) => {
+            (screen.$).card.showStep('voice-match');
+            ((screen.$).card.$).voiceMatch.setUIStep('recording');
+            ((screen.$).card.$).voiceMatch.voiceMatchDone();
+          },
+        },
+      ],
     },
     {
       id: 'parental-handoff',

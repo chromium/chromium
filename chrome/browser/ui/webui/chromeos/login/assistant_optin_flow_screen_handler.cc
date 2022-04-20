@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -653,7 +655,13 @@ void AssistantOptInFlowScreenHandler::HandleFlowFinished() {
 void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
     const int flow_type) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  if (!prefs->GetBoolean(chromeos::assistant::prefs::kAssistantEnabled)) {
+  // Do not skip the flow if the OOBE debug overlay is present. Otherwise it is
+  // not possible to test the screen manually.
+  const bool debugger_enabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kShowOobeDevOverlay);
+  if (!prefs->GetBoolean(chromeos::assistant::prefs::kAssistantEnabled) &&
+      !debugger_enabled) {
     HandleFlowFinished();
     return;
   }
