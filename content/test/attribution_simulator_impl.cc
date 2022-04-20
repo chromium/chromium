@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -90,42 +91,25 @@ class AlwaysSetCookieChecker : public AttributionCookieChecker {
   }
 };
 
-class SentReportAccumulator : public AttributionReportSender {
- public:
-  SentReportAccumulator(base::Value::List& event_level_reports,
-                        base::Value::List& debug_event_level_reports,
-                        base::Value::List& aggregatable_reports,
-                        base::Value::List& debug_aggregatable_reports,
-                        bool remove_report_ids,
-                        AttributionReportTimeFormat report_time_format,
-                        bool remove_assembled_report)
-      : time_origin_(base::Time::Now()),
-        remove_report_ids_(remove_report_ids),
-        report_time_format_(report_time_format),
-        remove_assembled_report_(remove_assembled_report),
-        event_level_reports_(event_level_reports),
-        debug_event_level_reports_(debug_event_level_reports),
-        aggregatable_reports_(aggregatable_reports),
-        debug_aggregatable_reports_(debug_aggregatable_reports) {}
+struct AttributionReportJsonConverter {
+  AttributionReportJsonConverter(const AttributionReportJsonConverter&) =
+      delete;
+  AttributionReportJsonConverter(AttributionReportJsonConverter&&) = delete;
 
-  ~SentReportAccumulator() override = default;
+  AttributionReportJsonConverter& operator=(
+      const AttributionReportJsonConverter&) = delete;
+  AttributionReportJsonConverter& operator=(AttributionReportJsonConverter&&) =
+      delete;
 
-  SentReportAccumulator(const SentReportAccumulator&) = delete;
-  SentReportAccumulator(SentReportAccumulator&&) = delete;
-
-  SentReportAccumulator& operator=(const SentReportAccumulator&) = delete;
-  SentReportAccumulator& operator=(SentReportAccumulator&&) = delete;
-
- private:
-  // AttributionManagerImpl::ReportSender:
-  void SendReport(AttributionReport report,
-                  bool is_debug_report,
-                  ReportSentCallback sent_callback) override {
+  base::Value::Dict ToJson(
+      const AttributionReport& report,
+      bool is_debug_report,
+      const absl::optional<base::GUID>& replaced_by = absl::nullopt) const {
     base::Value::Dict report_body = report.ReportBody();
-    if (remove_report_ids_)
+    if (remove_report_ids)
       report_body.Remove("report_id");
 
-    if (remove_assembled_report_ &&
+    if (remove_assembled_report &&
         absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
             report.data())) {
       report_body.Remove("shared_info");
@@ -137,20 +121,18 @@ class SentReportAccumulator : public AttributionReportSender {
     value.Set("report", std::move(report_body));
     value.Set("report_url", report.ReportURL(is_debug_report).spec());
 
-    static constexpr char kKeyReportTime[] = "report_time";
-    base::TimeDelta report_time_delta = base::Time::Now() - time_origin_;
-    switch (report_time_format_) {
+    const char* time_key = replaced_by ? "replacement_time" : "report_time";
+
+    base::TimeDelta time_delta = base::Time::Now() - time_origin;
+    switch (report_time_format) {
       case AttributionReportTimeFormat::kSecondsSinceUnixEpoch:
-        value.Set(kKeyReportTime,
-                  base::checked_cast<int>(report_time_delta.InSeconds()));
+        value.Set(time_key, base::checked_cast<int>(time_delta.InSeconds()));
         break;
       case AttributionReportTimeFormat::kISO8601:
-        value.Set(kKeyReportTime, base::TimeToISO8601(base::Time::UnixEpoch() +
-                                                      report_time_delta));
+        value.Set(time_key,
+                  base::TimeToISO8601(base::Time::UnixEpoch() + time_delta));
         break;
     }
-
-    base::Value::List* reports;
 
     base::Value::Dict test_info;
     if (absl::holds_alternative<AttributionReport::EventLevelData>(
@@ -158,9 +140,6 @@ class SentReportAccumulator : public AttributionReportSender {
       test_info.Set("randomized_trigger",
                     report.attribution_info().source.attribution_logic() ==
                         StoredSource::AttributionLogic::kFalsely);
-
-      reports =
-          is_debug_report ? &debug_event_level_reports_ : &event_level_reports_;
     } else {
       auto* aggregatable_data =
           absl::get_if<AttributionReport::AggregatableAttributionData>(
@@ -175,27 +154,72 @@ class SentReportAccumulator : public AttributionReportSender {
         list.Append(std::move(dict));
       }
       test_info.Set("histograms", std::move(list));
-
-      reports = is_debug_report ? &debug_aggregatable_reports_
-                                : &aggregatable_reports_;
     }
     value.Set("test_info", std::move(test_info));
 
-    reports->Append(std::move(value));
+    if (!remove_report_ids && replaced_by) {
+      value.Set("replaced_by", replaced_by->AsLowercaseString());
+    }
+
+    return value;
+  }
+
+  const bool remove_report_ids;
+  const AttributionReportTimeFormat report_time_format;
+  const bool remove_assembled_report;
+  const base::Time time_origin;
+};
+
+class SentReportAccumulator : public AttributionReportSender {
+ public:
+  SentReportAccumulator(base::Value::List& event_level_reports,
+                        base::Value::List& debug_event_level_reports,
+                        base::Value::List& aggregatable_reports,
+                        base::Value::List& debug_aggregatable_reports,
+                        const AttributionReportJsonConverter& json_converter)
+      : event_level_reports_(event_level_reports),
+        debug_event_level_reports_(debug_event_level_reports),
+        aggregatable_reports_(aggregatable_reports),
+        debug_aggregatable_reports_(debug_aggregatable_reports),
+        json_converter_(json_converter) {}
+
+  ~SentReportAccumulator() override = default;
+
+  SentReportAccumulator(const SentReportAccumulator&) = delete;
+  SentReportAccumulator(SentReportAccumulator&&) = delete;
+
+  SentReportAccumulator& operator=(const SentReportAccumulator&) = delete;
+  SentReportAccumulator& operator=(SentReportAccumulator&&) = delete;
+
+ private:
+  // AttributionManagerImpl::ReportSender:
+  void SendReport(AttributionReport report,
+                  bool is_debug_report,
+                  ReportSentCallback sent_callback) override {
+    base::Value::List* reports;
+    switch (report.GetReportType()) {
+      case AttributionReport::ReportType::kEventLevel:
+        reports = is_debug_report ? &debug_event_level_reports_
+                                  : &event_level_reports_;
+        break;
+      case AttributionReport::ReportType::kAggregatableAttribution:
+        reports = is_debug_report ? &debug_aggregatable_reports_
+                                  : &aggregatable_reports_;
+        break;
+    }
+
+    reports->Append(json_converter_.ToJson(report, is_debug_report));
 
     std::move(sent_callback)
         .Run(std::move(report), SendResult(SendResult::Status::kSent,
                                            /*http_response_code=*/200));
   }
 
-  const base::Time time_origin_;
-  const bool remove_report_ids_;
-  const AttributionReportTimeFormat report_time_format_;
-  const bool remove_assembled_report_;
   base::Value::List& event_level_reports_;
   base::Value::List& debug_event_level_reports_;
   base::Value::List& aggregatable_reports_;
   base::Value::List& debug_aggregatable_reports_;
+  const AttributionReportJsonConverter& json_converter_;
 };
 
 // Registers sources and triggers in the `AttributionManagerImpl` and records
@@ -203,11 +227,15 @@ class SentReportAccumulator : public AttributionReportSender {
 class AttributionEventHandler : public AttributionObserver {
  public:
   AttributionEventHandler(AttributionManagerImpl* manager,
+                          const AttributionReportJsonConverter& json_converter,
                           base::Value::List& rejected_sources,
-                          base::Value::List& rejected_triggers)
+                          base::Value::List& rejected_triggers,
+                          base::Value::List& replaced_event_level_reports)
       : manager_(manager),
+        json_converter_(json_converter),
         rejected_sources_(rejected_sources),
-        rejected_triggers_(rejected_triggers) {
+        rejected_triggers_(rejected_triggers),
+        replaced_event_level_reports_(replaced_event_level_reports) {
     observation_.Observe(manager);
   }
 
@@ -270,9 +298,12 @@ class AttributionEventHandler : public AttributionObserver {
     std::ostringstream event_level_reason;
     switch (result.event_level_status()) {
       case AttributionTrigger::EventLevelResult::kSuccess:
+        break;
       case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
-        // TODO(apaseltiner): Consider surfacing reports dropped due to
-        // prioritization.
+        replaced_event_level_reports_.Append(json_converter_.ToJson(
+            *result.replaced_event_level_report(),
+            /*is_debug_report=*/false,
+            result.new_event_level_report()->external_report_id()));
         break;
       case AttributionTrigger::EventLevelResult::kInternalError:
       case AttributionTrigger::EventLevelResult::
@@ -334,9 +365,11 @@ class AttributionEventHandler : public AttributionObserver {
       observation_{this};
 
   base::raw_ptr<AttributionManagerImpl> manager_;
+  const AttributionReportJsonConverter& json_converter_;
 
   base::Value::List& rejected_sources_;
   base::Value::List& rejected_triggers_;
+  base::Value::List& replaced_event_level_reports_;
 
   base::circular_deque<base::Value> input_values_;
 };
@@ -374,6 +407,12 @@ base::Value RunAttributionSimulation(
     rng = std::make_unique<AttributionDefaultRandomGenerator>();
   }
 
+  const AttributionReportJsonConverter json_converter{
+      .remove_report_ids = options.remove_report_ids,
+      .report_time_format = options.report_time_format,
+      .remove_assembled_report = options.remove_assembled_report,
+      .time_origin = base::Time::Now()};
+
   base::Value::List event_level_reports;
   base::Value::List debug_event_level_reports;
   base::Value::List aggregatable_reports;
@@ -392,14 +431,15 @@ base::Value RunAttributionSimulation(
       std::make_unique<AlwaysSetCookieChecker>(),
       std::make_unique<SentReportAccumulator>(
           event_level_reports, debug_event_level_reports, aggregatable_reports,
-          debug_aggregatable_reports, options.remove_report_ids,
-          options.report_time_format, options.remove_assembled_report),
+          debug_aggregatable_reports, json_converter),
       storage_partition);
 
   base::Value::List rejected_sources;
   base::Value::List rejected_triggers;
-  AttributionEventHandler handler(manager.get(), rejected_sources,
-                                  rejected_triggers);
+  base::Value::List replaced_event_level_reports;
+  AttributionEventHandler handler(manager.get(), json_converter,
+                                  rejected_sources, rejected_triggers,
+                                  replaced_event_level_reports);
 
   storage_partition->GetAggregationService()->SetPublicKeysForTesting(
       GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get()),
@@ -449,6 +489,11 @@ base::Value RunAttributionSimulation(
   if (!rejected_triggers.empty()) {
     output.SetKey("rejected_triggers",
                   base::Value(std::move(rejected_triggers)));
+  }
+
+  if (!replaced_event_level_reports.empty()) {
+    output.SetKey("replaced_event_level_reports",
+                  base::Value(std::move(replaced_event_level_reports)));
   }
 
   return output;

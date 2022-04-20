@@ -229,6 +229,32 @@ JSON schema for the output of the simulator.
       // The original input JSON corresponding to the trigger.
       "trigger": {}
     }
+  ],
+
+  // List of replaced event-level reports. Omitted if empty.
+  // These reports were never sent, but were replaced by higher-priority ones.
+  "replaced_event_level_reports": [
+    {
+      // Time at which the report was replaced in seconds since the UNIX epoch.
+      "replacement_time": 123,
+
+      // The report id that the report was replaced by. Omitted if
+      // `remove_report_ids` option is true.
+      "replaced_by": "21abd97f-73e8-4b88-9389-a9fee6abda5e",
+
+      // URL to which the report would have been sent.
+      "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
+
+      "test_info": {
+        // Whether fake reports were generated.
+        "randomized_trigger": false
+      },
+
+      // The report itself. See
+      // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports
+      // for details about its fields.
+      "report": {}
+    }
   ]
 }
 ```
