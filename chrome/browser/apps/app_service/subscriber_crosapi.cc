@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace {
@@ -116,7 +117,8 @@ void SubscriberCrosapi::OnPreferredAppsChanged(
   if (!subscriber_.is_bound()) {
     return;
   }
-  subscriber_->OnPreferredAppsChanged(std::move(changes));
+  subscriber_->OnPreferredAppsChanged(
+      ConvertMojomPreferredAppChangesToPreferredAppChanges(changes));
 }
 
 void SubscriberCrosapi::InitializePreferredApps(
@@ -124,7 +126,8 @@ void SubscriberCrosapi::InitializePreferredApps(
   if (!subscriber_.is_bound()) {
     return;
   }
-  subscriber_->InitializePreferredApps(std::move(preferred_apps));
+  subscriber_->InitializePreferredApps(
+      ConvertMojomPreferredAppsToPreferredApps(preferred_apps));
 }
 
 void SubscriberCrosapi::OnCrosapiDisconnected() {

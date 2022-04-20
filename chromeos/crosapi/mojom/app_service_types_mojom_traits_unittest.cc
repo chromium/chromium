@@ -1101,6 +1101,66 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
 }
 
+// Test that serialization and deserialization works with updating
+// preferred app.
+TEST(AppServiceTypesMojomTraitsTest, PreferredApp) {
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
+                                         apps::PatternMatchType::kNone);
+  auto input =
+      std::make_unique<apps::PreferredApp>(std::move(intent_filter), "abcdefg");
+
+  apps::PreferredAppPtr output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::PreferredApp>(
+      input, output));
+  EXPECT_EQ(*input, *output);
+}
+
+// Test that serialization and deserialization works with updating
+// PreferredAppChanges.
+TEST(AppServiceTypesMojomTraitsTest, PreferredAppChanges) {
+  apps::IntentFilters added_filters;
+  auto intent_filter1 = std::make_unique<apps::IntentFilter>();
+  intent_filter1->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
+                                          apps::PatternMatchType::kNone);
+  auto intent_filter2 = std::make_unique<apps::IntentFilter>();
+  intent_filter2->AddSingleValueCondition(apps::ConditionType::kHost, "2",
+                                          apps::PatternMatchType::kLiteral);
+  added_filters.push_back(std::move(intent_filter1));
+  added_filters.push_back(std::move(intent_filter2));
+
+  apps::IntentFilters removed_filters;
+  auto intent_filter3 = std::make_unique<apps::IntentFilter>();
+  intent_filter3->AddSingleValueCondition(apps::ConditionType::kPattern, "3",
+                                          apps::PatternMatchType::kPrefix);
+  auto intent_filter4 = std::make_unique<apps::IntentFilter>();
+  intent_filter4->AddSingleValueCondition(apps::ConditionType::kAction, "4",
+                                          apps::PatternMatchType::kGlob);
+  removed_filters.push_back(std::move(intent_filter3));
+  removed_filters.push_back(std::move(intent_filter4));
+
+  auto input = std::make_unique<apps::PreferredAppChanges>();
+  input->added_filters["a"] = std::move(added_filters);
+  input->removed_filters["b"] = std::move(removed_filters);
+
+  apps::PreferredAppChangesPtr output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<crosapi::mojom::PreferredAppChanges>(
+          input, output));
+
+  EXPECT_EQ(input->added_filters.size(), output->added_filters.size());
+  for (const auto& added_filters : input->added_filters) {
+    EXPECT_TRUE(IsEqual(added_filters.second,
+                        output->added_filters[added_filters.first]));
+  }
+
+  EXPECT_EQ(input->removed_filters.size(), output->removed_filters.size());
+  for (const auto& removed_filters : input->removed_filters) {
+    EXPECT_TRUE(IsEqual(removed_filters.second,
+                        output->removed_filters[removed_filters.first]));
+  }
+}
+
 TEST(AppServiceTypesMojomTraitsTest, RoundTripShortcuts) {
   {
     auto shortcut = std::make_unique<apps::Shortcut>("test_id", "test_name",

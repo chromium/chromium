@@ -22,6 +22,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -333,10 +334,8 @@ class AppServiceProxyLacros : public KeyedService,
   void OnApps(std::vector<AppPtr> deltas,
               AppType app_type,
               bool should_notify_initialized) override;
-  void OnPreferredAppsChanged(
-      apps::mojom::PreferredAppChangesPtr changes) override;
-  void InitializePreferredApps(
-      std::vector<apps::mojom::PreferredAppPtr> preferred_apps) override;
+  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
+  void InitializePreferredApps(PreferredApps preferred_apps) override;
 
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;

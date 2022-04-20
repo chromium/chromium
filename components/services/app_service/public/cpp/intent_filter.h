@@ -196,6 +196,11 @@ using IntentFilters = std::vector<IntentFilterPtr>;
 COMPONENT_EXPORT(APP_TYPES)
 IntentFilters CloneIntentFilters(const IntentFilters& intent_filters);
 
+// Creates a deep copy of `intent_filters` map.
+COMPONENT_EXPORT(APP_TYPES)
+base::flat_map<std::string, apps::IntentFilters> CloneIntentFiltersMap(
+    const base::flat_map<std::string, apps::IntentFilters>& intent_filters_map);
+
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const IntentFilters& source, const IntentFilters& target);
 
@@ -245,18 +250,6 @@ IntentFilterPtr ConvertMojomIntentFilterToIntentFilter(
 COMPONENT_EXPORT(APP_TYPES)
 apps::mojom::IntentFilterPtr ConvertIntentFilterToMojomIntentFilter(
     const IntentFilterPtr& intent_filter);
-
-COMPONENT_EXPORT(APP_TYPES)
-base::flat_map<std::string, std::vector<apps::mojom::IntentFilterPtr>>
-ConvertIntentFiltersToMojomIntentFilters(
-    const base::flat_map<std::string, apps::IntentFilters>& intent_filter);
-
-COMPONENT_EXPORT(APP_TYPES)
-base::flat_map<std::string, apps::IntentFilters>
-ConvertMojomIntentFiltersToIntentFilters(
-    const base::flat_map<std::string,
-                         std::vector<apps::mojom::IntentFilterPtr>>&
-        mojom_intent_filter);
 
 }  // namespace apps
 

@@ -183,12 +183,12 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.PreferredApp"
-          cpp = "::apps::mojom::PreferredAppPtr"
+          cpp = "::apps::PreferredAppPtr"
           move_only = true
         },
         {
           mojom = "crosapi.mojom.PreferredAppChanges"
-          cpp = "::apps::mojom::PreferredAppChangesPtr"
+          cpp = "::apps::PreferredAppChangesPtr"
           move_only = true
         },
         {
@@ -212,6 +212,7 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
         "//components/services/app_service/public/cpp/app_types.h",
+        "//components/services/app_service/public/cpp/preferred_app.h",
         "//chromeos/crosapi/mojom/sharesheet_mojom_traits.h",
         "//components/services/app_service/public/cpp/icon_types.h",
         "//components/services/app_service/public/mojom/types.mojom.h",
@@ -229,6 +230,7 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp:app_types",
         "//components/services/app_service/public/cpp:browser_app_instance_registry_update",
         "//components/services/app_service/public/cpp:icon_types",
+        "//components/services/app_service/public/cpp:preferred_app",
         "//components/services/app_service/public/mojom:mojom",
         "//components/webapps/browser:constants",
       ]

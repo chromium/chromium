@@ -12,6 +12,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -348,35 +349,34 @@ struct UnionTraits<crosapi::mojom::PermissionValueDataView,
 
 template <>
 struct StructTraits<crosapi::mojom::PreferredAppDataView,
-                    apps::mojom::PreferredAppPtr> {
-  static apps::IntentFilterPtr intent_filter(
-      const apps::mojom::PreferredAppPtr& r) {
-    return apps::ConvertMojomIntentFilterToIntentFilter(r->intent_filter);
+                    apps::PreferredAppPtr> {
+  static apps::IntentFilterPtr intent_filter(const apps::PreferredAppPtr& r) {
+    return r->intent_filter->Clone();
   }
 
-  static const std::string& app_id(const apps::mojom::PreferredAppPtr& r) {
+  static const std::string& app_id(const apps::PreferredAppPtr& r) {
     return r->app_id;
   }
 
   static bool Read(crosapi::mojom::PreferredAppDataView,
-                   apps::mojom::PreferredAppPtr* out);
+                   apps::PreferredAppPtr* out);
 };
 
 template <>
 struct StructTraits<crosapi::mojom::PreferredAppChangesDataView,
-                    apps::mojom::PreferredAppChangesPtr> {
+                    apps::PreferredAppChangesPtr> {
   static base::flat_map<std::string, apps::IntentFilters> added_filters(
-      const apps::mojom::PreferredAppChangesPtr& r) {
-    return apps::ConvertMojomIntentFiltersToIntentFilters(r->added_filters);
+      const apps::PreferredAppChangesPtr& r) {
+    return apps::CloneIntentFiltersMap(r->added_filters);
   }
 
   static base::flat_map<std::string, apps::IntentFilters> removed_filters(
-      const apps::mojom::PreferredAppChangesPtr& r) {
-    return apps::ConvertMojomIntentFiltersToIntentFilters(r->removed_filters);
+      const apps::PreferredAppChangesPtr& r) {
+    return apps::CloneIntentFiltersMap(r->removed_filters);
   }
 
   static bool Read(crosapi::mojom::PreferredAppChangesDataView,
-                   apps::mojom::PreferredAppChangesPtr* out);
+                   apps::PreferredAppChangesPtr* out);
 };
 
 template <>

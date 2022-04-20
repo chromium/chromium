@@ -1144,10 +1144,9 @@ bool UnionTraits<crosapi::mojom::PermissionValueDataView,
   return false;
 }
 
-bool StructTraits<crosapi::mojom::PreferredAppDataView,
-                  apps::mojom::PreferredAppPtr>::
+bool StructTraits<crosapi::mojom::PreferredAppDataView, apps::PreferredAppPtr>::
     Read(crosapi::mojom::PreferredAppDataView data,
-         apps::mojom::PreferredAppPtr* out) {
+         apps::PreferredAppPtr* out) {
   apps::IntentFilterPtr intent_filter;
   if (!data.ReadIntentFilter(&intent_filter))
     return false;
@@ -1156,18 +1155,14 @@ bool StructTraits<crosapi::mojom::PreferredAppDataView,
   if (!data.ReadAppId(&app_id))
     return false;
 
-  auto preferred_app = apps::mojom::PreferredApp::New();
-  preferred_app->intent_filter =
-      apps::ConvertIntentFilterToMojomIntentFilter(intent_filter);
-  preferred_app->app_id = app_id;
-  *out = std::move(preferred_app);
+  *out = std::make_unique<apps::PreferredApp>(std::move(intent_filter), app_id);
   return true;
 }
 
 bool StructTraits<crosapi::mojom::PreferredAppChangesDataView,
-                  apps::mojom::PreferredAppChangesPtr>::
+                  apps::PreferredAppChangesPtr>::
     Read(crosapi::mojom::PreferredAppChangesDataView data,
-         apps::mojom::PreferredAppChangesPtr* out) {
+         apps::PreferredAppChangesPtr* out) {
   base::flat_map<std::string, apps::IntentFilters> added_filters;
   if (!data.ReadAddedFilters(&added_filters))
     return false;
@@ -1176,11 +1171,9 @@ bool StructTraits<crosapi::mojom::PreferredAppChangesDataView,
   if (!data.ReadRemovedFilters(&removed_filters))
     return false;
 
-  auto preferred_app_changes = apps::mojom::PreferredAppChanges::New();
-  preferred_app_changes->added_filters =
-      ConvertIntentFiltersToMojomIntentFilters(added_filters);
-  preferred_app_changes->removed_filters =
-      ConvertIntentFiltersToMojomIntentFilters(removed_filters);
+  auto preferred_app_changes = std::make_unique<apps::PreferredAppChanges>();
+  preferred_app_changes->added_filters = std::move(added_filters);
+  preferred_app_changes->removed_filters = std::move(removed_filters);
   *out = std::move(preferred_app_changes);
   return true;
 }
