@@ -8,9 +8,7 @@
  * Autofill keyboard accessory.
  */
 
-goog.provide('__crWeb.formHandlers');
-
-// Requires __crWeb.fill and __crWeb.form.
+// Requires functions from fill.js and form.js.
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -19,8 +17,6 @@ goog.provide('__crWeb.formHandlers');
  */
 __gCrWeb.formHandlers = {};
 
-/** Beginning of anonymous object */
-(function() {
 /**
  * The MutationObserver tracking form related changes.
  */
@@ -474,5 +470,3 @@ __gCrWeb.formHandlers['toggleTrackingUserEditedFields'] = function(track) {
     __gCrWeb.form.wasEditedByUser = null;
   }
 };
-
-}());  // End of anonymous object

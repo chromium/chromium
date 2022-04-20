@@ -16,7 +16,7 @@
 #endif
 
 namespace {
-constexpr char kScriptName[] = "form_handlers_js";
+constexpr char kScriptName[] = "form_handlers";
 constexpr char kScriptMessageName[] = "FormHandlersMessage";
 }  // namespace
 

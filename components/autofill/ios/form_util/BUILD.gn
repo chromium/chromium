@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -58,18 +58,18 @@ source_set("form_handler_feature") {
   ]
 }
 
-js_compile_bundle("fill_js") {
-  closure_entry_point = "__crWeb.fill"
+optimize_js("fill_js") {
+  primary_script = "resources/fill.js"
   sources = [ "resources/fill.js" ]
 }
 
-js_compile_bundle("form_js") {
-  closure_entry_point = "__crWeb.form"
+optimize_js("form_js") {
+  primary_script = "resources/form.js"
   sources = [ "resources/form.js" ]
 }
 
-js_compile_bundle("form_handlers_js") {
-  closure_entry_point = "__crWeb.formHandlers"
+optimize_js("form_handlers_js") {
+  primary_script = "resources/form_handlers.js"
   sources = [ "resources/form_handlers.js" ]
 }
 

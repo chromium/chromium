@@ -13,8 +13,8 @@
 #endif
 
 namespace {
-const char kFillScriptName[] = "fill_js";
-const char kFormScriptName[] = "form_js";
+const char kFillScriptName[] = "fill";
+const char kFormScriptName[] = "form";
 }  // namespace
 
 namespace autofill {

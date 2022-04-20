@@ -4,9 +4,7 @@
 
 // This file provides methods used to fill forms in JavaScript.
 
-goog.provide('__crWeb.fill');
-
-// Requires __crWeb.form.
+// Requires functions from form.js.
 
 /**
  * @typedef {{
@@ -50,9 +48,6 @@ __gCrWeb.fill = {};
 // string, so it does not get renamed by closure compiler during the
 // minification.
 __gCrWeb['fill'] = __gCrWeb.fill;
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * The maximum length allowed for form data.
@@ -586,7 +581,7 @@ function extractFieldsFromControlElements_(
 
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
-    const formField = new __gCrWeb['common'].JSONSafeObject;
+    const formField = new __gCrWeb['common'].JSONSafeObject();
     __gCrWeb.fill.webFormControlElementToFormField(
         controlElement, extractMask, formField);
     formFields.push(formField);
@@ -2041,7 +2036,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
  * @return {string} a JSON encoded version of |form|
  */
 __gCrWeb.fill.autofillSubmissionData = function(form) {
-  const formData = new __gCrWeb['common'].JSONSafeObject;
+  const formData = new __gCrWeb['common'].JSONSafeObject();
   const extractMask =
       __gCrWeb.fill.EXTRACT_MASK_VALUE | __gCrWeb.fill.EXTRACT_MASK_OPTIONS;
   __gCrWeb['fill'].webFormElementToFormData(
@@ -2338,6 +2333,3 @@ __gCrWeb.fill.getUniqueID = function(element) {
     return __gCrWeb.fill.RENDERER_ID_NOT_SET;
   }
 };
-
-
-}());  // End of anonymous object

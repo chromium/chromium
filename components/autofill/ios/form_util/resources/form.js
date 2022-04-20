@@ -6,8 +6,6 @@
  * @fileoverview Contains method needed to access the forms and their elements.
  */
 
-goog.provide('__crWeb.form');
-
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
  * injected. String 'form' is used in |__gCrWeb['form']| as it needs to be
@@ -20,8 +18,6 @@ __gCrWeb.form = {};
 // minification.
 __gCrWeb['form'] = __gCrWeb.form;
 
-/** Beginning of anonymous object */
-(function() {
 /**
  * Prefix used in references to form elements that have no 'id' or 'name'
  */
@@ -305,5 +301,3 @@ __gCrWeb.form['fieldWasEditedByUser'] = function(element) {
   }
   return __gCrWeb.form.wasEditedByUser.get(element);
 };
-
-}());  // End of anonymous object
