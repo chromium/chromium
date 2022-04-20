@@ -270,8 +270,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     switch (ui_status()) {
       case UIStatus::kDisabled:
         disabled_features.push_back(security_state::features::kSafetyTipUI);
-        disabled_features.push_back(
-            lookalikes::features::kDetectTargetEmbeddingLookalikes);
         break;
       case UIStatus::kEnabledWithDefaultFeatures:
         enabled_features.emplace_back(security_state::features::kSafetyTipUI,
@@ -292,9 +290,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest
                                     {"topsites", "true"},
                                     {"editdistance", "true"},
                                     {"editdistance_siteengagement", "true"}}));
-        enabled_features.emplace_back(
-            lookalikes::features::kDetectTargetEmbeddingLookalikes,
-            base::FieldTrialParams());
         break;
     }
 

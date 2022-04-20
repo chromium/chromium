@@ -58,12 +58,6 @@ const char kDigitChars[] = "0123456789";
 // "baz" is shorter than kMinTargetE2LDLength.
 const size_t kMinE2LDLengthForTargetEmbedding = 4;
 
-// This list will be added to the static list of common words so common words
-// could be added to the list using a flag if needed.
-const base::FeatureParam<std::string> kRemoveAdditionalCommonWords{
-    &lookalikes::features::kDetectTargetEmbeddingLookalikes,
-    "additional_common_words", ""};
-
 // We might not protect a domain whose e2LD is a common word in target embedding
 // based on the TLD that is paired with it. This list supplements words from
 // url_formatter::common_words::IsCommonWord().
@@ -383,12 +377,6 @@ bool UsesCommonWord(const reputation::SafetyTipsConfig* config_proto,
     if (domain.domain_without_registry == common_word) {
       return true;
     }
-  }
-  std::vector<std::string> additional_common_words =
-      base::SplitString(kRemoveAdditionalCommonWords.Get(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (base::Contains(additional_common_words, domain.domain_without_registry)) {
-    return true;
   }
 
   return false;
@@ -729,8 +717,7 @@ bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
     //    check engaged sites. Otherwise, false positives are too high.
     return false;
 #else
-    return base::FeatureList::IsEnabled(
-        lookalikes::features::kDetectTargetEmbeddingLookalikes);
+    return true;
 #endif
   }
   if (match_type == LookalikeUrlMatchType::kFailedSpoofChecks) {

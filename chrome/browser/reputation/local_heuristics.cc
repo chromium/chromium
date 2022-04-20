@@ -29,9 +29,6 @@ const base::FeatureParam<bool> kEnableLookalikeEditDistance{
 const base::FeatureParam<bool> kEnableLookalikeEditDistanceSiteEngagement{
     &security_state::features::kSafetyTipUI, "editdistance_siteengagement",
     true};
-const base::FeatureParam<bool> kEnableTargetEmbeddingSafetyTips{
-    &lookalikes::features::kDetectTargetEmbeddingLookalikes, "safety_tips",
-    true};
 
 // Binary search through |words| to find |needle|.
 bool SortedWordListContains(const std::string& needle,
@@ -106,12 +103,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
       // Target Embedding should block URL Navigation.
       return false;
     case LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips:
-      // Require that target embedding is enabled globally *and* the feature
-      // parameter for safety tips is enabled, too. This allows disabling only
-      // safety tips by enabling the feature and unsetting this parameter.
-      return base::FeatureList::IsEnabled(
-                 lookalikes::features::kDetectTargetEmbeddingLookalikes) &&
-             kEnableTargetEmbeddingSafetyTips.Get();
+      return true;
     case LookalikeUrlMatchType::kSkeletonMatchTop5k:
       return is_safety_tip_for_simplified_domains_enabled ||
              kEnableLookalikeTopSites.Get();

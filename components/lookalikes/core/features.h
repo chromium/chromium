@@ -11,10 +11,6 @@
 namespace lookalikes {
 namespace features {
 
-// This feature enables interstitial warnings for target embedding lookalikes.
-COMPONENT_EXPORT(LOOKALIKES_FEATURES)
-extern const base::Feature kDetectTargetEmbeddingLookalikes;
-
 // This feature enables Digital Asset Link validations for lookalikes.
 COMPONENT_EXPORT(LOOKALIKES_FEATURES)
 extern const base::Feature kLookalikeDigitalAssetLinks;
