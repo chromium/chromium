@@ -4,9 +4,7 @@
 
 // This file provides common methods that can be shared by other JavaScripts.
 
-goog.provide('__crWeb.common');
-
-// Requires __crWeb.base.
+// Requires functions from base.js.
 
 /** @typedef {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement} */
 var FormControlElement;
@@ -22,9 +20,6 @@ __gCrWeb.common = {};
 // string, so it does not get renamed by closure compiler during the
 // minification.
 __gCrWeb['common'] = __gCrWeb.common;
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * JSON safe object to protect against custom implementation of Object.toJSON
@@ -234,5 +229,3 @@ __gCrWeb.common.sendWebKitMessage = function(handlerName, message) {
   window.webkit.messageHandlers[handlerName].postMessage(message);
   window.webkit = oldWebkit;
 };
-
-}());  // End of anonymous object

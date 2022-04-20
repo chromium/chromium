@@ -30,9 +30,9 @@ NSString* GetSharedScripts() {
   // Scripts must be all injected at once because as soon as __gCrWeb exists,
   // injection is assumed to be done and __gCrWeb.message is used.
   return [NSString stringWithFormat:@"%@; %@; %@",
-                                    web::test::GetPageScript(@"base_js"),
-                                    web::test::GetPageScript(@"common_js"),
-                                    web::test::GetPageScript(@"message_js")];
+                                    web::test::GetPageScript(@"base"),
+                                    web::test::GetPageScript(@"common"),
+                                    web::test::GetPageScript(@"message")];
 }
 
 void AddSharedScriptsToWebView(WKWebView* web_view) {
