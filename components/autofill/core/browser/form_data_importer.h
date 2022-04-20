@@ -284,6 +284,10 @@ class FormDataImporter {
   friend class SaveCardInfobarEGTestHelper;
   friend class ::SaveCardOfferObserver;
   FRIEND_TEST_ALL_PREFIXES(AutofillMergeTest, MergeProfiles);
+  FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
+                           ProcessCreditCardImportCandidate_EmptyCreditCard);
+  FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
+                           ShouldOfferUploadCardOrLocalCardSave);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
                            AllowDuplicateMaskedServerCardIfFlagEnabled);
   FRIEND_TEST_ALL_PREFIXES(

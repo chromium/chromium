@@ -50,6 +50,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -379,6 +380,37 @@ class FormDataImporterTestBase {
     WaitForOnPersonalDataChanged();
   }
 
+  void SetUpHelper() {
+    prefs_ = test::PrefServiceForTesting();
+    base::FilePath path(WebDatabase::kInMemoryPath);
+    web_database_ =
+        new WebDatabaseService(path, base::ThreadTaskRunnerHandle::Get(),
+                               base::ThreadTaskRunnerHandle::Get());
+
+    // Hacky: hold onto a pointer but pass ownership.
+    autofill_table_ = new AutofillTable;
+    web_database_->AddTable(std::unique_ptr<WebDatabaseTable>(autofill_table_));
+    web_database_->LoadDatabase();
+    autofill_database_service_ = new AutofillWebDataService(
+        web_database_, base::ThreadTaskRunnerHandle::Get(),
+        base::ThreadTaskRunnerHandle::Get());
+    autofill_database_service_->Init(base::NullCallback());
+
+    autofill_client_ = std::make_unique<TestAutofillClient>();
+
+    test::DisableSystemServices(prefs_.get());
+    ResetPersonalDataManager(USER_MODE_NORMAL);
+
+    form_data_importer_ =
+        std::make_unique<FormDataImporter>(autofill_client_.get(),
+                                           /*payments::PaymentsClient=*/nullptr,
+                                           personal_data_manager_.get(), "en");
+
+    // Reset the deduping pref to its default value.
+    personal_data_manager_->pref_service_->SetInteger(
+        prefs::kAutofillLastVersionDeduped, 0);
+  }
+
   // Helper method that will add credit card fields in |form|, according to the
   // specified values. If a value is nullptr, the corresponding field won't get
   // added (empty string will add a field with an empty string as the value).
@@ -573,42 +605,7 @@ class FormDataImporterTest
  private:
   void SetUp() override {
     InitializeFeatures();
-    OSCryptMocker::SetUp();
-    prefs_ = test::PrefServiceForTesting();
-    base::FilePath path(WebDatabase::kInMemoryPath);
-    web_database_ =
-        new WebDatabaseService(path, base::ThreadTaskRunnerHandle::Get(),
-                               base::ThreadTaskRunnerHandle::Get());
-
-    // Hacky: hold onto a pointer but pass ownership.
-    autofill_table_ = new AutofillTable;
-    web_database_->AddTable(std::unique_ptr<WebDatabaseTable>(autofill_table_));
-    web_database_->LoadDatabase();
-    autofill_database_service_ = new AutofillWebDataService(
-        web_database_, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get());
-    autofill_database_service_->Init(base::NullCallback());
-
-    autofill_client_ = std::make_unique<TestAutofillClient>();
-
-    test::DisableSystemServices(prefs_.get());
-    ResetPersonalDataManager(USER_MODE_NORMAL);
-
-    form_data_importer_ =
-        std::make_unique<FormDataImporter>(autofill_client_.get(),
-                                           /*payments::PaymentsClient=*/nullptr,
-                                           personal_data_manager_.get(), "en");
-
-    // Reset the deduping pref to its default value.
-    personal_data_manager_->pref_service_->SetInteger(
-        prefs::kAutofillLastVersionDeduped, 0);
-  }
-
-  void TearDown() override {
-    // Order of destruction is important as BrowserAutofillManager relies on
-    // PersonalDataManager to be around when it gets destroyed.
-    test::ReenableSystemServices();
-    OSCryptMocker::TearDown();
+    SetUpHelper();
   }
 
   void InitializeFeatures() {
@@ -4239,5 +4236,73 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
+
+class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
+                                             public testing::Test {
+ private:
+  void SetUp() override { SetUpHelper(); }
+};
+
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessCreditCardImportCandidate_EmptyCreditCard) {
+  std::unique_ptr<CreditCard> imported_credit_card;
+  FormData form;
+  AddFullCreditCardForm(&form, "Clyde Barrow", "378282246310005", "04", "2999");
+
+  // |form_data_importer_|'s |imported_credit_card_record_type_| is set to
+  // LOCAL_CARD because we need to make sure we do not return early in the
+  // NEW_CARD case, and LOCAL_CARD with upstream enabled but empty
+  // |imported_credit_card| is the most likely scenario for a crash.
+  form_data_importer_->imported_credit_card_record_type_ =
+      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD;
+
+  // We need a sync service so that
+  // LocalCardMigrationManager::ShouldOfferLocalCardMigration() does not crash.
+  syncer::TestSyncService sync_service;
+  personal_data_manager_->OnSyncServiceInitialized(&sync_service);
+
+  EXPECT_FALSE(form_data_importer_->ProcessCreditCardImportCandidate(
+      FormStructure(form), std::move(imported_credit_card),
+      /*detected_upi_id=*/"",
+      /*credit_card_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/true));
+  personal_data_manager_->OnSyncServiceInitialized(nullptr);
+}
+
+TEST_F(FormDataImporterNonParameterizedTest,
+       ShouldOfferUploadCardOrLocalCardSave) {
+  // Should not offer save for null cards.
+  std::unique_ptr<CreditCard> imported_credit_card;
+  EXPECT_FALSE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
+      imported_credit_card.get(),
+      /*is_credit_card_upload_enabled=*/false));
+
+  imported_credit_card = std::make_unique<CreditCard>(test::GetCreditCard());
+
+  // Should not offer save for local cards if upstream is not enabled.
+  form_data_importer_->imported_credit_card_record_type_ =
+      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD;
+  EXPECT_FALSE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
+      imported_credit_card.get(), /*is_credit_card_upload_enabled=*/false));
+
+  // Should offer save for local cards if upstream is enabled.
+  EXPECT_TRUE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
+      imported_credit_card.get(), /*is_credit_card_upload_enabled=*/true));
+
+  // Should not offer save for server cards.
+  form_data_importer_->imported_credit_card_record_type_ =
+      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD;
+  EXPECT_FALSE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
+      imported_credit_card.get(), /*is_credit_card_upload_enabled=*/true));
+
+  // Should always offer save for new cards; upload save if it is enabled, local
+  // save otherwise.
+  form_data_importer_->imported_credit_card_record_type_ =
+      FormDataImporter::ImportedCreditCardRecordType::NEW_CARD;
+  EXPECT_TRUE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
+      imported_credit_card.get(), /*is_credit_card_upload_enabled=*/true));
+  EXPECT_TRUE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
+      imported_credit_card.get(), /*is_credit_card_upload_enabled=*/false));
+}
 
 }  // namespace autofill
