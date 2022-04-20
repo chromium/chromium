@@ -5667,13 +5667,13 @@ def CheckMPArchApiUsage(input_api, output_api):
     presence of MPArch features such as bfcache, prerendering, and fenced frames.
     """
 
-    # Only consider top-level directories that (1) can use content APIs, (2)
-    # apply to desktop or android chrome, and (3) are known to have a significant
-    # number of uses of the APIs of concern.
+    # Only consider top-level directories that (1) can use content APIs or
+    # problematic blink APIs, (2) apply to desktop or android chrome, and (3)
+    # are known to have a significant number of uses of the APIs of concern.
     files_to_check = (
-        r'^(chrome|components|content|extensions)[\\/].+%s' %
+        r'^(chrome|components|content|extensions|third_party[\\/]blink[\\/]renderer)[\\/].+%s' %
         _IMPLEMENTATION_EXTENSIONS,
-        r'^(chrome|components|content|extensions)[\\/].+%s' %
+        r'^(chrome|components|content|extensions|third_party[\\/]blink[\\/]renderer)[\\/].+%s' %
         _HEADER_EXTENSIONS,
     )
     files_to_skip = (_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
@@ -5723,11 +5723,15 @@ def CheckMPArchApiUsage(input_api, output_api):
     concerning_ftn_methods = [
         'IsMainFrame',
     ]
+    concerning_blink_frame_methods = [
+        'IsCrossOriginToMainFrame',
+    ]
     concerning_method_pattern = input_api.re.compile(r'(' + r'|'.join(
         item for sublist in [
             concerning_wco_methods, concerning_nav_handle_methods,
             concerning_web_contents_methods, concerning_rfh_methods,
             concerning_rfhi_methods, concerning_ftn_methods,
+            concerning_blink_frame_methods,
         ] for item in sublist) + r')\(')
 
     used_apis = set()
