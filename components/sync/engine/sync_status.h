@@ -64,7 +64,6 @@ struct SyncStatus {
   int num_commits_total = 0;
 
   // Total number of overwrites due to conflict resolver since browser start.
-  int num_local_overwrites_total = 0;
   int num_server_overwrites_total = 0;
 
   // Encryption related.
