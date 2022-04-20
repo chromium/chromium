@@ -8,7 +8,6 @@ Inspector issue: {
                 sourceCodeLocation : {
                     columnNumber : 0
                     lineNumber : 0
-                    scriptId : <string>
                     url : https://devtools.test:8443/inspector-protocol/resources/client-hint-accept-ch-meta-tag-invalid-origin.html
                 }
             }

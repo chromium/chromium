@@ -85,7 +85,9 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
                                .setLineNumber(location.LineNumber() - 1)
                                .setColumnNumber(location.ColumnNumber())
                                .build();
-  protocol_location->setScriptId(WTF::String::Number(location.ScriptId()));
+  if (location.ScriptId()) {
+    protocol_location->setScriptId(WTF::String::Number(location.ScriptId()));
+  }
   return protocol_location;
 }
 
@@ -613,19 +615,8 @@ AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(
     cspDetails->setFrameAncestor(std::move(affected_frame));
   }
 
-  if (violation_data.sourceFile() && violation_data.lineNumber()) {
-    std::unique_ptr<protocol::Audits::SourceCodeLocation> source_code_location =
-        protocol::Audits::SourceCodeLocation::create()
-            .setUrl(violation_data.sourceFile())
-            // The frontend expects 0-based line numbers.
-            .setLineNumber(violation_data.lineNumber() - 1)
-            .setColumnNumber(violation_data.columnNumber())
-            .build();
-    if (source_location) {
-      source_code_location->setScriptId(
-          WTF::String::Number(source_location->ScriptId()));
-    }
-    cspDetails->setSourceCodeLocation(std::move(source_code_location));
+  if (source_location) {
+    cspDetails->setSourceCodeLocation(CreateProtocolLocation(*source_location));
   }
 
   if (element) {
