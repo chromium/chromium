@@ -36,28 +36,48 @@ constexpr int kFocusFontSize = 20;
 // after UX/UI strings are confirmed.
 constexpr base::StringPiece kEditErrorSameKey("Same key");
 
+// Arrow symbols for arrow keys.
+constexpr char kLeftArrow[] = "←";
+constexpr char kUpArrow[] = "↑";
+constexpr char kRightArrow[] = "→";
+constexpr char kDownArrow[] = "↓";
+
 }  // namespace
 
 std::string GetDisplayText(const ui::DomCode code) {
-  if (code == ui::DomCode::NONE)
-    return "?";
-  std::string dom_code_string = ui::KeycodeConverter::DomCodeToCodeString(code);
-  if (base::StartsWith(dom_code_string, "Key", base::CompareCase::SENSITIVE))
-    return base::ToLowerASCII(dom_code_string.substr(3));
-  if (base::StartsWith(dom_code_string, "Digit", base::CompareCase::SENSITIVE))
-    return dom_code_string.substr(5);
-  auto lower = base::ToLowerASCII(dom_code_string);
-  if (lower == "escape")
-    return "esc";
-  if (lower == "shiftleft" || lower == "shiftright")
-    return "shift";
-  if (lower == "controlleft" || lower == "controlright")
-    return "ctrl";
-  if (lower == "altleft" || lower == "altright")
-    return "alt";
-  // TODO(cuicuiruan): adjust more display text according to UX design
-  // requirement.
-  return lower;
+  switch (code) {
+    case ui::DomCode::NONE:
+      return "?";
+    case ui::DomCode::ARROW_LEFT:
+      return kLeftArrow;
+    case ui::DomCode::ARROW_RIGHT:
+      return kRightArrow;
+    case ui::DomCode::ARROW_UP:
+      return kUpArrow;
+    case ui::DomCode::ARROW_DOWN:
+      return kDownArrow;
+    default:
+      std::string dom_code_string =
+          ui::KeycodeConverter::DomCodeToCodeString(code);
+      if (base::StartsWith(dom_code_string, "Key",
+                           base::CompareCase::SENSITIVE))
+        return base::ToLowerASCII(dom_code_string.substr(3));
+      if (base::StartsWith(dom_code_string, "Digit",
+                           base::CompareCase::SENSITIVE))
+        return dom_code_string.substr(5);
+      auto lower = base::ToLowerASCII(dom_code_string);
+      if (lower == "escape")
+        return "esc";
+      if (lower == "shiftleft" || lower == "shiftright")
+        return "shift";
+      if (lower == "controlleft" || lower == "controlright")
+        return "ctrl";
+      if (lower == "altleft" || lower == "altright")
+        return "alt";
+      // TODO(cuicuiruan): adjust more display text according to UX design
+      // requirement.
+      return lower;
+  }
 }
 
 ActionLabel::ActionLabel() : views::Label() {}
