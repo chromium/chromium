@@ -4656,8 +4656,8 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gtest_tests': 'gpu_fyi_mac_amd_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_amd_release_telemetry_tests',
         },
       },
       'Mac FYI Retina Debug (AMD)': {
@@ -4667,7 +4667,7 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_debug_gtests',
+          'gtest_tests': 'gpu_fyi_mac_amd_debug_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_mac_debug_telemetry_tests',
         },
       },
@@ -4689,8 +4689,8 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'gtest_tests': 'gpu_fyi_mac_amd_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_amd_release_telemetry_tests',
           'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
         },
       },
