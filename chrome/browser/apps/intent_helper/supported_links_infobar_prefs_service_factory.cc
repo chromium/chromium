@@ -56,6 +56,11 @@ KeyedService* SupportedLinksInfoBarPrefsServiceFactory::BuildServiceInstanceFor(
       Profile::FromBrowserContext(context));
 }
 
+bool SupportedLinksInfoBarPrefsServiceFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 content::BrowserContext*
 SupportedLinksInfoBarPrefsServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {

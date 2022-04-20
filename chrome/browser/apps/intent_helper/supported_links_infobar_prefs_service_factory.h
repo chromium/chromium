@@ -33,6 +33,8 @@ class SupportedLinksInfoBarPrefsServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  // Service needs to be running immediately in order to observe uninstalls.
+  bool ServiceIsCreatedWithBrowserContext() const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };

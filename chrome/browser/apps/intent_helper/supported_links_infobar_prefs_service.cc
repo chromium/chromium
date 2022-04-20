@@ -5,10 +5,13 @@
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service.h"
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 namespace {
 // The pref dict is:
@@ -36,6 +39,16 @@ const char kInfoBarIgnoredCountKey[] = "ignored_count";
 // shown for an app.
 const char kMaxIgnoreCount = 3;
 
+bool AppIsInstalled(Profile* profile, const std::string& app_id) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  bool installed = false;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&installed](const apps::AppUpdate& update) {
+        installed = apps_util::IsInstalled(update.Readiness());
+      });
+  return installed;
+}
+
 }  // namespace
 
 namespace apps {
@@ -54,7 +67,11 @@ void SupportedLinksInfoBarPrefsService::RegisterProfilePrefs(
 
 SupportedLinksInfoBarPrefsService::SupportedLinksInfoBarPrefsService(
     Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  DCHECK(proxy);
+  apps_observation_.Observe(&proxy->AppRegistryCache());
+}
 
 SupportedLinksInfoBarPrefsService::~SupportedLinksInfoBarPrefsService() =
     default;
@@ -85,6 +102,9 @@ bool SupportedLinksInfoBarPrefsService::ShouldHideInfoBarForApp(
 
 void SupportedLinksInfoBarPrefsService::MarkInfoBarDismissed(
     const std::string& app_id) {
+  if (!AppIsInstalled(profile_, app_id))
+    return;
+
   DictionaryPrefUpdate infobar_prefs(profile_->GetPrefs(),
                                      kSupportedLinksAppPrefsKey);
 
@@ -94,6 +114,9 @@ void SupportedLinksInfoBarPrefsService::MarkInfoBarDismissed(
 
 void SupportedLinksInfoBarPrefsService::MarkInfoBarIgnored(
     const std::string& app_id) {
+  if (!AppIsInstalled(profile_, app_id))
+    return;
+
   DictionaryPrefUpdate infobar_prefs(profile_->GetPrefs(),
                                      kSupportedLinksAppPrefsKey);
 
@@ -101,6 +124,21 @@ void SupportedLinksInfoBarPrefsService::MarkInfoBarIgnored(
   absl::optional<int> ignore_count =
       infobar_prefs->GetDict().FindIntByDottedPath(path);
   infobar_prefs->GetDict().SetByDottedPath(path, ignore_count.value_or(0) + 1);
+}
+
+void SupportedLinksInfoBarPrefsService::OnAppUpdate(
+    const apps::AppUpdate& update) {
+  if (update.ReadinessChanged() &&
+      !apps_util::IsInstalled(update.Readiness())) {
+    DictionaryPrefUpdate infobar_prefs(profile_->GetPrefs(),
+                                       kSupportedLinksAppPrefsKey);
+    infobar_prefs->GetDict().Remove(update.AppId());
+  }
+}
+
+void SupportedLinksInfoBarPrefsService::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  apps_observation_.Reset();
 }
 
 }  // namespace apps
