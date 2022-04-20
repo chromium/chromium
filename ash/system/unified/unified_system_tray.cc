@@ -27,6 +27,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/unified/camera_mic_tray_item_view.h"
 #include "ash/system/unified/current_locale_view.h"
 #include "ash/system/unified/hps_notify_view.h"
@@ -589,6 +590,11 @@ void UnifiedSystemTray::ShowBubbleInternal() {
 
   message_center_bubble_ = std::make_unique<UnifiedMessageCenterBubble>(this);
   message_center_bubble_->ShowBubble();
+
+  // crbug/1310675 Add observers in `UnifiedSystemTrayBubble` after both bubbles
+  // have been completely created, without this the bubbles can be destroyed
+  // before their creation is complete resulting in crashes.
+  bubble_->InitializeObservers();
 
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
     ActivateBubble();

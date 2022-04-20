@@ -86,11 +86,6 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
     Shell::Get()->app_list_controller()->DismissAppList();
-
-  tray->tray_event_filter()->AddBubble(this);
-  tray->shelf()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  Shell::Get()->activation_client()->AddObserver(this);
 }
 
 UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
@@ -112,6 +107,13 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   }
 
   CHECK(!IsInObserverList());
+}
+
+void UnifiedSystemTrayBubble::InitializeObservers() {
+  tray_->tray_event_filter()->AddBubble(this);
+  tray_->shelf()->AddObserver(this);
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  Shell::Get()->activation_client()->AddObserver(this);
 }
 
 gfx::Rect UnifiedSystemTrayBubble::GetBoundsInScreen() const {

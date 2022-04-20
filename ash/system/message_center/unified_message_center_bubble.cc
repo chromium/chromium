@@ -98,9 +98,6 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   bubble_widget_->AddObserver(this);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
 
-  tray_->tray_event_filter()->AddBubble(this);
-  tray_->bubble()->unified_view()->AddObserver(this);
-
   ui::Layer* widget_layer = bubble_widget_->GetLayer();
   if (!features::IsNotificationsRefreshEnabled()) {
     float radius = kBubbleCornerRadius;
@@ -112,6 +109,9 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   bubble_view_->InitializeAndShowBubble();
   message_center_view_->Init();
   UpdateBubbleState();
+
+  tray_->tray_event_filter()->AddBubble(this);
+  tray_->bubble()->unified_view()->AddObserver(this);
 }
 
 UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
