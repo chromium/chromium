@@ -4011,7 +4011,6 @@ test("net_unittests") {
     "base/data_url_unittest.cc",
     "base/datagram_buffer_unittest.cc",
     "base/elements_upload_data_stream_unittest.cc",
-    "base/escape_unittest.cc",
     "base/expiring_cache_unittest.cc",
     "base/file_stream_unittest.cc",
     "base/filename_util_unittest.cc",

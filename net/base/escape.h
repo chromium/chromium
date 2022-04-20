@@ -16,6 +16,9 @@
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 
+// TODO(crbug/1100760): Migrate callers to call functions in
+// base/strings/escape.
+
 namespace net {
 
 // Escaping --------------------------------------------------------------------
@@ -47,9 +50,6 @@ NET_EXPORT std::string EscapeNSURLPrecursor(base::StringPiece precursor);
 // as %XX (hex).
 NET_EXPORT std::string EscapeUrlEncodedData(base::StringPiece path,
                                             bool use_plus);
-
-// Escapes all non-ASCII input, as well as escaping % to %25.
-NET_EXPORT std::string EscapeNonASCIIAndPercent(base::StringPiece input);
 
 // Escapes all non-ASCII input. Note this function leaves % unescaped, which
 // means the unescaping the resulting string will not give back the original

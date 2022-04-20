@@ -16,6 +16,58 @@
 
 namespace base {
 
+// Escaping --------------------------------------------------------------------
+
+// Escapes all characters except unreserved characters. Unreserved characters,
+// as defined in RFC 3986, include alphanumerics and -._~
+BASE_EXPORT std::string EscapeAllExceptUnreserved(StringPiece text);
+
+// Escapes characters in text suitable for use as a query parameter value.
+// We %XX everything except alphanumerics and -_.!~*'()
+// Spaces change to "+" unless you pass usePlus=false.
+// This is basically the same as encodeURIComponent in javascript.
+BASE_EXPORT std::string EscapeQueryParamValue(StringPiece text, bool use_plus);
+
+// Escapes a partial or complete file/pathname.  This includes:
+// non-printable, non-7bit, and (including space)  "#%:<>?[\]^`{|}
+BASE_EXPORT std::string EscapePath(StringPiece path);
+
+#if BUILDFLAG(IS_APPLE)
+// Escapes characters as per expectations of NSURL. This includes:
+// non-printable, non-7bit, and (including space)  "#%<>[\]^`{|}
+BASE_EXPORT std::string EscapeNSURLPrecursor(StringPiece precursor);
+#endif  // BUILDFLAG(IS_APPLE)
+
+// Escapes application/x-www-form-urlencoded content.  This includes:
+// non-printable, non-7bit, and (including space)  ?>=<;+'&%$#"![\]^`{|}
+// Space is escaped as + (if use_plus is true) and other special characters
+// as %XX (hex).
+BASE_EXPORT std::string EscapeUrlEncodedData(StringPiece path, bool use_plus);
+
+// Escapes all non-ASCII input, as well as escaping % to %25.
+BASE_EXPORT std::string EscapeNonASCIIAndPercent(StringPiece input);
+
+// Escapes all non-ASCII input. Note this function leaves % unescaped, which
+// means the unescaping the resulting string will not give back the original
+// input.
+BASE_EXPORT std::string EscapeNonASCII(StringPiece input);
+
+// Escapes characters in text suitable for use as an external protocol handler
+// command.
+// We %XX everything except alphanumerics and -_.!~*'() and the restricted
+// characters (;/?:@&=+$,#[]) and a valid percent escape sequence (%XX).
+BASE_EXPORT std::string EscapeExternalHandlerValue(StringPiece text);
+
+// Appends the given character to the output string, escaping the character if
+// the character would be interpreted as an HTML delimiter.
+BASE_EXPORT void AppendEscapedCharForHTML(char c, std::string* output);
+
+// Escapes chars that might cause this text to be interpreted as HTML tags.
+BASE_EXPORT std::string EscapeForHTML(StringPiece text);
+BASE_EXPORT std::u16string EscapeForHTML(StringPiece16 text);
+
+// Unescaping ------------------------------------------------------------------
+
 class UnescapeRule {
  public:
   // A combination of the following flags that is passed to the unescaping
@@ -114,6 +166,10 @@ BASE_EXPORT bool UnescapeBinaryURLComponentSafe(StringPiece escaped_text,
 // characters.
 BASE_EXPORT bool ContainsEncodedBytes(StringPiece escaped_text,
                                       const std::set<unsigned char>& bytes);
+
+// Unescapes the following ampersand character codes from |text|:
+// &lt; &gt; &amp; &quot; &#39;
+BASE_EXPORT std::u16string UnescapeForHTML(StringPiece16 text);
 
 }  // namespace base
 

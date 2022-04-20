@@ -53,7 +53,8 @@ base::Value NetLogStringValue(base::StringPiece raw) {
   // is added so the escaped string is not itself also ASCII (otherwise there
   // would be ambiguity for consumers as to when the value needs to be
   // unescaped).
-  return base::Value("%ESCAPED:\xE2\x80\x8B " + EscapeNonASCIIAndPercent(raw));
+  return base::Value("%ESCAPED:\xE2\x80\x8B " +
+                     base::EscapeNonASCIIAndPercent(raw));
 }
 
 base::Value NetLogBinaryValue(base::span<const uint8_t> bytes) {

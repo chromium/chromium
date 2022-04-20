@@ -962,7 +962,7 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
     // valid UTF-8, so encoding errors turn into replacement characters before
     // escaping. Escaping here preserves the bytes as-is. See
     // https://crbug.com/942073#c14.
-    *location = EscapeNonASCII(location_strpiece);
+    *location = base::EscapeNonASCII(location_strpiece);
   }
 
   return true;
