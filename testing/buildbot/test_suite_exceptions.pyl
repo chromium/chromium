@@ -3387,12 +3387,16 @@
       'Mac FYI Retina ASAN (AMD)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
-          '--enable-metal-debug-layers',
+          # This slows down tests and we are currently having AMD Mac capacity
+          # issues.
+          # '--enable-metal-debug-layers',
         ],
       },
       'Mac FYI Retina Release (AMD)': {
         'args': [
-          '--enable-metal-debug-layers',
+          # This slows down tests and we are currently having AMD Mac capacity
+          # issues.
+          # '--enable-metal-debug-layers',
         ],
       },
     },
@@ -3478,12 +3482,16 @@
       'Mac FYI Retina ASAN (AMD)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
-          '--enable-metal-debug-layers',
+          # This slows down tests and we are currently having AMD Mac capacity
+          # issues.
+          # '--enable-metal-debug-layers',
         ],
       },
       'Mac FYI Retina Release (AMD)': {
         'args': [
-          '--enable-metal-debug-layers',
+          # This slows down tests and we are currently having AMD Mac capacity
+          # issues.
+          # '--enable-metal-debug-layers',
         ],
       },
     },
