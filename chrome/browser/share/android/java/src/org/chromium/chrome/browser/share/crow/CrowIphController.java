@@ -1,0 +1,85 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.share.crow;
+
+import android.app.Activity;
+import android.os.Handler;
+import android.view.View;
+
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.url.GURL;
+
+/**
+ * Controls when the the Share Experiment IPH is shown.
+ */
+public class CrowIphController {
+    private final Activity mActivity;
+    private final AppMenuHandler mAppMenuHandler;
+    private final CurrentTabObserver mPageLoadObserver;
+    private final UserEducationHelper mUserEducationHelper;
+    private final View mMenuButtonAnchorView;
+
+    /**
+     * Constructs a {@link CrowIphController}.
+     *
+     * @param activity The current activity.
+     * @param appMenuHandler The app menu containing the menu entry to highlight.
+     * @param tabSupplier The supplier for the currently active {@link Tab}.
+     * @param menuButtonAnchorView The menu button view to anchor the bubble to.
+     */
+    public CrowIphController(Activity activity, AppMenuHandler appMenuHandler,
+            ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView) {
+        mActivity = activity;
+        mAppMenuHandler = appMenuHandler;
+        mMenuButtonAnchorView = menuButtonAnchorView;
+        mUserEducationHelper = new UserEducationHelper(activity, new Handler());
+
+        mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
+            @Override
+            public void onPageLoadFinished(Tab tab, GURL url) {
+                if (tab.isShowingErrorPage() || !shouldShowCrowIph()) {
+                    return;
+                }
+                showCrowIph();
+            }
+        });
+    }
+
+    public void destroy() {
+        mPageLoadObserver.destroy();
+    }
+
+    private boolean shouldShowCrowIph() {
+        // TODO(crbug/1314455): Implement this.
+        return false;
+    }
+
+    private void showCrowIph() {
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(mActivity.getResources(), FeatureConstants.CROW_FEATURE,
+                        // TODO(crbug/1314530): Fix IPH strings once they are finalized.
+                        R.string.link_toggle_iph, R.string.link_toggle_iph)
+                        .setAnchorView(mMenuButtonAnchorView)
+                        .setOnShowCallback(this::turnOnHighlightForCrowMenuItem)
+                        .setOnDismissCallback(this::turnOffHighlightForCrowMenuItem)
+                        .build());
+    }
+
+    private void turnOnHighlightForCrowMenuItem() {
+        // TODO(crbug/1314450): Implement this after menu item exists.
+    }
+
+    private void turnOffHighlightForCrowMenuItem() {
+        mAppMenuHandler.clearMenuHighlight();
+    }
+}

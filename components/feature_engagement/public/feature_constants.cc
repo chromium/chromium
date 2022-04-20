@@ -83,6 +83,8 @@ const base::Feature kIPHAutoDarkUserEducationMessageFeature{
     "IPH_AutoDarkUserEducationMessage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAutoDarkUserEducationMessageOptInFeature{
     "IPH_AutoDarkUserEducationMessageOptIn", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHCrowFeature{"IPH_Crow",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverDetailFeature{
     "IPH_DataSaverDetail", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverMilestonePromoFeature{
