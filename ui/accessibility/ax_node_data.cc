@@ -735,7 +735,6 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
     case ax::mojom::Action::kInternalInvalidateTree:
     case ax::mojom::Action::kLoadInlineTextBoxes:
     case ax::mojom::Action::kReplaceSelectedText:
-    case ax::mojom::Action::kRunScreenAi:
     case ax::mojom::Action::kScrollToMakeVisible:
     case ax::mojom::Action::kScrollToPoint:
     case ax::mojom::Action::kSetAccessibilityFocus:

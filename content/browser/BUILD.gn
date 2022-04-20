@@ -2356,8 +2356,6 @@ source_set("browser") {
 
   if (is_linux || is_chromeos) {
     sources += [
-      "accessibility/ax_screen_ai_annotator.cc",
-      "accessibility/ax_screen_ai_annotator.h",
       "child_process_launcher_helper_linux.cc",
       "compute_pressure/cpu_probe_linux.cc",
       "compute_pressure/cpu_probe_linux.h",
@@ -2385,7 +2383,6 @@ source_set("browser") {
     deps += [
       "//components/crash/content/browser/error_reporting",
       "//components/services/font:lib",
-      "//components/services/screen_ai",
       "//media/mojo/mojom/stable:stable_video_decoder",
       "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",
     ]

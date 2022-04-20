@@ -285,6 +285,10 @@
 #include "chrome/browser/ui/color_chooser.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
+#endif
+
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::NavigationController;
@@ -3086,3 +3090,13 @@ BackgroundContents* Browser::CreateBackgroundContents(
 
   return contents;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+void Browser::RunScreenAIAnnotator() {
+  if (!screen_ai_annotator_) {
+    screen_ai_annotator_ =
+        std::make_unique<screen_ai::AXScreenAIAnnotator>(this);
+  }
+  screen_ai_annotator_->Run();
+}
+#endif

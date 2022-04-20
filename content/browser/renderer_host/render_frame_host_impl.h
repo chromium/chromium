@@ -200,7 +200,6 @@ class DocumentServiceBase;
 }  // namespace internal
 
 class AgentSchedulingGroupHost;
-class AXScreenAIAnnotator;
 class BrowsingContextState;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
@@ -3340,10 +3339,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   TraceProto::LifecycleState LifecycleStateToProto() const;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void RunScreenAIAnnotator();
-#endif
-
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -4191,11 +4186,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   BackForwardCacheDisablingFeaturesCallback
       back_forward_cache_disabling_features_callback_for_testing_;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Manages the snapshot processing by Screen AI, if enabled.
-  std::unique_ptr<AXScreenAIAnnotator> ax_screen_ai_annotator_;
-#endif
 
   // Manages a transient affordance for this frame or subframes to open a popup.
   TransientAllowPopup transient_allow_popup_;

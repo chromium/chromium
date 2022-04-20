@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_
+#define CHROME_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class Browser;
+
 namespace gfx {
 class Image;
 }
 
-namespace content {
-
-class BrowserContext;
-class RenderFrameHost;
+namespace screen_ai {
 
 class AXScreenAIAnnotator {
  public:
-  AXScreenAIAnnotator(RenderFrameHost* const render_frame_host,
-                      BrowserContext* browser_context);
+  explicit AXScreenAIAnnotator(Browser* browser);
   ~AXScreenAIAnnotator();
   AXScreenAIAnnotator(const AXScreenAIAnnotator&) = delete;
   AXScreenAIAnnotator& operator=(const AXScreenAIAnnotator&) = delete;
@@ -32,11 +30,6 @@ class AXScreenAIAnnotator {
   void Run();
 
  private:
-  // Returns the Screen AI service for the given browser context, creates it if
-  // it does not exist.
-  mojo::Remote<screen_ai::mojom::ScreenAIService>&
-  GetScreenAIServiceForBrowserContext(BrowserContext* browser_context);
-
   // Receives an screenshot and sends it to ScreenAI library for processing.
   void OnScreenshotReceived(gfx::Image snapshot);
 
@@ -45,13 +38,13 @@ class AXScreenAIAnnotator {
   void OnAnnotationReceived(const ui::AXTreeUpdate& updates);
 
   // Owns us.
-  raw_ptr<RenderFrameHost> const render_frame_host_;
+  raw_ptr<Browser> const browser_;
 
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
 
   base::WeakPtrFactory<AXScreenAIAnnotator> weak_ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace screen_ai
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_H_

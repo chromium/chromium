@@ -276,11 +276,6 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "content/browser/accessibility/ax_screen_ai_annotator.h"
-#include "ui/accessibility/accessibility_features.h"
-#endif
-
 namespace content {
 
 #if defined(AX_FAIL_FAST_BUILD)
@@ -2661,27 +2656,8 @@ void RenderFrameHostImpl::AccessibilityPerformAction(
       view->SetLastPointerType(ui::EventPointerType::kTouch);
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (action_data.action == ax::mojom::Action::kRunScreenAi) {
-    RunScreenAIAnnotator();
-    return;
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
   render_accessibility_->PerformAction(action_data);
 }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RenderFrameHostImpl::RunScreenAIAnnotator() {
-  if (!features::IsScreenAIEnabled())
-    return;
-  if (!ax_screen_ai_annotator_) {
-    ax_screen_ai_annotator_ =
-        std::make_unique<AXScreenAIAnnotator>(this, GetBrowserContext());
-  }
-  ax_screen_ai_annotator_->Run();
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 bool RenderFrameHostImpl::AccessibilityViewHasFocus() {
   RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();

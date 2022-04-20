@@ -69,6 +69,12 @@ class TabStripModel;
 class TabStripModelDelegate;
 class TabMenuModelDelegate;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+namespace screen_ai {
+class AXScreenAIAnnotator;
+}
+#endif
+
 namespace blink {
 enum class ProtocolHandlerSecurityLevel;
 }
@@ -720,6 +726,10 @@ class Browser : public TabStripModelObserver,
 
   StatusBubble* GetStatusBubbleForTesting();
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void RunScreenAIAnnotator();
+#endif
+
  private:
   friend class BrowserTest;
   friend class ExclusiveAccessTest;
@@ -1252,6 +1262,11 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
       extension_browser_window_helper_;
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Manages the snapshot processing by ScreenAI, if enabled.
+  std::unique_ptr<screen_ai::AXScreenAIAnnotator> screen_ai_annotator_;
 #endif
 
   const base::ElapsedTimer creation_timer_;

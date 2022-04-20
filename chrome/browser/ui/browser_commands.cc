@@ -176,11 +176,6 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#endif
-
 namespace {
 
 const char kOsOverrideForTabletSite[] = "Linux; Android 9; Chrome tablet";
@@ -1861,12 +1856,7 @@ void UnfollowSite(content::WebContents* web_contents) {
 
 #if BUILDFLAG(IS_LINUX)
 void RunScreenAi(Browser* browser) {
-  ui::AXActionData ad;
-  ad.action = ax::mojom::Action::kRunScreenAi;
-  browser->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetMainFrame()
-      ->AccessibilityPerformAction(ad);
+  browser->RunScreenAIAnnotator();
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

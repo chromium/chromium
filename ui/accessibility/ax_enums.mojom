@@ -370,7 +370,7 @@ enum State {
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
 // Next version: 2
-// Next value: 39
+// Next value: 38
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -430,9 +430,6 @@ enum Action {
   kReplaceSelectedText = 17,
 
   [MinVersion=1] kResumeMedia = 34,
-
-  // Runs Screen AI on the current screen.
-  [MinVersion=2] kRunScreenAi = 38,
 
   // Scrolls by approximately one screen in a specific direction. Should be
   // called on a node that has scrollable boolean set to true.

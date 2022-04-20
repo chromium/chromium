@@ -416,7 +416,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kHitTest:
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kNone:
-    case ax::mojom::Action::kRunScreenAi:
       NOTREACHED();
       break;
     case ax::mojom::Action::kGetTextLocation:

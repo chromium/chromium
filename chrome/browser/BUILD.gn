@@ -2542,6 +2542,17 @@ static_library("browser") {
       deps += [ "//chromeos/services/libassistant/public/mojom" ]
     }
   }
+  if (is_linux || is_chromeos) {
+    sources += [
+      "//chrome/browser/accessibility/ax_screen_ai_annotator.cc",
+      "//chrome/browser/accessibility/ax_screen_ai_annotator.h",
+    ]
+    deps += [
+      "//components/services/screen_ai",
+      "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [
       "policy/messaging_layer/util/heartbeat_event.cc",
