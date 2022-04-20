@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
+#include "base/win/i18n.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -28,22 +29,19 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 #undef HANDLE_LANGUAGE
 };
 
-std::wstring GetPreferredLanguageFromGoogleUpdate() {
-  const TagParsingResult tag_parsing_result = GetTagArgs();
-  if (tag_parsing_result.error != tagging::ErrorCode::kSuccess) {
-    VLOG(0) << "Couldn't parse the tag!";
-    return {};
+std::wstring GetPreferredLanguage() {
+  std::vector<std::wstring> languages;
+  if (!base::win::i18n::GetUserPreferredUILanguageList(&languages) ||
+      languages.size() == 0) {
+    return L"en-us";
   }
-  const tagging::TagArgs tag_args =
-      tag_parsing_result.tag_args.value_or(tagging::TagArgs());
 
-  return tag_args.language.empty() ? L"en-us"
-                                   : base::SysUTF8ToWide(tag_args.language);
+  return languages[0];
 }
 
 const base::win::i18n::LanguageSelector& GetLanguageSelector() {
   static base::NoDestructor<base::win::i18n::LanguageSelector> instance(
-      GetPreferredLanguageFromGoogleUpdate(), kLanguageOffsetPairs);
+      GetPreferredLanguage(), kLanguageOffsetPairs);
   return *instance;
 }
 
