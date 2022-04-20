@@ -2210,4 +2210,63 @@ TEST_F(ControllerPrerenderTest, SuccessfulNavigation) {
   EXPECT_THAT(listener.events, IsEmpty());
 }
 
+class ControllerFencedFrameTest : public ControllerTest {
+ public:
+  ControllerFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~ControllerFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ControllerFencedFrameTest, DoNotNavigateInFencedFrame) {
+  EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
+  EXPECT_FALSE(controller_->HasNavigationError());
+
+  NavigationStateChangeListener listener(controller_.get());
+  controller_->AddNavigationListener(&listener);
+
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+
+  EXPECT_THAT(
+      listener.events,
+      ElementsAre(
+          NavigationState{/* navigating= */ true, /* has_errors= */ false},
+          NavigationState{/* navigating= */ false, /* has_errors= */ false}));
+
+  listener.events.clear();
+
+  // Create a fenced frame.
+  content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(web_contents()->GetMainFrame());
+  GURL kFencedFrameUrl("https://fencedframe.com");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(kFencedFrameUrl,
+                                                         fenced_frame_rfh);
+  navigation_simulator->Commit();
+  fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
+  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+
+  // Autofill assistant controller doesn't handle navigations in fenced frames.
+  EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
+  EXPECT_FALSE(controller_->HasNavigationError());
+
+  controller_->RemoveNavigationListener(&listener);
+
+  EXPECT_THAT(listener.events, IsEmpty());
+}
+
 }  // namespace autofill_assistant
