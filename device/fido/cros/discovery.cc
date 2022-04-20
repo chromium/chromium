@@ -100,10 +100,11 @@ void FidoChromeOSDiscovery::OnRequestComplete() {
 void FidoChromeOSDiscovery::MaybeAddAuthenticator() {
   bool uv_available = uv_available_;
 
-// TODO(http://crbug/1269528): Activate UV platform authenticator on lacros only
-// after the feature is complete.
+// If u2fd doesn't support Lacros WebAuthn, user verification won't work.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  uv_available = false;
+  if (!lacros_supported_) {
+    uv_available = false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (require_power_button_mode_) {

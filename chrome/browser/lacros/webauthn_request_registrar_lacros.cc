@@ -11,6 +11,8 @@
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
+#include "ui/platform_window/platform_window.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 WebAuthnRequestRegistrarLacros::WebAuthnRequestRegistrarLacros() = default;
 
@@ -20,7 +22,17 @@ WebAuthnRequestRegistrarLacros::GenerateRequestIdCallback
 WebAuthnRequestRegistrarLacros::GetRegisterCallback(aura::Window* window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return base::BindRepeating([] { return std::string(); });
+  if (!window) {
+    return base::BindRepeating([] { return std::string(); });
+  }
+
+  std::string unique_id =
+      views::DesktopWindowTreeHostLinux::From(window->GetHost())
+          ->platform_window()
+          ->GetWindowUniqueId();
+
+  return base::BindRepeating(
+      [](const std::string& unique_id) { return unique_id; }, unique_id);
 }
 
 // GetWindowForRequestId is not used in Lacros's WebAuthnRequestRegistrar:
