@@ -408,32 +408,42 @@ const DisplayLayout& DisplayManager::GetCurrentResolvedDisplayLayout() const {
 }
 
 DisplayIdList DisplayManager::GetConnectedDisplayIdList() const {
-  return connected_display_id_list_;
+  if (IsInUnifiedMode())
+    return CreateDisplayIdList(software_mirroring_display_list_);
+  DisplayIdList active_display_id_list =
+      CreateDisplayIdList(active_display_list_);
+  return GenerateConnectedDisplayIdListUsingDisplayIdList(
+      active_display_id_list);
 }
 
-#if DCHECK_IS_ON()
-bool DisplayManager::IsConnectedDisplayIdListInSyncWithCurrentState(
+DisplayIdList DisplayManager::GenerateConnectedDisplayIdListUsingDisplayIdList(
     const DisplayIdList& display_id_list) const {
-  DisplayIdList connected_display_id_list = display_id_list;
   if (IsInUnifiedMode()) {
-    // A display for unified desktop is virtual.
     DCHECK_EQ(1u, display_id_list.size());
     DCHECK_EQ(display_id_list[0], kUnifiedDisplayId);
-    connected_display_id_list.clear();
+    return CreateDisplayIdList(software_mirroring_display_list_);
+  }
+  DisplayIdList connected_display_id_list = display_id_list;
+
+  if (IsInSoftwareMirrorMode()) {
+    DisplayIdList software_mirroring_display_id_list =
+        CreateDisplayIdList(software_mirroring_display_list_);
+    connected_display_id_list.insert(connected_display_id_list.end(),
+                                     software_mirroring_display_id_list.begin(),
+                                     software_mirroring_display_id_list.end());
+    // Ordered display id list is used to retrieve layout from layout store, so
+    // always keep it sorted after merging two id list.
+    SortDisplayIdList(&connected_display_id_list);
+  } else if (IsInHardwareMirrorMode()) {
+    connected_display_id_list.insert(
+        connected_display_id_list.end(),
+        hardware_mirroring_display_id_list_.begin(),
+        hardware_mirroring_display_id_list_.end());
+    SortDisplayIdList(&connected_display_id_list);
   }
 
-  DisplayIdList software_mirroring_display_id_list =
-      CreateDisplayIdList(software_mirroring_display_list_);
-  connected_display_id_list.insert(connected_display_id_list.end(),
-                                   software_mirroring_display_id_list.begin(),
-                                   software_mirroring_display_id_list.end());
-  connected_display_id_list.insert(connected_display_id_list.end(),
-                                   hardware_mirroring_display_id_list_.begin(),
-                                   hardware_mirroring_display_id_list_.end());
-  SortDisplayIdList(&connected_display_id_list);
-  return connected_display_id_list_ == connected_display_id_list;
+  return connected_display_id_list;
 }
-#endif
 
 void DisplayManager::SetLayoutForCurrentDisplays(
     std::unique_ptr<DisplayLayout> layout) {
@@ -860,7 +870,7 @@ void DisplayManager::OnNativeDisplaysChanged(
   ClearMirroringSourceAndDestination();
   hardware_mirroring_display_id_list_ = hardware_mirroring_display_id_list;
   mirroring_source_id_ = mirroring_source_id;
-  connected_display_id_list_ = CreateDisplayIdList(updated_displays);
+  num_connected_displays_ = updated_displays.size();
 
   UpdateDisplaysWith(new_display_info_list);
 }
@@ -886,9 +896,9 @@ void DisplayManager::UpdateDisplaysWith(
   DisplayIdList new_display_id_list =
       CreateDisplayIdList(new_display_info_list);
 
-  if (num_connected_displays() > 1) {
-    DisplayIdList connected_display_id_list = GetConnectedDisplayIdList();
-    DCHECK(IsConnectedDisplayIdListInSyncWithCurrentState(new_display_id_list));
+  if (num_connected_displays_ > 1) {
+    DisplayIdList connected_display_id_list =
+        GenerateConnectedDisplayIdListUsingDisplayIdList(new_display_id_list);
     const DisplayLayout& layout =
         layout_store_->GetOrCreateRegisteredDisplayLayout(
             connected_display_id_list);
@@ -1327,7 +1337,7 @@ bool DisplayManager::ShouldSetMirrorModeOn(
   }
 
   if (should_restore_mirror_mode_from_display_prefs_ ||
-      num_connected_displays() <= 1) {
+      num_connected_displays_ <= 1) {
     // The ChromeOS just boots up, the display prefs have just been loaded, or
     // we only have one display. Restore mirror mode based on the external
     // displays' mirror info stored in the preferences. Mirror mode should be on
@@ -1431,7 +1441,7 @@ void DisplayManager::AddRemoveDisplay(
     display.SetManagedDisplayModes(std::move(display_modes));
     new_display_info_list.push_back(std::move(display));
   }
-  connected_display_id_list_ = CreateDisplayIdList(new_display_info_list);
+  num_connected_displays_ = new_display_info_list.size();
   ClearMirroringSourceAndDestination();
   UpdateDisplaysWith(new_display_info_list);
 }
@@ -2124,12 +2134,9 @@ void DisplayManager::UpdateNonPrimaryDisplayBoundsForLayout(
     std::vector<size_t>* updated_indices) {
   if (display_list->size() == 1u)
     return;
-
-  const DisplayLayout& layout =
-      layout_store_->GetRegisteredDisplayLayout(GetConnectedDisplayIdList());
-
-  DCHECK(IsConnectedDisplayIdListInSyncWithCurrentState(
-      CreateDisplayIdList(*display_list)));
+  DisplayIdList display_id_list = CreateDisplayIdList(*display_list);
+  const DisplayLayout& layout = layout_store_->GetRegisteredDisplayLayout(
+      GenerateConnectedDisplayIdListUsingDisplayIdList(display_id_list));
 
   // Ignore if a user has a old format (should be extremely rare)
   // and this will be replaced with DCHECK.
@@ -2154,8 +2161,6 @@ void DisplayManager::CreateMirrorWindowIfAny() {
   if (software_mirroring_display_list_.empty() || !delegate_) {
     if (created_mirror_window_)
       std::move(created_mirror_window_).Run();
-    DCHECK(IsConnectedDisplayIdListInSyncWithCurrentState(
-        CreateDisplayIdList(active_display_list())));
     return;
   }
   DisplayInfoList list;
@@ -2164,8 +2169,6 @@ void DisplayManager::CreateMirrorWindowIfAny() {
   delegate_->CreateOrUpdateMirroringDisplay(list);
   if (created_mirror_window_)
     std::move(created_mirror_window_).Run();
-  DCHECK(IsConnectedDisplayIdListInSyncWithCurrentState(
-      CreateDisplayIdList(active_display_list())));
 }
 
 void DisplayManager::ApplyDisplayLayout(DisplayLayout* layout,
@@ -2230,7 +2233,7 @@ void DisplayManager::RemoveObserver(DisplayObserver* observer) {
 }
 
 void DisplayManager::UpdateInfoForRestoringMirrorMode() {
-  if (num_connected_displays() <= 1)
+  if (num_connected_displays_ <= 1)
     return;
 
   // The display prefs have just been loaded and we're waiting for the
