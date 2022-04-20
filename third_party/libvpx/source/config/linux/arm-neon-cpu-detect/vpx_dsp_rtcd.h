@@ -1410,7 +1410,6 @@ RTCD_EXTERN void (*vpx_post_proc_down_and_across_mb_row)(unsigned char* src,
 
 void vpx_quantize_b_c(const tran_low_t* coeff_ptr,
                       intptr_t n_coeffs,
-                      int skip_block,
                       const int16_t* zbin_ptr,
                       const int16_t* round_ptr,
                       const int16_t* quant_ptr,
@@ -1423,7 +1422,6 @@ void vpx_quantize_b_c(const tran_low_t* coeff_ptr,
                       const int16_t* iscan);
 void vpx_quantize_b_neon(const tran_low_t* coeff_ptr,
                          intptr_t n_coeffs,
-                         int skip_block,
                          const int16_t* zbin_ptr,
                          const int16_t* round_ptr,
                          const int16_t* quant_ptr,
@@ -1436,7 +1434,6 @@ void vpx_quantize_b_neon(const tran_low_t* coeff_ptr,
                          const int16_t* iscan);
 RTCD_EXTERN void (*vpx_quantize_b)(const tran_low_t* coeff_ptr,
                                    intptr_t n_coeffs,
-                                   int skip_block,
                                    const int16_t* zbin_ptr,
                                    const int16_t* round_ptr,
                                    const int16_t* quant_ptr,
@@ -1450,7 +1447,6 @@ RTCD_EXTERN void (*vpx_quantize_b)(const tran_low_t* coeff_ptr,
 
 void vpx_quantize_b_32x32_c(const tran_low_t* coeff_ptr,
                             intptr_t n_coeffs,
-                            int skip_block,
                             const int16_t* zbin_ptr,
                             const int16_t* round_ptr,
                             const int16_t* quant_ptr,
@@ -1463,7 +1459,6 @@ void vpx_quantize_b_32x32_c(const tran_low_t* coeff_ptr,
                             const int16_t* iscan);
 void vpx_quantize_b_32x32_neon(const tran_low_t* coeff_ptr,
                                intptr_t n_coeffs,
-                               int skip_block,
                                const int16_t* zbin_ptr,
                                const int16_t* round_ptr,
                                const int16_t* quant_ptr,
@@ -1476,7 +1471,6 @@ void vpx_quantize_b_32x32_neon(const tran_low_t* coeff_ptr,
                                const int16_t* iscan);
 RTCD_EXTERN void (*vpx_quantize_b_32x32)(const tran_low_t* coeff_ptr,
                                          intptr_t n_coeffs,
-                                         int skip_block,
                                          const int16_t* zbin_ptr,
                                          const int16_t* round_ptr,
                                          const int16_t* quant_ptr,
@@ -1517,35 +1511,21 @@ RTCD_EXTERN unsigned int (*vpx_sad16x16_avg)(const uint8_t* src_ptr,
                                              int ref_stride,
                                              const uint8_t* second_pred);
 
-void vpx_sad16x16x3_c(const uint8_t* src_ptr,
-                      int src_stride,
-                      const uint8_t* ref_ptr,
-                      int ref_stride,
-                      uint32_t* sad_array);
-#define vpx_sad16x16x3 vpx_sad16x16x3_c
-
 void vpx_sad16x16x4d_c(const uint8_t* src_ptr,
                        int src_stride,
-                       const uint8_t* const ref_array[],
+                       const uint8_t* const ref_array[4],
                        int ref_stride,
-                       uint32_t* sad_array);
+                       uint32_t sad_array[4]);
 void vpx_sad16x16x4d_neon(const uint8_t* src_ptr,
                           int src_stride,
-                          const uint8_t* const ref_array[],
+                          const uint8_t* const ref_array[4],
                           int ref_stride,
-                          uint32_t* sad_array);
+                          uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad16x16x4d)(const uint8_t* src_ptr,
                                     int src_stride,
-                                    const uint8_t* const ref_array[],
+                                    const uint8_t* const ref_array[4],
                                     int ref_stride,
-                                    uint32_t* sad_array);
-
-void vpx_sad16x16x8_c(const uint8_t* src_ptr,
-                      int src_stride,
-                      const uint8_t* ref_ptr,
-                      int ref_stride,
-                      uint32_t* sad_array);
-#define vpx_sad16x16x8 vpx_sad16x16x8_c
+                                    uint32_t sad_array[4]);
 
 unsigned int vpx_sad16x32_c(const uint8_t* src_ptr,
                             int src_stride,
@@ -1578,19 +1558,19 @@ RTCD_EXTERN unsigned int (*vpx_sad16x32_avg)(const uint8_t* src_ptr,
 
 void vpx_sad16x32x4d_c(const uint8_t* src_ptr,
                        int src_stride,
-                       const uint8_t* const ref_array[],
+                       const uint8_t* const ref_array[4],
                        int ref_stride,
-                       uint32_t* sad_array);
+                       uint32_t sad_array[4]);
 void vpx_sad16x32x4d_neon(const uint8_t* src_ptr,
                           int src_stride,
-                          const uint8_t* const ref_array[],
+                          const uint8_t* const ref_array[4],
                           int ref_stride,
-                          uint32_t* sad_array);
+                          uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad16x32x4d)(const uint8_t* src_ptr,
                                     int src_stride,
-                                    const uint8_t* const ref_array[],
+                                    const uint8_t* const ref_array[4],
                                     int ref_stride,
-                                    uint32_t* sad_array);
+                                    uint32_t sad_array[4]);
 
 unsigned int vpx_sad16x8_c(const uint8_t* src_ptr,
                            int src_stride,
@@ -1621,35 +1601,21 @@ RTCD_EXTERN unsigned int (*vpx_sad16x8_avg)(const uint8_t* src_ptr,
                                             int ref_stride,
                                             const uint8_t* second_pred);
 
-void vpx_sad16x8x3_c(const uint8_t* src_ptr,
-                     int src_stride,
-                     const uint8_t* ref_ptr,
-                     int ref_stride,
-                     uint32_t* sad_array);
-#define vpx_sad16x8x3 vpx_sad16x8x3_c
-
 void vpx_sad16x8x4d_c(const uint8_t* src_ptr,
                       int src_stride,
-                      const uint8_t* const ref_array[],
+                      const uint8_t* const ref_array[4],
                       int ref_stride,
-                      uint32_t* sad_array);
+                      uint32_t sad_array[4]);
 void vpx_sad16x8x4d_neon(const uint8_t* src_ptr,
                          int src_stride,
-                         const uint8_t* const ref_array[],
+                         const uint8_t* const ref_array[4],
                          int ref_stride,
-                         uint32_t* sad_array);
+                         uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad16x8x4d)(const uint8_t* src_ptr,
                                    int src_stride,
-                                   const uint8_t* const ref_array[],
+                                   const uint8_t* const ref_array[4],
                                    int ref_stride,
-                                   uint32_t* sad_array);
-
-void vpx_sad16x8x8_c(const uint8_t* src_ptr,
-                     int src_stride,
-                     const uint8_t* ref_ptr,
-                     int ref_stride,
-                     uint32_t* sad_array);
-#define vpx_sad16x8x8 vpx_sad16x8x8_c
+                                   uint32_t sad_array[4]);
 
 unsigned int vpx_sad32x16_c(const uint8_t* src_ptr,
                             int src_stride,
@@ -1682,19 +1648,19 @@ RTCD_EXTERN unsigned int (*vpx_sad32x16_avg)(const uint8_t* src_ptr,
 
 void vpx_sad32x16x4d_c(const uint8_t* src_ptr,
                        int src_stride,
-                       const uint8_t* const ref_array[],
+                       const uint8_t* const ref_array[4],
                        int ref_stride,
-                       uint32_t* sad_array);
+                       uint32_t sad_array[4]);
 void vpx_sad32x16x4d_neon(const uint8_t* src_ptr,
                           int src_stride,
-                          const uint8_t* const ref_array[],
+                          const uint8_t* const ref_array[4],
                           int ref_stride,
-                          uint32_t* sad_array);
+                          uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad32x16x4d)(const uint8_t* src_ptr,
                                     int src_stride,
-                                    const uint8_t* const ref_array[],
+                                    const uint8_t* const ref_array[4],
                                     int ref_stride,
-                                    uint32_t* sad_array);
+                                    uint32_t sad_array[4]);
 
 unsigned int vpx_sad32x32_c(const uint8_t* src_ptr,
                             int src_stride,
@@ -1727,26 +1693,19 @@ RTCD_EXTERN unsigned int (*vpx_sad32x32_avg)(const uint8_t* src_ptr,
 
 void vpx_sad32x32x4d_c(const uint8_t* src_ptr,
                        int src_stride,
-                       const uint8_t* const ref_array[],
+                       const uint8_t* const ref_array[4],
                        int ref_stride,
-                       uint32_t* sad_array);
+                       uint32_t sad_array[4]);
 void vpx_sad32x32x4d_neon(const uint8_t* src_ptr,
                           int src_stride,
-                          const uint8_t* const ref_array[],
+                          const uint8_t* const ref_array[4],
                           int ref_stride,
-                          uint32_t* sad_array);
+                          uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad32x32x4d)(const uint8_t* src_ptr,
                                     int src_stride,
-                                    const uint8_t* const ref_array[],
+                                    const uint8_t* const ref_array[4],
                                     int ref_stride,
-                                    uint32_t* sad_array);
-
-void vpx_sad32x32x8_c(const uint8_t* src_ptr,
-                      int src_stride,
-                      const uint8_t* ref_ptr,
-                      int ref_stride,
-                      uint32_t* sad_array);
-#define vpx_sad32x32x8 vpx_sad32x32x8_c
+                                    uint32_t sad_array[4]);
 
 unsigned int vpx_sad32x64_c(const uint8_t* src_ptr,
                             int src_stride,
@@ -1779,19 +1738,19 @@ RTCD_EXTERN unsigned int (*vpx_sad32x64_avg)(const uint8_t* src_ptr,
 
 void vpx_sad32x64x4d_c(const uint8_t* src_ptr,
                        int src_stride,
-                       const uint8_t* const ref_array[],
+                       const uint8_t* const ref_array[4],
                        int ref_stride,
-                       uint32_t* sad_array);
+                       uint32_t sad_array[4]);
 void vpx_sad32x64x4d_neon(const uint8_t* src_ptr,
                           int src_stride,
-                          const uint8_t* const ref_array[],
+                          const uint8_t* const ref_array[4],
                           int ref_stride,
-                          uint32_t* sad_array);
+                          uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad32x64x4d)(const uint8_t* src_ptr,
                                     int src_stride,
-                                    const uint8_t* const ref_array[],
+                                    const uint8_t* const ref_array[4],
                                     int ref_stride,
-                                    uint32_t* sad_array);
+                                    uint32_t sad_array[4]);
 
 unsigned int vpx_sad4x4_c(const uint8_t* src_ptr,
                           int src_stride,
@@ -1822,35 +1781,21 @@ RTCD_EXTERN unsigned int (*vpx_sad4x4_avg)(const uint8_t* src_ptr,
                                            int ref_stride,
                                            const uint8_t* second_pred);
 
-void vpx_sad4x4x3_c(const uint8_t* src_ptr,
-                    int src_stride,
-                    const uint8_t* ref_ptr,
-                    int ref_stride,
-                    uint32_t* sad_array);
-#define vpx_sad4x4x3 vpx_sad4x4x3_c
-
 void vpx_sad4x4x4d_c(const uint8_t* src_ptr,
                      int src_stride,
-                     const uint8_t* const ref_array[],
+                     const uint8_t* const ref_array[4],
                      int ref_stride,
-                     uint32_t* sad_array);
+                     uint32_t sad_array[4]);
 void vpx_sad4x4x4d_neon(const uint8_t* src_ptr,
                         int src_stride,
-                        const uint8_t* const ref_array[],
+                        const uint8_t* const ref_array[4],
                         int ref_stride,
-                        uint32_t* sad_array);
+                        uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad4x4x4d)(const uint8_t* src_ptr,
                                   int src_stride,
-                                  const uint8_t* const ref_array[],
+                                  const uint8_t* const ref_array[4],
                                   int ref_stride,
-                                  uint32_t* sad_array);
-
-void vpx_sad4x4x8_c(const uint8_t* src_ptr,
-                    int src_stride,
-                    const uint8_t* ref_ptr,
-                    int ref_stride,
-                    uint32_t* sad_array);
-#define vpx_sad4x4x8 vpx_sad4x4x8_c
+                                  uint32_t sad_array[4]);
 
 unsigned int vpx_sad4x8_c(const uint8_t* src_ptr,
                           int src_stride,
@@ -1883,19 +1828,19 @@ RTCD_EXTERN unsigned int (*vpx_sad4x8_avg)(const uint8_t* src_ptr,
 
 void vpx_sad4x8x4d_c(const uint8_t* src_ptr,
                      int src_stride,
-                     const uint8_t* const ref_array[],
+                     const uint8_t* const ref_array[4],
                      int ref_stride,
-                     uint32_t* sad_array);
+                     uint32_t sad_array[4]);
 void vpx_sad4x8x4d_neon(const uint8_t* src_ptr,
                         int src_stride,
-                        const uint8_t* const ref_array[],
+                        const uint8_t* const ref_array[4],
                         int ref_stride,
-                        uint32_t* sad_array);
+                        uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad4x8x4d)(const uint8_t* src_ptr,
                                   int src_stride,
-                                  const uint8_t* const ref_array[],
+                                  const uint8_t* const ref_array[4],
                                   int ref_stride,
-                                  uint32_t* sad_array);
+                                  uint32_t sad_array[4]);
 
 unsigned int vpx_sad64x32_c(const uint8_t* src_ptr,
                             int src_stride,
@@ -1928,19 +1873,19 @@ RTCD_EXTERN unsigned int (*vpx_sad64x32_avg)(const uint8_t* src_ptr,
 
 void vpx_sad64x32x4d_c(const uint8_t* src_ptr,
                        int src_stride,
-                       const uint8_t* const ref_array[],
+                       const uint8_t* const ref_array[4],
                        int ref_stride,
-                       uint32_t* sad_array);
+                       uint32_t sad_array[4]);
 void vpx_sad64x32x4d_neon(const uint8_t* src_ptr,
                           int src_stride,
-                          const uint8_t* const ref_array[],
+                          const uint8_t* const ref_array[4],
                           int ref_stride,
-                          uint32_t* sad_array);
+                          uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad64x32x4d)(const uint8_t* src_ptr,
                                     int src_stride,
-                                    const uint8_t* const ref_array[],
+                                    const uint8_t* const ref_array[4],
                                     int ref_stride,
-                                    uint32_t* sad_array);
+                                    uint32_t sad_array[4]);
 
 unsigned int vpx_sad64x64_c(const uint8_t* src_ptr,
                             int src_stride,
@@ -1973,19 +1918,19 @@ RTCD_EXTERN unsigned int (*vpx_sad64x64_avg)(const uint8_t* src_ptr,
 
 void vpx_sad64x64x4d_c(const uint8_t* src_ptr,
                        int src_stride,
-                       const uint8_t* const ref_array[],
+                       const uint8_t* const ref_array[4],
                        int ref_stride,
-                       uint32_t* sad_array);
+                       uint32_t sad_array[4]);
 void vpx_sad64x64x4d_neon(const uint8_t* src_ptr,
                           int src_stride,
-                          const uint8_t* const ref_array[],
+                          const uint8_t* const ref_array[4],
                           int ref_stride,
-                          uint32_t* sad_array);
+                          uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad64x64x4d)(const uint8_t* src_ptr,
                                     int src_stride,
-                                    const uint8_t* const ref_array[],
+                                    const uint8_t* const ref_array[4],
                                     int ref_stride,
-                                    uint32_t* sad_array);
+                                    uint32_t sad_array[4]);
 
 unsigned int vpx_sad8x16_c(const uint8_t* src_ptr,
                            int src_stride,
@@ -2016,35 +1961,21 @@ RTCD_EXTERN unsigned int (*vpx_sad8x16_avg)(const uint8_t* src_ptr,
                                             int ref_stride,
                                             const uint8_t* second_pred);
 
-void vpx_sad8x16x3_c(const uint8_t* src_ptr,
-                     int src_stride,
-                     const uint8_t* ref_ptr,
-                     int ref_stride,
-                     uint32_t* sad_array);
-#define vpx_sad8x16x3 vpx_sad8x16x3_c
-
 void vpx_sad8x16x4d_c(const uint8_t* src_ptr,
                       int src_stride,
-                      const uint8_t* const ref_array[],
+                      const uint8_t* const ref_array[4],
                       int ref_stride,
-                      uint32_t* sad_array);
+                      uint32_t sad_array[4]);
 void vpx_sad8x16x4d_neon(const uint8_t* src_ptr,
                          int src_stride,
-                         const uint8_t* const ref_array[],
+                         const uint8_t* const ref_array[4],
                          int ref_stride,
-                         uint32_t* sad_array);
+                         uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad8x16x4d)(const uint8_t* src_ptr,
                                    int src_stride,
-                                   const uint8_t* const ref_array[],
+                                   const uint8_t* const ref_array[4],
                                    int ref_stride,
-                                   uint32_t* sad_array);
-
-void vpx_sad8x16x8_c(const uint8_t* src_ptr,
-                     int src_stride,
-                     const uint8_t* ref_ptr,
-                     int ref_stride,
-                     uint32_t* sad_array);
-#define vpx_sad8x16x8 vpx_sad8x16x8_c
+                                   uint32_t sad_array[4]);
 
 unsigned int vpx_sad8x4_c(const uint8_t* src_ptr,
                           int src_stride,
@@ -2077,19 +2008,19 @@ RTCD_EXTERN unsigned int (*vpx_sad8x4_avg)(const uint8_t* src_ptr,
 
 void vpx_sad8x4x4d_c(const uint8_t* src_ptr,
                      int src_stride,
-                     const uint8_t* const ref_array[],
+                     const uint8_t* const ref_array[4],
                      int ref_stride,
-                     uint32_t* sad_array);
+                     uint32_t sad_array[4]);
 void vpx_sad8x4x4d_neon(const uint8_t* src_ptr,
                         int src_stride,
-                        const uint8_t* const ref_array[],
+                        const uint8_t* const ref_array[4],
                         int ref_stride,
-                        uint32_t* sad_array);
+                        uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad8x4x4d)(const uint8_t* src_ptr,
                                   int src_stride,
-                                  const uint8_t* const ref_array[],
+                                  const uint8_t* const ref_array[4],
                                   int ref_stride,
-                                  uint32_t* sad_array);
+                                  uint32_t sad_array[4]);
 
 unsigned int vpx_sad8x8_c(const uint8_t* src_ptr,
                           int src_stride,
@@ -2120,35 +2051,21 @@ RTCD_EXTERN unsigned int (*vpx_sad8x8_avg)(const uint8_t* src_ptr,
                                            int ref_stride,
                                            const uint8_t* second_pred);
 
-void vpx_sad8x8x3_c(const uint8_t* src_ptr,
-                    int src_stride,
-                    const uint8_t* ref_ptr,
-                    int ref_stride,
-                    uint32_t* sad_array);
-#define vpx_sad8x8x3 vpx_sad8x8x3_c
-
 void vpx_sad8x8x4d_c(const uint8_t* src_ptr,
                      int src_stride,
-                     const uint8_t* const ref_array[],
+                     const uint8_t* const ref_array[4],
                      int ref_stride,
-                     uint32_t* sad_array);
+                     uint32_t sad_array[4]);
 void vpx_sad8x8x4d_neon(const uint8_t* src_ptr,
                         int src_stride,
-                        const uint8_t* const ref_array[],
+                        const uint8_t* const ref_array[4],
                         int ref_stride,
-                        uint32_t* sad_array);
+                        uint32_t sad_array[4]);
 RTCD_EXTERN void (*vpx_sad8x8x4d)(const uint8_t* src_ptr,
                                   int src_stride,
-                                  const uint8_t* const ref_array[],
+                                  const uint8_t* const ref_array[4],
                                   int ref_stride,
-                                  uint32_t* sad_array);
-
-void vpx_sad8x8x8_c(const uint8_t* src_ptr,
-                    int src_stride,
-                    const uint8_t* ref_ptr,
-                    int ref_stride,
-                    uint32_t* sad_array);
-#define vpx_sad8x8x8 vpx_sad8x8x8_c
+                                  uint32_t sad_array[4]);
 
 int vpx_satd_c(const int16_t* coeff, int length);
 int vpx_satd_neon(const int16_t* coeff, int length);

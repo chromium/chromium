@@ -80,19 +80,31 @@ void vp9_fht16x16_c(const int16_t* input,
                     tran_low_t* output,
                     int stride,
                     int tx_type);
-#define vp9_fht16x16 vp9_fht16x16_c
+void vp9_fht16x16_neon(const int16_t* input,
+                       tran_low_t* output,
+                       int stride,
+                       int tx_type);
+#define vp9_fht16x16 vp9_fht16x16_neon
 
 void vp9_fht4x4_c(const int16_t* input,
                   tran_low_t* output,
                   int stride,
                   int tx_type);
-#define vp9_fht4x4 vp9_fht4x4_c
+void vp9_fht4x4_neon(const int16_t* input,
+                     tran_low_t* output,
+                     int stride,
+                     int tx_type);
+#define vp9_fht4x4 vp9_fht4x4_neon
 
 void vp9_fht8x8_c(const int16_t* input,
                   tran_low_t* output,
                   int stride,
                   int tx_type);
-#define vp9_fht8x8 vp9_fht8x8_c
+void vp9_fht8x8_neon(const int16_t* input,
+                     tran_low_t* output,
+                     int stride,
+                     int tx_type);
+#define vp9_fht8x8 vp9_fht8x8_neon
 
 void vp9_filter_by_weight16x16_c(const uint8_t* src,
                                  int src_stride,
@@ -143,7 +155,6 @@ void vp9_iht8x8_64_add_neon(const tran_low_t* input,
 
 void vp9_quantize_fp_c(const tran_low_t* coeff_ptr,
                        intptr_t n_coeffs,
-                       int skip_block,
                        const int16_t* round_ptr,
                        const int16_t* quant_ptr,
                        tran_low_t* qcoeff_ptr,
@@ -154,7 +165,6 @@ void vp9_quantize_fp_c(const tran_low_t* coeff_ptr,
                        const int16_t* iscan);
 void vp9_quantize_fp_neon(const tran_low_t* coeff_ptr,
                           intptr_t n_coeffs,
-                          int skip_block,
                           const int16_t* round_ptr,
                           const int16_t* quant_ptr,
                           tran_low_t* qcoeff_ptr,
@@ -167,7 +177,6 @@ void vp9_quantize_fp_neon(const tran_low_t* coeff_ptr,
 
 void vp9_quantize_fp_32x32_c(const tran_low_t* coeff_ptr,
                              intptr_t n_coeffs,
-                             int skip_block,
                              const int16_t* round_ptr,
                              const int16_t* quant_ptr,
                              tran_low_t* qcoeff_ptr,
@@ -178,7 +187,6 @@ void vp9_quantize_fp_32x32_c(const tran_low_t* coeff_ptr,
                              const int16_t* iscan);
 void vp9_quantize_fp_32x32_neon(const tran_low_t* coeff_ptr,
                                 intptr_t n_coeffs,
-                                int skip_block,
                                 const int16_t* round_ptr,
                                 const int16_t* quant_ptr,
                                 tran_low_t* qcoeff_ptr,

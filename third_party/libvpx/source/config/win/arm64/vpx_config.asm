@@ -1,7 +1,7 @@
 @ This file was created from a .asm file
 @  using the ads2gas_apple.pl script.
 
-	.syntax unified
+.syntax unified
 .equ VPX_ARCH_ARM ,  1
 .equ ARCH_ARM ,  1
 .equ VPX_ARCH_MIPS ,  0

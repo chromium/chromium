@@ -338,43 +338,6 @@ void vp8_filter_by_weight8x8_sse2(unsigned char* src,
                                   int src_weight);
 #define vp8_filter_by_weight8x8 vp8_filter_by_weight8x8_sse2
 
-int vp8_full_search_sad_c(struct macroblock* x,
-                          struct block* b,
-                          struct blockd* d,
-                          union int_mv* ref_mv,
-                          int sad_per_bit,
-                          int distance,
-                          struct variance_vtable* fn_ptr,
-                          int* mvcost[2],
-                          union int_mv* center_mv);
-int vp8_full_search_sadx3(struct macroblock* x,
-                          struct block* b,
-                          struct blockd* d,
-                          union int_mv* ref_mv,
-                          int sad_per_bit,
-                          int distance,
-                          struct variance_vtable* fn_ptr,
-                          int* mvcost[2],
-                          union int_mv* center_mv);
-int vp8_full_search_sadx8(struct macroblock* x,
-                          struct block* b,
-                          struct blockd* d,
-                          union int_mv* ref_mv,
-                          int sad_per_bit,
-                          int distance,
-                          struct variance_vtable* fn_ptr,
-                          int* mvcost[2],
-                          union int_mv* center_mv);
-RTCD_EXTERN int (*vp8_full_search_sad)(struct macroblock* x,
-                                       struct block* b,
-                                       struct blockd* d,
-                                       union int_mv* ref_mv,
-                                       int sad_per_bit,
-                                       int distance,
-                                       struct variance_vtable* fn_ptr,
-                                       int* mvcost[2],
-                                       union int_mv* center_mv);
-
 void vp8_loop_filter_bh_c(unsigned char* y_ptr,
                           unsigned char* u_ptr,
                           unsigned char* v_ptr,
@@ -648,11 +611,6 @@ static void setup_rtcd_internal(void) {
   vp8_fast_quantize_b = vp8_fast_quantize_b_sse2;
   if (flags & HAS_SSSE3)
     vp8_fast_quantize_b = vp8_fast_quantize_b_ssse3;
-  vp8_full_search_sad = vp8_full_search_sad_c;
-  if (flags & HAS_SSE3)
-    vp8_full_search_sad = vp8_full_search_sadx3;
-  if (flags & HAS_SSE4_1)
-    vp8_full_search_sad = vp8_full_search_sadx8;
   vp8_regular_quantize_b = vp8_regular_quantize_b_sse2;
   if (flags & HAS_SSE4_1)
     vp8_regular_quantize_b = vp8_regular_quantize_b_sse4_1;
