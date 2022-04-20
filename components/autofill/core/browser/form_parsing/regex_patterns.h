@@ -9,6 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/common/language_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,9 +52,8 @@ class MatchPatternRef {
   using UnderlyingType = int16_t;
 
   // A wrapper of the constructor used by the code generation.
-  friend constexpr inline MatchPatternRef MakeMatchPatternRef(
-      bool is_supplementary,
-      UnderlyingType index);
+  friend constexpr MatchPatternRef MakeMatchPatternRef(bool is_supplementary,
+                                                       UnderlyingType index);
   friend class MatchPatternRefTestApi;
 
   constexpr MatchPatternRef(bool supplementary, UnderlyingType index)
@@ -81,11 +81,13 @@ class MatchPatternRef {
 // decreasing order.
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,
-    absl::optional<LanguageCode> language);
+    absl::optional<LanguageCode> language,
+    PredictionSource pattern_set = PredictionSource::kDefaultHeuristics);
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     ServerFieldType type,
-    absl::optional<LanguageCode> language);
+    absl::optional<LanguageCode> language,
+    PredictionSource pattern_set = PredictionSource::kDefaultHeuristics);
 
 }  // namespace autofill
 

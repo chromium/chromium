@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
+#include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -169,6 +170,9 @@ TEST_F(RegexPatternsTest,
 }
 
 struct PatternTestCase {
+  // The set of patterns. In non-branded builds, only the default set is
+  // supported.
+  PredictionSource prediction_source = PredictionSource::kDefaultHeuristics;
   // Reference to the pattern name in the resources/regex_patterns.json file.
   const char* pattern_name;
   // Language selector for the pattern, refers to the detected language of a
@@ -196,15 +200,19 @@ TEST_P(RegexPatternsTestWithSamples, TestPositiveAndNegativeCases) {
   for (const std::string& sample : test_case.positive_samples) {
     EXPECT_THAT(sample,
                 MatchesAny(GetMatchPatterns(test_case.pattern_name,
-                                            LanguageCode(test_case.language))))
+                                            LanguageCode(test_case.language),
+                                            test_case.prediction_source)))
+        << "prediction_source=" << static_cast<int>(test_case.prediction_source)
+        << ","
         << "pattern_name=" << test_case.pattern_name << ","
         << "language=" << test_case.language;
   }
 
   for (const std::string& sample : test_case.negative_samples) {
     EXPECT_THAT(sample,
-                ::testing::Not(MatchesAny(GetMatchPatterns(
-                    test_case.pattern_name, LanguageCode(test_case.language)))))
+                Not(MatchesAny(GetMatchPatterns(
+                    test_case.pattern_name, LanguageCode(test_case.language),
+                    test_case.prediction_source))))
         << "pattern_name=" << test_case.pattern_name << ","
         << "language=" << test_case.language;
   }
@@ -214,7 +222,45 @@ INSTANTIATE_TEST_SUITE_P(
     RegexPatternsTest,
     RegexPatternsTestWithSamples,
     testing::Values(
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
         PatternTestCase{
+            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_name = "PATTERN_SOURCE_DUMMY",
+            .language = "en",
+            .positive_samples = {"legacy"},
+            .negative_samples = {"default", "experimental", "nextgen",
+                                 "fallback"}},
+#else
+        PatternTestCase{
+            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_name = "PATTERN_SOURCE_DUMMY",
+            .language = "en",
+            .positive_samples = {"default"},
+            .negative_samples = {"legacy", "experimental", "nextgen",
+                                 "fallback"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kExperimentalHeuristics,
+            .pattern_name = "PATTERN_SOURCE_DUMMY",
+            .language = "en",
+            .positive_samples = {"experimental"},
+            .negative_samples = {"default", "legacy", "nextgen", "fallback"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_name = "PATTERN_SOURCE_DUMMY",
+            .language = "en",
+            .positive_samples = {"nextgen"},
+            .negative_samples = {"default", "legacy", "experimental",
+                                 "fallback"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kFallbackHeuristics,
+            .pattern_name = "PATTERN_SOURCE_DUMMY",
+            .language = "en",
+            .positive_samples = {"fallback"},
+            .negative_samples = {"default", "legacy", "experimental",
+                                 "nextgen"}},
+#endif
+        PatternTestCase{
+            .prediction_source = PredictionSource::kDefaultHeuristics,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -239,6 +285,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
                  "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
         PatternTestCase{
+            .prediction_source = PredictionSource::kDefaultHeuristics,
             .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -263,19 +310,170 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM / YY", "Expiration Date MM/YY",
                  "Expiration Date MM - YY", "Expiration Date MM-YY",
                  "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{.pattern_name = "ZIP_CODE",
-                        .language = "en",
-                        .positive_samples = {"Zip code", "postal code"},
-                        .negative_samples =
-                            {// Not matching for "en" language:
-                             "postleitzahl",
-                             // Not referring to a ZIP code:
-                             "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{.pattern_name = "ZIP_CODE",
-                        .language = "de",
-                        .positive_samples = {// Inherited from "en":
-                                             "Zip code", "postal code",
-                                             // Specifically added for "de":
-                                             "postleitzahl"}}));
+        PatternTestCase{
+            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_name = "ZIP_CODE",
+            .language = "en",
+            .positive_samples = {"Zip code", "postal code"},
+            .negative_samples =
+                {// Not matching for "en" language:
+                 "postleitzahl",
+                 // Not referring to a ZIP code:
+                 "Supported file formats: .docx, .rar, .zip."}},
+        PatternTestCase {
+          .prediction_source = PredictionSource::kDefaultHeuristics,
+          .pattern_name = "ZIP_CODE", .language = "de",
+          .positive_samples = {  // Inherited from "en":
+            "Zip code",
+            "postal code",
+            // Specifically added for "de":
+            "postleitzahl"
+          }
+        }
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+        ,
+        PatternTestCase{
+            .prediction_source = PredictionSource::kExperimentalHeuristics,
+            .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
+            .language = "en",
+            .positive_samples =
+                {"mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
+                 "mm -yy", "mm-yy", "mmyy",
+                 // Complex two year cases
+                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
+                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
+                 "Expiration Date MM / YY", "Expiration Date MM/YY",
+                 "Expiration Date MM - YY", "Expiration Date MM-YY",
+                 "expiration date yy", "Exp Date     (MM / YY)"},
+            .negative_samples =
+                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
+                 "mm a yy", "mm a yyyy",
+                 // Simple four year cases
+                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
+                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
+                 // Complex four year cases
+                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
+                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
+                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
+                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
+                 "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kExperimentalHeuristics,
+            .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
+            .language = "en",
+            .positive_samples =
+                {// Simple four year cases
+                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
+                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
+                 // Complex four year cases
+                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
+                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
+                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
+                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
+                 "expiration date yyyy", "Exp Date     (MM / YYYY)"},
+            .negative_samples =
+                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
+                 "mm a yy", "mm a yyyy",
+                 // Simple two year cases
+                 "mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
+                 "mm -yy", "mm-yy", "mmyy",
+                 // Complex two year cases
+                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
+                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
+                 "Expiration Date MM / YY", "Expiration Date MM/YY",
+                 "Expiration Date MM - YY", "Expiration Date MM-YY",
+                 "expiration date yy", "Exp Date     (MM / YY)"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kExperimentalHeuristics,
+            .pattern_name = "ZIP_CODE",
+            .language = "en",
+            .positive_samples = {"Zip code", "postal code"},
+            .negative_samples =
+                {// Not matching for "en" language:
+                 "postleitzahl",
+                 // Not referring to a ZIP code:
+                 "Supported file formats: .docx, .rar, .zip."}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kExperimentalHeuristics,
+            .pattern_name = "ZIP_CODE",
+            .language = "de",
+            .positive_samples =
+                {// Inherited from "en":
+                 "Zip code", "postal code",
+                 // Specifically added for "de":
+                 "postleitzahl"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
+            .language = "en",
+            .positive_samples =
+                {"mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
+                 "mm -yy", "mm-yy", "mmyy",
+                 // Complex two year cases
+                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
+                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
+                 "Expiration Date MM / YY", "Expiration Date MM/YY",
+                 "Expiration Date MM - YY", "Expiration Date MM-YY",
+                 "expiration date yy", "Exp Date     (MM / YY)"},
+            .negative_samples =
+                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
+                 "mm a yy", "mm a yyyy",
+                 // Simple four year cases
+                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
+                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
+                 // Complex four year cases
+                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
+                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
+                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
+                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
+                 "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
+            .language = "en",
+            .positive_samples =
+                {// Simple four year cases
+                 "mm / yyyy", "mm/ yyyy", "mm /yyyy", "mm/yyyy", "mm - yyyy",
+                 "mm- yyyy", "mm -yyyy", "mm-yyyy", "mmyyyy",
+                 // Complex four year cases
+                 "Expiration Date (MM / YYYY)", "Expiration Date (MM/YYYY)",
+                 "Expiration Date (MM - YYYY)", "Expiration Date (MM-YYYY)",
+                 "Expiration Date MM / YYYY", "Expiration Date MM/YYYY",
+                 "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
+                 "expiration date yyyy", "Exp Date     (MM / YYYY)"},
+            .negative_samples =
+                {"", "Look, ma' -- an invalid string!", "mmfavouritewordyy",
+                 "mm a yy", "mm a yyyy",
+                 // Simple two year cases
+                 "mm / yy", "mm/ yy", "mm /yy", "mm/yy", "mm - yy", "mm- yy",
+                 "mm -yy", "mm-yy", "mmyy",
+                 // Complex two year cases
+                 "Expiration Date (MM / YY)", "Expiration Date (MM/YY)",
+                 "Expiration Date (MM - YY)", "Expiration Date (MM-YY)",
+                 "Expiration Date MM / YY", "Expiration Date MM/YY",
+                 "Expiration Date MM - YY", "Expiration Date MM-YY",
+                 "expiration date yy", "Exp Date     (MM / YY)"}},
+        PatternTestCase{
+            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_name = "ZIP_CODE",
+            .language = "en",
+            .positive_samples = {"Zip code", "postal code"},
+            .negative_samples =
+                {// Not matching for "en" language:
+                 "postleitzahl",
+                 // Not referring to a ZIP code:
+                 "Supported file formats: .docx, .rar, .zip."}},
+        PatternTestCase {
+          .prediction_source = PredictionSource::kNextGenHeuristics,
+          .pattern_name = "ZIP_CODE", .language = "de",
+          .positive_samples = {  // Inherited from "en":
+            "Zip code",
+            "postal code",
+            // Specifically added for "de":
+            "postleitzahl"
+          }
+        }
+#endif
+        ));
 
 }  // namespace autofill

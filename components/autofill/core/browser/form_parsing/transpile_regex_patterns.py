@@ -4,6 +4,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
+from collections import defaultdict
 import io
 import json
 import sys
@@ -11,19 +13,29 @@ import sys
 # Generates a set of C++ constexpr constants to facilitate lookup of a set of
 # MatchingPatterns by a given tuple (pattern name, language code).
 #
+# id_to_name_to_lang_to_patterns is a
+# map from pattern source IDs to a
+#   map from pattern names to a
+#     map from language codes to a
+#       list of patterns,
+# where the pattern source IDs are consecutive natural numbers identifying the
+# input JSON files.
+#
 # The constants are:
 #
 # - kPatterns is an array of MatchingPatterns without duplicates.
 #   The array is not sorted. The patterns are condensed (see below).
-# - kPatterns_<pattern name>_<language code> contains the indices of the
-#   pattterns that for that pattern name and language code.
-# - kPatternMap is a fixed flat map from (pattern name, language code) to
-#   a span of MatchPatternRefs.
+# - kPatterns__<pattern source id>__<pattern name>__<language code> contains
+#   the indices of the pattterns that from the pattern source for that pattern
+#   name and language code.
+# - kPatternMap is a fixed flat map from (pattern name, language code) tuples
+#   to arrays of spans of MatchPatternRefs; the indices of the array correspond
+#   to the pattern sources.
 #
 # This representation has larger binary size on Android than using nested
 # lookup pattern name -> language code -> span of MatchPatternRefs, but it's
 # significantly simpler.
-def generate_cpp_constants(name_to_lang_to_patterns):
+def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   # The enum constant of the MatchAttribute::kName.
   kName = 1
   yield f'static_assert(MatchAttribute::kName == To<MatchAttribute,{kName}>());'
@@ -83,72 +95,72 @@ def generate_cpp_constants(name_to_lang_to_patterns):
            f'}}'
 
   # Name of the auxiliary C++ constant.
-  def kPatterns(name, lang):
-    if lang:
-      return f"kPatterns__{name}__{lang.replace('-', '_')}"
-    else:
-      return f"kPatterns__{name}"
+  def kPatterns(id, name, lang):
+    return (f"kPatterns__{id}__{name}__{lang.replace('-', '_')}"
+            if lang else f'kPatterns__{id}__{name}')
 
-  # Validate the JSON input.
-  for name, lang_to_patterns in name_to_lang_to_patterns.items():
-    if '' in lang_to_patterns:
-      raise Exception('JSON format error: language is ""')
+  for id, name_to_lang_to_patterns in id_to_name_to_lang_to_patterns.items():
+    # Validate the JSON input.
+    for name, lang_to_patterns in name_to_lang_to_patterns.items():
+      if '' in lang_to_patterns:
+        raise Exception('JSON format error: language is ""')
 
-  # Remember each pattern's language.
-  #
-  # To ease debugging, we shall sort patterns of equal positive_score by their
-  # language.
-  for lang_to_patterns in name_to_lang_to_patterns.values():
-    for lang, patterns in lang_to_patterns.items():
-      for pattern in patterns:
-        pattern['lang'] = lang
+    # Remember each pattern's language.
+    #
+    # To ease debugging, we shall sort patterns of equal positive_score by their
+    # language.
+    for lang_to_patterns in name_to_lang_to_patterns.values():
+      for lang, patterns in lang_to_patterns.items():
+        for pattern in patterns:
+          pattern['lang'] = lang
 
-  # For each name, collect the items of all languages and add them as a
-  # separate entry for the pseudo-language ''.
-  for name, lang_to_patterns in name_to_lang_to_patterns.items():
-    lang_to_patterns[''] = [
-        p.copy() for ps in lang_to_patterns.values() for p in ps
-    ]
+    # For each name, collect the items of all languages and add them as a
+    # separate entry for the pseudo-language ''.
+    for name, lang_to_patterns in name_to_lang_to_patterns.items():
+      lang_to_patterns[''] = [
+          p.copy() for ps in lang_to_patterns.values() for p in ps
+      ]
 
-  # Add the English patterns to all languages except for English itself and the
-  # catch-all language ''.
-  #
-  # The idea is that these patterns should be applied (only) to the HTML source
-  # code, i.e., not the user-visible labels. To this end, we mark the English
-  # patterns here "supplementary", which will in the subsequent step be encoded
-  # in the MatchPatternRef().
-  for lang_to_patterns in name_to_lang_to_patterns.values():
-    if 'en' not in lang_to_patterns:
-      continue
-    def make_supplementary_pattern(p):
-      p = p.copy()
-      p['supplementary'] = True
-      return p
-    for patterns in (patterns for lang, patterns in lang_to_patterns.items()
-                     if lang not in ['', 'en']):
-      patterns.extend(
-          make_supplementary_pattern(p)
-          for p in lang_to_patterns['en']
-          if kName in p['match_field_attributes'])
+    # Add the English patterns to all languages except for English itself and
+    # the catch-all language ''.
+    #
+    # The idea is that these patterns should be applied (only) to the HTML
+    # source code, i.e., not the user-visible labels. To this end, we mark the
+    # English patterns here "supplementary", which will in the subsequent step
+    # be encoded in the MatchPatternRef().
+    for lang_to_patterns in name_to_lang_to_patterns.values():
+      if 'en' not in lang_to_patterns:
+        continue
+      def make_supplementary_pattern(p):
+        assert kName in p['match_field_attributes']
+        p = p.copy()
+        p['supplementary'] = True
+        return p
+      for patterns in (patterns for lang, patterns in lang_to_patterns.items()
+                       if lang not in ['', 'en']):
+        patterns.extend(
+            make_supplementary_pattern(p)
+            for p in lang_to_patterns['en']
+            if kName in p['match_field_attributes'])
 
   # Populate the two maps:
   # - a map from C++ MatchingPattern expressions to their index.
-  # - a map from names and languages to the their MatchingPatterns, represented
-  #   as list of tuples (is_supplementary, pattern_index).
+  # - a map from names and languages and IDs to the their MatchingPatterns,
+  #   represented as list of tuples (is_supplementary, pattern_index).
   pattern_to_index = {}
-  name_to_lang_to_patternrefs = {
-      name: {lang: [] for lang in lang_to_patterns.keys()
-            } for name, lang_to_patterns in name_to_lang_to_patterns.items()
-  }
-  for name, lang_to_patterns in sorted(name_to_lang_to_patterns.items()):
-    for lang, patterns in sorted(lang_to_patterns.items()):
-      patternrefs = name_to_lang_to_patternrefs[name][lang]
-      sort_key = lambda p: (-p['positive_score'], p['lang'])
-      for pattern in sorted(patterns, key=sort_key):
-        is_supplementary = ('supplementary' in pattern and
-                            pattern['supplementary'])
-        index = memoize(json_to_cpp_pattern(pattern), pattern_to_index)
-        patternrefs.append((is_supplementary, index))
+  name_to_lang_to_id_to_patternrefs = defaultdict(
+      lambda: defaultdict(lambda: defaultdict(list)))
+  for id, name_to_lang_to_patterns in id_to_name_to_lang_to_patterns.items():
+    for name, lang_to_patterns in sorted(name_to_lang_to_patterns.items()):
+      for lang, patterns in sorted(lang_to_patterns.items()):
+        patternrefs = name_to_lang_to_id_to_patternrefs[name][lang][id]
+        sort_key = lambda p: (-p['positive_score'], p['lang'])
+        for pattern in sorted(patterns, key=sort_key):
+          is_supplementary = ('supplementary' in pattern and
+                              pattern['supplementary'])
+          pattern_index = memoize(
+              json_to_cpp_pattern(pattern), pattern_to_index)
+          patternrefs.append((is_supplementary, pattern_index))
 
   # Generate the C++ constants.
   yield '// The patterns. Referred to by their index in MatchPatternRef.'
@@ -157,27 +169,68 @@ def generate_cpp_constants(name_to_lang_to_patterns):
       pattern_to_index.items(), key=lambda item: item[1]):
     yield f'/*[{index}]=*/{cpp_expr},'
   yield '};'
+  yield ''
 
-  yield '\n// The patterns for field types and languages.'
+  min_pattern_id = min(id_to_name_to_lang_to_patterns.keys())
+  max_pattern_id = max(id_to_name_to_lang_to_patterns.keys())
+
+  yield '// The patterns for field types and languages.'
   yield '// They are sorted by the patterns MatchingPattern::positive_score.'
-  for name, lang_to_patternrefs in name_to_lang_to_patternrefs.items():
-    for lang, patternrefs in lang_to_patternrefs.items():
-      yield (f'constexpr std::array {kPatterns(name, lang)}{{' + ', '.join(
-          f'MakeMatchPatternRef({python_bool_to_cpp(is_supplementary)},{index})'
-          for is_supplementary, index in patternrefs) + f'}};')
+  for name, lang_to_id_to_patternrefs in (
+      name_to_lang_to_id_to_patternrefs.items()):
+    for lang, id_to_patternrefs in lang_to_id_to_patternrefs.items():
+      for id, patternrefs in id_to_patternrefs.items():
+        # If another pattern source has the same patterns for this `name` and
+        # `lang`, we don't need to a new array; a reference suffices.
+        ids_with_the_same_patternrefs = [
+            i for i in range(min_pattern_id, id)
+            if i in name_to_lang_to_id_to_patternrefs[name][lang] and
+            patternrefs == name_to_lang_to_id_to_patternrefs[name][lang][i]
+        ]
+        if ids_with_the_same_patternrefs != []:
+          other_id = ids_with_the_same_patternrefs[0]
+          yield (f'constexpr auto {kPatterns(id, name, lang)} = '
+                 f'base::make_span({kPatterns(other_id, name, lang)});')
+        else:
+          yield (f'constexpr std::array {kPatterns(id, name, lang)}{{' +
+                 f', '.join(
+                     f'MakeMatchPatternRef('+
+                     f'{python_bool_to_cpp(is_supplementary)}, {index})'
+                     for is_supplementary, index in patternrefs) + f'}};')
+  yield ''
 
-  yield '\n// The lookup map for field types and langs.'
-  yield '// The keys in the map are essentially const char* pairs.'
+  yield '// The lookup map for field types and langs.'
+  yield '//'
+  yield '// The key type in the map is essentially a pair of const char*.'
   yield '// It also allows for lookup by base::StringPiece pairs (because the'
-  yield '// comparator is transparently accepts base::StringPiece pairs).'
+  yield '// comparator transparently accepts base::StringPiece pairs).'
+  yield '//'
+  yield '// The value type is an array of spans of MatchPatternRefs. The'
+  yield '// indices of the array correspond to the pattern source: the patterns'
+  yield '// from the first input JSON file are stored at index 0, etc.'
+  yield '//'
+  yield '// This design exploits that the different JSON files by and large'
+  yield '// contain the same pattern names and languages. If instead we'
+  yield '// generated an individual map for each JSON file, then, assuming four'
+  yield '// JSON files, the duplicate keys would cause 60% overhead, which'
+  yield '// adds up to >10K binary size on Android.'
   yield 'constexpr auto kPatternMap = base::MakeFixedFlatMap<' \
-        'NameAndLanguage, base::span<const MatchPatternRef>>({'
-  for name, lang_to_patternrefs in sorted(name_to_lang_to_patternrefs.items()):
-    for lang in sorted(lang_to_patternrefs.keys()):
-      yield f'  {{{{"{name}", "{lang}"}}, {kPatterns(name, lang)}}},'
+      'NameAndLanguage, '\
+      'std::array<base::span<const MatchPatternRef>, ' \
+      f'{max_pattern_id - min_pattern_id + 1}' \
+      '>>({'
+  for name, lang_to_id_to_patternrefs in sorted(
+      name_to_lang_to_id_to_patternrefs.items()):
+    for lang, id_to_patternrefs in sorted(lang_to_id_to_patternrefs.items()):
+      pattern_array = [
+          kPatterns(id, name, lang)
+          if id in id_to_patternrefs else 'base::span<const MatchPatternRef>{}'
+          for id in range(min_pattern_id, max_pattern_id + 1)
+      ]
+      yield f'  {{{{"{name}", "{lang}"}}, {{{", ".join(pattern_array)}}}}},'
   yield '}, NameAndLanguageComparator());'
 
-def generate_cpp_lines(input_json):
+def generate_cpp_lines(id_to_name_to_lang_to_patterns):
   yield """// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -251,26 +304,48 @@ struct NameAndLanguageComparator {
   }
 };
 """
-  yield from generate_cpp_constants(input_json)
+  yield from generate_cpp_constants(id_to_name_to_lang_to_patterns)
   yield """
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
 """
 
-def build_cpp_file(input_json, output_handle):
-  for line in generate_cpp_lines(input_json):
+def build_cpp_file(id_to_name_to_lang_to_patterns, output_handle):
+  for line in generate_cpp_lines(id_to_name_to_lang_to_patterns):
     line += '\n'
     # unicode() exists and is necessary only in Python 2, not in Python 3.
     if sys.version_info[0] < 3:
       line = unicode(s, 'utf-8')
     output_handle.write(line)
 
+def parse_json(input_files, output_file):
+  id_to_name_to_lang_to_patterns = {}
+  for index, input_file in enumerate(input_files):
+    with io.open(input_file, 'r', encoding='utf-8') as input_handle:
+      id_to_name_to_lang_to_patterns[index] = json.load(input_handle)
+
+  with io.open(output_file, 'w', encoding='utf-8') as output_handle:
+    build_cpp_file(id_to_name_to_lang_to_patterns, output_handle)
+
 if __name__ == '__main__':
-  input_file = sys.argv[1]
-  output_file = sys.argv[2]
-  with io.open(input_file, 'r', encoding='utf-8') as input_handle:
-    input_json = json.load(input_handle)
-    with io.open(output_file, 'w', encoding='utf-8') as output_handle:
-      build_cpp_file(input_json, output_handle)
+  parser = argparse.ArgumentParser(
+      description='Transpiles parsing patterns from JSON to C++.')
+  parser.add_argument(
+      '--input',
+      metavar='json-file',
+      required=True,
+      type=str,
+      nargs='+',
+      help='JSON file(s) containing patterns')
+  parser.add_argument(
+      '--output',
+      metavar='header-file',
+      required=True,
+      type=str,
+      help='C++ header file to be generated')
+  args = parser.parse_args()
+  if not args.input or not args.output:
+    parser.print_help()
+  else:
+    parse_json(args.input, args.output)

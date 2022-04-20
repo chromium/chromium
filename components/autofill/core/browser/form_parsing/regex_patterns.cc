@@ -5,31 +5,71 @@
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
+#include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
 
 namespace autofill {
 
+namespace {
+
+// Returns the span of MatchPatternRefs for the given pattern name, language
+// code, and pattern source.
+//
+// Hits a CHECK if the given pattern source contains no patterns for the given
+// name.
+//
+// Falls back to the union of all patterns of a the given name in the given
+// pattern source if there are no patterns for the given language.
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,
-    base::StringPiece language_code) {
+    base::StringPiece language_code,
+    PredictionSource pattern_set) {
   auto* it = kPatternMap.find(std::make_pair(name, language_code));
   if (!language_code.empty() && it == kPatternMap.end())
     it = kPatternMap.find(std::make_pair(name, ""));
   CHECK(it != kPatternMap.end());
-  return it->second;
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+  switch (pattern_set) {
+    case PredictionSource::kDefaultHeuristics:
+      return it->second[0];
+    case PredictionSource::kExperimentalHeuristics:
+      return it->second[1];
+    case PredictionSource::kNextGenHeuristics:
+      return it->second[2];
+    case PredictionSource::kFallbackHeuristics:
+      return it->second[3];
+  }
+#else
+  switch (pattern_set) {
+    case PredictionSource::kDefaultHeuristics:
+      return it->second[0];
+    case PredictionSource::kExperimentalHeuristics:
+    case PredictionSource::kNextGenHeuristics:
+    case PredictionSource::kFallbackHeuristics:
+      break;
+  }
+#endif
+  CHECK(false);
+  return {};
 }
+
+}  // namespace
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,
-    absl::optional<LanguageCode> language_code) {
-  return language_code ? GetMatchPatterns(name, **language_code)
-                       : GetMatchPatterns(name, "");
+    absl::optional<LanguageCode> language_code,
+    PredictionSource pattern_set) {
+  return language_code ? GetMatchPatterns(name, **language_code, pattern_set)
+                       : GetMatchPatterns(name, "", pattern_set);
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     ServerFieldType type,
-    absl::optional<LanguageCode> language_code) {
-  return GetMatchPatterns(FieldTypeToStringPiece(type), language_code);
+    absl::optional<LanguageCode> language_code,
+    PredictionSource pattern_set) {
+  return GetMatchPatterns(FieldTypeToStringPiece(type), language_code,
+                          pattern_set);
 }
 
 // The dereferencing operator implements the distinction between ordinary and

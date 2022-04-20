@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/util/version.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -21,12 +22,34 @@ grit("autofill_address_rewriter_resources") {
   output_dir = "$root_gen_dir/components/autofill/core/browser"
 }
 
+declare_args() {
+  # Normally, only branded builds use Google-internal sets of parsing patterns.
+  #
+  # Setting the variable 'use_internal_autofill_patterns' in args.gn overrides
+  # this default.
+  use_internal_autofill_patterns = is_chrome_branded
+}
+
+buildflag_header("buildflags") {
+  header = "form_parsing/buildflags.h"
+  flags = [ "USE_INTERNAL_AUTOFILL_HEADERS=$use_internal_autofill_patterns" ]
+}
+
 action("regex_patterns_inl_h") {
   visibility = [ ":*" ]
-  sources = [ "form_parsing/resources/regex_patterns.json" ]
+  if (!use_internal_autofill_patterns) {
+    sources = [ "form_parsing/resources/legacy_regex_patterns.json" ]
+  } else {
+    sources = [
+      "form_parsing/internal_resources/0_default_regex_patterns.json",
+      "form_parsing/internal_resources/1_experimental_regex_patterns.json",
+      "form_parsing/internal_resources/2_nextgen_regex_patterns.json",
+      "form_parsing/internal_resources/3_fallback_regex_patterns.json",
+    ]
+  }
   script = "form_parsing/transpile_regex_patterns.py"
   outputs = [ "$target_gen_dir/form_parsing/regex_patterns_inl.h" ]
-  args = rebase_path(sources, root_build_dir) +
+  args = [ "--input" ] + rebase_path(sources, root_build_dir) + [ "--output" ] +
          rebase_path(outputs, root_build_dir)
 }
 
@@ -454,6 +477,7 @@ static_library("browser") {
   ]
   deps = [
     ":autofill_address_rewriter_resources",
+    ":buildflags",
     ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",
@@ -861,6 +885,8 @@ source_set("unit_tests") {
   deps = [
     ":autofill_address_rewriter_resources",
     ":browser",
+    ":buildflags",
+    ":regex_patterns_inl_h",
     ":test_support",
     ":unit_tests_bundle_data",
     "//base",

@@ -17,7 +17,8 @@ enum class PredictionSource {
   kDefaultHeuristics,
   kExperimentalHeuristics,
   kNextGenHeuristics,
-  kMaxValue = kNextGenHeuristics
+  kFallbackHeuristics,
+  kMaxValue = kFallbackHeuristics
 };
 
 // Represents a possible type for a given field.
