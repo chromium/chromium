@@ -267,6 +267,13 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
   auto bound_cdm_created_cb = BindToCurrentLoop(std::move(cdm_created_cb));
 
   HRESULT hr = cdm->Initialize();
+
+  static bool s_first_initialize_reported = false;
+  if (!s_first_initialize_reported) {
+    base::UmaHistogramSparse(uma_prefix + "FirstInitialize", hr);
+    s_first_initialize_reported = true;
+  }
+
   if (FAILED(hr)) {
     base::UmaHistogramSparse(uma_prefix + "Initialize", hr);
     std::move(bound_cdm_created_cb)
