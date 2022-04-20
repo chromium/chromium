@@ -39,6 +39,9 @@ http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-ifr
 http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
 
+# The test becomes flaky on Linux after sizeof(LocalFrameView) is reduced.
+crbug.com/1316940 [ Linux ] http/tests/devtools/bindings/contentscripts-navigator-multiple-frames.js [ Pass Failure ]
+
 # Fix to unblock wpt-importer
 crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
 

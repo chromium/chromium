@@ -545,10 +545,10 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   // The feature |kOptimizeViewportConstrainedPaintInvalidation| is for testing
   // the performance of removing the paint invalidation of viewport constrained
   // objects after scrolling.
-  if (IsA<LayoutView>(box) && frame_view->HasViewportConstrainedObjects() &&
+  if (IsA<LayoutView>(box) && frame_view->HasFixedPositionObjects() &&
       !base::FeatureList::IsEnabled(
           features::kOptimizeViewportConstrainedPaintInvalidation) &&
-      !frame_view->InvalidateViewportConstrainedObjects()) {
+      !frame_view->InvalidateFixedPositionObjects()) {
     box->SetShouldDoFullPaintInvalidation();
     box->SetSubtreeShouldCheckForPaintInvalidation();
   }

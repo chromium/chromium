@@ -266,7 +266,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       visually_non_empty_character_count_(0),
       visually_non_empty_pixel_count_(0),
       is_visually_non_empty_(false),
-      sticky_position_object_count_(0),
       layout_size_fixed_to_frame_size_(true),
       needs_update_geometries_(false),
       root_layer_did_scroll_(false),
@@ -326,7 +325,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_anchoring_scrollable_areas_);
   visitor->Trace(animating_scrollable_areas_);
   visitor->Trace(user_scrollable_areas_);
-  visitor->Trace(viewport_constrained_objects_);
+  visitor->Trace(fixed_position_objects_);
   visitor->Trace(background_attachment_fixed_objects_);
   visitor->Trace(auto_size_info_);
   visitor->Trace(plugins_);
@@ -481,7 +480,7 @@ void LocalFrameView::Dispose() {
   // are missed. It would be good to understand how/why that happens, but in the
   // mean time, it's not safe to keep pointers around to defunct LayoutObjects.
   orthogonal_writing_mode_root_list_.Clear();
-  viewport_constrained_objects_.Clear();
+  fixed_position_objects_.Clear();
   background_attachment_fixed_objects_.clear();
 
   // Destroy |m_autoSizeInfo| as early as possible, to avoid dereferencing
@@ -879,9 +878,8 @@ void LocalFrameView::PerformLayout() {
 
   gfx::Size new_size(Size());
   if (old_size != new_size) {
-    MarkViewportConstrainedObjectsForLayout(
-        old_size.width() != new_size.width(),
-        old_size.height() != new_size.height());
+    MarkFixedPositionObjectsForLayout(old_size.width() != new_size.width(),
+                                      old_size.height() != new_size.height());
   }
 
   if (frame_->IsMainFrame()) {
@@ -1237,35 +1235,15 @@ bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
   return true;
 }
 
-void LocalFrameView::AddViewportConstrainedObject(
-    LayoutObject& object,
-    ViewportConstrainedType constrained_reason) {
-  if (!viewport_constrained_objects_)
-    viewport_constrained_objects_ = MakeGarbageCollected<ObjectSet>();
-
-  auto result = viewport_constrained_objects_->insert(&object);
-  if (constrained_reason == ViewportConstrainedType::kSticky) {
-    if (result.is_new_entry) {
-      sticky_position_object_count_++;
-    }
-    DCHECK_LE(sticky_position_object_count_,
-              viewport_constrained_objects_->size());
-  }
+void LocalFrameView::AddFixedPositionObject(LayoutObject& object) {
+  if (!fixed_position_objects_)
+    fixed_position_objects_ = MakeGarbageCollected<ObjectSet>();
+  fixed_position_objects_->insert(&object);
 }
 
-void LocalFrameView::RemoveViewportConstrainedObject(
-    LayoutObject& object,
-    ViewportConstrainedType constrained_reason) {
-  if (viewport_constrained_objects_) {
-    auto it = viewport_constrained_objects_->find(&object);
-    if (it != viewport_constrained_objects_->end()) {
-      viewport_constrained_objects_->erase(it);
-      if (constrained_reason == ViewportConstrainedType::kSticky) {
-        DCHECK_GT(sticky_position_object_count_, 0U);
-        sticky_position_object_count_--;
-      }
-    }
-  }
+void LocalFrameView::RemoveFixedPositionObject(LayoutObject& object) {
+  if (fixed_position_objects_)
+    fixed_position_objects_->erase(&object);
 }
 
 void LocalFrameView::ViewportSizeChanged(bool width_changed,
@@ -1303,19 +1281,18 @@ void LocalFrameView::ViewportSizeChanged(bool width_changed,
     layout_view->SetShouldCheckForPaintInvalidation();
 
   if (GetFrame().GetDocument() && !IsInPerformLayout())
-    MarkViewportConstrainedObjectsForLayout(width_changed, height_changed);
+    MarkFixedPositionObjectsForLayout(width_changed, height_changed);
 
   if (GetPaintTimingDetector().Visualizer())
     GetPaintTimingDetector().Visualizer()->OnViewportChanged();
 }
 
-void LocalFrameView::MarkViewportConstrainedObjectsForLayout(
-    bool width_changed,
-    bool height_changed) {
-  if (!HasViewportConstrainedObjects() || !(width_changed || height_changed))
+void LocalFrameView::MarkFixedPositionObjectsForLayout(bool width_changed,
+                                                       bool height_changed) {
+  if (!HasFixedPositionObjects() || !(width_changed || height_changed))
     return;
 
-  for (const auto& layout_object : *viewport_constrained_objects_) {
+  for (const auto& layout_object : *fixed_position_objects_) {
     const ComputedStyle& style = layout_object->StyleRef();
     if (width_changed) {
       if (style.Width().IsFixed() &&
@@ -1367,13 +1344,12 @@ void LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
   }
 }
 
-bool LocalFrameView::InvalidateViewportConstrainedObjects() {
+bool LocalFrameView::InvalidateFixedPositionObjects() {
   DCHECK(!base::FeatureList::IsEnabled(
       features::kOptimizeViewportConstrainedPaintInvalidation));
   bool fast_path_allowed = true;
-  for (const auto& layout_object : *viewport_constrained_objects_) {
-    DCHECK(layout_object->StyleRef().HasViewportConstrainedPosition() ||
-           layout_object->StyleRef().HasStickyConstrainedPosition());
+  for (const auto& layout_object : *fixed_position_objects_) {
+    DCHECK(layout_object->IsFixedPositioned());
     DCHECK(layout_object->HasLayer());
     PaintLayer* layer = To<LayoutBoxModelObject>(layout_object.Get())->Layer();
     // If the layer has no visible content, then we shouldn't invalidate; but
