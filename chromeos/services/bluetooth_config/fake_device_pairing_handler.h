@@ -35,6 +35,8 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
     return DevicePairingHandler::current_pairing_device_id();
   }
 
+  const absl::optional<bool>& last_confirm() const { return last_confirm_; }
+
  private:
   // DevicePairingHandler:
   void FetchDevice(const std::string& device_address,
@@ -47,6 +49,8 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
   void OnRequestPinCode(const std::string& pin_code) override;
   void OnRequestPasskey(const std::string& passkey) override;
   void OnConfirmPairing(bool confirmed) override;
+
+  absl::optional<bool> last_confirm_;
 
   std::vector<device::BluetoothDevice*> device_list_;
 

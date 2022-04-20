@@ -40,37 +40,44 @@ void FakeDevicePairingHandler::SimulateFetchDeviceFinished(
 void FakeDevicePairingHandler::SimulateRequestPinCode() {
   DCHECK(!current_pairing_device_id().empty());
   SendRequestPinCode();
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::SimulateRequestPasskey() {
   DCHECK(!current_pairing_device_id().empty());
   SendRequestPasskey();
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::SimulateDisplayPinCode(
     const std::string& pin_code) {
   DCHECK(!current_pairing_device_id().empty());
   SendDisplayPinCode(pin_code);
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::SimulateDisplayPasskey(uint32_t passkey) {
   DCHECK(!current_pairing_device_id().empty());
   SendDisplayPasskey(passkey);
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::SimulateKeysEntered(uint32_t entered) {
   DCHECK(!current_pairing_device_id().empty());
   SendKeysEntered(entered);
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::SimulateConfirmPasskey(uint32_t passkey) {
   DCHECK(!current_pairing_device_id().empty());
   SendConfirmPasskey(passkey);
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::SimulateAuthorizePairing() {
   DCHECK(!current_pairing_device_id().empty());
   SendAuthorizePairing();
+  base::RunLoop().RunUntilIdle();
 }
 
 void FakeDevicePairingHandler::FetchDevice(const std::string& device_address,
@@ -95,7 +102,15 @@ void FakeDevicePairingHandler::OnRequestPinCode(const std::string& pin_code) {}
 
 void FakeDevicePairingHandler::OnRequestPasskey(const std::string& passkey) {}
 
-void FakeDevicePairingHandler::OnConfirmPairing(bool confirmed) {}
+void FakeDevicePairingHandler::OnConfirmPairing(bool confirmed) {
+  last_confirm_ = confirmed;
+  if (confirmed) {
+    FinishCurrentPairingRequest(/*failure_reason=*/absl::nullopt);
+  } else {
+    FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
+  }
+  base::RunLoop().RunUntilIdle();
+}
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

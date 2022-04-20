@@ -113,9 +113,6 @@ void BluetoothHidDetectorImpl::SetInputDevicesStatus(
                  << current_pairing_device_.value()->device_type << " for "
                  << current_pairing_device_.value()->id
                  << " is no longer missing";
-
-  // Invalidate the callback for any pairing being cancelled.
-  weak_ptr_factory_.InvalidateWeakPtrs();
   ClearCurrentPairingState();
 }
 
@@ -217,11 +214,25 @@ void BluetoothHidDetectorImpl::OnDiscoveredDevicesListChanged(
 }
 
 void BluetoothHidDetectorImpl::RequestPinCode(RequestPinCodeCallback callback) {
-  // TODO(crbug/1299099): Implement.
+  DCHECK(current_pairing_device_)
+      << "RequestPinCode() called with no |current_pairing_device_|";
+
+  // RequestPinCode auth is not attributed to HIDs, cancel the pairing.
+  HID_LOG(EVENT) << "RequestPinCode auth required for "
+                 << current_pairing_device_.value()->id
+                 << ", cancelling pairing";
+  ClearCurrentPairingState();
 }
 
 void BluetoothHidDetectorImpl::RequestPasskey(RequestPasskeyCallback callback) {
-  // TODO(crbug/1299099): Implement.
+  DCHECK(current_pairing_device_)
+      << "RequestPasskey() called with no |current_pairing_device_|";
+
+  // RequestPasskey auth is not attributed to HIDs, cancel the pairing.
+  HID_LOG(EVENT) << "RequestPasskey auth required for "
+                 << current_pairing_device_.value()->id
+                 << ", cancelling pairing";
+  ClearCurrentPairingState();
 }
 
 void BluetoothHidDetectorImpl::DisplayPinCode(
@@ -238,12 +249,24 @@ void BluetoothHidDetectorImpl::DisplayPasskey(
 
 void BluetoothHidDetectorImpl::ConfirmPasskey(const std::string& passkey,
                                               ConfirmPasskeyCallback callback) {
-  // TODO(crbug/1299099): Implement.
+  DCHECK(current_pairing_device_)
+      << "ConfirmPasskey() called with no |current_pairing_device_|";
+
+  // ConfirmPasskey auth is not attributed to HIDs, cancel the pairing.
+  HID_LOG(EVENT) << "ConfirmPasskey auth required for "
+                 << current_pairing_device_.value()->id
+                 << ", cancelling pairing";
+  ClearCurrentPairingState();
 }
 
 void BluetoothHidDetectorImpl::AuthorizePairing(
     AuthorizePairingCallback callback) {
-  // TODO(crbug/1299099): Implement.
+  DCHECK(current_pairing_device_)
+      << "AuthorizePairing() called with no |current_pairing_device_|";
+  HID_LOG(EVENT) << "AuthorizePairing auth required for "
+                 << current_pairing_device_.value()->id
+                 << ", automatically authorizing";
+  std::move(callback).Run(/*confirmed=*/true);
 }
 
 bool BluetoothHidDetectorImpl::IsHidTypeMissing(
@@ -330,6 +353,10 @@ void BluetoothHidDetectorImpl::OnPairDevice(
 }
 
 void BluetoothHidDetectorImpl::ClearCurrentPairingState() {
+  // If there is an ongoing pairing, it will be cancelled. Invalidate the
+  // pairing finished callback.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   queued_device_ids_.erase(current_pairing_device_.value()->id);
   current_pairing_device_.reset();
   device_pairing_delegate_receiver_.reset();

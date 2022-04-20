@@ -29,6 +29,8 @@ namespace ash {
 namespace hid_detection {
 namespace {
 
+const uint32_t kTestPasskey = 123456;
+
 class FakeBluetoothHidDetectorDelegate : public BluetoothHidDetector::Delegate {
  public:
   ~FakeBluetoothHidDetectorDelegate() override = default;
@@ -728,6 +730,100 @@ TEST_F(BluetoothHidDetectorImplTest, DetectionStopsStartsDuringPairing) {
             GetBluetoothHidDetectionStatus().current_pairing_device->name);
   EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
             GetBluetoothHidDetectionStatus().current_pairing_device->type);
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AddDevices_UnsupportedAuthorizations) {
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kMouse);
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kTablet);
+
+  std::string device_id3;
+  AddUnpairedDevice(&device_id3, DeviceType::kKeyboardMouseCombo);
+
+  // Begin HID detection. |device_id1| should be attempted to be paired with.
+  FakeBluetoothHidDetectorDelegate* delegate = StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
+  EXPECT_EQ(device_id1,
+            GetBluetoothHidDetectionStatus().current_pairing_device->name);
+  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
+            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+
+  // Simulate "RequestPinCode" authorization required. This should cancel the
+  // pairing. |device_id2| should be attempted to be paired with.
+  GetDevicePairingHandlers()[0]->SimulateRequestPinCode();
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(3u, delegate->num_bluetooth_hid_status_changed_calls());
+  EXPECT_EQ(device_id2,
+            GetBluetoothHidDetectionStatus().current_pairing_device->name);
+  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
+            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+
+  // Simulate "RequestPasskey" authorization required. This should cancel the
+  // pairing. |device_id3| should be attempted to be paired with.
+  GetDevicePairingHandlers()[0]->SimulateRequestPasskey();
+  EXPECT_EQ(device_id3,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(5u, delegate->num_bluetooth_hid_status_changed_calls());
+  EXPECT_EQ(device_id3,
+            GetBluetoothHidDetectionStatus().current_pairing_device->name);
+  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboardPointerCombo,
+            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+
+  // Simulate "ConfirmPasskey" authorization required. This should cancel the
+  // pairing.
+  GetDevicePairingHandlers()[0]->SimulateConfirmPasskey(kTestPasskey);
+  EXPECT_FALSE(GetDevicePairingHandlers()[0]->last_confirm().has_value());
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+  EXPECT_EQ(6u, delegate->num_bluetooth_hid_status_changed_calls());
+  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AddDevice_AuthorizePairingAuth) {
+  std::string device_id;
+  AddUnpairedDevice(&device_id, DeviceType::kKeyboard);
+
+  // Begin HID detection. |device_id| should be attempted to be paired with.
+  FakeBluetoothHidDetectorDelegate* delegate = StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
+  EXPECT_EQ(device_id,
+            GetBluetoothHidDetectionStatus().current_pairing_device->name);
+  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
+            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  EXPECT_FALSE(GetDevicePairingHandlers()[0]->last_confirm());
+
+  // Simulate "AuthorizePairing" authorization required. The pairing should be
+  // automatically authorized. BluetoothHidDetectorImpl won't move onto the next
+  // device because the device has not been registered as connected yet.
+  GetDevicePairingHandlers()[0]->SimulateAuthorizePairing();
+  EXPECT_TRUE(GetDevicePairingHandlers()[0]->last_confirm().has_value());
+  EXPECT_TRUE(GetDevicePairingHandlers()[0]->last_confirm().value());
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+  EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
+  EXPECT_EQ(device_id,
+            GetBluetoothHidDetectionStatus().current_pairing_device->name);
+  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
+            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+
+  // Mock the device being registered as connected.
+  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
+      .pointer_is_missing = true, .keyboard_is_missing = false});
+  EXPECT_TRUE(
+      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+  EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
+  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
 }
 
 }  // namespace hid_detection
