@@ -1169,6 +1169,8 @@ static_library("browser") {
     "policy/messaging_layer/public/report_client.h",
     "policy/messaging_layer/upload/dm_server_upload_service.cc",
     "policy/messaging_layer/upload/dm_server_upload_service.h",
+    "policy/messaging_layer/upload/network_condition_service.cc",
+    "policy/messaging_layer/upload/network_condition_service.h",
     "policy/messaging_layer/upload/record_handler_impl.cc",
     "policy/messaging_layer/upload/record_handler_impl.h",
     "policy/messaging_layer/upload/record_upload_request_builder.cc",
