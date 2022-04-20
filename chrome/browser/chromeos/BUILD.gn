@@ -3761,8 +3761,8 @@ source_set("chromeos") {
     deps += [
       "//ash/services/chromebox_for_meetings/public/cpp",
       "//ash/services/chromebox_for_meetings/public/mojom",
+      "//chromeos/ash/components/dbus/chromebox_for_meetings",
       "//chromeos/components/chromebox_for_meetings/features",
-      "//chromeos/dbus/chromebox_for_meetings",
       "//components/reporting/client:report_queue",
       "//components/reporting/client:report_queue_configuration",
       "//components/reporting/client:report_queue_provider",

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_CFM_OBSERVER_H_
-#define CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_CFM_OBSERVER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CHROMEBOX_FOR_MEETINGS_CFM_OBSERVER_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CHROMEBOX_FOR_MEETINGS_CFM_OBSERVER_H_
 
 #include <string>
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 
 class CfmObserver : public base::CheckedObserver {
@@ -28,11 +28,6 @@ class CfmObserver : public base::CheckedObserver {
 using CfmObserverList = base::ObserverList<CfmObserver>;
 
 }  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::cfm {
-using ::chromeos::cfm::CfmObserver;
-}
-
-#endif  // CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_CFM_OBSERVER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CHROMEBOX_FOR_MEETINGS_CFM_OBSERVER_H_

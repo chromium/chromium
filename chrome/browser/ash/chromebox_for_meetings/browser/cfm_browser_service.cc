@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/chromebox_for_meetings/browser/cfm_memory_details.h"
 #include "chrome/browser/memory_details.h"
-#include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

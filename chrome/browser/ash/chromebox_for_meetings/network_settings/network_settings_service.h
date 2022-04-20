@@ -9,7 +9,7 @@
 
 #include "ash/services/chromebox_for_meetings/public/mojom/cfm_network_settings.mojom.h"
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
-#include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::cfm {

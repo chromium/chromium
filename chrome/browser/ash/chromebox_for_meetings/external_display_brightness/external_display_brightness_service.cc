@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/external_display_brightness/external_display_brightness_service.h"
 
-#include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 

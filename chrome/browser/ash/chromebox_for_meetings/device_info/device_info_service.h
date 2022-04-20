@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 

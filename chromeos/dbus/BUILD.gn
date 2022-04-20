@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -126,9 +125,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/icu",
   ]
-  if (is_cfm) {
-    deps += [ "//chromeos/dbus/chromebox_for_meetings:unit_tests" ]
-  }
   sources = [
     "audio/cras_audio_client_unittest.cc",
     "blocking_method_caller_unittest.cc",

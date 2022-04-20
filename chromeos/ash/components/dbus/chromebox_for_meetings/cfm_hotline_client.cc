@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 
 #include <memory>
 #include <utility>
@@ -11,13 +11,13 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -156,4 +156,4 @@ CfmHotlineClient* CfmHotlineClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

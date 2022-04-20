@@ -7,8 +7,8 @@
 #include "ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/chromebox_for_meetings/logger/reporting_pipeline.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
-#include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::cfm {

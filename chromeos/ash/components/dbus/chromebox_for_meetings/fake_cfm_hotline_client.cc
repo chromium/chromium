@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeCfmHotlineClient::FakeCfmHotlineClient() = default;
 FakeCfmHotlineClient::~FakeCfmHotlineClient() = default;
@@ -45,4 +45,4 @@ bool FakeCfmHotlineClient::FakeEmitSignal(const std::string& interface_name) {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

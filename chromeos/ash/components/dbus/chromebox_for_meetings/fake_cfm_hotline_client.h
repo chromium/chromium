@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_FAKE_CFM_HOTLINE_CLIENT_H_
-#define CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_FAKE_CFM_HOTLINE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CHROMEBOX_FOR_MEETINGS_FAKE_CFM_HOTLINE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CHROMEBOX_FOR_MEETINGS_FAKE_CFM_HOTLINE_CLIENT_H_
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 
-#include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation of CfmHotlineClient. This is currently a no-op fake.
 class COMPONENT_EXPORT(CFM_HOTLINE_CLIENT) FakeCfmHotlineClient
@@ -38,11 +38,6 @@ class COMPONENT_EXPORT(CFM_HOTLINE_CLIENT) FakeCfmHotlineClient
   cfm::CfmObserverList observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::FakeCfmHotlineClient;
-}
-
-#endif  // CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_FAKE_CFM_HOTLINE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CHROMEBOX_FOR_MEETINGS_FAKE_CFM_HOTLINE_CLIENT_H_

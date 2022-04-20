@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 
 #include <algorithm>
 #include <atomic>
@@ -29,7 +29,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 class FakeCfmObserver : public cfm::CfmObserver {
  public:
@@ -184,4 +184,4 @@ TEST_F(CfmHotlineClientTest, EmitMojoServiceRequestedSignal) {
   EXPECT_EQ(observer.request_service_id_, interface_name);
 }
 
-}  // namespace chromeos
+}  // namespace ash

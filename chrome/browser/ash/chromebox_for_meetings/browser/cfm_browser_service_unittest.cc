@@ -22,7 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
