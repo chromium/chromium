@@ -1529,7 +1529,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSearchCommenced" units="searches"
-    expires_after="2022-04-24">
+    expires_after="2022-12-01">
+  <owner>yulunwu@chromium.org</owner>
   <owner>tapted@chromium.org</owner>
   <summary>
     The number of searches that are started in the app list. This is gathered
@@ -1538,9 +1539,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSearchQueryLength" units="characters"
-    expires_after="2022-05-01">
+    expires_after="2022-12-01">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
+  <owner>yulunwu@chromium.org</owner>
   <owner>calamity@chromium.org</owner>
   <summary>
     The length of the app list search query when a result is opened. This is
@@ -1637,9 +1639,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSuggestedChipLaunched" units="indices"
-    expires_after="2022-04-17">
+    expires_after="2022-12-01">
   <owner>newcomer@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
+  <owner>yulunwu@chromium.org</owner>
   <summary>
     The number of times suggested chips are launched at each suggested-apps
     tile. An index i, ranged from 0 to kNumStartPageTiles - 1, is logged each
