@@ -4933,7 +4933,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_OncePerVersion) {
 }
 
 // Tests that settings-inaccessible profile values are removed from every stored
-// profile.
+// profile and that metrics are collected accordingly.
 TEST_F(PersonalDataManagerTest, RemoveInaccessibleProfileValues) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(
@@ -4951,6 +4951,7 @@ TEST_F(PersonalDataManagerTest, RemoveInaccessibleProfileValues) {
   AddProfileToPersonalDataManager(profile0);
   AddProfileToPersonalDataManager(profile1);
 
+  base::HistogramTester histogram_tester;
   personal_data_->personal_data_manager_cleaner_for_testing()
       ->RemoveInaccessibleProfileValuesForTesting();
   WaitForOnPersonalDataChanged();
@@ -4959,6 +4960,14 @@ TEST_F(PersonalDataManagerTest, RemoveInaccessibleProfileValues) {
   // unchanged.
   profile0.SetRawInfo(ADDRESS_HOME_STATE, u"");
   ExpectSameElements({&profile0, &profile1}, personal_data_->GetProfiles());
+
+  // Verify that the metrics have increased.
+  const std::string metric =
+      "Autofill.ProfileImport.InaccessibleFieldsRemoved.";
+  histogram_tester.ExpectUniqueSample(metric + "Total", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      metric + "DE",
+      AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kState, 1);
 }
 
 // Tests that DeleteDisusedAddresses only deletes the addresses that are
