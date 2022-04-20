@@ -44,9 +44,6 @@ namespace ash {
 // 2) If the UI's width is greater than the animation's width, run the exact
 //    same logic (scale the width, then crop the height). The only difference is
 //    the animation will be scaled "up" instead of "down".
-//
-// For portrait mode, the same logic is applied except with the dimensions
-// reversed (scale the height, then crop the width).
 class ASH_EXPORT AmbientAnimationResizer {
  public:
   // Resizes the |animated_image_view| according to the UX requirements

@@ -27,26 +27,14 @@ void AmbientAnimationResizer::Resize(
   destination_bounds.Outset(padding_for_jitter);
   DCHECK(!destination_bounds.IsEmpty());
   gfx::Size animation_resized;
-  if (destination_bounds.width() >= destination_bounds.height()) {
-    // Landscape: Scale the width and crop the height.
-    float width_scale_factor =
-        static_cast<float>(destination_bounds.width()) / animation_size.width();
-    animation_resized.set_width(destination_bounds.width());
-    // TODO(esum): Add metrics for the number of times the new scaled height
-    // is less than the destination height. UX did not intend for this to
-    // happen, so it's worth recording.
-    animation_resized.set_height(
-        base::ClampRound(animation_size.height() * width_scale_factor));
-
-  } else {
-    // Portrait: Scale the height and crop the width.
-    float height_scale_factor =
-        static_cast<float>(destination_bounds.height()) /
-        animation_size.height();
-    animation_resized.set_height(destination_bounds.height());
-    animation_resized.set_width(
-        base::ClampRound(animation_size.width() * height_scale_factor));
-  }
+  float width_scale_factor =
+      static_cast<float>(destination_bounds.width()) / animation_size.width();
+  animation_resized.set_width(destination_bounds.width());
+  // TODO(esum): Add metrics for the number of times the new scaled height
+  // is less than the destination height. UX did not intend for this to
+  // happen, so it's worth recording.
+  animation_resized.set_height(
+      base::ClampRound(animation_size.height() * width_scale_factor));
   animated_image_view.SetVerticalAlignment(
       views::ImageViewBase::Alignment::kCenter);
   animated_image_view.SetHorizontalAlignment(
