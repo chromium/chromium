@@ -3779,8 +3779,7 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
     scoped_shared_image_raster_write_->set_callback(base::BindOnce(
         [](scoped_refptr<ServiceFontManager> font_manager,
            std::vector<SkDiscardableHandleId> handles) {
-          if (!font_manager->is_destroyed())
-            font_manager->Unlock(handles);
+          font_manager->Unlock(handles);
         },
         font_manager_, std::move(locked_handles_)));
     scoped_shared_image_raster_write_.reset();
