@@ -8,10 +8,12 @@
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
+class PasswordsLeakDialogDelegate;
 namespace credential_leak_dialog_factory {
 
 // Factory function for creating CredentialLeakDialogController objects.
 std::unique_ptr<CredentialLeakDialogController> CreateController(
+    PasswordsLeakDialogDelegate* delegate,
     password_manager::metrics_util::LeakDialogType dialog_type);
 
 }  // namespace credential_leak_dialog_factory
