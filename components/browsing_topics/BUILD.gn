@@ -33,6 +33,8 @@ source_set("browsing_topics") {
     "//content/public/common:common",
     "//crypto",
     "//net/base/registry_controlled_domains",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/common",
   ]
 }
@@ -83,6 +85,7 @@ source_set("unit_tests") {
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:test_support",
     "//components/sync_preferences:test_support",
+    "//components/ukm:test_support",
     "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common",

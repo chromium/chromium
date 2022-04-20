@@ -25,8 +25,10 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browsing_topics_test_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
@@ -450,6 +452,89 @@ TEST_F(BrowsingTopicsCalculatorTest, TopTopicsPartiallyPadded) {
                            {Topic(102), {}}});
 
   EXPECT_EQ(result.padded_top_topics_start_index(), 3u);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, CalculationResultUkm_FailedCalculation) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
+
+  CalculateTopics();
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  EXPECT_FALSE(ukm_recorder.GetEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kTopTopic0Name));
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, CalculationResultUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histograms;
+
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries({kHost4, kHost5, kHost6}, begin_time);
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  CalculateTopics();
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kTopTopic0Name,
+      6);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kTopTopic1Name,
+      5);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kTopTopic2Name,
+      4);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kTopTopic3Name,
+      101);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kTopTopic4Name,
+      102);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kTaxonomyVersionName,
+      1);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kModelVersionName,
+      1);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+          kPaddedTopicsStartIndexName,
+      3);
 }
 
 TEST_F(BrowsingTopicsCalculatorTest, TopTopicsAndObservingDomains) {

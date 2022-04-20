@@ -43,6 +43,8 @@ class BrowsingTopicsPageLoadDataTracker
 
   HashedHost hashed_main_frame_host_;
 
+  ukm::SourceId source_id_;
+
   base::flat_set<HashedDomain> observed_hashed_context_domains_;
 
   PAGE_USER_DATA_KEY_DECL();

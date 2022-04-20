@@ -28,14 +28,17 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -417,6 +420,9 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     calculation_finish_waiters_.emplace(profile,
                                         std::make_unique<base::RunLoop>());
 
+    if (!ukm_recorder_)
+      ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
     return std::make_unique<TesterBrowsingTopicsService>(
         profile->GetPath(), privacy_sandbox_settings, history_service,
         site_data_manager, annotations_service,
@@ -436,6 +442,8 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
       calculation_finish_waiters_;
 
   optimization_guide::TestPageContentAnnotator test_page_content_annotator_;
+
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 
   base::CallbackListSubscription subscription_;
 };
@@ -501,6 +509,161 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, BrowsingTopicsStateOnStart) {
             now + base::Days(7) - base::Minutes(1));
   EXPECT_LT(browsing_topics_state().next_scheduled_calculation_time(),
             now + base::Days(7));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, CalculationResultUkm) {
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::kEntryName);
+
+  // The number of entries should equal the number of profiles, which could be
+  // greater than 1 on some platform.
+  EXPECT_EQ(optimization_guide_model_providers_.size(), entries.size());
+
+  for (auto* entry : entries) {
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kTopTopic0Name,
+        6);
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kTopTopic1Name,
+        5);
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kTopTopic2Name,
+        4);
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kTopTopic3Name,
+        3);
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kTopTopic4Name,
+        2);
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kTaxonomyVersionName,
+        1);
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kModelVersionName,
+        1);
+    ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::
+            kPaddedTopicsStartIndexName,
+        5);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, ApiResultUkm) {
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  InvokeTopicsAPI(web_contents());
+
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ukm_recorder_->ExpectEntrySourceHasUrl(entries.back(), main_frame_url);
+
+  const int64_t* topic0_metric = ukm_recorder_->GetEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic0Name);
+  const int64_t* topic1_metric = ukm_recorder_->GetEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic1Name);
+
+  EXPECT_TRUE(topic0_metric);
+  EXPECT_TRUE(topic1_metric);
+
+  EXPECT_TRUE((*topic0_metric == kExpectedTopic1.value() &&
+               *topic1_metric == kExpectedTopic2.value()) ||
+              (*topic0_metric == kExpectedTopic2.value() &&
+               *topic1_metric == kExpectedTopic1.value()));
+
+  ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic0IsTrueTopTopicName,
+      true);
+  ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic0ModelVersionName,
+      2);
+  ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic0TaxonomyVersionName,
+      1);
+
+  ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic1IsTrueTopTopicName,
+      true);
+  ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic1ModelVersionName,
+      2);
+  ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic1TaxonomyVersionName,
+      1);
+
+  EXPECT_FALSE(ukm_recorder_->GetEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kReturnedTopic2Name));
+  EXPECT_FALSE(ukm_recorder_->GetEntryMetric(
+      entries.back(),
+      ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult::
+          kEmptyReasonName));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, PageLoadUkm) {
+  // The test assumes pages gets deleted after navigation, triggering metrics
+  // recording. Disable back/forward cache to ensure that pages don't get
+  // preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  InvokeTopicsAPI(web_contents());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::BrowsingTopics_PageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ukm_recorder_->ExpectEntrySourceHasUrl(entries.back(), main_frame_url);
+
+  ukm_recorder_->ExpectEntryMetric(entries.back(),
+                                   ukm::builders::BrowsingTopics_PageLoad::
+                                       kTopicsRequestingContextDomainsCountName,
+                                   1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, GetTopicsForSiteForDisplay) {

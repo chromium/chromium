@@ -14,11 +14,51 @@
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
 
 namespace {
+
+void RecordCalculatorResultMetrics(
+    const BrowsingTopicsCalculator::CalculatorResultStatus& status,
+    const EpochTopics& epoch_topics) {
+  base::UmaHistogramEnumeration(
+      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus", status);
+
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::BrowsingTopics_EpochTopicsCalculationResult builder(
+      ukm::NoURLSourceId());
+
+  if (status == BrowsingTopicsCalculator::CalculatorResultStatus::kSuccess) {
+    const std::vector<TopicAndDomains>& topics =
+        epoch_topics.top_topics_and_observing_domains();
+
+    if (topics.size() > 0 && topics[0].IsValid())
+      builder.SetTopTopic0(topics[0].topic().value());
+
+    if (topics.size() > 1 && topics[1].IsValid())
+      builder.SetTopTopic1(topics[1].topic().value());
+
+    if (topics.size() > 2 && topics[2].IsValid())
+      builder.SetTopTopic2(topics[2].topic().value());
+
+    if (topics.size() > 3 && topics[3].IsValid())
+      builder.SetTopTopic3(topics[3].topic().value());
+
+    if (topics.size() > 4 && topics[4].IsValid())
+      builder.SetTopTopic4(topics[4].topic().value());
+
+    builder.SetTaxonomyVersion(epoch_topics.taxonomy_version())
+        .SetModelVersion(epoch_topics.model_version())
+        .SetPaddedTopicsStartIndex(
+            epoch_topics.padded_top_topics_start_index());
+  }
+
+  builder.Record(ukm_recorder->Get());
+}
 
 // Derive the mapping from hosts to topics and the mapping from topics to hosts.
 // Precondition: the annotation didn't fail in general (e.g. `ModelInfo` is
@@ -379,8 +419,7 @@ void BrowsingTopicsCalculator::OnCalculateCompleted(
     EpochTopics epoch_topics) {
   DCHECK(status != CalculatorResultStatus::kSuccess || !epoch_topics.empty());
 
-  base::UmaHistogramEnumeration(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus", status);
+  RecordCalculatorResultMetrics(status, epoch_topics);
 
   std::move(calculate_completed_callback_).Run(std::move(epoch_topics));
 
