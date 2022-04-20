@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,6 +32,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/vector_icons.h"
 
 namespace arc {
 
@@ -48,7 +48,8 @@ constexpr int kHeaderMinHeight = 64;
 constexpr int kRowMinHeight = 60;
 
 // Other misc sizes.
-constexpr int kCloseButtonSize = 48;
+constexpr int kCloseButtonSize = 24;
+constexpr int kCloseButtonSide = 12;
 constexpr int kCornerRadius = 16;
 constexpr int kSideInset = 20;
 
@@ -181,13 +182,16 @@ void InputMenuView::Init() {
     game_control_toggle_->SetIsOn(
         display_overlay_controller_->GetTouchInjectorEnable());
 
-    auto close_icon = gfx::CreateVectorIcon(vector_icons::kCloseIcon, color);
+    auto close_icon =
+        gfx::CreateVectorIcon(views::kIcCloseIcon, kCloseButtonSize, color);
     auto close_button = std::make_unique<views::ImageButton>(
         base::BindRepeating(&InputMenuView::CloseMenu, base::Unretained(this)));
     close_button->SetImage(views::Button::STATE_NORMAL, close_icon);
     close_button->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    close_button->SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
+    close_button->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kCloseButtonSide, kCloseButtonSide, kCloseButtonSide,
+                          kCloseButtonSide)));
     close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     // TODO(djacobo): Pick a proper size close button.
