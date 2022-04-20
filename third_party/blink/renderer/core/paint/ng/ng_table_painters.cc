@@ -618,48 +618,39 @@ void NGTableRowPainter::PaintColumnsBackground(
     const PhysicalOffset& row_offset,
     const PhysicalRect& columns_paint_rect,
     const NGTableFragmentData::ColumnGeometries& column_geometries) {
-  wtf_size_t current_column = 0;
-  wtf_size_t smallest_viable_column = 0;
   bool is_horizontal =
       IsHorizontalWritingMode(fragment_.Style().GetWritingMode());
   for (const NGLink& child : fragment_.Children()) {
     if (!child.fragment->IsTableNGCell())
       continue;
-    wtf_size_t cell_column =
+    const wtf_size_t cell_column =
         To<NGPhysicalBoxFragment>(child.fragment.Get())->TableCellColumnIndex();
-    // if cell is in the column, generate column physical rect
-    for (current_column = smallest_viable_column;
-         current_column < column_geometries.size(); ++current_column) {
-      wtf_size_t current_start = column_geometries[current_column].start_column;
-      wtf_size_t current_end = column_geometries[current_column].start_column +
-                               column_geometries[current_column].span - 1;
-      if (cell_column >= current_start && cell_column <= current_end) {
-        PhysicalSize column_size;
-        PhysicalOffset column_offset = columns_paint_rect.offset;
-        PhysicalOffset cell_offset = row_offset + child.offset;
-        if (is_horizontal) {
-          column_size =
-              PhysicalSize(column_geometries[current_column].inline_size,
-                           columns_paint_rect.size.height);
-          column_offset.left += column_geometries[current_column].inline_offset;
-          cell_offset.left -= column_geometries[current_column].inline_offset;
-        } else {
-          column_size =
-              PhysicalSize(columns_paint_rect.size.width,
-                           column_geometries[current_column].inline_size);
-          column_offset.top += column_geometries[current_column].inline_offset;
-          cell_offset.top -= column_geometries[current_column].inline_offset;
-        }
-        NGTableCellPainter(To<NGPhysicalBoxFragment>(*child.fragment))
-            .PaintBackgroundForTablePart(
-                paint_info,
-                *column_geometries[current_column].node.GetLayoutBox(),
-                PhysicalRect(column_offset, column_size), cell_offset);
+    for (const auto& column_geometry : column_geometries) {
+      wtf_size_t current_start = column_geometry.start_column;
+      wtf_size_t current_end =
+          column_geometry.start_column + column_geometry.span - 1;
+      if (cell_column < current_start || cell_column > current_end)
+        continue;
+
+      PhysicalSize column_size;
+      PhysicalOffset column_offset = columns_paint_rect.offset;
+      PhysicalOffset cell_offset = row_offset + child.offset;
+      if (is_horizontal) {
+        column_size = {column_geometry.inline_size,
+                       columns_paint_rect.size.height};
+        column_offset.left += column_geometry.inline_offset;
+        cell_offset.left -= column_geometry.inline_offset;
+      } else {
+        column_size = {columns_paint_rect.size.width,
+                       column_geometry.inline_size};
+        column_offset.top += column_geometry.inline_offset;
+        cell_offset.top -= column_geometry.inline_offset;
       }
+      NGTableCellPainter(To<NGPhysicalBoxFragment>(*child.fragment))
+          .PaintBackgroundForTablePart(
+              paint_info, *column_geometry.node.GetLayoutBox(),
+              PhysicalRect(column_offset, column_size), cell_offset);
     }
-    // Optimization: no more columns to paint.
-    if (smallest_viable_column == column_geometries.size())
-      break;
   }
 }
 
