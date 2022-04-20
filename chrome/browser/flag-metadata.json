@@ -530,6 +530,16 @@
     "expiry_milestone": 103
   },
   {
+    "name": "autofill-upstream-allow-additional-email-domains",
+    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
+    "name": "autofill-upstream-allow-all-email-domains",
+    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
     "name": "autofill-use-consistent-popup-settings-icons",
     "owners": [ "koerber", "mamir" ],
     "expiry_milestone": 103

@@ -4,7 +4,9 @@
 
 #include "components/autofill/core/browser/autofill_experiments.h"
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -55,6 +57,16 @@ void LogCardUploadEnabled(LogManager* log_manager) {
                        << LogMessage::kCreditCardUploadEnabled << CTag{};
   }
 }
+
+// Given an email account domain, returns the contents before the first dot.
+std::string GetFirstSegmentFromDomain(const std::string& domain) {
+  size_t separator_pos = domain.find('.');
+  if (separator_pos != domain.npos)
+    return domain.substr(0, separator_pos);
+
+  NOTREACHED() << "'.' not found in email domain: " << domain;
+  return std::string();
+}
 }  // namespace
 
 // The list of countries for which the credit card upload save feature is fully
@@ -66,6 +78,31 @@ const char* const kAutofillUpstreamLaunchedCountries[] = {
     "IT", "JP", "KY", "LC", "LT", "LU", "LV", "ME", "MK", "MO", "MQ", "MT",
     "NC", "NL", "NO", "NZ", "PA", "PL", "PR", "PT", "RE", "RO", "RU", "SE",
     "SG", "SI", "SK", "TH", "TR", "TT", "TW", "UA", "US", "VI", "VN", "ZA"};
+
+// The list of supported additional email domains for credit card upload if the
+// AutofillUpstreamAllowAdditionalEmailDomains flag is enabled. Specifically
+// contains only the first part of the domain, so example.com, example.co.uk,
+// example.fr, etc., are all allowed for "example".
+const char* const kSupportedAdditionalDomains[] = {"aol",
+                                                   "att",
+                                                   "btinternet",
+                                                   "comcast",
+                                                   "gmx",
+                                                   "hotmail",
+                                                   "icloud",
+                                                   /*libero.it*/ "libero",
+                                                   "live",
+                                                   "me",
+                                                   "msn",
+                                                   /*orange.fr*/ "orange",
+                                                   "outlook",
+                                                   "sbcglobal",
+                                                   /*seznam.cz*/ "seznam",
+                                                   "sky",
+                                                   "verizon",
+                                                   /*wp.pl*/ "wp",
+                                                   "yahoo",
+                                                   "ymail"};
 
 bool IsCreditCardUploadEnabled(const PrefService* pref_service,
                                const syncer::SyncService* sync_service,
@@ -153,7 +190,7 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
     return false;
   }
 
-  // Check that the user is logged into a supported domain.
+  // Check that the user's account email address is known.
   if (user_email.empty()) {
     AutofillMetrics::LogCardUploadEnabledMetric(
         AutofillMetrics::CardUploadEnabledMetric::EMAIL_EMPTY, sync_state);
@@ -161,17 +198,30 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
     return false;
   }
 
+  // Check that the user is logged into a supported domain.
   std::string domain = gaia::ExtractDomainName(user_email);
-  // If the "allow all email domains" flag is off, restrict credit card upload
-  // only to Google Accounts with @googlemail, @gmail, @google, or @chromium
-  // domains.
+  std::string domain_first_segment = GetFirstSegmentFromDomain(domain);
+  // If the flag to allow all email domains is enabled, any domain is accepted.
+  bool all_domains_supported = base::FeatureList::IsEnabled(
+      features::kAutofillUpstreamAllowAllEmailDomains);
+  // If the flag to allow select email domains is enabled, domains from popular
+  // account providers are accepted.
+  bool using_supported_additional_domain =
+      base::FeatureList::IsEnabled(
+          features::kAutofillUpstreamAllowAdditionalEmailDomains) &&
+      std::find(std::begin(kSupportedAdditionalDomains),
+                std::end(kSupportedAdditionalDomains),
+                domain_first_segment) != std::end(kSupportedAdditionalDomains);
+  // Otherwise, restrict credit card upload only to Google Accounts with
+  // @googlemail, @gmail, @google, or @chromium domains.
   // example.com is on the list because ChromeOS tests rely on using this. That
   // should be fine, since example.com is an IANA reserved domain.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUpstreamAllowAllEmailDomains) &&
-      !(domain == "googlemail.com" || domain == "gmail.com" ||
-        domain == "google.com" || domain == "chromium.org" ||
-        domain == "example.com")) {
+  bool using_google_domain = domain == "googlemail.com" ||
+                             domain == "gmail.com" || domain == "google.com" ||
+                             domain == "chromium.org" ||
+                             domain == "example.com";
+  if (!all_domains_supported && !using_supported_additional_domain &&
+      !using_google_domain) {
     AutofillMetrics::LogCardUploadEnabledMetric(
         AutofillMetrics::CardUploadEnabledMetric::EMAIL_DOMAIN_NOT_SUPPORTED,
         sync_state);

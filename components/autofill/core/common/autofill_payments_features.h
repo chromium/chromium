@@ -47,6 +47,7 @@ extern const base::Feature kAutofillShowUnmaskedCachedCardInManualFillingView;
 extern const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence;
 extern const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm;
 extern const base::Feature kAutofillUpstream;
+extern const base::Feature kAutofillUpstreamAllowAdditionalEmailDomains;
 extern const base::Feature kAutofillUpstreamAllowAllEmailDomains;
 
 // Return whether a [No thanks] button and new messaging is shown in the save

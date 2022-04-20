@@ -235,7 +235,8 @@ TEST_F(
       AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
 }
 
-TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UserEmailWithGoogleDomain) {
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_UserEmailWithGoogleDomain_IsAllowed) {
   EXPECT_TRUE(IsCreditCardUploadEnabled(
       "john.smith@gmail.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -257,18 +258,45 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UserEmailWithGoogleDomain) {
 }
 
 TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_UserEmailWithNonGoogleDomain) {
+       IsCardUploadEnabled_UserEmailWithSupportedAdditionalDomain_IsAllowed) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillUpstreamAllowAdditionalEmailDomains);
+  EXPECT_TRUE(IsCreditCardUploadEnabled(
+      "cool.user@hotmail.com",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  EXPECT_TRUE(IsCreditCardUploadEnabled(
+      "cool.british.user@hotmail.co.uk",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  EXPECT_TRUE(IsCreditCardUploadEnabled(
+      "telecom.user@verizon.net",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  EXPECT_TRUE(IsCreditCardUploadEnabled(
+      "youve.got.mail@aol.com",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled",
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+}
+
+TEST_F(
+    AutofillExperimentsTest,
+    IsCardUploadEnabled_UserEmailWithSupportedAdditionalDomain_NotAllowedIfFlagOff) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAutofillUpstreamAllowAdditionalEmailDomains);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       "cool.user@hotmail.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "john.smith@johnsmith.com",
+      "cool.british.user@hotmail.co.uk",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "fake.googler@google.net",
+      "telecom.user@verizon.net",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "fake.committer@chromium.com",
+      "youve.got.mail@aol.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
@@ -279,14 +307,14 @@ TEST_F(AutofillExperimentsTest,
 }
 
 TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_UserEmailWithNonGoogleDomainIfExperimentEnabled) {
+       IsCardUploadEnabled_UserEmailWithOtherDomain_IsAllowed) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillUpstreamAllowAllEmailDomains);
   EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "cool.user@hotmail.com",
+      "grad.student@university.edu",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "john.smith@johnsmith.com",
+      "some.ceo@bigcorporation.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   EXPECT_TRUE(IsCreditCardUploadEnabled(
       "fake.googler@google.net",
@@ -300,6 +328,32 @@ TEST_F(AutofillExperimentsTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
       AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+}
+
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_UserEmailWithOtherDomain_NotAllowedIfFlagOff) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::
+                                kAutofillUpstreamAllowAdditionalEmailDomains},
+      /*disabled_features=*/{features::kAutofillUpstreamAllowAllEmailDomains});
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      "grad.student@university.edu",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      "some.ceo@bigcorporation.com",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      "fake.googler@google.net",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      "fake.committer@chromium.com",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled",
+      AutofillMetrics::CardUploadEnabledMetric::EMAIL_DOMAIN_NOT_SUPPORTED, 4);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      AutofillMetrics::CardUploadEnabledMetric::EMAIL_DOMAIN_NOT_SUPPORTED, 4);
 }
 
 }  // namespace autofill

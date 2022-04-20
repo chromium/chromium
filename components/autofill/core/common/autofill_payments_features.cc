@@ -195,6 +195,15 @@ const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm{
 const base::Feature kAutofillUpstream{"AutofillUpstream",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, Chrome allows credit card upload to Google Payments if the
+// user's email domain is from a common email provider (thus unlikely to be an
+// enterprise or education user).
+const base::Feature kAutofillUpstreamAllowAdditionalEmailDomains{
+    "AutofillUpstreamAllowAdditionalEmailDomains",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, Chrome allows credit card upload to Google Payments, no matter
+// the user's email domain.
 const base::Feature kAutofillUpstreamAllowAllEmailDomains{
     "AutofillUpstreamAllowAllEmailDomains", base::FEATURE_DISABLED_BY_DEFAULT};
 
