@@ -5095,24 +5095,6 @@
             ]
         }
     ],
-    "OmniboxPrerenderDogfood": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledPrerenderDUI_20220414_Dogfood",
-                    "enable_features": [
-                        "OmniboxTriggerForPrerender2"
-                    ],
-                    "disable_features": [
-                        "OmniboxTriggerForNoStatePrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxUpdatedConnectionSecurityIndicatorsIPH": [
         {
             "platforms": [
