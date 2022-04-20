@@ -299,7 +299,6 @@ class PropertyTreeManager {
                              const EffectPaintPropertyNode&,
                              const ClipPaintPropertyNode&,
                              const TransformPaintPropertyNode&);
-  void SetCurrentEffectRenderSurfaceReason(cc::RenderSurfaceReason);
 
   // Should only be called from EnsureCompositorTransformNode as part of
   // creating the associated scroll offset transform node.

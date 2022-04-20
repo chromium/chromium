@@ -342,6 +342,16 @@ bool TransformsMayBe2dAxisMisaligned(const TransformPaintPropertyNode& a,
   return false;
 }
 
+// A reason is conditional if it can be omitted if it controls less than two
+// composited layers or render surfaces. We set the reason on an effect node
+// when updating the cc effect property tree, and remove unnecessary ones in
+// UpdateConditionalRenderSurfaceReasons() after layerization.
+static bool IsConditionalRenderSurfaceReason(cc::RenderSurfaceReason reason) {
+  return reason == cc::RenderSurfaceReason::kBlendModeDstIn ||
+         reason == cc::RenderSurfaceReason::kOpacity ||
+         reason == cc::RenderSurfaceReason::kOpacityAnimation;
+}
+
 void PropertyTreeManager::SetCurrentEffectState(
     const cc::EffectNode& cc_effect_node,
     CcEffectType effect_type,
@@ -356,7 +366,8 @@ void PropertyTreeManager::SetCurrentEffectState(
   current_.clip = &clip;
   current_.transform = &transform;
 
-  if (cc_effect_node.HasRenderSurface()) {
+  if (cc_effect_node.HasRenderSurface() &&
+      !IsConditionalRenderSurfaceReason(cc_effect_node.render_surface_reason)) {
     current_.may_be_2d_axis_misaligned_to_render_surface =
         EffectState::kAligned;
     current_.contained_by_non_render_surface_synthetic_rounded_clip = false;
@@ -370,14 +381,6 @@ void PropertyTreeManager::SetCurrentEffectState(
     current_.contained_by_non_render_surface_synthetic_rounded_clip |=
         (effect_type & CcEffectType::kSyntheticForNonTrivialClip);
   }
-}
-
-// TODO(crbug.com/504464): Remove this when move render surface decision logic
-// into cc compositor thread.
-void PropertyTreeManager::SetCurrentEffectRenderSurfaceReason(
-    cc::RenderSurfaceReason reason) {
-  auto* effect = effect_tree_.Node(current_.effect_id);
-  effect->render_surface_reason = reason;
 }
 
 void PropertyTreeManager::SetOverscrollTransformNodeId(const int id) {
@@ -887,16 +890,6 @@ bool PropertyTreeManager::SupportsShaderBasedRoundedCorner(
   return true;
 }
 
-// A reason is conditional if it can be omitted if it controls less than two
-// composited layers or render surfaces. We set the reason on an effect node
-// when updating the cc effect property tree, and remove unnecessary ones in
-// UpdateConditionalRenderSurfaceReasons() after layerirzation.
-static bool IsConditionalRenderSurfaceReason(cc::RenderSurfaceReason reason) {
-  return reason == cc::RenderSurfaceReason::kBlendModeDstIn ||
-         reason == cc::RenderSurfaceReason::kOpacity ||
-         reason == cc::RenderSurfaceReason::kOpacityAnimation;
-}
-
 int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     const ClipPaintPropertyNode& target_clip,
     const EffectPaintPropertyNode* next_effect) {
@@ -911,8 +904,8 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
 
     // An effect node can't omit render surface if it has child with backdrop
     // effect, in order to define the scope of the backdrop.
-    SetCurrentEffectRenderSurfaceReason(
-        cc::RenderSurfaceReason::kBackdropScope);
+    effect_tree_.Node(current_.effect_id)->render_surface_reason =
+        cc::RenderSurfaceReason::kBackdropScope;
     should_realize_backdrop_effect = true;
     backdrop_effect_clip_id = EnsureCompositorClipNode(target_clip);
   } else {
