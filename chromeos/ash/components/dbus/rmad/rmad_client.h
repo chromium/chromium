@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
-#define CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_RMAD_RMAD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_RMAD_RMAD_CLIENT_H_
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/dbus/rmad/rmad.pb.h"
 
 namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // RmadClient is responsible for receiving D-bus signals from the RmaDaemon
 // service. The RmaDaemon is the underlying service that informs us whenever
@@ -120,11 +120,6 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   virtual ~RmadClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::RmadClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_RMAD_RMAD_CLIENT_H_

@@ -14,7 +14,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/rmad/rmad.pb.h"
+#include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

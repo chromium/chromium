@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 
 #include <utility>
 
@@ -14,15 +14,15 @@
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/rmad/fake_rmad_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 RmadClient* g_instance = nullptr;
@@ -563,4 +563,4 @@ void RmadClient::InitializeFake() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

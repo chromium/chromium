@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/rmad/fake_rmad_client.h"
+#include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
 
 #include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char rsu_challenge_code[] =
@@ -434,4 +434,4 @@ size_t FakeRmadClient::NumStates() const {
   return state_replies_.size();
 }
 
-}  // namespace chromeos
+}  // namespace ash

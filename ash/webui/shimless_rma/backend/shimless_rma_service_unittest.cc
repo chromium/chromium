@@ -16,9 +16,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
+#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/rmad/fake_rmad_client.h"
-#include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
@@ -37,7 +37,6 @@ namespace shimless_rma {
 namespace {
 
 using chromeos::DBusMethodCallback;
-using chromeos::FakeRmadClient;
 
 constexpr char kDefaultWifiGuid[] = "WiFi";
 
@@ -45,8 +44,7 @@ class FakeRmadClientForTest : public FakeRmadClient {
  public:
   static void Initialize() {
     // The this pointer is stored in rmad_client.cc:g_instance and deleted when
-    // chromeos::RmadClient::Shutdown() is called in
-    // ShimlessRmaServiceTest::TearDown()
+    // RmadClient::Shutdown() is called in ShimlessRmaServiceTest::TearDown()
     new FakeRmadClientForTest();
   }
 
@@ -95,7 +93,7 @@ class ShimlessRmaServiceTest : public testing::Test {
 
     SetupFakeNetwork();
     FakeRmadClientForTest::Initialize();
-    rmad_client_ = chromeos::RmadClient::Get();
+    rmad_client_ = RmadClient::Get();
     // ShimlessRmaService has to be created after RmadClient or there will be a
     // null ptr dereference in the service constructor.
     shimless_rma_provider_ = std::make_unique<ShimlessRmaService>(
@@ -110,7 +108,7 @@ class ShimlessRmaServiceTest : public testing::Test {
     // ShimlessRmaService has to be shutdown before RmadClient or there will be
     // a null ptr dereference in the service destructor.
     shimless_rma_provider_.reset();
-    chromeos::RmadClient::Shutdown();
+    RmadClient::Shutdown();
     NetworkHandler::Shutdown();
     cros_network_config_test_helper_.reset();
     chromeos::LoginState::Shutdown();
@@ -262,7 +260,7 @@ class ShimlessRmaServiceTest : public testing::Test {
   }
 
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
-  chromeos::RmadClient* rmad_client_ = nullptr;  // Unowned convenience pointer.
+  RmadClient* rmad_client_ = nullptr;  // Unowned convenience pointer.
 
  private:
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>

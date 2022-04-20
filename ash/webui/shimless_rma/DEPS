@@ -1,7 +1,7 @@
 include_rules = [
   "+chromeos/dbus",
   "+chromeos/dbus/power",
-  "+chromeos/dbus/rmad",
+  "+chromeos/ash/components/dbus/rmad",
   "+chromeos/dbus/update_engine",
   "+chromeos/dbus/util",
   "+chromeos/login/login_state",

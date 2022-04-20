@@ -6,7 +6,7 @@
 #define ASH_WEBUI_SHIMLESS_RMA_MOJOM_SHIMLESS_RMA_MOJOM_TRAITS_H_
 
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
-#include "chromeos/dbus/rmad/rmad.pb.h"
+#include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"

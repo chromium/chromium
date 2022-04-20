@@ -12,8 +12,8 @@
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/containers/flat_set.h"
-#include "chromeos/dbus/rmad/rmad.pb.h"
-#include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
+#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,7 +27,7 @@ namespace shimless_rma {
 class ShimlessRmaDelegate;
 
 class ShimlessRmaService : public mojom::ShimlessRmaService,
-                           public chromeos::RmadClient::Observer {
+                           public RmadClient::Observer {
  public:
   ShimlessRmaService(
       std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate);

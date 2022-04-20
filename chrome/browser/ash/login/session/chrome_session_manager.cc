@@ -52,7 +52,7 @@
 #include "chrome/browser/ui/webui/chromeos/shimless_rma_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -251,7 +251,7 @@ void ChromeSessionManager::Initialize(
 
     // If the RMA state is detected later, OnRmaIsRequiredResponse() is invoked
     // to append the kLaunchRma switch and restart Chrome in RMA mode.
-    chromeos::RmadClient::Get()->SetRmaRequiredCallbackForSessionManager(
+    RmadClient::Get()->SetRmaRequiredCallbackForSessionManager(
         base::BindOnce(&OnRmaIsRequiredResponse));
   }
 

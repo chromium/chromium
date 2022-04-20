@@ -18,9 +18,9 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
+#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/rmad/rmad.pb.h"
-#include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -97,7 +97,7 @@ chromeos::network_config::mojom::NetworkFilterPtr GetConfiguredWiFiFilter() {
 ShimlessRmaService::ShimlessRmaService(
     std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate)
     : shimless_rma_delegate_(std::move(shimless_rma_delegate)) {
-  chromeos::RmadClient::Get()->AddObserver(this);
+  RmadClient::Get()->AddObserver(this);
 
   network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
@@ -112,11 +112,11 @@ ShimlessRmaService::ShimlessRmaService(
 }
 
 ShimlessRmaService::~ShimlessRmaService() {
-  chromeos::RmadClient::Get()->RemoveObserver(this);
+  RmadClient::Get()->RemoveObserver(this);
 }
 
 void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
-  chromeos::RmadClient::Get()->GetCurrentState(base::BindOnce(
+  RmadClient::Get()->GetCurrentState(base::BindOnce(
       &ShimlessRmaService::OnGetStateResponse<GetCurrentStateCallback>,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -124,13 +124,13 @@ void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
 // TODO(gavindodd): Handle transition back from wifi connect and os update pages
 void ShimlessRmaService::TransitionPreviousState(
     TransitionPreviousStateCallback callback) {
-  chromeos::RmadClient::Get()->TransitionPreviousState(base::BindOnce(
+  RmadClient::Get()->TransitionPreviousState(base::BindOnce(
       &ShimlessRmaService::OnGetStateResponse<TransitionPreviousStateCallback>,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
-  chromeos::RmadClient::Get()->AbortRma(base::BindOnce(
+  RmadClient::Get()->AbortRma(base::BindOnce(
       &ShimlessRmaService::OnAbortRmaResponse, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), /*reboot=*/false));
 }
@@ -142,7 +142,7 @@ void ShimlessRmaService::CriticalErrorExitToLogin(
     std::move(callback).Run(rmad::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  chromeos::RmadClient::Get()->AbortRma(base::BindOnce(
+  RmadClient::Get()->AbortRma(base::BindOnce(
       &ShimlessRmaService::OnAbortRmaResponse, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), /*reboot=*/false));
 }
@@ -154,7 +154,7 @@ void ShimlessRmaService::CriticalErrorReboot(
     std::move(callback).Run(rmad::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  chromeos::RmadClient::Get()->AbortRma(base::BindOnce(
+  RmadClient::Get()->AbortRma(base::BindOnce(
       &ShimlessRmaService::OnAbortRmaResponse, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), /*reboot=*/true));
 }
@@ -927,9 +927,9 @@ void ShimlessRmaService::GetLog(GetLogCallback callback) {
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  chromeos::RmadClient::Get()->GetLog(
-      base::BindOnce(&ShimlessRmaService::OnGetLog,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  RmadClient::Get()->GetLog(base::BindOnce(&ShimlessRmaService::OnGetLog,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           std::move(callback)));
 }
 
 void ShimlessRmaService::OnGetLog(GetLogCallback callback,
@@ -1171,7 +1171,7 @@ void ShimlessRmaService::BindInterface(
 // RmadClient response handlers.
 template <class Callback>
 void ShimlessRmaService::TransitionNextStateGeneric(Callback callback) {
-  chromeos::RmadClient::Get()->TransitionNextState(
+  RmadClient::Get()->TransitionNextState(
       state_proto_,
       base::BindOnce(&ShimlessRmaService::OnGetStateResponse<Callback>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

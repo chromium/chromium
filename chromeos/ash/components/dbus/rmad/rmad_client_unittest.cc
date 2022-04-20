@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -821,4 +821,4 @@ TEST_F(RmadClientTest, RoFirmwareUpdateProgressBadParameterFails) {
 
 }  // namespace
 
-}  // namespace chromeos
+}  // namespace ash

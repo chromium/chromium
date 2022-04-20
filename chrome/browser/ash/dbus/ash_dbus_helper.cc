@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
@@ -50,7 +51,6 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
-#include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
@@ -175,7 +175,7 @@ void InitializeFeatureListDependentDBus() {
   }
 #endif
   if (ash::features::IsShimlessRMAFlowEnabled()) {
-    InitializeDBusClient<chromeos::RmadClient>(bus);
+    InitializeDBusClient<RmadClient>(bus);
   }
   InitializeDBusClient<chromeos::WilcoDtcSupportdClient>(bus);
 
@@ -216,7 +216,7 @@ void ShutdownDBus() {
   chromeos::SeneschalClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();
   if (ash::features::IsShimlessRMAFlowEnabled()) {
-    chromeos::RmadClient::Shutdown();
+    RmadClient::Shutdown();
   }
   chromeos::PowerManagerClient::Shutdown();
   chromeos::PermissionBrokerClient::Shutdown();

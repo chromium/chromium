@@ -107,8 +107,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/oobe_config:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
-    "//chromeos/dbus/rmad:rmad_proto",
-    "//chromeos/dbus/rmad:test_support",
     "//chromeos/dbus/shill:test_support",
     "//chromeos/dbus/system_clock:unit_tests",
     "//chromeos/dbus/tpm_manager",
