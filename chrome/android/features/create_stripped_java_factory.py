@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -141,8 +141,8 @@ def _FormatType(type_node):
     if not type_node.arguments:
       return type_node.name
     formatted_args = (_FormatType(arg) for arg in type_node.arguments)
-    return '{name}<{arguments}>'.format(
-      name=type_node.name, arguments=','.join(formatted_args))
+    return '{name}<{arguments}>'.format(name=type_node.name,
+                                        arguments=','.join(formatted_args))
   if isinstance(type_node, javalang.tree.TypeArgument):
     # TODO: Support pattern_type if someone wants to use it.
     return _FormatType(type_node.type)
@@ -150,6 +150,17 @@ def _FormatType(type_node):
     # TODO: Support dimensions if someone wants to use it.
     return type_node.name
   assert False, 'Type node {node} cannot be formatted.'.format(node=type_node)
+
+
+def _FormatMethodModifiers(method_modifiers):
+  # Found from:
+  # https://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.4.3
+  modifiers_in_order = ('public', 'protected', 'private', 'abstract', 'static',
+                        'final', 'synchronized', 'native', 'strictfp')
+  unknown_modifiers = method_modifiers - set(modifiers_in_order)
+  assert len(unknown_modifiers) == 0, (
+      f'Unknown method modifiers: {unknown_modifiers}')
+  return ' '.join([m for m in modifiers_in_order if m in method_modifiers])
 
 
 def _FormatMethod(method):
@@ -162,7 +173,7 @@ def _FormatMethod(method):
     params.append(_PARAM_TEMPLATE.format(**param_dict))
   return_type = _FormatType(method.return_type)
   method_dict = {
-      'MODIFIERS': ' '.join(method.modifiers),
+      'MODIFIERS': _FormatMethodModifiers(method.modifiers),
       'RETURN_TYPE': return_type,
       'NAME': method.name,
       'PARAMS': ', '.join(params),
