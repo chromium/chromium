@@ -120,6 +120,9 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // extensions::ExtensionHostObserver:
   void OnExtensionHostShouldClose(extensions::ExtensionHost* host) override;
 
+  // Returns the most recently constructed popup. For testing only.
+  static ExtensionPopup* last_popup_for_testing();
+
  private:
   class ScopedDevToolsAgentHostObservation;
 
