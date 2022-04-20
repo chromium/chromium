@@ -92,11 +92,18 @@ public final class ReadingListUtils {
         // remove the regular bookmark first so the save flow is shown.
         List<BookmarkId> bookmarkIds = new ArrayList<>();
         bookmarkIds.add(bookmarkId);
-        ReadingListUtils.typeSwapBookmarksIfNecessary(bookmarkBridge, bookmarkIds,
-                new ArrayList<>(), bookmarkBridge.getReadingListFolder());
-        if (sSkipShowSaveFlowForTesting) return true;
+        List<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
+        typeSwapBookmarksIfNecessary(bookmarkBridge, bookmarkIds, typeSwappedBookmarks,
+                bookmarkBridge.getReadingListFolder());
+
+        assert typeSwappedBookmarks.size() == 1;
+        if (typeSwappedBookmarks.size() != 1) return false;
+
+        BookmarkId newBookmark = typeSwappedBookmarks.get(0);
+        if (Boolean.TRUE.equals(sSkipShowSaveFlowForTesting)) return true;
         BookmarkUtils.showSaveFlow(activity, bottomsheetController,
-                /*fromExplicitTrackUi=*/false, bookmarkIds.get(0), /*wasBookmarkMoved=*/true);
+                /*fromExplicitTrackUi=*/false, newBookmark,
+                /*wasBookmarkMoved=*/true);
         return true;
     }
 
