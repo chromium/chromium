@@ -42,10 +42,15 @@ namespace {
 
 // Holds data used to create deterministic PSM network request/response protos.
 struct PsmTestData {
-  psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase test_case;
-  std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
-  FresnelPsmRlweOprfResponse fresnel_oprf_response;
-  FresnelPsmRlweQueryResponse fresnel_query_response;
+  // Holds the response bodies used to test the case where the plaintext id is
+  // a member of the PSM dataset.
+  psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase
+      member_test_case;
+
+  // Holds the response bodies used to test the case where the plaintext id is
+  // not a member of the PSM dataset.
+  psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase
+      nonmember_test_case;
 };
 
 PsmTestData* GetPsmTestData() {
@@ -59,6 +64,8 @@ PsmTestData* GetPsmTestData() {
 // URLs for the different network requests being performed.
 const char kTestFresnelBaseUrl[] = "https://dummy.googleapis.com";
 const char kPsmImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
+const char kPsmOprfRequestEndpoint[] = "/v1/fresnel/psmRlweOprf";
+const char kPsmQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
 
 // Create fake secrets used by the |DeviceActivityClient|.
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
@@ -177,14 +184,19 @@ class FakeMonthlyUseCaseImpl : public MonthlyUseCaseImpl {
   ~FakeMonthlyUseCaseImpl() override = default;
 };
 
+// TODO(crbug/1317652): Refactor checking if current use case local pref is
+// unset. We may also want to abstract the psm network responses for the unit
+// tests.
 class DeviceActivityClientTest : public testing::Test {
  public:
   DeviceActivityClientTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    // Start base::Time::Now() at least after epoch time by forwarding 365 days.
-    // DeviceActivityClient assumes epoch as a date in the past.
     // Remote env. runs unit tests assuming base::Time::Now() is epoch.
-    task_environment_.FastForwardBy(base::Days(365));
+    // Forward current time to 2022-01-01 00:00:00.
+    base::Time new_current_ts;
+    EXPECT_TRUE(
+        base::Time::FromUTCString("2022-01-01 00:00:00", &new_current_ts));
+    task_environment_.FastForwardBy(new_current_ts - base::Time::Now());
     task_environment_.RunUntilIdle();
   }
   DeviceActivityClientTest(const DeviceActivityClientTest&) = delete;
@@ -196,20 +208,6 @@ class DeviceActivityClientTest : public testing::Test {
     // Initialize |psm_test_case_| which is used to generate deterministic psm
     // protos.
     CreatePsmTestCase();
-
-    PsmTestData* psm_test_data = GetPsmTestData();
-
-    // Return well formed plaintext ids used in faking PSM network requests.
-    std::vector<psm_rlwe::RlwePlaintextId> fake_plaintext_ids{
-        psm_test_data->test_case.plaintext_id()};
-    psm_test_data->plaintext_ids = std::move(fake_plaintext_ids);
-
-    // Initialize well formed Oprf and Query response body used to
-    // deterministically fake PSM network responses.
-    *psm_test_data->fresnel_oprf_response.mutable_rlwe_oprf_response() =
-        psm_test_data->test_case.oprf_response();
-    *psm_test_data->fresnel_query_response.mutable_rlwe_query_response() =
-        psm_test_data->test_case.query_response();
   }
 
   static void CreatePsmTestCase() {
@@ -234,16 +232,49 @@ class DeviceActivityClientTest : public testing::Test {
 
     // Sets |psm_test_case_| to have one of the fake PSM request/response
     // protos.
-    GetPsmTestData()->test_case = test_data.test_cases(0);
+    //
+    // Test case 0 contains a response where check membership returns true.
+    // Test case 5 contains a response where check membership returns false.
+    GetPsmTestData()->member_test_case = test_data.test_cases(0);
+    GetPsmTestData()->nonmember_test_case = test_data.test_cases(5);
+  }
+
+  std::vector<psm_rlwe::RlwePlaintextId> GetPlaintextIds(
+      const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+          test_case) {
+    // Return well formed plaintext ids used in faking PSM network requests.
+    return {test_case.plaintext_id()};
+  }
+
+  // Initialize well formed OPRF response body used to deterministically fake
+  // PSM network responses.
+  std::string GetFresnelOprfResponse(
+      const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+          test_case) {
+    FresnelPsmRlweOprfResponse psm_oprf_response;
+    *psm_oprf_response.mutable_rlwe_oprf_response() = test_case.oprf_response();
+    return psm_oprf_response.SerializeAsString();
+  }
+
+  // Initialize well formed Query response body used to deterministically fake
+  // PSM network responses.
+  std::string GetFresnelQueryResponse(
+      const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+          test_case) {
+    FresnelPsmRlweQueryResponse psm_query_response;
+    *psm_query_response.mutable_rlwe_query_response() =
+        test_case.query_response();
+    return psm_query_response.SerializeAsString();
   }
 
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDeviceActiveClientMonthlyCheckIn},
-        /*disabled_features*/ {
-            features::kDeviceActiveClientDailyCheckMembership,
-            features::kDeviceActiveClientMonthlyCheckMembership});
+        /*enabled_features=*/{features::kDeviceActiveClientMonthlyCheckIn,
+                              features::kDeviceActiveClientDailyCheckMembership,
+                              features::
+                                  kDeviceActiveClientMonthlyCheckMembership},
+        /*disabled_features*/ {});
 
     // Initialize pointer to our fake |PsmTestData| object.
     psm_test_data_ = GetPsmTestData();
@@ -272,10 +303,11 @@ class DeviceActivityClientTest : public testing::Test {
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
         network_state_test_helper_->network_state_handler(),
         test_shared_loader_factory_,
+        // |FakePsmDelegate| can use any test case parameters.
         std::make_unique<FakePsmDelegate>(
-            psm_test_data_->test_case.ec_cipher_key(),
-            psm_test_data_->test_case.seed(),
-            std::move(psm_test_data_->plaintext_ids)),
+            psm_test_data_->nonmember_test_case.ec_cipher_key(),
+            psm_test_data_->nonmember_test_case.seed(),
+            GetPlaintextIds(psm_test_data_->nonmember_test_case)),
         std::make_unique<base::MockRepeatingTimer>(), kTestFresnelBaseUrl,
         kFakeFresnelApiKey, std::move(use_cases));
   }
@@ -356,7 +388,8 @@ TEST_F(DeviceActivityClientTest, DefaultStatesAreInitializedProperly) {
 }
 
 TEST_F(DeviceActivityClientTest, NetworkRequestsUseFakeApiKey) {
-  // When network comes online, the device performs an Import network request.
+  // When network comes online, the device performs a check membership
+  // network request.
   SetWifiNetworkState(shill::kStateOnline);
 
   network::TestURLLoaderFactory::PendingRequest* request =
@@ -380,45 +413,29 @@ TEST_F(DeviceActivityClientTest,
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest, PerformSuccessfulCheckIn) {
-  // Device active reporting starts checking in on network connect.
+TEST_F(DeviceActivityClientTest, NetworkReconnectsAfterSuccessfulCheckIn) {
+  // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Import response body for every use case.
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
   for (auto* use_case : device_activity_client_->GetUseCases()) {
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
     EXPECT_EQ(device_activity_client_->GetState(),
-              DeviceActivityClient::State::kCheckingIn);
-    base::Time prev_time = use_case->GetLastKnownPingTimestamp();
+              DeviceActivityClient::State::kCheckingMembershipOprf);
 
     test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
-        net::HTTP_OK);
-    task_environment_.RunUntilIdle();
-
-    base::Time new_time = use_case->GetLastKnownPingTimestamp();
-
-    // After a PSM identifier is checked in, local state prefs is updated.
-    EXPECT_LT(prev_time, new_time);
-  }
-
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kIdle);
-}
-
-TEST_F(DeviceActivityClientTest, NetworkReconnectsAfterSuccessfulCheckIn) {
-  // Device active reporting starts checking in on network connect.
-  SetWifiNetworkState(shill::kStateOnline);
-
-  // Return well formed Import response body for every use case.
-  for (auto* use_case : device_activity_client_->GetUseCases()) {
-    SCOPED_TRACE(testing::Message()
-                 << "PSM use case: "
-                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
-
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
         net::HTTP_OK);
@@ -434,15 +451,341 @@ TEST_F(DeviceActivityClientTest, NetworkReconnectsAfterSuccessfulCheckIn) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
+TEST_F(DeviceActivityClientTest,
+       CheckMembershipOnLocalStateUnsetAndPingRequired) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    // On first ever ping, we begin the check membership protocol
+    // since the local state pref for that use case is by default unix
+    // epoch.
+    EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingMembershipOprf);
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+
+    EXPECT_NE(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+  }
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, CheckInOnLocalStateSetAndPingRequired) {
+  // Set the use cases last ping timestamps to a previous month.
+  // This date must be ahead of unix epoch, since that is the default value
+  // of the local state time pref.
+  // The current time in the unit tests is 10 years after unix epoch.
+  base::Time expected;
+  ASSERT_TRUE(base::Time::FromUTCString("2000-01-01 00:00:00", &expected));
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    use_case->SetLastKnownPingTimestamp(expected);
+  }
+
+  // Device active reporting starts check in on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_NE(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+
+    // base::Time::Now() is updated in |DeviceActivityClientTest| constructor.
+    EXPECT_GE(use_case->GetLastKnownPingTimestamp(), expected);
+  }
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, TransitionClientToIdleOnInvalidOprfResponse) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingMembershipOprf);
+
+    // Return an invalid Fresnel OPRF response.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        /*fresnel_oprf_response*/ std::string(), net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, TransitionClientToIdleOnInvalidQueryResponse) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingMembershipOprf);
+
+    // Return a valid OPRF response.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+
+    // Return an invalid Query response.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, DailyCheckInFailsButMonthlyCheckInSucceeds) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    // On first ever ping, we begin the check membership protocol
+    // since the local state pref for that use case is by default unix
+    // epoch.
+    EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingMembershipOprf);
+
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY) {
+      // Daily use case will terminate while failing to parse
+      // this invalid OPRF response.
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmOprfRequestEndpoint), std::string(),
+          net::HTTP_OK);
+
+      task_environment_.RunUntilIdle();
+
+      // Failed to update the local state since the OPRF response was invalid.
+      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+    } else if (use_case->GetPsmUseCase() ==
+               psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY) {
+      // Monthly use case will return valid psm network request responses.
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+          GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+          GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+          net::HTTP_OK);
+
+      task_environment_.RunUntilIdle();
+
+      // Successfully imported and updated the last ping timestamp to the
+      // current mocked time for this test.
+      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::Now());
+    } else {
+      // Currently we only support daily, and monthly use cases.
+      NOTREACHED() << "Invalid Use Case.";
+    }
+  }
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, MonthlyCheckInFailsButDailyCheckInSucceeds) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    // On first ever ping, we begin the check membership protocol
+    // since the local state pref for that use case is by default unix
+    // epoch.
+    EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingMembershipOprf);
+
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY) {
+      // Daily use case will return valid psm network request responses.
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+          GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+          GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+          net::HTTP_OK);
+
+      task_environment_.RunUntilIdle();
+
+      // Successfully imported and updated the last ping timestamp to the
+      // current mocked time for this test.
+      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::Now());
+    } else if (use_case->GetPsmUseCase() ==
+               psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY) {
+      // Monthly use case will terminate while failing to parse
+      // this invalid OPRF response.
+      test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GetFresnelTestEndpoint(kPsmOprfRequestEndpoint), std::string(),
+          net::HTTP_OK);
+
+      task_environment_.RunUntilIdle();
+
+      // Failed to update the local state since the OPRF response was invalid.
+      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::UnixEpoch());
+    } else {
+      // Currently we only support daily, and monthly use cases.
+      NOTREACHED() << "Invalid Use Case.";
+    }
+  }
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, CurrentTimeIsBeforeLocalStateTimeStamp) {
+  // Update last ping timestamps to a time in the future.
+  base::Time expected;
+  ASSERT_TRUE(base::Time::FromUTCString("2100-01-01 00:00:00", &expected));
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    use_case->SetLastKnownPingTimestamp(expected);
+  }
+
+  // Device active reporting is triggered by network connection.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // Device pings are not required since the last ping timestamps are in the
+  // future. Client will stay in |kIdle| state.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, StayIdleIfTimerFiresWithoutNetworkConnected) {
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  SetWifiNetworkState(shill::kStateOffline);
+  FireTimer();
+
+  // Verify that no network requests were sent.
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, CheckInIfCheckMembershipReturnsFalse) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingMembershipOprf);
+    base::Time prev_time = use_case->GetLastKnownPingTimestamp();
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+        net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+
+    // After a PSM identifier is checked in, local state prefs is updated.
+    EXPECT_LT(prev_time, use_case->GetLastKnownPingTimestamp());
+  }
+
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
 TEST_F(DeviceActivityClientTest, NetworkDisconnectsWhileWaitingForResponse) {
-  // Device active reporting starts checking in on network connect.
+  // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
   // We expect the size of the use cases to be greater than 0.
   EXPECT_GT(device_activity_client_->GetUseCases().size(), 0);
 
   EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingIn);
+            DeviceActivityClient::State::kCheckingMembershipOprf);
 
   // Currently there is at least 1 pending request that has not received it's
   // response.
@@ -460,18 +803,28 @@ TEST_F(DeviceActivityClientTest, NetworkDisconnectsWhileWaitingForResponse) {
 }
 
 TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
-  // Device active reporting starts membership check on network connect.
+  // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Import response body for every use case.
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
   for (auto* use_case : device_activity_client_->GetUseCases()) {
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
     EXPECT_EQ(device_activity_client_->GetState(),
-              DeviceActivityClient::State::kCheckingIn);
+              DeviceActivityClient::State::kCheckingMembershipOprf);
 
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
         net::HTTP_OK);
@@ -496,9 +849,6 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingIn);
 
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingIn);
-
   // Return well formed Import response body for the DAILY use case.
   // The time was forwarded by 1 day, which means only the daily use case will
   // report actives again.
@@ -513,18 +863,28 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
 }
 
 TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
-  // Device active reporting starts checking in on network connect.
+  // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Import response body for every use case.
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
   for (auto* use_case : device_activity_client_->GetUseCases()) {
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
     EXPECT_EQ(device_activity_client_->GetState(),
-              DeviceActivityClient::State::kCheckingIn);
+              DeviceActivityClient::State::kCheckingMembershipOprf);
 
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
         net::HTTP_OK);
@@ -553,18 +913,28 @@ TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
 }
 
 TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMonth) {
-  // Device active reporting starts membership check on network connect.
+  // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Import response body for every use case.
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
   for (auto* use_case : device_activity_client_->GetUseCases()) {
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
     EXPECT_EQ(device_activity_client_->GetState(),
-              DeviceActivityClient::State::kCheckingIn);
+              DeviceActivityClient::State::kCheckingMembershipOprf);
 
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
         net::HTTP_OK);
@@ -586,9 +956,6 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMonth) {
 
   // Verify state is |kCheckingIn| since local state was updated
   // with the last check in timestamp during the previous day check ins.
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingIn);
-
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingIn);
 
@@ -621,8 +988,13 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMonth) {
 // Powerwashing a device resets the local state. This will result in the
 // client re-importing a PSM ID, on the same day.
 TEST_F(DeviceActivityClientTest, CheckInAgainOnLocalStateReset) {
-  // Device active reporting starts membership check on network connect.
+  // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
+
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
 
   for (auto* use_case : device_activity_client_->GetUseCases()) {
     SCOPED_TRACE(testing::Message()
@@ -630,6 +1002,16 @@ TEST_F(DeviceActivityClientTest, CheckInAgainOnLocalStateReset) {
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
     base::Time prev_time = use_case->GetLastKnownPingTimestamp();
+
+    // Mock Successful |kCheckingMembershipOprf|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+
+    // Mock Successful |kCheckingMembershipQuery|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
 
     // Mock Successful |kCheckingIn|.
     test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -661,9 +1043,19 @@ TEST_F(DeviceActivityClientTest, CheckInAgainOnLocalStateReset) {
     // Indicator is used to verify that we are checking in the PSM ID again
     // after powerwash/recovery scenario.
     EXPECT_EQ(device_activity_client_->GetState(),
-              DeviceActivityClient::State::kCheckingIn);
+              DeviceActivityClient::State::kCheckingMembershipOprf);
 
     base::Time prev_time = use_case->GetLastKnownPingTimestamp();
+
+    // Mock Successful |kCheckingMembershipOprf|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+
+    // Mock Successful |kCheckingMembershipQuery|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
 
     // Mock Successful |kCheckingIn|.
     test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -701,12 +1093,27 @@ TEST_F(DeviceActivityClientTest, UmaHistogramStateCountAfterFirstCheckIn) {
   std::vector<DeviceActiveUseCase*> use_cases =
       device_activity_client_->GetUseCases();
 
-  // Return well formed Import response body for every use case.
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
   for (auto* use_case : use_cases) {
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
+    // Mock Successful |kCheckingMembershipOprf|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+        GetFresnelOprfResponse(nonmember_test_case), net::HTTP_OK);
+
+    // Mock Successful |kCheckingMembershipQuery|.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+        GetFresnelQueryResponse(nonmember_test_case), net::HTTP_OK);
+
+    // Mock Successful |kCheckingIn|.
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
         net::HTTP_OK);
