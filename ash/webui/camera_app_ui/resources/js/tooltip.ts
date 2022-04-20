@@ -91,8 +91,7 @@ function show(element: HTMLElement) {
  * @param elements Elements whose tooltips to be shown.
  * @return Elements whose tooltips have been set up.
  */
-export function setup(elements: NodeListOf<HTMLElement>):
-    NodeListOf<HTMLElement> {
+export function setup(elements: HTMLElement[]): HTMLElement[] {
   wrapper = dom.get('#tooltip', HTMLElement);
   for (const el of elements) {
     function handler() {

@@ -133,8 +133,6 @@ export class PrimarySettings extends BaseSettings {
             return {[openerId]: () => this.openSubSettings(opener, viewName)};
           };
           return {
-            ...openHandler('settings-gridtype', ViewName.GRID_SETTINGS),
-            ...openHandler('settings-timerdur', ViewName.TIMER_SETTINGS),
             ...openHandler('settings-resolution', ViewName.RESOLUTION_SETTINGS),
             ...openHandler('settings-expert', ViewName.EXPERT_SETTINGS),
             'settings-feedback': () => {
@@ -153,8 +151,6 @@ export class PrimarySettings extends BaseSettings {
     );
 
     this.subViews = [
-      new BaseSettings(ViewName.GRID_SETTINGS),
-      new BaseSettings(ViewName.TIMER_SETTINGS),
       new ResolutionSettings(cameraManager),
       new BaseSettings(ViewName.EXPERT_SETTINGS),
     ];

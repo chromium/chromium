@@ -213,11 +213,14 @@
       <message desc="Message for how to navigate to new controls UI with accessibility tool" name="IDS_NEW_CONTROL_NAVIGATION">
         <ph name="aspect_ratio_width">$1<ex>Additional camera controls available</ex></ph>. Search + Left arrow to access.
       </message>
-      <message desc="Label for the checkbox to toggle the 3 seconds countdown timer." name="IDS_TOGGLE_TIMER_3S_BUTTON">
+      <message desc="Label for the radio button to toggle the 3 seconds countdown timer." name="IDS_ARIA_TIMER_3S">
         3 seconds timer
       </message>
-      <message desc="Label for the checkbox to toggle the 10 seconds countdown timer." name="IDS_TOGGLE_TIMER_10S_BUTTON">
+      <message desc="Label for the radio button to toggle the 10 seconds countdown timer." name="IDS_ARIA_TIMER_10S">
         10 seconds timer
+      </message>
+      <message desc="Label for the radio button to turn off the timer." name="IDS_ARIA_TIMER_OFF">
+        Timer off
       </message>
       <message desc="Message shown before moving all photos and videos stored in the Camera App to the Downloads folder." name="IDS_MIGRATE_PICTURES_MSG">
         Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
@@ -245,7 +248,7 @@
       <message desc="Label for the button to switch to next connected camera. Eg. switching from front facing to back facing, or a camera connected via USB. The button is shown only when more than one camera is connected." name="IDS_SWITCH_CAMERA_BUTTON">
         Switch to next camera
       </message>
-      <message desc="Label for the button of timer-duration options." name="IDS_TIMER_DURATION_BUTTON">
+      <message desc="Label for the button to open timer duration control panel" name="IDS_OPEN_TIMER_PANEL_BUTTON">
         Timer duration
       </message>
       <message desc="Label for timer-duration: 3 seconds." name="IDS_LABEL_TIMER_3S">
@@ -296,7 +299,7 @@
       <message desc="Label for switch to take photo mode button." name="IDS_LABEL_SWITCH_TAKE_PHOTO_BUTTON">
         Photo
       </message>
-      <message desc="Label for the checkbox to toggle the grid shown on preview." name="IDS_TOGGLE_GRID_BUTTON">
+      <message desc="Label for the button to open grid control panel." name="IDS_OPEN_GRID_PANEL_BUTTON">
         Grid
       </message>
       <message desc="Label for the shutter button to take photo." name="IDS_TAKE_PHOTO_BUTTON">
@@ -444,8 +447,8 @@
       <message desc="Label for switch to record video mode button." name="IDS_LABEL_SWITCH_RECORD_VIDEO_BUTTON">
         Video
       </message>
-      <message desc="Label for the checkbox to toggle the preview mirroring. Eg. if mirroring is toggled on, preview will be flipped horizontally." name="IDS_TOGGLE_MIRROR_BUTTON">
-        Mirroring
+      <message desc="Label for the button to open mirror control panel. Eg. if mirroring is toggled on, preview will be flipped horizontally." name="IDS_OPEN_MIRROR_PANEL_BUTTON">
+        Mirror preview
       </message>
       <message desc="Label for the button of grid-type options." name="IDS_GRID_TYPE_BUTTON">
         Grid type
@@ -619,6 +622,21 @@ If your feedback is about image or video quality, please attach a sample photo o
       </message>
       <message desc="Label for spoken feedback to read out group of record type options." name="IDS_ARIA_RECORD_TYPE_GROUP">
         Record type
+      </message>
+      <message desc="Label for the option state off" name="IDS_LABEL_OFF">
+        Off
+      </message>
+      <message desc="Label for the option state on" name="IDS_LABEL_ON">
+        On
+      </message>
+      <message desc="Label for spoken feedback to turn off the mirror button." name="IDS_ARIA_MIRROR_OFF">
+        Mirror off
+      </message>
+      <message desc="Label for spoken feedback to turn on the mirror button." name="IDS_ARIA_MIRROR_ON">
+        Mirror on
+      </message>
+      <message desc="Label for spoken feedback to turn off the grid button." name="IDS_ARIA_GRID_OFF">
+        Grid off
       </message>
     </messages>
   </release>

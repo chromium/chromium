@@ -60,6 +60,7 @@ import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {CropDocument} from './crop_document.js';
 import {Dialog} from './dialog.js';
+import {OptionPanel} from './option_panel.js';
 import {PTZPanel} from './ptz_panel.js';
 import * as review from './review.js';
 import {PrimarySettings} from './settings.js';
@@ -126,6 +127,7 @@ export class Camera extends View implements CameraViewUI {
 
     this.subViews = [
       new PrimarySettings(this.cameraManager),
+      new OptionPanel(),
       new PTZPanel(),
       this.review,
       this.cropDocument,

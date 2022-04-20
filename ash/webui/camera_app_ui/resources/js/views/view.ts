@@ -4,6 +4,8 @@
 
 import {assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
+import {I18nString} from '../i18n_string.js';
+import * as state from '../state.js';
 import {ViewName} from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
@@ -45,11 +47,46 @@ export class PTZPanelOptions {
   }
 }
 
+export interface StateOption {
+  readonly label: I18nString;
+
+  readonly ariaLabel: I18nString;
+
+  readonly state: state.State;
+
+  readonly isDisableOption?: boolean;
+}
+
+/**
+ * Options for open Option panel.
+ */
+export class OptionPanelOptions {
+  readonly triggerButton: HTMLElement;
+
+  readonly titleLabel: I18nString;
+
+  readonly stateOptions: StateOption[];
+
+  readonly onStateChanged: (newState: state.State|null) => void;
+
+  constructor({triggerButton, titleLabel, stateOptions, onStateChanged}: {
+    triggerButton: HTMLElement,
+    titleLabel: I18nString,
+    stateOptions: StateOption[],
+    onStateChanged: (newState: state.State|null) => void,
+  }) {
+    this.triggerButton = triggerButton;
+    this.titleLabel = titleLabel;
+    this.stateOptions = stateOptions;
+    this.onStateChanged = onStateChanged;
+  }
+}
+
 // TODO(pihsun): After we migrate all files into TypeScript, we can have some
 // sort of "global" view registration, so we can enforce the enter / leave type
 // at compile time.
 export type EnterOptions =
-    DialogEnterOptions|PTZPanelOptions|WarningEnterOptions;
+    DialogEnterOptions|OptionPanelOptions|PTZPanelOptions|WarningEnterOptions;
 
 export type LeaveCondition = {
   kind: 'BACKGROUND_CLICKED',

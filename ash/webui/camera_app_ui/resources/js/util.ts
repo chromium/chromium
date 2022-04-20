@@ -102,7 +102,11 @@ export function getShortcutIdentifier(event: KeyboardEvent): string {
  */
 export function setupI18nElements(rootElement: DocumentFragment|Element): void {
   function getElements(attr: string) {
-    return dom.getAllFrom(rootElement, `[${attr}]`, HTMLElement);
+    const elements = [...dom.getAllFrom(rootElement, `[${attr}]`, HTMLElement)];
+    if (rootElement instanceof HTMLElement && rootElement.hasAttribute(attr)) {
+      elements.push(rootElement);
+    }
+    return elements;
   }
   function getMessage(element: HTMLElement, attr: string) {
     return loadTimeData.getI18nMessage(

@@ -627,38 +627,42 @@ body:not(.enable-ptz) #open-ptz-panel {
   --ripple-spread-ratio: 2;
   --ripple-start-radius: 18px;
 
-  background-image: url(/images/camera_button_ptz_panel.svg);
+  background-image: url(/images/camera_button_ptz_panel_off.svg);
 }
 
-body.timer-3s #toggle-timer:checked {
+body.view-ptz-panel #open-ptz-panel {
+  background-image: url(/images/camera_button_ptz_panel_on.svg);
+}
+
+body.timer-3s #open-timer-panel {
   background-image: url(/images/camera_button_timer_on_3s.svg);
 }
 
-body.timer-10s #toggle-timer:checked {
+body.timer-10s #open-timer-panel {
   background-image: url(/images/camera_button_timer_on_10s.svg);
 }
 
-#toggle-timer {
+#open-timer-panel {
   background-image: url(/images/camera_button_timer_off.svg);
 }
 
-#toggle-grid:checked {
+body.grid #open-grid-panel {
   background-image: url(/images/camera_button_grid_on.svg);
 }
 
-#toggle-grid {
+#open-grid-panel {
   background-image: url(/images/camera_button_grid_off.svg);
 }
 
-#toggle-mirror:checked {
+body.mirror #open-mirror-panel {
   background-image: url(/images/camera_button_mirror_on.svg);
 }
 
-#toggle-mirror {
+#open-mirror-panel {
   background-image: url(/images/camera_button_mirror_off.svg);
 }
 
-body:is(.scan) #toggle-mirror:disabled {
+body:is(.scan) #open-mirror-panel:disabled {
   display: none;
 }
 
@@ -689,12 +693,11 @@ body.should-handle-intent-result #open-settings {
 #view-camera,
 #view-crop-document,
 #view-document-mode-dialog,
+#view-option-panel,
 #view-ptz-panel,
 #view-review,
 #view-flash,
 #view-settings,
-#view-grid-settings,
-#view-timer-settings,
 #view-resolution-settings,
 #view-photo-resolution-settings,
 #view-video-resolution-settings,
@@ -715,12 +718,11 @@ body.should-handle-intent-result #open-settings {
 body.view-camera #view-camera,
 body.view-crop-document #view-crop-document,
 body.view-document-mode-dialog #view-document-mode-dialog,
+body.view-option-panel #view-option-panel,
 body.view-ptz-panel #view-ptz-panel,
 body.view-review #view-review,
 body.view-flash #view-flash,
 body.view-settings #view-settings,
-body.view-grid-settings #view-grid-settings,
-body.view-timer-settings #view-timer-settings,
 body.view-resolution-settings #view-resolution-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
 body.view-video-resolution-settings #view-video-resolution-settings,
@@ -733,8 +735,6 @@ body.view-splash #view-splash {
   visibility: visible;
 }
 
-body.view-grid-settings #view-grid-settings,
-body.view-timer-settings #view-timer-settings,
 body.view-resolution-settings #view-resolution-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
 body.view-video-resolution-settings #view-video-resolution-settings,
@@ -746,12 +746,6 @@ body.view-settings #view-settings {
 
 html[dir=ltr] body.view-settings .left-stripe,
 html[dir=rtl] body.view-settings .right-stripe,
-body.view-grid-settings #view-settings,
-html[dir=ltr] body.view-grid-settings .left-stripe,
-html[dir=rtl] body.view-grid-settings .right-stripe,
-body.view-timer-settings #view-settings,
-html[dir=ltr] body.view-timer-settings .left-stripe,
-html[dir=rtl] body.view-timer-settings .right-stripe,
 body.view-resolution-settings #view-settings,
 html[dir=ltr] body.view-resolution-settings .left-stripe,
 html[dir=rtl] body.view-resolution-settings .right-stripe,
@@ -955,20 +949,16 @@ body.grid.grid-4x4 #preview-grid-horizontal::before {
   top: 0;
 }
 
-body.grid.grid-3x3 #preview-grid-horizontal,
-body.view-grid-settings.grid-3x3 #preview-grid-horizontal {
+body.grid.grid-3x3 #preview-grid-horizontal {
   height: 33.333%;
 }
 
-body.grid.grid-golden #preview-grid-horizontal,
-body.view-grid-settings.grid-golden #preview-grid-horizontal {
+body.grid.grid-golden #preview-grid-horizontal {
   height: 23.607%;
 }
 
 body.grid.grid-4x4 #preview-grid-horizontal,
-body.grid.grid-4x4 #preview-grid-horizontal::before,
-body.view-grid-settings.grid-4x4 #preview-grid-horizontal,
-body.view-grid-settings.grid-4x4 #preview-grid-horizontal::before {
+body.grid.grid-4x4 #preview-grid-horizontal::before {
   height: 50%;
 }
 
@@ -993,20 +983,16 @@ body.grid-4x4 #preview-grid-vertical::before {
   width: 0;
 }
 
-body.grid.grid-3x3 #preview-grid-vertical,
-body.view-grid-settings.grid-3x3 #preview-grid-vertical {
+body.grid.grid-3x3 #preview-grid-vertical {
   width: 33.333%;
 }
 
-body.grid.grid-golden #preview-grid-vertical,
-body.view-grid-settings.grid-golden #preview-grid-vertical {
+body.grid.grid-golden #preview-grid-vertical {
   width: 23.607%;
 }
 
 body.grid.grid-4x4 #preview-grid-vertical,
-body.grid.grid-4x4 #preview-grid-vertical::before,
-body.view-grid-settings.grid-4x4 #preview-grid-vertical,
-body.view-grid-settings.grid-4x4 #preview-grid-vertical::before {
+body.grid.grid-4x4 #preview-grid-vertical::before {
   width: 50%;
 }
 
@@ -1018,13 +1004,6 @@ body.view-grid-settings.grid-4x4 #preview-grid-vertical::before {
 #preview-grid-vertical,
 #preview-grid-vertical::before {
   transition: width 500ms, visibility 500ms;
-}
-
-body:not(.grid):not(.view-grid-settings) #preview-grid-horizontal,
-body:not(.grid):not(.view-grid-settings) #preview-grid-horizontal::before,
-body:not(.grid):not(.view-grid-settings) #preview-grid-vertical,
-body:not(.grid):not(.view-grid-settings) #preview-grid-vertical::before {
-  visibility: hidden;
 }
 
 #record-time {
@@ -1161,6 +1140,11 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   top: 0;
 }
 
+.settings .menu-header,
+.settings .menu-item {
+  height: 64px;
+}
+
 .menu-header,
 .menu-item {
   --hover-color: rgba(255, 255, 255, 0.06);
@@ -1171,7 +1155,6 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   display: flex;
   flex-shrink: 0;
   font-size: 13px;
-  height: 64px;
   justify-content: flex-start;
   text-align: initial;
 }
@@ -1181,7 +1164,7 @@ label.menu-item:hover {
   background-color: var(--hover-color);
 }
 
-.menu-item {
+.settings .menu-item {
   padding-inline-start: 32px;
 }
 
@@ -1216,11 +1199,6 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
   display: none;
 }
 
-body.grid-3x3 .description span[i18n-text=label_grid_3x3],
-body.grid-4x4 .description span[i18n-text=label_grid_4x4],
-body.grid-golden .description span[i18n-text=label_grid_golden],
-body.timer-3s .description span[i18n-text=label_timer_3s],
-body.timer-10s .description span[i18n-text=label_timer_10s],
 .menu-item.resol-item .description span {
   display: inline;
 }
@@ -1413,4 +1391,44 @@ body:not(.mode-switching):not(.streaming) #spinner {
 
 .invisible {
   visibility: hidden;
+}
+
+.panel {
+  backdrop-filter: blur(10px);
+  background: rgba(var(--grey-900-rgb), 0.9);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+#option-panel {
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  position: absolute;
+  width: 225px;
+}
+
+#option-title {
+  color: var(--grey-500);
+  font-family: var(--default-font-family);
+  font-size: 13px;
+  font-weight: 400;
+  height: 28px;
+  padding: 8px 8px 0 8px;
+}
+
+#options-container {
+  display: flex;
+  flex-direction: column;
+}
+
+#options-container .menu-item {
+  height: 40px;
+  padding-inline-start: 6px;
+}
+
+#options-container .menu-item span {
+  color: var(--grey-100);
+  margin-inline-start: 4px;
 }

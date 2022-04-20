@@ -84,7 +84,7 @@ export function assertState(s: string): StateUnion {
   return s as StateUnion;
 }
 
-type StateObserver = (val: boolean, perfInfo: PerfInformation) => void;
+export type StateObserver = (val: boolean, perfInfo: PerfInformation) => void;
 
 const allObservers = new Map<StateUnion, Set<StateObserver>>();
 
