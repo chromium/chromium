@@ -332,7 +332,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- Printing specific strings -->
-      <if expr="enable_printing">
+      <if expr="enable_basic_printing">
         <part file="printing_strings.grdp" />
       </if>
 
