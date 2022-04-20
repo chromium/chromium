@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BubbleSuppression.AccountsInStatisticsTable"
-    units="accounts" expires_after="2022-05-31">
+    units="accounts" expires_after="2022-11-30">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2946,7 +2946,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.{Store}TimesPasswordUsed2.{PasswordType}{CustomPassphraseStatus}"
-    units="PasswordUses" expires_after="2022-05-31">
+    units="PasswordUses" expires_after="2022-11-30">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -2988,7 +2988,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.{Store}TotalAccountsHiRes2.WithScheme{Scheme}"
-    units="accounts" expires_after="2022-05-31">
+    units="accounts" expires_after="2022-11-30">
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
