@@ -171,6 +171,8 @@ class Settings {
     ScopedLockedFileHandle(ScopedLockedFileHandle&& rvalue);
     ScopedLockedFileHandle& operator=(ScopedLockedFileHandle&& rvalue);
 
+    ~ScopedLockedFileHandle();
+
    private:
     std::unique_ptr<internal::ScopedBackgroundTask> ios_background_task_;
   };

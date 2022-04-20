@@ -68,6 +68,11 @@ using Key = IntermediateDumpKey;
 
 ThreadSnapshotIOSIntermediateDump::ThreadSnapshotIOSIntermediateDump()
     : ThreadSnapshot(),
+#if defined(ARCH_CPU_X86_64)
+      context_x86_64_(),
+#elif defined(ARCH_CPU_ARM64)
+      context_arm64_(),
+#endif
       context_(),
       stack_(),
       thread_id_(0),

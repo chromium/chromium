@@ -183,13 +183,14 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
   //! \brief A private extension of the Report class that maintains bookkeeping
   //!    information of the database.
   struct UploadReportMac : public UploadReport {
+#if BUILDFLAG(IS_IOS)
+    //! \brief Obtain a background task assertion while a flock is in use.
+    //!     Ensure this is defined first so it is destroyed last.
+    internal::ScopedBackgroundTask ios_background_task{"UploadReportMac"};
+#endif  // BUILDFLAG(IS_IOS)
     //! \brief Stores the flock of the file for the duration of
     //!     GetReportForUploading() and RecordUploadAttempt().
     base::ScopedFD lock_fd;
-#if BUILDFLAG(IS_IOS)
-    //! \brief Obtain a background task assertion while a flock is in use.
-    internal::ScopedBackgroundTask ios_background_task{"UploadReportMac"};
-#endif  // BUILDFLAG(IS_IOS)
   };
 
   //! \brief Locates a crash report in the database by UUID.
