@@ -7,7 +7,8 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux ChromiumOS Full (reclient shadow)": {
@@ -29,7 +30,8 @@
       "is_asan": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-asan-rel (reclient shadow)": {
@@ -62,7 +64,8 @@
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-dbg (reclient shadow)": {
@@ -106,7 +109,8 @@
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-arm-generic-dbg (reclient shadow)": {
@@ -144,7 +148,8 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-kevin-rel (reclient shadow)": {

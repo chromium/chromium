@@ -24,7 +24,8 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "ChromeOS FYI Release (amd64-generic) (reclient shadow)": {

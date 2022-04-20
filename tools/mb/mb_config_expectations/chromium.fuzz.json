@@ -109,7 +109,8 @@
       "is_debug": false,
       "is_lsan": true,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
   },
