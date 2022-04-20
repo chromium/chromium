@@ -1551,11 +1551,7 @@ void PagedAppsGridView::AnimateOnNudgeRemoved() {
   }
 
   PrepareItemsForBoundsAnimation();
-
-  // Set the tween type to be used specifically for this ideal bounds animation.
-  bounds_animator()->set_tween_type(gfx::Tween::ACCEL_40_DECEL_100_3);
   AnimateToIdealBounds();
-  bounds_animator()->set_tween_type(gfx::Tween::EASE_OUT);
 }
 
 int PagedAppsGridView::GetTotalTopPaddingOnFirstPage() const {

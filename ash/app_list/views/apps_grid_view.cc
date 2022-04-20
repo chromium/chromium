@@ -356,6 +356,8 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
   bounds_animator_->AddObserver(this);
   bounds_animator_->SetAnimationDuration(base::Milliseconds(300));
   if (features::IsProductivityLauncherEnabled()) {
+    bounds_animator_->set_tween_type(gfx::Tween::ACCEL_40_DECEL_100_3);
+
     GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
 
     // Override the a11y name of top level apps grid.
