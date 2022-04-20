@@ -15,12 +15,12 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     main_console_view = "main",
     notifies = ["chromium.linux"],
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     pool = ci.DEFAULT_POOL,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
@@ -43,9 +43,6 @@ ci.builder(
         short_name = "aud",
     ),
     ssd = True,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -56,9 +53,6 @@ ci.builder(
         short_name = "vid",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -72,9 +66,6 @@ ci.builder(
     os = os.LINUX_BIONIC,
     # TODO(crbug.com/1173333): Make it tree-closing.
     tree_closing = False,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -87,9 +78,6 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     os = os.LINUX_BIONIC,
     tree_closing = False,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -109,6 +97,8 @@ ci.builder(
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
     goma_jobs = None,
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -124,9 +114,7 @@ ci.builder(
     # failure.
     tree_closing = False,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -138,9 +126,7 @@ ci.builder(
     cores = 32,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -160,6 +146,9 @@ ci.builder(
     ],
     cq_mirrors_console_view = "mirrors",
     notifies = ["cr-fuchsia"],
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -179,6 +168,9 @@ ci.builder(
     ],
     cq_mirrors_console_view = "mirrors",
     notifies = ["cr-fuchsia"],
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -191,9 +183,7 @@ ci.builder(
     main_console_view = None,
     notifies = args.ignore_default([]),
     tree_closing = False,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -205,9 +195,6 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -231,9 +218,7 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -244,9 +229,7 @@ ci.builder(
         short_name = "bld-wl",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.thin_tester(
@@ -328,6 +311,9 @@ ci.builder(
     # failure.
     tree_closing = False,
     notifies = ["cr-fuchsia", "close-on-any-step-failure"],
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -336,9 +322,7 @@ ci.builder(
         category = "release",
         short_name = "nsl",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -362,6 +346,9 @@ ci.builder(
     # failure.
     tree_closing = False,
     notifies = ["cr-fuchsia", "close-on-any-step-failure"],
+    goma_backend = goma.backend.RBE_PROD,
+    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -379,9 +366,6 @@ ci.builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -390,9 +374,7 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -401,9 +383,7 @@ ci.builder(
         category = "release",
         short_name = "trc",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -412,5 +392,5 @@ ci.builder(
         category = "release",
         short_name = "gcc",
     ),
-    goma_backend = None,
+    reclient_instance = None,
 )
