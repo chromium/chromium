@@ -150,9 +150,11 @@ static LayoutPoint ComputeRelativeOffset(const LayoutObject* layout_object,
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
                                          const ScrollableArea* scroller) {
-  if (candidate->IsFixedPositioned() ||
-      candidate->StyleRef().HasStickyConstrainedPosition())
-    return false;
+  if (const ComputedStyle* style = candidate->Style()) {
+    if (style->HasViewportConstrainedPosition() ||
+        style->HasStickyConstrainedPosition())
+      return false;
+  }
 
   LayoutObject::AncestorSkipInfo skip_info(ScrollerLayoutBox(scroller));
   candidate->Container(&skip_info);

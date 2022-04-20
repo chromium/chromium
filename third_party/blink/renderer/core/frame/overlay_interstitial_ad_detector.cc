@@ -45,7 +45,7 @@ bool IsOverlayCandidate(Element* element) {
 
   // 'style' is now the ComputedStyle for the object whose position depends
   // on the document.
-  if (style->GetPosition() == EPosition::kFixed ||
+  if (style->HasViewportConstrainedPosition() ||
       style->HasStickyConstrainedPosition()) {
     return true;
   }

@@ -480,7 +480,6 @@ void LayoutBox::WillBeDestroyed() {
 
   if (IsOutOfFlowPositioned())
     LayoutBlock::RemovePositionedObject(this);
-
   RemoveFromPercentHeightContainer();
   if (IsOrthogonalWritingModeRoot() && !DocumentBeingDestroyed())
     UnmarkOrthogonalWritingModeRoot();
@@ -500,8 +499,6 @@ void LayoutBox::WillBeDestroyed() {
         .GetFrame()
         ->GetInputMethodController()
         .LayoutObjectWillBeDestroyed(*this);
-    if (IsFixedPositioned())
-      GetFrameView()->RemoveFixedPositionObject(*this);
   }
 
   SetSnapContainer(nullptr);
@@ -727,19 +724,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     if (IsInLayoutNGInlineFormattingContext() && IsAtomicInlineLevel() &&
         old_style->Direction() != new_style.Direction()) {
       SetNeedsCollectInlines();
-    }
-  }
-
-  if (LocalFrameView* frame_view = View()->GetFrameView()) {
-    bool new_style_is_fixed_position =
-        StyleRef().GetPosition() == EPosition::kFixed;
-    bool old_style_is_fixed_position =
-        old_style && old_style->GetPosition() == EPosition::kFixed;
-    if (new_style_is_fixed_position != old_style_is_fixed_position) {
-      if (new_style_is_fixed_position && Layer())
-        frame_view->AddFixedPositionObject(*this);
-      else
-        frame_view->RemoveFixedPositionObject(*this);
     }
   }
 
