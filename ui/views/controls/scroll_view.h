@@ -315,15 +315,17 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // scrolling content within the viewport.
   void UpdateOverflowIndicatorVisibility(const gfx::PointF& offset);
 
+  View* GetContentsViewportForTest() const;
+
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
   View* contents_ = nullptr;
-  raw_ptr<View> contents_viewport_ = nullptr;
+  raw_ptr<Viewport> contents_viewport_ = nullptr;
 
   // The current header and its viewport. |header_| is contained in
   // |header_viewport_|.
   View* header_ = nullptr;
-  raw_ptr<View> header_viewport_ = nullptr;
+  raw_ptr<Viewport> header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
   raw_ptr<ScrollBar> horiz_sb_;
