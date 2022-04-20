@@ -253,6 +253,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             if (getBarBannerControl().isVisible()) {
                 getBarBannerControl().animateAppearance();
             }
+        }
+
+        if (toState == PanelState.CLOSED || toState == PanelState.UNDEFINED) {
             mManagementDelegate.onPanelFinishedShowing();
         }
 
