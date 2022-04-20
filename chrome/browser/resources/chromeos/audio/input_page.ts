@@ -59,9 +59,9 @@ export class InputPage extends Page {
     const draw = () => {
       this.animationRequestId = requestAnimationFrame(draw);
       for (const channel of pairs) {
-        let canvas = <HTMLCanvasElement>channel['canvas'];
-        let canvasContext = canvas.getContext('2d');
-        let analyser = channel['analyser'];
+        const canvas = <HTMLCanvasElement>channel['canvas'];
+        const canvasContext = canvas.getContext('2d');
+        const analyser = channel['analyser'];
 
         if (canvasContext && analyser) {
           analyser.fftSize = 2048;
@@ -105,8 +105,9 @@ export class InputPage extends Page {
         }
       }
     };
-    if (this.animationRequestId)
+    if (this.animationRequestId) {
       window.cancelAnimationFrame(this.animationRequestId);
+    }
     draw();
   }
 

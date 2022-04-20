@@ -14,7 +14,7 @@ export interface AudioSample {
   description: string;
 }
 
-let audiosSamples: AudioSample[] = [
+const audiosSamples: AudioSample[] = [
   {
     sampleRate: 44100,
     freqency: 440,

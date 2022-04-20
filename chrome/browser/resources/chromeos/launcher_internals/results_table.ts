@@ -87,7 +87,7 @@ export class LauncherResultsTableElement extends PolymerElement {
     }
     this.sortKey = sortKey;
 
-    let sortedResults = Array.from(this.results.values());
+    const sortedResults = Array.from(this.results.values());
     if (this.sortKey === 'Display score') {
       sortedResults.sort((a, b) => b.score - a.score);
     } else {
@@ -124,7 +124,7 @@ export class LauncherResultsTableElement extends PolymerElement {
   // Converts ranker scores into an array of scores in string form and ordered
   // according to the current headers.
   private flattenScores(inputScores: {[key: string]: number}): Array<string> {
-    let outputScores = [];
+    const outputScores = [];
     for (const header of this.headerCells.keys()) {
       const score = inputScores[header];
       outputScores.push(score === undefined ? '' : score.toString());
