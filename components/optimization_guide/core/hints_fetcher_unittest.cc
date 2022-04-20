@@ -42,8 +42,7 @@ class HintsFetcherTest : public testing::Test,
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    base::test::ScopedFeatureList scoped_list;
-    scoped_list.InitWithFeaturesAndParameters(
+    scoped_list_.InitWithFeaturesAndParameters(
         {{features::kRemoteOptimizationGuideFetching, {}},
          {features::kOptimizationHints,
           {{"persist_hints_to_disk",
@@ -156,6 +155,7 @@ class HintsFetcherTest : public testing::Test,
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   bool hints_fetched_ = false;
+  base::test::ScopedFeatureList scoped_list_;
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<HintsFetcher> hints_fetcher_;
@@ -241,6 +241,8 @@ TEST_P(HintsFetcherTest, FetchInProgress) {
 // Tests that the hints are refreshed again for hosts for whom hints were
 // fetched recently.
 TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
+  if (!ShouldPersistHintsToDisk())
+    return;
   base::SimpleTestClock test_clock;
   SetTimeClockForTesting(&test_clock);
 
@@ -494,6 +496,9 @@ TEST_P(HintsFetcherTest, HintsFetcherHostNotCovered) {
   DictionaryPrefUpdate hosts_fetched(
       pref_service(), prefs::kHintsFetcherHostsSuccessfullyFetched);
   EXPECT_EQ(2u, hosts_fetched->DictSize());
+
+  if (!ShouldPersistHintsToDisk())
+    return;
 
   EXPECT_TRUE(WasHostCoveredByFetch(hosts[0]));
   EXPECT_TRUE(WasHostCoveredByFetch(hosts[1]));
