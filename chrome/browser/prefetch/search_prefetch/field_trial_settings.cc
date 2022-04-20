@@ -31,7 +31,7 @@ bool SearchPrefetchServicePrefetchingIsEnabled() {
 }
 
 const base::Feature kSearchPrefetchUsesNetworkCache{
-    "SearchPrefetchUsesNetworkCache", base::FEATURE_ENABLED_BY_DEFAULT};
+    "SearchPrefetchUsesNetworkCache", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool SearchPrefetchUsesNetworkCache() {
   return base::FeatureList::IsEnabled(kSearchPrefetchUsesNetworkCache);
