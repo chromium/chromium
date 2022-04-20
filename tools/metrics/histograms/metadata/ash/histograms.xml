@@ -4390,6 +4390,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Window.DragMaximized.NumberOfMisTriggers" units="units"
+    expires_after="2023-03-31">
+  <owner>conniekxu@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <summary>
+    Emitted when a window state is being destroyed. Records number of
+    mis-triggers of the drag to maximize behavior for a window during its
+    lifetime.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.DragMaximized.Valid" units="Boolean"
+    expires_after="2023-03-31">
+  <owner>conniekxu@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <summary>
+    This boolean keeps tracking if a drag to maximize behavior is valid or not.
+    Emits true if a window is dragged to maximized and stays maximized status
+    over 5 seconds. If a window is dragged to maximized, but gets restored
+    during 5 seconds, the drag to maximize behavior should be considered as
+    invalid and a mis-trigger.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
     expires_after="2022-10-16">
   <owner>cattalyya@chromium.org</owner>

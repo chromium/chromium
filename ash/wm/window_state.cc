@@ -66,6 +66,17 @@
 namespace ash {
 namespace {
 
+// The threshold for us to judge if drag to maximize behavior is mis-triggered.
+// If a window is dragged to maximized and remains maximized longer than this
+// threshold, then drag to maximize behavior is not mis-triggered, otherwise it
+// will be counted as one mis-trigger.
+constexpr base::TimeDelta kDragToMaximizeMisTriggerThreshold = base::Seconds(5);
+
+constexpr char kDragToMaximizeMisTriggersHistogramName[] =
+    "Ash.Window.DragMaximized.NumberOfMisTriggers";
+constexpr char kValidDragMaximizedHistogramName[] =
+    "Ash.Window.DragMaximized.Valid";
+
 using ::chromeos::kHideShelfWhenFullscreenKey;
 using ::chromeos::kImmersiveIsActive;
 using ::chromeos::kWindowManagerManagesOpacityKey;
@@ -265,6 +276,11 @@ WindowState::~WindowState() {
   // unregisters all of its observers in its d'tor before destroying its
   // properties. As a result, window_->RemoveObserver() doesn't need to (and
   // shouldn't) be called here.
+
+  // Records the number of mis-triggers of drag to maximize behavior for
+  // `window_` during its lifetime.
+  base::UmaHistogramCounts100(kDragToMaximizeMisTriggersHistogramName,
+                              num_of_drag_to_maximize_mis_triggers_);
 }
 
 bool WindowState::HasDelegate() const {
@@ -685,6 +701,21 @@ WindowStateType WindowState::GetRestoreWindowState() const {
     restore_state = GetMaximizedOrCenteredWindowType();
 
   return restore_state;
+}
+
+void WindowState::TrackDragToMaximizeBehavior() {
+  // If drag to maximize is triggered again before we check for the previous
+  // one, then the previous one must be a mis-trigger. Record the mis-trigger
+  // and reset `drag_to_maximize_mis_trigger_timer_`.
+  if (drag_to_maximize_mis_trigger_timer_.IsRunning()) {
+    num_of_drag_to_maximize_mis_triggers_++;
+    base::UmaHistogramBoolean(kValidDragMaximizedHistogramName, false);
+    drag_to_maximize_mis_trigger_timer_.Stop();
+  }
+
+  drag_to_maximize_mis_trigger_timer_.Start(
+      FROM_HERE, kDragToMaximizeMisTriggerThreshold, this,
+      &WindowState::CheckAndRecordDragMaximizedBehavior);
 }
 
 void WindowState::CreateDragDetails(const gfx::PointF& point_in_parent,
@@ -1227,6 +1258,15 @@ void WindowState::RecordAndResetWindowSnapActionSource(
   base::UmaHistogramEnumeration(kWindowSnapActionSourceHistogram,
                                 snap_action_source_);
   snap_action_source_ = WindowSnapActionSource::kOthers;
+}
+
+void WindowState::CheckAndRecordDragMaximizedBehavior() {
+  if (!IsMaximized()) {
+    num_of_drag_to_maximize_mis_triggers_++;
+    base::UmaHistogramBoolean(kValidDragMaximizedHistogramName, false);
+  } else {
+    base::UmaHistogramBoolean(kValidDragMaximizedHistogramName, true);
+  }
 }
 
 void WindowState::ReadOutWindowCycleSnapAction(int message_id) {

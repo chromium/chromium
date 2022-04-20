@@ -902,6 +902,8 @@ void WorkspaceWindowResizer::CompleteDrag() {
               window, screen_util::GetMaximizedWindowBoundsInParent(window),
               /*maximize=*/true);
         }
+
+        window_state()->TrackDragToMaximizeBehavior();
         break;
       default:
         NOTREACHED();
