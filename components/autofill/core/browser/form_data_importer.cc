@@ -398,6 +398,75 @@ bool FormDataImporter::IsValidLearnableProfile(
            is_zip_invalid);
 }
 
+bool FormDataImporter::ComplementCountry(
+    AutofillProfile& profile,
+    const std::string& predicted_country_code) {
+  // TODO(crbug.com/1297032): Cleanup `kAutofillComplementCountryCodeOnImport`
+  // check when launched.
+  bool should_complement_country =
+      profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAddressProfileSavePrompt) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillComplementCountryCodeOnImport);
+  return should_complement_country &&
+         profile.SetInfoWithVerificationStatus(
+             AutofillType(ADDRESS_HOME_COUNTRY),
+             base::ASCIIToUTF16(predicted_country_code), app_locale_,
+             VerificationStatus::kObserved);
+}
+
+bool FormDataImporter::SetPhoneNumber(
+    AutofillProfile& profile,
+    PhoneNumber::PhoneCombineHelper& combined_phone,
+    const std::string& predicted_country_code) {
+  if (combined_phone.IsEmpty()) {
+    return true;
+  }
+  const std::string predicted_country_code_without_variation =
+      GetPredictedCountryCode(profile, "", app_locale_, nullptr);
+  // If `kAutofillConsiderVariationCountryCodeForPhoneNumbers` is enabled,
+  // a consistent country code prediction for addresses and phone numbers is
+  // used. Otherwise the variation service state is not considered for phone
+  // numbers. This makes a difference, if the country code cannot be found
+  // in the `profile`.
+  // `ParseNumber()` implicity accepts both a country code and a locale. This
+  // will be refactored with crbug/1296077. The parameter for
+  // `SetInfoWithVerificationStatus()` has to be consistent with
+  // `ParseNumber()`.
+  // TODO(crbug.com/1295721): Cleanup when launched.
+  const std::string& phone_number_region =
+      predicted_country_code != predicted_country_code_without_variation &&
+              base::FeatureList::IsEnabled(
+                  features::
+                      kAutofillConsiderVariationCountryCodeForPhoneNumbers)
+          ? predicted_country_code
+          : app_locale_;
+  std::u16string constructed_number;
+  return combined_phone.ParseNumber(profile, phone_number_region,
+                                    &constructed_number) &&
+         profile.SetInfoWithVerificationStatus(
+             AutofillType(PHONE_HOME_WHOLE_NUMBER), constructed_number,
+             phone_number_region, VerificationStatus::kObserved);
+}
+
+void FormDataImporter::RemoveInaccessibleProfileValues(
+    AutofillProfile& profile,
+    const std::string& predicted_country_code) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillRemoveInaccessibleProfileValues)) {
+    const ServerFieldTypeSet inaccessible_fields =
+        profile.FindInaccessibleProfileValues(predicted_country_code);
+    profile.ClearFields(inaccessible_fields);
+    AutofillMetrics::LogRemovedSettingInaccessibleFields(
+        !inaccessible_fields.empty());
+    for (const ServerFieldType inaccessible_field : inaccessible_fields) {
+      AutofillMetrics::LogRemovedSettingInaccessibleField(
+          predicted_country_code, inaccessible_field);
+    }
+  }
+}
+
 void FormDataImporter::CacheFetchedVirtualCard(
     const std::u16string& last_four) {
   fetched_virtual_cards_.insert(last_four);
@@ -662,78 +731,28 @@ bool FormDataImporter::ImportAddressProfileForSection(
   const std::string predicted_country_code = GetPredictedCountryCode(
       candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
       import_log_buffer);
-  // If the form doesn't contain a country field, complement the profile using
-  // |predicted_country_code|. To give users the opportunity to edit, this is
-  // only done with explicit save prompts enabled.
-  // TODO(crbug.com/1297032): Cleanup kAutofillComplementCountryCodeOnImport
-  // check when launched.
-  if (!has_invalid_country &&
-      candidate_profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillAddressProfileSavePrompt) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillComplementCountryCodeOnImport)) {
-    candidate_profile.SetInfoWithVerificationStatus(
-        AutofillType(ADDRESS_HOME_COUNTRY),
-        base::ASCIIToUTF16(predicted_country_code), app_locale_,
-        VerificationStatus::kObserved);
-    import_metadata.did_complement_country = true;
-  }
 
-  // Construct the phone number. Reject the whole profile if the number is
-  // invalid, unless |kAutofillRemoveInvalidPhoneNumberOnImport| is enabled.
-  if (!combined_phone.IsEmpty()) {
-    const std::string predicted_country_code_without_variation =
-        GetPredictedCountryCode(candidate_profile, "", app_locale_, nullptr);
-    // If kAutofillConsiderVariationCountryCodeForPhoneNumbers is enabled,
-    // a consistent country code prediction for addresses and phone numbers is
-    // used. Otherwise the variation service state is not considered for phone
-    // numbers. This makes a difference, if the country code cannot be found
-    // in the profile.
-    // ParseNumber() implicity accepts both a country code and a locale. This
-    // will be refactored with crbug/1296077. The parameter for
-    // SetInfoWithVerificationStatus() has to be consistent with ParseNumber().
-    // TODO(crbug.com/1295721): Cleanup when launched.
-    const std::string& phone_number_region =
-        predicted_country_code != predicted_country_code_without_variation &&
-                base::FeatureList::IsEnabled(
-                    features::
-                        kAutofillConsiderVariationCountryCodeForPhoneNumbers)
-            ? predicted_country_code
-            : app_locale_;
-    std::u16string constructed_number;
-    if (!combined_phone.ParseNumber(candidate_profile, phone_number_region,
-                                    &constructed_number) ||
-        !candidate_profile.SetInfoWithVerificationStatus(
-            AutofillType(PHONE_HOME_WHOLE_NUMBER), constructed_number,
-            phone_number_region, VerificationStatus::kObserved)) {
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
-        DCHECK(candidate_profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
-        import_metadata.did_remove_invalid_phone_number = true;
-      } else {
-        if (import_log_buffer) {
-          *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                             << "Invalid phone number." << CTag{};
-        }
-        has_invalid_phone_number = true;
+  // Only complement the country if no invalid country was entered in the form.
+  import_metadata.did_complement_country =
+      !has_invalid_country &&
+      ComplementCountry(candidate_profile, predicted_country_code);
+
+  if (!SetPhoneNumber(candidate_profile, combined_phone,
+                      predicted_country_code)) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
+      candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+      import_metadata.did_remove_invalid_phone_number = true;
+    } else {
+      has_invalid_phone_number = true;
+      if (import_log_buffer) {
+        *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                           << "Invalid phone number." << CTag{};
       }
     }
   }
 
-  // Filter unexpected values that are not shown in the settings.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillRemoveInaccessibleProfileValues)) {
-    const ServerFieldTypeSet inaccessible_fields =
-        candidate_profile.FindInaccessibleProfileValues(predicted_country_code);
-    candidate_profile.ClearFields(inaccessible_fields);
-    AutofillMetrics::LogRemovedSettingInaccessibleFields(
-        !inaccessible_fields.empty());
-    for (const ServerFieldType inaccessible_field : inaccessible_fields) {
-      AutofillMetrics::LogRemovedSettingInaccessibleField(
-          predicted_country_code, inaccessible_field);
-    }
-  }
+  RemoveInaccessibleProfileValues(candidate_profile, predicted_country_code);
 
   // Reject the profile if minimum address and validation requirements are not
   // met.
