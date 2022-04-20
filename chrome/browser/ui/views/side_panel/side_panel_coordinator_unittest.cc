@@ -481,3 +481,57 @@ TEST_F(SidePanelCoordinatorTest,
   EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
 }
+
+TEST_F(SidePanelCoordinatorTest,
+       SwitchBackToTabWithContextualEntryAfterClosingGlobal) {
+  // Open side panel to contextual entry and verify.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator_->Show(SidePanelEntry::Id::kSideSearch);
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(global_registry_->active_entry().has_value());
+  VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
+                               SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+
+  // Switch to another tab and verify the side panel is closed.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_FALSE(GetLastActiveEntryId().has_value());
+  EXPECT_FALSE(global_registry_->active_entry().has_value());
+  VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
+                               SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+
+  // Open a global entry and verify.
+  coordinator_->Show(SidePanelEntry::Id::kReadingList);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistanceAndValue(global_registry_->active_entry(),
+                               SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
+                               SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+
+  // Verify the panel closes but the first tab still has an active entry.
+  coordinator_->Toggle();
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(global_registry_->active_entry().has_value());
+  VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
+                               SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+
+  // Verify returning to the first tab reopens the side panel to the active
+  // contextual entry.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(global_registry_->active_entry().has_value());
+  VerifyEntryExistanceAndValue(contextual_registries_[0]->active_entry(),
+                               SidePanelEntry::Id::kSideSearch);
+  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+}

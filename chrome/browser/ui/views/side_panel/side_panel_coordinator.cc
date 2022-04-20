@@ -138,9 +138,9 @@ void SidePanelCoordinator::Close() {
     last_active_global_entry_id_ =
         global_registry_->active_entry().value()->id();
   }
-  // Reset active entry values for all registries since existence of an
-  // active_entry for a tab in any registry will trigger the side panel to be
-  // shown.
+  // Reset active entry values for all observed registries and clear cache for
+  // everything except remaining active entries (i.e. if another tab has an
+  // active contextual entry).
   global_registry_->ResetActiveEntry();
   if (auto* contextual_registry = GetActiveContextualRegistry())
     contextual_registry->ResetActiveEntry();
