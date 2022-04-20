@@ -126,9 +126,9 @@ DataTypeManagerImpl::DataTypeManagerImpl(
 
 DataTypeManagerImpl::~DataTypeManagerImpl() = default;
 
-void DataTypeManagerImpl::Configure(ModelTypeSet desired_types,
+void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
                                     const ConfigureContext& context) {
-  desired_types.PutAll(ControlTypes());
+  preferred_types.PutAll(ControlTypes());
 
   ModelTypeSet allowed_types = ControlTypes();
   // Add types with controllers.
@@ -136,7 +136,7 @@ void DataTypeManagerImpl::Configure(ModelTypeSet desired_types,
     allowed_types.Put(type);
   }
 
-  ConfigureImpl(Intersection(desired_types, allowed_types), context);
+  ConfigureImpl(Intersection(preferred_types, allowed_types), context);
 }
 
 void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
@@ -187,10 +187,10 @@ void DataTypeManagerImpl::PurgeForMigration(ModelTypeSet undesired_types) {
   ConfigureImpl(remainder, last_requested_context_);
 }
 
-void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet desired_types,
+void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet preferred_types,
                                         const ConfigureContext& context) {
   DCHECK_NE(context.reason, CONFIGURE_REASON_UNKNOWN);
-  DVLOG(1) << "Configuring for " << ModelTypeSetToDebugString(desired_types)
+  DVLOG(1) << "Configuring for " << ModelTypeSetToDebugString(preferred_types)
            << " with reason " << context.reason;
   if (state_ == STOPPING) {
     // You can not set a configuration while stopping.
@@ -208,7 +208,7 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet desired_types,
   // reliable way to determine if the requested set of enabled types matches the
   // current set.
 
-  preferred_types_ = desired_types;
+  preferred_types_ = preferred_types;
   last_requested_context_ = context;
 
   // Only proceed if we're in a steady state or retrying.

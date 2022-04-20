@@ -59,15 +59,15 @@ class DataTypeManager {
   static std::string ConfigureStatusToString(ConfigureStatus status);
 
   // Begins asynchronous configuration of data types.  Any currently
-  // running data types that are not in the desired_types set will be
-  // stopped.  Any stopped data types that are in the desired_types
+  // running data types that are not in the preferred_types set will be
+  // stopped.  Any stopped data types that are in the preferred_types
   // set will be started.  All other data types are left in their
   // current state.
   //
   // Note that you may call Configure() while configuration is in
   // progress.  Configuration will be complete only when the
-  // desired_types supplied in the last call to Configure is achieved.
-  virtual void Configure(ModelTypeSet desired_types,
+  // preferred_types supplied in the last call to Configure is achieved.
+  virtual void Configure(ModelTypeSet preferred_types,
                          const ConfigureContext& context) = 0;
 
   // Informs the data type manager that the ready-for-start status of a

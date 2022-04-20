@@ -41,7 +41,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ~DataTypeManagerImpl() override;
 
   // DataTypeManager interface.
-  void Configure(ModelTypeSet desired_types,
+  void Configure(ModelTypeSet preferred_types,
                  const ConfigureContext& context) override;
   void DataTypePreconditionChanged(ModelType type) override;
   void ResetDataTypeErrors() override;
@@ -134,7 +134,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   void NotifyStart();
   void NotifyDone(const ConfigureResult& result);
 
-  void ConfigureImpl(ModelTypeSet desired_types,
+  void ConfigureImpl(ModelTypeSet preferred_types,
                      const ConfigureContext& context);
 
   // Calls data type controllers of requested types to connect.
