@@ -2329,20 +2329,16 @@ scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
 }
 
 void PersonalDataManager::OnServerCreditCardsRefreshed() {
-  ProcessVirtualCardMetadataChanges();
+  ProcessCardArtUrlChanges();
 }
 
-void PersonalDataManager::ProcessVirtualCardMetadataChanges() {
+void PersonalDataManager::ProcessCardArtUrlChanges() {
   std::vector<GURL> updated_urls;
   for (auto& card : server_credit_cards_) {
-    // If this card is not enrolled for virtual cards or the url is not valid,
-    // continue.
-    if (card->virtual_card_enrollment_state() != CreditCard::ENROLLED ||
-        !card->card_art_url().is_valid()) {
+    if (!card->card_art_url().is_valid())
       continue;
-    }
 
-    // Otherwise try to find the old entry with the same url.
+    // Try to find the old entry with the same url.
     auto it = credit_card_art_images_.find(card->card_art_url());
     // No existing entry found.
     if (it == credit_card_art_images_.end())

@@ -794,9 +794,9 @@ class PersonalDataManager : public KeyedService,
   // Invoked when server credit card cache is refreshed.
   void OnServerCreditCardsRefreshed();
 
-  // Checks whether any virtual card metadata for server cards is new and makes
-  // corresponding changes.
-  void ProcessVirtualCardMetadataChanges();
+  // Checks whether any new card art url is synced. If so, attempt to fetch the
+  // image based on the url.
+  void ProcessCardArtUrlChanges();
 
   // Returns the number of server credit cards that have a valid credit card art
   // image.

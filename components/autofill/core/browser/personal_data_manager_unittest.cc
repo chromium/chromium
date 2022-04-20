@@ -1208,16 +1208,12 @@ TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *cached_image));
 }
 
-TEST_F(PersonalDataManagerMockTest, ProcessVirtualCardMetadataChanges) {
+TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
   CreditCard card = test::GetFullServerCard();
-  card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
   card.set_server_id("card_server_id");
   personal_data_->AddFullServerCreditCard(card);
   WaitForOnPersonalDataChanged();
 
-  card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
   card.set_server_id("card_server_id");
   card.set_card_art_url(GURL("https://www.example.com/card1"));
   std::vector<GURL> updated_urls;
