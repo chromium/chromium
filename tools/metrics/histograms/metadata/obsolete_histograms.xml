@@ -61734,7 +61734,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tombergan@chromium.org</owner>
-  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <owner>src/chrome/browser/data_saver/OWNERS</owner>
   <summary>
     Whether or not the server directed Chrome to blacklist the requested host on
     a bypass response.
@@ -82003,8 +82003,8 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>zea@chromium.org</owner>
   <summary>
-    Whether OAuth2 refresh token was available at the time when
-    SyncServiceImpl was starting backend.
+    Whether OAuth2 refresh token was available at the time when SyncServiceImpl
+    was starting backend.
   </summary>
 </histogram>
 

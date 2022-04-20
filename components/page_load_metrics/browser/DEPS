@@ -3,7 +3,6 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+components/blocklist",
-  "+components/data_reduction_proxy/core/browser",
   "+components/heavy_ad_intervention",
   "+components/keyed_service/content",
   "+components/keyed_service/core",

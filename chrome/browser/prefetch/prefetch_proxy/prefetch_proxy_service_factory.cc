@@ -4,7 +4,6 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
 
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -25,9 +24,7 @@ PrefetchProxyServiceFactory* PrefetchProxyServiceFactory::GetInstance() {
 PrefetchProxyServiceFactory::PrefetchProxyServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "PrefetchProxyService",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(DataReductionProxyChromeSettingsFactory::GetInstance());
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 PrefetchProxyServiceFactory::~PrefetchProxyServiceFactory() = default;
 
