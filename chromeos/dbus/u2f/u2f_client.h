@@ -106,6 +106,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
       const u2f::GetAlgorithmsRequest& request,
       DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) = 0;
 
+  // Get supported features of u2fd. Currently only "whether lacros WebAuthn is
+  // supported".
+  virtual void GetSupportedFeatures(
+      const u2f::GetSupportedFeaturesRequest& request,
+      DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) = 0;
+
  protected:
   U2FClient();
   virtual ~U2FClient();

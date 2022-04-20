@@ -86,4 +86,10 @@ void FakeU2FClient::GetAlgorithms(
   NOTREACHED();
 }
 
+void FakeU2FClient::GetSupportedFeatures(
+    const u2f::GetSupportedFeaturesRequest& request,
+    DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) {
+  NOTREACHED();
+}
+
 }  // namespace chromeos

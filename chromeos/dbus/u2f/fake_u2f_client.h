@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) FakeU2FClient : public U2FClient {
   void GetAlgorithms(
       const u2f::GetAlgorithmsRequest& request,
       DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) override;
+  void GetSupportedFeatures(
+      const u2f::GetSupportedFeaturesRequest& request,
+      DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) override;
 };
 
 }  // namespace chromeos

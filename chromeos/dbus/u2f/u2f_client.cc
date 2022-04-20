@@ -119,6 +119,9 @@ class U2FClientImpl : public U2FClient {
   void GetAlgorithms(
       const u2f::GetAlgorithmsRequest& request,
       DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) override;
+  void GetSupportedFeatures(
+      const u2f::GetSupportedFeaturesRequest& request,
+      DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) override;
 
  private:
   dbus::ObjectProxy* proxy_ = nullptr;
@@ -316,6 +319,20 @@ void U2FClientImpl::GetAlgorithms(
       &method_call, kU2FShortTimeout,
       base::BindOnce(&U2FClientImpl::HandleResponse<u2f::GetAlgorithmsResponse>,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void U2FClientImpl::GetSupportedFeatures(
+    const u2f::GetSupportedFeaturesRequest& request,
+    DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) {
+  dbus::MethodCall method_call(u2f::kU2FInterface,
+                               u2f::kU2FGetSupportedFeatures);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendProtoAsArrayOfBytes(request);
+  proxy_->CallMethod(
+      &method_call, kU2FShortTimeout,
+      base::BindOnce(
+          &U2FClientImpl::HandleResponse<u2f::GetSupportedFeaturesResponse>,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 }  // namespace
