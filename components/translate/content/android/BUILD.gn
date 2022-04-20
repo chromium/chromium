@@ -135,7 +135,6 @@ source_set("unit_tests") {
     "//components/translate/core/common",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base",
     "//url",
   ]
 }

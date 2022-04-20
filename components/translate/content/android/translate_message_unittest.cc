@@ -29,7 +29,6 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace translate {
@@ -64,20 +63,9 @@ class TestBridge : public TranslateMessage::Bridge {
               (override));
 
   MOCK_METHOD(void,
-              ShowBeforeTranslateMessage,
+              ShowMessage,
               (JNIEnv*,
                base::android::ScopedJavaLocalRef<jstring>,
-               base::android::ScopedJavaLocalRef<jstring>),
-              (override));
-  MOCK_METHOD(void,
-              ShowTranslationInProgressMessage,
-              (JNIEnv*,
-               base::android::ScopedJavaLocalRef<jstring>,
-               base::android::ScopedJavaLocalRef<jstring>),
-              (override));
-  MOCK_METHOD(void,
-              ShowAfterTranslateMessage,
-              (JNIEnv*,
                base::android::ScopedJavaLocalRef<jstring>,
                base::android::ScopedJavaLocalRef<jstring>),
               (override));
@@ -124,12 +112,6 @@ class TestTranslateDriver : public testing::MockTranslateDriver {
 
 TestTranslateDriver::~TestTranslateDriver() = default;
 
-std::u16string GetLanguageDisplayName(const std::string& language_code) {
-  if (language_code == kUnknownLanguageCode)
-    return TranslateUIDelegate::GetUnknownLanguageDisplayName();
-  return l10n_util::GetDisplayNameForLocale(language_code, "en", true);
-}
-
 class JavaStringMatcher {
  public:
   JavaStringMatcher(JNIEnv* env, std::u16string expected)
@@ -144,6 +126,15 @@ class JavaStringMatcher {
   raw_ptr<JNIEnv> env_;
   std::u16string expected_;
 };
+
+bool IsJavaStringNonNull(
+    const base::android::ScopedJavaLocalRef<jstring>& java_string) {
+  return static_cast<bool>(java_string);
+}
+bool IsJavaStringNull(
+    const base::android::ScopedJavaLocalRef<jstring>& java_string) {
+  return !java_string;
+}
 
 base::android::ScopedJavaLocalRef<jobjectArray> CreateTestJobjectArray(
     JNIEnv* env) {
@@ -181,13 +172,12 @@ class TranslateMessageTest : public ::testing::Test {
     EXPECT_CALL(*bridge_, CreateTranslateMessage(
                               env, _, _, kDefaultDismissalDurationSeconds));
 
-    EXPECT_CALL(*bridge_,
-                ShowBeforeTranslateMessage(
-                    env,
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(source_language_code))),
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(target_language_code)))));
+    EXPECT_CALL(
+        *bridge_,
+        ShowMessage(env,
+                    /*title=*/Truly(IsJavaStringNonNull),
+                    /*description=*/Truly(IsJavaStringNonNull),
+                    /*primary_button_text=*/Truly(IsJavaStringNonNull)));
 
     translate_message_->ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE,
                                           source_language_code,
@@ -200,12 +190,10 @@ class TranslateMessageTest : public ::testing::Test {
                                    const std::string& source_language_code,
                                    const std::string& target_language_code) {
     EXPECT_CALL(*bridge_,
-                ShowTranslationInProgressMessage(
-                    env,
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(source_language_code))),
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(target_language_code)))));
+                ShowMessage(env,
+                            /*title=*/Truly(IsJavaStringNonNull),
+                            /*description=*/Truly(IsJavaStringNonNull),
+                            /*primary_button_text=*/Truly(IsJavaStringNull)));
 
     EXPECT_CALL(
         *client_,
@@ -223,13 +211,12 @@ class TranslateMessageTest : public ::testing::Test {
   void FinishTranslation(JNIEnv* env,
                          const std::string& source_language_code,
                          const std::string& target_language_code) {
-    EXPECT_CALL(*bridge_,
-                ShowAfterTranslateMessage(
-                    env,
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(source_language_code))),
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(target_language_code)))));
+    EXPECT_CALL(
+        *bridge_,
+        ShowMessage(env,
+                    /*title=*/Truly(IsJavaStringNonNull),
+                    /*description=*/Truly(IsJavaStringNonNull),
+                    /*primary_button_text=*/Truly(IsJavaStringNonNull)));
 
     EXPECT_CALL(
         *client_,
@@ -254,13 +241,12 @@ class TranslateMessageTest : public ::testing::Test {
                                 const std::string& target_language_code) {
     EXPECT_CALL(driver_, RevertTranslation(_));
 
-    EXPECT_CALL(*bridge_,
-                ShowBeforeTranslateMessage(
-                    env,
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(source_language_code))),
-                    Truly(JavaStringMatcher(
-                        env, GetLanguageDisplayName(target_language_code)))));
+    EXPECT_CALL(
+        *bridge_,
+        ShowMessage(env,
+                    /*title=*/Truly(IsJavaStringNonNull),
+                    /*description=*/Truly(IsJavaStringNonNull),
+                    /*primary_button_text=*/Truly(IsJavaStringNonNull)));
   }
 
   void ExpectConstructMenuItemArray(
@@ -395,11 +381,11 @@ TEST_F(TranslateMessageTest, ShowErrorBeforeTranslation) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds));
   EXPECT_CALL(*bridge_, ShowTranslateError(env, _));
-  EXPECT_CALL(
-      *bridge_,
-      ShowBeforeTranslateMessage(
-          env, Truly(JavaStringMatcher(env, GetLanguageDisplayName("fr"))),
-          Truly(JavaStringMatcher(env, GetLanguageDisplayName("en")))));
+  EXPECT_CALL(*bridge_,
+              ShowMessage(env,
+                          /*title=*/Truly(IsJavaStringNonNull),
+                          /*description=*/Truly(IsJavaStringNonNull),
+                          /*primary_button_text=*/Truly(IsJavaStringNonNull)));
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_TRANSLATE_ERROR, "fr",
                                         "en");
@@ -416,11 +402,11 @@ TEST_F(TranslateMessageTest, ShowErrorAfterTranslation) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds));
   EXPECT_CALL(*bridge_, ShowTranslateError(env, _));
-  EXPECT_CALL(
-      *bridge_,
-      ShowAfterTranslateMessage(
-          env, Truly(JavaStringMatcher(env, GetLanguageDisplayName("fr"))),
-          Truly(JavaStringMatcher(env, GetLanguageDisplayName("en")))));
+  EXPECT_CALL(*bridge_,
+              ShowMessage(env,
+                          /*title=*/Truly(IsJavaStringNonNull),
+                          /*description=*/Truly(IsJavaStringNonNull),
+                          /*primary_button_text=*/Truly(IsJavaStringNonNull)));
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_TRANSLATE_ERROR, "fr",
                                         "en");

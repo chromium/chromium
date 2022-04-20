@@ -52,12 +52,6 @@
   <message name="IDS_TRANSLATE_INFOBAR_RETRY" desc="Text to show for translate infobar to retry translation of page">
     Try again
   </message>
-  <message name="IDS_TRANSLATE_MESSAGE_ALWAYS_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Always Translate' option to indicate that they want the app to translate pages in this language automatically. Imperative.">
-    Always translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
-  </message>
-  <message name="IDS_TRANSLATE_MESSAGE_NEVER_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Never Translate' option to indicate that they never want the app to translate pages in this language. Imperative.">
-    Never translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
-  </message>
 
   <if expr="is_android">
       <message name="IDS_TRANSLATE_INFOBAR_ERROR" formatter_data="android_java">
@@ -101,14 +95,23 @@
         Cancel
       </message>
 
-      <message name="IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE" desc="A text label on the translate message popup that prompts the user to translate the page." formatter_data="android_java">
+      <message name="IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE" desc="A text label on the translate message popup that prompts the user to translate the page.">
         Translate page?
       </message>
-      <message name="IDS_TRANSLATE_MESSAGE_AFTER_TRANSLATE_TITLE" desc="A text label on the translate message popup that announces to the user that Chrome has finished translating the page." formatter_data="android_java">
+      <message name="IDS_TRANSLATE_MESSAGE_AFTER_TRANSLATE_TITLE" desc="A text label on the translate message popup that announces to the user that Chrome has finished translating the page.">
         Page translated
       </message>
-      <message name="IDS_TRANSLATE_MESSAGE_DESCRIPTION" desc="A text label on the translate message popup that lets the user know what the source and target languages are for translating the page." formatter_data="android_java">
-        <ph name="source_language">%1$s<ex>French</ex></ph> to <ph name="target_language">%2$s<ex>English</ex></ph>
+      <message name="IDS_TRANSLATE_MESSAGE_DESCRIPTION" desc="A text label on the translate message popup that lets the user know what the source and target languages are for translating the page.">
+        <ph name="source_language">$1<ex>French</ex></ph> to <ph name="target_language">$2<ex>English</ex></ph>
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_UNDO_BUTTON" desc="A text label for the button on the translate message popup that, when clicked, will undo the translation.">
+        Undo
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_ALWAYS_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Always Translate' option to indicate that they want the app to translate pages in this language automatically. Imperative.">
+        Always translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_NEVER_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Never Translate' option to indicate that they never want the app to translate pages in this language. Imperative.">
+        Never translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
       </message>
   </if>
 

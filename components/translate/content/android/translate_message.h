@@ -94,23 +94,11 @@ class TranslateMessage {
     virtual void ShowTranslateError(JNIEnv* env,
                                     content::WebContents* web_contents) = 0;
 
-    virtual void ShowBeforeTranslateMessage(
+    virtual void ShowMessage(
         JNIEnv* env,
-        base::android::ScopedJavaLocalRef<jstring> source_language_display_name,
-        base::android::ScopedJavaLocalRef<jstring>
-            target_language_display_name) = 0;
-
-    virtual void ShowTranslationInProgressMessage(
-        JNIEnv* env,
-        base::android::ScopedJavaLocalRef<jstring> source_language_display_name,
-        base::android::ScopedJavaLocalRef<jstring>
-            target_language_display_name) = 0;
-
-    virtual void ShowAfterTranslateMessage(
-        JNIEnv* env,
-        base::android::ScopedJavaLocalRef<jstring> source_language_display_name,
-        base::android::ScopedJavaLocalRef<jstring>
-            target_language_display_name) = 0;
+        base::android::ScopedJavaLocalRef<jstring> title,
+        base::android::ScopedJavaLocalRef<jstring> description,
+        base::android::ScopedJavaLocalRef<jstring> primary_button_text) = 0;
 
     virtual base::android::ScopedJavaLocalRef<jobjectArray>
     ConstructMenuItemArray(
