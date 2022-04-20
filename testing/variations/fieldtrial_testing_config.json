@@ -8367,6 +8367,24 @@
             ]
         }
     ],
+    "WebRTC-SlackedTaskQueuePacedSender": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-TaskQueuePacer": [
         {
             "platforms": [
