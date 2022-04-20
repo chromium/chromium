@@ -60,6 +60,17 @@ TEST(MirrorLandingAccountReconcilorDelegateTest,
                 gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER),
             (std::vector<CoreAccountId>{kPrimaryAccountId, kOtherAccountId2,
                                         kOtherAccountId1}));
+  // Primary account error causes a logout.
+  EXPECT_TRUE(
+      delegate
+          .GetChromeAccountsForReconcile(
+              /*chrome_accounts=*/{kPrimaryAccountId, kOtherAccountId1},
+              /*primary_account=*/kPrimaryAccountId,
+              /*gaia_accounts=*/{gaia_account_primary, gaia_account_1},
+              /*first_execution=*/true,
+              /*primary_has_error=*/true,
+              gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER)
+          .empty());
 }
 
 }  // namespace signin

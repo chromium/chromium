@@ -29,7 +29,7 @@ gaia::GaiaSource MirrorLandingAccountReconcilorDelegate::GetGaiaApiSource()
 
 bool MirrorLandingAccountReconcilorDelegate::
     ShouldAbortReconcileIfPrimaryHasError() const {
-  return true;
+  return false;
 }
 
 ConsentLevel
@@ -46,9 +46,10 @@ MirrorLandingAccountReconcilorDelegate::GetChromeAccountsForReconcile(
     bool first_execution,
     bool primary_has_error,
     const gaia::MultiloginMode mode) const {
-  DCHECK(!primary_has_error);
   DCHECK_EQ(mode,
             gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);
+  if (primary_has_error)
+    return {};  // Log out all accounts.
   return ReorderChromeAccountsForReconcile(chrome_accounts, primary_account,
                                            gaia_accounts);
 }
