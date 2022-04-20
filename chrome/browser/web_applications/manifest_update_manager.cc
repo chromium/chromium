@@ -26,7 +26,7 @@ ManifestUpdateManager::ManifestUpdateManager() = default;
 ManifestUpdateManager::~ManifestUpdateManager() = default;
 
 void ManifestUpdateManager::SetSubsystems(
-    raw_ptr<WebAppInstallManager> install_manager,
+    WebAppInstallManager* install_manager,
     WebAppRegistrar* registrar,
     WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,

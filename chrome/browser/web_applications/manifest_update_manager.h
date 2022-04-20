@@ -48,7 +48,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
 
-  void SetSubsystems(raw_ptr<WebAppInstallManager> install_manager_,
+  void SetSubsystems(WebAppInstallManager* install_manager,
                      WebAppRegistrar* registrar,
                      WebAppIconManager* icon_manager,
                      WebAppUiManager* ui_manager,
