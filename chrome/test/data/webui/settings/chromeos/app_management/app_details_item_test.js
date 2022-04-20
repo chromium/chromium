@@ -266,4 +266,67 @@ suite('<app-management-app-details-item>', () => {
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
         'Version: 13.1.52');
   });
+
+  test('Android type storage', async function() {
+    const options = {
+      type: apps.mojom.AppType.kArc,
+      installSource: apps.mojom.InstallSource.kUnknown,
+      appSize: '17 MB',
+    };
+
+    const options2 = {
+      type: apps.mojom.AppType.kArc,
+      installSource: apps.mojom.InstallSource.kUnknown,
+      appSize: '17 MB',
+      dataSize: '124.6 GB',
+    };
+
+    // Add Android app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app', options);
+    const app2 = await fakeHandler.addApp('app2', options2);
+
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
+
+    appDetailsItem.app = app;
+
+    replaceBody(appDetailsItem);
+    fakeHandler.flushPipesForTesting();
+    flushTasks();
+
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#storage-title'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#app-size'));
+    assertFalse(!!appDetailsItem.shadowRoot.querySelector('#data-size'));
+
+    expectEquals(
+        appDetailsItem.shadowRoot.querySelector('#app-size').textContent.trim(),
+        'App size: 17 MB');
+
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app2.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app2.id]);
+
+    appDetailsItem.app = app2;
+
+    replaceBody(appDetailsItem);
+    fakeHandler.flushPipesForTesting();
+    flushTasks();
+
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#storage-title'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#app-size'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#data-size'));
+
+    expectEquals(
+        appDetailsItem.shadowRoot.querySelector('#app-size').textContent.trim(),
+        'App size: 17 MB');
+    expectEquals(
+        appDetailsItem.shadowRoot.querySelector('#data-size')
+            .textContent.trim(),
+        'Data stored in app: 124.6 GB');
+  });
 });
