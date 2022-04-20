@@ -62,6 +62,25 @@
       self.textAlignment ? self.textAlignment : NSTextAlignmentNatural;
   cell.detailTextLabel.textAlignment =
       self.textAlignment ? self.textAlignment : NSTextAlignmentNatural;
+
+  // Accessory symbol.
+  switch (self.accessorySymbol) {
+    case TableViewDetailTextCellAccessorySymbolChevron:
+      cell.accessoryView = [[UIImageView alloc]
+          initWithImage:[UIImage systemImageNamed:@"chevron.forward"]];
+      break;
+    case TableViewDetailTextCellAccessorySymbolExternalLink:
+      cell.accessoryView = [[UIImageView alloc]
+          initWithImage:[UIImage systemImageNamed:@"arrow.up.forward.square"]];
+      break;
+    case TableViewDetailTextCellAccessorySymbolNone:
+      cell.accessoryView = nil;
+      break;
+  }
+  if (cell.accessoryView) {
+    // Hard code color until other use cases arise.
+    cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+  }
 }
 
 @end
@@ -143,6 +162,7 @@
   [super prepareForReuse];
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
+  self.accessoryView = nil;
 }
 
 #pragma mark - UIView

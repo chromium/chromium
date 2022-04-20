@@ -237,6 +237,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:noDetailTextItem
       toSectionWithIdentifier:SectionIdentifierText];
 
+  TableViewDetailTextItem* chevronAccessorySymbolItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeDetailText];
+  chevronAccessorySymbolItem.text = @"Text on first line.";
+  chevronAccessorySymbolItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolChevron;
+  [model addItem:chevronAccessorySymbolItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewDetailTextItem* externalLinkAccessorySymbolItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeDetailText];
+  externalLinkAccessorySymbolItem.text = @"Text on first line.";
+  externalLinkAccessorySymbolItem.detailText = @"Detail item on second line";
+  externalLinkAccessorySymbolItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
+  [model addItem:externalLinkAccessorySymbolItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
   TableViewDetailIconItem* detailIconItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   detailIconItem.text = @"Detail Icon Item Cell";

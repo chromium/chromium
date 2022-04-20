@@ -10,6 +10,13 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
+// Accessory symbol at the leading edge of the cell. These are SF Symbols only.
+typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
+  TableViewDetailTextCellAccessorySymbolNone = 0,
+  TableViewDetailTextCellAccessorySymbolChevron,
+  TableViewDetailTextCellAccessorySymbolExternalLink,
+};
+
 // TableViewDetailTextItem contains the model data for a
 // TableViewDetailTextCell.
 @interface TableViewDetailTextItem : TableViewItem
@@ -30,6 +37,12 @@
 @property(nonatomic, strong) UIColor* detailTextColor;
 // Detail text to be displayed.
 @property(nonatomic, strong) NSString* detailText;
+
+// The accessory symbol associated with this item.
+// The default color is |kTextQuaternaryColor| and is not currently
+// configurable.
+@property(nonatomic, assign)
+    TableViewDetailTextCellAccessorySymbol accessorySymbol;
 
 @end
 

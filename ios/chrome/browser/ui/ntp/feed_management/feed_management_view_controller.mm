@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -65,11 +64,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [model addSectionWithIdentifier:FollowingSectionIdentifier];
 
-  TableViewTextItem* followingItem =
-      [[TableViewTextItem alloc] initWithType:FollowingItemType];
+  TableViewDetailTextItem* followingItem =
+      [[TableViewDetailTextItem alloc] initWithType:FollowingItemType];
   followingItem.text =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT);
-  followingItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  followingItem.accessorySymbol = TableViewDetailTextCellAccessorySymbolChevron;
   [model addItem:followingItem
       toSectionWithIdentifier:FollowingSectionIdentifier];
 
@@ -81,7 +80,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT);
   interestsItem.detailText =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL);
-  interestsItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  interestsItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
   [model addItem:interestsItem toSectionWithIdentifier:OtherSectionIdentifier];
 
   TableViewDetailTextItem* hiddenItem =
@@ -89,7 +89,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   hiddenItem.text = l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_HIDDEN_TEXT);
   hiddenItem.detailText =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_HIDDEN_DETAIL);
-  hiddenItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  hiddenItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
   [model addItem:hiddenItem toSectionWithIdentifier:OtherSectionIdentifier];
 
   TableViewDetailTextItem* activityItem =
@@ -98,7 +99,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_TEXT);
   activityItem.detailText =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL);
-  activityItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  activityItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
   [model addItem:activityItem toSectionWithIdentifier:OtherSectionIdentifier];
 }
 
