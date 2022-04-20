@@ -117,9 +117,8 @@ bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
     return false;
   // Query the Autofill StrikeDatabase on if we should pop up the
   // offer-to-save prompt for this card.
-  show_save_prompt_ =
-      !GetCreditCardSaveStrikeDatabase()->IsMaxStrikesLimitReached(
-          base::UTF16ToUTF8(local_card_save_candidate_.LastFourDigits()));
+  show_save_prompt_ = !GetCreditCardSaveStrikeDatabase()->ShouldBlockFeature(
+      base::UTF16ToUTF8(local_card_save_candidate_.LastFourDigits()));
   OfferCardLocalSave();
   return show_save_prompt_.value_or(false);
 }
@@ -279,9 +278,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
   // Query the Autofill StrikeDatabase on if we should pop up the
   // offer-to-save prompt for this card.
-  show_save_prompt_ =
-      !GetCreditCardSaveStrikeDatabase()->IsMaxStrikesLimitReached(
-          base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
+  show_save_prompt_ = !GetCreditCardSaveStrikeDatabase()->ShouldBlockFeature(
+      base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
   payments_client_->GetUploadDetails(
       country_only_profiles, upload_request_.detected_values,
       upload_request_.active_experiments, app_locale_,

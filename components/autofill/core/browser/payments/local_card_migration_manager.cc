@@ -80,7 +80,7 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
   }
 
   // Don't show the prompt if max strike count was reached.
-  if (GetLocalCardMigrationStrikeDatabase()->IsMaxStrikesLimitReached()) {
+  if (GetLocalCardMigrationStrikeDatabase()->ShouldBlockFeature()) {
     switch (imported_credit_card_record_type_) {
       case FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD:
         AutofillMetrics::LogLocalCardMigrationNotOfferedDueToMaxStrikesMetric(

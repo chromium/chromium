@@ -1563,7 +1563,7 @@ bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
     return false;
   }
 
-  return GetProfileSaveStrikeDatabase()->IsMaxStrikesLimitReached(url.host());
+  return GetProfileSaveStrikeDatabase()->ShouldBlockFeature(url.host());
 }
 
 void PersonalDataManager::AddStrikeToBlockNewProfileImportForDomain(
@@ -1590,7 +1590,7 @@ bool PersonalDataManager::IsProfileUpdateBlocked(
     return false;
   }
 
-  return GetProfileUpdateStrikeDatabase()->IsMaxStrikesLimitReached(guid);
+  return GetProfileUpdateStrikeDatabase()->ShouldBlockFeature(guid);
 }
 
 void PersonalDataManager::AddStrikeToBlockProfileUpdate(

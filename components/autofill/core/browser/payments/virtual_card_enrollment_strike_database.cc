@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_strike_database.h"
 
+#include "base/feature_list.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -66,6 +67,17 @@ VirtualCardEnrollmentStrikeDatabase::GetExpiryTimeDelta() const {
 
 bool VirtualCardEnrollmentStrikeDatabase::UniqueIdsRequired() const {
   return true;
+}
+
+absl::optional<base::TimeDelta>
+VirtualCardEnrollmentStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnforceDelaysInStrikeDatabase)) {
+    return absl::optional<base::TimeDelta>(base::Days(
+        features::kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays.Get()));
+  }
+
+  return absl::nullopt;
 }
 
 }  // namespace autofill

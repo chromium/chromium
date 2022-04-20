@@ -148,10 +148,13 @@ class VirtualCardEnrollmentManager {
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
 
-  // Returns true if a credit card identified by its |instrument_id| is
+  // Returns true if a credit card identified by its |instrument_id| should be
   // blocked for virtual card enrollment and is not attempting to enroll from
-  // the settings page. Does nothing if the strike database is not available.
-  bool IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
+  // the settings page. Currently we block enrollment offer if the user has
+  // reached the limit of strikes or if the required delay time since last
+  // strike has not passed yet. Does nothing if the strike database is not
+  // available.
+  bool ShouldBlockVirtualCardEnrollment(
       const std::string& instrument_id,
       VirtualCardEnrollmentSource virtual_card_enrollment_source) const;
 
@@ -247,6 +250,10 @@ class VirtualCardEnrollmentManager {
                            StrikeDatabase_SettingsPageNotBlocked);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            VirtualCardEnrollmentFields_LastShow);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           RequiredDelaySinceLastStrike_ExpOn);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           RequiredDelaySinceLastStrike_ExpOff);
 
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s

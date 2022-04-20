@@ -28,18 +28,26 @@ static const char kSharedId[] = "shared_id";
 // be loaded once per browser session.
 class StrikeDatabaseIntegratorBase {
  public:
+  // Reason why the feature should be blocked.
+  enum BlockedReason {
+    // Unknown reason, default value.
+    kUnknown = 0,
+    // Feature not offered due to max strike limit has been reached.
+    kMaxStrikeLimitReached = 1,
+    // Feature not offered due to required delay since last strike has not
+    // passed yet.
+    kRequiredLatencyNotPassed = 2,
+  };
+
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();
 
-  // TODO(crbug.com/1304328): Rename this to ShouldBlockFeature...() since this
-  // takes both strikes and time delays.
-  // Returns whether or not strike count for |id| has reached the strike limit
-  // set by GetMaxStrikesLimit().
-  bool IsMaxStrikesLimitReached(const std::string& id = kSharedId) const;
-
-  // Returns whether or not |GetOfferDelayTimeDelta()| has passed since last
-  // strike was logged for candidate with |id|.
-  bool HasDelayPassedSinceLastStrike(const std::string& id = kSharedId) const;
+  // Returns whether a particular feature should be blocked (not offered) for
+  // the given |id|. The |blocked_reason|, if provided, will be populated with
+  // the reason why the feature should be blocked.
+  bool ShouldBlockFeature(const std::string& id,
+                          BlockedReason* blocked_reason = nullptr) const;
+  bool ShouldBlockFeature(BlockedReason* blocked_reason = nullptr) const;
 
   // Increments in-memory cache and updates underlying ProtoDatabase.
   int AddStrike(const std::string& id = kSharedId);

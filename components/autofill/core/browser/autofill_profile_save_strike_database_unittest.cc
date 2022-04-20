@@ -69,15 +69,15 @@ class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
 TEST_F(AutofillProfileSaveStrikeDatabaseTest, AddAndRemoveStrikes) {
   strike_database_->AddStrike(test_host1);
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
-  EXPECT_FALSE(strike_database_->IsMaxStrikesLimitReached(test_host1));
+  EXPECT_FALSE(strike_database_->ShouldBlockFeature(test_host1));
 
   strike_database_->AddStrikes(2, test_host1);
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 3);
-  EXPECT_TRUE(strike_database_->IsMaxStrikesLimitReached(test_host1));
+  EXPECT_TRUE(strike_database_->ShouldBlockFeature(test_host1));
 
   strike_database_->RemoveStrike(test_host1);
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 2);
-  EXPECT_FALSE(strike_database_->IsMaxStrikesLimitReached(test_host1));
+  EXPECT_FALSE(strike_database_->ShouldBlockFeature(test_host1));
 }
 
 TEST_F(AutofillProfileSaveStrikeDatabaseTest,

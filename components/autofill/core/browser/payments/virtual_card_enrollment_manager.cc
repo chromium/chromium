@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_strike_database.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/strike_database_base.h"
@@ -67,7 +68,7 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
   // If at strike limit, exit enrollment flow.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment) &&
-      IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
+      ShouldBlockVirtualCardEnrollment(
           base::NumberToString(credit_card.instrument_id()),
           virtual_card_enrollment_source)) {
     return;
@@ -173,10 +174,9 @@ void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {
                      VirtualCardEnrollmentRequestType::kUnenroll));
 }
 
-bool VirtualCardEnrollmentManager::
-    IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-        const std::string& instrument_id,
-        VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
+bool VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
+    const std::string& instrument_id,
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
   if (virtual_card_enrollment_source ==
       VirtualCardEnrollmentSource::kSettingsPage)
     return false;
@@ -184,14 +184,27 @@ bool VirtualCardEnrollmentManager::
   if (!GetVirtualCardEnrollmentStrikeDatabase())
     return false;
 
-  bool max_strikes_limit_reached =
-      GetVirtualCardEnrollmentStrikeDatabase()->IsMaxStrikesLimitReached(
-          instrument_id);
-  if (max_strikes_limit_reached) {
-    LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
-        virtual_card_enrollment_source);
+  VirtualCardEnrollmentStrikeDatabase::BlockedReason reason =
+      VirtualCardEnrollmentStrikeDatabase::kUnknown;
+  if (!GetVirtualCardEnrollmentStrikeDatabase()->ShouldBlockFeature(
+          instrument_id, &reason)) {
+    return false;
   }
-  return max_strikes_limit_reached;
+
+  switch (reason) {
+    case VirtualCardEnrollmentStrikeDatabase::kMaxStrikeLimitReached:
+      LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
+          virtual_card_enrollment_source);
+      break;
+    case VirtualCardEnrollmentStrikeDatabase::kRequiredLatencyNotPassed:
+      // TODO(crbug.com/1304328): Add logging to record this reason.
+      break;
+    case VirtualCardEnrollmentStrikeDatabase::kUnknown:
+      NOTREACHED();
+      break;
+  }
+
+  return true;
 }
 
 void VirtualCardEnrollmentManager::

@@ -899,7 +899,7 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   // offer it.
   if (GetOrCreateFIDOAuthenticator()
           ->GetOrCreateFidoAuthenticationStrikeDatabase()
-          ->IsMaxStrikesLimitReached()) {
+          ->ShouldBlockFeature()) {
     return false;
   }
 

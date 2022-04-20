@@ -58,16 +58,16 @@ TEST_F(VirtualCardEnrollmentStrikeDatabaseTest, AddAndRemoveStrikes) {
   EXPECT_EQ(strike_database_->GetStrikes(test_guid), 0);
   strike_database_->AddStrike(test_guid);
   EXPECT_EQ(strike_database_->GetStrikes(test_guid), 1);
-  EXPECT_FALSE(strike_database_->IsMaxStrikesLimitReached(test_guid));
+  EXPECT_FALSE(strike_database_->ShouldBlockFeature(test_guid));
 
   strike_database_->AddStrikes(max_strikes - 1, test_guid);
   EXPECT_EQ(strike_database_->GetStrikes(test_guid), max_strikes);
   EXPECT_EQ(strike_database_->GetMaxStrikesLimit(), max_strikes);
-  EXPECT_TRUE(strike_database_->IsMaxStrikesLimitReached(test_guid));
+  EXPECT_TRUE(strike_database_->ShouldBlockFeature(test_guid));
 
   strike_database_->RemoveStrike(test_guid);
   EXPECT_EQ(strike_database_->GetStrikes(test_guid), max_strikes - 1);
-  EXPECT_FALSE(strike_database_->IsMaxStrikesLimitReached(test_guid));
+  EXPECT_FALSE(strike_database_->ShouldBlockFeature(test_guid));
 }
 
 // Test to ensure that IsLastOffer works correctly.

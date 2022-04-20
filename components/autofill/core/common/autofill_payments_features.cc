@@ -19,8 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace autofill {
-namespace features {
+namespace autofill::features {
 
 // Features
 
@@ -207,6 +206,13 @@ const base::Feature kAutofillUpstreamAllowAdditionalEmailDomains{
 const base::Feature kAutofillUpstreamAllowAllEmailDomains{
     "AutofillUpstreamAllowAllEmailDomains", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The delay required since the last strike before offering another virtual card
+// enrollment attempt.
+const base::FeatureParam<int>
+    kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays{
+        &kAutofillEnforceDelaysInStrikeDatabase,
+        "autofill_virtual_card_enroll_delay_in_strike_database_in_days", 7};
+
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -220,5 +226,4 @@ bool ShouldShowImprovedUserConsentForCreditCardSave() {
 #endif
 }
 
-}  // namespace features
-}  // namespace autofill
+}  // namespace autofill::features

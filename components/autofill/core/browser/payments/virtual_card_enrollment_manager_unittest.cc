@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
@@ -127,17 +128,15 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     personal_data_manager_->SetPaymentsCustomerData(
         std::make_unique<PaymentsCustomerData>("123456"));
     EXPECT_FALSE(
-        virtual_card_enrollment_manager_
-            ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                base::NumberToString(state->virtual_card_enrollment_fields
-                                         .credit_card.instrument_id()),
-                VirtualCardEnrollmentSource::kUpstream));
+        virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+            base::NumberToString(state->virtual_card_enrollment_fields
+                                     .credit_card.instrument_id()),
+            VirtualCardEnrollmentSource::kUpstream));
     EXPECT_FALSE(
-        virtual_card_enrollment_manager_
-            ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                base::NumberToString(state->virtual_card_enrollment_fields
-                                         .credit_card.instrument_id()),
-                VirtualCardEnrollmentSource::kDownstream));
+        virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+            base::NumberToString(state->virtual_card_enrollment_fields
+                                     .credit_card.instrument_id()),
+            VirtualCardEnrollmentSource::kDownstream));
   }
 
  protected:
@@ -635,16 +634,16 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
 
   raw_ptr<VirtualCardEnrollmentProcessState> state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  EXPECT_TRUE(virtual_card_enrollment_manager_
-                  ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                      base::NumberToString(state->virtual_card_enrollment_fields
-                                               .credit_card.instrument_id()),
-                      VirtualCardEnrollmentSource::kUpstream));
-  EXPECT_TRUE(virtual_card_enrollment_manager_
-                  ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                      base::NumberToString(state->virtual_card_enrollment_fields
-                                               .credit_card.instrument_id()),
-                      VirtualCardEnrollmentSource::kDownstream));
+  EXPECT_TRUE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(state->virtual_card_enrollment_fields.credit_card
+                                   .instrument_id()),
+          VirtualCardEnrollmentSource::kUpstream));
+  EXPECT_TRUE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(state->virtual_card_enrollment_fields.credit_card
+                                   .instrument_id()),
+          VirtualCardEnrollmentSource::kDownstream));
 }
 
 TEST_F(VirtualCardEnrollmentManagerTest,
@@ -661,13 +660,12 @@ TEST_F(VirtualCardEnrollmentManagerTest,
 
   // Make sure enrollment is not blocked through settings page.
   EXPECT_FALSE(
-      virtual_card_enrollment_manager_
-          ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-              base::NumberToString(virtual_card_enrollment_manager_
-                                       ->GetVirtualCardEnrollmentProcessState()
-                                       ->virtual_card_enrollment_fields
-                                       .credit_card.instrument_id()),
-              VirtualCardEnrollmentSource::kSettingsPage));
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(
+              virtual_card_enrollment_manager_
+                  ->GetVirtualCardEnrollmentProcessState()
+                  ->virtual_card_enrollment_fields.credit_card.instrument_id()),
+          VirtualCardEnrollmentSource::kSettingsPage));
 }
 
 // Test to ensure that the |last_show| inside a VirtualCardEnrollmentFields is
@@ -707,6 +705,93 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
   virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
   EXPECT_TRUE(state->virtual_card_enrollment_fields.last_show);
 }
+
+// Test to ensure that the required delay since the last strike is respected
+// before Chrome offers another virtual card enrollment for the card, when the
+// |kAutofillEnforceDelaysInStrikeDatabase| is enabled.
+TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike_ExpOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnforceDelaysInStrikeDatabase);
+  SetUpStrikeDatabaseTest();
+  TestAutofillClock test_autofill_clock(AutofillClock::Now());
+  raw_ptr<VirtualCardEnrollmentProcessState> state =
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
+  SetUpCard();
+  card_->set_instrument_id(11223344);
+  state->virtual_card_enrollment_fields.credit_card = *card_;
+
+  virtual_card_enrollment_manager_->OfferVirtualCardEnroll(
+      *card_, VirtualCardEnrollmentSource::kDownstream,
+      virtual_card_enrollment_manager_->AutofillClientIsPresent() ? user_prefs_
+                                                                  : nullptr,
+      base::DoNothing());
+
+  // Logs one strike for the card and makes sure that the enrollment offer is
+  // blocked.
+  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+  EXPECT_TRUE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()),
+          VirtualCardEnrollmentSource::kDownstream));
+
+  // Advances the clock for
+  // |kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays - 1| days. Verifies
+  // that enrollment should still be blocked.
+  test_autofill_clock.Advance(base::Days(
+      features::kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays.Get() -
+      1));
+  EXPECT_TRUE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()),
+          VirtualCardEnrollmentSource::kDownstream));
+
+  // Makes sure that enrollment offer for another card is not blocked.
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(55667788),
+          VirtualCardEnrollmentSource::kDownstream));
+
+  // Advances the clock for another days. Verifies that enrollment should not
+  // be blocked.
+  test_autofill_clock.Advance(base::Days(1));
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()),
+          VirtualCardEnrollmentSource::kDownstream));
+}
+
+// Test to ensure that the required delay since last strike is respected before
+// Chrome offers another virtual card enrollment for the card, when the
+// |kAutofillEnforceDelaysInStrikeDatabase| is disabled.
+TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike_ExpOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnforceDelaysInStrikeDatabase);
+  SetUpStrikeDatabaseTest();
+  TestAutofillClock test_autofill_clock;
+  test_autofill_clock.SetNow(AutofillClock::Now());
+  raw_ptr<VirtualCardEnrollmentProcessState> state =
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
+  SetUpCard();
+  card_->set_instrument_id(11223344);
+  state->virtual_card_enrollment_fields.credit_card = *card_;
+
+  virtual_card_enrollment_manager_->OfferVirtualCardEnroll(
+      *card_, VirtualCardEnrollmentSource::kDownstream,
+      virtual_card_enrollment_manager_->AutofillClientIsPresent() ? user_prefs_
+                                                                  : nullptr,
+      base::DoNothing());
+
+  // Logs one strike for the card and makes sure that the enrollment offer is
+  // not blocked.
+  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
+          base::NumberToString(card_->instrument_id()),
+          VirtualCardEnrollmentSource::kDownstream));
+}
+
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(VirtualCardEnrollmentManagerTest, Metrics_LatencySinceUpstream) {

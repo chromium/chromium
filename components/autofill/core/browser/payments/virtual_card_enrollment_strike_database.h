@@ -34,6 +34,8 @@ class VirtualCardEnrollmentStrikeDatabase
   int GetMaxStrikesLimit() const override;
   absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
   bool UniqueIdsRequired() const override;
+  absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+      const override;
 };
 
 }  // namespace autofill

@@ -25,22 +25,40 @@ StrikeDatabaseIntegratorBase::StrikeDatabaseIntegratorBase(
 
 StrikeDatabaseIntegratorBase::~StrikeDatabaseIntegratorBase() = default;
 
-bool StrikeDatabaseIntegratorBase::IsMaxStrikesLimitReached(
-    const std::string& id) const {
+bool StrikeDatabaseIntegratorBase::ShouldBlockFeature(
+    const std::string& id,
+    BlockedReason* blocked_reason) const {
   CheckIdUniqueness(id);
-  return GetStrikes(id) >= GetMaxStrikesLimit();
+
+  // Returns whether or not strike count for |id| has reached the strike limit
+  // set by GetMaxStrikesLimit().
+  if (GetStrikes(id) >= GetMaxStrikesLimit()) {
+    if (blocked_reason)
+      *blocked_reason = BlockedReason::kMaxStrikeLimitReached;
+
+    return true;
+  }
+
+  // Returns whether or not |GetRequiredDelaySinceLastStrike()| has passed since
+  // the last strike was logged for candidate with |id|. Note that some features
+  // don't specify a required delay.
+  if (GetRequiredDelaySinceLastStrike().has_value() &&
+      (AutofillClock::Now() -
+       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+           strike_database_->GetLastUpdatedTimestamp(GetKey(id))))) <
+          GetRequiredDelaySinceLastStrike()) {
+    if (blocked_reason)
+      *blocked_reason = BlockedReason::kRequiredLatencyNotPassed;
+
+    return true;
+  }
+
+  return false;
 }
 
-bool StrikeDatabaseIntegratorBase::HasDelayPassedSinceLastStrike(
-    const std::string& id) const {
-  CheckIdUniqueness(id);
-  if (!GetRequiredDelaySinceLastStrike().has_value())
-    return true;
-
-  return (AutofillClock::Now() -
-          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-              strike_database_->GetLastUpdatedTimestamp(GetKey(id))))) >=
-         GetRequiredDelaySinceLastStrike();
+bool StrikeDatabaseIntegratorBase::ShouldBlockFeature(
+    BlockedReason* blocked_reason) const {
+  return ShouldBlockFeature(kSharedId, blocked_reason);
 }
 
 int StrikeDatabaseIntegratorBase::AddStrike(const std::string& id) {
