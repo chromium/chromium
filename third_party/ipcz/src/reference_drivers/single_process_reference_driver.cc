@@ -22,17 +22,17 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
                               IpczDriverHandle transport,
                               uint32_t flags,
                               const void* options,
-                              uint8_t* data,
-                              uint32_t* num_bytes,
+                              void* data,
+                              size_t* num_bytes,
                               IpczDriverHandle* handles,
-                              uint32_t* num_handles) {
+                              size_t* num_handles) {
   return IPCZ_RESULT_UNIMPLEMENTED;
 }
 
-IpczResult IPCZ_API Deserialize(const uint8_t* data,
-                                uint32_t num_bytes,
+IpczResult IPCZ_API Deserialize(const void* data,
+                                size_t num_bytes,
                                 const IpczDriverHandle* handles,
-                                uint32_t num_handles,
+                                size_t num_handles,
                                 IpczDriverHandle transport,
                                 uint32_t flags,
                                 const void* options,
@@ -64,16 +64,16 @@ IpczResult IPCZ_API DeactivateTransport(IpczDriverHandle driver_transport,
 }
 
 IpczResult IPCZ_API Transmit(IpczDriverHandle driver_transport,
-                             const uint8_t* data,
-                             uint32_t num_bytes,
+                             const void* data,
+                             size_t num_bytes,
                              const IpczDriverHandle* handles,
-                             uint32_t num_handles,
+                             size_t num_handles,
                              uint32_t flags,
                              const void* options) {
   return IPCZ_RESULT_UNIMPLEMENTED;
 }
 
-IpczResult IPCZ_API AllocateSharedMemory(uint64_t num_bytes,
+IpczResult IPCZ_API AllocateSharedMemory(size_t num_bytes,
                                          uint32_t flags,
                                          const void* options,
                                          IpczDriverHandle* driver_memory) {
@@ -102,7 +102,7 @@ IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
   return IPCZ_RESULT_UNIMPLEMENTED;
 }
 
-IpczResult IPCZ_API GenerateRandomBytes(uint32_t num_bytes,
+IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
                                         uint32_t flags,
                                         const void* options,
                                         void* buffer) {
