@@ -18,18 +18,7 @@
   <div slot="button" behavior="button" class="button">
     Custom button
   </div>
-  <popup slot="listbox" behavior="listbox">
-    <option>one</option>
-    <option class="child2">two</option>
-    <option class="child3">three</option>
-  </popup>
-</selectmenu>
-
-<selectmenu id="selectMenu1-new">
-  <div slot="button" behavior="button" class="button">
-    Custom button
-  </div>
-  <div popup="popup" slot="listbox" behavior="listbox">
+  <div popup=popup slot="listbox" behavior="listbox">
     <option>one</option>
     <option class="child2">two</option>
     <option class="child3">three</option>
@@ -43,9 +32,9 @@
 
 <selectmenu id="selectMenu3">
   <div slot="listbox">
-    <popup behavior="listbox" id="selectMenu3-listbox">
+    <div popup=popup behavior="listbox" id="selectMenu3-listbox">
       <option>one</option>
-    </popup>
+    </div>
   </div>
 </selectmenu>
 <script>
@@ -79,31 +68,25 @@
     assert_equals(selectMenu0.open, false);
   }, "Opening the popup and clicking an option should change the selectmenu's value");
 
-
-  async function test1(selectMenu) {
-    const button = selectMenu.querySelector(".button");
-    const child2 = selectMenu.querySelector(".child2");
-    const child3 = selectMenu.querySelector(".child3");
-    assert_equals(selectMenu.value, "one");
-    assert_equals(selectMenu.open, false);
+  promise_test(async () => {
+    const selectMenu1 = document.getElementById("selectMenu1");
+    const button = selectMenu1.querySelector(".button");
+    const child2 = selectMenu1.querySelector(".child2");
+    const child3 = selectMenu1.querySelector(".child3");
+    assert_equals(selectMenu1.value, "one");
+    assert_equals(selectMenu1.open, false);
     await clickOn(button);
-    assert_equals(selectMenu.open, true);
+    assert_equals(selectMenu1.open, true);
     await clickOn(child2);
-    assert_equals(selectMenu.value, "two", "Clicking an <option> should change the value");
-    assert_equals(selectMenu.open, false);
+    assert_equals(selectMenu1.value, "two", "Clicking an <option> should change the value");
+    assert_equals(selectMenu1.open, false);
 
     await clickOn(button);
-    assert_equals(selectMenu.open, true);
+    assert_equals(selectMenu1.open, true);
     await clickOn(child3);
-    assert_equals(selectMenu.value, "three", "Clicking a <div part='option'> should change the value");
-    assert_equals(selectMenu.open, false);
-  }
-  promise_test(async () => {
-    await test1(document.getElementById("selectMenu1"));
-  }, "With custom button and popup: opening the popup and clicking an option should change the selectmenu's value, old <popup> version");
-  promise_test(async () => {
-    await test1(document.getElementById("selectMenu1-new"));
-  }, "With custom button and popup: opening the popup and clicking an option should change the selectmenu's value, new <div popup> version");
+    assert_equals(selectMenu1.value, "three", "Clicking a <div part='option'> should change the value");
+    assert_equals(selectMenu1.open, false);
+  }, "With custom button and popup: opening the popup and clicking an option should change the selectmenu's value");
 
   promise_test(async () => {
     const selectMenu2 = document.getElementById("selectMenu2");

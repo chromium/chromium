@@ -4101,10 +4101,6 @@ crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/pre
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Failure Timeout ]
 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
 
-# selectmenu timeouts
-crbug.com/1253971 [ Linux ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
-crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
-
 
 ### See crbug.com/891427 comment near the top of this file:
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
@@ -7733,8 +7729,6 @@ crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-gradient-color.htm
 
 # Sheriff 2022-04-12
 crbug.com/1315300 [ Linux ] http/tests/devtools/elements/styles-3/styles-disable-inherited.js [ Failure Pass ]
-
-crbug.com/1315753 virtual/selectmenu-new-popup/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Pass Timeout ]
 
 # HighlightOverlayPainting: decoration painting hasn’t landed yet.
 crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]

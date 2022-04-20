@@ -4,14 +4,14 @@
 <script src="../../../resources/ahem.js"></script>
 
 <selectmenu id="selectMenu0">
-  <div popup=popup slot="listbox" behavior="listbox">
+  <popup slot="listbox" behavior="listbox">
     <option>
       option with image displayed
       <img src="../images/green-256x256.png">
     </option>
-  </div>
+  </popup>
 </selectmenu>
-<div id=fakelistbox>
+<div>
   option with image displayed
   <img src="../images/green-256x256.png">
 </div>
@@ -20,7 +20,7 @@
   html {
     font-family: Ahem;
   }
-  #fakelistbox {
+  div {
     /* Per spec: */
     display: block;
     position: fixed;
