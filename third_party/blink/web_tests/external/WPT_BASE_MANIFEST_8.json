@@ -66140,19 +66140,6 @@
         {}
        ]
       ],
-      "text-align-white-space-007.xht": [
-       "12de03cfd0e81833b628fa07e6f8df9d9041dc51",
-       [
-        null,
-        [
-         [
-          "/css/CSS2/text/text-align-white-space-002-ref.xht",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "text-align-white-space-008.xht": [
        "410b551580f61c449d05d5de23bec1c5136f9868",
        [
@@ -232852,7 +232839,7 @@
       },
       "the-selectmenu-element": {
        "selectmenu-option-arbitrary-content-displayed.tentative.html": [
-        "f9824d1d520f960591ac5161621ae553de01f7f1",
+        "047236bde27a4c4f1f611235e884765797e18cc6",
         [
          null,
          [
@@ -232861,27 +232848,11 @@
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              10
-             ]
-            ]
-           ]
-          ]
-         }
+         {}
         ]
        ],
        "selectmenu-option-arbitrary-content-not-displayed.tentative.html": [
-        "01d389c18507d153203490458b4e5879e12ee3b4",
+        "7bc936e7dc48f1ecc3bc10333b701b47ae24fab3",
         [
          null,
          [
@@ -314361,7 +314332,7 @@
         []
        ],
        "selectmenu-option-arbitrary-content-displayed-ref.tentative.html": [
-        "8705cf83945069a87ea8ac70d2130b3e13d83ec5",
+        "f92786a82122acff64f7252fa71660bd6c5aa6cc",
         []
        ],
        "selectmenu-option-arbitrary-content-not-displayed-ref.tentative.html": [
@@ -314371,10 +314342,6 @@
        "support": {
         "back.html": [
          "0d13a0f3b7c9c759a9a29c0d70a535b398ff108e",
-         []
-        ],
-        "cat.png": [
-         "85dd7324815b8f8ef1a1d0496224c1a0661db9d8",
          []
         ]
        }
@@ -474136,7 +474103,7 @@
       },
       "the-selectmenu-element": {
        "selectmenu-ask-for-reset.html": [
-        "002ad83f2d2c39cca9283800a49587b0ec4ffea1",
+        "3993c139506188eabe549a3bf92f9967e58de47b",
         [
          null,
          {}
@@ -474166,7 +474133,7 @@
         ]
        ],
        "selectmenu-form-submission.tentative.html": [
-        "c34b5004ebd4940dbe60a9430d692be4deff8ca5",
+        "75a2b17e9037a5c531577e8593b5d808750b9e0c",
         [
          null,
          {}
@@ -474182,14 +474149,14 @@
         ]
        ],
        "selectmenu-labels.tentative.html": [
-        "fda50b5a3161fa4dc107c6791edad03f868814b5",
+        "6f94043299932979c81b71aac75dc1ce4fde15d3",
         [
          null,
          {}
         ]
        ],
        "selectmenu-many-options.tentative.html": [
-        "442722fc087bf356fb26965695ae29f62f7167a7",
+        "2abb9d07e6863b8910cb7190dfbc8086bad39156",
         [
          null,
          {
@@ -474198,7 +474165,7 @@
         ]
        ],
        "selectmenu-nested.tentative.html": [
-        "edaebf9dea42eb74f9a56c3c2ac67b49bf30e022",
+        "fdbf50b93902db06136e89d7f77f2f9803101247",
         [
          null,
          {
@@ -474207,7 +474174,7 @@
         ]
        ],
        "selectmenu-option-focusable.tentative.html": [
-        "bcfc1b9565215b680f32ba537cd90dbea6e3fe02",
+        "a78b972a2a7b4e599be4c2c292450b87c9fdbe95",
         [
          null,
          {
@@ -474216,7 +474183,7 @@
         ]
        ],
        "selectmenu-parts-structure.tentative.html": [
-        "65959a4275de0b4b9a6cebebb8ae85e9be9690dc",
+        "683ca5aa2910b76eafaae58cd8a061edb3e1146e",
         [
          null,
          {
@@ -474225,7 +474192,7 @@
         ]
        ],
        "selectmenu-popup-position-with-zoom.tentative.html": [
-        "55ffbce99cb3db519d20f1798868dae8ce0465cc",
+        "740be4bc76fbd8816d990d3cf044727498d6e56f",
         [
          null,
          {
@@ -474234,7 +474201,7 @@
         ]
        ],
        "selectmenu-popup-position.tentative.html": [
-        "559e3c9b9d834681af4c5b0a18dadaec7196b74b",
+        "6ad7833046274a5867067003616939a24382bb23",
         [
          null,
          {
@@ -474243,7 +474210,7 @@
         ]
        ],
        "selectmenu-popup.tentative.html": [
-        "51e3e791aa89c059884831444a5052dba45a2269",
+        "d8abcb72d5a6292b823754670b34b76b40267c60",
         [
          null,
          {
@@ -474252,14 +474219,14 @@
         ]
        ],
        "selectmenu-required-attribute.tentative.html": [
-        "25f9ca361a0affa5ed3a73de00111e67008a708d",
+        "ea6d1b215d721a3ebff22c965dd92c98fe8fb67e",
         [
          null,
          {}
         ]
        ],
        "selectmenu-shadow-root-replacement.tentative.html": [
-        "1b7a752c1e3a030fa4949bebaa93986eb505fdc4",
+        "cad488fb41e58490452631633a653feb1bde19fc",
         [
          null,
          {
@@ -474275,7 +474242,7 @@
         ]
        ],
        "selectmenu-value-selectedOption.tentative.html": [
-        "a2272b3087d7857edb89a6173da443b8f5a2f17c",
+        "f477ddb90dda9a04d6386c87deae83cbc94f272e",
         [
          null,
          {}
