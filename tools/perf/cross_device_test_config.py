@@ -43,7 +43,10 @@ TARGET_DEVICES = {
             'background:social:facebook:2019': 10,
             # cputimeToFirstContentfulPaint
             'load:search:google:2018': 10
-        }
+        },
+        'speedometer2': {
+            'Speedometer2': 10,
+        },
     },
     'android-pixel4-perf': {
         'speedometer2': {
@@ -70,6 +73,11 @@ TARGET_DEVICES = {
             'Speedometer2': 20,
         },
     },
+    'win-10_laptop_low_end-perf': {
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+    },
     'win-10-perf': {
         'system_health.common_desktop': {
             # cputimeToFirstContentfulPaint
@@ -86,5 +94,15 @@ TARGET_DEVICES = {
             'Speedometer2': 28,
         },
         'blink_perf.shadow_dom': 31
-    }
+    },
+    'mac-laptop_high_end-perf': {
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+    },
+    'mac-m1_mini_2020-perf': {
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+    },
 }
