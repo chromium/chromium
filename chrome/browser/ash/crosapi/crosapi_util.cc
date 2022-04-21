@@ -84,6 +84,7 @@
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "chromeos/startup/startup.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -461,29 +462,11 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider,
                                  InitialBrowserAction initial_browser_action,
                                  bool is_keep_alive_enabled) {
-  auto data = GetBrowserInitParams(environment_provider,
-                                   std::move(initial_browser_action),
-                                   is_keep_alive_enabled);
-  std::vector<uint8_t> serialized =
-      crosapi::mojom::BrowserInitParams::Serialize(&data);
+  const auto& data = GetBrowserInitParams(environment_provider,
+                                          std::move(initial_browser_action),
+                                          is_keep_alive_enabled);
 
-  base::ScopedFD fd(memfd_create("startup_data", 0));
-  if (!fd.is_valid()) {
-    PLOG(ERROR) << "Failed to create a memory backed file";
-    return base::ScopedFD();
-  }
-
-  if (!base::WriteFileDescriptor(fd.get(), serialized)) {
-    LOG(ERROR) << "Failed to dump the serialized startup data";
-    return base::ScopedFD();
-  }
-
-  if (lseek(fd.get(), 0, SEEK_SET) < 0) {
-    PLOG(ERROR) << "Failed to reset the FD position";
-    return base::ScopedFD();
-  }
-
-  return fd;
+  return chromeos::CreateMemFDFromBrowserInitParams(data);
 }
 
 bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {

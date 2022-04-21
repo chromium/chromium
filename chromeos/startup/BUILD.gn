@@ -7,10 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 component("startup") {
   output_name = "chromeos_startup"
   defines = [ "IS_CHROMEOS_STARTUP_IMPL" ]
+  public_deps = [ "//chromeos/crosapi/mojom" ]
   deps = [
     ":constants",
     "//base",
-    "//chromeos/crosapi/mojom",
   ]
   sources = [
     "startup.cc",

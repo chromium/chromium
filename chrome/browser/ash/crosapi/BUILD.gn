@@ -221,6 +221,7 @@ source_set("crosapi") {
     "//chromeos/network",
     "//chromeos/printing",
     "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/startup",
     "//chromeos/startup:constants",
     "//chromeos/system",
     "//components/arc",

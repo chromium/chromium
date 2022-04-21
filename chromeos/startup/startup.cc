@@ -5,12 +5,12 @@
 #include "chromeos/startup/startup.h"
 
 #include <stdio.h>
-
+#include <sys/mman.h>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/startup/startup_switches.h"
@@ -37,6 +37,30 @@ absl::optional<std::string> ReadStartupData() {
   }
 
   return absl::make_optional(std::move(content));
+}
+
+base::ScopedFD CreateMemFDFromBrowserInitParams(
+    const crosapi::mojom::BrowserInitParamsPtr& data) {
+  std::vector<uint8_t> serialized =
+      crosapi::mojom::BrowserInitParams::Serialize(&data);
+
+  base::ScopedFD fd(memfd_create("startup_data", 0));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Failed to create a memory backed file";
+    return base::ScopedFD();
+  }
+
+  if (!base::WriteFileDescriptor(fd.get(), serialized)) {
+    LOG(ERROR) << "Failed to dump the serialized BrowserInitParams";
+    return base::ScopedFD();
+  }
+
+  if (lseek(fd.get(), 0, SEEK_SET) < 0) {
+    PLOG(ERROR) << "Failed to reset the FD position";
+    return base::ScopedFD();
+  }
+
+  return fd;
 }
 
 }  // namespace chromeos
