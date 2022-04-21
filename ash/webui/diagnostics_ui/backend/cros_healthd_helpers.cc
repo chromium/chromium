@@ -42,7 +42,7 @@ bool CheckResponse(const TResult& result,
   }
 
   auto tag = result->which();
-  if (tag == TTag::ERROR) {
+  if (tag == TTag::kError) {
     LOG(ERROR) << "Error retrieving " << type_name
                << "from croshealthd: " << result->get_error()->msg;
     return false;
@@ -57,7 +57,7 @@ bool CheckResponse(const TResult& result,
 
 const BatteryInfo* GetBatteryInfo(const TelemetryInfo& info) {
   const BatteryResultPtr& battery_result = info.battery_result;
-  if (!CheckResponse(battery_result, BatteryResult::Tag::BATTERY_INFO,
+  if (!CheckResponse(battery_result, BatteryResult::Tag::kBatteryInfo,
                      "battery info")) {
     return nullptr;
   }
@@ -67,7 +67,7 @@ const BatteryInfo* GetBatteryInfo(const TelemetryInfo& info) {
 
 const CpuInfo* GetCpuInfo(const TelemetryInfo& info) {
   const CpuResultPtr& cpu_result = info.cpu_result;
-  if (!CheckResponse(cpu_result, CpuResult::Tag::CPU_INFO, "cpu info")) {
+  if (!CheckResponse(cpu_result, CpuResult::Tag::kCpuInfo, "cpu info")) {
     return nullptr;
   }
 
@@ -76,7 +76,7 @@ const CpuInfo* GetCpuInfo(const TelemetryInfo& info) {
 
 const MemoryInfo* GetMemoryInfo(const TelemetryInfo& info) {
   const MemoryResultPtr& memory_result = info.memory_result;
-  if (!CheckResponse(memory_result, MemoryResult::Tag::MEMORY_INFO,
+  if (!CheckResponse(memory_result, MemoryResult::Tag::kMemoryInfo,
                      "memory info")) {
     return nullptr;
   }
@@ -86,7 +86,7 @@ const MemoryInfo* GetMemoryInfo(const TelemetryInfo& info) {
 
 const SystemInfo* GetSystemInfo(const TelemetryInfo& info) {
   const SystemResultPtr& system_result = info.system_result;
-  if (!CheckResponse(system_result, SystemResult::Tag::SYSTEM_INFO,
+  if (!CheckResponse(system_result, SystemResult::Tag::kSystemInfo,
                      "system info")) {
     return nullptr;
   }
@@ -99,9 +99,9 @@ const NonInteractiveRoutineUpdate* GetNonInteractiveRoutineUpdate(
   const RoutineUpdateUnionPtr& routine_update = update.routine_update_union;
 
   switch (routine_update->which()) {
-    case RoutineUpdateUnion::Tag::INTERACTIVE_UPDATE:
+    case RoutineUpdateUnion::Tag::kInteractiveUpdate:
       return nullptr;
-    case RoutineUpdateUnion::Tag::NONINTERACTIVE_UPDATE:
+    case RoutineUpdateUnion::Tag::kNoninteractiveUpdate:
       return routine_update->get_noninteractive_update().get();
   }
 }
