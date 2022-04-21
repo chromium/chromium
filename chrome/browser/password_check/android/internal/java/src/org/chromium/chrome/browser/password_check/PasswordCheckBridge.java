@@ -174,6 +174,26 @@ class PasswordCheckBridge {
     }
 
     /**
+     * Register the start of an automated password change flow. Notifies the
+     * password change success tracker.
+     * @param credential The credential for which the flow was started.
+     */
+    void onAutomatedPasswordChangeStarted(CompromisedCredential credential) {
+        PasswordCheckBridgeJni.get().onAutomatedPasswordChangeStarted(
+                mNativePasswordCheckBridge, credential);
+    }
+
+    /**
+     * Register the start of a manual password change flow. Notifies the
+     * password change success tracker.
+     * @param credential The credential for which the flow was started.
+     */
+    void onManualPasswordChangeStarted(CompromisedCredential credential) {
+        PasswordCheckBridgeJni.get().onManualPasswordChangeStarted(
+                mNativePasswordCheckBridge, credential);
+    }
+
+    /**
      * Destroys its C++ counterpart.
      */
     void destroy() {
@@ -204,6 +224,10 @@ class PasswordCheckBridge {
         void onEditCredential(long nativePasswordCheckBridge, CompromisedCredential credential,
                 Context context, SettingsLauncher settingsLauncher);
         void removeCredential(long nativePasswordCheckBridge, CompromisedCredential credentials);
+        void onAutomatedPasswordChangeStarted(
+                long nativePasswordCheckBridge, CompromisedCredential credential);
+        void onManualPasswordChangeStarted(
+                long nativePasswordCheckBridge, CompromisedCredential credential);
         void destroy(long nativePasswordCheckBridge);
     }
 }

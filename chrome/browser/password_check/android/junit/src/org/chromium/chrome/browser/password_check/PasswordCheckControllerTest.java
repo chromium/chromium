@@ -515,6 +515,7 @@ public class PasswordCheckControllerTest {
     public void testOnChangePasswordButtonClick() {
         // No auto change button. A user clicks "Change password" (manually).
         mMediator.onChangePasswordButtonClick(ANA);
+        verify(mDelegate).onManualPasswordChangeStarted(eq(ANA));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(ANA));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -537,6 +538,7 @@ public class PasswordCheckControllerTest {
     public void testOnChangePasswordManuallyButtonClick() {
         // There is an auto change button, but a user clicks "Change manually".
         mMediator.onChangePasswordButtonClick(BOB);
+        verify(mDelegate).onManualPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -561,6 +563,7 @@ public class PasswordCheckControllerTest {
         // There is a script but auto change button isn't shown. A user clicks "Change password"
         // (manually).
         mMediator.onChangePasswordButtonClick(CHARLIE);
+        verify(mDelegate).onManualPasswordChangeStarted(eq(CHARLIE));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(CHARLIE));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -586,6 +589,7 @@ public class PasswordCheckControllerTest {
         when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(true);
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -611,6 +615,7 @@ public class PasswordCheckControllerTest {
         when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(false);
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
@@ -643,6 +648,7 @@ public class PasswordCheckControllerTest {
                 .reauthenticate(notNull());
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate, never()).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate, never())
                 .launchCctWithScript(any(CompromisedCredential.class));
 
@@ -676,6 +682,7 @@ public class PasswordCheckControllerTest {
                 .reauthenticate(notNull());
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mDelegate).onAutomatedPasswordChangeStarted(eq(BOB));
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
 
         assertThat(RecordHistogram.getHistogramValueCountForTesting(

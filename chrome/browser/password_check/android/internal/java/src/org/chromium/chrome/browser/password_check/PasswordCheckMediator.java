@@ -321,6 +321,7 @@ class PasswordCheckMediator
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.OPENED_SITE, credential);
         mCctIsOpened = true;
+        mDelegate.onManualPasswordChangeStarted(credential);
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
     }
 
@@ -346,6 +347,7 @@ class PasswordCheckMediator
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.STARTED_SCRIPT, credential);
         mCctIsOpened = true;
+        mDelegate.onAutomatedPasswordChangeStarted(credential);
         mChangePasswordDelegate.launchCctWithScript(credential);
     }
 

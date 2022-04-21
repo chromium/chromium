@@ -29,6 +29,18 @@ public interface PasswordCheckComponentUi {
          * @param credential A {@link CompromisedCredential}.
          */
         void removeCredential(CompromisedCredential credential);
+
+        /**
+         * Register the start of an automated password change flow.
+         * @param credential A {@link CompromisedCredential} for which a flow was started.
+         */
+        void onAutomatedPasswordChangeStarted(CompromisedCredential credential);
+
+        /**
+         * Register the start of a manual password change flow.
+         * @param credential A {@link CompromisedCredential} for which a flow was started.
+         */
+        void onManualPasswordChangeStarted(CompromisedCredential credential);
     }
 
     /**
