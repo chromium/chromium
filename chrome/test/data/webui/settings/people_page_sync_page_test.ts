@@ -669,20 +669,12 @@ suite('SyncSettingsTests', function() {
             .shadowRoot!.querySelector<HTMLElement>(
                 '#setup-buttons cr-button:not(.action-button)');
 
-    // <if expr="chromeos_lacros">
-    // On Lacros, turning off sync is not supported yet.
-    // TODO(https://crbug.com/1217645): Add the cancel button.
-    assertFalse(!!cancelButton);
-    // </if>
-
-    // <if expr="not chromeos_lacros">
     assertTrue(!!cancelButton);
 
     // Clicking the setup cancel button aborts sync.
     cancelButton!.click();
     const abort = await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
     assertTrue(abort);
-    // </if>
   });
 
   test('SyncSetupConfirm', async function() {
