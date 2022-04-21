@@ -362,7 +362,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulest side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> uleste sider}}</translation>
 <translation id="2961210776189273067">Tittel</translation>
 <translation id="2979025552038692506">Valgt inkognitofane</translation>
-<translation id="2979448359891869301">Kan ikke utvide skjermbildet. Prøv igjen når telefonen din ikke er opptatt.</translation>
+<translation id="2979448359891869301">Kan ikke utvide skjermbildet. Prøv på nytt når telefonen din ikke er opptatt.</translation>
 <translation id="2979639724566107830">Åpne i nytt vindu</translation>
 <translation id="2981364137500752533">Du kan ha opptil 5 vinduer.</translation>
 <translation id="2984978667043170458">Ta med den omliggende teksten i Google-søk</translation>
@@ -612,7 +612,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4472118726404937099">For å synkronisere og gi et personlig preg på alle enhetene, slå på synkronisering</translation>
 <translation id="4479839115899251637">Slett fra leselisten</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> for Chrome …</translation>
-<translation id="4484496141267039529">Ingen tilkobling. Prøv igjen senere.</translation>
+<translation id="4484496141267039529">Ingen tilkobling. Prøv på nytt senere.</translation>
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
 <translation id="4504667196171871375">Via Wi-Fi og mobildata</translation>
@@ -1417,7 +1417,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
 <translation id="8712637175834984815">Skjønner</translation>
-<translation id="8725066075913043281">Prøv igjen</translation>
+<translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8746155870861185046">Del merket tekst</translation>
 <translation id="8748850008226585750">Innholdet er skjult</translation>
@@ -1453,7 +1453,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="8937267401510745927">For å hjelpe deg med å fullføre oppgaver mottar Google nettadressene til og innholdet på nettsteder der du bruker assistenten, i tillegg til informasjon som du sender inn gjennom assistenten. Denne informasjonen kan bli lagret i Google-kontoen din. Du kan slå av assistenten i Chrome-innstillingene.</translation>
 <translation id="8937772741022875483">Vil du fjerne Chrome-aktiviteten din fra Digital balanse?</translation>
 <translation id="8942627711005830162">Åpne i et annet vindu</translation>
-<translation id="8945143127965743188"><ph name="LANG" /> – Kunne ikke laste ned dette språket. Prøv igjen senere.</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> – Kunne ikke laste ned dette språket. Prøv på nytt senere.</translation>
 <translation id="8955719471735800169">Tilbake til toppen</translation>
 <translation id="8964479563882643397">For å åpne en ny inkognitofane, åpne menyen</translation>
 <translation id="8965591936373831584">venter</translation>

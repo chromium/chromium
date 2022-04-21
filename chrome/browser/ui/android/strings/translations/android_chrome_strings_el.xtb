@@ -1028,7 +1028,7 @@
 <translation id="6648459603387803038">Ο διαχειριστής σας μπορεί να αλλάξει τη ρύθμιση του προγράμματος περιήγησής σας απομακρυσμένα. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}other{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}}</translation>
 <translation id="6649642165559792194">Προεπισκόπηση εικόνας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
-<translation id="6657585470893396449">Κωδικός Πρόσβασης</translation>
+<translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="666731172850799929">Άνοιγμα σε <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>

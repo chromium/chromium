@@ -63,7 +63,7 @@
 <translation id="2309047409763057870">Dette er en sekundær installering av Google Chrome. Den kan ikke brukes som standardnettleser.</translation>
 <translation id="2345992953227471816">Chrome har oppdaget at disse utvidelsene inneholder skadelig programvare:</translation>
 <translation id="2348335408836342058">Chrome trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
-<translation id="234869673307233423">Chrome kan ikke sjekke passordene dine. Prøv igjen senere.</translation>
+<translation id="234869673307233423">Chrome kan ikke sjekke passordene dine. Prøv på nytt senere.</translation>
 <translation id="235650106824528204">Alle Chrome-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2429317896000329049">Google Chrome kunne ikke synkronisere dataene dine fordi synkronisering ikke er tilgjengelig for domenet ditt.</translation>
@@ -122,7 +122,7 @@
 <translation id="34857402635545079">Slett dataene fra Chrome også (<ph name="URL" />)</translation>
 <translation id="3503306920980160878">Chrome trenger tilgang til posisjonen din for å kunne dele den med dette nettstedet</translation>
 <translation id="3533694711092285624">Ingen lagrede passord. Chrome kan sjekke passordene dine når du lagrer dem.</translation>
-<translation id="3541482654983822893">Chrome kan ikke sjekke passordene dine. Prøv igjen når det har gått 24 timer.</translation>
+<translation id="3541482654983822893">Chrome kan ikke sjekke passordene dine. Prøv på nytt når det har gått 24 timer.</translation>
 <translation id="3576528680708590453">Systemadministratoren din har konfigurert at Google Chrome skal åpne <ph name="TARGET_URL_HOSTNAME" /> i en annen nettleser.</translation>
 <translation id="3582972582564653026">Synkroniser og gi Chrome et personlig preg på alle enhetene dine</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>

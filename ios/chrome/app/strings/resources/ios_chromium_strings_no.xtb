@@ -53,7 +53,7 @@
 <translation id="4681781466797808448">Slå på Chromium-skanneren</translation>
 <translation id="4736424910885271643">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten</translation>
 <translation id="4806326830773390517">Bidra til å gjøre Chromium bedre ved å sende bruksstatistikk og programstopprapporter til Google</translation>
-<translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
+<translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
 <translation id="5039881550736388123">Når du gir samtykke
@@ -116,7 +116,7 @@ Dette bør du tenke over:
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Flytt Chromium til dokken<ph name="END_LINK" /></translation>
-<translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv igjen senere.</translation>
+<translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8663480472502753423">Hold Chromium oppdatert</translation>

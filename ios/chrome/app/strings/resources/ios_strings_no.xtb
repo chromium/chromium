@@ -227,7 +227,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2958718410589002129">Passord</translation>
 <translation id="2961210776189273067">Tittel</translation>
 <translation id="2964349545761222050">Blokkér informasjonskapsler fra tredjeparter</translation>
-<translation id="2969979262385602596">Kunne ikke logge på. Prøv igjen senere.</translation>
+<translation id="2969979262385602596">Kunne ikke logge på. Prøv på nytt senere.</translation>
 <translation id="2975121486251958312">Kun inkognitomodus er tilgjengelig</translation>
 <translation id="2982481275546140226">Slett data</translation>
 <translation id="298306318844797842">Legg til betalingsmåte …</translation>
@@ -868,7 +868,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8706588385081740091">Passord</translation>
 <translation id="8717864919010420084">Kopiér linken</translation>
 <translation id="8721297211384281569">Verktøy-menyen</translation>
-<translation id="8725066075913043281">Prøv igjen</translation>
+<translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8741995161408053644">Google-kontoen din kan ha andre typer nettleserlogger på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Her finner du fanene dine</translation>

@@ -66,7 +66,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
 <translation id="2977506796191543575">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
 <translation id="2983934633046890458">Chromium prøver å redigere passord.</translation>
-<translation id="3032706164202344641">Chromium kan ikke sjekke passordene dine. Prøv igjen senere.</translation>
+<translation id="3032706164202344641">Chromium kan ikke sjekke passordene dine. Prøv på nytt senere.</translation>
 <translation id="3032787606318309379">Legger til i Chromium …</translation>
 <translation id="3068515742935458733">Bidra til å gjøre Chromium bedre ved å sende programstopprapporter og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="3101560983689755071">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chromium interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
@@ -233,7 +233,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="7067091210845072982">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
 <translation id="718435575166326686">Chromium trenger kameratillatelse for dette nettstedet</translation>
 <translation id="7196312274710523067">Kunne ikke starte Chromium. Prøv på nytt.</translation>
-<translation id="7197677400338048821">Chromium kan ikke sjekke passordene dine. Prøv igjen når det har gått 24 timer.</translation>
+<translation id="7197677400338048821">Chromium kan ikke sjekke passordene dine. Prøv på nytt når det har gått 24 timer.</translation>
 <translation id="7218568399872925918">Nettsteder du besøker, husker informasjonen din til du lukker Chromium</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="7246575524853130370">Interessene dine som Chromium har anslått</translation>

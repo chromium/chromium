@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1088086359088493902">Detik</translation>
-<translation id="1142001580032786438">Tampilkan alat pilih minggu</translation>
+<translation id="1142001580032786438">Tampilkan pemilih minggu</translation>
 <translation id="1171774979989969504">Masukkan alamat email.</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1306460908038601864">Nonaktif</translation>
@@ -22,7 +22,7 @@
 <translation id="1832974991323546415">putar di perangkat jarak jauh</translation>
 <translation id="1921819250265091946">hh</translation>
 <translation id="1938124657309484470">Tanggal harus <ph name="MAXIMUM_DATE_OR_TIME" /> atau lebih awal.</translation>
-<translation id="1946271899482435442">Tampilkan alat pilih tanggal</translation>
+<translation id="1946271899482435442">Tampilkan pemilih tanggal</translation>
 <translation id="1993104285338243655">Dialihkan ke pencerminan</translation>
 <translation id="2031987842108996681">Saluran merah</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' digunakan pada posisi yang salah di '<ph name="INVALIDDOMAIN" />'.</translation>

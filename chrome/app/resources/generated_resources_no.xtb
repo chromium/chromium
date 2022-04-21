@@ -386,7 +386,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{1 passord er utsatt for sikkerhetsbrudd}other{{NUM_COMPROMISED} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="1380028686461971526">Koble til nettverket automatisk</translation>
 <translation id="1381567580865186407">Tale på <ph name="LANGUAGE" /> blir sendt til Google for behandling</translation>
-<translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv igjen senere.</translation>
+<translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv på nytt senere.</translation>
 <translation id="1383861834909034572">Åpnes ved fullført nedlasting</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1384849755549338773">Tilby Google Oversetter for nettsteder på andre språk</translation>
@@ -442,7 +442,7 @@
            Bokmerker, loggen og lagrede passord berøres ikke.</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> er blokkert</translation>
-<translation id="1426870617281699524">Klikk på Prøv igjen, og godta forespørselen på datamaskinen din</translation>
+<translation id="1426870617281699524">Klikk på Prøv på nytt, og godta forespørselen på datamaskinen din</translation>
 <translation id="1427179946227469514">Tonehøyde for tekst til tale</translation>
 <translation id="1427269577154060167">Land</translation>
 <translation id="142758023928848008">Slå på trege taster (for å bruke hurtigtaster ved å trykke sekvenser)</translation>
@@ -1102,7 +1102,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2046770133657639077">Vis enhets-EID</translation>
 <translation id="204706822916043810">Kontrollerer den virtuelle maskinen</translation>
 <translation id="2048182445208425546">Få tilgang til nettverkstrafikken din</translation>
-<translation id="2048554637254265991">Feil ved oppstart av beholderbehandling. Prøv igjen.</translation>
+<translation id="2048554637254265991">Feil ved oppstart av beholderbehandling. Prøv på nytt.</translation>
 <translation id="2048653237708779538">Handlingen er ikke tilgjengelig</translation>
 <translation id="204914487372604757">Opprett snarvei</translation>
 <translation id="2050339315714019657">Stående</translation>
@@ -1134,7 +1134,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2081816110395725788">Inaktivitet ved batteridrift</translation>
 <translation id="2082187087049518845">Gruppér fane</translation>
 <translation id="2082510809738716738">Velg en temafarge</translation>
-<translation id="208586643495776849">Prøv igjen</translation>
+<translation id="208586643495776849">Prøv på nytt</translation>
 <translation id="208634871997892083">Alltid-på-VPN</translation>
 <translation id="2087822576218954668">Skriv ut: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Registrering støttes bare etter at du har installert <ph name="DEVICE_OS" />.</translation>
@@ -1345,7 +1345,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2281863813036651454">Venstre museknapp</translation>
 <translation id="2282146716419988068">GPU-prosess</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Åpne alle i &amp;ny fanegruppe}=1{Åpne i &amp;ny fanegruppe}other{Åpne alle ({COUNT}) i &amp;ny fanegruppe}}</translation>
-<translation id="2285942871162473373">Gjenkjente ikke fingeravtrykket ditt. Prøv igjen.</translation>
+<translation id="2285942871162473373">Gjenkjente ikke fingeravtrykket ditt. Prøv på nytt.</translation>
 <translation id="2287944065963043964">Påloggingsskjerm</translation>
 <translation id="2288181517385084064">Bytt til videoopptaker</translation>
 <translation id="2288735659267887385">Innstillinger for tilgjengelighet</translation>
@@ -1851,7 +1851,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2765217105034171413">Liten</translation>
 <translation id="2766006623206032690">&amp;Lim inn og gå til</translation>
 <translation id="2766161002040448006">Spør en forelder</translation>
-<translation id="2767077837043621282">Kunne ikke oppdatere Chromebooken din. Prøv igjen senere.</translation>
+<translation id="2767077837043621282">Kunne ikke oppdatere Chromebooken din. Prøv på nytt senere.</translation>
 <translation id="2767127727915954024">Da kan <ph name="ORIGIN" /> redigere <ph name="FILENAME" /> frem til du lukker alle fanene for dette nettstedet</translation>
 <translation id="2770465223704140727">Fjern fra listen</translation>
 <translation id="2770690685823456775">Eksportér passordene dine til en annen mappe</translation>
@@ -2059,7 +2059,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2956070239128776395">En seksjon er flettet i en gruppe: <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">Ikke la nettsteder redigere filer eller mapper på enheten</translation>
 <translation id="2958721676848865875">Advarsel om pakkeutvidelse</translation>
-<translation id="2959127025785722291">Noe gikk galt. Gjennomsøkingen kunne ikke fullføres. Prøv igjen.</translation>
+<translation id="2959127025785722291">Noe gikk galt. Gjennomsøkingen kunne ikke fullføres. Prøv på nytt.</translation>
 <translation id="2959842337402130152">Det er ikke nok lagringsplass til å gjenopprette. Frigjør <ph name="SPACE_REQUIRED" /> på enheten, og prøv på nytt.</translation>
 <translation id="2960208947600937804">Det oppsto en feil under konfigureringen av Linux. Kontakt administrator.</translation>
 <translation id="296026337010986570">Ferdig! Skadelig programvare er fjernet. For å slå på utvidelser igjen, gå til &lt;a href="chrome://extensions"&gt;Utvidelser&lt;/a&gt;.</translation>
@@ -2409,7 +2409,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3341699307020049241">Feil PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="3341703758641437857">Tillat tilgang til filnettadresser</translation>
 <translation id="3342361181740736773">«<ph name="TRIGGERING_EXTENSION_NAME" />» vil fjerne denne utvidelsen.</translation>
-<translation id="3345135638360864351">Forespørselen om tilgang til dette nettstedet kunne ikke sendes til <ph name="NAME" />. Prøv igjen.</translation>
+<translation id="3345135638360864351">Forespørselen om tilgang til dette nettstedet kunne ikke sendes til <ph name="NAME" />. Prøv på nytt.</translation>
 <translation id="3345634917232014253">Sikkerhetssjekken ble nettopp kjørt</translation>
 <translation id="3345886924813989455">Ingen støttede nettlesere funnet</translation>
 <translation id="3347086966102161372">K&amp;opiér bildeadressen</translation>
@@ -2575,7 +2575,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3496689104192986836">Batterinivå <ph name="PERCENTAGE" /> %</translation>
 <translation id="3497501929010263034">USB-enhet fra <ph name="VENDOR_NAME" /> (produkt <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Del doodlen</translation>
-<translation id="3498215018399854026">Vi kunne ikke nå foreldrene dine akkurat nå. Prøv igjen.</translation>
+<translation id="3498215018399854026">Vi kunne ikke nå foreldrene dine akkurat nå. Prøv på nytt.</translation>
 <translation id="3500417806337761827">Feil ved innsetting av delt nettverksressurs. Det er allerede satt inn for mange delte SMB-nettverksressurser.</translation>
 <translation id="3503995387997205657">Du kan gjenopprette de tidligere appene dine</translation>
 <translation id="3505030558724226696">Opphev enhetstilgangen</translation>
@@ -3625,7 +3625,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4538163005498287211">Basert på bakgrunnen din</translation>
 <translation id="4538417792467843292">Slett ord</translation>
 <translation id="4538792345715658285">Installert av bedriftsinnstillingen.</translation>
-<translation id="4541123282641193691">Kunne ikke bekrefte kontoen din. Prøv igjen, eller start Chromebooken på nytt.</translation>
+<translation id="4541123282641193691">Kunne ikke bekrefte kontoen din. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="4541662893742891060">Kan ikke koble til denne profilen. Kontakt operatøren din om du trenger teknisk støtte.</translation>
 <translation id="4541706525461326392">Fjerner profilen. Dette kan ta noen minutter.</translation>
 <translation id="4542520061254486227">Les dataene dine på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
@@ -4403,7 +4403,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
 <translation id="5319712128756744240">Koble til en ny enhet</translation>
 <translation id="5320135788267874712">Nytt enhetsnavn</translation>
-<translation id="532247166573571973">Det kan hende tjeneren ikke er tilgjengelig. Prøv igjen senere.</translation>
+<translation id="532247166573571973">Det kan hende tjeneren ikke er tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="5324300749339591280">App-liste</translation>
 <translation id="5324780743567488672">Angi tidssonen automatisk ved hjelp av posisjonen din</translation>
 <translation id="5327248766486351172">Navn</translation>
@@ -5501,7 +5501,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6438234780621650381">Tilbakestill innstillingene</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – lyd spilles av</translation>
 <translation id="6442187272350399447">Mega</translation>
-<translation id="6442445294758185945">Kunne ikke laste ned oppdateringen. Prøv igjen senere.</translation>
+<translation id="6442445294758185945">Kunne ikke laste ned oppdateringen. Prøv på nytt senere.</translation>
 <translation id="6444070574980481588">Angi dato og klokkeslett</translation>
 <translation id="6444147596556711162">Bruk «Neste» og «Forrige» for å bevege deg mellom elementer på skjermen</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Bluetooth-søk pågår</translation>
@@ -5624,7 +5624,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6551612971599078809">Nettstedet bruker USB</translation>
 <translation id="6551739526055143276">Administreres av Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> brukere</translation>
-<translation id="655483977608336153">Prøv igjen</translation>
+<translation id="655483977608336153">Prøv på nytt</translation>
 <translation id="6555432686520421228">Fjern alle brukerkontoer og tilbakestill <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten din til fabrikkstandard.</translation>
 <translation id="6555604601707417276">Linux-sikkerhetskopien er gjenopprettet</translation>
 <translation id="6555810572223193255">Opprydning er utilgjengelig for øyeblikket</translation>
@@ -6182,7 +6182,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7114054701490058191">Passordene samsvarer ikke</translation>
 <translation id="7114648273807173152">For å bruke Smart Lock til å logge på Google-kontoen din, gå til Innstillinger &gt; Tilkoblede enheter &gt; Telefonen din &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Ingen kontakter kan nås</translation>
-<translation id="7117228822971127758">Prøv igjen senere</translation>
+<translation id="7117228822971127758">Prøv på nytt senere</translation>
 <translation id="7117247127439884114">Logg på igjen</translation>
 <translation id="711840821796638741">Vis administrerte bokmerker</translation>
 <translation id="711902386174337313">lese listen over de påloggede enhetene dine</translation>
@@ -6294,7 +6294,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7246230585855757313">Sett inn sikkerhetsnøkkelen på nytt, og prøv igjen</translation>
 <translation id="724835896049478274">Kontoer som er tilgjengelige for Android-apper</translation>
 <translation id="7249197363678284330">Endre denne innstillingen i adressefeltet.</translation>
-<translation id="7250616558727237648">Enheten du deler med, svarte ikke. Prøv igjen.</translation>
+<translation id="7250616558727237648">Enheten du deler med, svarte ikke. Prøv på nytt.</translation>
 <translation id="725109152065019550">Administratoren din har deaktivert ekstern lagring for kontoen din.</translation>
 <translation id="7251346854160851420">Standardbakgrunn</translation>
 <translation id="7251635775446614726">Administratoren din sier «<ph name="CUSTOM_MESSAGE" />».</translation>
@@ -7082,7 +7082,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8008356846765065031">Internett er frakoblet. Sjekk Internett-forbindelsen din .</translation>
 <translation id="8009225694047762179">Administrer passord</translation>
 <translation id="8011372169388649948">«<ph name="BOOKMARK_TITLE" />» ble flyttet.</translation>
-<translation id="8012647001091218357">Vi kunne ikke nå foreldrene dine akkurat nå. Prøv igjen.</translation>
+<translation id="8012647001091218357">Vi kunne ikke nå foreldrene dine akkurat nå. Prøv på nytt.</translation>
 <translation id="8013993649590906847">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
 <translation id="8014154204619229810">Oppdateringsprogrammet kjører. Last inn siden på nytt om en liten stund for å sjekke igjen.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> kunne ikke tilbakestilles til forrige versjon. Prøv å utføre en powerwash av enheten på nytt.</translation>
@@ -7545,7 +7545,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8475313423285172237">Et annet program på datamaskinen la til en utvidelse som kan endre måten Chrome fungerer på.</translation>
 <translation id="8477241577829954800">Erstattet</translation>
 <translation id="8477384620836102176">&amp;Generelt</translation>
-<translation id="8479176401914456949">Ugyldig kode. Prøv igjen.</translation>
+<translation id="8479176401914456949">Ugyldig kode. Prøv på nytt.</translation>
 <translation id="8480082892550707549">Selv om du har lastet ned filer fra dette nettstedet før, kan det hende at nettstedet er midlertidig utrygt (hacket). Prøv å laste ned filen på nytt senere.</translation>
 <translation id="8480869669560681089">Ukjent enhet fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekreft USB-tillatelse</translation>
@@ -7585,7 +7585,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8528962588711550376">Logger på.</translation>
 <translation id="8529925957403338845">Tilkoblingen med umiddelbar internettdeling kunne ikke opprettes</translation>
 <translation id="8531701051932785007">Safe Browsing med økt beskyttelse er avslått</translation>
-<translation id="8534656636775144800">Beklager. Det oppstod en feil da du prøvde å knytte deg til domenet. Prøv igjen.</translation>
+<translation id="8534656636775144800">Beklager. Det oppstod en feil da du prøvde å knytte deg til domenet. Prøv på nytt.</translation>
 <translation id="8535005006684281994">Fornying av Netscape-sertifikat for nettadresse</translation>
 <translation id="8536956381488731905">Lyd ved tastetrykk</translation>
 <translation id="8539727552378197395">Nei (kun http)</translation>
@@ -7775,7 +7775,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8724405322205516354">Når du ser dette ikonet, kan du bruke fingeravtrykket ditt for å identifisere deg eller godkjenne kjøp.</translation>
 <translation id="8724409975248965964">Fingeravtrykk lagt til</translation>
 <translation id="8724859055372736596">&amp;Vis i mappe</translation>
-<translation id="8725066075913043281">Prøv igjen</translation>
+<translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8725178340343806893">Favoritter/bokmerker</translation>
 <translation id="8726206820263995930">Feil under henting av innstillingsangivelser fra tjeneren: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">Tillatelse du har valgt, blir tilbakestilt</translation>
@@ -8019,7 +8019,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8957757410289731985">Tilpass profil</translation>
 <translation id="895944840846194039">JavaScript-minne</translation>
 <translation id="8960208913905765425">Hurtiginfo-enhetskonvertering</translation>
-<translation id="8962051932294470566">Du kan kun dele én fil om gangen. Prøv igjen når den nåværende overføringen er fullført.</translation>
+<translation id="8962051932294470566">Du kan kun dele én fil om gangen. Prøv på nytt når den nåværende overføringen er fullført.</translation>
 <translation id="8962083179518285172">Skjul detaljer</translation>
 <translation id="8962918469425892674">Dette nettstedet bruker bevegelses- eller lyssensorer.</translation>
 <translation id="8965037249707889821">Skriv inn det gamle passordet</translation>
