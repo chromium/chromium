@@ -87,10 +87,9 @@ import * as utils from '//third_party/text-fragments-polyfill/src/src/text-fragm
           .filter((mark) => { return !!mark });
 
       if (Array.isArray(foundRanges)) {
-        // If length < 1, then nothing was found. If length > 1, then the
-        // fragment in the URL is ambiguous (i.e., it could identify multiple
-        // different places on the page) so we discard it as well.
-        if (foundRanges.length === 1) {
+        // If length < 1, then nothing was found. If length > 1, the spec says
+        // to take the first instance.
+        if (foundRanges.length >= 1) {
           ++successCount;
           let newMarks = utils.markRange(foundRanges[0]);
           if (Array.isArray(newMarks)) {

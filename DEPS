@@ -1671,7 +1671,7 @@ deps = {
     Var('swiftshader_git') + '/SwiftShader.git' + '@' +  Var('swiftshader_revision'),
 
   'src/third_party/text-fragments-polyfill/src':
-    Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + '428dd13167f3ce02e3ca7c086d291d7c079da0dc',
+    Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + '3ea83256445a217b82b8b34b03a87a4cede95056',
 
   'src/third_party/tflite/src':
     Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'b188eebba3f0fe2008d983896c3313e4ef0efaa0',
