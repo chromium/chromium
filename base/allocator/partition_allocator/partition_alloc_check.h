@@ -39,7 +39,7 @@
 // could operate with inconsistent allocator state.
 #define PA_CHECK(condition)                                                \
   UNLIKELY(!(condition))                                                   \
-  ? ::logging::RawCheck(                                                   \
+  ? logging::RawCheck(                                                     \
         __FILE__ "(" PA_STRINGIFY(__LINE__) ") Check failed: " #condition) \
   : EAT_CHECK_STREAM_PARAMS()
 #endif  // defined(OFFICIAL_BUILD) && defined(NDEBUG)

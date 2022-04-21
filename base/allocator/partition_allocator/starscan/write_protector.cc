@@ -9,8 +9,8 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -66,7 +66,7 @@ void UserFaultFDThread(int uffd) {
 UserFaultFDWriteProtector::UserFaultFDWriteProtector()
     : uffd_(syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK)) {
   if (uffd_ == -1) {
-    PA_LOG(WARNING) << "userfaultfd is not supported by the current kernel";
+    LOG(WARNING) << "userfaultfd is not supported by the current kernel";
     return;
   }
 

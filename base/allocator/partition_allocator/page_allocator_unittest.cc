@@ -14,9 +14,9 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -363,8 +363,8 @@ TEST(PartitionAllocPageAllocatorTest,
         // generated at this point but we may not notice straight away...
         *buffer0 = 42;
         EXPECT_EQ(42, *buffer0);
-        PA_LOG(ERROR) << "=";  // Until we receive control back from the kernel
-                               // (e.g. on a system call).
+        LOG(ERROR) << "=";  // Until we receive control back from the kernel
+                            // (e.g. on a system call).
       },
       testing::KilledBySignal(SIGSEGV), "");
   FreePages(buffer, PageAllocationGranularity());
