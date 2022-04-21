@@ -50,28 +50,33 @@ class UkmDataManager;
 // The internal implementation of the SegmentationPlatformService.
 class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
  public:
-  SegmentationPlatformServiceImpl(
-      std::unique_ptr<ModelProviderFactory> model_provider,
-      leveldb_proto::ProtoDatabaseProvider* db_provider,
-      const base::FilePath& storage_dir,
-      UkmDataManager* ukm_data_manager,
-      PrefService* pref_service,
-      history::HistoryService* history_service,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      base::Clock* clock,
-      std::vector<std::unique_ptr<Config>> configs,
-      PrefService* local_state);
+  struct InitParams {
+    InitParams();
+    ~InitParams();
 
-  // For testing only.
-  SegmentationPlatformServiceImpl(
-      std::unique_ptr<StorageService> storage_service,
-      std::unique_ptr<ModelProviderFactory> model_provider,
-      PrefService* pref_service,
-      history::HistoryService* history_service,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      base::Clock* clock,
-      std::vector<std::unique_ptr<Config>> configs,
-      PrefService* local_state);
+    bool IsValid();
+
+    leveldb_proto::ProtoDatabaseProvider* db_provider = nullptr;
+    history::HistoryService* history_service = nullptr;
+    base::FilePath storage_dir;
+    PrefService* profile_prefs = nullptr;
+    PrefService* local_state = nullptr;
+
+    std::unique_ptr<ModelProviderFactory> model_provider;
+    UkmDataManager* ukm_data_manager = nullptr;
+    std::vector<std::unique_ptr<Config>> configs;
+
+    scoped_refptr<base::SequencedTaskRunner> task_runner;
+    base::Clock* clock = nullptr;
+
+    // Test only:
+    std::unique_ptr<StorageService> storage_service;
+  };
+
+  explicit SegmentationPlatformServiceImpl(
+      std::unique_ptr<InitParams> init_params);
+
+  SegmentationPlatformServiceImpl();
 
   ~SegmentationPlatformServiceImpl() override;
 

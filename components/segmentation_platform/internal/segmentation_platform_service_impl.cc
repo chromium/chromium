@@ -49,54 +49,40 @@ base::flat_set<OptimizationTarget> GetAllSegmentIds(
 
 }  // namespace
 
-SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
-    std::unique_ptr<ModelProviderFactory> model_provider,
-    leveldb_proto::ProtoDatabaseProvider* db_provider,
-    const base::FilePath& storage_dir,
-    UkmDataManager* ukm_data_manager,
-    PrefService* pref_service,
-    history::HistoryService* history_service,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    base::Clock* clock,
-    std::vector<std::unique_ptr<Config>> configs,
-    PrefService* local_state)
-    : SegmentationPlatformServiceImpl(
-          std::make_unique<StorageService>(storage_dir,
-                                           db_provider,
-                                           task_runner,
-                                           clock,
-                                           ukm_data_manager,
-                                           GetAllSegmentIds(configs),
-                                           model_provider.get()),
-          std::move(model_provider),
-          pref_service,
-          history_service,
-          task_runner,
-          clock,
-          std::move(configs),
-          local_state) {}
+SegmentationPlatformServiceImpl::InitParams::InitParams() = default;
+SegmentationPlatformServiceImpl::InitParams::~InitParams() = default;
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
-    std::unique_ptr<StorageService> storage_service,
-    std::unique_ptr<ModelProviderFactory> model_provider,
-    PrefService* pref_service,
-    history::HistoryService* history_service,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    base::Clock* clock,
-    std::vector<std::unique_ptr<Config>> configs,
-    PrefService* local_state)
-    : model_provider_factory_(std::move(model_provider)),
-      task_runner_(task_runner),
-      clock_(clock),
+    std::unique_ptr<InitParams> init_params)
+    : model_provider_factory_(std::move(init_params->model_provider)),
+      task_runner_(init_params->task_runner),
+      clock_(init_params->clock),
       platform_options_(PlatformOptions::CreateDefault()),
-      configs_(std::move(configs)),
-      storage_service_(std::move(storage_service)),
-      local_state_(local_state),
+      configs_(std::move(init_params->configs)),
+      all_segment_ids_(GetAllSegmentIds(configs_)),
+      local_state_(init_params->local_state),
       creation_time_(clock_->Now()) {
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",
       base::SysInfo::Uptime());
-  all_segment_ids_ = GetAllSegmentIds(configs_);
+
+  DCHECK(task_runner_);
+  DCHECK(clock);
+  DCHECK(init_params->profile_prefs && init_params->local_state);
+
+  if (init_params->storage_service) {
+    // Test only:
+    storage_service_ = std::move(init_params->storage_service);
+  } else {
+    DCHECK(model_provider_factory_ && init_params->db_provider);
+    DCHECK(!init_params->storage_dir.empty() && init_params->ukm_data_manager);
+    storage_service_ = std::make_unique<StorageService>(
+        init_params->storage_dir, init_params->db_provider,
+        init_params->task_runner, init_params->clock,
+        init_params->ukm_data_manager, all_segment_ids_,
+        model_provider_factory_.get());
+  }
+
   std::vector<OptimizationTarget> segment_id_vec(all_segment_ids_.begin(),
                                                  all_segment_ids_.end());
 
@@ -104,16 +90,16 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   signal_handler_.Initialize(
       storage_service_->signal_database(),
       storage_service_->segment_info_database(),
-      storage_service_->ukm_data_manager(), history_service,
+      storage_service_->ukm_data_manager(), init_params->history_service,
       storage_service_->default_model_manager(), segment_id_vec);
 
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =
         std::make_unique<SegmentSelectorImpl>(
             storage_service_->segment_info_database(),
-            storage_service_->signal_storage_config(), pref_service,
-            config.get(), clock, platform_options_,
-            storage_service_->default_model_manager());
+            storage_service_->signal_storage_config(),
+            init_params->profile_prefs, config.get(), init_params->clock,
+            platform_options_, storage_service_->default_model_manager());
   }
 
   proxy_ = std::make_unique<ServiceProxyImpl>(
