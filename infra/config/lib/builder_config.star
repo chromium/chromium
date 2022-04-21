@@ -526,6 +526,44 @@ def _entry(bc_state, node, parent = None):
 def _builder_id_sort_key(builder_id):
     return (builder_id["bucket"], builder_id["builder"])
 
+# Some fields don't need to be consistent between mirrored specs, either because
+# they're only used on CI codepaths or because they're used on a per-spec basis
+def _filter_spec_for_consistency(spec):
+    spec = dict(spec)
+    for a in (
+        # Only used in CI code-paths
+        "build_gs_bucket",
+        "run_tests_serially",
+        "expose_trigger_properties",
+        # Used on a per-spec basis to look up tests for mirrored builders
+        "builder_group",
+    ):
+        spec.pop(a, None)
+    return spec
+
+def _check_specs_for_consistency(bucket_name, builder_name, entries):
+    filtered_specs = [
+        (e["builder_id"], _filter_spec_for_consistency(e["builder_spec"]))
+        for e in entries
+    ]
+    spec = filtered_specs[0][1]
+    for _, s in filtered_specs[1:]:
+        if s != spec:
+            failure_output = []
+            for b, s in filtered_specs:
+                failure_output.extend("{}/{}: {}".format(
+                    b["bucket"],
+                    b["builder"],
+                    json.indent(json.encode(s)),
+                ).splitlines())
+            fail("Builder {}/{} mirrors builders with inconsistent builder specs (omitting fields that do not need to be consistent):{}".format(
+                bucket_name,
+                builder_name,
+                "".join(
+                    ["\n  {}".format(l) for l in failure_output],
+                ),
+            ))
+
 def _set_builder_config_property(ctx):
     cfg = None
     for f in ctx.output:
@@ -564,12 +602,17 @@ def _set_builder_config_property(ctx):
 
                 encountered = {}
 
+                entries_to_check_for_consistency = []
+
                 def add(node, parent = None):
                     node_id = (node.key.container.id, node.key.id)
                     if node_id not in encountered:
-                        entries.append(_entry(bc_state, node, parent))
+                        entry = _entry(bc_state, node, parent)
+                        entries.append(entry)
                         if bc_state.builder_spec(node).execution_mode == _execution_mode.COMPILE_AND_TEST:
-                            builder_ids.append(_builder_id(node))
+                            builder_id = _builder_id(node)
+                            builder_ids.append(builder_id)
+                            entries_to_check_for_consistency.append(entry)
                         else:
                             builder_ids_in_scope_for_testing.append(_builder_id(node))
                         encountered[node_id] = True
@@ -582,6 +625,8 @@ def _set_builder_config_property(ctx):
                     if node.props.try_settings.include_all_triggered_testers:
                         for child in bc_state.children(m):
                             add(child, m)
+
+                _check_specs_for_consistency(bucket_name, builder_name, entries_to_check_for_consistency)
 
             if not entries:
                 fail("internal error: entries is empty for builder {}"
