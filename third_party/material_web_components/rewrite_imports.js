@@ -24,7 +24,7 @@ for (const inputFile of inputFiles) {
       fs.readFileSync(inputFile, {encoding: 'utf8'}).split('\n');
 
   // Investigate JS parsing if this is insufficient.
-  const importRegex = /^((?:export [*{]|import ).*["'])([^.].*)(["'];)$/;
+  const importRegex = /^((?:export [*{]|import ).*["'])(.*)(["'];)$/;
   const output = [];
 
   for (let line of data) {
