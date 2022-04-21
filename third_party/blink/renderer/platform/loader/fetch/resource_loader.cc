@@ -611,6 +611,12 @@ void ResourceLoader::DidReceiveData(base::span<const char> data) {
   DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
+void ResourceLoader::DidReceiveDecodedData(
+    const String& data,
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+  resource_->DidReceiveDecodedData(data, std::move(digest));
+}
+
 void ResourceLoader::DidFinishLoadingBody() {
   has_seen_end_of_body_ = true;
 

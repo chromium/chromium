@@ -100,9 +100,7 @@ ClassicScript* ClassicScript::CreateFromResource(
                            ScriptStreamer::NotStreamingReason::kInvalid);
 
   ParkableString source;
-  const char web_snapshot_prefix[4] = {'+', '+', '+', ';'};
-  if (RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled() &&
-      resource->DataHasPrefix(base::span<const char>(web_snapshot_prefix))) {
+  if (resource->IsWebSnapshot()) {
     source = resource->RawSourceText();
   } else {
     source = resource->SourceText();

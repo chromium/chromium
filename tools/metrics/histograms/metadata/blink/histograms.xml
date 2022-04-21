@@ -2046,6 +2046,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Script.SourceTextTime" units="microseconds"
+    expires_after="2022-10-18">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@google.com</owner>
+  <summary>
+    The time spent generating the source text for a script resource. Logged when
+    the source text is accessed for the first time. Emitted at most once per
+    script resource.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.ScrollDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2022-09-11">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

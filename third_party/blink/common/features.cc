@@ -1431,5 +1431,8 @@ const base::FeatureParam<base::TimeDelta> kRecentBeginMainFrameCutoff = {
     &kDeferBeginMainFrameDuringLoading, "recent_begin_main_frame_cutoff",
     base::Milliseconds(150)};
 
+const base::Feature kDecodeScriptSourceOffThread{
+    "DecodeScriptSourceOffThread", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

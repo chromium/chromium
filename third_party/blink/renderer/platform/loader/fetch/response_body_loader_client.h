@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESPONSE_BODY_LOADER_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESPONSE_BODY_LOADER_CLIENT_H_
 
+#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+
 namespace blink {
 
 // A ResponseBodyLoaderClient receives signals for loading a response body.
@@ -14,6 +16,12 @@ class ResponseBodyLoaderClient : public GarbageCollectedMixin {
 
   // Called when reading a chunk, with the chunk.
   virtual void DidReceiveData(base::span<const char> data) = 0;
+
+  // Called as an optimization if the loader has decoded the body data. This can
+  // be called at most once.
+  virtual void DidReceiveDecodedData(
+      const String& data,
+      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) = 0;
 
   // Called when finishing reading the entire body. This must be the last
   // signal.

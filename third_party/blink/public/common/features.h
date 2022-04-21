@@ -723,6 +723,10 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kRecentBeginMainFrameCutoff;
 
+// If enabled, script source text will be decoded and hashed off the main
+// thread.
+BLINK_COMMON_EXPORT extern const base::Feature kDecodeScriptSourceOffThread;
+
 }  // namespace features
 }  // namespace blink
 

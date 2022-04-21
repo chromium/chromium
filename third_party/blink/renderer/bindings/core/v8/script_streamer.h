@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -75,6 +76,7 @@ class CORE_EXPORT ScriptStreamer final
       ScriptResource* resource,
       mojo::ScopedDataPipeConsumerHandle data_pipe,
       ResponseBodyLoaderClient* response_body_loader_client,
+      std::unique_ptr<TextResourceDecoder> decoder,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
 
   ScriptStreamer(const ScriptStreamer&) = delete;
@@ -216,6 +218,14 @@ class CORE_EXPORT ScriptStreamer final
   Member<ScriptResource> script_resource_;
   Member<ResponseBodyLoaderClient> response_body_loader_client_;
 
+  // |script_decoder_| should only be accessed on the decoding thread.
+  class ScriptDecoder;
+  struct ScriptDecoderDeleter {
+    void operator()(const ScriptDecoder* ptr);
+  };
+  using ScriptDecoderPtr = std::unique_ptr<ScriptDecoder, ScriptDecoderDeleter>;
+  ScriptDecoderPtr script_decoder_;
+
   // Fields active during asynchronous (non-streaming) reads.
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
   std::unique_ptr<mojo::SimpleWatcher> watcher_;
@@ -237,8 +247,6 @@ class CORE_EXPORT ScriptStreamer final
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;
 
   v8::ScriptType script_type_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
 };
 
 }  // namespace blink

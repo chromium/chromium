@@ -94,7 +94,9 @@ class PLATFORM_EXPORT ParkableStringManager {
   friend class ParkableString;
   friend class ParkableStringImpl;
 
-  scoped_refptr<ParkableStringImpl> Add(scoped_refptr<StringImpl>&&);
+  scoped_refptr<ParkableStringImpl> Add(
+      scoped_refptr<StringImpl>&&,
+      std::unique_ptr<ParkableStringImpl::SecureDigest> digest);
   void Remove(ParkableStringImpl*);
 
   void OnParked(ParkableStringImpl*);

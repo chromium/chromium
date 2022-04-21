@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -34,9 +35,153 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 namespace blink {
+
+bool DecodingEnabled() {
+  return base::FeatureList::IsEnabled(features::kDecodeScriptSourceOffThread);
+}
+
+// ScriptDecoder decodes and hashes the script source on a worker thread, and
+// then forwards the data to the client on the loader thread.
+class ScriptStreamer::ScriptDecoder {
+ public:
+  ScriptDecoder(ResponseBodyLoaderClient* response_body_loader_client,
+                std::unique_ptr<TextResourceDecoder> decoder,
+                scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner)
+      : decoding_enabled_(DecodingEnabled()),
+        decoder_(std::move(decoder)),
+        response_body_loader_client_(response_body_loader_client),
+        loading_task_runner_(std::move(loading_task_runner)),
+        decoding_task_runner_(decoding_enabled_
+                                  ? worker_pool::CreateSequencedTaskRunner(
+                                        {base::TaskPriority::USER_BLOCKING})
+                                  : nullptr) {}
+
+  void DidReceiveData(std::unique_ptr<char[]> data,
+                      size_t data_size,
+                      bool send_to_client) {
+    if (ShouldPostToDecodingThread()) {
+      PostCrossThreadTask(
+          *decoding_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&ScriptDecoder::DidReceiveData,
+                              CrossThreadUnretained(this), std::move(data),
+                              data_size, send_to_client));
+      return;
+    }
+
+    if (decoding_enabled_)
+      AppendData(decoder_->Decode(data.get(), data_size));
+
+    if (send_to_client) {
+      RunOrPostToLoadingThread(FROM_HERE,
+                               CrossThreadBindOnce(NotifyClientDidReceiveData,
+                                                   response_body_loader_client_,
+                                                   std::move(data), data_size));
+    }
+  }
+
+  void FinishDecode(CrossThreadOnceClosure main_thread_continuation) {
+    if (ShouldPostToDecodingThread()) {
+      PostCrossThreadTask(
+          *decoding_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&ScriptDecoder::FinishDecode,
+                              CrossThreadUnretained(this),
+                              std::move(main_thread_continuation)));
+      return;
+    }
+
+    if (decoding_enabled_) {
+      AppendData(decoder_->Flush());
+
+      DigestValue digest_value;
+      digestor_.Finish(digest_value);
+
+      RunOrPostToLoadingThread(
+          FROM_HERE,
+          CrossThreadBindOnce(
+              NotifyClientDidFinishLoading, response_body_loader_client_,
+              builder_.ReleaseString(),
+              std::make_unique<ParkableStringImpl::SecureDigest>(digest_value),
+              std::move(main_thread_continuation)));
+    } else {
+      RunOrPostToLoadingThread(FROM_HERE, std::move(main_thread_continuation));
+    }
+  }
+
+  void Delete() const {
+    if (decoding_task_runner_)
+      decoding_task_runner_->DeleteSoon(FROM_HERE, this);
+    else
+      delete this;
+  }
+
+ private:
+  void RunOrPostToLoadingThread(const base::Location& from_here,
+                                CrossThreadOnceClosure closure) {
+    if (loading_task_runner_->RunsTasksInCurrentSequence()) {
+      std::move(closure).Run();
+      return;
+    }
+
+    PostCrossThreadTask(*loading_task_runner_, from_here, std::move(closure));
+  }
+
+  bool ShouldPostToDecodingThread() {
+    return decoding_task_runner_ &&
+           !decoding_task_runner_->RunsTasksInCurrentSequence();
+  }
+
+  void AppendData(const String& data) {
+    digestor_.Update(base::as_bytes(base::make_span(
+        static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+    builder_.Append(data);
+  }
+
+  static void NotifyClientDidReceiveData(
+      ResponseBodyLoaderClient* response_body_loader_client,
+      std::unique_ptr<char[]> data,
+      size_t data_size) {
+    // The response_body_loader_client is held weakly, so it may be dead by the
+    // time this callback is called. If so, we can simply drop this chunk.
+    if (!response_body_loader_client)
+      return;
+
+    response_body_loader_client->DidReceiveData(
+        base::make_span(data.get(), data_size));
+  }
+
+  static void NotifyClientDidFinishLoading(
+      ResponseBodyLoaderClient* response_body_loader_client,
+      const String& decoded_data,
+      std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+      CrossThreadOnceClosure main_thread_continuation) {
+    if (response_body_loader_client) {
+      response_body_loader_client->DidReceiveDecodedData(decoded_data,
+                                                         std::move(digest));
+    }
+
+    std::move(main_thread_continuation).Run();
+  }
+
+  const bool decoding_enabled_;
+  StringBuilder builder_;
+  std::unique_ptr<TextResourceDecoder> decoder_;
+  Digestor digestor_{kHashAlgorithmSha256};
+
+  CrossThreadWeakPersistent<ResponseBodyLoaderClient>
+      response_body_loader_client_;
+  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
+};
+
+void ScriptStreamer::ScriptDecoderDeleter::operator()(
+    const ScriptDecoder* ptr) {
+  if (ptr)
+    ptr->Delete();
+}
 
 // SourceStream implements the streaming interface towards V8. The main
 // functionality is preparing the data to give to V8 on main thread, and
@@ -107,11 +252,8 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           // the client once the streaming completes.
           auto copy_for_resource = std::make_unique<char[]>(num_bytes);
           memcpy(copy_for_resource.get(), buffer, num_bytes);
-          PostCrossThreadTask(
-              *loading_task_runner_, FROM_HERE,
-              CrossThreadBindOnce(NotifyClientDidReceiveData,
-                                  response_body_loader_client_,
-                                  std::move(copy_for_resource), num_bytes));
+          script_decoder_->DidReceiveData(std::move(copy_for_resource),
+                                          num_bytes, true);
 
           result = data_pipe_->EndReadData(num_bytes);
           CHECK_EQ(result, MOJO_RESULT_OK);
@@ -196,8 +338,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
       ScriptResource* resource,
       ScriptStreamer* streamer,
       mojo::ScopedDataPipeConsumerHandle data_pipe,
-      ResponseBodyLoaderClient* response_body_loader_client,
-      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner) {
+      ScriptStreamer::ScriptDecoder* script_decoder) {
     DCHECK(IsMainThread());
     CHECK(data_pipe);
     CHECK(!ready_to_run_.IsSet());
@@ -227,8 +368,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
     }
 
     data_pipe_ = std::move(data_pipe);
-    response_body_loader_client_ = response_body_loader_client;
-    loading_task_runner_ = loading_task_runner;
+    script_decoder_ = script_decoder;
 
     CHECK(data_pipe_);
     ready_to_run_.Set();
@@ -237,19 +377,6 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
   ScriptStreamer::LoadingState LoadingState() const { return load_state_; }
 
  private:
-  static void NotifyClientDidReceiveData(
-      ResponseBodyLoaderClient* response_body_loader_client,
-      std::unique_ptr<char[]> data,
-      uint32_t data_size) {
-    // The response_body_loader_client is held weakly, so it may be dead by the
-    // time this callback is called. If so, we can simply drop this chunk.
-    if (!response_body_loader_client)
-      return;
-
-    response_body_loader_client->DidReceiveData(
-        base::make_span(data.get(), data_size));
-  }
-
   void SetFinished(ScriptStreamer::LoadingState state) { load_state_ = state; }
 
   // TODO(leszeks): Make this a DCHECK-only flag.
@@ -266,9 +393,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
   size_t initial_data_len_ = 0;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
-  CrossThreadWeakPersistent<ResponseBodyLoaderClient>
-      response_body_loader_client_;
-  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
+  ScriptStreamer::ScriptDecoder* script_decoder_;
 };
 
 std::tuple<ScriptStreamer*, ScriptStreamer::NotStreamingReason>
@@ -434,8 +559,7 @@ void ScriptStreamer::StreamingCompleteOnBackgroundThread(LoadingState state) {
 
   // notifyFinished might already be called, or it might be called in the
   // future (if the parsing finishes earlier because of a parse error).
-  PostCrossThreadTask(
-      *loading_task_runner_, FROM_HERE,
+  script_decoder_->FinishDecode(
       CrossThreadBindOnce(&ScriptStreamer::StreamingComplete,
                           WrapCrossThreadPersistent(this), state));
 
@@ -637,8 +761,7 @@ bool ScriptStreamer::TryStartStreamingTask() {
       });
 
   stream_->TakeDataAndPipeOnMainThread(
-      script_resource_, this, std::move(data_pipe_),
-      response_body_loader_client_.Get(), loading_task_runner_);
+      script_resource_, this, std::move(data_pipe_), script_decoder_.get());
 
   // This reset will also cancel the watcher.
   watcher_.reset();
@@ -685,20 +808,23 @@ ScriptStreamer::ScriptStreamer(
     ScriptResource* script_resource,
     mojo::ScopedDataPipeConsumerHandle data_pipe,
     ResponseBodyLoaderClient* response_body_loader_client,
+    std::unique_ptr<TextResourceDecoder> decoder,
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner)
     : script_resource_(script_resource),
       response_body_loader_client_(response_body_loader_client),
+      script_decoder_(new ScriptDecoder(response_body_loader_client,
+                                        std::move(decoder),
+                                        loading_task_runner)),
       data_pipe_(std::move(data_pipe)),
       script_url_string_(script_resource->Url().Copy().GetString()),
       script_resource_identifier_(script_resource->InspectorId()),
       // Unfortunately there's no dummy encoding value in the enum; let's use
       // one we don't stream.
       encoding_(v8::ScriptCompiler::StreamedSource::TWO_BYTE),
-      script_type_(ScriptTypeForStreamingTask(script_resource)),
-      loading_task_runner_(std::move(loading_task_runner)) {
+      script_type_(ScriptTypeForStreamingTask(script_resource)) {
   watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-      loading_task_runner_);
+      loading_task_runner);
 
   watcher_->Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                   MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
@@ -773,6 +899,12 @@ void ScriptStreamer::OnDataPipeReadable(MojoResult result,
 
   response_body_loader_client_->DidReceiveData(
       base::make_span(reinterpret_cast<const char*>(data), data_size));
+  if (DecodingEnabled()) {
+    auto copy_for_decoding = std::make_unique<char[]>(data_size);
+    memcpy(copy_for_decoding.get(), data, data_size);
+    script_decoder_->DidReceiveData(std::move(copy_for_decoding), data_size,
+                                    false);
+  }
 
   MojoResult end_read_result = data_pipe_->EndReadData(data_size);
 
@@ -835,7 +967,11 @@ void ScriptStreamer::LoadCompleteWithoutStreaming(
     SuppressStreaming(no_streaming_reason);
   }
   AdvanceLoadingState(state);
-  SendClientLoadFinishedCallback();
+
+  // Make sure decoding is finished before finishing the load.
+  script_decoder_->FinishDecode(
+      CrossThreadBindOnce(&ScriptStreamer::SendClientLoadFinishedCallback,
+                          WrapCrossThreadPersistent(this)));
 }
 
 void ScriptStreamer::SendClientLoadFinishedCallback() {

@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
@@ -115,7 +116,9 @@ ScriptResource::ScriptResource(
                    options,
                    decoder_options),
       consume_cache_state_(ConsumeCacheState::kWaitingForCache),
-      initial_request_script_type_(initial_request_script_type) {
+      initial_request_script_type_(initial_request_script_type),
+      stream_text_decoder_(
+          std::make_unique<TextResourceDecoder>(decoder_options)) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
   // TODO(leszeks): This could be static to avoid the cost of feature flag
@@ -167,6 +170,7 @@ const ParkableString& ScriptResource::SourceText() {
   CHECK(IsLoaded());
 
   if (source_text_.IsNull() && Data()) {
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Blink.Script.SourceTextTime");
     String source_text = DecodedText();
     ClearData();
     SetDecodedSize(source_text.CharactersSizeInBytes());
@@ -195,6 +199,12 @@ const ParkableString& ScriptResource::RawSourceText() {
   }
 
   return source_text_;
+}
+
+bool ScriptResource::IsWebSnapshot() const {
+  const char web_snapshot_prefix[4] = {'+', '+', '+', ';'};
+  return RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled() &&
+         DataHasPrefix(base::span<const char>(web_snapshot_prefix));
 }
 
 bool ScriptResource::DataHasPrefix(const base::span<const char>& prefix) const {
@@ -404,11 +414,23 @@ void ScriptResource::ResponseBodyReceived(
   CheckStreamingState();
   CHECK(!ErrorOccurred());
 
-  streamer_ = MakeGarbageCollected<ScriptStreamer>(this, std::move(data_pipe),
-                                                   response_body_loader_client,
-                                                   loader_task_runner);
+  streamer_ = MakeGarbageCollected<ScriptStreamer>(
+      this, std::move(data_pipe), response_body_loader_client,
+      std::move(stream_text_decoder_), loader_task_runner);
   CHECK_EQ(no_streamer_reason_, ScriptStreamer::NotStreamingReason::kInvalid);
   AdvanceStreamingState(StreamingState::kStreaming);
+}
+
+void ScriptResource::DidReceiveDecodedData(
+    const String& data,
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+  // Web snapshots use RawSourceText(), and don't need the decoded data.
+  if (IsWebSnapshot())
+    return;
+
+  ClearData();
+  source_text_ = ParkableString(data.Impl(), std::move(digest));
+  SetDecodedSize(source_text_.CharactersSizeInBytes());
 }
 
 void ScriptResource::NotifyFinished() {
@@ -444,6 +466,14 @@ void ScriptResource::NotifyFinished() {
   }
   CheckStreamingState();
   TextResource::NotifyFinished();
+}
+
+void ScriptResource::SetEncoding(const String& chs) {
+  TextResource::SetEncoding(chs);
+  if (stream_text_decoder_) {
+    stream_text_decoder_->SetEncoding(
+        WTF::TextEncoding(chs), TextResourceDecoder::kEncodingFromHTTPHeader);
+  }
 }
 
 ScriptStreamer* ScriptResource::TakeStreamer() {

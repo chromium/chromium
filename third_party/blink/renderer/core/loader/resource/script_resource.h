@@ -87,6 +87,9 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   void ResponseBodyReceived(
       ResponseBodyLoaderDrainableInterface& body_loader,
       scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) override;
+  void DidReceiveDecodedData(
+      const String& data,
+      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override;
 
   void Trace(Visitor*) const override;
 
@@ -101,7 +104,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   const ParkableString& RawSourceText();
 
-  bool DataHasPrefix(const base::span<const char>& prefix) const;
+  bool IsWebSnapshot() const;
 
   // Get the resource's current text. This can return partial data, so should
   // not be used outside of the inspector.
@@ -149,6 +152,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   //   1. Loading + streaming completes, or
   //   2. Loading completes + streaming is disabled.
   void NotifyFinished() override;
+
+  void SetEncoding(const String& chs) override;
 
  private:
   // Valid state transitions:
@@ -232,6 +237,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   void OnDataPipeReadable(MojoResult result,
                           const mojo::HandleSignalsState& state);
 
+  bool DataHasPrefix(const base::span<const char>& prefix) const;
+
   ParkableString source_text_;
 
   Member<ScriptStreamer> streamer_;
@@ -242,6 +249,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   Member<ScriptCacheConsumer> cache_consumer_;
   ConsumeCacheState consume_cache_state_;
   const mojom::blink::ScriptType initial_request_script_type_;
+  std::unique_ptr<TextResourceDecoder> stream_text_decoder_;
 };
 
 template <>

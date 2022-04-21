@@ -166,13 +166,15 @@ bool ParkableStringManager::ShouldPark(const StringImpl& string) {
 }
 
 scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
-    scoped_refptr<StringImpl>&& string) {
+    scoped_refptr<StringImpl>&& string,
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
   DCHECK(IsMainThread());
 
   ScheduleAgingTaskIfNeeded();
 
   auto string_impl = string;
-  auto digest = ParkableStringImpl::HashString(string_impl.get());
+  if (!digest)
+    digest = ParkableStringImpl::HashString(string_impl.get());
   DCHECK(digest.get());
 
   auto it = unparked_strings_.find(digest.get());

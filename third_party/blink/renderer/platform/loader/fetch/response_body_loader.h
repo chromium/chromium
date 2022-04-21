@@ -127,6 +127,9 @@ class PLATFORM_EXPORT ResponseBodyLoader final
 
   // ResponseBodyLoaderClient implementation.
   void DidReceiveData(base::span<const char> data) override;
+  void DidReceiveDecodedData(
+      const String& data,
+      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override;
   void DidFinishLoadingBody() override;
   void DidFailLoadingBody() override;
   void DidCancelLoadingBody() override;
