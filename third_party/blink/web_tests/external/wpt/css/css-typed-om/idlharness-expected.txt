@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 544 tests; 476 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 544 tests; 477 PASS, 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: original interface defined
@@ -400,7 +400,7 @@ PASS CSSColorValue interface: existence and properties of interface prototype ob
 PASS CSSColorValue interface: existence and properties of interface prototype object's @@unscopables property
 FAIL CSSColorValue interface: attribute colorSpace assert_true: The prototype object must have a property "colorSpace" expected true got false
 FAIL CSSColorValue interface: operation to(CSSKeywordish) assert_own_property: interface prototype object missing non-static operation expected property "to" missing
-FAIL CSSColorValue interface: operation parse(USVString) assert_own_property: interface object missing static operation expected property "parse" missing
+PASS CSSColorValue interface: operation parse(USVString)
 PASS CSSRGB interface: existence and properties of interface object
 PASS CSSRGB interface object length
 PASS CSSRGB interface object name

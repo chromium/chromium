@@ -629,6 +629,7 @@ interface CSSAnimation : Animation
     getter animationName
     method constructor
 interface CSSColorValue
+    static method parse
     attribute @@toStringTag
     method constructor
     method toHSL
