@@ -110,17 +110,23 @@ RuleData::RuleData(StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
                    AddRuleFlags add_rule_flags)
-    : RuleData(Type::kNormal, rule, selector_index, position, add_rule_flags) {}
+    : RuleData(Type::kNormal,
+               rule,
+               selector_index,
+               position,
+               0 /* extra_specificity */,
+               add_rule_flags) {}
 
 RuleData::RuleData(Type type,
                    StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
+                   unsigned extra_specificity,
                    AddRuleFlags add_rule_flags)
     : rule_(rule),
       selector_index_(selector_index),
       position_(position),
-      specificity_(Selector().Specificity()),
+      specificity_(Selector().Specificity() + extra_specificity),
       link_match_type_(DetermineLinkMatchType(add_rule_flags, Selector())),
       has_document_security_origin_(add_rule_flags &
                                     kRuleHasDocumentSecurityOrigin),
@@ -720,7 +726,12 @@ ExtendedRuleData::ExtendedRuleData(base::PassKey<RuleData>,
                                    AddRuleFlags flags,
                                    const ContainerQuery* container_query,
                                    const StyleScope* style_scope)
-    : RuleData(Type::kExtended, rule, selector_index, position, flags),
+    : RuleData(Type::kExtended,
+               rule,
+               selector_index,
+               position,
+               (style_scope ? style_scope->Specificity() : 0),
+               flags),
       container_query_(container_query),
       style_scope_(style_scope) {}
 

@@ -27,10 +27,15 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   const absl::optional<CSSSelectorList>& To() const { return to_; }
   const StyleScope* Parent() const { return parent_.Get(); }
 
+  // Specificity of the <scope-start> selector (::From()), plus the
+  // specificity of the parent scope (if any).
+  unsigned Specificity() const;
+
  private:
   CSSSelectorList from_;
   absl::optional<CSSSelectorList> to_;
   Member<const StyleScope> parent_;
+  mutable absl::optional<unsigned> specificity_;
 };
 
 }  // namespace blink

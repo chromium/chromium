@@ -110,6 +110,15 @@ unsigned CSSSelectorList::ComputeLength() const {
   return SelectorIndex(*current) + 1;
 }
 
+unsigned CSSSelectorList::MaximumSpecificity() const {
+  unsigned specificity = 0;
+
+  for (const CSSSelector* s = First(); s; s = Next(*s))
+    specificity = std::max(specificity, s->Specificity());
+
+  return specificity;
+}
+
 String CSSSelectorList::SelectorsText() const {
   StringBuilder result;
 

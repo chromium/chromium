@@ -150,10 +150,15 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   static constexpr size_t kPositionBits = 18;
 
  protected:
+  // The `extra_specificity` parameter is added to the specificity of the
+  // RuleData. This is useful for @scope, where inner selectors must gain
+  // additional specificity from the <scope-start> of the enclosing @scope.
+  // https://drafts.csswg.org/css-cascade-6/#scope-atrule
   RuleData(Type type,
            StyleRule*,
            unsigned selector_index,
            unsigned position,
+           unsigned extra_specificity,
            AddRuleFlags);
 
  private:

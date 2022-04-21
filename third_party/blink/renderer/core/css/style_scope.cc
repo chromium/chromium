@@ -19,4 +19,12 @@ StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
   return copy;
 }
 
+unsigned StyleScope::Specificity() const {
+  if (!specificity_.has_value()) {
+    specificity_ =
+        from_.MaximumSpecificity() + (parent_ ? parent_->Specificity() : 0);
+  }
+  return *specificity_;
+}
+
 }  // namespace blink

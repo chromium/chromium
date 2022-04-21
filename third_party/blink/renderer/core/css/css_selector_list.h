@@ -114,6 +114,9 @@ class CORE_EXPORT CSSSelectorList {
   // avoided when possible. Instead iterate from first() and using next().
   unsigned ComputeLength() const;
 
+  // Return the specificity of the selector with the highest specificity.
+  unsigned MaximumSpecificity() const;
+
  private:
   CSSSelectorList(const CSSSelectorList&) = delete;
   CSSSelectorList& operator=(const CSSSelectorList&) = delete;
