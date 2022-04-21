@@ -210,7 +210,13 @@ void CheckScalarInDump(const MemoryAllocatorDump* dump,
 
 }  // namespace
 
-TEST_F(URLRequestQuicPerfTest, TestGetRequest) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/852937): Fix this test on Fuchsia and re-enable.
+#define MAYBE_TestGetRequest DISABLED_TestGetRequest
+#else
+#define MAYBE_TestGetRequest TestGetRequest
+#endif
+TEST_F(URLRequestQuicPerfTest, MAYBE_TestGetRequest) {
   bool quic_succeeded = false;
   GURL url(base::StringPrintf("https://%s%s", kOriginHost, kHelloPath));
   base::TimeTicks start = base::TimeTicks::Now();

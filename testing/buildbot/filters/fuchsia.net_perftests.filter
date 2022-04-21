@@ -1,5 +1,2 @@
-# Flaky test blocked until crbug.com/852937 is fixed
--URLRequestQuicPerfTest.TestGetRequest
-
 # Too long-running for repeat execution
 -SimpleIndexPerfTest.EvictionPerformance
