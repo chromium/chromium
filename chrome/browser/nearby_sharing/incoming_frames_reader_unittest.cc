@@ -105,7 +105,7 @@ TEST_F(IncomingFramesReaderTest, ReadTimedOut) {
 
   base::RunLoop run_loop;
   frames_reader().ReadFrame(
-      sharing::mojom::V1Frame::Tag::INTRODUCTION,
+      sharing::mojom::V1Frame::Tag::kIntroduction,
       base::BindLambdaForTesting(
           [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             EXPECT_FALSE(frame);
@@ -172,7 +172,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful) {
 
   base::RunLoop run_loop;
   frames_reader().ReadFrame(
-      sharing::mojom::V1Frame::Tag::INTRODUCTION,
+      sharing::mojom::V1Frame::Tag::kIntroduction,
       base::BindLambdaForTesting(
           [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             ExpectIntroductionFrame(frame);
@@ -220,7 +220,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful_JumbledFramesOrdering) {
 
   base::RunLoop run_loop_introduction;
   frames_reader().ReadFrame(
-      sharing::mojom::V1Frame::Tag::INTRODUCTION,
+      sharing::mojom::V1Frame::Tag::kIntroduction,
       base::BindLambdaForTesting(
           [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             ExpectIntroductionFrame(frame);
@@ -268,7 +268,7 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
 
   base::RunLoop run_loop_introduction;
   frames_reader().ReadFrame(
-      sharing::mojom::V1Frame::Tag::INTRODUCTION,
+      sharing::mojom::V1Frame::Tag::kIntroduction,
       base::BindLambdaForTesting(
           [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             ExpectIntroductionFrame(frame);
@@ -292,7 +292,7 @@ TEST_F(IncomingFramesReaderTest, ReadAfterConnectionClosed) {
 
   base::RunLoop run_loop_before_close;
   frames_reader().ReadFrame(
-      sharing::mojom::V1Frame::Tag::INTRODUCTION,
+      sharing::mojom::V1Frame::Tag::kIntroduction,
       base::BindLambdaForTesting(
           [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             EXPECT_FALSE(frame);

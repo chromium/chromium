@@ -129,7 +129,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
     EXPECT_CALL(
         frames_reader_,
         ReadFrame(
-            testing::Eq(sharing::mojom::V1Frame::Tag::PAIRED_KEY_ENCRYPTION),
+            testing::Eq(sharing::mojom::V1Frame::Tag::kPairedKeyEncryption),
             testing::_, testing::Eq(kTimeout)))
         .WillOnce(testing::WithArg<1>(testing::Invoke(
             [frame_type](
@@ -163,7 +163,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
           sharing::mojom::PairedKeyResultFrame_Status::kUnknown) {
     EXPECT_CALL(
         frames_reader_,
-        ReadFrame(testing::Eq(sharing::mojom::V1Frame::Tag::PAIRED_KEY_RESULT),
+        ReadFrame(testing::Eq(sharing::mojom::V1Frame::Tag::kPairedKeyResult),
                   testing::_, testing::Eq(kTimeout)))
         .WillOnce(testing::WithArg<1>(testing::Invoke(
             [=](base::OnceCallback<void(

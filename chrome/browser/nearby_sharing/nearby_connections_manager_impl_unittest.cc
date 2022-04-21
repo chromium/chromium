@@ -374,7 +374,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           EXPECT_EQ(kRemoteEndpointId, endpoint_ids.front());
           ASSERT_TRUE(payload);
           EXPECT_EQ(payload_id, payload->id);
-          ASSERT_EQ(PayloadContent::Tag::FILE, payload->content->which());
+          ASSERT_EQ(PayloadContent::Tag::kFile, payload->content->which());
 
           base::ScopedAllowBlockingForTesting allow_blocking;
           base::File file = std::move(payload->content->get_file()->file);
@@ -845,7 +845,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectWrite) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(kRemoteEndpointId, endpoint_ids.front());
         ASSERT_TRUE(payload);
-        ASSERT_EQ(PayloadContent::Tag::BYTES, payload->content->which());
+        ASSERT_EQ(PayloadContent::Tag::kBytes, payload->content->which());
         EXPECT_EQ(byte_payload, payload->content->get_bytes()->bytes);
 
         std::move(callback).Run(Status::kSuccess);

@@ -96,7 +96,7 @@ void PairedKeyVerificationRunner::Run(
 
   SendPairedKeyEncryptionFrame();
   frames_reader_->ReadFrame(
-      sharing::mojom::V1Frame::Tag::PAIRED_KEY_ENCRYPTION,
+      sharing::mojom::V1Frame::Tag::kPairedKeyEncryption,
       base::BindOnce(
           &PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame,
           weak_ptr_factory_.GetWeakPtr()),
@@ -142,7 +142,7 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
   SendPairedKeyResultFrame(local_result);
 
   frames_reader_->ReadFrame(
-      sharing::mojom::V1Frame::Tag::PAIRED_KEY_RESULT,
+      sharing::mojom::V1Frame::Tag::kPairedKeyResult,
       base::BindOnce(&PairedKeyVerificationRunner::OnReadPairedKeyResultFrame,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(verification_results)),
