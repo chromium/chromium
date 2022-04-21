@@ -53,7 +53,7 @@ void EvaluateGetNetworkDetailsResult(base::OnceClosure closure,
                                      mojom::GetNetworkDetailsResultPtr expected,
                                      mojom::GetNetworkDetailsResultPtr found) {
   ASSERT_EQ(expected->which(), found->which());
-  if (expected->which() == mojom::GetNetworkDetailsResult::Tag::ERROR_MESSAGE) {
+  if (expected->which() == mojom::GetNetworkDetailsResult::Tag::kErrorMessage) {
     ASSERT_EQ(expected->get_error_message(), found->get_error_message());
   } else {
     ASSERT_EQ(expected->get_network_details()->mac_address,

@@ -52,7 +52,7 @@ void EvaluateRetrieveResult(base::OnceClosure closure,
                             mojom::LoginScreenStorageRetrieveResultPtr found) {
   ASSERT_EQ(expected->which(), found->which());
   if (expected->which() ==
-      mojom::LoginScreenStorageRetrieveResult::Tag::ERROR_MESSAGE) {
+      mojom::LoginScreenStorageRetrieveResult::Tag::kErrorMessage) {
     ASSERT_EQ(expected->get_error_message(), found->get_error_message());
   } else {
     ASSERT_EQ(expected->get_data(), found->get_data());

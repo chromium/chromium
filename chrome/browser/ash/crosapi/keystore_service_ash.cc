@@ -825,7 +825,7 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionGenerateKey(
   }
 
   switch (algorithm->which()) {
-    case mojom::KeystoreSigningAlgorithm::Tag::PKCS115: {
+    case mojom::KeystoreSigningAlgorithm::Tag::kPkcs115: {
       auto c = base::BindOnce(
           &KeystoreServiceAsh::DEPRECATED_DidExtensionGenerateKey,
           std::move(callback));
@@ -834,7 +834,7 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionGenerateKey(
           algorithm->get_pkcs115()->sw_backed, *extension_id, std::move(c));
       break;
     }
-    case mojom::KeystoreSigningAlgorithm::Tag::ECDSA: {
+    case mojom::KeystoreSigningAlgorithm::Tag::kEcdsa: {
       auto c = base::BindOnce(
           &KeystoreServiceAsh::DEPRECATED_DidExtensionGenerateKey,
           std::move(callback));

@@ -21,7 +21,7 @@ void EvaluateGetSessionStateResult(base::OnceClosure closure,
                                    mojom::GetSessionStateResultPtr expected,
                                    mojom::GetSessionStateResultPtr found) {
   ASSERT_EQ(expected->which(), found->which());
-  if (expected->which() == mojom::GetSessionStateResult::Tag::ERROR_MESSAGE) {
+  if (expected->which() == mojom::GetSessionStateResult::Tag::kErrorMessage) {
     ASSERT_EQ(expected->get_error_message(), found->get_error_message());
   } else {
     ASSERT_EQ(expected->get_session_state(), found->get_session_state());
