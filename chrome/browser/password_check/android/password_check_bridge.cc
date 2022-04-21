@@ -49,6 +49,32 @@ password_manager::CredentialView ConvertJavaObjectToCredentialView(
           Java_CompromisedCredential_getLastUsedTime(env, credential)));
 }
 
+// Checks whether the credential is leaked but not phished. Other compromising
+// states are ignored (e.g. weak or reused).
+constexpr bool IsOnlyLeaked(
+    const password_manager::InsecureCredentialTypeFlags& flags) {
+  using password_manager::InsecureCredentialTypeFlags;
+  if ((flags & InsecureCredentialTypeFlags::kCredentialPhished) !=
+      InsecureCredentialTypeFlags::kSecure) {
+    return false;
+  }
+  return (flags & InsecureCredentialTypeFlags::kCredentialLeaked) !=
+         InsecureCredentialTypeFlags::kSecure;
+}
+
+// Checks whether the credential is phished but not leaked. Other compromising
+// states are ignored (e.g. weak or reused).
+constexpr bool IsOnlyPhished(
+    const password_manager::InsecureCredentialTypeFlags& flags) {
+  using password_manager::InsecureCredentialTypeFlags;
+  if ((flags & InsecureCredentialTypeFlags::kCredentialLeaked) !=
+      InsecureCredentialTypeFlags::kSecure) {
+    return false;
+  }
+  return (flags & InsecureCredentialTypeFlags::kCredentialPhished) !=
+         InsecureCredentialTypeFlags::kSecure;
+}
+
 }  // namespace
 
 static jlong JNI_PasswordCheckBridge_Create(
@@ -105,10 +131,8 @@ void PasswordCheckBridge::GetCompromisedCredentials(
         base::android::ConvertUTF8ToJavaString(env, credential.package_name),
         credential.create_time.ToJavaTime(),
         credential.last_used_time.ToJavaTime(),
-        (credential.insecure_type ==
-         password_manager::InsecureCredentialTypeFlags::kCredentialLeaked),
-        (credential.insecure_type ==
-         password_manager::InsecureCredentialTypeFlags::kCredentialPhished),
+        IsOnlyLeaked(credential.insecure_type),
+        IsOnlyPhished(credential.insecure_type),
         credential.has_startable_script, credential.has_auto_change_button);
   }
 }

@@ -426,8 +426,8 @@ class PasswordCheckMediator
 
         Collections.sort(credentials, (CompromisedCredential lhs, CompromisedCredential rhs) -> {
             // Phished credentials should always appear first.
-            if (lhs.isPhished() != rhs.isPhished()) {
-                return lhs.isPhished() ? -1 : 1;
+            if (lhs.isOnlyPhished() != rhs.isOnlyPhished()) {
+                return lhs.isOnlyPhished() ? -1 : 1;
             }
 
             boolean lhsInitial = mPreCheckSet.contains(lhs);

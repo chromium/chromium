@@ -199,8 +199,12 @@ class PasswordCheckViewBinder {
     }
 
     private static @StringRes int getReasonForCredential(CompromisedCredential credential) {
-        if (!credential.isPhished()) return R.string.password_check_credential_row_reason_leaked;
-        if (!credential.isLeaked()) return R.string.password_check_credential_row_reason_phished;
+        if (!credential.isOnlyPhished()) {
+            return R.string.password_check_credential_row_reason_leaked;
+        }
+        if (!credential.isOnlyLeaked()) {
+            return R.string.password_check_credential_row_reason_phished;
+        }
         return R.string.password_check_credential_row_reason_leaked_and_phished;
     }
 
