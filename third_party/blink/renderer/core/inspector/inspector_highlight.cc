@@ -2426,8 +2426,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorContainerQueryHighlight(
 
 std::unique_ptr<protocol::DictionaryValue> InspectorIsolatedElementHighlight(
     Element* element,
-    const InspectorIsolationModeHighlightConfig& config,
-    int highlight_index) {
+    const InspectorIsolationModeHighlightConfig& config) {
   LocalFrameView* frame_view = element->GetDocument().View();
   if (!frame_view)
     return nullptr;
@@ -2439,7 +2438,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorIsolatedElementHighlight(
   if (!isolated_element_info)
     return nullptr;
 
-  isolated_element_info->setInteger("highlightIndex", highlight_index);
+  isolated_element_info->setInteger("highlightIndex", config.highlight_index);
   return isolated_element_info;
 }
 
