@@ -40,13 +40,11 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrackImpl {
   void Trace(Visitor* visitor) const override;
 
  private:
-  void CreateAudioOutputPlatformTrack();
   void CreateAudioStream(ScriptState* script_state);
 
-  void CreateVideoOutputPlatformTrack();
   void CreateVideoStream(ScriptState* script_state);
 
-  static MediaStreamSource* MakeMediaStreamSource(
+  static MediaStreamComponent* MakeMediaStreamComponent(
       ScriptState* script_state,
       MediaStreamSource::StreamType type);
 
