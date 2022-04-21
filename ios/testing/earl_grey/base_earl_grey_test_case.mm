@@ -34,6 +34,18 @@ bool g_needs_set_up_for_test_case = true;
 + (void)setUpForTestCase {
 }
 
++ (void)setUp {
+  // TODO(crbug.com/1316613): app-measurement.com network request started
+  // causing EG synchronization timeouts since iOS 15.4 on simulators. Remove
+  // when the root cause is fixed.
+  NSArray<NSString*>* blockedURLs = @[
+    @"https://app-measurement.com/.*",
+  ];
+  [[GREYConfiguration sharedConfiguration]
+          setValue:blockedURLs
+      forConfigKey:kGREYConfigKeyBlockedURLRegex];
+}
+
 // Invoked upon starting each test method in a test case.
 // Launches the app under test if necessary.
 - (void)setUp {
