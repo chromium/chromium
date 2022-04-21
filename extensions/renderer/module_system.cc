@@ -214,12 +214,19 @@ void ModuleSystem::AddRoutes() {
 }
 
 void ModuleSystem::Invalidate() {
+  // TODO(1276144): remove checks once investigation finished.
+  CHECK(!has_been_invalidated_);
+  has_been_invalidated_ = true;
   // Clear the module system properties from the global context. It's polite,
   // and we use this as a signal in lazy handlers that we no longer exist.
   {
     v8::HandleScope scope(GetIsolate());
     v8::Local<v8::Object> global = context()->v8_context()->Global();
+    // TODO(1276144): remove checks once investigation finished.
+    v8::Local<v8::Value> dummy_value;
+    CHECK(GetPrivate(global, kModulesField, &dummy_value));
     DeletePrivate(global, kModulesField);
+    CHECK(GetPrivate(global, kModuleSystem, &dummy_value));
     DeletePrivate(global, kModuleSystem);
   }
 
