@@ -39,6 +39,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
@@ -599,9 +600,14 @@ void LoginUserView::OnThemeChanged() {
 
 views::View::Views LoginUserView::GetChildrenInZOrder() {
   auto children = views::View::GetChildrenInZOrder();
-  auto tap_button_iter = base::ranges::find(children, tap_button_);
-  DCHECK(tap_button_iter != children.end());
-  std::rotate(tap_button_iter, tap_button_iter + 1, children.end());
+  const auto move_child_to_top = [&](View* child) {
+    auto it = base::ranges::find(children, child);
+    DCHECK(it != children.end());
+    std::rotate(it, it + 1, children.end());
+  };
+  move_child_to_top(tap_button_);
+  if (dropdown_)
+    move_child_to_top(dropdown_);
   return children;
 }
 
@@ -704,41 +710,42 @@ void LoginUserView::UpdateOpacity() {
 }
 
 void LoginUserView::SetLargeLayout() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kVerticalSpacingBetweenEntriesDp));
+  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout
+      ->AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kCenter,
+                  1.0f, views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        kDistanceBetweenUsernameAndDropdownDp)
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        kDistanceBetweenUsernameAndDropdownDp)
+      .AddColumn(views::LayoutAlignment::kStart,
+                 views::LayoutAlignment::kCenter, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize)
+      .AddPaddingRow(views::TableLayout::kFixedSize,
+                     kVerticalSpacingBetweenEntriesDp)
+      .AddRows(1, views::TableLayout::kFixedSize);
+
   AddChildView(tap_button_);
-  tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  layout->SetChildViewIgnoredByLayout(tap_button_, true);
 
-  // Centered user image.
-  auto* image_row = AddChildView(std::make_unique<NonAccessibleView>());
-  auto* image_layout =
-      image_row->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  image_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  image_row->AddChildView(user_image_);
+  AddChildView(user_image_);
+  user_image_->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(5, 1));
+  user_image_->SetProperty(views::kTableHorizAlignKey,
+                           views::LayoutAlignment::kCenter);
 
-  // User name, menu dropdown.
-  auto* label_row = AddChildView(std::make_unique<NonAccessibleView>());
-  auto* label_layout =
-      label_row->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  label_layout->set_between_child_spacing(
-      kDistanceBetweenUsernameAndDropdownDp);
-  label_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
+  auto* skip_column = AddChildView(std::make_unique<NonAccessibleView>());
+  if (dropdown_)
+    skip_column->SetPreferredSize(dropdown_->GetPreferredSize());
 
-  // Add an empty view that has the same size as the dropdown so we center on
-  // `user_label_`. This is simpler than doing manual size calculation to take
-  // into account the extra offset.
-  if (dropdown_) {
-    label_row->AddChildView(std::make_unique<NonAccessibleView>())
-        ->SetPreferredSize(dropdown_->GetPreferredSize());
-  }
-
-  label_row->AddChildView(user_label_);
+  AddChildView(user_label_);
 
   if (dropdown_)
-    label_row->AddChildView(dropdown_);
+    AddChildView(dropdown_);
 }
 
 void LoginUserView::SetSmallishLayout() {

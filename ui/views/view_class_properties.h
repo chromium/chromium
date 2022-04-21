@@ -62,6 +62,9 @@ VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
     kCrossAxisAlignmentKey;
 
 // TableLayout-specific properties:
+// Note that col/row span counts padding columns, so if you want to span a
+// region consisting of <column><padding column><column>, it's a column span of
+// 3, not 2.
 VIEWS_EXPORT extern const ui::ClassProperty<gfx::Size*>* const
     kTableColAndRowSpanKey;
 VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
