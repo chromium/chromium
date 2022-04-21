@@ -212,13 +212,13 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
 
   // Upload client is ready, upload all previously stored requests (if any).
   auto records = std::make_unique<std::vector<EncryptedRecord>>();
-  if (!stored_records_.empty()) {
-    records = std::move(stored_records_.begin()->second);
-    stored_records_.erase(stored_records_.begin());
-  }
-  bool need_encryption_key = stored_need_encryption_key_;
-  stored_need_encryption_key_ = false;
-  if (!records->empty() || need_encryption_key) {
+  while (!stored_records_.empty() || stored_need_encryption_key_) {
+    if (!stored_records_.empty()) {
+      records = std::move(stored_records_.begin()->second);
+      stored_records_.erase(stored_records_.begin());
+    }
+    const bool need_encryption_key =
+        std::exchange(stored_need_encryption_key_, false);
     const auto result = upload_client_->EnqueueUpload(
         need_encryption_key, std::move(records), report_successful_upload_cb_,
         encryption_key_attached_cb_);
