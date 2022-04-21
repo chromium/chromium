@@ -91,6 +91,11 @@ bool IsPasswordFormPhished(const PasswordForm& form) {
          form.password_issues.end();
 }
 
+bool SupportsMuteOperation(InsecureType insecure_type) {
+  return (insecure_type == InsecureType::kLeaked ||
+          insecure_type == InsecureType::kPhished);
+}
+
 // This function takes two lists: weak passwords and saved passwords and joins
 // them, producing a map that contains CredentialWithPassword as keys and
 // vector<PasswordForm> as values.
@@ -124,7 +129,8 @@ CredentialPasswordsMap GetInsecureCredentialsFromPasswords(
         credential_to_form.type |= ConvertInsecureType(pair.first);
         credential_to_form.latest_time =
             std::max(credential_to_form.latest_time, pair.second.create_time);
-        credential_to_form.is_muted = pair.second.is_muted;
+        if (SupportsMuteOperation(pair.first))
+          credential_to_form.is_muted = pair.second.is_muted;
       }
       // Populate the map. The values are vectors, because it is
       // possible that multiple saved passwords match to the same
@@ -287,7 +293,8 @@ bool InsecureCredentialsManager::MuteCredential(
     PasswordForm form_to_update = saved_password;
     bool form_changed = false;
     for (const auto& password_issue : saved_password.password_issues) {
-      if (!password_issue.second.is_muted.value()) {
+      if (!password_issue.second.is_muted.value() &&
+          SupportsMuteOperation(password_issue.first)) {
         form_to_update.password_issues.insert_or_assign(
             password_issue.first,
             InsecurityMetadata(password_issue.second.create_time,
@@ -319,7 +326,8 @@ bool InsecureCredentialsManager::UnmuteCredential(
     PasswordForm form_to_update = saved_password;
     bool form_changed = false;
     for (const auto& password_issue : saved_password.password_issues) {
-      if (password_issue.second.is_muted.value()) {
+      if (password_issue.second.is_muted.value() &&
+          SupportsMuteOperation(password_issue.first)) {
         form_to_update.password_issues.insert_or_assign(
             password_issue.first,
             InsecurityMetadata(password_issue.second.create_time,

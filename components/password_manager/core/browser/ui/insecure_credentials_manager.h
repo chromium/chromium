@@ -65,12 +65,13 @@ constexpr InsecureCredentialTypeFlags& operator|=(
   return lhs;
 }
 
-// Unsets the bit responsible for the weak credential in the |flag|.
-constexpr InsecureCredentialTypeFlags UnsetWeakCredentialTypeFlag(
+// Unsets the bits responsible for the reused and weak credential in the |flag|.
+constexpr InsecureCredentialTypeFlags UnsetWeakAndReusedCredentialTypeFlags(
     InsecureCredentialTypeFlags flag) {
   return static_cast<InsecureCredentialTypeFlags>(
       static_cast<int>(flag) &
-      ~(static_cast<int>(InsecureCredentialTypeFlags::kWeakCredential)));
+      ~(static_cast<int>(InsecureCredentialTypeFlags::kWeakCredential |
+                         InsecureCredentialTypeFlags::kReusedCredential)));
 }
 
 // Checks that |flag| contains at least one of insecure types.

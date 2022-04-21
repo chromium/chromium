@@ -195,10 +195,11 @@ std::vector<CompromisedCredentialAndType> OrderCompromisedCredentials(
   std::vector<CompromisedCredentialAndType> results;
   results.reserve(compromised_credentials.size());
   for (auto& credential : compromised_credentials) {
-    // Since CompromiseType does not contain information about weakness of
-    // credential, we need to unset this bit in the |credential.insecure_type|.
+    // Since CompromiseType does not contain information about weakness/reuse
+    // of credential, we need to unset those bits in the
+    // |credential.insecure_type|.
     auto type = static_cast<api::passwords_private::CompromiseType>(
-        UnsetWeakCredentialTypeFlag(credential.insecure_type));
+        UnsetWeakAndReusedCredentialTypeFlags(credential.insecure_type));
     results.push_back({std::move(credential), type});
   }
   // Reordering phished credential to the beginning.
