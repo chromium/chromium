@@ -5,7 +5,7 @@
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
 
-rust_static_library("autocxx_test_lib") {
+rust_static_library("autocxx_basic_test_lib") {
   sources = [ "src/lib.rs" ]
   cxx_bindings = [ "src/lib.rs" ]
   deps = [
@@ -16,8 +16,8 @@ rust_static_library("autocxx_test_lib") {
   crate_root = "src/lib.rs"
 }
 
-rust_executable("autocxx_test") {
-  deps = [ ":autocxx_test_lib" ]
+rust_executable("autocxx_basic_test") {
+  deps = [ ":autocxx_basic_test_lib" ]
   sources = [ "main.rs" ]
   crate_root = "main.rs"
 }

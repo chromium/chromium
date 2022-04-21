@@ -1,0 +1,35 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_unit_tests_group.gni")
+
+group("tests") {
+  testonly = true
+
+  deps = [ ":deps" ]
+  if (can_build_rust_unit_tests) {
+    deps += [ ":autocxx_tests" ]
+  }
+}
+
+group("deps") {
+  testonly = true
+  deps = []
+  if (toolchain_has_rust) {
+    if (rustc_can_link) {
+      deps += [ "autocxx_basic_test" ]
+    }
+    if (can_build_rust_unit_tests) {
+      deps += [ "autocxx_basic_test:autocxx_basic_test_lib_unittests" ]
+    }
+  }
+}
+
+if (can_build_rust_unit_tests) {
+  # A group covering all native Rust unit tests under :deps
+  rust_unit_tests_group("autocxx_tests") {
+    deps = [ ":deps" ]
+  }
+}

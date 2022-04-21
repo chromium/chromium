@@ -7,6 +7,10 @@ import("//build/config/clang/clang.gni")
 import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
 
+# The currently applicable semver major version of autocxx.
+# See tools/crates/crates.py for what an 'epoch' means specifically.
+autocxx_epoch = "v0_21"
+
 # Template to build Rust/C++ bindings using autocxx tooling. This also works
 # to build bindings with cxx tooling. This is meant for use by higher level
 # templates. Prefer to write GN targets with those higher level templates,
@@ -99,8 +103,7 @@ template("rust_autocxx") {
     # C++ code, and put it somewhere that other C++ code can include it easily.
     output_h = "{{source_gen_dir}}/{{source_file_part}}.h"
 
-    autocxx_gen_target =
-        "//third_party/rust/autocxx_gen/v0_21:autocxx_gen($host_toolchain)"
+    autocxx_gen_target = "//third_party/rust/autocxx_gen/$autocxx_epoch:autocxx_gen($host_toolchain)"
 
     autocxx_gen_obj_dir = get_label_info(autocxx_gen_target, "root_out_dir")
     autocxx_gen_executable = rebase_path("${autocxx_gen_obj_dir}/autocxx_gen")
@@ -108,7 +111,8 @@ template("rust_autocxx") {
       autocxx_gen_executable = rebase_path("${autocxx_gen_executable}.exe")
     }
 
-    script = rebase_path("//build/rust/run_autocxx_gen.py")
+    script = rebase_path(
+            "//third_party/rust/autocxx/chromium_integration/run_autocxx_gen.py")
     inputs = [
       autocxx_gen_executable,
       script,

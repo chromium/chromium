@@ -5,7 +5,7 @@
 fn main() {
     println!(
         "Hello, world! Origin is: {}",
-        autocxx_test_lib::serialize_url("https", "foo.com", 443)
+        autocxx_basic_test_lib::serialize_url("https", "foo.com", 443)
     );
-    println!("CPU vendor is: {}", autocxx_test_lib::get_cpu_vendor());
+    println!("CPU vendor is: {}", autocxx_basic_test_lib::get_cpu_vendor());
 }

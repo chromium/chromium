@@ -1,0 +1,15 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/rust/autocxx/chromium_integration/rust_autocxx.gni")
+
+# The required dependencies for autocxx-generated bindings, that must be included
+# on the Rust side.
+group("autocxx_rustdeps") {
+  # Depend upon cxx as well as autocxx due to https://github.com/google/autocxx/issues/36
+  public_deps = [
+    "//third_party/rust/autocxx/$autocxx_epoch:lib",
+    "//third_party/rust/cxx/v1:lib",
+  ]
+}

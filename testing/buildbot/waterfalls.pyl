@@ -5636,6 +5636,7 @@
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
+          'autocxx_tests',
         ],
         'mixins': [ 'marshmallow' ],
         'test_suites': {
@@ -5649,6 +5650,7 @@
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
+          'autocxx_tests',
         ],
         'mixins': [ 'marshmallow' ],
         'test_suites': {
@@ -5663,6 +5665,7 @@
           'mojo_rust',
           'mojo_rust_tests',
           'rust_build_tests',
+          'autocxx_tests',
         ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
@@ -5674,6 +5677,7 @@
           'mojo_rust',
           'mojo_rust_tests',
           'rust_build_tests',
+          'autocxx_tests',
         ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
@@ -5685,6 +5689,7 @@
           'mojo_rust',
           'mojo_rust_tests',
           'rust_build_tests',
+          'autocxx_tests',
         ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
