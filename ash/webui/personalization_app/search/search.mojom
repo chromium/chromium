@@ -20,10 +20,23 @@ struct SearchResult {
     double relevance_score;
 };
 
+// Used to observe changes to search results.
+interface SearchResultsObserver {
+  // Called when one or more search results has changed.
+  // This may happen when certain preferences are set by sync or schedule, ie
+  // search results for dark mode may change if dark mode is changed in the
+  // background due to auto dark mode schedule.
+  OnSearchResultsChanged();
+};
+
 // Handles search queries and may respond with Personalization results.
 interface SearchHandler {
     // Run a search from user input and reply with a list of results. Returns
     // empty list on error or no relevant results.
     Search(mojo_base.mojom.String16 query, uint32 max_num_results) => (
         array<SearchResult> results);
+
+    // Set an observer for search results. To stop observing, close the
+    // connection.
+    AddObserver(pending_remote<SearchResultsObserver> observer);
 };

@@ -42,6 +42,8 @@ SearchHandler::SearchHandler(
       local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
   DCHECK(index_remote_.is_bound());
+
+  search_tag_registry_observer_.Observe(search_tag_registry_.get());
 }
 
 SearchHandler::~SearchHandler() = default;
@@ -61,6 +63,17 @@ void SearchHandler::Search(const std::u16string& query,
                       base::BindOnce(&SearchHandler::OnLocalSearchDone,
                                      weak_ptr_factory_.GetWeakPtr(),
                                      std::move(callback), max_num_results));
+}
+
+void SearchHandler::AddObserver(
+    mojo::PendingRemote<mojom::SearchResultsObserver> observer) {
+  observers_.Add(std::move(observer));
+}
+
+void SearchHandler::OnRegistryUpdated() {
+  for (auto& observer : observers_) {
+    observer->OnSearchResultsChanged();
+  }
 }
 
 void SearchHandler::OnLocalSearchDone(

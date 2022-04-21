@@ -12,6 +12,7 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -77,8 +78,10 @@ void SearchTagRegistry::AddSearchConcepts(
   for (const auto& concept : search_concepts) {
     result_id_to_search_concept_[SearchConceptToId(concept)] = &concept;
   }
-  index_remote_->AddOrUpdate(SearchConceptVectorToDataVector(search_concepts),
-                             base::DoNothing());
+  index_remote_->AddOrUpdate(
+      SearchConceptVectorToDataVector(search_concepts),
+      base::BindOnce(&SearchTagRegistry::OnIndexUpdateComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 const SearchConcept* SearchTagRegistry::GetSearchConceptById(
@@ -88,6 +91,20 @@ const SearchConcept* SearchTagRegistry::GetSearchConceptById(
     return nullptr;
   }
   return it->second;
+}
+
+void SearchTagRegistry::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void SearchTagRegistry::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void SearchTagRegistry::OnIndexUpdateComplete() {
+  for (auto& observer : observer_list_) {
+    observer.OnRegistryUpdated();
+  }
 }
 
 }  // namespace personalization_app

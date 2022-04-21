@@ -10,6 +10,9 @@
 #include <vector>
 
 #include "ash/webui/personalization_app/search/search_concept.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -25,6 +28,12 @@ namespace personalization_app {
 
 class SearchTagRegistry {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+    virtual void OnRegistryUpdated() = 0;
+  };
+
   explicit SearchTagRegistry(
       ::chromeos::local_search_service::LocalSearchServiceProxy&
           local_search_service_proxy);
@@ -39,9 +48,16 @@ class SearchTagRegistry {
 
   const SearchConcept* GetSearchConceptById(const std::string& id) const;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
+  void OnIndexUpdateComplete();
+
+  base::ObserverList<Observer> observer_list_;
   mojo::Remote<::chromeos::local_search_service::mojom::Index> index_remote_;
   std::map<std::string, const SearchConcept*> result_id_to_search_concept_;
+  base::WeakPtrFactory<SearchTagRegistry> weak_ptr_factory_{this};
 };
 
 }  // namespace personalization_app
