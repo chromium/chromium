@@ -236,6 +236,9 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
+  VLOGF(2);
+  DCHECK_GT(num_buffers, 0u);
+
   // Most of the users of this class are decoders that only want a pixel format
   // conversion (with the same coded dimensions and visible rectangles). Video
   // encoding, however, can try and ask for cropping (this is common for camera
@@ -248,25 +251,6 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
              << output_config.ToString();
     return nullptr;
   }
-
-  return V4L2ImageProcessorBackend::CreateWithOutputMode(
-      device, num_buffers, input_config, output_config, output_mode,
-      relative_rotation, error_cb, backend_task_runner);
-}
-
-// static
-std::unique_ptr<ImageProcessorBackend>
-V4L2ImageProcessorBackend::CreateWithOutputMode(
-    scoped_refptr<V4L2Device> device,
-    size_t num_buffers,
-    const PortConfig& input_config,
-    const PortConfig& output_config,
-    const OutputMode& output_mode,
-    VideoRotation relative_rotation,
-    ErrorCB error_cb,
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
-  VLOGF(2);
-  DCHECK_GT(num_buffers, 0u);
 
   if (!device) {
     VLOGF(2) << "Failed creating V4L2Device";

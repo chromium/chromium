@@ -108,16 +108,6 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
     size_t output_buffer_id;
   };
 
-  static std::unique_ptr<ImageProcessorBackend> CreateWithOutputMode(
-      scoped_refptr<V4L2Device> device,
-      size_t num_buffers,
-      const PortConfig& input_config,
-      const PortConfig& output_config,
-      const OutputMode& preferred_output_modes,
-      VideoRotation relative_rotation,
-      ErrorCB error_cb,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
-
   V4L2ImageProcessorBackend(
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
       scoped_refptr<V4L2Device> device,
