@@ -1650,12 +1650,12 @@
   {
     "name": "enable-commerce-merchant-viewer",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 108
   },
   {
     "name": "enable-commerce-price-tracking",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 108
   },
   {
     "name": "enable-component-updater-test-request",
@@ -5353,7 +5353,7 @@
   {
     "name": "shopping-list",
     "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 108
   },
   {
     "name": "show-autofill-type-predictions",
