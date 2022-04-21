@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
@@ -143,8 +144,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
     source_data->aggregatable_source =
         AggregatableSourceMojoBuilder()
             .AddKey(/*key_id=*/"key",
-                    blink::mojom::AttributionAggregatableKey::New(
-                        /*high_bits=*/5, /*low_bits=*/345))
+                    absl::MakeUint128(/*high=*/5, /*low=*/345))
             .Build();
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
@@ -384,8 +384,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       for (size_t i = 0u; i < key_count; ++i) {
         std::string key(key_size, 'A' + i);
         builder.AddKey(std::move(key),
-                       blink::mojom::AttributionAggregatableKey::New(
-                           /*high_bits=*/i, /*low_bits=*/i));
+                       absl::MakeUint128(/*high=*/i, /*low=*/i));
       }
       return builder.Build();
     }
@@ -965,8 +964,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->aggregatable_source =
         AggregatableSourceMojoBuilder()
             .AddKey(/*key_id=*/"key",
-                    blink::mojom::AttributionAggregatableKey::New(
-                        /*high_bits=*/5, /*low_bits=*/345))
+                    absl::MakeUint128(/*high=*/5, /*low=*/345))
             .Build();
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
