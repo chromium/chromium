@@ -183,6 +183,7 @@ public class TabGridAccessibilityHelperTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1318394")
     public void testGetPositionsOfReorderAction() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         int leftActionId = R.id.move_tab_left;
