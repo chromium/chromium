@@ -43,7 +43,7 @@
 <translation id="1088860948719068836">Ajouter le nom du titulaire de la carte</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
-<translation id="1100782917270858593">Bouton "Reprendre votre exploration", appuyez sur Entrée pour reprendre votre exploration et voir les activités pertinentes dans votre historique Chrome</translation>
+<translation id="1100782917270858593">Bouton "Reprendre votre parcours", appuyez sur Entrée pour reprendre votre parcours et voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="1101672080107056897">Action en cas d'erreur</translation>
 <translation id="1103523840287552314">Toujours traduire les pages en <ph name="LANGUAGE" /></translation>
 <translation id="1110994991967754504">Sélectionnez une autorisation pour <ph name="PERMISSION_NAME" /></translation>
@@ -269,7 +269,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1711234383449478798">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie sur <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> souhaite stocker des données de façon permanente sur votre ordinateur local</translation>
 <translation id="1713628304598226412">Bac 2</translation>
-<translation id="1715874602234207">F</translation>
+<translation id="1715874602234207">V</translation>
 <translation id="1717218214683051432">Capteurs de mouvement</translation>
 <translation id="1717494416764505390">Boîte aux lettres 3</translation>
 <translation id="1718029547804390981">Le document est trop volumineux pour être annoté</translation>
@@ -1528,7 +1528,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5695542892312572833">Utiliser Windows Hello pour valider et finaliser votre achat ?</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="570530837424789914">Gérer…</translation>
-<translation id="5707154300732650394">Reprendre votre exploration</translation>
+<translation id="5707154300732650394">Reprendre votre parcours</translation>
 <translation id="57094364128775171">Suggérer un mot de passe sécurisé…</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">Utilisateur actuel</translation>
@@ -1680,7 +1680,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6264485186158353794">Revenir en lieu sûr</translation>
 <translation id="6265794661083428563">Copier la valeur de la règle <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Turquoise clair</translation>
-<translation id="6272088941196661550">Reprenez votre exploration pour voir les activités pertinentes dans votre historique Chrome</translation>
+<translation id="6272088941196661550">Reprenez votre parcours pour voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Les pages de votre liste de lecture s'affichent ici</translation>
 <translation id="627746635834430766">Pour régler vos achats plus rapidement la prochaine fois, enregistrez votre carte et votre adresse de facturation dans votre compte Google.</translation>
@@ -2547,7 +2547,7 @@ Informations supplémentaires :
 <translation id="9114524666733003316">Validation de la carte…</translation>
 <translation id="9114581008513152754">Ce navigateur n'est géré par aucune entreprise ni aucune autre organisation. Il se peut que l'activité sur cet appareil soit gérée en dehors de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9117930699067497412">Frais</translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur Entrée pour reprendre vos recherches et voir les activités pertinentes dans votre historique Chrome</translation>
+<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour reprendre votre parcours et voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="9119042192571987207">Importation terminée</translation>
 <translation id="9128016270925453879">Les règles sont chargées</translation>
 <translation id="9128870381267983090">Connectez-vous au réseau</translation>
