@@ -392,7 +392,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "name": "2591174844 file"
    } ],
    "handle_links": "kAuto",
-   "install_source_for_metrics": 12,
+   "install_source_for_metrics": 13,
    "install_time": "1970-01-10 21:57:36.131 UTC",
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": true,

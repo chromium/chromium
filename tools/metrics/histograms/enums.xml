@@ -95433,6 +95433,7 @@ others/histograms.xml -->
   <int value="19"
       label="Installed via the Chrome Android service for installing WebAPKs
              from another app"/>
+  <int value="20" label="Rich install UI in WebLayer"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">

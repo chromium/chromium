@@ -17,10 +17,13 @@
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
+#include "weblayer/browser/webapps/webapk_install_scheduler.h"
 #include "weblayer/browser/webapps/webapps_utils.h"
+#include "weblayer/browser/webapps/weblayer_app_banner_manager_android.h"
 
 namespace weblayer {
 
@@ -53,27 +56,28 @@ WebLayerWebappsClient::GetInfoBarManagerForWebContents(
 webapps::WebappInstallSource WebLayerWebappsClient::GetInstallSource(
     content::WebContents* web_contents,
     webapps::InstallTrigger trigger) {
-  NOTIMPLEMENTED();
+  if (trigger == webapps::InstallTrigger::AMBIENT_BADGE) {
+    // RICH_INSTALL_UI is the new name for AMBIENT_BADGE.
+    return webapps::WebappInstallSource::RICH_INSTALL_UI_WEBLAYER;
+  }
   return webapps::WebappInstallSource::COUNT;
 }
 
 webapps::AppBannerManager* WebLayerWebappsClient::GetAppBannerManager(
     content::WebContents* web_contents) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return WebLayerAppBannerManagerAndroid::FromWebContents(web_contents);
 }
 
 bool WebLayerWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
     const GURL& manifest_url) {
-  NOTIMPLEMENTED();
+  // TODO(swestphal): Implement this in a follow up CL.
   return false;
 }
 
 bool WebLayerWebappsClient::CanShowAppBanners(
     content::WebContents* web_contents) {
-  NOTIMPLEMENTED();
-  return false;
+  return true;
 }
 
 void WebLayerWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
@@ -82,7 +86,9 @@ void WebLayerWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
 void WebLayerWebappsClient::InstallWebApk(
     content::WebContents* web_contents,
     const webapps::AddToHomescreenParams& params) {
-  NOTIMPLEMENTED();
+  WebApkInstallScheduler::FetchProtoAndScheduleInstall(
+      web_contents, *(params.shortcut_info), params.primary_icon,
+      params.has_maskable_primary_icon);
 }
 
 void WebLayerWebappsClient::InstallShortcut(

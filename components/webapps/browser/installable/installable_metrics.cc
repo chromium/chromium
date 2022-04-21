@@ -27,6 +27,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
   switch (source) {
     case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
     case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+    case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::API_BROWSER_TAB:
     case WebappInstallSource::API_CUSTOM_TAB:
     case WebappInstallSource::ARC:
@@ -65,6 +66,7 @@ bool InstallableMetrics::IsUserInitiatedInstallSource(
     case WebappInstallSource::API_CUSTOM_TAB:
     case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
     case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+    case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::ARC:
     case WebappInstallSource::CHROME_SERVICE:
     case WebappInstallSource::OMNIBOX_INSTALL_ICON:

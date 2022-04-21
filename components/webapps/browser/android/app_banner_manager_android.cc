@@ -218,7 +218,8 @@ void AppBannerManagerAndroid::ShowBannerUi(WebappInstallSource install_source) {
 
   // If we are installing from the ambient badge, it will remove itself.
   if (install_source != WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB &&
-      install_source != WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB) {
+      install_source != WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB &&
+      install_source != WebappInstallSource::RICH_INSTALL_UI_WEBLAYER) {
     HideAmbientBadge();
   }
 
@@ -274,6 +275,8 @@ void AppBannerManagerAndroid::OnInstallEvent(
              WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB ||
          a2hs_params.install_source ==
              WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB ||
+         a2hs_params.install_source ==
+             WebappInstallSource::RICH_INSTALL_UI_WEBLAYER ||
          a2hs_params.install_source == WebappInstallSource::API_BROWSER_TAB ||
          a2hs_params.install_source == WebappInstallSource::API_CUSTOM_TAB ||
          a2hs_params.install_source == WebappInstallSource::DEVTOOLS);

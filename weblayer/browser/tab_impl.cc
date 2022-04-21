@@ -132,6 +132,7 @@
 #include "weblayer/browser/safe_browsing/weblayer_safe_browsing_tab_observer_delegate.h"
 #include "weblayer/browser/translate_client_impl.h"
 #include "weblayer/browser/url_bar/trusted_cdn_observer.h"
+#include "weblayer/browser/webapps/weblayer_app_banner_manager_android.h"
 #include "weblayer/browser/weblayer_factory_impl_android.h"
 #include "weblayer/browser/webrtc/media_stream_manager.h"
 #include "weblayer/common/features.h"
@@ -437,6 +438,11 @@ TabImpl::TabImpl(ProfileImpl* profile,
   PrerenderTabHelper::CreateForWebContents(web_contents_.get());
 
   webapps::InstallableManager::CreateForWebContents(web_contents_.get());
+
+#if BUILDFLAG(IS_ANDROID)
+  // Must be created after InstallableManager.
+  WebLayerAppBannerManagerAndroid::CreateForWebContents(web_contents_.get());
+#endif
 }
 
 TabImpl::~TabImpl() {

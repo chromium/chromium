@@ -102,6 +102,9 @@ enum class WebappInstallSource {
   // Chrome Android service for installing WebAPKs from another app.
   CHROME_SERVICE = 19,
 
+  // PWA rich install bottom sheet in WebLayer.
+  RICH_INSTALL_UI_WEBLAYER = 20,
+
   // Add any new values above this one.
   COUNT,
 };
