@@ -381,6 +381,7 @@ component("cpp") {
     "//components/user_manager",
     "//mojo/public/cpp/bindings",
     "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
     "//skia/public/mojom",
     "//ui/aura",

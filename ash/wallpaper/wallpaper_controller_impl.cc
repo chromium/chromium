@@ -31,7 +31,6 @@
 #include "ash/shell_delegate.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_decoder.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
@@ -1321,7 +1320,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
     return;
   }
 
-  DecodeImageCallback decoded_callback =
+  image_util::DecodeImageCallback decoded_callback =
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), params, /*save_file=*/true,
                      std::move(callback));
@@ -1330,7 +1329,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
         .Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  DecodeImageData(std::move(decoded_callback), image_data);
+  image_util::DecodeImageData(std::move(decoded_callback), image_data);
 }
 
 void WallpaperControllerImpl::SetGooglePhotosWallpaper(
@@ -1404,7 +1403,7 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
 
   // Updates the screen only when the user with this account_id has logged in.
   const bool show_wallpaper = IsActiveUser(account_id);
-  DecodeImageCallback callback = base::BindOnce(
+  image_util::DecodeImageCallback callback = base::BindOnce(
       &WallpaperControllerImpl::SaveAndSetWallpaper, weak_factory_.GetWeakPtr(),
       account_id, kPolicyWallpaperFile, WallpaperType::kPolicy,
       WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
@@ -1413,7 +1412,7 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  DecodeImageData(std::move(callback), data);
+  image_util::DecodeImageData(std::move(callback), data);
 }
 
 void WallpaperControllerImpl::SetDevicePolicyWallpaperPath(
@@ -2160,14 +2159,14 @@ bool WallpaperControllerImpl::WallpaperIsAlreadyLoaded(
 }
 
 void WallpaperControllerImpl::ReadAndDecodeWallpaper(
-    DecodeImageCallback callback,
+    image_util::DecodeImageCallback callback,
     const base::FilePath& file_path) {
   decode_requests_for_testing_.push_back(file_path);
   if (bypass_decode_for_testing_) {
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  DecodeImageFile(std::move(callback), file_path);
+  image_util::DecodeImageFile(std::move(callback), file_path);
 }
 
 bool WallpaperControllerImpl::SetDefaultWallpaperInfo(

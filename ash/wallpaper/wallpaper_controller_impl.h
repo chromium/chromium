@@ -12,6 +12,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -22,7 +23,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_decoder.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -433,7 +433,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Reads image from |file_path| on disk, and calls |OnWallpaperDataRead|
   // with the result of |ReadFileToString|.
-  void ReadAndDecodeWallpaper(DecodeImageCallback callback,
+  void ReadAndDecodeWallpaper(image_util::DecodeImageCallback callback,
                               const base::FilePath& file_path);
 
   // Sets wallpaper info for the user to default and saves it to local

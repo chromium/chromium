@@ -1739,8 +1739,6 @@ component("ash") {
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.h",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h",
     "wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h",
-    "wallpaper/wallpaper_utils/wallpaper_decoder.cc",
-    "wallpaper/wallpaper_utils/wallpaper_decoder.h",
     "wallpaper/wallpaper_utils/wallpaper_resizer.cc",
     "wallpaper/wallpaper_utils/wallpaper_resizer.h",
     "wallpaper/wallpaper_utils/wallpaper_resizer_observer.h",

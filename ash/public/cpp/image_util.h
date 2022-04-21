@@ -5,7 +5,14 @@
 #ifndef ASH_PUBLIC_CPP_IMAGE_UTIL_H_
 #define ASH_PUBLIC_CPP_IMAGE_UTIL_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback_forward.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace gfx {
 class ImageSkia;
@@ -17,6 +24,23 @@ namespace image_util {
 
 // Returns a `gfx::ImageSkia` of the specified `size` which draws nothing.
 ASH_PUBLIC_EXPORT gfx::ImageSkia CreateEmptyImage(const gfx::Size& size);
+
+using DecodeImageCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
+
+// Reads contents at |file_path| and calls |callback| with a decoded image.
+// Calls |callback| with an empty image on failure to read the file or decode
+// the image.
+// If the image is too large, it will be repeatedly halved until it fits in
+// |IPC::Channel::kMaximumMessageSize| bytes.
+ASH_PUBLIC_EXPORT void DecodeImageFile(DecodeImageCallback callback,
+                                       const base::FilePath& file_path);
+
+// Reads contents of |data| and calls |callback| with a decoded image.
+// Calls |callback| with an empty image on failure to decode the image.
+// If the image is too large, it will be repeatedly halved until it fits in
+// |IPC::Channel::kMaximumMessageSize| bytes.
+ASH_PUBLIC_EXPORT void DecodeImageData(DecodeImageCallback callback,
+                                       const std::string& data);
 
 }  // namespace image_util
 }  // namespace ash
