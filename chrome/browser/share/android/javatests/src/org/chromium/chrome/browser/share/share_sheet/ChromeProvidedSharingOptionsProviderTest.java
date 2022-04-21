@@ -36,6 +36,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -416,6 +417,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
             ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
+    @DisabledTest(message = "https://crbug.com/1318398")
     public void
     getShareDetailsMetrics_LinkGeneration() {
         @LinkGeneration
