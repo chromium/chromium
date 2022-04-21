@@ -711,6 +711,11 @@ message PolicyData {
   // device's managing OU's SSO profile. Currently, this points to the OU's
   // SAML settings. May support OIDC in the future.
   optional string sso_profile = 37;
+
+  // Indicates which kind of licenses this device is using, so that chrome OS
+  // can check that. The value is from ChromeOsDeviceInfo
+  // http://google3/ccc/hosted/devices/services/chromeos/common.proto;rcl=436571779;l=549
+  optional string license_sku = 38;
 }
 
 message ClientActionRequired {

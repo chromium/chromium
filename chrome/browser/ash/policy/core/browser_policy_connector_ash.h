@@ -130,6 +130,9 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Returns the obfuscated customer's ID or an empty string if it not set.
   std::string GetObfuscatedCustomerID() const;
 
+  // Returns whether device is enrolled in Kiosk SKU.
+  bool IsKioskEnrolled() const;
+
   // Returns the organization logo URL or an empty string if it is not set.
   std::string GetCustomerLogoURL() const;
 

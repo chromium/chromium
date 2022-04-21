@@ -122,6 +122,10 @@ std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
       std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
+// This is the constant that exists on the server side. It corresponds to
+// the type of enrollment license.
+constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
+
 }  // namespace
 
 // static
@@ -463,6 +467,13 @@ std::string BrowserPolicyConnectorAsh::GetObfuscatedCustomerID() const {
   if (policy && policy->has_obfuscated_customer_id())
     return policy->obfuscated_customer_id();
   return std::string();
+}
+
+bool BrowserPolicyConnectorAsh::IsKioskEnrolled() const {
+  const em::PolicyData* policy = GetDevicePolicy();
+  if (policy && policy->has_license_sku())
+    return policy->license_sku() == kKioskSkuName;
+  return false;
 }
 
 std::string BrowserPolicyConnectorAsh::GetCustomerLogoURL() const {
