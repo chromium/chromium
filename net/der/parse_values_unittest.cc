@@ -325,23 +325,23 @@ TEST(ParseValuesTest, IsValidInteger) {
 TEST(ParseValuesTest, ParseBitStringEmptyNoUnusedBits) {
   const uint8_t kData[] = {0x00};
 
-  BitString bit_string;
-  ASSERT_TRUE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  ASSERT_TRUE(bit_string.has_value());
 
-  EXPECT_EQ(0u, bit_string.unused_bits());
-  EXPECT_EQ(0u, bit_string.bytes().Length());
+  EXPECT_EQ(0u, bit_string->unused_bits());
+  EXPECT_EQ(0u, bit_string->bytes().Length());
 
-  EXPECT_FALSE(bit_string.AssertsBit(0));
-  EXPECT_FALSE(bit_string.AssertsBit(1));
-  EXPECT_FALSE(bit_string.AssertsBit(3));
+  EXPECT_FALSE(bit_string->AssertsBit(0));
+  EXPECT_FALSE(bit_string->AssertsBit(1));
+  EXPECT_FALSE(bit_string->AssertsBit(3));
 }
 
 // Tests parsing an empty BIT STRING that incorrectly claims one unused bit.
 TEST(ParseValuesTest, ParseBitStringEmptyOneUnusedBit) {
   const uint8_t kData[] = {0x01};
 
-  BitString bit_string;
-  EXPECT_FALSE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  EXPECT_FALSE(bit_string.has_value());
 }
 
 // Tests parsing an empty BIT STRING that is not minmally encoded (the entire
@@ -349,30 +349,30 @@ TEST(ParseValuesTest, ParseBitStringEmptyOneUnusedBit) {
 TEST(ParseValuesTest, ParseBitStringNonEmptyTooManyUnusedBits) {
   const uint8_t kData[] = {0x08, 0x00};
 
-  BitString bit_string;
-  EXPECT_FALSE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  EXPECT_FALSE(bit_string.has_value());
 }
 
 // Tests parsing a BIT STRING of 7 bits each of which are 1.
 TEST(ParseValuesTest, ParseBitStringSevenOneBits) {
   const uint8_t kData[] = {0x01, 0xFE};
 
-  BitString bit_string;
-  ASSERT_TRUE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  ASSERT_TRUE(bit_string.has_value());
 
-  EXPECT_EQ(1u, bit_string.unused_bits());
-  EXPECT_EQ(1u, bit_string.bytes().Length());
-  EXPECT_EQ(0xFE, bit_string.bytes().UnsafeData()[0]);
+  EXPECT_EQ(1u, bit_string->unused_bits());
+  EXPECT_EQ(1u, bit_string->bytes().Length());
+  EXPECT_EQ(0xFE, bit_string->bytes().UnsafeData()[0]);
 
-  EXPECT_TRUE(bit_string.AssertsBit(0));
-  EXPECT_TRUE(bit_string.AssertsBit(1));
-  EXPECT_TRUE(bit_string.AssertsBit(2));
-  EXPECT_TRUE(bit_string.AssertsBit(3));
-  EXPECT_TRUE(bit_string.AssertsBit(4));
-  EXPECT_TRUE(bit_string.AssertsBit(5));
-  EXPECT_TRUE(bit_string.AssertsBit(6));
-  EXPECT_FALSE(bit_string.AssertsBit(7));
-  EXPECT_FALSE(bit_string.AssertsBit(8));
+  EXPECT_TRUE(bit_string->AssertsBit(0));
+  EXPECT_TRUE(bit_string->AssertsBit(1));
+  EXPECT_TRUE(bit_string->AssertsBit(2));
+  EXPECT_TRUE(bit_string->AssertsBit(3));
+  EXPECT_TRUE(bit_string->AssertsBit(4));
+  EXPECT_TRUE(bit_string->AssertsBit(5));
+  EXPECT_TRUE(bit_string->AssertsBit(6));
+  EXPECT_FALSE(bit_string->AssertsBit(7));
+  EXPECT_FALSE(bit_string->AssertsBit(8));
 }
 
 // Tests parsing a BIT STRING of 7 bits each of which are 1. The unused bit
@@ -380,8 +380,8 @@ TEST(ParseValuesTest, ParseBitStringSevenOneBits) {
 TEST(ParseValuesTest, ParseBitStringSevenOneBitsUnusedBitIsOne) {
   const uint8_t kData[] = {0x01, 0xFF};
 
-  BitString bit_string;
-  EXPECT_FALSE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  EXPECT_FALSE(bit_string.has_value());
 }
 
 TEST(ParseValuesTest, ParseIA5String) {

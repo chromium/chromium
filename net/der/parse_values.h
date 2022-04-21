@@ -9,6 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "net/der/input.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -77,13 +78,12 @@ class NET_EXPORT BitString {
   // Default assignment and copy constructor are OK.
 };
 
-// Reads a DER-encoded ASN.1 BIT STRING value from |in| and puts the resulting
-// octet string and number of unused bits into |bit_string|
+// Reads a DER-encoded ASN.1 BIT STRING value from |in| and returns the
+// resulting octet string and number of unused bits.
 //
-// Returns true on success, otherwise returns false and does not modify the
-// out-parameters.
-[[nodiscard]] NET_EXPORT bool ParseBitString(const Input& in,
-                                             BitString* bit_string);
+// On failure, returns absl::nullopt.
+[[nodiscard]] NET_EXPORT absl::optional<BitString> ParseBitString(
+    const Input& in);
 
 struct NET_EXPORT GeneralizedTime {
   uint16_t year;

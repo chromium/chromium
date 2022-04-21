@@ -174,11 +174,12 @@ class NET_EXPORT Parser {
   // input may or may not have been advanced).
   [[nodiscard]] bool ReadUint64(uint64_t* out);
 
-  // Reads a BIT STRING. On success fills |out| and returns true.
+  // Reads a BIT STRING. On success returns BitString. On failure, returns
+  // absl::nullopt.
   //
   // Note that on failure the Parser is left in an undefined state (the
   // input may or may not have been advanced).
-  [[nodiscard]] bool ReadBitString(BitString* out);
+  [[nodiscard]] absl::optional<BitString> ReadBitString();
 
   // Reads a GeneralizeTime. On success fills |out| and returns true.
   //

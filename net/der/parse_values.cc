@@ -236,7 +236,7 @@ bool BitString::AssertsBit(size_t bit_index) const {
   return 0 != (byte & (1 << bit_index_in_byte));
 }
 
-bool ParseBitString(const Input& in, BitString* out) {
+absl::optional<BitString> ParseBitString(const Input& in) {
   ByteReader reader(in);
 
   // From ITU-T X.690, section 8.6.2.2 (applies to BER, CER, DER):
@@ -246,13 +246,13 @@ bool ParseBitString(const Input& in, BitString* out) {
   // subsequent octet. The number shall be in the range zero to seven.
   uint8_t unused_bits;
   if (!reader.ReadByte(&unused_bits))
-    return false;
+    return absl::nullopt;
   if (unused_bits > 7)
-    return false;
+    return absl::nullopt;
 
   Input bytes;
   if (!reader.ReadBytes(reader.BytesLeft(), &bytes))
-    return false;  // Not reachable.
+    return absl::nullopt;  // Not reachable.
 
   // Ensure that unused bits in the last byte are set to 0.
   if (unused_bits > 0) {
@@ -261,7 +261,7 @@ bool ParseBitString(const Input& in, BitString* out) {
     // If the bitstring is empty, there shall be no subsequent octets,
     // and the initial octet shall be zero.
     if (bytes.Length() == 0)
-      return false;
+      return absl::nullopt;
     uint8_t last_byte = bytes.UnsafeData()[bytes.Length() - 1];
 
     // From ITU-T X.690, section 11.2.1 (applies to CER and DER, but not BER):
@@ -270,11 +270,10 @@ bool ParseBitString(const Input& in, BitString* out) {
     // shall be set to zero.
     uint8_t mask = 0xFF >> (8 - unused_bits);
     if ((mask & last_byte) != 0)
-      return false;
+      return absl::nullopt;
   }
 
-  *out = BitString(bytes, unused_bits);
-  return true;
+  return BitString(bytes, unused_bits);
 }
 
 bool GeneralizedTime::InUTCTimeRange() const {

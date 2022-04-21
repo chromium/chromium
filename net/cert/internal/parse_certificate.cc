@@ -13,6 +13,7 @@
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -359,10 +360,13 @@ bool ParseCertificate(const der::Input& certificate_tlv,
   }
 
   //        signatureValue       BIT STRING  }
-  if (!certificate_parser.ReadBitString(out_signature_value)) {
+  absl::optional<der::BitString> signature_value =
+      certificate_parser.ReadBitString();
+  if (!signature_value) {
     out_errors->AddError(kSignatureValueNotBitString);
     return false;
   }
+  *out_signature_value = signature_value.value();
 
   // There isn't an extension point at the end of Certificate.
   if (certificate_parser.HasMore()) {
@@ -418,15 +422,14 @@ bool ParseTbsCertificate(const der::Input& tbs_tlv,
   }
 
   //        version         [0]  EXPLICIT Version DEFAULT v1,
-  der::Input version;
-  bool has_version;
-  if (!tbs_parser.ReadOptionalTag(der::ContextSpecificConstructed(0), &version,
-                                  &has_version)) {
+  absl::optional<der::Input> version;
+  if (!tbs_parser.ReadOptionalTag(der::ContextSpecificConstructed(0),
+                                  &version)) {
     errors->AddError(kFailedReadingVersion);
     return false;
   }
-  if (has_version) {
-    if (!ParseVersion(version, &out->version)) {
+  if (version) {
+    if (!ParseVersion(version.value(), &out->version)) {
       errors->AddError(kFailedParsingVersion);
       return false;
     }
@@ -491,15 +494,15 @@ bool ParseTbsCertificate(const der::Input& tbs_tlv,
 
   //        issuerUniqueID  [1]  IMPLICIT UniqueIdentifier OPTIONAL,
   //                             -- If present, version MUST be v2 or v3
-  der::Input issuer_unique_id;
+  absl::optional<der::Input> issuer_unique_id;
   if (!tbs_parser.ReadOptionalTag(der::ContextSpecificPrimitive(1),
-                                  &issuer_unique_id,
-                                  &out->has_issuer_unique_id)) {
+                                  &issuer_unique_id)) {
     errors->AddError(kFailedReadingIssuerUniqueId);
     return false;
   }
-  if (out->has_issuer_unique_id) {
-    if (!der::ParseBitString(issuer_unique_id, &out->issuer_unique_id)) {
+  if (issuer_unique_id) {
+    out->issuer_unique_id = der::ParseBitString(issuer_unique_id.value());
+    if (!out->issuer_unique_id) {
       errors->AddError(kFailedParsingIssuerUniqueId);
       return false;
     }
@@ -512,15 +515,15 @@ bool ParseTbsCertificate(const der::Input& tbs_tlv,
 
   //        subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL,
   //                             -- If present, version MUST be v2 or v3
-  der::Input subject_unique_id;
+  absl::optional<der::Input> subject_unique_id;
   if (!tbs_parser.ReadOptionalTag(der::ContextSpecificPrimitive(2),
-                                  &subject_unique_id,
-                                  &out->has_subject_unique_id)) {
+                                  &subject_unique_id)) {
     errors->AddError(kFailedReadingSubjectUniqueId);
     return false;
   }
-  if (out->has_subject_unique_id) {
-    if (!der::ParseBitString(subject_unique_id, &out->subject_unique_id)) {
+  if (subject_unique_id) {
+    out->subject_unique_id = der::ParseBitString(subject_unique_id.value());
+    if (!out->subject_unique_id) {
       errors->AddError(kFailedParsingSubjectUniqueId);
       return false;
     }
@@ -730,9 +733,12 @@ bool ParseBasicConstraints(const der::Input& basic_constraints_tlv,
   return true;
 }
 
+// TODO(crbug.com/1314019): return absl::optional<BitString> when converting
+// has_key_usage_ and key_usage_ into single absl::optional field.
 bool ParseKeyUsage(const der::Input& key_usage_tlv, der::BitString* key_usage) {
   der::Parser parser(key_usage_tlv);
-  if (!parser.ReadBitString(key_usage))
+  absl::optional<der::BitString> key_usage_internal = parser.ReadBitString();
+  if (!key_usage_internal)
     return false;
 
   // By definition the input was a single BIT STRING.
@@ -743,9 +749,10 @@ bool ParseKeyUsage(const der::Input& key_usage_tlv, der::BitString* key_usage) {
   //
   //     When the keyUsage extension appears in a certificate, at least
   //     one of the bits MUST be set to 1.
-  if (BitStringIsAllZeros(*key_usage))
+  if (BitStringIsAllZeros(key_usage_internal.value()))
     return false;
 
+  *key_usage = key_usage_internal.value();
   return true;
 }
 

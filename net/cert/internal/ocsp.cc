@@ -344,8 +344,10 @@ bool ParseBasicOCSPResponse(const der::Input& raw_tlv, OCSPResponse* out) {
   out->signature_algorithm = SignatureAlgorithm::Create(sigalg_tlv, &errors);
   if (!out->signature_algorithm)
     return false;
-  if (!parser.ReadBitString(&(out->signature)))
+  absl::optional<der::BitString> signature = parser.ReadBitString();
+  if (!signature)
     return false;
+  out->signature = signature.value();
   der::Input certs_input;
   if (!parser.ReadOptionalTag(der::ContextSpecificConstructed(0), &certs_input,
                               &(out->has_certs))) {

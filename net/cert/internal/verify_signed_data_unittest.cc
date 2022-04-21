@@ -14,6 +14,7 @@
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -55,16 +56,17 @@ void RunTestCase(VerifyResult expected_result, const char* file_name) {
       SignatureAlgorithm::Create(der::Input(&algorithm), &algorithm_errors);
   ASSERT_TRUE(signature_algorithm) << algorithm_errors.ToDebugString();
 
-  der::BitString signature_value_bit_string;
   der::Parser signature_value_parser((der::Input(&signature_value)));
-  ASSERT_TRUE(signature_value_parser.ReadBitString(&signature_value_bit_string))
+  absl::optional<der::BitString> signature_value_bit_string =
+      signature_value_parser.ReadBitString();
+  ASSERT_TRUE(signature_value_bit_string.has_value())
       << "The signature value is not a valid BIT STRING";
 
   bool expected_result_bool = expected_result == SUCCESS;
 
-  bool result =
-      VerifySignedData(*signature_algorithm, der::Input(&signed_data),
-                       signature_value_bit_string, der::Input(&public_key));
+  bool result = VerifySignedData(*signature_algorithm, der::Input(&signed_data),
+                                 signature_value_bit_string.value(),
+                                 der::Input(&public_key));
 
   EXPECT_EQ(expected_result_bool, result);
 }

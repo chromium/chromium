@@ -63,8 +63,11 @@ bool ParseCrlCertificateList(const der::Input& crl_tlv,
     return false;
 
   //        signatureValue       BIT STRING  }
-  if (!certificate_list_parser.ReadBitString(out_signature_value))
+  absl::optional<der::BitString> signature_value =
+      certificate_list_parser.ReadBitString();
+  if (!signature_value)
     return false;
+  *out_signature_value = signature_value.value();
 
   // There isn't an extension point at the end of CertificateList.
   if (certificate_list_parser.HasMore())

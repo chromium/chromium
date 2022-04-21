@@ -190,12 +190,18 @@ void RunTbsCertificateTestGivenVersion(const std::string& file_name,
   EXPECT_EQ(der::Input(&expected_subject), parsed.subject_tlv);
   EXPECT_EQ(der::Input(&expected_spki), parsed.spki_tlv);
 
-  EXPECT_EQ(der::Input(&expected_issuer_unique_id),
-            parsed.issuer_unique_id.bytes());
-  EXPECT_EQ(!expected_issuer_unique_id.empty(), parsed.has_issuer_unique_id);
-  EXPECT_EQ(der::Input(&expected_subject_unique_id),
-            parsed.subject_unique_id.bytes());
-  EXPECT_EQ(!expected_subject_unique_id.empty(), parsed.has_subject_unique_id);
+  EXPECT_EQ(!expected_issuer_unique_id.empty(),
+            parsed.issuer_unique_id.has_value());
+  if (parsed.issuer_unique_id.has_value()) {
+    EXPECT_EQ(der::Input(&expected_issuer_unique_id),
+              parsed.issuer_unique_id->bytes());
+  }
+  EXPECT_EQ(!expected_subject_unique_id.empty(),
+            parsed.subject_unique_id.has_value());
+  if (parsed.subject_unique_id.has_value()) {
+    EXPECT_EQ(der::Input(&expected_subject_unique_id),
+              parsed.subject_unique_id->bytes());
+  }
 
   EXPECT_EQ(der::Input(&expected_extensions), parsed.extensions_tlv);
   EXPECT_EQ(!expected_extensions.empty(), parsed.has_extensions);

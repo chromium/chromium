@@ -60,6 +60,7 @@
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -284,8 +285,9 @@ void AppendUniqueTransportsFromCertificate(
 
   const net::der::Input contents_der(contents);
   net::der::Parser contents_parser(contents_der);
-  net::der::BitString transport_bits;
-  if (!contents_parser.ReadBitString(&transport_bits)) {
+  absl::optional<net::der::BitString> transport_bits =
+      contents_parser.ReadBitString();
+  if (!transport_bits) {
     return;
   }
 
@@ -305,7 +307,7 @@ void AppendUniqueTransportsFromCertificate(
   };
 
   for (const auto& mapping : kTransportMapping) {
-    if (transport_bits.AssertsBit(mapping.bit_index) &&
+    if (transport_bits->AssertsBit(mapping.bit_index) &&
         !base::Contains(*out_transports, mapping.transport)) {
       out_transports->push_back(mapping.transport);
     }

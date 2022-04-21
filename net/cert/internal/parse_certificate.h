@@ -269,8 +269,7 @@ struct NET_EXPORT ParsedTbsCertificate {
   //
   // Parsing guarantees that if issuer_unique_id is present it is a valid BIT
   // STRING, and that the version is either v2 or v3
-  bool has_issuer_unique_id = false;
-  der::BitString issuer_unique_id;
+  absl::optional<der::BitString> issuer_unique_id;
 
   // Corresponds with "subjectUniqueID" from RFC 5280:
   //         subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL,
@@ -278,8 +277,7 @@ struct NET_EXPORT ParsedTbsCertificate {
   //
   // Parsing guarantees that if subject_unique_id is present it is a valid BIT
   // STRING, and that the version is either v2 or v3
-  bool has_subject_unique_id = false;
-  der::BitString subject_unique_id;
+  absl::optional<der::BitString> subject_unique_id;
 
   // Corresponds with "extensions" from RFC 5280:
   //         extensions      [3]  EXPLICIT Extensions OPTIONAL
