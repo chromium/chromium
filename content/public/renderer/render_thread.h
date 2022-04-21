@@ -9,13 +9,11 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/callback.h"
-#include "base/metrics/user_metrics_action.h"
+#include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
-#include "ipc/ipc_channel_proxy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
@@ -34,7 +32,12 @@ enum class WebRendererProcessType;
 }
 }  // namespace blink
 
+namespace perfetto::protos::pbzero {
+class RenderProcessHost;
+}
+
 namespace IPC {
+class Listener;
 class MessageFilter;
 class SyncChannel;
 class SyncMessageFilter;

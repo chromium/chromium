@@ -4,6 +4,7 @@
 
 #include "components/plugins/renderer/plugin_placeholder.h"
 
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
