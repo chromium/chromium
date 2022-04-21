@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/timezone.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
@@ -20,13 +21,26 @@
 namespace {
 extern const char kDefaultLocale[] = "en-US";
 
+bool AvailableInCurrentTimezoneLocale(
+    const apps::proto::LocaleAvailability& app_with_locale) {
+  auto local_country_code = base::CountryCodeForCurrentTimezone();
+  if (local_country_code.empty()) {
+    return false;
+  }
+  for (const auto& country_code : app_with_locale.available_country_codes()) {
+    if (country_code == local_country_code) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool AvailableInCurrentLocale(
     const apps::proto::LocaleAvailability& app_with_locale) {
   int current_country_id = country_codes::GetCurrentCountryID();
-  // TODO(melzhang) : This should not be returning -1. Return true for now so
-  // that we have data during development.
   if (current_country_id == -1) {
-    return true;
+    // Try using the timezone to get the country as a fallback.
+    return AvailableInCurrentTimezoneLocale(app_with_locale);
   }
   for (const auto& country_code : app_with_locale.available_country_codes()) {
     int country_id = country_codes::CountryStringToCountryID(country_code);
