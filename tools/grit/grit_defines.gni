@@ -127,7 +127,7 @@ if (current_toolchain != host_toolchain) {
   if (is_linux || is_chromeos) {
     grit_defines += [
       "-t",
-      "linux2",
+      "linux",
     ]
   }
   if (is_mac) {

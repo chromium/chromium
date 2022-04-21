@@ -507,7 +507,7 @@ class Node(object):
         value = defs
 
       elif name == 'is_linux':
-        value = target_platform.startswith('linux')
+        value = target_platform == 'linux'
       elif name == 'is_macosx':
         value = target_platform == 'darwin'
       elif name == 'is_win':
@@ -521,9 +521,8 @@ class Node(object):
       elif name == 'is_bsd':
         value = 'bsd' in target_platform
       elif name == 'is_posix':
-        value = (target_platform.startswith('linux')
-                 or target_platform in ('darwin', 'sunos5', 'android', 'ios')
-                 or 'bsd' in target_platform)
+        value = (target_platform in ('linux', 'darwin', 'sunos5', 'android',
+                                     'ios') or 'bsd' in target_platform)
 
       elif name == 'pp_ifdef':
         def pp_ifdef(symbol):
@@ -558,7 +557,7 @@ class Node(object):
       - 'context' is the current output context
            (the 'context' attribute of the <output> element).
       - 'defs' is a map of C preprocessor-style symbol names to their values.
-      - 'os' is the current platform (likely 'linux2', 'win32' or 'darwin').
+      - 'os' is the current platform (likely 'linux', 'win32' or 'darwin').
       - 'pp_ifdef(symbol)' is a shorthand for "symbol in defs".
       - 'pp_if(symbol)' is a shorthand for "symbol in defs and defs[symbol]".
       - 'is_linux', 'is_macosx', 'is_win', 'is_posix' are true if 'os'
@@ -664,7 +663,7 @@ class Node(object):
 
     if compress == 'gzip' or compress_by_default:
       # We only use rsyncable compression on Linux.
-      if sys.platform == 'linux2':
+      if sys.platform == 'linux':
         return grit.format.gzip_string.GzipStringRsyncable(data)
       return grit.format.gzip_string.GzipString(data)
 
