@@ -398,11 +398,10 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
 
   mojom::SerializeAsMHTMLParamsPtr params(CreateMojoParams());
 
-  params->output_handle = mojom::MhtmlOutputHandle::New();
-
   // File::Duplicate() creates a reference to this file for use in the
   // Renderer.
-  params->output_handle->set_file_handle(browser_file_.Duplicate());
+  params->output_handle =
+      mojom::MhtmlOutputHandle::NewFileHandle(browser_file_.Duplicate());
 
   // Send a Mojo request to Renderer to serialize its frame.
   DCHECK_EQ(FrameTreeNode::kFrameTreeNodeInvalidId,
