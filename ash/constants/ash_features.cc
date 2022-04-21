@@ -923,7 +923,7 @@ const base::Feature kLauncherFolderRenameKeepsSortOrder{
 // buttons for dismissal.
 const base::Feature kLauncherDismissButtonsOnSortNudgeAndToast{
     "LauncherDismissButtonsOnSortNudgeAndToast",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Uses short intervals for launcher nudge for testing if enabled.
 const base::Feature kLauncherNudgeShortInterval{
