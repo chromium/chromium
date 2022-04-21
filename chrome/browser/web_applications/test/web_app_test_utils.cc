@@ -524,6 +524,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetManagementToInstallURLsMap(
       management_to_install_urls_map_without_sync);
 
+  app->SetAppSizeInBytes(random.next_uint());
+  app->SetDataSizeInBytes(random.next_uint());
+
   return app;
 }
 

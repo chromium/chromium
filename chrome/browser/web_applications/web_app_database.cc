@@ -676,6 +676,12 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
   }
 
+  if (web_app.app_size_in_bytes().has_value())
+    local_data->set_app_size_in_bytes(web_app.app_size_in_bytes().value());
+
+  if (web_app.data_size_in_bytes().has_value())
+    local_data->set_data_size_in_bytes(web_app.data_size_in_bytes().value());
+
   return local_data;
 }
 
@@ -1242,6 +1248,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         install_urls);
   }
   web_app->SetManagementToInstallURLsMap(management_install_urls_map);
+
+  if (local_data.has_app_size_in_bytes()) {
+    web_app->SetAppSizeInBytes(local_data.app_size_in_bytes());
+  }
+
+  if (local_data.has_data_size_in_bytes()) {
+    web_app->SetDataSizeInBytes(local_data.data_size_in_bytes());
+  }
 
   return web_app;
 }

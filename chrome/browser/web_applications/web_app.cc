@@ -401,6 +401,14 @@ void WebApp::SetManagementToInstallURLsMap(
       management_to_install_urls_map_without_sync;
 }
 
+void WebApp::SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes) {
+  app_size_in_bytes_ = app_size_in_bytes;
+}
+
+void WebApp::SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes) {
+  data_size_in_bytes_ = data_size_in_bytes;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -502,7 +510,9 @@ bool WebApp::operator==(const WebApp& other) const {
         app.permissions_policy_,
         app.install_source_for_metrics_,
         app.is_placeholder_,
-        app.management_to_install_urls_map_without_sync_
+        app.management_to_install_urls_map_without_sync_,
+        app.app_size_in_bytes_,
+        app.data_size_in_bytes_
         // clang-format on
     );
   };
@@ -568,8 +578,22 @@ base::Value WebApp::AsDebugValue() const {
   root.SetStringKey("app_service_icon_url",
                     base::StrCat({"chrome://app-icon/", app_id_, "/32"}));
 
+  if (app_size_in_bytes_.has_value()) {
+    root.SetStringKey("app_size_in_bytes",
+                      base::NumberToString(app_size_in_bytes_.value()));
+  } else {
+    root.SetStringKey("app_size_in_bytes", "");
+  }
+
   root.SetKey("allowed_launch_protocols",
               ConvertList(allowed_launch_protocols_));
+
+  if (data_size_in_bytes_.has_value()) {
+    root.SetStringKey("data_size_in_bytes",
+                      base::NumberToString(data_size_in_bytes_.value()));
+  } else {
+    root.SetStringKey("data_size_in_bytes", "");
+  }
 
   root.SetKey("disallowed_launch_protocols",
               ConvertList(disallowed_launch_protocols_));
@@ -590,6 +614,13 @@ base::Value WebApp::AsDebugValue() const {
               chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());
 
   root.SetKey("client_data", client_data_.AsDebugValue());
+
+  if (data_size_in_bytes_.has_value()) {
+    root.SetStringKey("data_size_in_bytes",
+                      base::NumberToString(data_size_in_bytes_.value()));
+  } else {
+    root.SetStringKey("data_size_in_bytes", "");
+  }
 
   root.SetStringKey("description", description_);
 

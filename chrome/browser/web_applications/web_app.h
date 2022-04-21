@@ -269,6 +269,13 @@ class WebApp {
     return management_to_install_urls_map_without_sync_;
   }
 
+  const absl::optional<int64_t>& app_size_in_bytes() const {
+    return app_size_in_bytes_;
+  }
+  const absl::optional<int64_t>& data_size_in_bytes() const {
+    return data_size_in_bytes_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -352,6 +359,8 @@ class WebApp {
   void SetManagementToInstallURLsMap(
       const WebAppManagementToInstallURLsMap
           management_to_install_urls_map_without_sync);
+  void SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes);
+  void SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -453,6 +462,10 @@ class WebApp {
   // This will help future developers adding this functionality
   // have an existing data structure that can be re-used.
   WebAppManagementToInstallURLsMap management_to_install_urls_map_without_sync_;
+
+  absl::optional<int64_t> app_size_in_bytes_;
+  absl::optional<int64_t> data_size_in_bytes_;
+
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()
