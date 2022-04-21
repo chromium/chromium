@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_consumer.h"
@@ -67,6 +67,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong, null_resettable)
     TableViewSwitchItem* passwordLeakCheckItem;
 
+// Header that has shield icon.
+@property(nonatomic, strong) SafeBrowsingHeaderItem* shieldIconHeader;
+
+// Second header which has a metric icon.
+@property(nonatomic, strong) SafeBrowsingHeaderItem* metricIconHeader;
+
 // All the items for the standard safe browsing section.
 @property(nonatomic, strong, readonly)
     ItemArray safeBrowsingStandardProtectionItems;
@@ -104,26 +110,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (ItemArray)safeBrowsingStandardProtectionItems {
   if (!_safeBrowsingStandardProtectionItems) {
     NSMutableArray* items = [NSMutableArray array];
-    SettingsImageDetailTextItem* shieldIconItem = [self
-             detailItemWithType:ItemTypeShieldIcon
-                     detailText:
-                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_ONE
-                          image:[[UIImage imageNamed:@"shield"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]
-        accessibilityIdentifier:kSafeBrowsingStandardProtectionShieldCellId];
-    [items addObject:shieldIconItem];
-
-    SettingsImageDetailTextItem* metricIconItem = [self
-             detailItemWithType:ItemTypeMetricIcon
-                     detailText:
-                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO
-                          image:[[UIImage imageNamed:@"bar_chart"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]
-        accessibilityIdentifier:kSafeBrowsingStandardProtectionMetricCellId];
-    [items addObject:metricIconItem];
-
     if (self.userPrefService->IsManagedPreference(
             prefs::kSafeBrowsingEnabled)) {
       TableViewInfoButtonItem* safeBrowsingStandardProtectionManagedItem = [self
@@ -154,6 +140,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _safeBrowsingStandardProtectionItems;
 }
 
+- (SafeBrowsingHeaderItem*)shieldIconHeader {
+  if (!_shieldIconHeader) {
+    SafeBrowsingHeaderItem* shieldIconItem = [self
+             detailItemWithType:ItemTypeShieldIcon
+                     detailText:
+                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_ONE
+                          image:[[UIImage imageNamed:@"shield"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]
+        accessibilityIdentifier:kSafeBrowsingStandardProtectionShieldCellId];
+    _shieldIconHeader = shieldIconItem;
+  }
+  return _shieldIconHeader;
+}
+
+- (SafeBrowsingHeaderItem*)metricIconHeader {
+  if (!_metricIconHeader) {
+    SafeBrowsingHeaderItem* metricIconItem = [self
+             detailItemWithType:ItemTypeMetricIcon
+                     detailText:
+                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO
+                          image:[[UIImage imageNamed:@"bar_chart"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]
+        accessibilityIdentifier:kSafeBrowsingStandardProtectionMetricCellId];
+    _metricIconHeader = metricIconItem;
+  }
+  return _metricIconHeader;
+}
+
 - (TableViewSwitchItem*)passwordLeakCheckItem {
   if (!_passwordLeakCheckItem) {
     TableViewSwitchItem* passwordLeakCheckItem = [[TableViewSwitchItem alloc]
@@ -177,19 +193,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _consumer = consumer;
   [_consumer setSafeBrowsingStandardProtectionItems:
                  self.safeBrowsingStandardProtectionItems];
+  [_consumer setShieldIconHeader:self.shieldIconHeader];
+  [_consumer setMetricIconHeader:self.metricIconHeader];
 }
 
 #pragma mark - Private
 
-// Creates item in Standard Protection view.
-- (SettingsImageDetailTextItem*)detailItemWithType:(NSInteger)type
-                                        detailText:(NSInteger)detailText
-                                             image:(UIImage*)image
-                           accessibilityIdentifier:
-                               (NSString*)accessibilityIdentifier {
-  SettingsImageDetailTextItem* detailItem =
-      [[SettingsImageDetailTextItem alloc] initWithType:type];
-  detailItem.detailText = l10n_util::GetNSString(detailText);
+// Creates header in Standard Protection view.
+- (SafeBrowsingHeaderItem*)detailItemWithType:(NSInteger)type
+                                   detailText:(NSInteger)detailText
+                                        image:(UIImage*)image
+                      accessibilityIdentifier:
+                          (NSString*)accessibilityIdentifier {
+  SafeBrowsingHeaderItem* detailItem =
+      [[SafeBrowsingHeaderItem alloc] initWithType:type];
+  detailItem.text = l10n_util::GetNSString(detailText);
   detailItem.image = image;
   detailItem.imageViewTintColor = [UIColor colorNamed:kGrey600Color];
   detailItem.accessibilityIdentifier = accessibilityIdentifier;

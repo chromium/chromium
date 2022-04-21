@@ -12,6 +12,8 @@ source_set("cells") {
     "copied_to_chrome_item.mm",
     "passphrase_error_item.h",
     "passphrase_error_item.mm",
+    "safe_browsing_header_item.h",
+    "safe_browsing_header_item.mm",
     "search_engine_item.h",
     "search_engine_item.mm",
     "settings_check_cell.h",

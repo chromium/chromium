@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_view_controller.h"
 
+#import "ios/chrome/browser/ui/settings/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -17,15 +18,31 @@
 using ItemArray = NSArray<TableViewItem*>*;
 
 namespace {
-// List of sections.
+// List of sections. There are two section headers since one header is allowed
+// per section, and two header rows needed to above the rest of the content in
+// this view. There are two section headers instead of one extra section and
+// attaching the second header to
+// SectionIdentifierSafeBrowsingStandardProtection so that padding worked as
+// intended and provided enough space between the header and the switches.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSafeBrowsingStandardProtection = kSectionIdentifierEnumZero,
+  SectionIdentifierHeaderShield = kSectionIdentifierEnumZero,
+  SectionIdentifierHeaderMetric,
+  SectionIdentifierSafeBrowsingStandardProtection,
 };
+
+const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 }  // namespace
 
 @interface SafeBrowsingStandardProtectionViewController ()
 
+// All items for safe browsing standard protection view.
 @property(nonatomic, strong) ItemArray safeBrowsingStandardProtectionItems;
+
+// Header related to shield icon.
+@property(nonatomic, strong) SafeBrowsingHeaderItem* shieldIconHeader;
+
+// Header related to metric icon.
+@property(nonatomic, strong) SafeBrowsingHeaderItem* metricIconHeader;
 
 @end
 
@@ -38,6 +55,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.title = l10n_util::GetNSString(
       IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE);
   [self loadModel];
+  // Moved position down to center the view better.
+  [self.tableView
+      setContentInset:UIEdgeInsetsMake(
+                          kSafeBrowsingStandardProtectionContentInset, 0, 0,
+                          0)];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -81,17 +103,30 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _safeBrowsingStandardProtectionItems = safeBrowsingStandardProtectionItems;
 }
 
+- (void)setShieldIconHeader:(SafeBrowsingHeaderItem*)shieldIconHeader {
+  _shieldIconHeader = shieldIconHeader;
+}
+
+- (void)setMetricIconHeader:(SafeBrowsingHeaderItem*)metricIconHeader {
+  _metricIconHeader = metricIconHeader;
+}
+
 #pragma mark - CollectionViewController
 
 - (void)loadModel {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
+  [model addSectionWithIdentifier:SectionIdentifierHeaderShield];
+  [model addSectionWithIdentifier:SectionIdentifierHeaderMetric];
   [model
       addSectionWithIdentifier:SectionIdentifierSafeBrowsingStandardProtection];
+
+  [model setHeader:self.shieldIconHeader
+      forSectionWithIdentifier:SectionIdentifierHeaderShield];
+  [model setHeader:self.metricIconHeader
+      forSectionWithIdentifier:SectionIdentifierHeaderMetric];
+
   for (TableViewItem* item in self.safeBrowsingStandardProtectionItems) {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.styler.cellBackgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
     [model addItem:item
         toSectionWithIdentifier:
             SectionIdentifierSafeBrowsingStandardProtection];

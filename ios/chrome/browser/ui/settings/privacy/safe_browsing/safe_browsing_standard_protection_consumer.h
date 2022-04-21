@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class SafeBrowsingHeaderItem;
 @class TableViewItem;
 
 // Consumer protocol for Safe Browsing Standard Protection view.
@@ -19,6 +20,11 @@
 - (void)setSafeBrowsingStandardProtectionItems:
     (NSArray<TableViewItem*>*)safeBrowsingStandardProtectionItems;
 
-@end
+// Initializes section header related to the shield icon.
+- (void)setShieldIconHeader:(SafeBrowsingHeaderItem*)shieldIconHeader;
 
+// Initializes section header related to the metric icon.
+- (void)setMetricIconHeader:(SafeBrowsingHeaderItem*)metricIconHeader;
+
+@end
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_SAFE_BROWSING_SAFE_BROWSING_STANDARD_PROTECTION_CONSUMER_H_
