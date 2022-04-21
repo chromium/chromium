@@ -2025,17 +2025,13 @@ void TransformationMatrix::Recompose2D(const Decomposed2dType& decomp) {
   DCHECK(!IsInvalidMatrix());
 }
 
-bool TransformationMatrix::IsIntegerTranslation() const {
-  if (!IsIdentityOrTranslation())
-    return false;
-
-  // Check for translate Z.
-  if (matrix_[3][2])
+bool TransformationMatrix::IsInteger2DTranslation() const {
+  if (!IsIdentityOr2DTranslation())
     return false;
 
   // Check for non-integer translate X/Y.
-  if (static_cast<int>(matrix_[3][0]) != matrix_[3][0] ||
-      static_cast<int>(matrix_[3][1]) != matrix_[3][1])
+  if (ClampTo<int>(matrix_[3][0]) != matrix_[3][0] ||
+      ClampTo<int>(matrix_[3][1]) != matrix_[3][1])
     return false;
 
   return true;

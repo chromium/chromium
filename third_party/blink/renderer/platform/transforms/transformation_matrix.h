@@ -451,7 +451,7 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   bool Is2dTransform() const;
 
-  bool IsIntegerTranslation() const;
+  bool IsInteger2DTranslation() const;
 
   bool IsInvalidMatrix() const {
     for (int i = 0; i < 4; i++) {

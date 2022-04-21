@@ -732,4 +732,20 @@ TEST(TransformationMatrixTest, QuaternionInterpolation) {
   EXPECT_TRANSFORMATION_MATRIX(expected, to_matrix);
 }
 
+TEST(TransformationMatrixTest, IsInteger2DTranslation) {
+  EXPECT_TRUE(TransformationMatrix().IsInteger2DTranslation());
+  EXPECT_TRUE(TransformationMatrix().Translate(1, 2).IsInteger2DTranslation());
+  EXPECT_FALSE(
+      TransformationMatrix().Translate(1.00001, 2).IsInteger2DTranslation());
+  EXPECT_FALSE(
+      TransformationMatrix().Translate(1, 2.00002).IsInteger2DTranslation());
+  EXPECT_FALSE(TransformationMatrix().Rotate(2).IsInteger2DTranslation());
+  EXPECT_FALSE(
+      TransformationMatrix().Translate3d(1, 2, 3).IsInteger2DTranslation());
+  EXPECT_FALSE(
+      TransformationMatrix().Translate(1e20, 0).IsInteger2DTranslation());
+  EXPECT_FALSE(
+      TransformationMatrix().Translate(0, 1e20).IsInteger2DTranslation());
+}
+
 }  // namespace blink
