@@ -806,8 +806,7 @@ void GetAssertionRequestHandler::OnGetAssertionSuccess(
 void GetAssertionRequestHandler::OnReadLargeBlobs(
     FidoAuthenticator* authenticator,
     CtapDeviceResponseCode status,
-    absl::optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
-        blobs) {
+    absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs) {
   if (status == CtapDeviceResponseCode::kSuccess) {
     for (auto& response : responses_) {
       const auto blob =

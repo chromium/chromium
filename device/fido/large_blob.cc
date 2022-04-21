@@ -36,6 +36,20 @@ std::array<uint8_t, kAssociatedDataLength> GenerateLargeBlobAdditionalData(
 
 }  // namespace
 
+LargeBlob::LargeBlob(std::vector<uint8_t> compressed_data,
+                     uint64_t original_size)
+    : compressed_data(std::move(compressed_data)),
+      original_size(original_size) {}
+LargeBlob::~LargeBlob() = default;
+LargeBlob::LargeBlob(const LargeBlob&) = default;
+LargeBlob& LargeBlob::operator=(const LargeBlob&) = default;
+LargeBlob::LargeBlob(LargeBlob&&) = default;
+LargeBlob& LargeBlob::operator=(LargeBlob&&) = default;
+bool LargeBlob::operator==(const LargeBlob& other) const {
+  return other.compressed_data == compressed_data &&
+         other.original_size == original_size;
+}
+
 LargeBlobArrayFragment::LargeBlobArrayFragment(const std::vector<uint8_t> bytes,
                                                const size_t offset)
     : bytes(std::move(bytes)), offset(offset) {}
@@ -203,13 +217,13 @@ LargeBlobData::LargeBlobData(
     : ciphertext_(std::move(ciphertext)), orig_size_(std::move(orig_size)) {
   std::copy(nonce.begin(), nonce.end(), nonce_.begin());
 }
-LargeBlobData::LargeBlobData(LargeBlobKey key, base::span<const uint8_t> blob) {
-  orig_size_ = blob.size();
+LargeBlobData::LargeBlobData(LargeBlobKey key, LargeBlob large_blob)
+    : orig_size_(large_blob.original_size) {
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(key);
   crypto::RandBytes(nonce_);
-  ciphertext_ =
-      aead.Seal(blob, nonce_, GenerateLargeBlobAdditionalData(orig_size_));
+  ciphertext_ = aead.Seal(large_blob.compressed_data, nonce_,
+                          GenerateLargeBlobAdditionalData(orig_size_));
 }
 LargeBlobData::LargeBlobData(LargeBlobData&&) = default;
 LargeBlobData& LargeBlobData::operator=(LargeBlobData&&) = default;
@@ -220,12 +234,15 @@ bool LargeBlobData::operator==(const LargeBlobData& other) const {
          orig_size_ == other.orig_size_;
 }
 
-absl::optional<std::vector<uint8_t>> LargeBlobData::Decrypt(
-    LargeBlobKey key) const {
+absl::optional<LargeBlob> LargeBlobData::Decrypt(LargeBlobKey key) const {
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(key);
-  return aead.Open(ciphertext_, nonce_,
-                   GenerateLargeBlobAdditionalData(orig_size_));
+  absl::optional<std::vector<uint8_t>> compressed_data = aead.Open(
+      ciphertext_, nonce_, GenerateLargeBlobAdditionalData(orig_size_));
+  if (!compressed_data) {
+    return absl::nullopt;
+  }
+  return LargeBlob(*compressed_data, orig_size_);
 }
 
 cbor::Value::MapValue LargeBlobData::AsCBOR() const {

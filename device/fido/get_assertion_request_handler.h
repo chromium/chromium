@@ -130,8 +130,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   void OnReadLargeBlobs(
       FidoAuthenticator* authenticator,
       CtapDeviceResponseCode status,
-      absl::optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
-          blobs);
+      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs);
   void OnWriteLargeBlob(FidoAuthenticator* authenticator,
                         CtapDeviceResponseCode status);
 

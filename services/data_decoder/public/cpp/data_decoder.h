@@ -129,6 +129,23 @@ class DataDecoder {
       mojom::XmlParser::WhitespaceBehavior whitespace_behavior,
       ValueParseCallback callback);
 
+  // Deflates potentially unsafe |data| using this DataDecoder's service
+  // instance. This will use raw DEFLATE, i.e. no headers are outputted.
+  //
+  // Note that |callback| will only be called if the parsing operation succeeds
+  // or fails before this DataDecoder is destroyed.
+  void Deflate(base::span<const uint8_t> data, GzipperCallback callback);
+
+  // Inflates potentially unsafe |data| using this DataDecoder's service
+  // instance. |data| must have been deflated raw, i.e. with no headers. If the
+  // uncompressed data exceeds |max_uncompressed_size|, returns empty.
+  //
+  // Note that |callback| will only be called if the parsing operation succeeds
+  // or fails before this DataDecoder is destroyed.
+  void Inflate(base::span<const uint8_t> data,
+               uint64_t max_uncompressed_size,
+               GzipperCallback callback);
+
   // Compresses potentially unsafe |data| using this DataDecoder's service
   // instance.
   //

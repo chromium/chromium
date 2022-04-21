@@ -146,14 +146,14 @@ void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  absl::optional<std::vector<uint8_t>> blob =
+  absl::optional<device::LargeBlob> blob =
       state_->GetLargeBlob(registration->second);
   if (!blob) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  data_decoder_.GzipUncompress(
-      std::move(*blob),
+  data_decoder_.Inflate(
+      std::move(blob->compressed_data), blob->original_size,
       base::BindOnce(&VirtualAuthenticator::OnLargeBlobUncompressed,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -161,9 +161,9 @@ void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
 void VirtualAuthenticator::SetLargeBlob(const std::vector<uint8_t>& key_handle,
                                         const std::vector<uint8_t>& blob,
                                         SetLargeBlobCallback callback) {
-  data_decoder_.GzipCompress(
+  data_decoder_.Deflate(
       blob, base::BindOnce(&VirtualAuthenticator::OnLargeBlobCompressed,
-                           weak_factory_.GetWeakPtr(), key_handle,
+                           weak_factory_.GetWeakPtr(), key_handle, blob.size(),
                            std::move(callback)));
 }
 
@@ -221,6 +221,7 @@ void VirtualAuthenticator::OnLargeBlobUncompressed(
 
 void VirtualAuthenticator::OnLargeBlobCompressed(
     base::span<const uint8_t> key_handle,
+    uint64_t original_size,
     SetLargeBlobCallback callback,
     data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
   auto registration = state_->registrations.find(key_handle);
@@ -232,7 +233,10 @@ void VirtualAuthenticator::OnLargeBlobCompressed(
     std::move(callback).Run(false);
     return;
   }
-  state_->InjectLargeBlob(&registration->second, *result.value);
+  state_->InjectLargeBlob(
+      &registration->second,
+      device::LargeBlob(device::fido_parsing_utils::Materialize(*result.value),
+                        original_size));
   std::move(callback).Run(true);
 }
 

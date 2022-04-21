@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                               absl::optional<BioEnrollmentResponse>)>;
   using LargeBlobReadCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      absl::optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
+      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>>
           callback)>;
 
   FidoAuthenticator() = default;
@@ -240,7 +240,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // Attempts to write a |large_blob| into the credential. If there is an
   // existing credential for the |large_blob_key|, it will be overwritten.
   virtual void WriteLargeBlob(
-      const std::vector<uint8_t>& large_blob,
+      LargeBlob large_blob,
       const LargeBlobKey& large_blob_key,
       absl::optional<pin::TokenResponse> pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback);

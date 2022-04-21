@@ -591,19 +591,23 @@ bool AuthenticatorCommon::IsFocused() const {
 }
 
 void AuthenticatorCommon::OnLargeBlobCompressed(
+    uint64_t original_size,
     data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
-  ctap_get_assertion_request_->large_blob_write =
-      device::fido_parsing_utils::MaterializeOrNull(result.value);
+  if (result.value) {
+    ctap_get_assertion_request_->large_blob_write = device::LargeBlob(
+        device::fido_parsing_utils::Materialize(*result.value), original_size);
+  }
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
 
 void AuthenticatorCommon::OnLargeBlobUncompressed(
     device::AuthenticatorGetAssertionResponse response,
     data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
-  response.large_blob =
-      device::fido_parsing_utils::MaterializeOrNull(result.value);
-  CompleteGetAssertionRequest(blink::mojom::AuthenticatorStatus::SUCCESS,
-                              CreateGetAssertionResponse(std::move(response)));
+  CompleteGetAssertionRequest(
+      blink::mojom::AuthenticatorStatus::SUCCESS,
+      CreateGetAssertionResponse(
+          std::move(response),
+          device::fido_parsing_utils::MaterializeOrNull(result.value)));
 }
 
 // mojom::Authenticator
@@ -1175,10 +1179,11 @@ void AuthenticatorCommon::GetAssertion(
   ctap_get_assertion_request_->is_u2f_only = origin_is_crypto_token_extension;
 
   if (options->large_blob_write) {
-    data_decoder_.GzipCompress(
+    data_decoder_.Deflate(
         *options->large_blob_write,
         base::BindOnce(&AuthenticatorCommon::OnLargeBlobCompressed,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(),
+                       options->large_blob_write->size()));
     return;
   }
 
@@ -1621,10 +1626,11 @@ void AuthenticatorCommon::OnSignResponse(
 void AuthenticatorCommon::OnAccountSelected(
     device::AuthenticatorGetAssertionResponse response) {
   if (response.large_blob) {
-    std::vector<uint8_t> blob = std::move(*response.large_blob);
-    data_decoder_.GzipUncompress(
-        blob, base::BindOnce(&AuthenticatorCommon::OnLargeBlobUncompressed,
-                             weak_factory_.GetWeakPtr(), std::move(response)));
+    device::LargeBlob large_blob = std::move(*response.large_blob);
+    data_decoder_.Inflate(
+        std::move(large_blob.compressed_data), large_blob.original_size,
+        base::BindOnce(&AuthenticatorCommon::OnLargeBlobUncompressed,
+                       weak_factory_.GetWeakPtr(), std::move(response)));
     return;
   }
   CompleteGetAssertionRequest(blink::mojom::AuthenticatorStatus::SUCCESS,
@@ -1855,7 +1861,8 @@ void AuthenticatorCommon::CompleteMakeCredentialRequest(
 
 blink::mojom::GetAssertionAuthenticatorResponsePtr
 AuthenticatorCommon::CreateGetAssertionResponse(
-    device::AuthenticatorGetAssertionResponse response_data) {
+    device::AuthenticatorGetAssertionResponse response_data,
+    absl::optional<std::vector<uint8_t>> large_blob) {
   auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
   auto common_info = blink::mojom::CommonCredentialInfo::New();
   common_info->client_data_json.assign(client_data_json_.begin(),
@@ -1906,7 +1913,7 @@ AuthenticatorCommon::CreateGetAssertionResponse(
       }
       case RequestExtension::kLargeBlobRead:
         response->echo_large_blob = true;
-        response->large_blob = response_data.large_blob;
+        response->large_blob = large_blob;
         break;
       case RequestExtension::kLargeBlobWrite:
         response->echo_large_blob = true;

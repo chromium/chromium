@@ -269,6 +269,33 @@ void DataDecoder::ParseXmlIsolated(
           std::move(decoder), std::move(callback)));
 }
 
+void DataDecoder::Deflate(base::span<const uint8_t> data,
+                          GzipperCallback callback) {
+  auto request = base::MakeRefCounted<
+      ValueParseRequest<mojom::Gzipper, mojo_base::BigBuffer>>(
+      std::move(callback));
+  GetService()->BindGzipper(request->BindRemote());
+  request->remote()->Deflate(
+      data,
+      base::BindOnce(&ValueParseRequest<mojom::Gzipper,
+                                        mojo_base::BigBuffer>::OnServiceValue,
+                     request));
+}
+
+void DataDecoder::Inflate(base::span<const uint8_t> data,
+                          uint64_t max_uncompressed_size,
+                          GzipperCallback callback) {
+  auto request = base::MakeRefCounted<
+      ValueParseRequest<mojom::Gzipper, mojo_base::BigBuffer>>(
+      std::move(callback));
+  GetService()->BindGzipper(request->BindRemote());
+  request->remote()->Inflate(
+      data, max_uncompressed_size,
+      base::BindOnce(&ValueParseRequest<mojom::Gzipper,
+                                        mojo_base::BigBuffer>::OnServiceValue,
+                     request));
+}
+
 void DataDecoder::GzipCompress(base::span<const uint8_t> data,
                                GzipperCallback callback) {
   auto request = base::MakeRefCounted<

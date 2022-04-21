@@ -63,6 +63,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -78,8 +79,10 @@
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/gzipper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -452,22 +455,33 @@ std::string GetTestClientDataJSON(ClientDataRequestType type) {
                               /*is_cross_origin_iframe=*/false});
 }
 
-std::vector<uint8_t> StringToVector(const std::string& string) {
-  std::vector<uint8_t> vector;
-  vector.assign(string.begin(), string.end());
-  return vector;
+device::LargeBlob CompressLargeBlob(base::span<const uint8_t> blob) {
+  data_decoder::Gzipper gzipper;
+  std::vector<uint8_t> compressed;
+  base::RunLoop run_loop;
+  gzipper.Deflate(
+      blob, base::BindLambdaForTesting(
+                [&](absl::optional<mojo_base::BigBuffer> result) {
+                  compressed = device::fido_parsing_utils::Materialize(*result);
+                  run_loop.Quit();
+                }));
+  run_loop.Run();
+  return device::LargeBlob(std::move(compressed), blob.size());
 }
 
-std::vector<uint8_t> CompressLargeBlob(base::span<const uint8_t> blob) {
-  std::string output;
-  CHECK(compression::GzipCompress(blob, &output));
-  return StringToVector(output);
-}
-
-std::vector<uint8_t> UncompressLargeBlob(base::span<const uint8_t> blob) {
-  std::string output;
-  CHECK(compression::GzipUncompress(blob, &output));
-  return StringToVector(output);
+std::vector<uint8_t> UncompressLargeBlob(device::LargeBlob blob) {
+  data_decoder::Gzipper gzipper;
+  std::vector<uint8_t> uncompressed;
+  base::RunLoop run_loop;
+  gzipper.Inflate(blob.compressed_data, blob.original_size,
+                  base::BindLambdaForTesting(
+                      [&](absl::optional<mojo_base::BigBuffer> result) {
+                        uncompressed =
+                            device::fido_parsing_utils::Materialize(*result);
+                        run_loop.Quit();
+                      }));
+  run_loop.Run();
+  return uncompressed;
 }
 
 // Convert a blink::mojom::AttestationConveyancePreference to a
@@ -7282,7 +7296,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
     EXPECT_TRUE(result.response->echo_large_blob_written);
     EXPECT_EQ(test.did_write_large_blob, result.response->large_blob_written);
     if (test.did_write_large_blob) {
-      absl::optional<std::vector<uint8_t>> compressed_blob =
+      absl::optional<device::LargeBlob> compressed_blob =
           virtual_device_factory_->mutable_state()->GetLargeBlob(
               virtual_device_factory_->mutable_state()
                   ->registrations.begin()

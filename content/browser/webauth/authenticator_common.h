@@ -150,6 +150,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // Callback to handle the large blob being compressed before attempting to
   // start a request.
   void OnLargeBlobCompressed(
+      uint64_t original_size,
       data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
 
   // Callback to handle the large blob being uncompressed before completing a
@@ -218,7 +219,8 @@ class CONTENT_EXPORT AuthenticatorCommon {
 
   // Creates a get assertion response.
   blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
-      device::AuthenticatorGetAssertionResponse response_data);
+      device::AuthenticatorGetAssertionResponse response_data,
+      absl::optional<std::vector<uint8_t>> large_blob = absl::nullopt);
 
   // Runs |get_assertion_callback_| and then Cleanup().
   void CompleteGetAssertionRequest(

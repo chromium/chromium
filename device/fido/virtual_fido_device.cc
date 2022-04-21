@@ -19,7 +19,6 @@
 #include "crypto/ec_signature_creator.h"
 #include "crypto/openssl_util.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/large_blob.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -439,7 +438,7 @@ bool VirtualFidoDevice::State::InjectResidentKey(
                                     /*icon_url=*/absl::nullopt));
 }
 
-absl::optional<std::vector<uint8_t>> VirtualFidoDevice::State::GetLargeBlob(
+absl::optional<LargeBlob> VirtualFidoDevice::State::GetLargeBlob(
     const RegistrationData& credential) {
   if (!credential.large_blob_key) {
     return absl::nullopt;
@@ -452,8 +451,7 @@ absl::optional<std::vector<uint8_t>> VirtualFidoDevice::State::GetLargeBlob(
     return absl::nullopt;
   }
   for (const auto& data : *large_blob_array) {
-    absl::optional<std::vector<uint8_t>> blob =
-        data.Decrypt(*credential.large_blob_key);
+    absl::optional<LargeBlob> blob = data.Decrypt(*credential.large_blob_key);
     if (blob) {
       return blob;
     }
@@ -462,7 +460,7 @@ absl::optional<std::vector<uint8_t>> VirtualFidoDevice::State::GetLargeBlob(
 }
 
 void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
-                                               base::span<const uint8_t> blob) {
+                                               LargeBlob blob) {
   LargeBlobArrayReader reader;
   reader.Append(large_blob);
   std::vector<LargeBlobData> large_blob_array =
@@ -478,8 +476,9 @@ void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
                     credential->large_blob_key->size());
   }
 
-  large_blob_array.insert(large_blob_array.end(),
-                          LargeBlobData(*credential->large_blob_key, blob));
+  large_blob_array.insert(
+      large_blob_array.end(),
+      LargeBlobData(*credential->large_blob_key, std::move(blob)));
   LargeBlobArrayWriter writer(large_blob_array);
   large_blob = writer.Pop(writer.size()).bytes;
 }

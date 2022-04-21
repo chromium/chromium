@@ -122,7 +122,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   absl::optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;
   bool large_blob_read = false;
-  absl::optional<std::vector<uint8_t>> large_blob_write;
+  absl::optional<LargeBlob> large_blob_write;
   bool get_cred_blob = false;
 
   // Instructs the request handler only to dispatch this request via U2F.

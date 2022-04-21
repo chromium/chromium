@@ -18,6 +18,10 @@ class Gzipper : public mojom::Gzipper {
 
  public:
   // mojom::Gzipper:
+  void Deflate(mojo_base::BigBuffer data, DeflateCallback callback) override;
+  void Inflate(mojo_base::BigBuffer data,
+               uint64_t max_uncompressed_size,
+               InflateCallback callback) override;
   void Compress(mojo_base::BigBuffer data, CompressCallback callback) override;
   void Uncompress(mojo_base::BigBuffer compressed_data,
                   UncompressCallback callback) override;

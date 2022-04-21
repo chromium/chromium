@@ -166,7 +166,7 @@ void FidoAuthenticator::BioEnrollDelete(const pin::TokenResponse&,
 }
 
 void FidoAuthenticator::WriteLargeBlob(
-    const std::vector<uint8_t>& large_blob,
+    LargeBlob large_blob,
     const LargeBlobKey& large_blob_key,
     const absl::optional<pin::TokenResponse> pin_uv_auth_token,
     base::OnceCallback<void(CtapDeviceResponseCode)> callback) {

@@ -114,7 +114,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
                        std::vector<uint8_t> template_id,
                        BioEnrollmentCallback) override;
   void WriteLargeBlob(
-      const std::vector<uint8_t>& large_blob,
+      LargeBlob large_blob,
       const LargeBlobKey& large_blob_key,
       absl::optional<pin::TokenResponse> pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback) override;
@@ -215,7 +215,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       CtapDeviceResponseCode status,
       absl::optional<LargeBlobsResponse> response);
   void OnHaveLargeBlobArrayForWrite(
-      const std::vector<uint8_t>& large_blob,
+      LargeBlob large_blob,
       const LargeBlobKey& large_blob_key,
       absl::optional<pin::TokenResponse> pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback,

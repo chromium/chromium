@@ -19,6 +19,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -297,14 +298,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
                            absl::optional<std::string> user_display_name);
 
     // Returns the large blob associated with the credential, if any.
-    absl::optional<std::vector<uint8_t>> GetLargeBlob(
-        const RegistrationData& credential);
+    absl::optional<LargeBlob> GetLargeBlob(const RegistrationData& credential);
 
     // Injects a large blob for the credential. If the credential already has an
     // associated large blob, replaces it. If the |large_blob| is malformed,
     // completely replaces its contents.
-    void InjectLargeBlob(RegistrationData* credential,
-                         base::span<const uint8_t> blob);
+    void InjectLargeBlob(RegistrationData* credential, LargeBlob blob);
 
     // Clears all large blobs resetting |large_blob| to its default value.
     void ClearLargeBlobs();

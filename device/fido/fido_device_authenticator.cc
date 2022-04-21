@@ -621,8 +621,7 @@ void FidoDeviceAuthenticator::OnEnumerateRPsDone(
   DCHECK(response->rp_id_hash);
 
   state.rp_id_hashes.push_back(*response->rp_id_hash);
-  state.responses.push_back(
-      AggregatedEnumerateCredentialsResponse(*response->rp));
+  state.responses.emplace_back(*response->rp);
 
   if (state.rp_id_hashes.size() < state.rp_count) {
     // Get the next RP.
@@ -820,7 +819,7 @@ void FidoDeviceAuthenticator::BioEnrollEnumerate(
 }
 
 void FidoDeviceAuthenticator::WriteLargeBlob(
-    const std::vector<uint8_t>& large_blob,
+    LargeBlob large_blob,
     const LargeBlobKey& large_blob_key,
     const absl::optional<pin::TokenResponse> pin_uv_auth_token,
     base::OnceCallback<void(CtapDeviceResponseCode)> callback) {
@@ -890,7 +889,7 @@ void FidoDeviceAuthenticator::OnReadLargeBlobFragment(
 }
 
 void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
-    const std::vector<uint8_t>& large_blob,
+    LargeBlob large_blob,
     const LargeBlobKey& large_blob_key,
     const absl::optional<pin::TokenResponse> pin_uv_auth_token,
     base::OnceCallback<void(CtapDeviceResponseCode)> callback,
@@ -918,7 +917,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
                      return blob.Decrypt(large_blob_key);
                    });
 
-  LargeBlobData new_large_blob_data(large_blob_key, large_blob);
+  LargeBlobData new_large_blob_data(large_blob_key, std::move(large_blob));
   if (existing_large_blob != large_blob_array->end()) {
     *existing_large_blob = std::move(new_large_blob_data);
   } else {
@@ -997,10 +996,10 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead(
     return;
   }
 
-  std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>> result;
+  std::vector<std::pair<LargeBlobKey, LargeBlob>> result;
   for (const LargeBlobData& blob : *large_blob_array) {
     for (const LargeBlobKey& key : large_blob_keys) {
-      absl::optional<std::vector<uint8_t>> plaintext = blob.Decrypt(key);
+      absl::optional<LargeBlob> plaintext = blob.Decrypt(key);
       if (plaintext) {
         result.emplace_back(std::make_pair(key, std::move(*plaintext)));
         break;

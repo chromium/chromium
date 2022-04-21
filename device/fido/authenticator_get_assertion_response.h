@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,7 +69,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   bool user_selected = false;
 
   // The large blob associated with the credential.
-  absl::optional<std::vector<uint8_t>> large_blob;
+  absl::optional<LargeBlob> large_blob;
 
   // Whether a large blob was successfully written as part of this GetAssertion
   // request.
