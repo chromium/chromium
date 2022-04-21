@@ -144,10 +144,6 @@ void WebRuntimeFeatures::EnableAdTagging(bool enable) {
   RuntimeEnabledFeatures::SetAdTaggingEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableCacheInlineScriptCode(bool enable) {
-  RuntimeEnabledFeatures::SetCacheInlineScriptCodeEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableCanvas2dImageChromium(bool enable) {
   RuntimeEnabledFeatures::SetCanvas2dImageChromiumEnabled(enable);
 }

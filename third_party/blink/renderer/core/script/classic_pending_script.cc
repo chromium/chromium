@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 
+#include "base/feature_list.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
@@ -286,7 +287,7 @@ void ClassicPendingScript::Trace(Visitor* visitor) const {
 
 static SingleCachedMetadataHandler* GetInlineCacheHandler(const String& source,
                                                           Document& document) {
-  if (!RuntimeEnabledFeatures::CacheInlineScriptCodeEnabled())
+  if (!base::FeatureList::IsEnabled(kCacheInlineScriptCode))
     return nullptr;
 
   ScriptableDocumentParser* scriptable_parser =

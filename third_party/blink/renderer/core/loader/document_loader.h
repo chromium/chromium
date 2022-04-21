@@ -111,6 +111,9 @@ namespace mojom {
 enum class CommitResult : int32_t;
 }
 
+// Enables code caching for inline scripts.
+extern const base::Feature kCacheInlineScriptCode;
+
 // The DocumentLoader fetches a main resource and handles the result.
 // TODO(https://crbug.com/855189). This was originally structured to have a
 // provisional load, then commit but that is no longer necessary and this class

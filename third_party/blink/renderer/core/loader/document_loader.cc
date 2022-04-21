@@ -34,6 +34,8 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -140,7 +142,14 @@
 
 namespace blink {
 
+const base::Feature kCacheInlineScriptCode{"CacheInlineScriptCode",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 namespace {
+
+// Controls whether caching of inline script is wired up correctly.
+constexpr base::FeatureParam<bool> kCacheInlineScriptCodeFixConfiguring{
+    &kCacheInlineScriptCode, "fix_configuring", false};
 
 Vector<OriginTrialFeature> CopyInitiatorOriginTrials(
     const WebVector<int>& initiator_origin_trial_features) {
@@ -1763,14 +1772,17 @@ void DocumentLoader::StartLoadingResponse() {
     return;
   }
 
-  // The |cached_metadata_handler_| is created, even when
-  // |UseIsolatedCodeCache()| is false to support the parts that don't
-  // go throught the site-isolated-code-cache.
-  auto cached_metadata_sender = CachedMetadataSender::Create(
-      response_, blink::mojom::CodeCacheType::kJavascript, requestor_origin_);
-  cached_metadata_handler_ =
-      MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
-          WTF::TextEncoding(), std::move(cached_metadata_sender));
+  ScriptableDocumentParser* scriptable_parser =
+      parser_->AsScriptableDocumentParser();
+  if (scriptable_parser) {
+    auto cached_metadata_sender = CachedMetadataSender::Create(
+        response_, blink::mojom::CodeCacheType::kJavascript, requestor_origin_);
+    cached_metadata_handler_ =
+        MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
+            WTF::TextEncoding(), std::move(cached_metadata_sender));
+    if (kCacheInlineScriptCodeFixConfiguring.Get())
+      scriptable_parser->SetInlineScriptCacheHandler(cached_metadata_handler_);
+  }
 
   if (waiting_for_document_loader_) {
     // If we were just waiting for the document loader, the body has already
@@ -1785,11 +1797,8 @@ void DocumentLoader::StartLoadingResponse() {
 }
 
 void DocumentLoader::StartLoadingBodyWithCodeCache() {
-  CodeCacheHost* code_cache_host = nullptr;
-  if (UseIsolatedCodeCache()) {
-    code_cache_host = GetCodeCacheHost();
-    DCHECK(code_cache_host);
-  }
+  CodeCacheHost* code_cache_host =
+      UseIsolatedCodeCache() ? GetCodeCacheHost() : nullptr;
   if (base::FeatureList::IsEnabled(features::kEarlyBodyLoad)) {
     waiting_for_code_cache_ = true;
     // If the body can load in parallel with the code cache, we need to enter
@@ -2608,12 +2617,14 @@ void DocumentLoader::CreateParserPostCommit() {
     frame_->DomWindow()->GetScriptController().UpdateDocument();
   }
 
-  // If this is a scriptable parser and there is a resource, register the
-  // resource's cache handler with the parser.
-  ScriptableDocumentParser* scriptable_parser =
-      parser_->AsScriptableDocumentParser();
-  if (scriptable_parser && cached_metadata_handler_)
-    scriptable_parser->SetInlineScriptCacheHandler(cached_metadata_handler_);
+  if (!kCacheInlineScriptCodeFixConfiguring.Get()) {
+    // If this is a scriptable parser and there is a resource, register the
+    // resource's cache handler with the parser.
+    ScriptableDocumentParser* scriptable_parser =
+        parser_->AsScriptableDocumentParser();
+    if (scriptable_parser && cached_metadata_handler_)
+      scriptable_parser->SetInlineScriptCacheHandler(cached_metadata_handler_);
+  }
 
   GetFrameLoader().DispatchDidClearDocumentOfWindowObject();
 
@@ -2930,7 +2941,7 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
 }
 
 bool DocumentLoader::UseIsolatedCodeCache() {
-  return RuntimeEnabledFeatures::CacheInlineScriptCodeEnabled() &&
+  return base::FeatureList::IsEnabled(kCacheInlineScriptCode) &&
          ShouldUseIsolatedCodeCache(mojom::blink::RequestContextType::HYPERLINK,
                                     response_);
 }

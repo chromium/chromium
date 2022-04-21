@@ -318,9 +318,6 @@
       name: "BrowserVerifiedUserActivationMouse",
     },
     {
-      name: "CacheInlineScriptCode"
-    },
-    {
       name: "CacheStorageCodeCacheHint",
       origin_trial_feature_name: "CacheStorageCodeCacheHint",
       status: "experimental",

@@ -84,20 +84,6 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
   Key key_;
 };
 
-class SourceKeyedCachedMetadataHandler::KeyHash {
-  STATIC_ONLY(KeyHash);
-
- public:
-  static unsigned GetHash(const Key& key) {
-    return StringHasher::ComputeHash(key.data(),
-                                     static_cast<uint32_t>(key.size()));
-  }
-
-  static bool Equal(const Key& a, const Key& b) { return a == b; }
-
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
 SingleCachedMetadataHandler* SourceKeyedCachedMetadataHandler::HandlerForSource(
     const String& source) {
   DigestValue digest_value;
@@ -174,13 +160,11 @@ T ReadVal(const uint8_t* data) {
 
 void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
     mojo_base::BigBuffer data_buffer) {
+  // NOTE: Loading of the cache is async. This may be invoked after state has
+  // been set.
+
   const uint8_t* data = data_buffer.data();
   size_t size = data_buffer.size();
-
-  // We only expect to receive cached metadata from the platform once. If this
-  // triggers, it indicates an efficiency problem which is most likely
-  // unexpected in code designed to improve performance.
-  DCHECK(cached_metadata_map_.IsEmpty());
 
   // Ensure we have a marker.
   if (size < sizeof(uint32_t))
@@ -201,10 +185,14 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
   data += sizeof(int);
   size -= sizeof(int);
 
+  // Make a copy of existing entries. Only add ones from `data_buffer` that
+  // do not already existed. If the data is successfully processed, the map
+  // is swapped at the end.
+  CachedMetadataMap result = cached_metadata_map_;
+
   for (int i = 0; i < num_entries; ++i) {
     // Ensure we have an entry key and size.
     if (size < kKeySize + sizeof(size_t)) {
-      cached_metadata_map_.clear();
       return;
     }
 
@@ -218,14 +206,17 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
 
     // Ensure we have enough data for this entry.
     if (size < entry_size) {
-      cached_metadata_map_.clear();
       return;
     }
 
-    if (scoped_refptr<CachedMetadata> deserialized_entry =
-            CachedMetadata::CreateFromSerializedData(data, entry_size)) {
-      // Only insert the deserialized entry if it deserialized correctly.
-      cached_metadata_map_.insert(key, std::move(deserialized_entry));
+    if (!result.Contains(key)) {
+      if (scoped_refptr<CachedMetadata> deserialized_entry =
+              CachedMetadata::CreateFromSerializedData(data, entry_size)) {
+        // Only insert the deserialized entry if it deserialized correctly and
+        // it isn't already present (because loading is async, the key may have
+        // already been inserted).
+        result.insert(key, std::move(deserialized_entry));
+      }
     }
     data += entry_size;
     size -= entry_size;
@@ -233,8 +224,10 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
 
   // Ensure we have no more data.
   if (size > 0) {
-    cached_metadata_map_.clear();
+    return;
   }
+
+  std::swap(result, cached_metadata_map_);
 }
 
 void SourceKeyedCachedMetadataHandler::LogUsageMetrics() {

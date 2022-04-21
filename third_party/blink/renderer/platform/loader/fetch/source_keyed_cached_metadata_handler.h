@@ -55,34 +55,43 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
  private:
   // Keys are SHA-256, which are 256/8 = 32 bytes.
   static constexpr size_t kKeySize = 32;
-  typedef Vector<uint8_t, kKeySize> Key;
+  using Key = Vector<uint8_t, kKeySize>;
 
   class SingleKeyHandler;
-  class KeyHash;
-  class KeyHashTraits : public WTF::GenericHashTraits<Key> {
+  class KeyTraits : public WTF::GenericHashTraits<Key> {
    public:
-    // Note: This class relies on hashes never being zero or 1 followed by all
-    // zeros. Practically, our hash space is large enough that the risk of such
-    // a collision is infinitesimal.
-
-    typedef Key EmptyValueType;
-    static const bool kEmptyValueIsZero = true;
-    static EmptyValueType EmptyValue() {
-      // Rely on integer value initialization to zero out the key array.
-      return Key{};
-    }
-
     static void ConstructDeletedValue(Key& slot, bool) {
-      slot = {1};  // Remaining entries are value initialized to 0.
+      new (NotNullTag::kNotNull, &slot) Key(WTF::kHashTableDeletedValue);
+      DCHECK(IsDeletedValue(slot));
+      DCHECK(!IsEmptyValue(slot));
     }
-    static bool IsDeletedValue(const Key& value) { return value == Key{1}; }
+
+    static bool IsEmptyValue(const Key& key) {
+      return !IsDeletedValue(key) && key.IsEmpty();
+    }
+
+    static bool IsDeletedValue(const Key& value) {
+      return value.IsHashTableDeletedValue();
+    }
+
+    static unsigned GetHash(const Key& key) {
+      return StringHasher::ComputeHash(key.data(),
+                                       static_cast<uint32_t>(key.size()));
+    }
+
+    static bool Equal(const Key& a, const Key& b) { return a == b; }
+
+    static const bool kEmptyValueIsZero = false;
+    static const bool safe_to_compare_to_empty_or_deleted = false;
+    static const bool kHasIsEmptyValueFunction = true;
   };
 
   void SendToPlatform(CodeCacheHost*);
 
   // TODO(leszeks): Maybe just store the SingleKeyHandlers directly in here?
-  WTF::HashMap<Key, scoped_refptr<CachedMetadata>, KeyHash, KeyHashTraits>
-      cached_metadata_map_;
+  using CachedMetadataMap =
+      WTF::HashMap<Key, scoped_refptr<CachedMetadata>, KeyTraits, KeyTraits>;
+  CachedMetadataMap cached_metadata_map_;
   std::unique_ptr<CachedMetadataSender> sender_;
 
   const WTF::TextEncoding encoding_;

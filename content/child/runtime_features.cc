@@ -205,7 +205,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kBrowserVerifiedUserActivationKeyboard},
     {wf::EnableBrowserVerifiedUserActivationMouse,
      features::kBrowserVerifiedUserActivationMouse},
-    {wf::EnableCacheInlineScriptCode, features::kCacheInlineScriptCode},
     {wf::EnableCapabilityDelegationPaymentRequest,
      features::kCapabilityDelegationPaymentRequest},
     {wf::EnableClickPointerEvent, features::kClickPointerEvent},
