@@ -1636,10 +1636,6 @@
           'chromeos-kevin',
           'has_native_resultdb_integration',
         ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-          'isolated_scripts': 'chromeos_remote_device_isolated_tests',
-        },
         'os_type': 'chromeos',
       },
       'lacros-amd64-generic-binary-size-rel': {

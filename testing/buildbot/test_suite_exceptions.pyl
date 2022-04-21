@@ -1558,7 +1558,6 @@
     # TODO(crbug.com/1077659): Add the test back after it's fixed.
     'remove_from': [
       'chromeos-kevin-rel',
-      'chromeos-kevin-rel (reclient shadow)',
     ],
   },
   'exo_unittests': {
@@ -3037,7 +3036,6 @@
       # TODO(crbug.com/1141234): Restore when there's more DUTs
       'chromeos-kevin-chrome',
       'chromeos-kevin-rel',
-      'chromeos-kevin-rel (reclient shadow)',
 
       # crbug.com/936540
       'Mac10.11 Tests',
