@@ -831,7 +831,7 @@ class CWriter(object):
     except OSError as e:
       if e.errno == errno.EEXIST:
         pass
-    self._file = open(filename, 'w')
+    self._file = open(filename, 'w', newline='')
 
   def __enter__(self):
     self._file.write(self._ENTER_MSG)
