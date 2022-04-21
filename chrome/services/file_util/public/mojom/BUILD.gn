@@ -35,12 +35,12 @@ mojom("mojom") {
   if (safe_browsing_mode == 1 && enable_maldoca) {
     sources += [
       "document_analysis_service.mojom",
-      "safe_document_analyzer.mojom"
+      "safe_document_analyzer.mojom",
     ]
     enabled_features += [ "enable_maldoca" ]
     public_deps += [
       "//components/services/filesystem/public/mojom",
-      "//sandbox/policy/mojom"
+      "//sandbox/policy/mojom",
     ]
   }
 
@@ -58,8 +58,9 @@ mojom("mojom") {
         "//chrome/common/safe_browsing:proto",
         "//components/safe_browsing:buildflags",
         "//components/safe_browsing/core/common/proto:csd_proto",
+        "//ipc:protobuf_support",
       ]
-    }
+    },
   ]
 
   if (safe_browsing_mode == 1 && enable_maldoca) {
@@ -78,7 +79,7 @@ mojom("mojom") {
           "//components/safe_browsing:buildflags",
           "//components/safe_browsing/core/common/proto:csd_proto",
         ]
-      }
+      },
     ]
   }
 }

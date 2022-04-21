@@ -139,6 +139,7 @@ mojom("mojom") {
       traits_public_deps = [
         "//mojo/public/cpp/base:shared_typemap_traits",
         "//mojo/public/cpp/bindings",
+        "//mojo/public/cpp/bindings:protobuf_support",
         "//remoting/host/base",
         "//remoting/proto",
         "//remoting/protocol:errors",

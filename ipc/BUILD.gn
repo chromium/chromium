@@ -53,7 +53,6 @@ component("ipc") {
       "ipc_message_macros.h",
       "ipc_message_pipe_reader.cc",
       "ipc_message_pipe_reader.h",
-      "ipc_message_protobuf_utils.h",
       "ipc_message_start.h",
       "ipc_message_templates.h",
       "ipc_message_templates_impl.h",
@@ -97,7 +96,6 @@ component("ipc") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/tracing/public/cpp",
-    "//third_party/protobuf:protobuf_lite",
   ]
 
   deps = [ "//base" ]
@@ -234,6 +232,16 @@ source_set("param_traits") {
   public = [ "ipc_param_traits.h" ]
 }
 
+# This is provided as a separate target so other targets can use IPC without
+# necessarily linking to protobuf.
+source_set("protobuf_support") {
+  public = [ "ipc_message_protobuf_utils.h" ]
+  public_deps = [
+    ":ipc",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
 if (!is_ios) {
   source_set("run_all_unittests") {
     testonly = true
@@ -277,6 +285,7 @@ if (!is_ios) {
 
     deps = [
       ":ipc",
+      ":protobuf_support",
       ":run_all_unittests",
       ":test_interfaces",
       ":test_proto",

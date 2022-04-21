@@ -392,6 +392,7 @@ static_library("common") {
     "//components/webrtc:thread_wrapper",
     "//crypto",
     "//google_apis",
+    "//ipc:protobuf_support",
     "//media",
     "//remoting/base",
     "//remoting/base:authorization",
