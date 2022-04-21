@@ -326,6 +326,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void DumpProcessStack() = 0;
 #endif
 
+  virtual void PauseSocketManagerForRenderFrameHost(
+      const GlobalRenderFrameHostId& render_frame_host_id) = 0;
+  virtual void ResumeSocketManagerForRenderFrameHost(
+      const GlobalRenderFrameHostId& render_frame_host_id) = 0;
+
   // Sets a flag indicating that the process can be abnormally terminated.
   virtual void SetSuddenTerminationAllowed(bool allowed) = 0;
   // Returns true if the process can be abnormally terminated.

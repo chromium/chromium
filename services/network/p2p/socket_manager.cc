@@ -189,12 +189,28 @@ void P2PSocketManager::OnNetworkChanged(
   // network configuration changes. All other notifications can be ignored.
   if (type != net::NetworkChangeNotifier::CONNECTION_NONE)
     return;
+  if (notifications_paused_) {
+    pending_network_change_notification_ = true;
+    return;
+  }
 
   // Notify the renderer about changes to list of network interfaces.
   network_list_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&P2PSocketManager::DoGetNetworkList,
                                 weak_factory_.GetWeakPtr(),
                                 base::ThreadTaskRunnerHandle::Get()));
+}
+
+void P2PSocketManager::PauseNetworkChangeNotifications() {
+  notifications_paused_ = true;
+}
+
+void P2PSocketManager::ResumeNetworkChangeNotifications() {
+  notifications_paused_ = false;
+  if (pending_network_change_notification_) {
+    pending_network_change_notification_ = false;
+    OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_NONE);
+  }
 }
 
 void P2PSocketManager::AddAcceptedConnection(

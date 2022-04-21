@@ -23,7 +23,15 @@ interface P2PTrustedSocketManagerClient {
 
 // From the browser process to the network process.
 interface P2PTrustedSocketManager {
-  // Start or stop dumping of packet headers.
+  // Starts dumping of packet headers; the incoming/outgoing arguments control
+  // whether incoming or outgoing or both are dumped.
   StartRtpDump(bool incoming, bool outgoing);
+  // Stops dumping of packet headers; the incoming/outgoing arguments control
+  // whether incoming or outgoing or both are dumped.
   StopRtpDump(bool incoming, bool outgoing);
+
+  // Pauses network change notifications for this socket manager.
+  PauseNetworkChangeNotifications();
+  // Resumes network change notifications for this socket manager.
+  ResumeNetworkChangeNotifications();
 };

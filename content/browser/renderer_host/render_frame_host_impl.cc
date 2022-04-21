@@ -202,12 +202,14 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/schemeful_site.h"
+#include "net/net_buildflags.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/trust_token_operation_authorization.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -1771,6 +1773,9 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
 
   DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(this)
       ->OnEnterBackForwardCache();
+#if BUILDFLAG(IS_P2P_ENABLED)
+  GetProcess()->PauseSocketManagerForRenderFrameHost(GetGlobalId());
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
 // The frame as been restored from the BackForwardCache.
@@ -1790,6 +1795,9 @@ void RenderFrameHostImpl::WillLeaveBackForwardCache() {
 
   DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(this)
       ->OnRestoreFromBackForwardCache();
+#if BUILDFLAG(IS_P2P_ENABLED)
+  GetProcess()->ResumeSocketManagerForRenderFrameHost(GetGlobalId());
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
 mojom::DidCommitProvisionalLoadParamsPtr

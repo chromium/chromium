@@ -71,7 +71,8 @@ void P2PSocketDispatcherHost::StopRtpDump(bool incoming, bool outgoing) {
 void P2PSocketDispatcherHost::BindReceiver(
     RenderProcessHostImpl& process,
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
-    net::NetworkIsolationKey isolation_key) {
+    net::NetworkIsolationKey isolation_key,
+    const GlobalRenderFrameHostId& render_frame_host_id) {
   DCHECK_EQ(process.GetID(), render_process_id_);
 
   mojo::PendingRemote<network::mojom::P2PTrustedSocketManagerClient>
@@ -91,7 +92,32 @@ void P2PSocketDispatcherHost::BindReceiver(
     trusted_socket_manager->StartRtpDump(dump_incoming_rtp_packet_,
                                          dump_outgoing_rtp_packet_);
   }
-  trusted_socket_managers_.Add(std::move(trusted_socket_manager));
+  mojo::RemoteSetElementId manager_id =
+      trusted_socket_managers_.Add(std::move(trusted_socket_manager));
+  frame_host_to_socket_manager_id_.emplace(render_frame_host_id, manager_id);
+}
+
+void P2PSocketDispatcherHost::PauseSocketManagerForRenderFrameHost(
+    const GlobalRenderFrameHostId& frame_id) {
+  if (frame_host_to_socket_manager_id_.contains(frame_id)) {
+    mojo::RemoteSetElementId manager_id =
+        frame_host_to_socket_manager_id_[frame_id];
+    if (trusted_socket_managers_.Contains(manager_id)) {
+      trusted_socket_managers_.Get(manager_id)
+          ->PauseNetworkChangeNotifications();
+    }
+  }
+}
+void P2PSocketDispatcherHost::ResumeSocketManagerForRenderFrameHost(
+    const GlobalRenderFrameHostId& frame_id) {
+  if (frame_host_to_socket_manager_id_.contains(frame_id)) {
+    mojo::RemoteSetElementId manager_id =
+        frame_host_to_socket_manager_id_[frame_id];
+    if (trusted_socket_managers_.Contains(manager_id)) {
+      trusted_socket_managers_.Get(manager_id)
+          ->ResumeNetworkChangeNotifications();
+    }
+  }
 }
 
 base::WeakPtr<P2PSocketDispatcherHost> P2PSocketDispatcherHost::GetWeakPtr() {

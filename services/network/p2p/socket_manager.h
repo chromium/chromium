@@ -77,6 +77,9 @@ class P2PSocketManager
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
+  void PauseNetworkChangeNotifications() override;
+  void ResumeNetworkChangeNotifications() override;
+
  private:
   class DnsRequest;
 
@@ -140,6 +143,9 @@ class P2PSocketManager
 
   bool dump_incoming_rtp_packet_ = false;
   bool dump_outgoing_rtp_packet_ = false;
+
+  bool notifications_paused_ = false;
+  bool pending_network_change_notification_ = false;
 
   // Used to call DoGetNetworkList, which may briefly block since getting the
   // default local address involves creating a dummy socket.

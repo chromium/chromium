@@ -688,7 +688,7 @@ void BindSocketManager(
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver) {
   static_cast<RenderProcessHostImpl*>(frame->GetProcess())
       ->BindP2PSocketManager(frame->GetNetworkIsolationKey(),
-                             std::move(receiver));
+                             std::move(receiver), frame->GetGlobalId());
 }
 
 void BindGamepadMonitor(

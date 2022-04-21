@@ -299,6 +299,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DumpProfilingData(base::OnceClosure callback) override;
 #endif
 
+  void PauseSocketManagerForRenderFrameHost(
+      const GlobalRenderFrameHostId& render_frame_host_id) override;
+  void ResumeSocketManagerForRenderFrameHost(
+      const GlobalRenderFrameHostId& render_frame_host_id) override;
+
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;
 
@@ -662,7 +667,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   void BindP2PSocketManager(
       net::NetworkIsolationKey isolation_key,
-      mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver);
+      mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
+      GlobalRenderFrameHostId render_frame_host_id);
 
   using IpcSendWatcher = base::RepeatingCallback<void(const IPC::Message& msg)>;
   void SetIpcSendWatcherForTesting(IpcSendWatcher watcher) {

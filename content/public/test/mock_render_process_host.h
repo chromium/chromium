@@ -256,6 +256,11 @@ class MockRenderProcessHost : public RenderProcessHost {
   void EnableBlinkRuntimeFeatures(
       const std::vector<std::string>& features) override;
 
+  void PauseSocketManagerForRenderFrameHost(
+      const GlobalRenderFrameHostId& render_frame_host_id) override {}
+  void ResumeSocketManagerForRenderFrameHost(
+      const GlobalRenderFrameHostId& render_frame_host_id) override {}
+
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;
 
