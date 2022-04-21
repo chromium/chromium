@@ -1092,7 +1092,7 @@ void NetworkStateHandler::UpdateBlockedNetworksInternal(
     const NetworkTypePattern& network_type) {
   for (auto iter = network_list_.begin(); iter != network_list_.end(); ++iter) {
     NetworkState* network = (*iter)->AsNetworkState();
-    if (!network->Matches(network_type))
+    if (!TypeMatches(network, network_type))
       continue;
     if (UpdateBlockedByPolicy(network))
       NotifyNetworkPropertiesUpdated(network);
