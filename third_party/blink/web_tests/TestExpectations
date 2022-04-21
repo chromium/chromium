@@ -3384,7 +3384,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/redirect.https.window.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/shared-worker.https.window.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/permissions-policy/reporting/xr-report-only.https.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/webxr/xr_view_projection_detached.https.html [ Crash ]
@@ -7524,15 +7523,6 @@ crbug.com/1297416 [ Mac Release ] virtual/fenced-frame-shadow-dom/http/tests/fen
 crbug.com/1297416 [ Linux Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
 crbug.com/1297416 [ Release Win10.20h2 ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
 
-crbug.com/1296179 [ Mac10.12 Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-crbug.com/1296179 [ Mac10.13 Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-crbug.com/1296179 [ Mac10.14 Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-crbug.com/1296179 [ Mac10.15 Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-crbug.com/1296179 [ Mac11 Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-crbug.com/1296179 [ Linux Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-crbug.com/1296179 [ Mac Release ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-crbug.com/1296179 [ Linux Release ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
-
 # Fails flakily on Win
 crbug.com/1173382 [ Win ] virtual/stable/http/tests/navigation/replacestate-base-legal.html [ Failure Pass ]
 
@@ -7750,3 +7740,7 @@ crbug.com/1253971 [ Mac ] virtual/selectmenu-old-popup/the-selectmenu-element/se
 
 # Temporarily disabled in order to land devtools-frontend commit that will change this test's baseline
 crbug.com/1024156 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Skip ]
+
+# Sheriff 2022-04-21
+crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
+crbug.com/1318318 virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
