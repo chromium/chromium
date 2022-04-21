@@ -312,6 +312,11 @@ void WebMediaPlayerMSCompositor::SetForceBeginFrames(bool enable) {
   submitter_->SetForceBeginFrames(enable);
 }
 
+WebMediaPlayerMSCompositor::Metadata WebMediaPlayerMSCompositor::GetMetadata() {
+  base::AutoLock auto_lock(current_frame_lock_);
+  return current_metadata_;
+}
+
 void WebMediaPlayerMSCompositor::SetForceSubmit(bool force_submit) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   submitter_->SetForceSubmit(force_submit);
@@ -321,18 +326,6 @@ void WebMediaPlayerMSCompositor::SetIsPageVisible(bool is_visible) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   if (submitter_)
     submitter_->SetIsPageVisible(is_visible);
-}
-
-gfx::Size WebMediaPlayerMSCompositor::GetCurrentSize() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::AutoLock auto_lock(current_frame_lock_);
-  return current_frame_ ? current_frame_->natural_size() : gfx::Size();
-}
-
-base::TimeDelta WebMediaPlayerMSCompositor::GetCurrentTime() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::AutoLock auto_lock(current_frame_lock_);
-  return current_frame_.get() ? current_frame_->timestamp() : base::TimeDelta();
 }
 
 size_t WebMediaPlayerMSCompositor::total_frame_count() {
@@ -393,6 +386,15 @@ void WebMediaPlayerMSCompositor::RecordFrameDecodedStats(
         *frame_rtp_timestamp - *last_enqueued_frame_rtp_timestamp_);
   }
   last_enqueued_frame_rtp_timestamp_ = frame_rtp_timestamp;
+}
+
+void WebMediaPlayerMSCompositor::SetMetadata() {
+  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+  current_frame_lock_.AssertAcquired();
+  current_metadata_.natural_size = current_frame_->natural_size();
+  current_metadata_.video_transform =
+      current_frame_->metadata().transformation.value_or(
+          media::kNoTransformation);
 }
 
 void WebMediaPlayerMSCompositor::EnqueueFrame(
@@ -753,6 +755,7 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
 
   current_frame_ = std::move(frame);
   current_frame_is_copy_ = is_copy;
+  SetMetadata();
 
   current_frame_receive_time_ = current_frame_->metadata().receive_time;
   current_frame_rtp_timestamp_ = static_cast<uint32_t>(

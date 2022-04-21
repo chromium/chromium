@@ -797,7 +797,7 @@ void WebMediaPlayerMSTest::RenderFrame() {
 }
 
 void WebMediaPlayerMSTest::SizeChanged() {
-  gfx::Size frame_size = compositor_->GetCurrentSize();
+  gfx::Size frame_size = compositor_->GetMetadata().natural_size;
   CheckSizeChanged(frame_size);
 }
 
@@ -1218,7 +1218,7 @@ TEST_P(WebMediaPlayerMSTest, BackgroundRendering) {
 TEST_P(WebMediaPlayerMSTest, FrameSizeChange) {
   // During this test, the frame size of the input changes.
   // We need to make sure, when sizeChanged() gets called, new size should be
-  // returned by GetCurrentSize().
+  // returned by GetMetadata().
   InitializeWebMediaPlayerMS();
   MockMediaStreamVideoRenderer* provider = LoadAndGetFrameProvider(true);
 

@@ -64,6 +64,11 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
  public:
   using OnNewFramePresentedCB = base::OnceClosure;
 
+  struct Metadata {
+    gfx::Size natural_size = gfx::Size();
+    media::VideoTransformation video_transform = media::kNoTransformation;
+  };
+
   WebMediaPlayerMSCompositor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
@@ -84,17 +89,14 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void EnqueueFrame(scoped_refptr<media::VideoFrame> frame, bool is_copy);
 
   // Statistical data
-  gfx::Size GetCurrentSize();
-  base::TimeDelta GetCurrentTime();
   size_t total_frame_count();
   size_t dropped_frame_count();
 
   // Signals the VideoFrameSubmitter to prepare to receive BeginFrames and
   // submit video frames given by WebMediaPlayerMSCompositor.
-  virtual void EnableSubmission(
-      const viz::SurfaceId& id,
-      media::VideoTransformation transformation,
-      bool force_submit);
+  virtual void EnableSubmission(const viz::SurfaceId& id,
+                                media::VideoTransformation transformation,
+                                bool force_submit);
 
   // Notifies the |submitter_| that the frames must be submitted.
   void SetForceSubmit(bool force_submit);
@@ -139,6 +141,9 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // even if the video element is not visible, so websites can still use the
   // requestVideoFrameCallback() API when the video is offscreen.
   void SetForceBeginFrames(bool enable);
+
+  // Gets metadata which is available after kReadyStateHaveMetadata state.
+  Metadata GetMetadata();
 
  private:
   friend class WTF::ThreadSafeRefCounted<WebMediaPlayerMSCompositor,
@@ -212,6 +217,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
       absl::optional<base::TimeDelta> frame_processing_time,
       absl::optional<uint32_t> frame_rtp_timestamp);
 
+  void SetMetadata();
+
   // Used for DCHECKs to ensure method calls executed in the correct thread,
   // which is renderer main thread in this class.
   THREAD_CHECKER(thread_checker_);
@@ -242,6 +249,10 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // however read on the compositor and main thread so locking is required
   // around all modifications and all reads on the any thread.
   scoped_refptr<media::VideoFrame> current_frame_;
+
+  // |current_metadata_| is the pipeline metadata extracted from the
+  // |current_frame_|.
+  Metadata current_metadata_ GUARDED_BY(current_frame_lock_);
 
   // |rendering_frame_buffer_| stores the incoming frames, and provides a frame
   // selection method which returns the best frame for the render interval.
@@ -304,7 +315,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
 
   // |current_frame_lock_| protects |current_frame_|, |rendering_frame_buffer_|,
-  // |dropped_frame_count_|, and |render_started_|.
+  // |dropped_frame_count_|, |current_metadata_| and |render_started_|.
   base::Lock current_frame_lock_;
 
   base::WeakPtrFactory<WebMediaPlayerMSCompositor> weak_ptr_factory_{this};

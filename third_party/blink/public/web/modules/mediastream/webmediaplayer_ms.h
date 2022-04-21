@@ -211,7 +211,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   bool IsInPictureInPicture() const;
 
   // Switch to SurfaceLayer, either initially or from VideoLayer.
-  void ActivateSurfaceLayerForVideo();
+  void ActivateSurfaceLayerForVideo(media::VideoTransformation video_transform);
 
   // Need repaint due to state change.
   void RepaintInternal();
@@ -294,7 +294,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   bool pending_rvfc_request_ = false;
 
   bool paused_;
-  media::VideoTransformation video_transformation_;
 
   std::unique_ptr<media::MediaLog> media_log_;
 
