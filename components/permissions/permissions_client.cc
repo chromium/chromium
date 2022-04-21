@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -81,6 +82,8 @@ void PermissionsClient::OnPromptResolved(
     PermissionAction action,
     const GURL& origin,
     PermissionPromptDisposition prompt_disposition,
+    PermissionPromptDispositionReason prompt_disposition_reason,
+    PermissionRequestGestureType gesture_type,
     absl::optional<QuietUiReason> quiet_ui_reason) {}
 
 absl::optional<bool>
