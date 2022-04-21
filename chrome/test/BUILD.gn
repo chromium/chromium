@@ -9455,6 +9455,11 @@ if (!is_android) {
         "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
       ]
     }
+
+    if (is_chromeos_lacros && !is_chromeos_device) {
+      # For support version skew testing.
+      data_deps += [ "//build/lacros:lacros_version_metadata" ]
+    }
   }
 }
 

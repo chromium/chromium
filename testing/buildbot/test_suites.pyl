@@ -4257,6 +4257,17 @@
       },
     },
 
+    'linux_lacros_chrome_interactive_ui_tests_version_skew': {
+      'interactive_ui_tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
     'linux_lacros_specific_gtests': {
       'lacros_chrome_unittests': {},
     },
@@ -7551,7 +7562,7 @@
     },
 
     'linux_lacros_version_skew_tests': {
-      'linux_lacros_chrome_browsertests_version_skew': {
+      'linux_lacros_chrome_interactive_ui_tests_version_skew': {
         'variants': [
           'LACROS_VERSION_SKEW_CANARY',
           'LACROS_VERSION_SKEW_DEV',
