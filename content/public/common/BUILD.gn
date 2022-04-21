@@ -36,6 +36,7 @@ source_set("result_codes") {
 # a header-only dependency, without bringing in all of content.
 source_set("content_descriptors") {
   sources = [ "content_descriptors.h" ]
+  deps = [ "//build:chromeos_buildflags" ]
 }
 
 source_set("content_descriptor_keys") {

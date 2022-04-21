@@ -73,7 +73,6 @@
 #include "chromeos/lacros/native_theme_cache.h"
 #include "chromeos/lacros/system_idle_cache.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "chromeos/startup/startup.h"
 #include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"

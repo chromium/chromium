@@ -36,7 +36,14 @@ BrowserInitParams::BrowserInitParams()
     : init_params_(disable_crosapi_for_testing_
                        ? crosapi::mojom::BrowserInitParams::New()
                        : ReadStartupBrowserInitParams()) {
-  DCHECK(init_params_);
+  if (!init_params_) {
+    LOG(WARNING) << "BrowserInitParams is not set. "
+                 << "This message should not appear except for testing. "
+                 << "For testing, consider setting "
+                 << "BrowserInitParams::disable_crosapi_for_testing_ "
+                 << "to true if crosapi is not required.";
+    init_params_ = crosapi::mojom::BrowserInitParams::New();
+  }
 }
 
 // static
@@ -48,6 +55,13 @@ const crosapi::mojom::BrowserInitParams* BrowserInitParams::Get() {
 void BrowserInitParams::SetInitParamsForTests(
     crosapi::mojom::BrowserInitParamsPtr init_params) {
   GetInstance()->init_params_ = std::move(init_params);
+}
+
+// static
+base::ScopedFD BrowserInitParams::CreateStartupData() {
+  DCHECK(GetInstance()->init_params_);
+  return chromeos::CreateMemFDFromBrowserInitParams(
+      GetInstance()->init_params_);
 }
 
 // static

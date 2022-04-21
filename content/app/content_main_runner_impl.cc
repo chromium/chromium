@@ -145,6 +145,11 @@
 #include "third_party/skia/include/ports/SkFontMgr_android.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/startup_switches.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/common/pepper_plugin_list.h"
 #include "content/public/common/pepper_plugin_info.h"
@@ -299,6 +304,20 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
   base::FileHandleMappingVector additional_remapped_fds;
   additional_remapped_fds.emplace_back(
       SandboxHostLinux::GetInstance()->GetChildSocket(), GetSandboxFD());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Create the file descriptor for Cros startup data and pass it.
+  // This FD will be used to obtain BrowserInitParams in Zygote process.
+  base::ScopedFD cros_startup_fd =
+      chromeos::BrowserInitParams::CreateStartupData();
+  if (cros_startup_fd.is_valid()) {
+    constexpr int kStartupDataFD =
+        kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
+    cmd_line->AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
+                                base::NumberToString(kStartupDataFD));
+    additional_remapped_fds.emplace_back(cros_startup_fd.get(), kStartupDataFD);
+  }
+#endif
 
   return ZygoteHostImpl::GetInstance()->LaunchZygote(
       cmd_line, control_fd, std::move(additional_remapped_fds));
