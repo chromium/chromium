@@ -119,7 +119,7 @@ TEST_F(HttpsOnlyModeUpgradeTabHelperTest, GetUpgradedHttpsUrl) {
           GURL("http://example.com:8000/test"), /*https_port_for_testing=*/8001,
           /*use_fake_https_for_testing=*/false));
   EXPECT_EQ(
-      GURL("http://example.com:8001/test"),
+      GURL("http://example.com:8001/test#fake-https"),
       HttpsOnlyModeUpgradeTabHelper::GetUpgradedHttpsUrl(
           GURL("http://example.com:8000/test"), /*https_port_for_testing=*/8001,
           /*use_fake_https_for_testing=*/true));

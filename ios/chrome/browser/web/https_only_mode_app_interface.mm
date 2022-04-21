@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/https_only_mode_app_interface.h"
 
+#include "base/time/time.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_upgrade_tab_helper.h"
@@ -31,6 +32,13 @@
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
   HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
       ->UseFakeHTTPSForTesting(useFakeHTTPS);
+}
+
++ (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
+      ->SetFallbackDelayForTesting(
+          base::Milliseconds(fallbackDelayInMilliseconds));
 }
 
 @end

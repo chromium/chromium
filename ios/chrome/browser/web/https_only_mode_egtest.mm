@@ -35,6 +35,8 @@
 
 namespace {
 
+const long kVeryLongTimeout = 100 * 3600 * 1000;
+
 // net::EmbeddedTestServer handler that responds with the request's query as the
 // title and body.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
@@ -55,6 +57,11 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
   return std::move(response);
 }
 
+std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
+    const net::test_server::HttpRequest& request) {
+  return std::make_unique<net::test_server::HungResponse>();
+}
+
 }  // namespace
 
 // Tests for HTTPS-Only Mode.
@@ -63,21 +70,28 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
 // limitations on iOS. Instead, we use a faux-HTTPS server (goodHTTPSServer)
 // which is just another HTTP_SERVER but runs on a different port and returns a
 // different text than self.testServer. badHTTPSServer is a proper HTTPS_SERVER
-// that just serves bad HTTPS responses.
+// that just serves bad HTTPS responses. slowHTTPSServer is a faux-HTTPS server
+// that serves hung responses.
 @interface HttpsOnlyModeUpgradeTestCase : ChromeTestCase {
   std::unique_ptr<net::test_server::EmbeddedTestServer> _goodHTTPSServer;
   std::unique_ptr<net::test_server::EmbeddedTestServer> _badHTTPSServer;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> _slowHTTPSServer;
 }
 
-// The EmbeddedTestServer instance that serves faux-good HTTPS requests for
+// The EmbeddedTestServer instance that serves faux-good HTTPS responses for
 // tests.
 @property(nonatomic, readonly)
     net::test_server::EmbeddedTestServer* goodHTTPSServer;
 
-// The EmbeddedTestServer instance that serves actual bad HTTPS requests for
+// The EmbeddedTestServer instance that serves actual bad HTTPS responses for
 // tests.
 @property(nonatomic, readonly)
     net::test_server::EmbeddedTestServer* badHTTPSServer;
+
+// The EmbeddedTestServer instance that serves a hung response for tests.
+@property(nonatomic, readonly)
+    net::test_server::EmbeddedTestServer* slowHTTPSServer;
+
 @end
 
 @implementation HttpsOnlyModeUpgradeTestCase
@@ -110,6 +124,16 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
   return _badHTTPSServer.get();
 }
 
+- (net::EmbeddedTestServer*)slowHTTPSServer {
+  if (!_slowHTTPSServer) {
+    _slowHTTPSServer = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTP);
+    _slowHTTPSServer->RegisterRequestHandler(
+        base::BindRepeating(&FakeHungHTTPSResponse));
+  }
+  return _slowHTTPSServer.get();
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];
@@ -122,6 +146,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
                  @"Test good faux-HTTPS server failed to start.");
   GREYAssertTrue(self.badHTTPSServer->Start(),
                  @"Test bad HTTPS server failed to start.");
+  GREYAssertTrue(self.slowHTTPSServer->Start(),
+                 @"Test slow faux-HTTPS server failed to start.");
 
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
@@ -130,6 +156,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
       setHTTPSPortForTesting:self.goodHTTPSServer->port()];
   [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
   [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+  [HttpsOnlyModeAppInterface setFallbackDelayForTesting:kVeryLongTimeout];
 }
 
 - (void)tearDown {
@@ -187,6 +214,33 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
                        forBucket:static_cast<int>(
                                      security_interstitials::https_only_mode::
                                          Event::kUpgradeFailed)
+                    forHistogram:@(security_interstitials::https_only_mode::
+                                       kEventHistogram)],
+                @"Failed to record fail event");
+}
+
+// Asserts that the metrics are properly recorded for a timed-out upgrade.
+// repeatCount is the expected number of times the upgrade failed.
+- (void)assertTimedOutUpgrade:(int)repeatCount {
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:(repeatCount * 2)
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"Failed to record event histogram");
+
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:repeatCount
+                       forBucket:static_cast<int>(
+                                     security_interstitials::https_only_mode::
+                                         Event::kUpgradeAttempted)
+                    forHistogram:@(security_interstitials::https_only_mode::
+                                       kEventHistogram)],
+                @"Failed to record upgrade attempt");
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:repeatCount
+                       forBucket:static_cast<int>(
+                                     security_interstitials::https_only_mode::
+                                         Event::kUpgradeTimedOut)
                     forHistogram:@(security_interstitials::https_only_mode::
                                        kEventHistogram)],
                 @"Failed to record fail event");
@@ -262,6 +316,43 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
                 @"Unexpected histogram event recorded.");
 }
 
+// Same as testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted but uses
+// a slow HTTPS response instead:
+// Navigate to an HTTP URL directly. The upgraded HTTPS version serves a slow
+// loading SSL page. The upgrade will be cancelled and the HTTPS-Only mode
+// interstitial will be shown. Click through the interstitial, then reload the
+// page. The HTTP page should be shown.
+- (void)testUpgrade_SlowHTTPS_ProceedInterstitial_Allowlisted {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  // Set the fallback delay to zero. This will immediately stop the HTTPS
+  // upgrade attempt.
+  [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];
+
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"You are seeing this warning because this "
+                                    "site does not support HTTPS"];
+  [self assertTimedOutUpgrade:1];
+
+  // Click through the interstitial. This should load the HTTP page.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+
+  // Reload. Since the URL is now allowlisted, this should immediately load
+  // HTTP without trying to upgrade.
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:2
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"Unexpected histogram event recorded.");
+}
+
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Tap Go back on the interstitial.
@@ -282,7 +373,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
                                     "site does not support HTTPS"];
   [self assertFailedUpgrade:1];
 
-  // Tap "Go back" on the interstitial. This should go back to about:blank.
+  // Tap "Go back" on the interstitial. This should go back to chrome://version.
   [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
 
@@ -292,6 +383,43 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
       waitForWebStateContainingText:"You are seeing this warning because this "
                                     "site does not support HTTPS"];
   [self assertFailedUpgrade:2];
+}
+
+// Same as testUpgrade_BadHTTPS_GoBack but uses a slow HTTPS response instead:
+// Navigate to an HTTP URL directly. The upgraded HTTPS version serves a slow
+// loading HTTPS page. The upgrade will be cancelled and the HTTPS-Only mode
+// interstitial will be shown. Tap Go back on the interstitial.
+- (void)testUpgrade_SlowHTTPS_GoBack {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  // Set the fallback delay to zero. This will immediately stop the HTTPS
+  // upgrade attempt.
+  [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];
+
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
+
+  // Load a site with a slow HTTPS upgrade. This shows an interstitial.
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"You are seeing this warning because this "
+                                    "site does not support HTTPS"];
+  [self assertTimedOutUpgrade:1];
+
+  // Tap "Go back" on the interstitial. This should go back to
+  // chrome://version.
+  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
+
+  // Go forward. Should hit the interstitial again.
+  [ChromeEarlGrey goForward];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"You are seeing this warning because this "
+                                    "site does not support HTTPS"];
+  [self assertTimedOutUpgrade:2];
 }
 
 // Navigate to an HTTP URL and click through the interstitial. Then,
@@ -327,6 +455,46 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   // Histogram numbers shouldn't change.
   [self assertFailedUpgrade:1];
+}
+
+// Same as testUpgrade_BadHTTPS_GoBackToAllowlistedSite but uses a slow
+// HTTPS response instead:
+// Navigate to an HTTP URL with a slow HTTPS upgrade, click through the
+// interstitial. Then, navigate to a new page and go back. This should load the
+// HTTP URL without showing the interstitial again.
+- (void)testUpgrade_SlowHTTPS_GoBackToAllowlistedSite {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  // Set the fallback delay to zero. This will immediately stop the HTTPS
+  // upgrade attempt.
+  [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];
+
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+
+  // Load a site with a bad HTTPS upgrade. This shows an interstitial.
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"You are seeing this warning because this "
+                                    "site does not support HTTPS"];
+  [self assertTimedOutUpgrade:1];
+
+  // Click through the interstitial. This should load the HTTP page.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+
+  // Go to a new page.
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
+
+  // Then go back to the HTTP URL. Since we previously clicked through its
+  // interstitial, this should immediately load the HTTP response.
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  // Histogram numbers shouldn't change.
+  [self assertTimedOutUpgrade:1];
 }
 
 @end

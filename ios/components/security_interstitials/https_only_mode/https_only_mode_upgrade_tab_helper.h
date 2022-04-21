@@ -5,6 +5,8 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_
 
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -40,14 +42,14 @@ class HttpsOnlyModeUpgradeTabHelper
   // the correct port while upgrading URLs to https if the original URL has a
   // non-default port.
   void SetHttpsPortForTesting(int https_port_for_testing);
-  int GetHttpsPortForTesting();
   // Sets the port used by the embedded http server. This is used to determine
   // the correct port while falling back to http if the upgraded https URL has a
   // non-default port.
   void SetHttpPortForTesting(int http_port_for_testing);
-  int GetHttpPortForTesting();
   // Configures tests to use an HTTP server to simulate a good HTTPS response.
   void UseFakeHTTPSForTesting(bool use_fake_https_for_testing);
+  // Sets the fallback delay for tests.
+  void SetFallbackDelayForTesting(base::TimeDelta delay);
 
  private:
   explicit HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state);
@@ -59,6 +61,13 @@ class HttpsOnlyModeUpgradeTabHelper
   // server.
   bool IsFakeHTTPSForTesting(const GURL& url) const;
   bool IsHttpAllowedForUrl(const GURL& url) const;
+
+  // Called when the upgrade timer times out.
+  void OnHttpsLoadTimeout();
+  // Initiates a fallback navigation to the original HTTP URL. This will be
+  // cancelled in ShouldAllowResponse() with an HTTP interstitial, unless the
+  // HTTP URL was previously allowlisted.
+  void FallbackToHttp();
 
   // web::WebStatePolicyDecider implementation
   void ShouldAllowRequest(
@@ -88,6 +97,7 @@ class HttpsOnlyModeUpgradeTabHelper
 
   // True if the HTTP navigation was stopped to initiate an upgrade.
   bool stopped_loading_to_upgrade_ = false;
+  bool stopped_with_timeout_ = false;
 
   // Parameters for the upgraded navigation.
   GURL upgraded_https_url_;
@@ -98,6 +108,9 @@ class HttpsOnlyModeUpgradeTabHelper
   int https_port_for_testing_ = 0;
   int http_port_for_testing_ = 0;
   bool use_fake_https_for_testing_ = false;
+
+  base::TimeDelta fallback_delay_ = base::Seconds(3);
+  base::OneShotTimer timer_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

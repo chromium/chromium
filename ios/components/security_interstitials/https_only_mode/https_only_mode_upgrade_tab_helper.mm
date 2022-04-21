@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
@@ -62,6 +63,10 @@ GURL HttpsOnlyModeUpgradeTabHelper::GetUpgradedHttpsUrl(
     // port on the input text.
     DCHECK(!http_url.port().empty());
     replacements.SetPortStr(port_str);
+
+    // Change the URL to help with debugging.
+    if (use_fake_https_for_testing)
+      replacements.SetRefStr("fake-https");
   }
   if (!use_fake_https_for_testing) {
     replacements.SetSchemeStr(url::kHttpsScheme);
@@ -74,22 +79,19 @@ void HttpsOnlyModeUpgradeTabHelper::SetHttpsPortForTesting(
   https_port_for_testing_ = https_port_for_testing;
 }
 
-int HttpsOnlyModeUpgradeTabHelper::GetHttpsPortForTesting() {
-  return https_port_for_testing_;
-}
-
 void HttpsOnlyModeUpgradeTabHelper::SetHttpPortForTesting(
     int http_port_for_testing) {
   http_port_for_testing_ = http_port_for_testing;
 }
 
-int HttpsOnlyModeUpgradeTabHelper::GetHttpPortForTesting() {
-  return http_port_for_testing_;
-}
-
 void HttpsOnlyModeUpgradeTabHelper::UseFakeHTTPSForTesting(
     bool use_fake_https_for_testing) {
   use_fake_https_for_testing_ = use_fake_https_for_testing;
+}
+
+void HttpsOnlyModeUpgradeTabHelper::SetFallbackDelayForTesting(
+    base::TimeDelta delay) {
+  fallback_delay_ = delay;
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsFakeHTTPSForTesting(
@@ -117,6 +119,15 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
   if (navigation_context->IsSameDocument()) {
     return;
   }
+  if (was_upgraded_) {
+    DCHECK(!timer_.IsRunning());
+    // |timer_| is deleted when the tab helper is deleted, so it's safe to use
+    // Unretained here.
+    timer_.Start(
+        FROM_HERE, fallback_delay_,
+        base::BindOnce(&HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout,
+                       base::Unretained(this)));
+  }
   navigation_transition_type_ = navigation_context->GetPageTransition();
   navigation_is_renderer_initiated_ = navigation_context->IsRendererInitiated();
 }
@@ -130,6 +141,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
 
   if (stopped_loading_to_upgrade_) {
     DCHECK(!was_upgraded_);
+    DCHECK(!stopped_with_timeout_);
     // Start an upgraded navigation.
     RecordUMA(Event::kUpgradeAttempted);
     stopped_loading_to_upgrade_ = false;
@@ -143,22 +155,24 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
     return;
   }
 
+  if (stopped_with_timeout_) {
+    DCHECK(!timer_.IsRunning());
+    stopped_with_timeout_ = false;
+    RecordUMA(Event::kUpgradeTimedOut);
+    FallbackToHttp();
+    return;
+  }
+
   if (!was_upgraded_) {
     return;
   }
   was_upgraded_ = false;
+  // The upgrade either failed or succeeded. In both cases, stop the timer.
+  timer_.Stop();
 
   if (navigation_context->IsFailedHTTPSUpgrade()) {
     RecordUMA(Event::kUpgradeFailed);
-    is_http_fallback_navigation_ = true;
-    // Start a new navigation to the original HTTP page. We'll then show an
-    // interstitial for this navigation in ShouldAllowResponse().
-    web::NavigationManager::WebLoadParams params(http_url_);
-    params.transition_type = navigation_transition_type_;
-    params.is_renderer_initiated = navigation_is_renderer_initiated_;
-    params.referrer = referrer_;
-    params.is_using_https_as_default_scheme = true;
-    web_state->GetNavigationManager()->LoadURLWithParams(params);
+    FallbackToHttp();
     return;
   }
 
@@ -167,6 +181,40 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
     RecordUMA(Event::kUpgradeSucceeded);
     return;
   }
+}
+
+void HttpsOnlyModeUpgradeTabHelper::FallbackToHttp() {
+  DCHECK(!was_upgraded_);
+  DCHECK(!stopped_with_timeout_);
+  DCHECK(!timer_.IsRunning());
+  DCHECK(!is_http_fallback_navigation_);
+  is_http_fallback_navigation_ = true;
+  // Start a new navigation to the original HTTP page. We'll then show an
+  // interstitial for this navigation in ShouldAllowRequest().
+  web::NavigationManager::WebLoadParams params(http_url_);
+  params.transition_type = navigation_transition_type_;
+  params.is_renderer_initiated = navigation_is_renderer_initiated_;
+  params.referrer = referrer_;
+  params.is_using_https_as_default_scheme = true;
+  // Post a task to navigate to the fallback URL. We don't want to navigate
+  // synchronously from a DidNavigationFinish() call.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<web::WebState> web_state,
+             const web::NavigationManager::WebLoadParams& params) {
+            if (web_state)
+              web_state->GetNavigationManager()->LoadURLWithParams(params);
+          },
+          web_state()->GetWeakPtr(), std::move(params)));
+}
+
+void HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout() {
+  DCHECK(!stopped_with_timeout_);
+  DCHECK(was_upgraded_);
+  stopped_with_timeout_ = true;
+  was_upgraded_ = false;
+  web_state()->Stop();
 }
 
 void HttpsOnlyModeUpgradeTabHelper::ShouldAllowRequest(
@@ -180,6 +228,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowRequest(
     return;
   }
   DCHECK(!stopped_loading_to_upgrade_);
+
   // Show an interstitial if this is a fallback HTTP navigation.
   if (!is_http_fallback_navigation_) {
     std::move(callback).Run(
@@ -219,6 +268,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
+  // Fallback navigations are handled in ShouldAllowRequest().
   DCHECK(!is_http_fallback_navigation_);
 
   // If the URL is in the allowlist, don't upgrade.

@@ -13,6 +13,7 @@
 + (void)setHTTPSPortForTesting:(int)HTTPSPortForTesting;
 + (void)setHTTPPortForTesting:(int)HTTPPortForTesting;
 + (void)useFakeHTTPSForTesting:(bool)useFakeHTTPSForTesting;
++ (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds;
 
 @end
 
