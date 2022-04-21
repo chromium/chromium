@@ -18,7 +18,6 @@
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
-#include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/aw_quota_permission_context.h"
 #include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_settings.h"
@@ -53,9 +52,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/cdm/browser/cdm_message_filter_android.h"
-#include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -67,8 +64,6 @@
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -93,7 +88,6 @@
 #include "content/public/common/user_agent.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/android/network_library.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
@@ -116,10 +110,6 @@
 #include "ui/display/display.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
-
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-#include "components/spellcheck/browser/spell_check_host_impl.h"
-#endif
 
 using content::BrowserThread;
 using content::WebContents;
@@ -178,28 +168,6 @@ void AwContentsMessageFilter::SubFrameCreated(int parent_render_frame_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   AwContentsIoThreadClient::SubFrameCreated(process_id_, parent_render_frame_id,
                                             child_render_frame_id);
-}
-
-// Helper method that checks the RenderProcessHost is still alive before hopping
-// over to the IO thread.
-void MaybeCreateSafeBrowsing(
-    int rph_id,
-    content::ResourceContext* resource_context,
-    base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>()>
-        get_checker_delegate,
-    mojo::PendingReceiver<safe_browsing::mojom::SafeBrowsing> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  content::RenderProcessHost* render_process_host =
-      content::RenderProcessHost::FromID(rph_id);
-  if (!render_process_host)
-    return;
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, rph_id,
-                     resource_context, std::move(get_checker_delegate),
-                     std::move(receiver)));
 }
 
 }  // anonymous namespace
@@ -608,88 +576,6 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
 std::unique_ptr<content::DevToolsManagerDelegate>
 AwContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<AwDevToolsManagerDelegate>();
-}
-
-void AwContentBrowserClient::
-    RegisterAssociatedInterfaceBindersForRenderFrameHost(
-        content::RenderFrameHost& render_frame_host,
-        blink::AssociatedInterfaceRegistry& associated_registry) {
-  // TODO(https://crbug.com/1265864): Move the registry logic below to a
-  // dedicated file to ensure security review coverage.
-  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
-             receiver) {
-        autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-             content_capture::mojom::ContentCaptureReceiver> receiver) {
-        content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver) {
-        AwRenderViewHostExt::BindFrameHost(std::move(receiver),
-                                           render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-             page_load_metrics::mojom::PageLoadMetrics> receiver) {
-        page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
-             receiver) {
-        AwPrintManager::BindPrintManagerHost(std::move(receiver),
-                                             render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-             security_interstitials::mojom::InterstitialCommands> receiver) {
-        security_interstitials::SecurityInterstitialTabHelper::
-            BindInterstitialCommands(std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-}
-
-void AwContentBrowserClient::ExposeInterfacesToRenderer(
-    service_manager::BinderRegistry* registry,
-    blink::AssociatedInterfaceRegistry* associated_registry,
-    content::RenderProcessHost* render_process_host) {
-  content::ResourceContext* resource_context =
-      render_process_host->GetBrowserContext()->GetResourceContext();
-  registry->AddInterface(
-      base::BindRepeating(
-          &MaybeCreateSafeBrowsing, render_process_host->GetID(),
-          resource_context,
-          base::BindRepeating(
-              &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
-              base::Unretained(this))),
-      content::GetUIThreadTaskRunner({}));
-
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-  auto create_spellcheck_host =
-      [](mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
-        mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
-                                    std::move(receiver));
-      };
-  registry->AddInterface(base::BindRepeating(create_spellcheck_host),
-                         content::GetUIThreadTaskRunner({}));
-#endif
 }
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
