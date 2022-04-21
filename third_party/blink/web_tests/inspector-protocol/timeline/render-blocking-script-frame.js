@@ -1,6 +1,6 @@
 (async function(testRunner) {
   // The number includes the frame, and the 9 JS files that it loads directly.
-  const numberOfURLs = 10;
+  const numberOfURLs = 11;
 
   var {page, session, dp} = await testRunner.startHTML(`
       <head></head>

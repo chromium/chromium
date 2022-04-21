@@ -6,6 +6,7 @@ empty.js?dynamicAsync: non_blocking
 empty.js?dynamicAsyncModule: non_blocking
 empty.js?dynamicAsyncModuleBlocking: blocking
 empty.js?dynamicBlocking: blocking
+empty.js?dynamicDefer: non_blocking
 empty.js?dynamicModuleBlocking: blocking
 empty.js?dynamicNonAsync: non_blocking
 
