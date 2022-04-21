@@ -7,6 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {metrics} from '../../common/js/metrics.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 
@@ -1187,6 +1188,7 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
         }
 
         // Start ZIP operation.
+        const startTime = Date.now();
         const {zipId, totalBytes} = await new Promise(
             (resolve, reject) => chrome.fileManagerPrivate.zipSelection(
                 assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
@@ -1233,6 +1235,8 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
 
           // Check for success.
           if (result == 0) {
+            // On success, record zip time UMA.
+            metrics.recordTime(`ZipTask.Time`, Date.now() - startTime);
             successCallback();
             return;
           }

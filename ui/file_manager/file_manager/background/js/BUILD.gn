@@ -416,6 +416,7 @@ js_library("file_operation_util") {
     ":metadata_proxy",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:file_operation_common",
+    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:trash",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert.m",

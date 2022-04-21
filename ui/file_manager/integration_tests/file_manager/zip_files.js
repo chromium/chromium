@@ -205,10 +205,8 @@ testcase.zipCreateFileDownloads = async () => {
   const files = getZipSelectionFileListRowEntries();
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
-  // Check: In Files SWA, a zip time histogram value should have been recorded.
-  const expectedHistogramCount = remoteCall.isSwaMode() ? 1 : 0;
-  await expectHistogramTotalCount(
-      ZipCreationTimeHistogramName, expectedHistogramCount);
+  // Check: a zip time histogram value should have been recorded.
+  await expectHistogramTotalCount(ZipCreationTimeHistogramName, 1);
 };
 
 /**
@@ -243,10 +241,8 @@ testcase.zipCreateFileDrive = async () => {
   const files = getZipSelectionFileListRowEntries();
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
-  // Check: In Files SWA, a zip time histogram value should have been recorded.
-  const expectedHistogramCount = remoteCall.isSwaMode() ? 1 : 0;
-  await expectHistogramTotalCount(
-      ZipCreationTimeHistogramName, expectedHistogramCount);
+  // Check: a zip time histogram value should have been recorded.
+  await expectHistogramTotalCount(ZipCreationTimeHistogramName, 1);
 };
 
 /**
@@ -300,10 +296,8 @@ testcase.zipCreateFileUsb = async () => {
   const files = getZipSelectionFileListRowEntries();
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
-  // Check: In Files SWA, a zip time histogram value should have been recorded.
-  const expectedHistogramCount = remoteCall.isSwaMode() ? 1 : 0;
-  await expectHistogramTotalCount(
-      ZipCreationTimeHistogramName, expectedHistogramCount);
+  // Check: a zip time histogram value should have been recorded.
+  await expectHistogramTotalCount(ZipCreationTimeHistogramName, 1);
 };
 
 /**
