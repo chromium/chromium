@@ -26,7 +26,6 @@ source_set("lib") {
     "//base",
     "//build:chromeos_buildflags",
     "//net",
-    "//net/cert:root_store_proto_lite",
     "//services/cert_verifier/cert_net_url_loader",
     "//services/network/public/mojom",
   ]
@@ -60,7 +59,6 @@ source_set("tests") {
     "//crypto:test_support",
     "//net",
     "//net:test_support",
-    "//net/cert:root_store_proto_lite",
     "//services/cert_verifier/cert_net_url_loader:cert_net_url_loader",
     "//services/cert_verifier/public/mojom",
     "//services/network:network_service",

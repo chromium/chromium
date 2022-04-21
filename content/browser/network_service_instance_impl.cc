@@ -749,13 +749,9 @@ GetCertVerifierServiceFactoryRemoteStorage() {
   return cert_verifier_service_factory_remote.GetOrCreateValue();
 }
 
-}  // namespace
-
 // Returns a pointer to a CertVerifierServiceFactory usable on the UI thread.
 cert_verifier::mojom::CertVerifierServiceFactory*
 GetCertVerifierServiceFactory() {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
   if (g_cert_verifier_service_factory_for_testing)
     return g_cert_verifier_service_factory_for_testing;
 
@@ -780,6 +776,8 @@ GetCertVerifierServiceFactory() {
   }
   return factory_remote_storage.get();
 }
+
+}  // namespace
 
 network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
     cert_verifier::mojom::CertVerifierCreationParamsPtr

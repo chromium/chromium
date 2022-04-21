@@ -35,10 +35,6 @@
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #endif
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-#include "net/cert/internal/trust_store_chrome.h"
-#endif
-
 namespace {
 
 enum class RootStoreType {
@@ -195,16 +191,9 @@ std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
                 << ": using system roots (--roots are in addition).\n";
       return net::CreateSslSystemTrustStore();
     case RootStoreType::kChrome:
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
       std::cerr << impl_name
                 << ": using Chrome Root Store (--roots are in addition).\n";
-      return net::CreateSslSystemTrustStoreChromeRoot(
-          std::make_unique<net::TrustStoreChrome>());
-#else
-      std::cerr << impl_name << ": not supported.\n";
-      [[fallthrough]];
-#endif
-
+      return net::CreateSslSystemTrustStoreChromeRoot();
     case RootStoreType::kEmpty:
     default:
       std::cerr << impl_name << ": only using --roots specified.\n";

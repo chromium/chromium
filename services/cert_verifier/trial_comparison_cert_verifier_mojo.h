@@ -18,11 +18,8 @@
 
 namespace net {
 class CertVerifyProc;
-class CertVerifyProcFactory;
-class CertNetFetcher;
 class CertVerifyResult;
 class TrialComparisonCertVerifier;
-class ChromeRootStoreData;
 }  // namespace net
 
 FORWARD_DECLARE_TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo);
@@ -32,7 +29,7 @@ namespace cert_verifier {
 // Wrapper around TrialComparisonCertVerifier that does trial configuration and
 // reporting over Mojo pipes.
 class TrialComparisonCertVerifierMojo
-    : public net::CertVerifierWithUpdatableProc,
+    : public net::CertVerifier,
       public mojom::TrialComparisonCertVerifierConfigClient {
  public:
   // |initial_allowed| is the initial setting for whether the trial is allowed.
@@ -48,9 +45,7 @@ class TrialComparisonCertVerifierMojo
       mojo::PendingRemote<mojom::TrialComparisonCertVerifierReportClient>
           report_client,
       scoped_refptr<net::CertVerifyProc> primary_verify_proc,
-      scoped_refptr<net::CertVerifyProcFactory> primary_verify_proc_factory,
-      scoped_refptr<net::CertVerifyProc> trial_verify_proc,
-      scoped_refptr<net::CertVerifyProcFactory> trial_verify_proc_factory);
+      scoped_refptr<net::CertVerifyProc> trial_verify_proc);
 
   TrialComparisonCertVerifierMojo(const TrialComparisonCertVerifierMojo&) =
       delete;
@@ -66,9 +61,6 @@ class TrialComparisonCertVerifierMojo
              std::unique_ptr<Request>* out_req,
              const net::NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
-  void UpdateChromeRootStoreData(
-      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const net::ChromeRootStoreData* root_store_data) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(::TrialComparisonCertVerifierMojoTest,

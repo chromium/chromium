@@ -1385,10 +1385,7 @@ component("net") {
       "cert/internal/trust_store_chrome.cc",
       "cert/internal/trust_store_chrome.h",
     ]
-    deps += [
-      "//net/cert:root_store_proto_lite",
-      "//net/data/ssl/chrome_root_store:gen_root_store_inc",
-    ]
+    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_inc" ]
     if (is_win) {
       sources += [
         "cert/internal/trust_store_win.cc",

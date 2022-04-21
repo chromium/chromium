@@ -158,8 +158,7 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   FakeReportClient report_client(
       report_client_remote.InitWithNewPipeAndPassReceiver());
   cert_verifier::TrialComparisonCertVerifierMojo tccvm(
-      true, {}, std::move(report_client_remote), nullptr, nullptr, nullptr,
-      nullptr);
+      true, {}, std::move(report_client_remote), nullptr, nullptr);
 
   tccvm.OnSendTrialReport("example.com", unverified_cert, false, false, false,
                           false, "stapled ocsp", "sct list", primary_result,

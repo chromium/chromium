@@ -13,12 +13,6 @@
 #include "net/cert/cert_verifier.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 
-namespace net {
-class ChromeRootStoreData;
-}  // namespace net
-
-// Set of utility functions to help with creation of CertVerifiers for
-// CertVerifyServiceFactory.
 namespace cert_verifier {
 
 // Certain platforms and build configurations require a net::CertNetFetcher in
@@ -28,11 +22,10 @@ namespace cert_verifier {
 bool IsUsingCertNetFetcher();
 
 // Creates a concrete net::CertVerifier based on the platform and the particular
-// build configuration. |creation_params| and |root_store_data| are optional.
-std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
+// build configuration. |creation_params| is optional.
+std::unique_ptr<net::CertVerifier> CreateCertVerifier(
     mojom::CertVerifierCreationParams* creation_params,
-    scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    const net::ChromeRootStoreData* root_store_data);
+    scoped_refptr<net::CertNetFetcher> cert_net_fetcher);
 
 }  // namespace cert_verifier
 

@@ -8,7 +8,6 @@
 #include <type_traits>
 
 #include "base/memory/scoped_refptr.h"
-#include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 
@@ -44,11 +43,6 @@ void TestCertVerifierServiceFactoryImpl::GetNewCertVerifier(
 
   captured_params_.push_front(std::move(params));
 }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-void TestCertVerifierServiceFactoryImpl::UpdateChromeRootStore(
-    mojom::ChromeRootStorePtr new_root_store) {}
-#endif
 
 void TestCertVerifierServiceFactoryImpl::ReleaseAllCertVerifierParams() {
   DCHECK(delegate_);
