@@ -87,7 +87,12 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAgcConfig) {
   // zero.
   EXPECT_EQ(agc1_analog_config.startup_min_volume, 0);
 #endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(agc1_analog_config.clipping_predictor.enabled);
+#else
   EXPECT_FALSE(agc1_analog_config.clipping_predictor.enabled);
+#endif
   // TODO(bugs.webrtc.org/7909): Uncomment below once fixed.
   // #endif
 

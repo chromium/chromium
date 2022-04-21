@@ -147,8 +147,14 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.high_pass_filter.enabled);
     EXPECT_TRUE(config.noise_suppression.enabled);
     EXPECT_EQ(config.noise_suppression.level, config.noise_suppression.kHigh);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    EXPECT_TRUE(config.gain_controller1.analog_gain_controller
+                    .clipping_predictor.enabled);
+#else
     EXPECT_FALSE(config.gain_controller1.analog_gain_controller
                      .clipping_predictor.enabled);
+#endif
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
     EXPECT_EQ(config.gain_controller1.mode,

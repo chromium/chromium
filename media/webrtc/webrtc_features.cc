@@ -18,6 +18,15 @@ constexpr base::FeatureState kWebRtcHybridAgcState =
 #endif
 }  // namespace
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+constexpr base::FeatureState kWebRtcAnalogAgcClippingControlState =
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#else
+constexpr base::FeatureState kWebRtcAnalogAgcClippingControlState =
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#endif
+
 // When enabled we will tell WebRTC that we want to use the
 // Windows.Graphics.Capture API based DesktopCapturer, if it is available.
 const base::Feature kWebRtcAllowWgcDesktopCapturer{
@@ -35,7 +44,7 @@ const base::Feature kWebRtcHybridAgc{"WebRtcHybridAgc", kWebRtcHybridAgcState};
 
 // Enables and configures the clipping control in the WebRTC analog AGC.
 const base::Feature kWebRtcAnalogAgcClippingControl{
-    "WebRtcAnalogAgcClippingControl", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebRtcAnalogAgcClippingControl", kWebRtcAnalogAgcClippingControlState};
 
 // Enables the override for the default minimum starting volume of the Automatic
 // Gain Control algorithm in WebRTC.
