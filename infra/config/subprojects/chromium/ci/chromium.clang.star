@@ -394,7 +394,7 @@ ci.builder(
         short_name = "sim",
     ),
     cores = None,
-    os = os.MAC_11,
+    os = os.MAC_12,
     ssd = True,
     xcode = xcode.x13main,
 )
@@ -407,7 +407,7 @@ ci.builder(
         short_name = "dev",
     ),
     cores = None,
-    os = os.MAC_11,
+    os = os.MAC_12,
     ssd = True,
     xcode = xcode.x13main,
 )
