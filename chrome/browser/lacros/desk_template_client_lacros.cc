@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 
+#include "chrome/browser/apps/icon_standardizer.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,8 +13,30 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_util.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+
+namespace {
+
+// Creates a callback for when a favicon image is retrieved which creates a
+// standard icon image and then calls `callback` with the standardized image.
+base::OnceCallback<void(const favicon_base::FaviconImageResult&)>
+CreateFaviconResultCallback(
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(const gfx::ImageSkia&)> image_skia_callback,
+         const favicon_base::FaviconImageResult& result) {
+        auto image = result.image.AsImageSkia();
+        image.EnsureRepsForSupportedScales();
+        std::move(image_skia_callback)
+            .Run(apps::CreateStandardIconImage(image));
+      },
+      std::move(callback));
+}
+
+}  // namespace
 
 DeskTemplateClientLacros::DeskTemplateClientLacros() {
   auto* const lacros_service = chromeos::LacrosService::Get();
@@ -88,4 +112,16 @@ void DeskTemplateClientLacros::GetTabStripModelUrls(
         tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
   }
   std::move(callback).Run(serial, window_unique_id, std::move(state));
+}
+
+void DeskTemplateClientLacros::GetFaviconImage(
+    const GURL& url,
+    GetFaviconImageCallback callback) {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(
+          ProfileManager::GetActiveUserProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS);
+
+  favicon_service->GetFaviconImageForPageURL(
+      url, CreateFaviconResultCallback(std::move(callback)), &task_tracker_);
 }

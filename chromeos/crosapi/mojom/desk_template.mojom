@@ -7,6 +7,7 @@ module crosapi.mojom;
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 
 // Additional state of the browser in the single Lacros window for saving in the
 // desk template.
@@ -22,8 +23,8 @@ struct DeskTemplateState {
 };
 
 // Interface for desk template clients.  Implemented by lacros-chrome.
-// Next version: 3
-// Next method id: 2
+// Next version: 4
+// Next method id: 3
 [Stable]
 interface DeskTemplateClient {
   // Creates a browser from the desk template data.
@@ -36,6 +37,11 @@ interface DeskTemplateClient {
   // |window_unique_id|.
   GetTabStripModelUrls@0(uint32 serial, string window_unique_id) => (
     uint32 serial, string window_unique_id, DeskTemplateState? state);
+
+  // Gets the image of the favicon associated with `url`. Returns an empty
+  // image if the favicon cannot be found.
+  [MinVersion=3]
+  GetFaviconImage@2(url.mojom.Url url) => (gfx.mojom.ImageSkia? image);
 };
 
 // Interface for desk template. Implemented by ash-chrome.

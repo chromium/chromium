@@ -51,6 +51,17 @@ void DeskTemplateAsh::CreateBrowserWithRestoredData(
       bounds, show_state, std::move(additional_state));
 }
 
+void DeskTemplateAsh::GetFaviconImage(
+    const GURL& url,
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  if (remotes_.empty()) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  remotes_.begin()->get()->GetFaviconImage(url, std::move(callback));
+}
+
 void DeskTemplateAsh::AddDeskTemplateClient(
     mojo::PendingRemote<mojom::DeskTemplateClient> client) {
   remotes_.Add(mojo::Remote<mojom::DeskTemplateClient>(std::move(client)));

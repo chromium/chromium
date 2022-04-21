@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_LACROS_DESK_TEMPLATE_CLIENT_LACROS_H_
 #define CHROME_BROWSER_LACROS_DESK_TEMPLATE_CLIENT_LACROS_H_
 
+#include "base/task/cancelable_task_tracker.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 // This class gathers desk template data for Ash.
 class DeskTemplateClientLacros : public crosapi::mojom::DeskTemplateClient {
@@ -26,6 +28,12 @@ class DeskTemplateClientLacros : public crosapi::mojom::DeskTemplateClient {
   void GetTabStripModelUrls(uint32_t serial,
                             const std::string& window_unique_id,
                             GetTabStripModelUrlsCallback callback) override;
+  void GetFaviconImage(const GURL& url,
+                       GetFaviconImageCallback callback) override;
+
+  // The cancelable task tracker used for retreiving icons from the favicon
+  // service.
+  base::CancelableTaskTracker task_tracker_;
 
   mojo::Receiver<crosapi::mojom::DeskTemplateClient> receiver_{this};
 };

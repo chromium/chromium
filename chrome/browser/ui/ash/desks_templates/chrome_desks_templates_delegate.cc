@@ -19,6 +19,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -160,6 +164,8 @@ void ShowUnavailableAppToast(
 
 // Creates a callback for when a favicon image is retrieved which creates a
 // standard icon image and then calls `callback` with the standardized image.
+// TODO(crbug.com/1318250): Remove this once non-lacros browser is not
+// supported.
 base::OnceCallback<void(const favicon_base::FaviconImageResult&)>
 ImageResultToImageSkia(
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
@@ -320,6 +326,15 @@ void ChromeDesksTemplatesDelegate::GetFaviconForUrl(
     const std::string& page_url,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {
+  // Get the icons from lacros favicon service.
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->desk_template_ash()
+        ->GetFaviconImage(GURL(page_url), std::move(callback));
+    return;
+  }
+
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile(),

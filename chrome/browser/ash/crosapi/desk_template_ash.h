@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "url/gurl.h"
 
 namespace crosapi {
 
@@ -35,6 +36,9 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
       const gfx::Rect& bounds,
       const ui::mojom::WindowShowState show_state,
       crosapi::mojom::DeskTemplateStatePtr additional_state);
+  void GetFaviconImage(
+      const GURL& url,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback);
 
   // crosapi::mojom::DeskTemplate:
   void AddDeskTemplateClient(
