@@ -4008,6 +4008,20 @@ message BrowserPublicKeyUploadResponse {
   optional ResponseCode response_code = 1;
 }
 
+// Additional detail about the error which can be used to clarify user messaging
+// around the error or to influence Chrome's error-handling behavior.
+enum DeviceManagementErrorDetail {
+  NO_ERROR_DETAIL = 0;
+
+  // Only valid for CBCM browser DEVICE_NOT_FOUND errors. Indicates that the
+  // DMToken should be deleted entirely from its storage location.
+  CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN = 1;
+
+  // Only valid for CBCM browser DEVICE_NOT_FOUND errors. Indicates that the
+  // DMToken should be invalidated, preventing device re-enrollment.
+  CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN = 2;
+}
+
 // Request from the DMAgent on the device to the DMServer.  This is
 // container for all requests from device to server.  The overall HTTP
 // request MUST be in the following format:
@@ -4277,6 +4291,9 @@ message DeviceManagementResponse {
   // Error message.
   optional string error_message = 2;
 
+  // Additional details about the error message.
+  repeated DeviceManagementErrorDetail error_detail = 39;
+
   // Register response
   optional DeviceRegisterResponse register_response = 3;
 
@@ -4388,7 +4405,7 @@ message DeviceManagementResponse {
   // Response to a Chrome Profile report request.
   optional ChromeProfileReportResponse chrome_profile_report_response = 38;
 
-  // Next id: 39.
+  // Next id: 40.
 }
 
 // Device State Information stored in the server is retrieval at
