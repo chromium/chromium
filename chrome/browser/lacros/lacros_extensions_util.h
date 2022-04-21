@@ -30,7 +30,6 @@ const extensions::Extension* MaybeGetExtension(Profile* profile,
 // extension id.
 std::string MuxId(const Profile* profile,
                   const extensions::Extension* extension);
-std::string MuxId(const Profile* profile, const std::string& extension_id);
 
 // Takes |muxed_id| and extracts the corresponding Profile* and Extension*. On
 // success, returns true and populates variables |output_profile| and

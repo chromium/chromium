@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -393,7 +394,13 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     case AppType::kBuiltIn:
     case AppType::kChromeApp:
     case AppType::kExtension:
+    case AppType::kStandaloneBrowser:
       source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
+      break;
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kStandaloneBrowserExtension:
+      source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(
+          GetStandaloneBrowserExtensionAppId(app_id));
       break;
     case AppType::kArc:
     case AppType::kWeb:
@@ -435,10 +442,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     case AppType::kUnknown:
     case AppType::kMacOs:
     case AppType::kPluginVm:
-    case AppType::kStandaloneBrowser:
-    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
-    case AppType::kStandaloneBrowserExtension:
       return ukm::kInvalidSourceId;
   }
   return source_id;

@@ -308,14 +308,14 @@ bool ShouldRecordUkmForAppTypeName(AppType app_type) {
     case AppType::kCrostini:
     case AppType::kBorealis:
     case AppType::kExtension:
+    case AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kStandaloneBrowserExtension:
       return true;
     case AppType::kUnknown:
     case AppType::kMacOs:
     case AppType::kPluginVm:
-    case AppType::kStandaloneBrowser:
-    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
-    case AppType::kStandaloneBrowserExtension:
       return false;
   }
 }

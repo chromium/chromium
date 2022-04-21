@@ -4,6 +4,10 @@
 
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 
+#include "base/files/file_path.h"
+#include "base/strings/string_split.h"
+#include "chrome/browser/profiles/profile.h"
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -30,5 +34,24 @@ void EnableHostedAppsInLacrosForTesting() {
 }
 #endif  // IS_CHROMEOS_LACROS
 
+#if BUILDFLAG(IS_CHROMEOS)
+std::string MuxId(const Profile* profile, const std::string& extension_id) {
+  DCHECK(profile);
+  return profile->GetBaseName().value() + kExtensionAppMuxedIdDelimiter +
+         extension_id;
+}
+
+std::vector<std::string> DemuxId(const std::string& muxed_id) {
+  return base::SplitStringUsingSubstr(
+      muxed_id, apps::kExtensionAppMuxedIdDelimiter, base::KEEP_WHITESPACE,
+      base::SPLIT_WANT_ALL);
+}
+std::string GetStandaloneBrowserExtensionAppId(const std::string& app_id) {
+  std::vector<std::string> splits = DemuxId(app_id);
+  return (splits.size() == 2) ? splits[1] : app_id;
+}
+
 const char kExtensionAppMuxedIdDelimiter[] = "###";
+#endif  // IS_CHROMEOS
+
 }  // namespace apps

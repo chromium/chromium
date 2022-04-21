@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_EXTENSION_APPS_UTILS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_EXTENSION_APPS_UTILS_H_
 
+#include <string>
+#include <vector>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+
+class Profile;
 
 namespace apps {
 
@@ -18,9 +23,28 @@ bool ShouldHostedAppsRunInLacros();
 void EnableHostedAppsInLacrosForTesting();
 #endif  // IS_CHROMEOS_LACROS
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns a muxed id that consists of the profile base name joined to the
+// extension id.
+std::string MuxId(const Profile* profile, const std::string& extension_id);
+
+// Takes |muxed_id| and extracts the corresponding profile name and extension id
+// into the return value. E.g. for Chrome app id
+// "Default###plfjlfohfjjpmmifkbcmalnmcebkklkh", returns
+// ["Default", "plfjlfohfjjpmmifkbcmalnmcebkklkh"]. For Chrome app id
+// "plfjlfohfjjpmmifkbcmalnmcebkklkh", returns
+// ["plfjlfohfjjpmmifkbcmalnmcebkklkh"].
+std::vector<std::string> DemuxId(const std::string& muxed_id);
+
+// Returns the real app id for Chrome apps or extensions. E.g. for Chrome app id
+// "Default###plfjlfohfjjpmmifkbcmalnmcebkklkh", returns
+// "plfjlfohfjjpmmifkbcmalnmcebkklkh".
+std::string GetStandaloneBrowserExtensionAppId(const std::string& app_id);
+
 // The delimiter separating the profile basename from the extension id
 // in the muxed app id of standalone browser extension apps.
 extern const char kExtensionAppMuxedIdDelimiter[];
+#endif  // IS_CHROMEOS
 
 }  // namespace apps
 

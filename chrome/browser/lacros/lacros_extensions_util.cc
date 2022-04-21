@@ -37,20 +37,13 @@ const extensions::Extension* MaybeGetExtension(
 
 std::string MuxId(const Profile* profile,
                   const extensions::Extension* extension) {
-  return MuxId(profile, extension->id());
-}
-
-std::string MuxId(const Profile* profile, const std::string& extension_id) {
-  return profile->GetBaseName().value() + apps::kExtensionAppMuxedIdDelimiter +
-         extension_id;
+  return apps::MuxId(profile, extension->id());
 }
 
 bool DemuxId(const std::string& muxed_id,
              Profile** output_profile,
              const extensions::Extension** output_extension) {
-  std::vector<std::string> splits = base::SplitStringUsingSubstr(
-      muxed_id, apps::kExtensionAppMuxedIdDelimiter, base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_ALL);
+  std::vector<std::string> splits = apps::DemuxId(muxed_id);
   if (splits.size() != 2)
     return false;
   std::string profile_basename = std::move(splits[0]);

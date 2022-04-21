@@ -86,10 +86,7 @@ extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
 }
 
 bool IsStandaloneBrowserExtensionAppId(const std::string& app_id) {
-  std::vector<std::string> splits =
-      base::SplitStringUsingSubstr(app_id, apps::kExtensionAppMuxedIdDelimiter,
-                                   base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  return splits.size() == 2;
+  return apps::DemuxId(app_id).size() == 2;
 }
 
 std::string GetAppId(const ash::ShelfID& shelf_id) {

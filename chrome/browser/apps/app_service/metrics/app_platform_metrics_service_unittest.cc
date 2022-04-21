@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -57,6 +58,8 @@ namespace apps {
 namespace {
 
 constexpr char kStartTime[] = "1 Jan 2021 21:00";
+constexpr char kChromeAppId[] = "plfjlfohfjjpmmifkbcmalnmcebkklkh";
+constexpr char kExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 
 constexpr apps::InstanceState kActiveInstanceState =
     static_cast<apps::InstanceState>(
@@ -263,6 +266,24 @@ class AppPlatformMetricsServiceTest : public testing::Test {
            Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
            true /* should_notify_initialized */);
 
+    AddApp(cache, /*app_id=*/app_constants::kLacrosAppId,
+           AppType::kStandaloneBrowser, "Lacros", Readiness::kReady,
+           InstallReason::kSystem, InstallSource::kSystem,
+           true /* should_notify_initialized */);
+
+    AddApp(cache,
+           /*app_id=*/MuxId(profile(), kChromeAppId),
+           AppType::kStandaloneBrowserChromeApp, "Vine", Readiness::kReady,
+           InstallReason::kUser, InstallSource::kChromeWebStore,
+           true /* should_notify_initialized */);
+
+    AddApp(cache,
+           /*app_id=*/MuxId(profile(), kExtensionId),
+           AppType::kStandaloneBrowserExtension, "PDF Viewer",
+           Readiness::kReady, InstallReason::kUser,
+           InstallSource::kChromeWebStore,
+           true /* should_notify_initialized */);
+
     std::vector<AppPtr> deltas;
     deltas.push_back(MakeApp(/*app_id=*/"u", AppType::kUnknown, "",
                              Readiness::kReady, InstallReason::kUnknown,
@@ -273,13 +294,6 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     deltas.push_back(MakeApp(
         /*app_id=*/"p", AppType::kPluginVm, "", Readiness::kReady,
         InstallReason::kUser, InstallSource::kUnknown));
-    deltas.push_back(MakeApp(
-        /*app_id=*/"l", AppType::kStandaloneBrowser, "", Readiness::kReady,
-        InstallReason::kSystem, InstallSource::kUnknown));
-    deltas.push_back(MakeApp(
-        /*app_id=*/"lcr", AppType::kStandaloneBrowserChromeApp, "",
-        Readiness::kReady, InstallReason::kUser,
-        InstallSource::kChromeWebStore));
     deltas.push_back(MakeApp(
         /*app_id=*/"r", AppType::kRemote, "", Readiness::kReady,
         InstallReason::kPolicy, InstallSource::kUnknown));
@@ -302,14 +316,6 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*app_id=*/"p", apps::mojom::AppType::kPluginVm, "",
         apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser,
         apps::mojom::InstallSource::kUnknown));
-    mojom_deltas.push_back(MakeApp(
-        /*app_id=*/"l", apps::mojom::AppType::kStandaloneBrowser, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSystem,
-        apps::mojom::InstallSource::kUnknown));
-    mojom_deltas.push_back(MakeApp(
-        /*app_id=*/"lcr", apps::mojom::AppType::kStandaloneBrowserChromeApp, "",
-        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser,
-        apps::mojom::InstallSource::kChromeWebStore));
     mojom_deltas.push_back(MakeApp(
         /*app_id=*/"r", apps::mojom::AppType::kRemote, "",
         apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kPolicy,
@@ -1591,6 +1597,47 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
                         AppTypeName::kChromeBrowser);
 }
 
+TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
+  // Create a StandaloneBrowser window, and set it as activated for
+  // `kLacrosAppId`.
+  auto window1 = std::make_unique<aura::Window>(nullptr);
+  window1->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(app_constants::kLacrosAppId, window1.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  // Create a Chrome app window, and set it as activated for `kChromeAppId`.
+  auto window2 = std::make_unique<aura::Window>(nullptr);
+  window2->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(app_constants::kLacrosAppId, window1.get(),
+                 kInactiveInstanceState);
+  ModifyInstance(MuxId(profile(), kChromeAppId), window2.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(4));
+
+  // Create a Extension window, and set it as activated for `kExtensionId`.
+  auto window3 = std::make_unique<aura::Window>(nullptr);
+  window3->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(MuxId(profile(), kChromeAppId), window2.get(),
+                 kInactiveInstanceState);
+  ModifyInstance(MuxId(profile(), kExtensionId), window3.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(3));
+
+  // Set the Extension window as inactived.
+  ModifyInstance(MuxId(profile(), kExtensionId), window3.get(),
+                 kInactiveInstanceState);
+
+  // Set time passed 2 hours to record the usage time AppKM.
+  task_environment_.FastForwardBy(base::Minutes(108));
+  VerifyAppUsageTimeUkm(app_constants::kLacrosAppId, /*duration=*/300000,
+                        AppTypeName::kStandaloneBrowser);
+  VerifyAppUsageTimeUkm(kChromeAppId, /*duration=*/240000,
+                        AppTypeName::kStandaloneBrowserChromeApp);
+  VerifyAppUsageTimeUkm(kExtensionId, /*duration=*/180000,
+                        AppTypeName::kStandaloneBrowserExtension);
+}
+
 TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   // Verify the apps installed during the init phase.
   VerifyInstalledAppsUkm("app://com.google.A", AppTypeName::kArc,
@@ -1606,6 +1653,20 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   VerifyInstalledAppsUkm("https://foo.com", AppTypeName::kWeb,
                          apps::mojom::InstallReason::kSync,
                          apps::mojom::InstallSource::kSync, InstallTime::kInit);
+  VerifyInstalledAppsUkm(
+      "app://" + std::string(app_constants::kLacrosAppId),
+      AppTypeName::kStandaloneBrowser, apps::mojom::InstallReason::kSystem,
+      apps::mojom::InstallSource::kSystem, InstallTime::kInit);
+  VerifyInstalledAppsUkm("app://" + std::string(kChromeAppId),
+                         AppTypeName::kStandaloneBrowserChromeApp,
+                         apps::mojom::InstallReason::kUser,
+                         apps::mojom::InstallSource::kChromeWebStore,
+                         InstallTime::kInit);
+  VerifyInstalledAppsUkm("app://" + std::string(kExtensionId),
+                         AppTypeName::kStandaloneBrowserExtension,
+                         apps::mojom::InstallReason::kUser,
+                         apps::mojom::InstallSource::kChromeWebStore,
+                         InstallTime::kInit);
 
   // Install a new ARC app during the running time.
   InstallOneApp("aa", AppType::kArc, "com.google.AA", Readiness::kReady,
@@ -1658,6 +1719,37 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kArc);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kArc);
 
+  proxy->Launch(
+      /*app_id=*/app_constants::kLacrosAppId, ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://" + std::string(app_constants::kLacrosAppId),
+                      AppTypeName::kStandaloneBrowser,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kStandaloneBrowser);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kStandaloneBrowser);
+
+  proxy->Launch(
+      /*app_id=*/MuxId(profile(), kChromeAppId), ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://" + std::string(kChromeAppId),
+                      AppTypeName::kStandaloneBrowserChromeApp,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+  VerifyAppLaunchPerAppTypeHistogram(1,
+                                     AppTypeName::kStandaloneBrowserChromeApp);
+  VerifyAppLaunchPerAppTypeV2Histogram(
+      1, AppTypeNameV2::kStandaloneBrowserChromeApp);
+
+  proxy->Launch(
+      /*app_id=*/MuxId(profile(), kExtensionId), ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://" + std::string(kExtensionId),
+                      AppTypeName::kStandaloneBrowserExtension,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+  VerifyAppLaunchPerAppTypeHistogram(1,
+                                     AppTypeName::kStandaloneBrowserExtension);
+  VerifyAppLaunchPerAppTypeV2Histogram(
+      1, AppTypeNameV2::kStandaloneBrowserExtension);
+
   proxy->LaunchAppWithUrl(
       /*app_id=*/"w", ui::EventFlags::EF_NONE, GURL("https://boo.com/a"),
       apps::mojom::LaunchSource::kFromFileManager, nullptr);
@@ -1703,6 +1795,20 @@ TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   proxy->UninstallSilently(
       /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
+                         apps::mojom::UninstallSource::kAppList);
+
+  proxy->UninstallSilently(
+      /*app_id=*/MuxId(profile(), kChromeAppId),
+      apps::mojom::UninstallSource::kAppList);
+  VerifyAppsUninstallUkm("app://" + std::string(kChromeAppId),
+                         AppTypeName::kStandaloneBrowserChromeApp,
+                         apps::mojom::UninstallSource::kAppList);
+
+  proxy->UninstallSilently(
+      /*app_id=*/MuxId(profile(), kExtensionId),
+      apps::mojom::UninstallSource::kAppList);
+  VerifyAppsUninstallUkm("app://" + std::string(kExtensionId),
+                         AppTypeName::kStandaloneBrowserExtension,
                          apps::mojom::UninstallSource::kAppList);
 }
 
@@ -2116,6 +2222,35 @@ TEST_F(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   // Verify no more input events UKM recorded.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
   ASSERT_EQ(3U, entries.size());
+}
+
+TEST_F(AppPlatformInputMetricsTest, LacrosWindow) {
+  ModifyInstance(app_constants::kLacrosAppId, window(), kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnTwoHours();
+  VerifyUkm("app://" + std::string(app_constants::kLacrosAppId),
+            AppTypeName::kStandaloneBrowser, /*event_count=*/1,
+            InputEventSource::kStylus);
+}
+
+TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
+  ModifyInstance(MuxId(profile(), kChromeAppId), window(),
+                 kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kKeyboard);
+  app_platform_input_metrics()->OnTwoHours();
+  VerifyUkm("app://" + std::string(kChromeAppId),
+            AppTypeName::kStandaloneBrowserChromeApp, /*event_count=*/1,
+            InputEventSource::kKeyboard);
+}
+
+TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
+  ModifyInstance(MuxId(profile(), kExtensionId), window(),
+                 kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnTwoHours();
+  VerifyUkm("app://" + std::string(kExtensionId),
+            AppTypeName::kStandaloneBrowserExtension, /*event_count=*/1,
+            InputEventSource::kMouse);
 }
 
 }  // namespace apps
