@@ -185,6 +185,8 @@ public class ContactsProviderTest {
                 FencedFrameUtils.createFencedFrame(mActivityTestRule.getWebContents(), frame, url);
         executeJavaScript(fencedFrame, CONTACTS_SCRIPT, true);
         waitUntilHasValue(fencedFrame);
-        Assert.assertEquals("\"Unable to open a contact selector\"", getValue(fencedFrame));
+        Assert.assertEquals(
+                "\"Failed to execute 'select' on 'ContactsManager': The contacts API can only be used in the top frame\"",
+                getValue(fencedFrame));
     }
 }

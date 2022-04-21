@@ -154,7 +154,7 @@ ScriptPromise ContactsManager::select(
                           ? LocalDOMWindow::From(script_state)->GetFrame()
                           : nullptr;
 
-  if (!frame || !frame->IsMainFrame()) {
+  if (!frame || !frame->IsOutermostMainFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The contacts API can only be used in the top frame");
