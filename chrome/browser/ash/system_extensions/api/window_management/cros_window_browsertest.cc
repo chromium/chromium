@@ -6,19 +6,27 @@
 #include "ash/constants/ash_switches.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "ui/aura/window.h"
 
 namespace {
 
 static constexpr char kEventListenerCode[] = R"(
   self.addEventListener('message', async (event) => {
     try {
+      // TODO(b/229670749): Remove once crosWindowClose test is no longer flaky.
+      console.log('Starting test');
       await cros_test();
       event.source.postMessage("PASS");
     } catch (e) {
@@ -402,25 +410,47 @@ async function cros_test() {
 }
 
 // TODO(crbug.com/1316539): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, DISABLED_CrosWindowClose) {
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowClose) {
   // Open browser instance to close outside of service worker.
   chrome::NewWindow(browser());
 
-  const char test_code[] = R"(
+  aura::Window* initial = browser()->window()->GetNativeWindow();
+  aura::Window* new_window =
+      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+
+  ASSERT_NE(initial, new_window);
+
+  // Set target id to crosWindow id of newly opened window as per instance
+  // registry.
+  std::string target_id;
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  proxy->InstanceRegistry().ForEachInstance(
+      [&target_id, &new_window](const apps::InstanceUpdate& update) {
+        if (update.Window() == new_window) {
+          CHECK(target_id.empty());
+          target_id = update.InstanceId().ToString();
+        }
+      });
+
+  std::string test_code = base::StringPrintf(R"(
 async function cros_test() {
   let windows = await chromeos.windowManagement.windows();
   assert_equals(windows.length, 2);
 
-  const window_to_close_index =
-      windows[0].title == "Chromium - create service worker" ? 1 : 0;
-  windows[window_to_close_index].close();
+  let window_to_close = windows.find(window => window.id === "%s");
+  assert_not_equals(undefined, window_to_close);
+  console.log(window_to_close.title);
+  window_to_close.close();
 
-// TODO(b/221123297): Currently test will flake on close under stress.
-// Defer testing until on close event implemented
+  // TODO(b/221123297): Currently test will flake on close under stress.
+  // Defer testing until on close event implemented
   // windows = await chromeos.windowManagement.windows();
   // assert_equals(windows.length, 1);
 }
-  )";
+  )",
+                                             target_id.c_str());
 
   RunTest(test_code);
 }
