@@ -18,7 +18,12 @@ class Window;
 namespace gfx {
 class Point;
 class Rect;
+class Transform;
 }  // namespace gfx
+
+namespace ui {
+class Layer;
+}  // namespace ui
 
 namespace views {
 class View;
@@ -82,6 +87,10 @@ std::unique_ptr<views::View> CreateBannerView();
 // Creates the play icon view which shows on top of the video thumbnail in the
 // notification.
 std::unique_ptr<views::View> CreatePlayIconView();
+
+// Returns a transform that scales the given `layer` by the given `scale` factor
+// in both X and Y around its local center point.
+gfx::Transform GetScaleTransformAboutCenter(ui::Layer* layer, float scale);
 
 // Defines an object to hold the values of the camera preview size specs.
 struct CameraPreviewSizeSpecs {

@@ -18,10 +18,6 @@ class LabelButton;
 class Label;
 }  // namespace views
 
-namespace ui {
-class CallbackLayerAnimationObserver;
-}
-
 namespace ash {
 
 class CaptureModeSession;
@@ -66,16 +62,16 @@ class ASH_EXPORT CaptureLabelView
   std::unique_ptr<views::HighlightPathGenerator> CreatePathGenerator() override;
 
  private:
-  // Start performing countdown to number |timout_count_down_| animation.
-  void ScheduleCountDownAnimation();
-  // Called when each number's countdown animation is completed.
-  bool OnCountDownAnimationCompleted(
-      const ui::CallbackLayerAnimationObserver& observer);
+  // Fades in and out the given `counter_value` (e.g. "3", "2", or "1") as it
+  // performs a step in the count down animation.
+  void FadeInAndOutCounter(int counter_value);
 
-  // Starts the layer animation sequences for the countdown label.
-  void StartLabelLayerAnimationSequences();
-  // Starts the layer animation sequences for the entire widget if applicable.
-  void StartWidgetLayerAnimationSequences();
+  // When the count down reaches a value of `1`, we fade out the widget of this
+  // view as the last step in the count down animation.
+  void FadeOutWidget();
+
+  // Called once the entire count down animation finishes.
+  void OnCountDownAnimationFinished();
 
   // The label button that displays an icon and a text message. Can be user
   // interactable. When clicking/tapping on the button, start perform image or
@@ -85,12 +81,8 @@ class ASH_EXPORT CaptureLabelView
   // The label that displays a text message. Not user interactable.
   views::Label* label_ = nullptr;
 
-  int timeout_count_down_;
-
   // Callback function to be called after countdown if finished.
   base::OnceClosure countdown_finished_callback_;
-  // Observe the countdown animation.
-  std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
 
   // Pointer to the current capture mode session. Not nullptr during this
   // lifecycle.

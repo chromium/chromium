@@ -22,8 +22,10 @@
 #include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/views/controls/image_view.h"
@@ -52,6 +54,11 @@ bool CalculateCameraPreviewTargetVisibility(
   return !controller->IsActive() ||
          controller->capture_mode_session()
              ->CalculateCameraPreviewTargetVisibility();
+}
+
+// Returns the local center point of the given `layer`.
+gfx::Point GetLocalCenterPoint(ui::Layer* layer) {
+  return gfx::Rect(layer->GetTargetBounds().size()).CenterPoint();
 }
 
 }  // namespace
@@ -270,6 +277,10 @@ std::unique_ptr<views::View> CreatePlayIconView() {
   play_view->SetBackground(views::CreateRoundedRectBackground(
       background_color, kPlayIconBackgroundCornerRadiusDip));
   return play_view;
+}
+
+gfx::Transform GetScaleTransformAboutCenter(ui::Layer* layer, float scale) {
+  return gfx::GetScaleTransform(GetLocalCenterPoint(layer), scale);
 }
 
 CameraPreviewSizeSpecs CalculateCameraPreviewSizeSpecs(

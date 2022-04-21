@@ -5,6 +5,7 @@
 #include "ash/capture_mode/user_nudge_controller.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -51,11 +52,6 @@ constexpr base::TimeDelta kRippleAnimationDuration = base::Milliseconds(2000);
 
 constexpr base::TimeDelta kDelayToShowNudge = base::Milliseconds(1000);
 constexpr base::TimeDelta kDelayToRepeatNudge = base::Milliseconds(2500);
-
-// Returns the local center point of the given `layer`.
-gfx::Point GetLocalCenterPoint(ui::Layer* layer) {
-  return gfx::Rect(layer->size()).CenterPoint();
-}
 
 // Returns the given `view`'s layer bounds in root coordinates ignoring any
 // transforms it or any of its ancestors may have.
@@ -183,8 +179,9 @@ void UserNudgeController::PerformBaseRingAnimation() {
   // The `base_ring_` should scale up around the center of the
   // `view_to_be_highlighted_` to grab the user's attention, and then scales
   // back down to its original size.
-  gfx::Transform scale_up_transform;
-  scale_up_transform.Scale(kBaseRingScaleUpFactor, kBaseRingScaleUpFactor);
+  const gfx::Transform scale_up_transform =
+      capture_mode_util::GetScaleTransformAboutCenter(&base_ring_,
+                                                      kBaseRingScaleUpFactor);
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -192,9 +189,7 @@ void UserNudgeController::PerformBaseRingAnimation() {
                               base::Unretained(this)))
       .Once()
       .SetDuration(kScaleUpDuration)
-      .SetTransform(&base_ring_,
-                    gfx::TransformAboutPivot(GetLocalCenterPoint(&base_ring_),
-                                             scale_up_transform),
+      .SetTransform(&base_ring_, scale_up_transform,
                     gfx::Tween::ACCEL_40_DECEL_20)
       .Offset(kScaleDownOffset)
       .SetDuration(kScaleDownDuration)
@@ -207,10 +202,9 @@ void UserNudgeController::PerformRippleRingAnimation() {
   // around its center while fading out.
   ripple_ring_.SetOpacity(kRippleRingOpacity);
   ripple_ring_.SetTransform(gfx::Transform());
-  gfx::Transform scale_up_transform;
-  scale_up_transform.Scale(kRippleRingScaleUpFactor, kRippleRingScaleUpFactor);
-  scale_up_transform = gfx::TransformAboutPivot(
-      GetLocalCenterPoint(&ripple_ring_), scale_up_transform);
+  const gfx::Transform scale_up_transform =
+      capture_mode_util::GetScaleTransformAboutCenter(&ripple_ring_,
+                                                      kRippleRingScaleUpFactor);
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -225,17 +219,15 @@ void UserNudgeController::PerformViewScaleAnimation() {
   // The `view_to_be_highlighted_` scales up and down around its own center in
   // a similar fashion to that of the `base_ring_`.
   auto* view_layer = view_to_be_highlighted_->layer();
-  gfx::Transform scale_up_transform;
-  scale_up_transform.Scale(kHighlightedViewScaleUpFactor,
-                           kHighlightedViewScaleUpFactor);
+  const gfx::Transform scale_up_transform =
+      capture_mode_util::GetScaleTransformAboutCenter(
+          view_layer, kHighlightedViewScaleUpFactor);
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kScaleUpDuration)
-      .SetTransform(view_layer,
-                    gfx::TransformAboutPivot(GetLocalCenterPoint(view_layer),
-                                             scale_up_transform),
+      .SetTransform(view_layer, scale_up_transform,
                     gfx::Tween::ACCEL_40_DECEL_20)
       .Offset(kScaleDownOffset)
       .SetDuration(kScaleDownDuration)
