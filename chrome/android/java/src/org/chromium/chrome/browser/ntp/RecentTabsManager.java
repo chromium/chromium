@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
@@ -50,7 +51,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         void onUpdated();
     }
 
-    private static final int RECENTLY_CLOSED_MAX_TAB_COUNT = 5;
+    private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT = 5;
 
     private static RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
 
@@ -64,7 +65,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     private FaviconHelper mFaviconHelper;
     private ForeignSessionHelper mForeignSessionHelper;
     private List<ForeignSession> mForeignSessions;
-    private List<RecentlyClosedTab> mRecentlyClosedTabs;
+    private List<RecentlyClosedEntry> mRecentlyClosedEntries;
     private RecentTabsPagePrefs mPrefs;
     private RecentlyClosedTabManager mRecentlyClosedTabManager;
     private SigninManager mSignInManager;
@@ -150,8 +151,15 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     }
 
     private void updateRecentlyClosedEntries() {
-        mRecentlyClosedTabs =
-                mRecentlyClosedTabManager.getRecentlyClosedTabs(RECENTLY_CLOSED_MAX_TAB_COUNT);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BULK_TAB_RESTORE)) {
+            mRecentlyClosedEntries = mRecentlyClosedTabManager.getRecentlyClosedEntries(
+                    RECENTLY_CLOSED_MAX_ENTRY_COUNT);
+        } else {
+            mRecentlyClosedEntries =
+                    (List<RecentlyClosedEntry>) (List<? extends RecentlyClosedEntry>)
+                            mRecentlyClosedTabManager.getRecentlyClosedTabs(
+                                    RECENTLY_CLOSED_MAX_ENTRY_COUNT);
+        }
         onUpdateDone();
     }
 
@@ -170,8 +178,8 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     /**
      * @return Most up-to-date list of recently closed tabs.
      */
-    public List<RecentlyClosedTab> getRecentlyClosedTabs() {
-        return mRecentlyClosedTabs;
+    public List<RecentlyClosedEntry> getRecentlyClosedEntries() {
+        return mRecentlyClosedEntries;
     }
 
     /**
@@ -200,6 +208,23 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         RecordUserAction.record("MobileRecentTabManagerRecentTabOpened");
         // Window disposition will select which tab to open.
         mRecentlyClosedTabManager.openRecentlyClosedTab(getTabModel(), tab, windowDisposition);
+    }
+
+    /**
+     * Restores a recently closed entry. Use {@link #openRecentlyClosedTab()} for single tabs..
+     *
+     * @param entry The entry to open.
+     */
+    public void openRecentlyClosedEntry(RecentlyClosedEntry entry) {
+        if (mIsDestroyed) return;
+        assert !(entry instanceof RecentlyClosedTab)
+            : "Opening a RecentlyClosedTab should use openRecentlyClosedTab().";
+        if (entry instanceof RecentlyClosedGroup) {
+            RecordUserAction.record("MobileRecentTabManagerRecentGroupOpened");
+        } else if (entry instanceof RecentlyClosedBulkEvent) {
+            RecordUserAction.record("MobileRecentTabManagerRecentBulkEventOpened");
+        }
+        mRecentlyClosedTabManager.openRecentlyClosedEntry(getTabModel(), entry);
     }
 
     /**

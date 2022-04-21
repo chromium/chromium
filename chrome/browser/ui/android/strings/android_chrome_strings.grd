@@ -3079,6 +3079,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_FEED_BACK_TO_TOP_PROMPT" desc="A prompt for the user to click in order to go back to the top of the feed.">
         Back to top
       </message>
+      <message name="IDS_RECENT_TABS_BULK_CLOSURE" desc="Text for a Recent Tabs Page > Recently closed row item that represents multiple tabs closed together. Can be used for the following cases: 1) at least two tabs closed at the same time, 2) at least one tab group and at least one tab closed at the same time, 3) at least two tab groups closed at the same time. TAB_COUNT is the total number of tabs closed in the action including grouped tabs.">
+        <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs
+      </message>
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITH_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that had a user specified group title. TITLE_OF_GROUP is the user specified title of the group.">
+        <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>
+      </message>
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that does not have a user specified title.">
+        1 tab group
+      </message>
 
       <!-- Explore sites strings -->
       <message name="IDS_EXPLORE_SITES_TITLE" desc="Title of a section showing different categories, each with a number of popular websites">

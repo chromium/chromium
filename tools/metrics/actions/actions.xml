@@ -18581,6 +18581,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileRecentTabManagerRecentBulkEventOpened">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    A recently closed bulk event entry was opened from the recent tabs manager
+    on Android. This corresponds to a set of tabs and/or groups that are being
+    restored together. This does not count single tabs which are counted in
+    MobileRecentTabManagerRecentTabOpened or single groups which are counted in
+    MobileRecentTabManagerRecentGroupOpened.
+  </description>
+</action>
+
+<action name="MobileRecentTabManagerRecentGroupOpened">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    A recently closed group entry was opened from the recent tabs manager on.
+    Android. This corresponds to a group of tabs that are being restored
+    together. This does not count single tabs which is counted in
+    MobileRecentTabManagerRecentTabOpened or bulk entries multiple tabs and/or
+    groups which are counted in MobileRecentTabManagerRecentBulkEventOpened.
+  </description>
+</action>
+
 <action name="MobileRecentTabManagerRecentTabOpened">
   <owner>finkm@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

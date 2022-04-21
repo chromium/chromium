@@ -17,7 +17,11 @@ import java.util.List;
 public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     @Nullable
     private Runnable mEntriesUpdatedRunnable;
-    private List<RecentlyClosedTab> mTabs = new ArrayList<>();
+    private List<RecentlyClosedEntry> mTabs = new ArrayList<>();
+
+    public FakeRecentlyClosedTabManager() {
+        mEntriesUpdatedRunnable = null;
+    }
 
     @Override
     public void setEntriesUpdatedRunnable(@Nullable Runnable runnable) {
@@ -28,7 +32,7 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     public List<RecentlyClosedTab> getRecentlyClosedTabs(int maxTabCount) {
         List<RecentlyClosedTab> tabs = new ArrayList<>();
         for (int i = 0; i < maxTabCount && i < mTabs.size(); i++) {
-            tabs.add(mTabs.get(i));
+            tabs.add((RecentlyClosedTab) mTabs.get(i));
         }
         return tabs;
     }
@@ -65,7 +69,7 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     @Override
     public void destroy() {}
 
-    public void setRecentlyClosedTabs(List<RecentlyClosedTab> tabs) {
+    public void setRecentlyClosedEntries(List<RecentlyClosedEntry> tabs) {
         mTabs = new ArrayList<>(tabs);
         if (mEntriesUpdatedRunnable != null) mEntriesUpdatedRunnable.run();
     }
