@@ -117,7 +117,7 @@ void UnpackResult(absl::optional<mojom::TtsRequestError>* const error,
                   std::vector<uint8_t>* const audio_data,
                   std::vector<mojom::TimingInfo>* const timing_data,
                   mojom::TtsResponsePtr result) {
-  if (result->which() == mojom::TtsResponse::Tag::ERROR_CODE) {
+  if (result->which() == mojom::TtsResponse::Tag::kErrorCode) {
     *error = result->get_error_code();
   } else {
     // Copy audio data.
