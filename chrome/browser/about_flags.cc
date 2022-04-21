@@ -8383,6 +8383,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kLauncherPlayStoreSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"dm-token-deletion", flag_descriptions::kDmTokenDeletionName,
+     flag_descriptions::kDmTokenDeletionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDmTokenDeletion)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
