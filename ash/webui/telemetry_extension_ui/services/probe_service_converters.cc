@@ -78,10 +78,10 @@ health::mojom::BatteryInfoPtr UncheckedConvertPtr(
 health::mojom::BatteryResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BatteryResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::BatteryResult::Tag::BATTERY_INFO:
+    case cros_healthd::mojom::BatteryResult::Tag::kBatteryInfo:
       return health::mojom::BatteryResult::NewBatteryInfo(
           ConvertPtr(std::move(input->get_battery_info())));
-    case cros_healthd::mojom::BatteryResult::Tag::ERROR:
+    case cros_healthd::mojom::BatteryResult::Tag::kError:
       return health::mojom::BatteryResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -105,11 +105,11 @@ health::mojom::NonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::NonRemovableBlockDeviceResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
-        BLOCK_DEVICE_INFO:
+        kBlockDeviceInfo:
       return health::mojom::NonRemovableBlockDeviceResult::NewBlockDeviceInfo(
           ConvertPtrVector<health::mojom::NonRemovableBlockDeviceInfoPtr>(
               std::move(input->get_block_device_info())));
-    case cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::ERROR:
+    case cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::kError:
       return health::mojom::NonRemovableBlockDeviceResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -126,10 +126,10 @@ health::mojom::CachedVpdInfoPtr UncheckedConvertPtr(
 health::mojom::CachedVpdResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::SystemResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::SystemResult::Tag::SYSTEM_INFO:
+    case cros_healthd::mojom::SystemResult::Tag::kSystemInfo:
       return health::mojom::CachedVpdResult::NewVpdInfo(
           ConvertPtr(std::move(input->get_system_info())));
-    case cros_healthd::mojom::SystemResult::Tag::ERROR:
+    case cros_healthd::mojom::SystemResult::Tag::kError:
       return health::mojom::CachedVpdResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -192,10 +192,10 @@ health::mojom::CpuInfoPtr UncheckedConvertPtr(
 health::mojom::CpuResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::CpuResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::CpuResult::Tag::CPU_INFO:
+    case cros_healthd::mojom::CpuResult::Tag::kCpuInfo:
       return health::mojom::CpuResult::NewCpuInfo(
           ConvertPtr(std::move(input->get_cpu_info())));
-    case cros_healthd::mojom::CpuResult::Tag::ERROR:
+    case cros_healthd::mojom::CpuResult::Tag::kError:
       return health::mojom::CpuResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -209,10 +209,10 @@ health::mojom::TimezoneInfoPtr UncheckedConvertPtr(
 health::mojom::TimezoneResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::TimezoneResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::TimezoneResult::Tag::TIMEZONE_INFO:
+    case cros_healthd::mojom::TimezoneResult::Tag::kTimezoneInfo:
       return health::mojom::TimezoneResult::NewTimezoneInfo(
           ConvertPtr(std::move(input->get_timezone_info())));
-    case cros_healthd::mojom::TimezoneResult::Tag::ERROR:
+    case cros_healthd::mojom::TimezoneResult::Tag::kError:
       return health::mojom::TimezoneResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -229,10 +229,10 @@ health::mojom::MemoryInfoPtr UncheckedConvertPtr(
 health::mojom::MemoryResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::MemoryResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::MemoryResult::Tag::MEMORY_INFO:
+    case cros_healthd::mojom::MemoryResult::Tag::kMemoryInfo:
       return health::mojom::MemoryResult::NewMemoryInfo(
           ConvertPtr(std::move(input->get_memory_info())));
-    case cros_healthd::mojom::MemoryResult::Tag::ERROR:
+    case cros_healthd::mojom::MemoryResult::Tag::kError:
       return health::mojom::MemoryResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -248,11 +248,11 @@ health::mojom::BacklightInfoPtr UncheckedConvertPtr(
 health::mojom::BacklightResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BacklightResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::BacklightResult::Tag::BACKLIGHT_INFO:
+    case cros_healthd::mojom::BacklightResult::Tag::kBacklightInfo:
       return health::mojom::BacklightResult::NewBacklightInfo(
           ConvertPtrVector<health::mojom::BacklightInfoPtr>(
               std::move(input->get_backlight_info())));
-    case cros_healthd::mojom::BacklightResult::Tag::ERROR:
+    case cros_healthd::mojom::BacklightResult::Tag::kError:
       return health::mojom::BacklightResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -266,11 +266,11 @@ health::mojom::FanInfoPtr UncheckedConvertPtr(
 health::mojom::FanResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::FanResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::FanResult::Tag::FAN_INFO:
+    case cros_healthd::mojom::FanResult::Tag::kFanInfo:
       return health::mojom::FanResult::NewFanInfo(
           ConvertPtrVector<health::mojom::FanInfoPtr>(
               std::move(input->get_fan_info())));
-    case cros_healthd::mojom::FanResult::Tag::ERROR:
+    case cros_healthd::mojom::FanResult::Tag::kError:
       return health::mojom::FanResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -287,10 +287,10 @@ health::mojom::StatefulPartitionInfoPtr UncheckedConvertPtr(
 health::mojom::StatefulPartitionResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::StatefulPartitionResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::StatefulPartitionResult::Tag::PARTITION_INFO:
+    case cros_healthd::mojom::StatefulPartitionResult::Tag::kPartitionInfo:
       return health::mojom::StatefulPartitionResult::NewPartitionInfo(
           ConvertPtr(std::move(input->get_partition_info())));
-    case cros_healthd::mojom::StatefulPartitionResult::Tag::ERROR:
+    case cros_healthd::mojom::StatefulPartitionResult::Tag::kError:
       return health::mojom::StatefulPartitionResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -306,11 +306,11 @@ health::mojom::BluetoothAdapterInfoPtr UncheckedConvertPtr(
 health::mojom::BluetoothResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BluetoothResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::BluetoothResult::Tag::BLUETOOTH_ADAPTER_INFO:
+    case cros_healthd::mojom::BluetoothResult::Tag::kBluetoothAdapterInfo:
       return health::mojom::BluetoothResult::NewBluetoothAdapterInfo(
           ConvertPtrVector<health::mojom::BluetoothAdapterInfoPtr>(
               std::move(input->get_bluetooth_adapter_info())));
-    case cros_healthd::mojom::BluetoothResult::Tag::ERROR:
+    case cros_healthd::mojom::BluetoothResult::Tag::kError:
       return health::mojom::BluetoothResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }
@@ -329,10 +329,10 @@ health::mojom::SystemInfoPtr UncheckedConvertPtr(
 health::mojom::SystemResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::SystemResultV2Ptr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::SystemResultV2::Tag::SYSTEM_INFO_V2:
+    case cros_healthd::mojom::SystemResultV2::Tag::kSystemInfoV2:
       return health::mojom::SystemResult::NewSystemInfo(
           ConvertPtr(std::move(input->get_system_info_v2())));
-    case cros_healthd::mojom::SystemResultV2::Tag::ERROR:
+    case cros_healthd::mojom::SystemResultV2::Tag::kError:
       return health::mojom::SystemResult::NewError(
           ConvertPtr(std::move(input->get_error())));
   }

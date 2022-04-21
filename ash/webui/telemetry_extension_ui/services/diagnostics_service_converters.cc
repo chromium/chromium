@@ -38,10 +38,10 @@ health::mojom::RoutineUpdatePtr UncheckedConvertPtr(
 health::mojom::RoutineUpdateUnionPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdateUnionPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::RoutineUpdateUnion::Tag::INTERACTIVE_UPDATE:
+    case cros_healthd::mojom::RoutineUpdateUnion::Tag::kInteractiveUpdate:
       return health::mojom::RoutineUpdateUnion::NewInteractiveUpdate(
           ConvertPtr(std::move(input->get_interactive_update())));
-    case cros_healthd::mojom::RoutineUpdateUnion::Tag::NONINTERACTIVE_UPDATE:
+    case cros_healthd::mojom::RoutineUpdateUnion::Tag::kNoninteractiveUpdate:
       return health::mojom::RoutineUpdateUnion::NewNoninteractiveUpdate(
           ConvertPtr(std::move(input->get_noninteractive_update())));
   }
