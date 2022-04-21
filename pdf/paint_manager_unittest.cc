@@ -39,7 +39,6 @@ class FakeClient : public PaintManager::Client, public SkiaGraphics::Client {
               CreatePaintGraphics,
               (const gfx::Size& size),
               (override));
-  MOCK_METHOD(bool, BindPaintGraphics, (Graphics & graphics), (override));
   MOCK_METHOD(void,
               OnPaint,
               (const std::vector<gfx::Rect>& paint_rects,
@@ -142,7 +141,6 @@ TEST_F(PaintManagerTest, SetSizeWithoutPaint) {
 }
 
 TEST_F(PaintManagerTest, SetSizeWithPaint) {
-  EXPECT_CALL(client_, BindPaintGraphics).Times(0);
   paint_manager_.SetSize({400, 300}, 2.0f);
 
   EXPECT_CALL(client_, CreatePaintGraphics(gfx::Size(450, 350)));
@@ -153,7 +151,6 @@ TEST_F(PaintManagerTest, SetSizeWithPaint) {
 TEST_F(PaintManagerTest, DoPaintFirst) {
   paint_manager_.SetSize({400, 300}, 2.0f);
 
-  EXPECT_CALL(client_, BindPaintGraphics);
   sk_sp<SkImage> snapshot =
       WaitForFlush(/*expected_paint_rects=*/{{0, 0, 400, 300}},
                    /*fake_ready=*/

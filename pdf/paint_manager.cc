@@ -190,7 +190,6 @@ void PaintManager::DoPaint() {
     gfx::Size new_size = GetNewContextSize(old_size, pending_size_);
     if (old_size != new_size || !graphics_) {
       graphics_ = client_->CreatePaintGraphics(new_size);
-      graphics_need_to_be_bound_ = true;
       device_scale_ = 1.0f;
 
       // Since we're binding a new one, all of the callbacks have been canceled.
@@ -258,11 +257,6 @@ void PaintManager::DoPaint() {
   Flush();
 
   first_paint_ = false;
-
-  if (graphics_need_to_be_bound_) {
-    client_->BindPaintGraphics(*graphics_);
-    graphics_need_to_be_bound_ = false;
-  }
 }
 
 void PaintManager::Flush() {

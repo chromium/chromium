@@ -37,14 +37,10 @@ class PaintManager {
  public:
   class Client {
    public:
-    // Creates a new, unbound `Graphics` for the paint manager, with the given
-    // `size` and always-opaque rendering.
+    // Creates a new `Graphics` for the paint manager, with the given `size` and
+    // always-opaque rendering.
     virtual std::unique_ptr<Graphics> CreatePaintGraphics(
         const gfx::Size& size) = 0;
-
-    // Binds a `Graphics` created by `CreatePaintGraphics()`, returning `true`
-    // if binding was successful.
-    virtual bool BindPaintGraphics(Graphics& graphics) = 0;
 
     // Paints the given invalid area of the plugin to the given graphics
     // device. Returns true if anything was painted.
@@ -163,11 +159,10 @@ class PaintManager {
   bool flush_pending_ = false;
   bool flush_requested_ = false;
 
-  // When we get a resize, we don't bind right away (see SetSize). The
-  // has_pending_resize_ tells us that we need to do a resize for the next
-  // paint operation. When true, the new size is in pending_size_.
+  // When we get a resize, we don't do so right away (see `SetSize()`). The
+  // `has_pending_resize_` tells us that we need to do a resize for the next
+  // paint operation. When true, the new size is in `pending_size_`.
   bool has_pending_resize_ = false;
-  bool graphics_need_to_be_bound_ = false;
   gfx::Size pending_size_;
   gfx::Size plugin_size_;
   float pending_device_scale_ = 1.0f;

@@ -828,12 +828,10 @@ std::unique_ptr<Graphics> PdfViewWebPlugin::CreatePaintGraphics(
   // in which the graphics device exists.
   auto graphics = SkiaGraphics::Create(this, size);
   DCHECK(graphics);
-  return graphics;
-}
 
-bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
+  // TODO(crbug.com/1317832): Can we guarantee repainting some other way?
   InvalidatePluginContainer();
-  return false;
+  return graphics;
 }
 
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {

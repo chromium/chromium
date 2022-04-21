@@ -255,7 +255,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
-  bool BindPaintGraphics(Graphics& graphics) override;
 
   // pdf::mojom::PdfListener:
   void SetCaretPosition(const gfx::PointF& position) override;
