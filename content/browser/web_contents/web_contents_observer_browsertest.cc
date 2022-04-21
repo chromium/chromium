@@ -375,8 +375,14 @@ using CookieAccess = CookieTracker::CookieAccessDescription;
 
 }  // namespace
 
+// TODO(https://crbug.com/1288573): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CookieCallbacks_MainFrame DISABLED_CookieCallbacks_MainFrame
+#else
+#define MAYBE_CookieCallbacks_MainFrame CookieCallbacks_MainFrame
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
-                       CookieCallbacks_MainFrame) {
+                       MAYBE_CookieCallbacks_MainFrame) {
   CookieTracker cookie_tracker(web_contents());
 
   GURL first_party_url("http://a.com/");
@@ -420,8 +426,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   cookie_tracker.cookie_accesses().clear();
 }
 
+// TODO(https://crbug.com/1288573): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CookieCallbacks_MainFrameRedirect \
+  DISABLED_CookieCallbacks_MainFrameRedirect
+#else
+#define MAYBE_CookieCallbacks_MainFrameRedirect \
+  CookieCallbacks_MainFrameRedirect
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
-                       CookieCallbacks_MainFrameRedirect) {
+                       MAYBE_CookieCallbacks_MainFrameRedirect) {
   CookieTracker cookie_tracker(web_contents());
 
   GURL first_party_url("http://a.com/");
@@ -541,8 +555,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   cookie_tracker.cookie_accesses().clear();
 }
 
+// TODO(https://crbug.com/1288573): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CookieCallbacks_Subresource DISABLED_CookieCallbacks_Subresource
+#else
+#define MAYBE_CookieCallbacks_Subresource CookieCallbacks_Subresource
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
-                       CookieCallbacks_Subresource) {
+                       MAYBE_CookieCallbacks_Subresource) {
   CookieTracker cookie_tracker(web_contents());
 
   GURL first_party_url("http://a.com/");
