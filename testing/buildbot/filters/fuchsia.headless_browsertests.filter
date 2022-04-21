@@ -1,7 +1,2 @@
-# https://crbug.com/1090933
--DevtoolsInterceptionWithAuthProxyTest.RunAsyncTest
--HeadlessBrowserTest.ServerWantsClientCertificate
--HeadlessBrowserTestWithProxy.SetProxyConfig
-
 # https://crbug.com/1090970
 -HeadlessProtocolBrowserTest.VirtualTimeVideo

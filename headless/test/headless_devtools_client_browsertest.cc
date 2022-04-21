@@ -1132,8 +1132,11 @@ class DevtoolsInterceptionWithAuthProxyTest
   std::set<std::string> files_loaded_;
 };
 
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
+// TODO(crbug.com/1090933): Reenable on Fuchsia when fixed.
+// NOTE: This macro expands to:
+//   DevtoolsInterceptionWithAuthProxyTest.RunAsyncTest
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);
 #else
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);

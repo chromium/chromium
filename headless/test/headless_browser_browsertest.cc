@@ -223,8 +223,9 @@ class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
   net::EmbeddedTestServer proxy_server_;
 };
 
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
+// TODO(crbug.com/1090933): Fix this test on Fuchsia and re-enable.
 #define MAYBE_SetProxyConfig DISABLED_SetProxyConfig
 #else
 #define MAYBE_SetProxyConfig SetProxyConfig
@@ -698,7 +699,14 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestAppendCommandLineFlags,
   EXPECT_TRUE(callback_was_run_);
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ServerWantsClientCertificate) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1090933): Fix this test on Fuchsia and re-enable.
+#define MAYBE_ServerWantsClientCertificate DISABLED_ServerWantsClientCertificate
+#else
+#define MAYBE_ServerWantsClientCertificate ServerWantsClientCertificate
+#endif
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest,
+                       MAYBE_ServerWantsClientCertificate) {
   net::SSLServerConfig server_config;
   server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
