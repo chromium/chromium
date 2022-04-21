@@ -264,9 +264,15 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
     context_params->enable_encrypted_cookies = cookie_encryption_enabled_;
     context_params->file_paths =
         ::network::mojom::NetworkContextFilePaths::New();
-    context_params->file_paths->data_directory = user_data_path_;
+    context_params->file_paths->data_directory =
+        user_data_path_.Append(FILE_PATH_LITERAL("Network"));
+    context_params->file_paths->unsandboxed_data_path = user_data_path_;
     context_params->file_paths->cookie_database_name =
         base::FilePath(FILE_PATH_LITERAL("Cookies"));
+    // Headless should never perform a migration leaving it to the network
+    // service to decide which data directory (sandboxed or unsandboxed)
+    // it should pick.
+    context_params->file_paths->trigger_migration = false;
   }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDiskCacheDir)) {
