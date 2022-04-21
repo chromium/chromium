@@ -18,6 +18,7 @@
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -103,9 +104,12 @@ TEST_F(SerialTest, OpenAndClosePort) {
   auto token = base::UnguessableToken::Create();
   auto port_info = device::mojom::SerialPortInfo::New();
   port_info->token = token;
-  port_manager()->AddPort(std::move(port_info));
+  port_manager()->AddPort(port_info->Clone());
 
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
 
   TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future;
   service->OpenPort(token, device::mojom::SerialConnectionOptions::New(),
@@ -120,6 +124,35 @@ TEST_F(SerialTest, OpenAndClosePort) {
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
 }
 
+TEST_F(SerialTest, OpenWithoutPermission) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  auto token = base::UnguessableToken::Create();
+  auto port_info = device::mojom::SerialPortInfo::New();
+  port_info->token = token;
+  port_manager()->AddPort(port_info->Clone());
+
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(false));
+
+  TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future;
+  service->OpenPort(token, device::mojom::SerialConnectionOptions::New(),
+                    device::FakeSerialPortClient::Create(),
+                    future.GetCallback());
+  auto port = future.Take();
+  EXPECT_FALSE(port.is_valid());
+
+  // Allow extra time for the watcher connection failure to propagate.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+}
+
 TEST_F(SerialTest, OpenFailure) {
   NavigateAndCommit(GURL(kTestUrl));
 
@@ -130,10 +163,13 @@ TEST_F(SerialTest, OpenFailure) {
   auto token = base::UnguessableToken::Create();
   auto port_info = device::mojom::SerialPortInfo::New();
   port_info->token = token;
-  port_manager()->AddPort(std::move(port_info));
+  port_manager()->AddPort(port_info->Clone());
   port_manager()->set_simulate_open_failure(true);
 
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
 
   TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future;
   service->OpenPort(token, device::mojom::SerialConnectionOptions::New(),
@@ -157,9 +193,12 @@ TEST_F(SerialTest, OpenAndNavigateCrossOrigin) {
   auto token = base::UnguessableToken::Create();
   auto port_info = device::mojom::SerialPortInfo::New();
   port_info->token = token;
-  port_manager()->AddPort(std::move(port_info));
+  port_manager()->AddPort(port_info->Clone());
 
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
 
   TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future;
   service->OpenPort(token, device::mojom::SerialConnectionOptions::New(),
@@ -239,9 +278,12 @@ TEST_F(SerialTest, OpenAndClosePortManagerConnection) {
   auto token = base::UnguessableToken::Create();
   auto port_info = device::mojom::SerialPortInfo::New();
   port_info->token = token;
-  port_manager()->AddPort(std::move(port_info));
+  port_manager()->AddPort(port_info->Clone());
 
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
 
   TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future;
   service->OpenPort(token, device::mojom::SerialConnectionOptions::New(),
@@ -253,12 +295,152 @@ TEST_F(SerialTest, OpenAndClosePortManagerConnection) {
 
   ASSERT_TRUE(observer());
   observer()->OnPortManagerConnectionError();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
   port.FlushForTesting();
   EXPECT_FALSE(port.is_connected());
   service.FlushForTesting();
   EXPECT_FALSE(service.is_connected());
+}
+
+TEST_F(SerialTest, OpenAndRevokePermission) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  auto token = base::UnguessableToken::Create();
+  auto port_info = device::mojom::SerialPortInfo::New();
+  port_info->token = token;
+  port_manager()->AddPort(port_info->Clone());
+
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
+
+  TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future;
+  service->OpenPort(token, device::mojom::SerialConnectionOptions::New(),
+                    device::FakeSerialPortClient::Create(),
+                    future.GetCallback());
+  mojo::Remote<device::mojom::SerialPort> port(future.Take());
+  EXPECT_TRUE(port.is_connected());
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(false));
+
+  ASSERT_TRUE(observer());
+  url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  observer()->OnPermissionRevoked(origin);
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+  port.FlushForTesting();
+  EXPECT_FALSE(port.is_connected());
+  service.FlushForTesting();
+  EXPECT_TRUE(service.is_connected());
+}
+
+TEST_F(SerialTest, OpenAndRevokePermissionOnDifferentOrigin) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  auto token = base::UnguessableToken::Create();
+  auto port_info = device::mojom::SerialPortInfo::New();
+  port_info->token = token;
+  port_manager()->AddPort(port_info->Clone());
+
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
+
+  TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future;
+  service->OpenPort(token, device::mojom::SerialConnectionOptions::New(),
+                    device::FakeSerialPortClient::Create(),
+                    future.GetCallback());
+  mojo::Remote<device::mojom::SerialPort> port(future.Take());
+  EXPECT_TRUE(port.is_connected());
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+
+  ASSERT_TRUE(observer());
+  url::Origin different_origin =
+      url::Origin::Create(GURL("http://different-origin.com"));
+  observer()->OnPermissionRevoked(different_origin);
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+  port.FlushForTesting();
+  EXPECT_TRUE(port.is_connected());
+  service.FlushForTesting();
+  EXPECT_TRUE(service.is_connected());
+}
+
+TEST_F(SerialTest, OpenTwoPortsAndRevokePermission) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  auto token1 = base::UnguessableToken::Create();
+  auto port_info1 = device::mojom::SerialPortInfo::New();
+  port_info1->token = token1;
+  port_manager()->AddPort(port_info1->Clone());
+
+  auto token2 = base::UnguessableToken::Create();
+  auto port_info2 = device::mojom::SerialPortInfo::New();
+  port_info2->token = token2;
+  port_manager()->AddPort(port_info2->Clone());
+
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info1.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
+
+  TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future1;
+  service->OpenPort(token1, device::mojom::SerialConnectionOptions::New(),
+                    device::FakeSerialPortClient::Create(),
+                    future1.GetCallback());
+  mojo::Remote<device::mojom::SerialPort> port1(future1.Take());
+  EXPECT_TRUE(port1.is_connected());
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, _)).WillOnce(Return(port_info2.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
+
+  TestFuture<mojo::PendingRemote<device::mojom::SerialPort>> future2;
+  service->OpenPort(token2, device::mojom::SerialConnectionOptions::New(),
+                    device::FakeSerialPortClient::Create(),
+                    future2.GetCallback());
+  mojo::Remote<device::mojom::SerialPort> port2(future2.Take());
+  EXPECT_TRUE(port2.is_connected());
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(delegate(), GetPortInfo(_, token1))
+      .WillOnce(Return(port_info1.get()));
+  EXPECT_CALL(delegate(), GetPortInfo(_, token2))
+      .WillOnce(Return(port_info2.get()));
+  EXPECT_CALL(delegate(), HasPortPermission(_, _))
+      .Times(2)
+      .WillRepeatedly(testing::Invoke([&](auto rfh, auto port_info) {
+        if (port_info.token == port_info1->token) {
+          return false;
+        } else {
+          return true;
+        }
+      }));
+
+  ASSERT_TRUE(observer());
+  url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  observer()->OnPermissionRevoked(origin);
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+  port1.FlushForTesting();
+  EXPECT_FALSE(port1.is_connected());
+  port2.FlushForTesting();
+  EXPECT_TRUE(port2.is_connected());
+  service.FlushForTesting();
+  EXPECT_TRUE(service.is_connected());
 }
 
 }  // namespace content

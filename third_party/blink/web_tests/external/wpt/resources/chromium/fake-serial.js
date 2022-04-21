@@ -420,6 +420,20 @@ class FakeSerialService {
       return {port: null};
     }
   }
+
+  async forgetPort(token) {
+    let record = this.ports_.get(Number(token.low));
+    if (record === undefined) {
+      return {success: false};
+    }
+
+    this.ports_.delete(Number(token.low));
+    if (record.fakePort.receiver_) {
+      record.fakePort.receiver_.$.close();
+      record.fakePort.receiver_ = undefined;
+    }
+    return {success: true};
+  }
 }
 
 export const fakeSerialService = new FakeSerialService();

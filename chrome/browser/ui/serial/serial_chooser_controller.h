@@ -54,6 +54,7 @@ class SerialChooserController final
   void OnPortAdded(const device::mojom::SerialPortInfo& port) override;
   void OnPortRemoved(const device::mojom::SerialPortInfo& port) override;
   void OnPortManagerConnectionError() override;
+  void OnPermissionRevoked(const url::Origin& origin) override {}
 
  private:
   void OnGetDevices(std::vector<device::mojom::SerialPortInfoPtr> ports);

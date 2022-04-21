@@ -46,11 +46,14 @@ class SerialService : public blink::mojom::SerialService,
                 device::mojom::SerialConnectionOptionsPtr options,
                 mojo::PendingRemote<device::mojom::SerialPortClient> client,
                 OpenPortCallback callback) override;
+  void ForgetPort(const base::UnguessableToken& token,
+                  ForgetPortCallback callback) override;
 
   // SerialDelegate::Observer implementation
   void OnPortAdded(const device::mojom::SerialPortInfo& port) override;
   void OnPortRemoved(const device::mojom::SerialPortInfo& port) override;
   void OnPortManagerConnectionError() override;
+  void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
   friend class content::DocumentUserData<SerialService>;
@@ -71,6 +74,10 @@ class SerialService : public blink::mojom::SerialService,
   // Each pipe here watches a connection created by GetPort() in order to notify
   // the WebContentsImpl when an active connection indicator should be shown.
   mojo::ReceiverSet<device::mojom::SerialPortConnectionWatcher> watchers_;
+
+  // Maps every receiver to a token to allow closing particular connections when
+  // the user revokes a permission.
+  std::multimap<const base::UnguessableToken, mojo::ReceiverId> watcher_ids_;
 
   base::WeakPtrFactory<SerialService> weak_factory_{this};
 

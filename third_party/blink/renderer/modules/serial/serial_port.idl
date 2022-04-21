@@ -26,4 +26,6 @@
     Promise<void> setSignals(optional SerialOutputSignals signals = {});
     [RaisesException, CallWith=ScriptState, MeasureAs=SerialPortClose]
     Promise<void> close();
+    [RaisesException, CallWith=ScriptState, MeasureAs=SerialPortForget, RuntimeEnabled=SerialPortForget]
+    Promise<void> forget();
 };

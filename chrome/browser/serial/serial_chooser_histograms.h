@@ -21,10 +21,12 @@ enum class SerialChooserOutcome {
 // update kMaxValue. Also remember to update the enum listing in
 // tools/metrics/histograms/enums.xml.
 enum class SerialPermissionRevoked {
-  kPersistent = 0,
+  kPersistentByUser = 0,
   kEphemeralByUser,
   kEphemeralByDisconnect,
-  kMaxValue = kEphemeralByDisconnect,
+  kPersistentByWebsite,
+  kEphemeralByWebsite,
+  kMaxValue = kEphemeralByWebsite,
 };
 
 #endif  // CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_HISTOGRAMS_H_

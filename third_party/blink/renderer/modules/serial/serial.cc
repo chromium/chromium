@@ -181,6 +181,13 @@ void Serial::OpenPort(
                      std::move(callback));
 }
 
+void Serial::ForgetPort(
+    const base::UnguessableToken& token,
+    mojom::blink::SerialService::ForgetPortCallback callback) {
+  EnsureServiceConnection();
+  service_->ForgetPort(token, std::move(callback));
+}
+
 void Serial::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(receiver_);

@@ -445,6 +445,23 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
               script_state, MakeGarbageCollected<AbortCloseFunction>(this)));
 }
 
+ScriptPromise SerialPort::forget(ScriptState* script_state,
+                                 ExceptionState& exception_state) {
+  ExecutionContext* context = GetExecutionContext();
+  if (!context) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Script context has shut down.");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  parent_->ForgetPort(info_->token,
+                      WTF::Bind(&SerialPort::OnForget, WrapPersistent(this),
+                                WrapPersistent(resolver)));
+
+  return resolver->Promise();
+}
+
 ScriptPromise SerialPort::ContinueClose(ScriptState* script_state) {
   DCHECK(closing_);
   DCHECK(!close_resolver_);
@@ -707,6 +724,10 @@ void SerialPort::OnClose() {
 
   close_resolver_->Resolve();
   close_resolver_ = nullptr;
+}
+
+void SerialPort::OnForget(ScriptPromiseResolver* resolver) {
+  resolver->Resolve();
 }
 
 }  // namespace blink

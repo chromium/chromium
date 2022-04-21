@@ -1262,6 +1262,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter writable
 [Worker]     method close
 [Worker]     method constructor
+[Worker]     method forget
 [Worker]     method getInfo
 [Worker]     method getSignals
 [Worker]     method open

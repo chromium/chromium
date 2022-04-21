@@ -26,6 +26,12 @@ class ChromeSerialDelegate : public content::SerialDelegate {
   bool CanRequestPortPermission(content::RenderFrameHost* frame) override;
   bool HasPortPermission(content::RenderFrameHost* frame,
                          const device::mojom::SerialPortInfo& port) override;
+  void RevokePortPermissionWebInitiated(
+      content::RenderFrameHost* frame,
+      const base::UnguessableToken& token) override;
+  const device::mojom::SerialPortInfo* GetPortInfo(
+      content::RenderFrameHost* frame,
+      const base::UnguessableToken& token) override;
   device::mojom::SerialPortManager* GetPortManager(
       content::RenderFrameHost* frame) override;
   void AddObserver(content::RenderFrameHost* frame,

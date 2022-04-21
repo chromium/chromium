@@ -8451,6 +8451,7 @@ interface SerialPort : EventTarget
     getter writable
     method close
     method constructor
+    method forget
     method getInfo
     method getSignals
     method open

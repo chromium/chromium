@@ -60,6 +60,7 @@ class SerialPort final : public EventTargetWithInlineData,
                            const SerialOutputSignals*,
                            ExceptionState&);
   ScriptPromise close(ScriptState*, ExceptionState&);
+  ScriptPromise forget(ScriptState*, ExceptionState&);
 
   const base::UnguessableToken& token() const { return info_->token; }
 
@@ -98,6 +99,7 @@ class SerialPort final : public EventTargetWithInlineData,
                     device::mojom::blink::SerialPortControlSignalsPtr);
   void OnSetSignals(ScriptPromiseResolver*, bool success);
   void OnClose();
+  void OnForget(ScriptPromiseResolver*);
 
   const mojom::blink::SerialPortInfoPtr info_;
   const Member<Serial> parent_;
@@ -129,7 +131,7 @@ class SerialPort final : public EventTargetWithInlineData,
   // Resolvers for the Promises returned by getSignals() and setSignals() to
   // reject them on Mojo connection failure.
   HeapHashSet<Member<ScriptPromiseResolver>> signal_resolvers_;
-  // Resolver for the Promise returned by ClosePort().
+  // Resolver for the Promise returned by close().
   Member<ScriptPromiseResolver> close_resolver_;
 };
 

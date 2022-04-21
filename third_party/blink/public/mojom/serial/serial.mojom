@@ -45,6 +45,10 @@ interface SerialService {
            device.mojom.SerialConnectionOptions options,
            pending_remote<device.mojom.SerialPortClient> client)
       => (pending_remote<device.mojom.SerialPort>? port);
+
+  // Attempts to revoke the permission to the device by |token|.
+  // It will fail silently if the permission cannot be revoked.
+  ForgetPort(mojo_base.mojom.UnguessableToken token) => ();
 };
 
 // Client interface for receiving events from SerialService.

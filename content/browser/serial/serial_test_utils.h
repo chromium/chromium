@@ -33,6 +33,13 @@ class MockSerialDelegate : public SerialDelegate {
   MOCK_METHOD2(HasPortPermission,
                bool(RenderFrameHost* frame,
                     const device::mojom::SerialPortInfo& port));
+  MOCK_METHOD2(RevokePortPermissionWebInitiated,
+               void(RenderFrameHost* frame,
+                    const base::UnguessableToken& token));
+  MOCK_METHOD2(GetPortInfo,
+               const device::mojom::SerialPortInfo*(
+                   RenderFrameHost* frame,
+                   const base::UnguessableToken& token));
   MOCK_METHOD1(GetPortManager,
                device::mojom::SerialPortManager*(RenderFrameHost* frame));
   MOCK_METHOD2(AddObserver, void(RenderFrameHost* frame, Observer* observer));

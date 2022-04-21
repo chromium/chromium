@@ -2166,6 +2166,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "SerialPortForget",
+      status: {"Android": "", "default": "stable"},
+    },
+    {
       name: "ServiceWorkerClientLifecycleState",
       status: "experimental",
     },

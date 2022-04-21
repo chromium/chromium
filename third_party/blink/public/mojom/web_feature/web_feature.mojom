@@ -3533,6 +3533,7 @@ enum WebFeature {
   kCSSAtRuleScope = 4212,
   kDeferredShapingDisabledByPositioned = 4213,
   kCapabilityDelegationOfFullscreenRequest = 4214,
+  kSerialPortForget = 4215,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

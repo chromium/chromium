@@ -133,6 +133,53 @@ IN_PROC_BROWSER_TEST_F(SerialTest, RemovePort) {
   EXPECT_EQ(true, content::EvalJs(web_contents, "removedPromise"));
 }
 
+IN_PROC_BROWSER_TEST_F(SerialTest, ForgetPort) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create port and grant permission to it.
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  context()->GrantPortPermission(origin, *port);
+  port_manager().AddPort(port.Clone());
+
+  EXPECT_EQ(1, content::EvalJs(web_contents, R"(
+      (async () => {
+        const ports = await navigator.serial.getPorts();
+        return ports.length;
+      })())"));
+
+  EXPECT_EQ(0, content::EvalJs(web_contents, R"(
+      (async () => {
+        const [port] = await navigator.serial.getPorts();
+        await port.forget();
+        const ports = await navigator.serial.getPorts();
+        return ports.length;
+      })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SerialTest, ForgetAfterOpenPort) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create port and grant permission to it.
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  context()->GrantPortPermission(origin, *port);
+  port_manager().AddPort(port.Clone());
+
+  EXPECT_EQ(0, content::EvalJs(web_contents, R"(
+      (async () => {
+        const [port] = await navigator.serial.getPorts();
+        await port.open({baudRate: 9600});
+        await port.forget();
+        const ports = await navigator.serial.getPorts();
+        return ports.length;
+      })())"));
+}
+
 class SerialBlocklistTest : public SerialTest {
  public:
   void SetUp() override {

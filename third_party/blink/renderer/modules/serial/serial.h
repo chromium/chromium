@@ -66,6 +66,8 @@ class Serial final : public EventTargetWithInlineData,
       device::mojom::blink::SerialConnectionOptionsPtr options,
       mojo::PendingRemote<device::mojom::blink::SerialPortClient> client,
       mojom::blink::SerialService::OpenPortCallback callback);
+  void ForgetPort(const base::UnguessableToken& token,
+                  mojom::blink::SerialService::ForgetPortCallback callback);
   void Trace(Visitor*) const override;
 
  protected:

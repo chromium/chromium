@@ -54,6 +54,7 @@ class MockPortObserver : public SerialChooserContext::PortObserver {
   MOCK_METHOD1(OnPortAdded, void(const device::mojom::SerialPortInfo&));
   MOCK_METHOD1(OnPortRemoved, void(const device::mojom::SerialPortInfo&));
   MOCK_METHOD0(OnPortManagerConnectionError, void());
+  MOCK_METHOD1(OnPermissionRevoked, void(const url::Origin&));
 };
 
 device::mojom::SerialPortInfoPtr CreatePersistentPort(
@@ -250,6 +251,60 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
                                       1);
 }
 
+TEST_F(SerialChooserContextTest, RevokeEphemeralPermissionByWebsite) {
+  base::HistogramTester histogram_tester;
+
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  auto port_1 = device::mojom::SerialPortInfo::New();
+  port_1->token = base::UnguessableToken::Create();
+
+  auto port_2 = CreatePersistentPort("Persistent Port", "ABC123");
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+
+  context()->GrantPortPermission(origin, *port_1);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
+      context()->GetGrantedObjects(origin);
+  ASSERT_EQ(1u, origin_objects.size());
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetAllGrantedObjects();
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_EQ(origin.GetURL(), objects[0]->origin);
+  EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
+  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
+            objects[0]->source);
+  EXPECT_FALSE(objects[0]->incognito);
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
+
+  context()->RevokePortPermissionWebInitiated(origin, port_1->token);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+  origin_objects = context()->GetGrantedObjects(origin);
+  EXPECT_EQ(0u, origin_objects.size());
+  objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(0u, objects.size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.Serial.Revoked",
+      SerialPermissionRevoked::kEphemeralByWebsite, 1);
+}
+
 TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   base::HistogramTester histogram_tester;
 
@@ -300,8 +355,64 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
 
-  histogram_tester.ExpectUniqueSample("Permissions.Serial.Revoked",
-                                      SerialPermissionRevoked::kPersistent, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.Serial.Revoked", SerialPermissionRevoked::kPersistentByUser,
+      1);
+}
+
+TEST_F(SerialChooserContextTest, RevokePersistentPermissionByWebsite) {
+  base::HistogramTester histogram_tester;
+
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  device::mojom::SerialPortInfoPtr port_1 =
+      CreatePersistentPort("Persistent Port", "ABC123");
+
+  auto port_2 = device::mojom::SerialPortInfo::New();
+  port_2->token = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+
+  context()->GrantPortPermission(origin, *port_1);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
+      context()->GetGrantedObjects(origin);
+  ASSERT_EQ(1u, origin_objects.size());
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetAllGrantedObjects();
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_EQ(origin.GetURL(), objects[0]->origin);
+  EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
+  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
+            objects[0]->source);
+  EXPECT_FALSE(objects[0]->incognito);
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
+
+  context()->RevokePortPermissionWebInitiated(origin, port_1->token);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+  origin_objects = context()->GetGrantedObjects(origin);
+  EXPECT_EQ(0u, origin_objects.size());
+  objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(0u, objects.size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.Serial.Revoked",
+      SerialPermissionRevoked::kPersistentByWebsite, 1);
 }
 
 TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {

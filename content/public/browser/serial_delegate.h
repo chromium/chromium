@@ -14,6 +14,10 @@
 #include "services/device/public/mojom/serial.mojom.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class RenderFrameHost;
@@ -22,9 +26,13 @@ class CONTENT_EXPORT SerialDelegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
+    // Events forwarded from SerialChooserContext::PortObserver:
     virtual void OnPortAdded(const device::mojom::SerialPortInfo& port) = 0;
     virtual void OnPortRemoved(const device::mojom::SerialPortInfo& port) = 0;
     virtual void OnPortManagerConnectionError() = 0;
+
+    // Event forwarded from permissions::ChooserContextBase::PermissionObserver:
+    virtual void OnPermissionRevoked(const url::Origin& origin) = 0;
   };
 
   virtual ~SerialDelegate() = default;
@@ -44,6 +52,17 @@ class CONTENT_EXPORT SerialDelegate {
   // Returns whether |frame| has permission to access |port|.
   virtual bool HasPortPermission(RenderFrameHost* frame,
                                  const device::mojom::SerialPortInfo& port) = 0;
+
+  // Revokes |frame| permission to access port identified by |token| ordered by
+  // website.
+  virtual void RevokePortPermissionWebInitiated(
+      RenderFrameHost* frame,
+      const base::UnguessableToken& token) = 0;
+
+  // Gets the port info for a particular port, identified by its |token|.
+  virtual const device::mojom::SerialPortInfo* GetPortInfo(
+      RenderFrameHost* frame,
+      const base::UnguessableToken& token) = 0;
 
   // Returns an open connection to the SerialPortManager interface owned by
   // the embedder and being used to serve requests from |frame|.

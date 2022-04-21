@@ -39,19 +39,28 @@ std::unique_ptr<content::SerialChooser> ChromeSerialDelegate::RunChooser(
 
 bool ChromeSerialDelegate::CanRequestPortPermission(
     content::RenderFrameHost* frame) {
-  auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
-  auto* chooser_context = SerialChooserContextFactory::GetForProfile(profile);
-  return chooser_context->CanRequestObjectPermission(
+  return GetChooserContext(frame)->CanRequestObjectPermission(
       frame->GetMainFrame()->GetLastCommittedOrigin());
 }
 
 bool ChromeSerialDelegate::HasPortPermission(
     content::RenderFrameHost* frame,
     const device::mojom::SerialPortInfo& port) {
-  auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
-  auto* chooser_context = SerialChooserContextFactory::GetForProfile(profile);
-  return chooser_context->HasPortPermission(
+  return GetChooserContext(frame)->HasPortPermission(
       frame->GetMainFrame()->GetLastCommittedOrigin(), port);
+}
+
+void ChromeSerialDelegate::RevokePortPermissionWebInitiated(
+    content::RenderFrameHost* frame,
+    const base::UnguessableToken& token) {
+  return GetChooserContext(frame)->RevokePortPermissionWebInitiated(
+      frame->GetMainFrame()->GetLastCommittedOrigin(), token);
+}
+
+const device::mojom::SerialPortInfo* ChromeSerialDelegate::GetPortInfo(
+    content::RenderFrameHost* frame,
+    const base::UnguessableToken& token) {
+  return GetChooserContext(frame)->GetPortInfo(token);
 }
 
 device::mojom::SerialPortManager* ChromeSerialDelegate::GetPortManager(

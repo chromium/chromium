@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/cxx20_erase.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -124,6 +125,12 @@ void SerialService::OpenPort(
     return;
   }
 
+  const auto* port = delegate->GetPortInfo(&render_frame_host(), token);
+  if (!port || !delegate->HasPortPermission(&render_frame_host(), *port)) {
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
   if (watchers_.empty()) {
     auto* web_contents_impl = static_cast<WebContentsImpl*>(
         WebContents::FromRenderFrameHost(&render_frame_host()));
@@ -131,10 +138,22 @@ void SerialService::OpenPort(
   }
 
   mojo::PendingRemote<device::mojom::SerialPortConnectionWatcher> watcher;
-  watchers_.Add(this, watcher.InitWithNewPipeAndPassReceiver());
+  mojo::ReceiverId receiver_id =
+      watchers_.Add(this, watcher.InitWithNewPipeAndPassReceiver());
+  watcher_ids_.insert({token, receiver_id});
+
   delegate->GetPortManager(&render_frame_host())
       ->OpenPort(token, /*use_alternate_path=*/false, std::move(options),
                  std::move(client), std::move(watcher), std::move(callback));
+}
+
+void SerialService::ForgetPort(const base::UnguessableToken& token,
+                               ForgetPortCallback callback) {
+  SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
+  if (delegate) {
+    delegate->RevokePortPermissionWebInitiated(&render_frame_host(), token);
+  }
+  std::move(callback).Run();
 }
 
 void SerialService::OnPortAdded(const device::mojom::SerialPortInfo& port) {
@@ -169,6 +188,26 @@ void SerialService::OnPortManagerConnectionError() {
   }
 }
 
+void SerialService::OnPermissionRevoked(const url::Origin& origin) {
+  if (origin != render_frame_host().GetMainFrame()->GetLastCommittedOrigin())
+    return;
+
+  SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
+  size_t watchers_removed =
+      base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+        const auto* port =
+            delegate->GetPortInfo(&render_frame_host(), watcher_entry.first);
+        if (port && delegate->HasPortPermission(&render_frame_host(), *port))
+          return false;
+
+        watchers_.Remove(watcher_entry.second);
+        return true;
+      });
+
+  if (watchers_removed > 0 && watchers_.empty())
+    DecrementActiveFrameCount();
+}
+
 void SerialService::FinishGetPorts(
     GetPortsCallback callback,
     std::vector<device::mojom::SerialPortInfoPtr> ports) {
@@ -201,6 +240,11 @@ void SerialService::FinishRequestPort(RequestPortCallback callback,
 void SerialService::OnWatcherConnectionError() {
   if (watchers_.empty())
     DecrementActiveFrameCount();
+
+  // Clean up any associated |watcher_ids_| entries.
+  base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+    return watcher_entry.second == watchers_.current_receiver();
+  });
 }
 
 void SerialService::DecrementActiveFrameCount() {

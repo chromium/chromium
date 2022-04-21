@@ -161,6 +161,7 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
           HostContentSettingsMapFactory::GetForProfile(profile)),
       profile_(profile) {
   DCHECK(profile_);
+  permission_observation_.Observe(this);
 }
 
 SerialChooserContext::~SerialChooserContext() = default;
@@ -212,6 +213,11 @@ std::u16string SerialChooserContext::GetObjectDisplayName(
   return base::UTF8ToUTF16(*name);
 }
 
+void SerialChooserContext::OnPermissionRevoked(const url::Origin& origin) {
+  for (auto& observer : port_observer_list_)
+    observer.OnPermissionRevoked(origin);
+}
+
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
 SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
   std::vector<std::unique_ptr<Object>> objects =
@@ -226,7 +232,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
         if (port_it == port_info_.end())
           continue;
 
-        const base::Value& port = port_it->second;
+        const base::Value& port = PortInfoToValue(*port_it->second);
         objects.push_back(std::make_unique<Object>(
             origin, port.Clone(),
             content_settings::SettingSource::SETTING_SOURCE_USER,
@@ -290,7 +296,7 @@ SerialChooserContext::GetAllGrantedObjects() {
         continue;
 
       objects.push_back(std::make_unique<Object>(
-          origin, it->second.Clone(),
+          origin, PortInfoToValue(*it->second),
           content_settings::SettingSource::SETTING_SOURCE_USER,
           IsOffTheRecord()));
     }
@@ -335,10 +341,30 @@ SerialChooserContext::GetAllGrantedObjects() {
 
 void SerialChooserContext::RevokeObjectPermission(const url::Origin& origin,
                                                   const base::Value& object) {
+  RevokeObjectPermissionInternal(origin, object, /*revoked_by_website=*/false);
+}
+
+void SerialChooserContext::RevokePortPermissionWebInitiated(
+    const url::Origin& origin,
+    const base::UnguessableToken& token) {
+  auto it = port_info_.find(token);
+  if (it == port_info_.end())
+    return;
+
+  return RevokeObjectPermissionInternal(origin, PortInfoToValue(*it->second),
+                                        /*revoked_by_website=*/true);
+}
+
+void SerialChooserContext::RevokeObjectPermissionInternal(
+    const url::Origin& origin,
+    const base::Value& object,
+    bool revoked_by_website = false) {
   const std::string* token = object.FindStringKey(kTokenKey);
   if (!token) {
     ObjectPermissionContextBase::RevokeObjectPermission(origin, object);
-    RecordPermissionRevocation(SerialPermissionRevoked::kPersistent);
+    RecordPermissionRevocation(
+        revoked_by_website ? SerialPermissionRevoked::kPersistentByWebsite
+                           : SerialPermissionRevoked::kPersistentByUser);
     return;
   }
 
@@ -349,17 +375,19 @@ void SerialChooserContext::RevokeObjectPermission(const url::Origin& origin,
 
   DCHECK(IsValidObject(object));
   ports.erase(DecodeToken(*token));
-  RecordPermissionRevocation(SerialPermissionRevoked::kEphemeralByUser);
+  RecordPermissionRevocation(revoked_by_website
+                                 ? SerialPermissionRevoked::kEphemeralByWebsite
+                                 : SerialPermissionRevoked::kEphemeralByUser);
   NotifyPermissionRevoked(origin);
 }
 
 void SerialChooserContext::GrantPortPermission(
     const url::Origin& origin,
     const device::mojom::SerialPortInfo& port) {
-  base::Value value = PortInfoToValue(port);
-  port_info_.insert({port.token, value.Clone()});
+  port_info_.insert({port.token, port.Clone()});
 
   if (CanStorePersistentEntry(port)) {
+    base::Value value = PortInfoToValue(port);
     GrantObjectPermission(origin, std::move(value));
     return;
   }
@@ -470,6 +498,13 @@ bool SerialChooserContext::CanStorePersistentEntry(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
+const device::mojom::SerialPortInfo* SerialChooserContext::GetPortInfo(
+    const base::UnguessableToken& token) {
+  DCHECK(is_initialized_);
+  auto it = port_info_.find(token);
+  return it == port_info_.end() ? nullptr : it->second.get();
+}
+
 device::mojom::SerialPortManager* SerialChooserContext::GetPortManager() {
   EnsurePortManagerConnection();
   return port_manager_.get();
@@ -497,6 +532,10 @@ base::WeakPtr<SerialChooserContext> SerialChooserContext::AsWeakPtr() {
 }
 
 void SerialChooserContext::OnPortAdded(device::mojom::SerialPortInfoPtr port) {
+  if (!base::Contains(port_info_, port->token)) {
+    port_info_.insert({port->token, port->Clone()});
+  }
+
   for (auto& observer : port_observer_list_)
     observer.OnPortAdded(*port);
 }
@@ -546,6 +585,15 @@ void SerialChooserContext::SetUpPortManagerConnection(
                      base::Unretained(this)));
 
   port_manager_->SetClient(client_receiver_.BindNewPipeAndPassRemote());
+  port_manager_->GetDevices(base::BindOnce(&SerialChooserContext::OnGetDevices,
+                                           weak_factory_.GetWeakPtr()));
+}
+
+void SerialChooserContext::OnGetDevices(
+    std::vector<device::mojom::SerialPortInfoPtr> ports) {
+  for (auto& port : ports)
+    port_info_.insert({port->token, std::move(port)});
+  is_initialized_ = true;
 }
 
 void SerialChooserContext::OnPortManagerConnectionError() {

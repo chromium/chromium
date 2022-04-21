@@ -42,3 +42,15 @@ serial_test(async (t) => {
     assert_equals(e.name, 'NotSupportedError');
   }
 }, 'open() rejects in a detached context');
+
+serial_test(async (t) => {
+  const port = await getDetachedSerialPort();
+
+  try {
+    await port.forget();
+  } catch (e) {
+    // Cannot use promise_rejects_dom() because |e| is thrown from a different
+    // global.
+    assert_equals(e.name, 'NotSupportedError');
+  }
+}, 'forget() rejects in a detached context');

@@ -37959,6 +37959,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4212" label="CSSAtRuleScope"/>
   <int value="4213" label="DeferredShapingDisabledByPositioned"/>
   <int value="4214" label="CapabilityDelegationOfFullscreenRequest"/>
+  <int value="4215" label="SerialPortForget"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -81955,6 +81956,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Persistent permission revoked by user"/>
   <int value="1" label="Ephemeral permission revoked by user"/>
   <int value="2" label="Ephemeral permission revoked on disconnect"/>
+  <int value="3" label="Persistent permission revoked by website"/>
+  <int value="4" label="Ephemeral permission revoked by website"/>
 </enum>
 
 <enum name="ServiceProcessEventType">
