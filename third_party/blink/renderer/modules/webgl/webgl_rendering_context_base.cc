@@ -5065,13 +5065,8 @@ void WebGLRenderingContextBase::TexImageSkPixmap(TexImageParams params,
     params.depth = 1;
 
   const char* func_name = GetTexImageFunctionName(params.function_id);
-  const gfx::Rect source_rect(params.unpack_skip_pixels,
-                              params.unpack_skip_rows, *params.width,
-                              *params.height);
   bool selecting_sub_rectangle = false;
-  if (!ValidateTexImageSubRectangle(
-          func_name, params.function_id, pixmap, source_rect, *params.depth,
-          params.unpack_image_height, &selecting_sub_rectangle)) {
+  if (!ValidateTexImageSubRectangle(params, pixmap, &selecting_sub_rectangle)) {
     return;
   }
 
@@ -5110,7 +5105,9 @@ void WebGLRenderingContextBase::TexImageSkPixmap(TexImageParams params,
       params.type = GL_FLOAT;
 
     // Adjust the source image rectangle if doing a y-flip.
-    gfx::Rect adjusted_source_rect = source_rect;
+    gfx::Rect adjusted_source_rect(params.unpack_skip_pixels,
+                                   params.unpack_skip_rows, *params.width,
+                                   *params.height);
     if (do_flip_y) {
       adjusted_source_rect.set_y(pixmap->height() -
                                  adjusted_source_rect.bottom());
@@ -5702,24 +5699,26 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
   const char* func_name = GetTexImageFunctionName(params.function_id);
   if (isContextLost())
     return;
-  const gfx::Rect source_sub_rectangle(
-      params.unpack_skip_pixels, params.unpack_skip_rows,
-      params.width.value_or(context_host->width()),
-      params.height.value_or(context_host->height()));
+  if (!params.width)
+    params.width = context_host->width();
+  if (!params.height)
+    params.height = context_host->height();
+  if (!params.depth)
+    params.depth = 1;
 
   // TODO(crbug.com/1210718): It may be possible to simplify this code
   // by consolidating on CanvasImageSource::GetSourceImageForCanvas().
 
   if (!ValidateCanvasRenderingContextHost(security_origin, func_name,
-                                          context_host, exception_state))
+                                          context_host, exception_state)) {
     return;
+  }
   WebGLTexture* texture =
       ValidateTexImageBinding(func_name, params.function_id, params.target);
   if (!texture)
     return;
-  if (!ValidateTexFunc(params, kSourceHTMLCanvasElement,
-                       source_sub_rectangle.width(),
-                       source_sub_rectangle.height())) {
+  if (!ValidateTexFunc(params, kSourceHTMLCanvasElement, *params.width,
+                       *params.height)) {
     return;
   }
 
@@ -5727,10 +5726,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
   // copy case, but is redundant for the software upload case
   // (texImageImpl).
   bool selecting_sub_rectangle = false;
-  if (!ValidateTexImageSubRectangle(
-          func_name, params.function_id, context_host, source_sub_rectangle,
-          params.depth.value_or(1), params.unpack_image_height,
-          &selecting_sub_rectangle)) {
+  if (!ValidateTexImageSubRectangle(params, context_host,
+                                    &selecting_sub_rectangle)) {
     return;
   }
 
@@ -5749,7 +5746,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
         To<WebGLRenderingContextBase>(context_host->RenderingContext());
   } else {
     image = context_host->GetSourceImageForCanvas(
-        &source_image_status, gfx::SizeF(source_sub_rectangle.size()));
+        &source_image_status, gfx::SizeF(*params.width, *params.height));
     if (source_image_status != kNormalSourceImageStatus)
       return;
   }
@@ -5769,8 +5766,9 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
     }
 
     // The GPU-GPU copy path uses the Y-up coordinate system.
-    gfx::Rect adjusted_source_sub_rectangle = source_sub_rectangle;
-
+    gfx::Rect adjusted_source_sub_rectangle(params.unpack_skip_pixels,
+                                            params.unpack_skip_rows,
+                                            *params.width, *params.height);
     bool should_adjust_source_sub_rectangle = !unpack_flip_y_;
     if (is_origin_top_left_ && source_canvas_webgl_context)
       should_adjust_source_sub_rectangle = !should_adjust_source_sub_rectangle;
@@ -5927,19 +5925,14 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // orientation is provided, we must disable them.
   const auto transform = media_video_frame->metadata().transformation.value_or(
       media::kNoTransformation);
-
-  absl::optional<gfx::Rect> source_image_rect;
-  if (params.width && params.height) {
-    source_image_rect =
-        gfx::Rect(params.unpack_skip_pixels, params.unpack_skip_rows,
-                  *params.width, *params.height);
-  }
-
   const GLint adjusted_internalformat =
       ConvertTexInternalFormat(params.internalformat, params.type);
   const bool source_image_rect_is_default =
-      !source_image_rect ||
-      *source_image_rect == gfx::Rect(media_video_frame->natural_size());
+      params.unpack_skip_pixels == 0 && params.unpack_skip_rows == 0 &&
+      (!params.width ||
+       *params.width == media_video_frame->natural_size().width()) &&
+      (!params.height ||
+       *params.height == media_video_frame->natural_size().height());
   const auto& caps = GetDrawingBuffer()->ContextProvider()->GetCapabilities();
   const bool may_need_image_external_essl3 =
       caps.egl_image_external &&
@@ -6102,10 +6095,11 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     return;
 
   if (can_upload_via_gpu && image->IsTextureBacked()) {
-    auto adjusted_source_image_rect =
-        source_image_rect.value_or(GetTextureSourceSize(image.get()));
-
     auto* accel_image = static_cast<AcceleratedStaticBitmapImage*>(image.get());
+    const gfx::Rect adjusted_source_image_rect(
+        params.unpack_skip_pixels, params.unpack_skip_rows,
+        params.width.value_or(image->width()),
+        params.height.value_or(image->height()));
     TexImageViaGPU(params, texture, accel_image, nullptr,
                    adjusted_source_image_rect);
   } else {
@@ -6169,13 +6163,8 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     params.height = bitmap->height();
   if (!params.depth)
     params.depth = 1;
-  const gfx::Rect source_sub_rect(params.unpack_skip_pixels,
-                                  params.unpack_skip_rows, *params.width,
-                                  *params.height);
   bool selecting_sub_rectangle = false;
-  if (!ValidateTexImageSubRectangle(
-          func_name, params.function_id, bitmap, source_sub_rect, *params.depth,
-          params.unpack_image_height, &selecting_sub_rectangle)) {
+  if (!ValidateTexImageSubRectangle(params, bitmap, &selecting_sub_rectangle)) {
     return;
   }
 
@@ -6218,11 +6207,11 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
       !selecting_sub_rectangle) {
     AcceleratedStaticBitmapImage* accel_image =
         static_cast<AcceleratedStaticBitmapImage*>(image.get());
-    // We hard-code premultiply_alpha and flip_y values because these should
-    // have already been manipulated during construction of the ImageBitmap.
-    // All AcceleratedStaticBitmapImages have premultiplied alpha, so setting
-    // `unpack_premultiply_alpha` ensures a no-op.
+    // All AcceleratedStaticBitmapImages have premultiplied alpha.
     DCHECK_NE(accel_image->GetSkColorInfo().alphaType(), kUnpremul_SkAlphaType);
+    const gfx::Rect source_sub_rect(params.unpack_skip_pixels,
+                                    params.unpack_skip_rows, *params.width,
+                                    *params.height);
     TexImageViaGPU(params, texture, accel_image, nullptr, source_sub_rect);
   } else {
     TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);

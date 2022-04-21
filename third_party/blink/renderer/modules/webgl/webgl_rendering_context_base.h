@@ -1227,13 +1227,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   }
 
   template <typename T>
-  bool ValidateTexImageSubRectangle(const char* function_name,
-                                    TexImageFunctionID function_id,
+  bool ValidateTexImageSubRectangle(const TexImageParams& params,
                                     T* image,
-                                    const gfx::Rect& sub_rect,
-                                    GLsizei depth,
-                                    GLint unpack_image_height,
                                     bool* selecting_sub_rectangle) {
+    const char* function_name = GetTexImageFunctionName(params.function_id);
     DCHECK(function_name);
     DCHECK(selecting_sub_rectangle);
     if (!image) {
@@ -1242,8 +1239,12 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return false;
     }
 
-    int image_width = static_cast<int>(image->width());
-    int image_height = static_cast<int>(image->height());
+    const int image_width = static_cast<int>(image->width());
+    const int image_height = static_cast<int>(image->height());
+    const gfx::Rect sub_rect(params.unpack_skip_pixels, params.unpack_skip_rows,
+                             params.width.value_or(image_width),
+                             params.height.value_or(image_height));
+    const GLsizei depth = params.depth.value_or(1);
     *selecting_sub_rectangle =
         !(sub_rect.x() == 0 && sub_rect.y() == 0 &&
           sub_rect.width() == image_width && sub_rect.height() == image_height);
@@ -1266,8 +1267,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return false;
     }
 
-    if (function_id == kTexImage3D || function_id == kTexSubImage3D) {
-      DCHECK_GE(unpack_image_height, 0);
+    if (params.function_id == kTexImage3D ||
+        params.function_id == kTexSubImage3D) {
+      DCHECK_GE(params.unpack_image_height, 0);
 
       if (depth < 1) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
@@ -1278,8 +1280,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       // According to the WebGL 2.0 spec, specifying depth > 1 means
       // to select multiple rectangles stacked vertically.
       base::CheckedNumeric<GLint> max_y_accessed;
-      if (unpack_image_height) {
-        max_y_accessed = unpack_image_height;
+      if (params.unpack_image_height) {
+        max_y_accessed = params.unpack_image_height;
       } else {
         max_y_accessed = sub_rect.height();
       }
@@ -1302,7 +1304,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       }
     } else {
       DCHECK_EQ(depth, 1);
-      DCHECK_EQ(unpack_image_height, 0);
+      DCHECK_EQ(params.unpack_image_height, 0);
     }
     return true;
   }
