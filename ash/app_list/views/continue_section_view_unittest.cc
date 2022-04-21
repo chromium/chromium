@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
@@ -56,9 +57,6 @@ namespace ash {
 namespace {
 
 using test::AppListTestViewDelegate;
-
-constexpr char kFilesRemovedHistogramName[] =
-    "Apps.AppList.Search.ContinueSectionFilesRemovedPerSession";
 
 std::unique_ptr<TestSearchResult> CreateTestResult(const std::string& id,
                                                    AppListSearchResultType type,
@@ -106,6 +104,13 @@ class ContinueSectionViewTestBase : public AshTestBase {
         {});
   }
   ~ContinueSectionViewTestBase() override = default;
+
+  void TearDown() override {
+    AshTestBase::TearDown();
+    // Clean up global variables used for metrics on continue section removals.
+    ContinueSectionView::ResetContinueSectionFileRemovalMetricEnabledForTest();
+    ResetContinueSectionFileRemovedCountForTest();
+  }
 
   // Whether we should run the test in tablet mode.
   bool tablet_mode_param() { return tablet_mode_; }
@@ -1047,9 +1052,12 @@ TEST_P(ContinueSectionViewTest, ResultRemovedLogsMetricInBucket) {
       client->GetAndClearInvokedResultActions();
   EXPECT_EQ(expected_actions, invoked_actions);
 
-  EXPECT_EQ(1, histogram_tester.GetBucketCount(kFilesRemovedHistogramName, 1));
-  EXPECT_EQ(1, histogram_tester.GetBucketCount(kFilesRemovedHistogramName, 2));
-  histogram_tester.ExpectTotalCount(kFilesRemovedHistogramName, 2);
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   kContinueSectionFilesRemovedInSessionHistogram, 1));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   kContinueSectionFilesRemovedInSessionHistogram, 2));
+  histogram_tester.ExpectTotalCount(
+      kContinueSectionFilesRemovedInSessionHistogram, 2);
 }
 
 TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {

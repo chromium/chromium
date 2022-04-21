@@ -46,6 +46,9 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // Returns true if the continue section removal metrics should be logged.
   static bool EnableContinueSectionFileRemovalMetrics();
 
+  // Reset for the continue section file removal metric logging enabling.
+  static void ResetContinueSectionFileRemovalMetricEnabledForTest();
+
   // Called when the `suggestion_container_` finishes updating the tasks.
   void OnSearchResultContainerResultsChanged();
 

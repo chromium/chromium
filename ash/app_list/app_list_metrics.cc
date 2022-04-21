@@ -525,4 +525,8 @@ void RecordCumulativeContinueSectionResultRemovedNumber() {
                               ++g_continue_file_removals_in_session);
 }
 
+void ResetContinueSectionFileRemovedCountForTest() {
+  g_continue_file_removals_in_session = 0;
+}
+
 }  // namespace ash

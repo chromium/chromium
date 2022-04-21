@@ -153,6 +153,12 @@ bool ContinueSectionView::EnableContinueSectionFileRemovalMetrics() {
   return g_continue_section_files_shown;
 }
 
+// static
+void ContinueSectionView::
+    ResetContinueSectionFileRemovalMetricEnabledForTest() {
+  g_continue_section_files_shown = false;
+}
+
 void ContinueSectionView::UpdateSuggestionTasks() {
   suggestions_container_->SetResults(
       AppListModelProvider::Get()->search_model()->results());

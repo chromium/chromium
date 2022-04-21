@@ -29,6 +29,11 @@ ASH_EXPORT extern const char kTabletReorderAnimationSmoothnessHistogram[];
 ASH_EXPORT extern const char kClamshellReorderActionHistogram[];
 ASH_EXPORT extern const char kTabletReorderActionHistogram[];
 
+// UMA histograms that records the number of files removed per user per session
+// from the launcher continue section. Exposed in this header because it is
+// needed in tests.
+ASH_EXPORT extern const char kContinueSectionFilesRemovedInSessionHistogram[];
+
 // The different ways to create a new page in the apps grid. These values are
 // written to logs. New enum values can be added, but existing enums must never
 // be renumbered or deleted and reused.
@@ -294,6 +299,10 @@ void RecordMetricsOnSessionEnd();
 // Section in the session. This also increments the internal counter to keep
 // track of the number of files that have been removed.
 void RecordCumulativeContinueSectionResultRemovedNumber();
+
+// Resets the count for the number of files that have been removed from the
+// Launcher Continue Section in the session.
+void ResetContinueSectionFileRemovedCountForTest();
 
 }  // namespace ash
 
