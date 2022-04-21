@@ -59,11 +59,6 @@
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"]
     },
-    "Win7 Tests (dbg)(1)": {
-        "master": "chromium.win",
-        "port_name": "win-win7",
-        "specifiers": ["Win7", "Debug"]
-    },
     "fuchsia_x64": {
         "master": "tryserver.chromium.linux",
         "port_name": "fuchsia",
