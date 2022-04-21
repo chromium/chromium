@@ -523,6 +523,46 @@ suite('GooglePhotosPhotosTest', function() {
     assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
   });
 
+  test('regenerates placeholders on resize', async () => {
+    // Mock |window.innerWidth|.
+    window.innerWidth = 721;
+
+    // Initialize |googlePhotosPhotosElement|.
+    googlePhotosPhotosElement =
+        initElement(GooglePhotosPhotos, {hidden: false});
+    await waitAfterNextRender(googlePhotosPhotosElement);
+
+    const rowSelector = '.row:not([hidden])';
+
+    // No photos should be present.
+    const selector = `${rowSelector} wallpaper-grid-item:not([hidden]).photo`;
+    const photoSelector = `${selector}:not([placeholder])`;
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+
+    // Only placeholders should be present and there should be exactly four
+    // placeholders per row given the mocked |window.innerWidth|.
+    const placeholderSelector = `${selector}[placeholder]`;
+    assertEquals(querySelectorAll(placeholderSelector)!.length % 4, 0);
+    querySelectorAll(rowSelector)!.forEach(rowEl => {
+      assertEquals(rowEl.querySelectorAll(placeholderSelector)!.length, 4);
+    });
+
+    // Mock |window.innerWidth| and dispatch a resize event.
+    window.innerWidth = 720;
+    googlePhotosPhotosElement.dispatchEvent(new CustomEvent('iron-resize'));
+    await waitAfterNextRender(googlePhotosPhotosElement);
+
+    // No photos should be present.
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+
+    // Only placeholders should be present and there should be exactly three
+    // placeholders per row given the mocked |window.innerWidth|.
+    assertEquals(querySelectorAll(placeholderSelector)!.length % 3, 0);
+    querySelectorAll(rowSelector)!.forEach(rowEl => {
+      assertEquals(rowEl.querySelectorAll(placeholderSelector)!.length, 3);
+    });
+  });
+
   test('reattempts failed photos load on show', async () => {
     // Set values returned by |wallpaperProvider|.
     wallpaperProvider.setGooglePhotosCount(1);

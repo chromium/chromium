@@ -17,7 +17,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
+import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -113,6 +113,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         value: function() {
           return getNumberOfGridItemsPerRow();
         },
+        observer: 'onPhotosPerRowChanged_',
       },
 
       photosResumeToken_: {
@@ -325,6 +326,18 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
             photosBySection.flatMap(section => section.rows) :
             [],
         /*identityBasedUpdate=*/ true);
+  }
+
+  /** Invoked on changes to |photosPerRow_|. */
+  private onPhotosPerRowChanged_(photosPerRow:
+                                     GooglePhotosPhotos['photosPerRow_']) {
+    // Because this element manually partitions photos by row, placeholders need
+    // to be explicitly regenerated when the desired number of photos per row
+    // changes.
+    if (photosPerRow && isNonEmptyArray(this.photosByRow_) &&
+        this.photosByRow_.every(r => r.every(p => p.id === PLACEHOLDER_ID))) {
+      this.photosByRow_ = getPlaceholders();
+    }
   }
 
   /** Invoked on changes to |photosResumeToken_|. */
