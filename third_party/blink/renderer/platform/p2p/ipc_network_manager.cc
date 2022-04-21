@@ -112,7 +112,7 @@ void IpcNetworkManager::OnNetworkListChanged(
 
   // rtc::Network uses these prefix_length to compare network
   // interfaces discovered.
-  std::vector<rtc::Network*> networks;
+  std::vector<std::unique_ptr<rtc::Network>> networks;
   for (auto it = list.begin(); it != list.end(); it++) {
     rtc::IPAddress ip_address = webrtc::NetIPAddressToRtcIPAddress(it->address);
     DCHECK(!ip_address.IsNil());
@@ -125,8 +125,8 @@ void IpcNetworkManager::OnNetworkListChanged(
     if (adapter_type == rtc::ADAPTER_TYPE_UNKNOWN) {
       adapter_type = rtc::GetAdapterTypeFromName(it->name.c_str());
     }
-    std::unique_ptr<rtc::Network> network(new rtc::Network(
-        it->name, it->name, prefix, it->prefix_length, adapter_type));
+    auto network = std::make_unique<rtc::Network>(
+        it->name, it->name, prefix, it->prefix_length, adapter_type);
     network->set_default_local_address_provider(this);
     network->set_mdns_responder_provider(this);
 
@@ -149,7 +149,7 @@ void IpcNetworkManager::OnNetworkListChanged(
       use_default_ipv6_address |= (default_ipv6_local_address == it->address);
     }
     network->AddIP(iface_addr);
-    networks.push_back(network.release());
+    networks.push_back(std::move(network));
   }
 
   // Update the default local addresses.
@@ -168,12 +168,12 @@ void IpcNetworkManager::OnNetworkListChanged(
   if (Platform::Current()->AllowsLoopbackInPeerConnection()) {
     std::string name_v4("loopback_ipv4");
     rtc::IPAddress ip_address_v4(INADDR_LOOPBACK);
-    rtc::Network* network_v4 = new rtc::Network(name_v4, name_v4, ip_address_v4,
-                                                32, rtc::ADAPTER_TYPE_UNKNOWN);
+    auto network_v4 = std::make_unique<rtc::Network>(
+        name_v4, name_v4, ip_address_v4, 32, rtc::ADAPTER_TYPE_UNKNOWN);
     network_v4->set_default_local_address_provider(this);
     network_v4->set_mdns_responder_provider(this);
     network_v4->AddIP(ip_address_v4);
-    networks.push_back(network_v4);
+    networks.push_back(std::move(network_v4));
 
     rtc::IPAddress ipv6_default_address;
     // Only add IPv6 loopback if we can get default local address for IPv6. If
@@ -183,18 +183,18 @@ void IpcNetworkManager::OnNetworkListChanged(
       DCHECK(!ipv6_default_address.IsNil());
       std::string name_v6("loopback_ipv6");
       rtc::IPAddress ip_address_v6(in6addr_loopback);
-      rtc::Network* network_v6 = new rtc::Network(
+      auto network_v6 = std::make_unique<rtc::Network>(
           name_v6, name_v6, ip_address_v6, 64, rtc::ADAPTER_TYPE_UNKNOWN);
       network_v6->set_default_local_address_provider(this);
       network_v6->set_mdns_responder_provider(this);
       network_v6->AddIP(ip_address_v6);
-      networks.push_back(network_v6);
+      networks.push_back(std::move(network_v6));
     }
   }
 
   bool changed = false;
   NetworkManager::Stats stats;
-  MergeNetworkList(networks, &changed, &stats);
+  MergeNetworkList(std::move(networks), &changed, &stats);
   if (changed)
     SignalNetworksChanged();
 

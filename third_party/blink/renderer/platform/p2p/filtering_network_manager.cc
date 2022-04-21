@@ -181,16 +181,16 @@ void FilteringNetworkManager::OnNetworksChanged() {
   // known.
   std::vector<const rtc::Network*> networks =
       network_manager_for_signaling_thread_->GetNetworks();
-  NetworkList copied_networks;
+  std::vector<std::unique_ptr<rtc::Network>> copied_networks;
   copied_networks.reserve(networks.size());
   for (const rtc::Network* network : networks) {
     auto copied_network = std::make_unique<rtc::Network>(*network);
     copied_network->set_default_local_address_provider(this);
     copied_network->set_mdns_responder_provider(this);
-    copied_networks.push_back(copied_network.release());
+    copied_networks.push_back(std::move(copied_network));
   }
   bool changed;
-  MergeNetworkList(copied_networks, &changed);
+  MergeNetworkList(std::move(copied_networks), &changed);
   // We wait until our permission status is known before firing a network
   // change signal, so that the listener(s) don't miss out on receiving a
   // full network list.
