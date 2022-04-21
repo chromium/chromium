@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -92,6 +93,7 @@ public class TabGridAccessibilityHelperTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1318376")
     public void testGetPotentialActionsForView() {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
