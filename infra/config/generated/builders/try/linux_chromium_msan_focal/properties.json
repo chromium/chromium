@@ -17,7 +17,7 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium"
+                "config": "chromium_msan"
               },
               "legacy_gclient_config": {
                 "config": "chromium"

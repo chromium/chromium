@@ -1380,7 +1380,7 @@ ci.builder(
             config = "chromium",
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "chromium_msan",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
         ),
@@ -1405,9 +1405,10 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = ["chromeos"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "chromium_msan",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
         ),
