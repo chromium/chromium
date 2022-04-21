@@ -14,6 +14,7 @@ namespace cr_fuchsia {
 // the version from version_info, and an appropriate value for the release
 // channel. |component_url| must match the current component. The calling
 // process must have access to "fuchsia.feedback.CrashReportingProductRegister".
+// Registration is skipped for unofficial and unbranded builds.
 void RegisterProductDataForCrashReporting(base::StringPiece component_url,
                                           base::StringPiece crash_product_name);
 

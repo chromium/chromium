@@ -9,6 +9,7 @@
 
 #include "base/fuchsia/process_context.h"
 #include "base/strings/string_piece.h"
+#include "build/branding_buildflags.h"
 #include "components/version_info/version_info.h"
 
 namespace cr_fuchsia {
@@ -22,10 +23,23 @@ void RegisterProductDataForCrashReporting(
   // TODO(https://crbug.com/1077428): Use the actual channel when appropriate.
   // For now, always set it to the empty string to avoid reporting "missing".
   product_data.set_channel("");
-  base::ComponentContextForProcess()
-      ->svc()
-      ->Connect<fuchsia::feedback::CrashReportingProductRegister>()
-      ->Upsert(std::string(component_url), std::move(product_data));
+
+  auto crash_reporting_service =
+      base::ComponentContextForProcess()
+          ->svc()
+          ->Connect<fuchsia::feedback::CrashReportingProductRegister>();
+
+  // Only register the |crash_product_name| for official Chrome-branded builds.
+  // Otherwise, the crashes will be handled as non-component-specific crashes.
+  // Since Fuchsia handles crashes, it is possible that Fuchsia will upload a
+  // crash for an unofficial and/or unbranded build of a Chromium-based
+  // component if it is running on an official Fuchsia build. To avoid adding
+  // noise from such crash reports, which are not received on other platforms,
+  // do not set a product name for such builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
+  crash_reporting_service->Upsert(std::string(component_url),
+                                  std::move(product_data));
+#endif
 }
 
 void RegisterProductDataForFeedback(base::StringPiece component_namespace) {
