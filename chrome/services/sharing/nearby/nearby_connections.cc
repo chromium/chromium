@@ -529,12 +529,12 @@ void NearbyConnections::SendPayload(
     SendPayloadCallback callback) {
   Payload core_payload;
   switch (payload->content->which()) {
-    case mojom::PayloadContent::Tag::BYTES:
+    case mojom::PayloadContent::Tag::kBytes:
       core_payload =
           Payload(payload->id,
                   ByteArrayFromMojom(payload->content->get_bytes()->bytes));
       break;
-    case mojom::PayloadContent::Tag::FILE:
+    case mojom::PayloadContent::Tag::kFile:
       int64_t file_size = payload->content->get_file()->file.GetLength();
       {
         base::AutoLock al(input_file_lock_);
