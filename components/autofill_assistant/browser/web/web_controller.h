@@ -390,8 +390,9 @@ class WebController {
   virtual base::WeakPtr<WebController> GetWeakPtr() const;
 
  private:
-  friend class WebControllerBrowserTest;
   friend class BatchElementCheckerBrowserTest;
+  friend class SemanticElementFinderBrowserTest;
+  friend class WebControllerBrowserTest;
 
   void OnJavaScriptResult(
       base::OnceCallback<void(const ClientStatus&)> callback,

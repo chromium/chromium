@@ -18,7 +18,7 @@
 #include "components/autofill_assistant/browser/web/base_element_finder.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
-#include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_types.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
 
 namespace content {
