@@ -1020,12 +1020,6 @@
     "args": ["--stable-release-mode"]
   },
   {
-    "prefix": "selectmenu-old-popup",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--disable-blink-features=HTMLSelectMenuElementUsesPopupAttribute"]
-  },
-  {
     "prefix": "dialogfocus-old-behavior",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

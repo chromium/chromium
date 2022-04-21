@@ -3,8 +3,9 @@
 <script src='../../resources/testharness.js'></script>
 
 <div id=elements>
-  <popup id=popup_element>This content should be visible, if HTMLPopupElement is disabled</popup>
-  <div popup=popup id=popup_attribute>This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup=popup id=popup_popup>This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup=hint  id=popup_hint>This content should be visible, if HTMLPopupAttribute is disabled</div>
+  <div popup=async id=popup_async>This content should be visible, if HTMLPopupAttribute is disabled</div>
 </div>
 
 <script>
@@ -16,11 +17,8 @@
   }
 
   const elements = document.getElementById('elements');
-  const popupElement = elements.querySelector('popup');
   test(() => {
     assert_throws_dom("SyntaxError",() => {elements.matches(':popup-open')},"The :popup-open pseudo class shouldn't be available");
-    assert_true(!!popupElement);
-    assert_true(popupElement instanceof HTMLUnknownElement, '<popup> should be an instance of HTMLUnknownElement');
   },'Basic tests');
 
   for(let el of elements.children) {
@@ -28,7 +26,7 @@
       assert_true(!!el);
       assert_true(popupVisible(el));
       assert_not_equals(window.getComputedStyle(el).display,'none');
-    },`${el.id} should be HTMLUnknownElement and should be stylable/visible`);
+    },`${el.id} should be stylable/visible and not display:none`);
   }
 
   function supportsPopup() {

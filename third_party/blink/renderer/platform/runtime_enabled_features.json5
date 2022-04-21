@@ -1274,20 +1274,10 @@
     {
       name: "HTMLPopupAttribute",
       status: "experimental",
-      implied_by: ["HTMLSelectMenuElement","HTMLSelectMenuElementUsesPopupAttribute"],
-    },
-    {
-      name: "HTMLPopupElement",
-      status: "experimental",
       implied_by: ["HTMLSelectMenuElement"],
     },
     {
       name: "HTMLSelectMenuElement",
-      status: "experimental",
-      implied_by: ["HTMLSelectMenuElementUsesPopupAttribute"],
-    },
-    {
-      name: "HTMLSelectMenuElementUsesPopupAttribute",
       status: "experimental",
     },
     {

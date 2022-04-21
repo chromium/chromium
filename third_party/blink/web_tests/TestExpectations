@@ -7728,7 +7728,6 @@ crbug.com/1296449 [ Linux Release ] external/wpt/workers/SharedWorker-MessageEve
 
 # Sheriff 2022-04-20
 crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
-crbug.com/1253971 [ Mac ] virtual/selectmenu-old-popup/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 
 # Temporarily disabled in order to land devtools-frontend commit that will change this test's baseline
 crbug.com/1024156 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Skip ]

@@ -302,11 +302,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
-  if (!popup_style_sheet_ &&
-      (IsA<HTMLPopupElement>(element) || element.HasValidPopupAttribute())) {
-    // TODO: We should assert that this sheet only contains rules for <popup>.
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
-           RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  if (!popup_style_sheet_ && element.HasValidPopupAttribute()) {
+    // TODO: We should assert that this sheet only contains rules for popups.
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
     popup_style_sheet_ =
         ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_POPUP_CSS));
     AddRulesToDefaultStyleSheets(popup_style_sheet_, NamespaceType::kHTML);

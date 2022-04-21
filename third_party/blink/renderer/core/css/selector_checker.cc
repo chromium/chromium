@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
-#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -1285,8 +1284,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       break;
     }
     case CSSSelector::kPseudoPopupOpen:
-      if (auto* popup_element = DynamicTo<HTMLPopupElement>(element))
-        return popup_element->open();
       if (element.HasValidPopupAttribute()) {
         return element.popupOpen();
       }

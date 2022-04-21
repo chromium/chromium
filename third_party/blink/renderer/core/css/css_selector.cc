@@ -554,7 +554,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoPopupOpen &&
-      !RuntimeEnabledFeatures::HTMLPopupElementEnabled() &&
       !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
     return CSSSelector::kPseudoUnknown;
 

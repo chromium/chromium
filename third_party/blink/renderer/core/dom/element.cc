@@ -140,7 +140,6 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
-#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_table_rows_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -2431,8 +2430,7 @@ void Element::hidePopup() {
 }
 
 void Element::SetPopupFocusOnShow() {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   // The layout must be updated here because we call Element::isFocusable,
   // which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
@@ -2478,16 +2476,14 @@ void Element::SetPopupFocusOnShow() {
 // https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area
 // does not include dialogs or popups yet.
 Element* Element::GetPopupFocusableArea(bool autofocus_only) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   Node* next = nullptr;
   for (Node* node = FlatTreeTraversal::FirstChild(*this); node; node = next) {
     next = FlatTreeTraversal::Next(*node, this);
     auto* element = DynamicTo<Element>(node);
     if (!element)
       continue;
-    if (IsA<HTMLPopupElement>(*element) || element->HasValidPopupAttribute() ||
-        IsA<HTMLDialogElement>(*element)) {
+    if (element->HasValidPopupAttribute() || IsA<HTMLDialogElement>(*element)) {
       next = FlatTreeTraversal::NextSkippingChildren(*element, this);
       continue;
     }
@@ -2501,8 +2497,7 @@ Element* Element::GetPopupFocusableArea(bool autofocus_only) const {
 
 // static
 const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (!start_node)
     return nullptr;
   // We need to walk up from the start node to see if there is a parent popup,
@@ -2512,18 +2507,6 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
   // popup, but we will stop on any of them. Therefore, just store the popup
   // that is highest (last) on the popup stack for each anchor and/or invoker.
 
-  // TODO(masonf): getInvoker can be removed once the HTMLPopupElement is
-  // removed.
-  auto getInvoker = [](const Element* element) -> Element* {
-    if (auto* popup_element = DynamicTo<HTMLPopupElement>(element)) {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-      // The <popup> element `popup` attribute has been deprecated and removed.
-      return nullptr;
-    } else {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-      return element->GetPopupData()->invoker();
-    }
-  };
   // |anchors_and_invokers| is a map from anchors/invokers to popup elements.
   HeapHashMap<Member<const Element>, Member<const Element>>
       anchors_and_invokers;
@@ -2531,20 +2514,15 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
   for (auto popup : document.PopupElementStack()) {
     if (const auto* anchor = popup->anchorElement())
       anchors_and_invokers.Set(anchor, popup);
-    if (const auto* invoker = getInvoker(popup))
+    if (const auto* invoker = popup->GetPopupData()->invoker())
       anchors_and_invokers.Set(invoker, popup);
   }
   for (Node* current_node = start_node; current_node;
        current_node = FlatTreeTraversal::Parent(*current_node)) {
     // Parent popup element (or the start_node itself, if popup).
-    if (auto* popup = DynamicTo<HTMLPopupElement>(current_node)) {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-      if (popup->open())
-        return popup;
-    } else if (auto* current_element = DynamicTo<Element>(current_node)) {
+    if (auto* current_element = DynamicTo<Element>(current_node)) {
       if (current_element->HasValidPopupAttribute() &&
           current_element->GetPopupData()->open()) {
-        DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
         return current_element;
       } else if (anchors_and_invokers.Contains(current_element)) {
         return anchors_and_invokers.at(current_element);
@@ -2555,14 +2533,13 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
   // If the starting element is a popup, we need to check for ancestors
   // of its anchor and invoking element also.
   if (const auto* start_element = DynamicTo<Element>(start_node)) {
-    if (IsA<HTMLPopupElement>(start_element) ||
-        start_element->HasValidPopupAttribute()) {
+    if (start_element->HasValidPopupAttribute()) {
       if (auto* anchor_ancestor =
               NearestOpenAncestralPopup(start_element->anchorElement())) {
         return anchor_ancestor;
       }
-      if (auto* invoker_ancestor =
-              NearestOpenAncestralPopup(getInvoker(start_element))) {
+      if (auto* invoker_ancestor = NearestOpenAncestralPopup(
+              start_element->GetPopupData()->invoker())) {
         return invoker_ancestor;
       }
     }
@@ -2610,8 +2587,7 @@ void Element::InvokePopup(Element* invoker) {
 }
 
 Element* Element::anchorElement() const {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() &&
-      !RuntimeEnabledFeatures::HTMLPopupElementEnabled()) {
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
     return nullptr;
   }
   const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
@@ -2624,9 +2600,8 @@ Element* Element::anchorElement() const {
 
 void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-  DCHECK(IsA<HTMLPopupElement>(this) || HasValidPopupAttribute());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(HasValidPopupAttribute());
   auto& popup_data = EnsureElementRareData().EnsurePopupData();
   if (popup_data.needsRepositioningForSelectMenu() == flag)
     return;
@@ -2641,9 +2616,8 @@ void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
 
 void Element::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-  DCHECK(IsA<HTMLPopupElement>(this) || HasValidPopupAttribute());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(HasValidPopupAttribute());
   EnsureElementRareData().EnsurePopupData().setOwnerSelectMenuElement(element);
 }
 
@@ -2651,7 +2625,7 @@ void Element::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
 // anchored positioning scheme.
 void Element::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(IsA<HTMLPopupElement>(this) || HasValidPopupAttribute());
+  DCHECK(HasValidPopupAttribute());
   DCHECK(GetPopupData()->needsRepositioningForSelectMenu());
   auto* owner_select = GetPopupData()->ownerSelectMenuElement();
   DCHECK(owner_select);
@@ -4944,10 +4918,9 @@ void Element::Focus(const FocusParams& params) {
       frame_owner_element->contentDocument()->UnloadStarted())
     return;
 
-  if ((IsA<HTMLPopupElement>(this) || HasValidPopupAttribute()) &&
+  if (HasValidPopupAttribute() &&
       hasAttribute(html_names::kDelegatesfocusAttr)) {
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
-           RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
     if (auto* node_to_focus = GetPopupFocusableArea(/*autofocus_only=*/false)) {
       node_to_focus->Focus(params);
     }
@@ -7152,8 +7125,7 @@ scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject(
   if (HasValidPopupAttribute() &&
       GetPopupData()->needsRepositioningForSelectMenu()) {
     DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
-           RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
     AdjustPopupPositionForSelectMenu(*style);
   }
   return style;

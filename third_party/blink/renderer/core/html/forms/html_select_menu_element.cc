@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_menu_part_traversal.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
-#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -183,8 +182,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
 HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::RuntimeEnabledFeatures::
+             HTMLPopupAttributeEnabled());
   UseCounter::Count(document, WebFeature::kSelectMenuElement);
 
   EnsureUserAgentShadowRoot();
@@ -254,13 +253,8 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
 
   Element* new_popup;
-  if (RuntimeEnabledFeatures::
-          HTMLSelectMenuElementUsesPopupAttributeEnabled()) {
-    new_popup = MakeGarbageCollected<HTMLDivElement>(document);
-    new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValuePopup);
-  } else {
-    new_popup = MakeGarbageCollected<HTMLPopupElement>(document);
-  }
+  new_popup = MakeGarbageCollected<HTMLDivElement>(document);
+  new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValuePopup);
   new_popup->setAttribute(html_names::kPartAttr, kListboxPartName);
   new_popup->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
   new_popup->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));
@@ -327,22 +321,13 @@ bool HTMLSelectMenuElement::open() const {
   // either of the key parts (button or listbox) are missing.
   if (!listbox_part_)
     return false;
-  if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
-    return popup_element->open();
-  } else if (listbox_part_->HasValidPopupAttribute()) {
-    return listbox_part_->popupOpen();
-  }
-  return false;
+  return listbox_part_->HasValidPopupAttribute() && listbox_part_->popupOpen();
 }
 
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
     listbox_part_->SetNeedsRepositioningForSelectMenu(true);
-    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
-      popup_element->show();
-    } else {
-      listbox_part_->showPopup();
-    }
+    listbox_part_->showPopup();
     if (selectedOption()) {
       selectedOption()->Focus();
     }
@@ -355,9 +340,7 @@ void HTMLSelectMenuElement::CloseListbox() {
     if (button_part_) {
       button_part_->Focus();
     }
-    if (auto* popup_element = DynamicTo<HTMLPopupElement>(*listbox_part_)) {
-      popup_element->hide();
-    } else if (listbox_part_->HasValidPopupAttribute()) {
+    if (listbox_part_->HasValidPopupAttribute()) {
       listbox_part_->hidePopup();
     }
 
@@ -416,24 +399,15 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Node* node,
     return false;
   }
 
-  DCHECK(!element->HasValidPopupAttribute() ||
-         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (!IsA<HTMLPopupElement>(element) && !element->HasValidPopupAttribute()) {
+  if (!element->HasValidPopupAttribute()) {
     if (show_warning) {
-      const char* error_message =
-          RuntimeEnabledFeatures::
-                  HTMLSelectMenuElementUsesPopupAttributeEnabled()
-              ? "Found non-popup element labeled as listbox under "
-                "<selectmenu>, which is not allowed. The <selectmenu>'s "
-                "listbox element must have a valid value set for the 'popup' "
-                "attribute. This <selectmenu> will not be fully functional."
-              : "Found non-<popup> element labeled as listbox under "
-                "<selectmenu>, but only a <popup> can be used for the "
-                "<selectmenu>'s listbox part. This <selectmenu> will not be "
-                "fully functional.";
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning, error_message));
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "Found non-popup element labeled as listbox under "
+          "<selectmenu>, which is not allowed. The <selectmenu>'s "
+          "listbox element must have a valid value set for the 'popup' "
+          "attribute. This <selectmenu> will not be fully functional."));
     }
     return false;
   }

@@ -102,7 +102,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
-#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -2868,7 +2867,7 @@ void Node::HandleLocalEvents(Event& event) {
     if (GetDocument().PopupShowing() &&
         (event.eventPhase() == Event::kCapturingPhase ||
          event.eventPhase() == Event::kAtTarget)) {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+      DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
       // There is a popup visible - check if this event should "light dismiss"
       // one or more popups.
       Element::HandlePopupLightDismiss(event);

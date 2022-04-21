@@ -37512,8 +37512,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3779" label="V8TCPSocket_RemotePort_AttributeGetter"/>
   <int value="3780" label="CSSSelectorTargetText"/>
   <int value="3781" label="PopupElement"/>
-  <int value="3782" label="V8HTMLPopupElement_Show_Method"/>
-  <int value="3783" label="V8HTMLPopupElement_Hide_Method"/>
+  <int value="3782" label="OBSOLETE_V8HTMLPopupElement_Show_Method"/>
+  <int value="3783" label="OBSOLETE_V8HTMLPopupElement_Hide_Method"/>
   <int value="3784" label="OBSOLETE_WindowOpenWithAdditionalBoolParameter"/>
   <int value="3785" label="RTCPeerConnectionConstructedWithPlanB"/>
   <int value="3786" label="RTCPeerConnectionConstructedWithUnifiedPlan"/>

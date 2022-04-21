@@ -221,7 +221,6 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
-#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/html_unknown_element.h"
@@ -7212,37 +7211,23 @@ bool Document::PopupShowing() const {
   return !popup_element_stack_.IsEmpty();
 }
 
-void Document::HidePopup(Element* popup) {
-  if (auto* popup_element = DynamicTo<HTMLPopupElement>(popup)) {
-    popup_element->hide();
-  } else if (popup->HasValidPopupAttribute()) {
-    popup->hidePopup();
-  } else {
-    NOTREACHED() << "popup should be either a <popup> or have a valid "
-                    "popup attribute";
-  }
-}
-
 void Document::HideTopmostPopupElement() {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (popup_element_stack_.IsEmpty())
     return;
-  HidePopup(popup_element_stack_.back());
+  popup_element_stack_.back()->hidePopup();
 }
 
 void Document::HideAllPopupsUntil(const Element* endpoint) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   while (!popup_element_stack_.IsEmpty() &&
          popup_element_stack_.back() != endpoint) {
-    HidePopup(popup_element_stack_.back());
+    popup_element_stack_.back()->hidePopup();
   }
 }
 
 void Document::HidePopupIfShowing(const Element* popup) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
-         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (!popup_element_stack_.Contains(popup))
     return;
   HideAllPopupsUntil(popup);
