@@ -415,6 +415,136 @@ TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
   EXPECT_TRUE(IsLocked("target"));
 }
 
+TEST_F(DeferredShapingTest, AbsolutePositionedHugeNegativeTop) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div>IFC
+  <span id="target" style="position:absolute; top:-9999px"></span>
+</div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
+
+  GetElementById("target")->setAttribute(html_names::kStyleAttr,
+                                         "position:absolute; top:-20px;");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, AbsolutePositionedNegativeTopInIfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div>IFC<span style="position:absolute; top:-1800px"></span></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, AbsolutePositionedNegativeTopInBfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<p>IFC</p>
+<div><div style="position:absolute; top:-1800px"></div></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, AbsolutePositionedBottomInIfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div>IFC<span style="position:absolute; bottom:0px"></span></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, AbsolutePositionedBottomInBfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<p>IFC</p>
+<div><div style="position:absolute; top:0px"></div></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, AbsolutePositionedInNonVisibleOverflow) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div style="overflow:scroll">IFC
+  <span style="position:absolute; top:-1800px; left:0px"></span></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, AbsolutePositionedNoLeftRightInIfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div>IFC<span style="position:absolute; top:0px"></span></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, AbsolutePositionedNoLeftRightInBfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div><div></div><div style="position:absolute; top:0px"></div></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, RelativePositionedHugeNegativeTop) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div>IFC
+  <span id="target" style="position:relative; top:-9999px"></span>
+</div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
+
+  GetElementById("target")->setAttribute(html_names::kStyleAttr,
+                                         "position:relative; top:-20px;");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, RelativePositionedNegativeTopInIfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div>IFC<span style="position:relative; top:-1800px"></span></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, RelativePositionedNegativeTopInBfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div><div></div><div style="position:relative; top:-1800px"></div></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, RelativePositionedBottomInIfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div>IFC<span style="position:relative; bottom:0px"></span></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, RelativePositionedBottomInBfc) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div><div></div><div style="position:relative; bottom:0px"></div></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
+TEST_F(DeferredShapingTest, RelativePositionedInNonVisibleOverflow) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div style="overflow:scroll">IFC
+  <span style="position:relative; top:-1800px; left:0px"></span></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
+}
+
 TEST_F(DeferredShapingTest, ShapeResultCrash) {
   StringBuilder builder;
   builder.ReserveCapacity(1000);

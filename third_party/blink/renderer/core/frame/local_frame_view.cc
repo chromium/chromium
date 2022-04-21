@@ -858,7 +858,7 @@ void LocalFrameView::PerformLayout() {
       base::AutoReset<bool> deferred_shaping(
           &allow_deferred_shaping_,
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
-              !frame_->PagePopupOwner() &&
+              default_allow_deferred_shaping_ && !frame_->PagePopupOwner() &&
               !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
                    .SeenFirstMeaningfulPaint());
       DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
@@ -4935,6 +4935,12 @@ DarkModeFilter& LocalFrameView::EnsureDarkModeFilter() {
         std::make_unique<DarkModeFilter>(GetCurrentDarkModeSettings());
   }
   return *dark_mode_filter_;
+}
+
+void LocalFrameView::DisallowDeferredShaping() {
+  DCHECK_EQ(current_viewport_bottom_, kIndefiniteSize);
+  DCHECK_EQ(current_minimum_top_, LayoutUnit());
+  default_allow_deferred_shaping_ = false;
 }
 
 void LocalFrameView::RequestToLockDeferred(Element& element) {

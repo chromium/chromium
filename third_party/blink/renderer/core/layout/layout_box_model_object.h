@@ -588,6 +588,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual void LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const;
 
   void WillBeDestroyed() override;
+  void InsertedIntoTree() override;
 
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
                                             const Element*) const;
@@ -718,6 +719,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
         &LayoutBoxModelObject::BorderTop, &LayoutBoxModelObject::BorderRight,
         &LayoutBoxModelObject::BorderBottom, &LayoutBoxModelObject::BorderLeft);
   }
+  void DisallowDeferredShapingIfNegativePositioned() const;
 };
 
 template <>
