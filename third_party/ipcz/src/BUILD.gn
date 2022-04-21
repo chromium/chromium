@@ -126,11 +126,17 @@ ipcz_source_set("ipcz") {
 }
 
 ipcz_source_set("reference_drivers") {
+  public = [ "reference_drivers/single_process_reference_driver.h" ]
+
   sources = [
+    "reference_drivers/object.cc",
+    "reference_drivers/object.h",
+    "reference_drivers/random.cc",
+    "reference_drivers/random.h",
     "reference_drivers/single_process_reference_driver.cc",
-    "reference_drivers/single_process_reference_driver.h",
   ]
 
+  ipcz_deps = [ ":util" ]
   public_deps = [ ":ipcz_header" ]
   configs = [ ":ipcz_include_src_dir" ]
 }
@@ -214,6 +220,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "api_test.cc",
     "ipcz/parcel_queue_test.cc",
     "ipcz/sequenced_queue_test.cc",
+    "reference_drivers/single_process_reference_driver_test.cc",
     "test/test_base.cc",
     "test/test_base.h",
     "util/ref_counted_test.cc",
