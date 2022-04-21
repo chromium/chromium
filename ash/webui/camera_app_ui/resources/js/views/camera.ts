@@ -81,7 +81,7 @@ export class Camera extends View implements CameraViewUI {
   /**
    * Layout handler for the camera view.
    */
-  private readonly layoutHandler = new Layout();
+  private readonly layoutHandler: Layout;
 
   private readonly scanOptions: ScanOptions;
 
@@ -134,6 +134,8 @@ export class Camera extends View implements CameraViewUI {
       this.docModeDialogView,
       new View(ViewName.FLASH),
     ];
+
+    this.layoutHandler = new Layout(this.cameraManager);
 
     this.scanOptions = new ScanOptions(this.cameraManager);
 
@@ -502,6 +504,18 @@ export class Camera extends View implements CameraViewUI {
   async onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
     state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
+
+    if (this.cameraManager.preferSquarePhoto()) {
+      pendingPhotoResult = (async () => {
+        const photoResult = await pendingPhotoResult;
+        const croppedBlob = await util.cropSquare(photoResult.blob);
+        return {
+          ...photoResult,
+          blob: croppedBlob,
+        };
+      })();
+    }
+
     try {
       const {resolution, blob, timestamp, metadata} =
           await this.checkPhotoResult(pendingPhotoResult);

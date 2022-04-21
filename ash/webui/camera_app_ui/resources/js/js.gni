@@ -22,7 +22,6 @@ compile_js_files = [
   "device/mode/portrait.ts",
   "device/mode/record_time.ts",
   "device/mode/scan.ts",
-  "device/mode/square.ts",
   "device/mode/video.ts",
   "device/preview.ts",
   "device/stream_constraints.ts",

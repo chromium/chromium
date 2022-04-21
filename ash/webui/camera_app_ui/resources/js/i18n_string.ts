@@ -90,6 +90,7 @@ export enum I18nString {
   LABEL_PHOTO_RESOLUTION = 'label_photo_resolution',
   LABEL_RECORD_GIF_VIDEO_OPTION = 'label_record_gif_video_option',
   LABEL_RECORD_NORMAL_VIDEO_OPTION = 'label_record_normal_video_option',
+  LABEL_RESOLUTION_MP = 'label_resolution_mp',
   LABEL_RETAKE = 'label_retake',
   LABEL_SAVE = 'label_save',
   LABEL_SAVE_PDF_DOCUMENT = 'label_save_pdf_document',

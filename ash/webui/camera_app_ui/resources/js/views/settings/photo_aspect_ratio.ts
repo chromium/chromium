@@ -62,7 +62,6 @@ export class PhotoAspectRatioSettings extends BaseSettings {
         this.addAspectRatioItem(deviceId, facing, option);
       }
     }
-    // TODO(b/215484798): Moves square mode in photo aspect ratio settings.
     setupI18nElements(this.menu);
   }
 

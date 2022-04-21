@@ -433,6 +433,15 @@ export class CameraManager implements EventListener {
     this.scheduler.toggleVideoRecordingPause();
   }
 
+  preferSquarePhoto(): boolean {
+    const deviceId = this.getDeviceId();
+    if (deviceId === null) {
+      return false;
+    }
+    return this.scheduler.reconfigurer.capturePreferrer.preferSquarePhoto(
+        deviceId);
+  }
+
   private setCameraAvailable(available: boolean): void {
     if (available === this.cameraAvailable) {
       return;

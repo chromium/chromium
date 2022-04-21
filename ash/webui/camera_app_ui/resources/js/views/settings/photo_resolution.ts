@@ -11,7 +11,7 @@ import {
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
-import {Facing, ViewName} from '../../type.js';
+import {Facing, Resolution, ViewName} from '../../type.js';
 import {instantiateTemplate, setupI18nElements} from '../../util.js';
 
 import {BaseSettings} from './base.js';
@@ -69,9 +69,17 @@ export class PhotoResolutionSettings extends BaseSettings {
   private addResolutionItem(
       deviceId: string, facing: Facing, option: PhotoResolutionOption): void {
     const optionElement = instantiateTemplate('#resolution-item-template');
+
     const label = util.toPhotoResolutionOptionLabel(option.resolutionLevel);
     const resolution = option.resolutions[0];
-    const text = `${label} (${resolution.mp} MP)`;
+    let megaPixels = resolution.mp;
+    if (this.cameraManager.preferSquarePhoto()) {
+      const croppedEdge = Math.min(resolution.width, resolution.height);
+      megaPixels = (new Resolution(croppedEdge, croppedEdge)).mp;
+    }
+    const mpInfo =
+        loadTimeData.getI18nMessage(I18nString.LABEL_RESOLUTION_MP, megaPixels);
+    const text = `${label} (${mpInfo})`;
     const span = dom.getFrom(optionElement, 'span', HTMLSpanElement);
     span.textContent = text;
     const deviceName =

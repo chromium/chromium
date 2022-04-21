@@ -29,7 +29,6 @@ import {
   ScanFactory,
   ScanHandler,
 } from './scan.js';
-import {SquareFactory} from './square.js';
 import {
   VideoFactory,
   VideoHandler,
@@ -198,20 +197,7 @@ export class Modes {
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
-        fallbackMode: Mode.SQUARE,
-      },
-      [Mode.SQUARE]: {
-        getCaptureFactory: () => {
-          const params = this.getCaptureParams();
-          return new SquareFactory(
-              params.constraints, params.captureResolution,
-              assertExists(this.handler));
-        },
-        isSupported: async () => true,
-        isSupportPTZ: checkSupportPTZForPhotoMode,
-        prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, CaptureIntent.STILL_CAPTURE),
-        fallbackMode: Mode.PHOTO,
+        fallbackMode: Mode.SCAN,
       },
       [Mode.PORTRAIT]: {
         getCaptureFactory: () => {

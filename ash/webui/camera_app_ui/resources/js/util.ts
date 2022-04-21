@@ -342,3 +342,25 @@ export function assertEnumVariant<T extends string>(
   assert(ret !== null, `${value} is not a valid enum variant`);
   return ret;
 }
+
+/**
+ * Crops out maximum possible centered square from the image blob.
+ *
+ * @return Promise with result cropped square image.
+ */
+export async function cropSquare(blob: Blob): Promise<Blob> {
+  const img = await blobToImage(blob);
+  try {
+    const side = Math.min(img.width, img.height);
+    const {canvas, ctx} = newDrawingCanvas({width: side, height: side});
+    ctx.drawImage(
+        img, Math.floor((img.width - side) / 2),
+        Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);
+    // TODO(b/174190121): Patch important exif entries from input blob to
+    // result blob.
+    const croppedBlob = await canvasToJpegBlob(canvas);
+    return croppedBlob;
+  } finally {
+    URL.revokeObjectURL(img.src);
+  }
+}

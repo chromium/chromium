@@ -99,6 +99,7 @@ const struct {
     {"label_photo_resolution", IDS_LABEL_PHOTO_RESOLUTION},
     {"label_record_gif_video_option", IDS_LABEL_RECORD_GIF_VIDEO_OPTION},
     {"label_record_normal_video_option", IDS_LABEL_RECORD_NORMAL_VIDEO_OPTION},
+    {"label_resolution_mp", IDS_LABEL_RESOLUTION_MP},
     {"label_retake", IDS_LABEL_RETAKE},
     {"label_save", IDS_LABEL_SAVE},
     {"label_save_pdf_document", IDS_LABEL_SAVE_PDF_DOCUMENT},

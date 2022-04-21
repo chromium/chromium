@@ -92,6 +92,9 @@ export function toAspectRatioLabel(aspectRatioSet: AspectRatioSet): string {
       return '16:9';
     case AspectRatioSet.RATIO_OTHER:
       return loadTimeData.getI18nMessage(I18nString.LABEL_OTHER_ASPECT_RATIO);
+    case AspectRatioSet.RATIO_SQUARE:
+      return loadTimeData.getI18nMessage(
+          I18nString.LABEL_SWITCH_TAKE_SQUARE_PHOTO_BUTTON);
     default:
       assertNotReached();
   }
@@ -111,6 +114,9 @@ export function toAspectRatioAriaLabel(aspectRatioSet: AspectRatioSet): string {
       break;
     case AspectRatioSet.RATIO_OTHER:
       ariaLabel = I18nString.LABEL_OTHER_ASPECT_RATIO;
+      break;
+    case AspectRatioSet.RATIO_SQUARE:
+      ariaLabel = I18nString.LABEL_SWITCH_TAKE_SQUARE_PHOTO_BUTTON;
       break;
     default:
       assertNotReached();

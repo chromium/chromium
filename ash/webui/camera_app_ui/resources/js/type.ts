@@ -92,7 +92,6 @@ export enum MimeType {
 export enum Mode {
   PHOTO = 'photo',
   VIDEO = 'video',
-  SQUARE = 'square',
   PORTRAIT = 'portrait',
   SCAN = 'scan',
 }
@@ -153,9 +152,10 @@ export enum AspectRatioSet {
   RATIO_4_3 = 1.3333,
   RATIO_16_9 = 1.7778,
   RATIO_OTHER = 0.0000,
+  RATIO_SQUARE = 1.0000,
 }
 
-export const ASPECT_RATIO_GROUPS = [
+export const NON_CROP_ASPECT_RATIO_SETS = [
   AspectRatioSet.RATIO_4_3,
   AspectRatioSet.RATIO_16_9,
   AspectRatioSet.RATIO_OTHER,
