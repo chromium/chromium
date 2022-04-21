@@ -19,6 +19,7 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/content_browser_client.h"

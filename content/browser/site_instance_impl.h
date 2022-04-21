@@ -8,21 +8,27 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
+#include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_info.h"
-#include "content/browser/site_instance_group.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/site_instance_process_assignment.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
-#include "url/origin.h"
+
+namespace url {
+class Origin;
+}
 
 namespace content {
 
+class AgentSchedulingGroupHost;
+class BrowserContext;
 class BrowsingInstance;
 class SiteInstanceGroup;
 class StoragePartitionConfig;
