@@ -265,6 +265,10 @@ class NavigationManagerImpl : public NavigationManager {
   // instead of the public NavigationItem interface.
   NavigationItemImpl* GetNavigationItemImplAtIndex(size_t index) const;
 
+  // Returns false if no navigation has been committed since the most recent
+  // session restore, and true otherwise.
+  bool IsCommittedAfterRestore() const;
+
  protected:
   // The SessionStorageBuilder functions require access to private variables of
   // NavigationManagerImpl.
@@ -473,6 +477,10 @@ class NavigationManagerImpl : public NavigationManager {
   // data blob (rather than a cached one). This is useful for when there is a
   // cache miss, or when syncing tabs between devices.
   SynthesizedSessionRestore synthesized_restore_helper_;
+
+  // Whether this navigation manager committed the restored item. It is set to
+  // false in Restore() and true in OnNavigationItemCommitted().
+  bool committed_after_restore_ = true;
 };
 
 }  // namespace web

@@ -127,6 +127,7 @@ void NavigationManagerImpl::OnNavigationItemCommitted() {
       FinalizeSessionRestore();
     }
   }
+  committed_after_restore_ = true;
 }
 
 void NavigationManagerImpl::OnNavigationStarted(const GURL& url) {
@@ -935,12 +936,16 @@ void NavigationManagerImpl::Restore(
   DCHECK_EQ(0, GetItemCount());
   DCHECK_EQ(-1, pending_item_index_);
   last_committed_item_index_ = -1;
-
+  committed_after_restore_ = false;
   UnsafeRestore(last_committed_item_index, std::move(items));
 }
 
 bool NavigationManagerImpl::IsRestoreSessionInProgress() const {
   return is_restore_session_in_progress_;
+}
+
+bool NavigationManagerImpl::IsCommittedAfterRestore() const {
+  return committed_after_restore_;
 }
 
 void NavigationManagerImpl::AddRestoreCompletionCallback(

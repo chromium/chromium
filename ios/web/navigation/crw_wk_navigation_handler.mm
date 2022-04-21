@@ -2028,8 +2028,12 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
           if (errorHTML) {
             NSString* injectedHTML =
                 [reloadPageHTMLTemplate stringByAppendingString:errorHTML];
-            errorNavigation = [webView loadSimulatedRequest:URLRequest
-                                         responseHTMLString:injectedHTML];
+            if (self.navigationManagerImpl->IsCommittedAfterRestore()) {
+              errorNavigation = [webView loadSimulatedRequest:URLRequest
+                                           responseHTMLString:injectedHTML];
+            } else {
+              [webView loadHTMLString:injectedHTML baseURL:failingURL];
+            }
           } else {
             errorNavigation = [webView loadSimulatedRequest:URLRequest
                                          responseHTMLString:@""];
