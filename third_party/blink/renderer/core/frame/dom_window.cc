@@ -749,15 +749,21 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
     user_activation = UserActivation::CreateSnapshot(source);
 
   // TODO(mustaq): This is an ad-hoc mechanism to support delegating a single
-  // capability.  We need to add a structure to support passing other
+  // capability.  We need to add a structure to support passing multiple
   // capabilities.  An explainer for the general delegation API is here:
   // https://github.com/mustaqahmed/capability-delegation
-  bool delegate_payment_request = false;
+  mojom::blink::DelegatedCapability delegated_capability =
+      mojom::blink::DelegatedCapability::kNone;
   if (LocalFrame::HasTransientUserActivation(source_frame) &&
       options->hasDelegate()) {
     Vector<String> capability_list;
     options->delegate().Split(' ', capability_list);
-    delegate_payment_request = capability_list.Contains("payment");
+    if (capability_list.Contains("payment")) {
+      delegated_capability = mojom::blink::DelegatedCapability::kPaymentRequest;
+    } else if (capability_list.Contains("fullscreen")) {
+      delegated_capability =
+          mojom::blink::DelegatedCapability::kFullscreenRequest;
+    }
   }
 
   PostedMessage* posted_message = MakeGarbageCollected<PostedMessage>();
@@ -767,7 +773,7 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   posted_message->channels = std::move(channels);
   posted_message->source = source;
   posted_message->user_activation = user_activation;
-  posted_message->delegate_payment_request = delegate_payment_request;
+  posted_message->delegated_capability = delegated_capability;
   SchedulePostMessage(posted_message);
 }
 
@@ -829,7 +835,7 @@ DOMWindow::PostedMessage::ToBlinkTransferableMessage() && {
   }
 
   // Capability delegation
-  result.delegate_payment_request = delegate_payment_request;
+  result.delegated_capability = delegated_capability;
 
   return result;
 }

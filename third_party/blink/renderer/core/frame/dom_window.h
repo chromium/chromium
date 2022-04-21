@@ -9,6 +9,7 @@
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -175,7 +176,8 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
     Vector<MessagePortChannel> channels;
     Member<LocalDOMWindow> source;
     Member<UserActivation> user_activation;
-    bool delegate_payment_request = false;
+    mojom::blink::DelegatedCapability delegated_capability =
+        mojom::blink::DelegatedCapability::kNone;
   };
   virtual void SchedulePostMessage(PostedMessage* message) = 0;
 

@@ -358,8 +358,11 @@
     },
     {
       name: "CapabilityDelegation",
-      implied_by: ["CapabilityDelegationPaymentRequest"],
+      implied_by: ["CapabilityDelegationFullscreenRequest", "CapabilityDelegationPaymentRequest"],
       origin_trial_feature_name: "CapabilityDelegationPaymentRequest",
+    },
+    {
+      name: "CapabilityDelegationFullscreenRequest",
     },
     {
       name: "CapabilityDelegationPaymentRequest",

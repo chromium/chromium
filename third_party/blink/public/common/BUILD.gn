@@ -141,6 +141,7 @@ source_set("headers") {
     "frame/frame_policy.h",
     "frame/frame_visual_properties.h",
     "frame/from_ad_state.h",
+    "frame/fullscreen_request_token.h",
     "frame/payment_request_token.h",
     "frame/transient_allow_fullscreen.h",
     "frame/user_activation_state.h",

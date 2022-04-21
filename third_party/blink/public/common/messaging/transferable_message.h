@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-shared.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -38,8 +39,9 @@ struct BLINK_COMMON_EXPORT TransferableMessage : public CloneableMessage {
   // The state of user activation.
   mojom::UserActivationSnapshotPtr user_activation;
 
-  // Whether payment request capability is delegated to the destination frame.
-  bool delegate_payment_request = false;
+  // What capability, if any, is delegated to the destination frame.
+  mojom::DelegatedCapability delegated_capability =
+      mojom::DelegatedCapability::kNone;
 };
 
 }  // namespace blink

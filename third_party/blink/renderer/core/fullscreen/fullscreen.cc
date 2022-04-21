@@ -318,6 +318,13 @@ bool AllowedToRequestFullscreen(Document& document) {
   if (LocalFrame::HasTransientUserActivation(document.GetFrame()))
     return true;
 
+  // The algorithm is triggered by a fullscreen request capability delegation.
+  if (RuntimeEnabledFeatures::CapabilityDelegationFullscreenRequestEnabled(
+          document.GetExecutionContext()) &&
+      document.domWindow()->IsFullscreenRequestTokenActive()) {
+    return true;
+  }
+
   // The algorithm is triggered by a user-generated orientation change.
   if (ScopedAllowFullscreen::FullscreenAllowedReason() ==
       ScopedAllowFullscreen::kOrientationChange) {
@@ -699,8 +706,10 @@ ScriptPromise Fullscreen::RequestFullscreen(Element& pending,
 
     // After the first fullscreen request, the user activation should be
     // consumed, and the following fullscreen requests should receive an error.
-    if (!for_cross_process_descendant)
+    if (!for_cross_process_descendant) {
       LocalFrame::ConsumeTransientUserActivation(&frame);
+      window.ConsumeFullscreenRequestToken();
+    }
   } else {
     // Note: Although we are past the "in parallel" point, it's OK to continue
     // synchronously because when |error| is true, |ContinueRequestFullscreen()|

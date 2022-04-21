@@ -50,7 +50,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
         message.user_activation->has_been_active,
         message.user_activation->was_active);
   }
-  result.delegate_payment_request = message.delegate_payment_request;
+  result.delegated_capability = message.delegated_capability;
 
   if (!message.array_buffer_contents_array.empty()) {
     SerializedScriptValue::ArrayBufferContentsArray array_buffer_contents_array;

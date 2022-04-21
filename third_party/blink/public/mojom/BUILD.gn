@@ -986,8 +986,9 @@ mojom("mojom_core") {
     "page/widget.mojom",
     "page_state/page_state.mojom",
 
-    # transferable_message.mojom depends the other three messaging/ mojom files.
+    # transferable_message.mojom depends the other messaging/ mojom files here.
     "messaging/cloneable_message.mojom",
+    "messaging/delegated_capability.mojom",
     "messaging/message_port_descriptor.mojom",
     "messaging/transferable_message.mojom",
     "messaging/user_activation_snapshot.mojom",

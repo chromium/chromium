@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -33,7 +34,8 @@ struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
 
   mojom::blink::UserActivationSnapshotPtr user_activation;
 
-  bool delegate_payment_request = false;
+  mojom::blink::DelegatedCapability delegated_capability =
+      mojom::blink::DelegatedCapability::kNone;
 };
 
 CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> ToStaticBitmapImage(

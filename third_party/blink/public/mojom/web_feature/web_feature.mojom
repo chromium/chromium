@@ -3532,6 +3532,7 @@ enum WebFeature {
   kV8Window_QueryLocalFonts_Method = 4211,
   kCSSAtRuleScope = 4212,
   kDeferredShapingDisabledByPositioned = 4213,
+  kCapabilityDelegationOfFullscreenRequest = 4214,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

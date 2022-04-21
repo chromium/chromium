@@ -47,8 +47,9 @@ struct BLINK_COMMON_EXPORT
     return input.user_activation;
   }
 
-  static bool delegate_payment_request(blink::TransferableMessage& input) {
-    return input.delegate_payment_request;
+  static blink::mojom::DelegatedCapability delegated_capability(
+      blink::TransferableMessage& input) {
+    return input.delegated_capability;
   }
 
   static bool Read(blink::mojom::TransferableMessage::DataView data,

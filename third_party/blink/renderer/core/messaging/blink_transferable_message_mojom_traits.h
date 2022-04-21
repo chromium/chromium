@@ -59,9 +59,9 @@ struct CORE_EXPORT StructTraits<blink::mojom::TransferableMessageDataView,
     return input.user_activation;
   }
 
-  static bool delegate_payment_request(
+  static blink::mojom::blink::DelegatedCapability delegated_capability(
       const blink::BlinkTransferableMessage& input) {
-    return input.delegate_payment_request;
+    return input.delegated_capability;
   }
 
   static bool Read(blink::mojom::TransferableMessageDataView,

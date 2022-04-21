@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_dom_message_event.h"
 
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -64,7 +65,8 @@ WebDOMMessageEvent::WebDOMMessageEvent(
   // right?
   Unwrap<MessageEvent>()->initMessageEvent(
       "message", false, false, message_data, origin, "" /*lastEventId*/, window,
-      ports, nullptr /*user_activation*/, false);
+      ports, nullptr /*user_activation*/,
+      mojom::blink::DelegatedCapability::kNone);
 }
 
 WebString WebDOMMessageEvent::Origin() const {

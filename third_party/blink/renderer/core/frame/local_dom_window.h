@@ -31,6 +31,7 @@
 
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/frame/fullscreen_request_token.h"
 #include "third_party/blink/public/common/frame/payment_request_token.h"
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -451,8 +452,14 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Returns the state of the |PaymentRequestToken| in this document.
   bool IsPaymentRequestTokenActive() const;
 
-  // Consumes the |PaymentRequestToken| if it was active in this document .
+  // Consumes the |PaymentRequestToken| if it was active in this document.
   bool ConsumePaymentRequestToken();
+
+  // Returns the state of the |FullscreenRequestToken| in this document.
+  bool IsFullscreenRequestTokenActive() const;
+
+  // Consumes the |FullscreenRequestToken| if it was active in this document.
+  bool ConsumeFullscreenRequestToken();
 
   // Called when a network request buffered an additional `num_bytes` while this
   // frame is in back-forward cache.
@@ -528,9 +535,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   HeapHashSet<WeakMember<EventListenerObserver>> event_listener_observers_;
 
-  // Tracker for delegated PaymentRequest.  This is related to
-  // |Frame::user_activation_state_|.
+  // Trackers for delegated payment and fullscreen requests.  These are related
+  // to |Frame::user_activation_state_|.
   PaymentRequestToken payment_request_token_;
+  FullscreenRequestToken fullscreen_request_token_;
 
   // https://dom.spec.whatwg.org/#window-current-event
   // We represent the "undefined" value as nullptr.

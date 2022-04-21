@@ -8,6 +8,7 @@ import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
+import "third_party/blink/public/mojom/messaging/delegated_capability.mojom";
 import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 import "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom";
 
@@ -33,8 +34,6 @@ struct TransferableMessage {
   array<skia.mojom.BitmapN32> image_bitmap_contents_array;
   // The user activation state, null if the frame isn't providing it.
   UserActivationSnapshot? user_activation;
-  // Whether payment request capability is delegated to the destination frame.
-  //
-  // TODO(mustaq): Replace this with a structure for capability-specific bits.
-  bool delegate_payment_request;
+  // What capability, if any, is delegated to the destination frame.
+  DelegatedCapability delegated_capability = kNone;
 };

@@ -27,7 +27,7 @@ bool StructTraits<blink::mojom::TransferableMessage::DataView,
   out->ports = blink::MessagePortChannel::CreateFromHandles(std::move(ports));
   out->stream_channels =
       blink::MessagePortChannel::CreateFromHandles(std::move(stream_channels));
-  out->delegate_payment_request = data.delegate_payment_request();
+  out->delegated_capability = data.delegated_capability();
   return true;
 }
 

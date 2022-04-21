@@ -37958,6 +37958,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4211" label="V8Window_QueryLocalFonts_Method"/>
   <int value="4212" label="CSSAtRuleScope"/>
   <int value="4213" label="DeferredShapingDisabledByPositioned"/>
+  <int value="4214" label="CapabilityDelegationOfFullscreenRequest"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
