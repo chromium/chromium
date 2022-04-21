@@ -100,8 +100,6 @@ public class CompromisedCredential implements Parcelable {
         assert !passwordChangeUrl.isEmpty()
                 || !associatedApp.isEmpty()
             : "Change URL and app name may not be empty at the same time!";
-        assert isOnlyLeaked
-                || isOnlyPhished : "A compromised credential must be leaked or phished!";
         assert hasStartableScript
                 || !hasAutoChangeButton
             : "Auto change button cannot be shown without a script that can start!";
