@@ -7,7 +7,6 @@
 
 set noparent
 brucedawson@chromium.org
-scottmg@chromium.org
 thakis@chromium.org
 
 per-file add_header*.py=dcheng@chromium.org
