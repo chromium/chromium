@@ -2729,6 +2729,30 @@
           'gtest_tests': 'chromium_linux_and_gl_gtests',
         },
       },
+      'Linux ChromiumOS MSan Focal': {
+        'mixins': [
+          'linux-focal',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'linux_chromeos_gtests_oobe',
+        },
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+        ],
+      },
+      'Linux MSan Focal': {
+        'mixins': [
+          'linux-focal',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_and_gl_gtests',
+        },
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+        ],
+      },
       'Linux Viz': {
         'mixins': [
           'linux-bionic',

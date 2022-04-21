@@ -65,6 +65,7 @@ os = struct(
     LINUX_TRUSTY = os_enum("Ubuntu-14.04", os_category.LINUX),
     LINUX_XENIAL = os_enum("Ubuntu-16.04", os_category.LINUX),
     LINUX_BIONIC = os_enum("Ubuntu-18.04", os_category.LINUX),
+    LINUX_FOCAL = os_enum("Ubuntu-20.04", os_category.LINUX),
     # xenial -> bionic migration
     # * If a builder does not already explicitly set an os value, use
     #   LINUX_BIONIC_REMOVE or LINUX_XENIAL_OR_BIONIC_REMOVE

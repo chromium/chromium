@@ -391,6 +391,15 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux_chromium_chromeos_msan_focal",
+    mirrors = [
+        "ci/Linux ChromiumOS MSan Focal",
+    ],
+    goma_jobs = goma.jobs.J150,
+    os = os.LINUX_FOCAL,
+)
+
+try_.builder(
     name = "linux_chromium_chromeos_msan_rel_ng",
     goma_jobs = goma.jobs.J150,
 )
@@ -448,6 +457,16 @@ try_.builder(
             ".+/[+]/build/.*check_gn_headers.*",
         ],
     ),
+)
+
+try_.builder(
+    name = "linux_chromium_msan_focal",
+    mirrors = [
+        "ci/Linux MSan Focal",
+    ],
+    execution_timeout = 6 * time.hour,
+    goma_jobs = goma.jobs.J150,
+    os = os.LINUX_FOCAL,
 )
 
 try_.builder(

@@ -1368,6 +1368,54 @@ fyi_ios_builder(
     xcode = xcode.x13betabots,
 )
 
+ci.builder(
+    # An FYI version of the following builders that runs on Focal:
+    # https://ci.chromium.org/p/chromium/builders/ci/Linux%20MSan%20Builder
+    # https://ci.chromium.org/p/chromium/builders/ci/Linux%20MSan%20Tests
+    # TODO(crbug.com/1260217): Remove this builder when the main MSAN builder
+    # has migrated to focal.
+    name = "Linux MSan Focal",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "msan",
+        short_name = "lin",
+    ),
+    os = os.LINUX_FOCAL,
+)
+
+ci.builder(
+    # An FYI version of the following builders that runs on Focal:
+    # https://ci.chromium.org/p/chromium/builders/ci/Linux%20ChromiumOS%20MSan%20Builder
+    # https://ci.chromium.org/p/chromium/builders/ci/Linux%20ChromiumOS%20MSan%20Tests
+    # TODO(crbug.com/1260217): Remove this builder when the main MSAN builder
+    # has migrated to focal.
+    name = "Linux ChromiumOS MSan Focal",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "msan",
+        short_name = "crs",
+    ),
+    os = os.LINUX_FOCAL,
+)
+
 fyi_mac_builder(
     name = "Mac Builder Next",
     console_view_entry = consoles.console_view_entry(

@@ -727,6 +727,17 @@
       "use_goma": true
     }
   },
+  "linux_chromium_chromeos_msan_focal": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_msan": true,
+      "msan_track_origins": 2,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux_chromium_chromeos_msan_rel_ng": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -780,6 +791,16 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "linux_chromium_msan_focal": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_msan": true,
+      "msan_track_origins": 2,
       "use_goma": true
     }
   },

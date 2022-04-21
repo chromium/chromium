@@ -314,8 +314,10 @@
       'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot',
       'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
+      'Linux ChromiumOS MSan Focal': 'chromeos_msan_release_bot',
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
+      'Linux MSan Focal': 'msan_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
@@ -1092,6 +1094,7 @@
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot',
+      'linux_chromium_chromeos_msan_focal': 'chromeos_msan_release_bot',
       'linux_chromium_clobber_deterministic': 'release_trybot',
       'linux_chromium_clobber_rel_ng': 'release_trybot',
       'linux_chromium_compile_dbg_ng': 'debug_bot',
@@ -1102,6 +1105,7 @@
       # enabling DCHECKs seems to cause flaky failures that don't show up
       # on the continuous builder.
       'linux_chromium_msan_rel_ng': 'msan_release_bot',
+      'linux_chromium_msan_focal': 'msan_release_bot',
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot',
 
