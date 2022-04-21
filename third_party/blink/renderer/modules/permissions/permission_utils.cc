@@ -31,6 +31,7 @@ namespace blink {
 using MojoPermissionDescriptor = mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
+using mojom::blink::PermissionStatus;
 
 void ConnectToPermissionService(
     ExecutionContext* execution_context,
@@ -39,66 +40,66 @@ void ConnectToPermissionService(
       std::move(receiver));
 }
 
-String PermissionStatusToString(mojom::blink::PermissionStatus status) {
+String PermissionStatusToString(PermissionStatus status) {
   switch (status) {
-    case mojom::blink::PermissionStatus::GRANTED:
+    case PermissionStatus::GRANTED:
       return "granted";
-    case mojom::blink::PermissionStatus::DENIED:
+    case PermissionStatus::DENIED:
       return "denied";
-    case mojom::blink::PermissionStatus::ASK:
+    case PermissionStatus::ASK:
       return "prompt";
   }
   NOTREACHED();
   return "denied";
 }
 
-String PermissionNameToString(mojom::blink::PermissionName name) {
+String PermissionNameToString(PermissionName name) {
   switch (name) {
-    case mojom::blink::PermissionName::GEOLOCATION:
+    case PermissionName::GEOLOCATION:
       return "geolocation";
-    case mojom::blink::PermissionName::NOTIFICATIONS:
+    case PermissionName::NOTIFICATIONS:
       return "notifications";
-    case mojom::blink::PermissionName::MIDI:
+    case PermissionName::MIDI:
       return "midi";
-    case mojom::blink::PermissionName::PROTECTED_MEDIA_IDENTIFIER:
+    case PermissionName::PROTECTED_MEDIA_IDENTIFIER:
       return "protected_media_identifier";
-    case mojom::blink::PermissionName::DURABLE_STORAGE:
+    case PermissionName::DURABLE_STORAGE:
       return "durable_storage";
-    case mojom::blink::PermissionName::AUDIO_CAPTURE:
+    case PermissionName::AUDIO_CAPTURE:
       return "audio_capture";
-    case mojom::blink::PermissionName::VIDEO_CAPTURE:
+    case PermissionName::VIDEO_CAPTURE:
       return "video_capture";
-    case mojom::blink::PermissionName::BACKGROUND_SYNC:
+    case PermissionName::BACKGROUND_SYNC:
       return "background_sync";
-    case mojom::blink::PermissionName::SENSORS:
+    case PermissionName::SENSORS:
       return "sensors";
-    case mojom::blink::PermissionName::ACCESSIBILITY_EVENTS:
+    case PermissionName::ACCESSIBILITY_EVENTS:
       return "accessibility_events";
-    case mojom::blink::PermissionName::CLIPBOARD_READ:
+    case PermissionName::CLIPBOARD_READ:
       return "clipboard_read";
-    case mojom::blink::PermissionName::CLIPBOARD_WRITE:
+    case PermissionName::CLIPBOARD_WRITE:
       return "clipboard_write";
-    case mojom::blink::PermissionName::PAYMENT_HANDLER:
+    case PermissionName::PAYMENT_HANDLER:
       return "payment_handler";
-    case mojom::blink::PermissionName::BACKGROUND_FETCH:
+    case PermissionName::BACKGROUND_FETCH:
       return "background_fetch";
-    case mojom::blink::PermissionName::IDLE_DETECTION:
+    case PermissionName::IDLE_DETECTION:
       return "idle_detection";
-    case mojom::blink::PermissionName::PERIODIC_BACKGROUND_SYNC:
+    case PermissionName::PERIODIC_BACKGROUND_SYNC:
       return "periodic_background_sync";
-    case mojom::blink::PermissionName::SCREEN_WAKE_LOCK:
+    case PermissionName::SCREEN_WAKE_LOCK:
       return "screen_wake_lock";
-    case mojom::blink::PermissionName::SYSTEM_WAKE_LOCK:
+    case PermissionName::SYSTEM_WAKE_LOCK:
       return "system_wake_lock";
-    case mojom::blink::PermissionName::NFC:
+    case PermissionName::NFC:
       return "nfc";
-    case mojom::blink::PermissionName::STORAGE_ACCESS:
+    case PermissionName::STORAGE_ACCESS:
       return "storage_access";
-    case mojom::blink::PermissionName::WINDOW_PLACEMENT:
+    case PermissionName::WINDOW_PLACEMENT:
       return "window_placement";
-    case mojom::blink::PermissionName::LOCAL_FONTS:
+    case PermissionName::LOCAL_FONTS:
       return "local_fonts";
-    case mojom::blink::PermissionName::DISPLAY_CAPTURE:
+    case PermissionName::DISPLAY_CAPTURE:
       return "display_capture";
   }
   NOTREACHED();
@@ -112,8 +113,7 @@ PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
 }
 
 PermissionDescriptorPtr CreateMidiPermissionDescriptor(bool sysex) {
-  auto descriptor =
-      CreatePermissionDescriptor(mojom::blink::PermissionName::MIDI);
+  auto descriptor = CreatePermissionDescriptor(PermissionName::MIDI);
   auto midi_extension = mojom::blink::MidiPermissionDescriptor::New();
   midi_extension->sysex = sysex;
   descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
@@ -135,8 +135,7 @@ PermissionDescriptorPtr CreateClipboardPermissionDescriptor(
 
 PermissionDescriptorPtr CreateVideoCapturePermissionDescriptor(
     bool pan_tilt_zoom) {
-  auto descriptor =
-      CreatePermissionDescriptor(mojom::blink::PermissionName::VIDEO_CAPTURE);
+  auto descriptor = CreatePermissionDescriptor(PermissionName::VIDEO_CAPTURE);
   auto camera_device_extension =
       mojom::blink::CameraDevicePermissionDescriptor::New(pan_tilt_zoom);
   descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
