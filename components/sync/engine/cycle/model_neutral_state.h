@@ -41,9 +41,6 @@ struct ModelNeutralState {
   int num_server_conflicts;
   int num_hierarchy_conflicts;
 
-  // Overwrites due to conflict resolution counters.
-  int num_server_overwrites;
-
   // Records the most recent results of GetKey, PostCommit and GetUpdates
   // commands.
   SyncerError last_get_key_result;
