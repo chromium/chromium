@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -64,7 +63,6 @@ class LocationIconViewTest : public ChromeViewsTestBase {
   // ChromeViewsTestBase:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
 
     gfx::FontList font_list;
 
@@ -74,8 +72,8 @@ class LocationIconViewTest : public ChromeViewsTestBase {
     delegate_ =
         std::make_unique<TestLocationIconDelegate>(location_bar_model());
 
-    auto view = std::make_unique<LocationIconView>(font_list, delegate(),
-                                                   delegate(), profile_.get());
+    auto view =
+        std::make_unique<LocationIconView>(font_list, delegate(), delegate());
     view->SetBoundsRect(gfx::Rect(0, 0, 24, 24));
     view_ = widget_->SetContentsView(std::move(view));
 
@@ -84,7 +82,6 @@ class LocationIconViewTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     widget_.reset();
-    profile_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -111,7 +108,6 @@ class LocationIconViewTest : public ChromeViewsTestBase {
   std::unique_ptr<TestLocationIconDelegate> delegate_;
   raw_ptr<LocationIconView> view_;
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(LocationIconViewTest, ShouldNotAnimateWhenSuppressingAnimations) {

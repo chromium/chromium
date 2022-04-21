@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -134,8 +133,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
      * @param jankTracker Tracks UI jank.
      * @param exploreIconProvider The provider to get explore sites icon.
-     * @param userEducationHelper Helper to show in product help UI. Can be null if an in product
-     *         help shouldn't be shown, such as when called from a search activity.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
      *         such as when called from a search activity.
@@ -160,7 +157,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull BookmarkState bookmarkState,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker,
             @NonNull ExploreIconProvider exploreIconProvider,
-            @Nullable UserEducationHelper userEducationHelper,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
@@ -199,8 +195,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 modalDialogManagerSupplier, locationBarDataProvider, mTemplateUrlServiceSupplier,
                 searchEngineLogoUtils, profileObservableSupplier, windowAndroid, pageInfoAction,
-                userEducationHelper, merchantTrustSignalsCoordinatorSupplier,
-                browserControlsVisibilityDelegate);
+                merchantTrustSignalsCoordinatorSupplier, browserControlsVisibilityDelegate);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 

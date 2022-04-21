@@ -76,7 +76,6 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
         FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
         FeatureConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE,
-        FeatureConstants.IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE,
         FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE,
         FeatureConstants.SHARING_HUB_WEBNOTES_STYLIZE_FEATURE,
         FeatureConstants.VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE,
@@ -378,13 +377,6 @@ public @interface FeatureConstants {
      * surface is enabled.
      */
     String START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE = "IPH_StartSurfaceTabSwitcherHomeButton";
-
-    /**
-     * An IPH feature to inform users about updated connection security indicators in the omnibox.
-     * Only shown on the first visit to an https page.
-     */
-    String IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE =
-            "IPH_UpdatedConnectionSecurityIndicators";
 
     /**
      * An IPH feature encouraging users to create highlights.

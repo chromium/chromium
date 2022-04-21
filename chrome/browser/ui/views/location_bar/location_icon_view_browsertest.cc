@@ -30,8 +30,8 @@ class LocationIconViewBrowserTest : public InProcessBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     location_bar_ = browser_view->GetLocationBarView();
-    icon_view_ = std::make_unique<LocationIconView>(
-        font_list, location_bar_, location_bar_, browser()->profile());
+    icon_view_ = std::make_unique<LocationIconView>(font_list, location_bar_,
+                                                    location_bar_);
   }
 
   LocationBarView* location_bar() const { return location_bar_; }

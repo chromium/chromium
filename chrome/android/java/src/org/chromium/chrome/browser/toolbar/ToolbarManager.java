@@ -622,7 +622,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                             && mBookmarkBridgeSupplier.get().isBookmarked(url),
                     VoiceToolbarButtonController::isToolbarMicEnabled, jankTracker,
                     exploreIconProvider,
-                    new UserEducationHelper(mActivity, mHandler),
                     merchantTrustSignalsCoordinatorSupplier,
                     omniboxPedalDelegate, mControlsVisibilityDelegate,
                     ChromePureJavaExceptionReporter::postReportJavaException);

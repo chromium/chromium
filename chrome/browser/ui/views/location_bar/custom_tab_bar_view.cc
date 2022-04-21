@@ -224,8 +224,8 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   views::InstallCircleHighlightPathGenerator(close_button_);
 
-  location_icon_view_ = AddChildView(std::make_unique<LocationIconView>(
-      font_list, this, this, browser_->profile()));
+  location_icon_view_ =
+      AddChildView(std::make_unique<LocationIconView>(font_list, this, this));
 
   auto title_origin_view = std::make_unique<CustomTabBarTitleOriginView>(
       background_color_, GetShowTitle());

@@ -5135,30 +5135,6 @@
             ]
         }
     ],
-    "OmniboxUpdatedConnectionSecurityIndicatorsIPH": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:updated_connection_security_indicators_iph_trigger;comparator:==0;window:360;storage:360",
-                        "event_used": "name:updated_connection_security_indicators_iph_opened;comparator:==0;window:360;storage:360",
-                        "session_rate": "any"
-                    },
-                    "enable_features": [
-                        "IPH_UpdatedConnectionSecurityIndicators"
-                    ]
-                }
-            ]
-        }
-    ],
     "OnDemandAPIValidation": [
         {
             "platforms": [

@@ -105,7 +105,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSharedHighlightingBuilder,
     &kIPHSharedHighlightingReceiverFeature,
     &kIPHStartSurfaceTabSwitcherHomeButton,
-    &kIPHUpdatedConnectionSecurityIndicatorsFeature,
     &kIPHSharingHubWebnotesStylizeFeature,
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)
@@ -137,7 +136,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHWebUITabStripFeature,
     &kIPHDesktopPwaInstallFeature,
     &kIPHProfileSwitchFeature,
-    &kIPHUpdatedConnectionSecurityIndicatorsFeature,
     &kIPHDesktopSharedHighlightingFeature,
     &kIPHIntentChipFeature,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||

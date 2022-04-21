@@ -38,9 +38,6 @@ const char kWebUITabStripOpened[] = "webui_tab_strip_opened";
 
 const char kDesktopPwaInstalled[] = "desktop_pwa_installed";
 
-const char kUpdatedConnectionSecurityIndicatorDisplayed[] =
-    "updated_connection_security_indicator_displayed";
-
 const char kFocusHelpBubbleAcceleratorPressed[] =
     "focus_help_bubble_accelerator_pressed";
 

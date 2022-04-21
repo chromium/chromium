@@ -200,7 +200,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
                 VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
                 /*ExploreIconState*/(pixelSize, callback) ->{},
-                /*userEducationHelper=*/null, /*merchantTrustSignalsCoordinatorSupplier=*/null,
+                /*merchantTrustSignalsCoordinatorSupplier=*/null,
                 new OmniboxPedalDelegateImpl(this, new OneshotSupplierImpl<>()), null,
                 ChromePureJavaExceptionReporter::postReportJavaException);
         // clang-format on

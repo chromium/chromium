@@ -12,30 +12,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.permissions.PermissionDialogController;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,9 +51,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private final PropertyModel mModel;
     private final boolean mIsTablet;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Supplier<Profile> mProfileSupplier;
     private final PageInfoAction mPageInfoAction;
-    private final UserEducationHelper mUserEducationHelper;
     private LocationBarDataProvider mLocationBarDataProvider;
     private boolean mUrlHasFocus;
 
@@ -80,8 +68,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      * @param windowAndroid The {@link WindowAndroid} that is used by the owning {@link Activity}.
      * @param pageInfoAction Displays page info popup.
-     * @param userEducationHelper Helper to show in product help UI. Can be null if an in product
-     *         help shouldn't be shown, such as when called from a search activity.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
      *         such as when called from a search activity.
@@ -95,17 +81,14 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier,
             WindowAndroid windowAndroid, PageInfoAction pageInfoAction,
-            UserEducationHelper userEducationHelper,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mProfileSupplier = profileSupplier;
         mLocationBarDataProvider = locationBarDataProvider;
         mPageInfoAction = pageInfoAction;
-        mUserEducationHelper = userEducationHelper;
 
         mModel = new PropertyModel(StatusProperties.ALL_KEYS);
 
@@ -201,36 +184,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     public void onSecurityStateChanged() {
         updateStatusIcon();
         updateVerboseStatusVisibility();
-
-        // Show IPH for updated connection security indicators.
-        if (mUserEducationHelper != null && FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
-                && mLocationBarDataProvider.getSecurityLevel() == ConnectionSecurityLevel.SECURE
-                && mLocationBarDataProvider.getTab() != null
-                && UrlConstants.HTTPS_SCHEME.equals(
-                        mLocationBarDataProvider.getTab().getUrl().getScheme())) {
-            // Also check lock icon enterprise policy.
-            boolean useLockIconEnabled = false;
-            if (mProfileSupplier.get() != null) {
-                PrefService prefService = UserPrefs.get(mProfileSupplier.get());
-                if (prefService.isManagedPreference(
-                            ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED)) {
-                    useLockIconEnabled = prefService.getBoolean(
-                            ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED);
-                }
-                if (!useLockIconEnabled) {
-                    mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(
-                            mStatusView.getContext().getResources(),
-                            FeatureConstants.IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE,
-                            R.string.iph_updated_connection_security_indicators,
-                            R.string.iph_updated_connection_security_indicators)
-                                                                .setAnchorView(
-                                                                        getSecurityIconView())
-                                                                .build());
-                }
-            }
-        }
     }
 
     /** Updates the security icon displayed in the LocationBar. */
