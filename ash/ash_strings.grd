@@ -3332,12 +3332,12 @@ This file contains the strings for ash.
         has been migrated to the settings app.">
         To manage notifications, go to Settings
       </message>
-      <if expr="is_chrome_branded">
+      <if expr="_google_chrome">
         <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME" desc="The source of a system-generated notification, as displayed to the user.">
           ChromeOS
         </message>
       </if>
-      <if expr="not is_chrome_branded">
+      <if expr="not _google_chrome">
         <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME" desc="The source of a system-generated notification, as displayed to the user.">
           ChromiumOS
         </message>
