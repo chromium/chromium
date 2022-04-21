@@ -147,8 +147,8 @@
     <div id="buttonContainer">
       <cr-button id="diagnosticsButton" class="button-card"
         on-click="onDiagnosticsButtonClick_" disabled="[[allButtonsDisabled]]">
-        <img id="diagnosticsIcon" class="button-icon" 
-            src="png/diagnostics_app_icon_192.png">
+        <iron-icon icon="shimless-icon:diagnostics" class="button-icon">
+        </iron-icon>
         <div class="button-text">
           <div class="button-label">
             <span>[[i18n('repairCompletedDiagnosticsButtonText')]]</span>
@@ -160,9 +160,7 @@
       </cr-button>
       <cr-button id="rmaLogButton" class="button-card"
           on-click="onRmaLogButtonClick_" disabled="[[allButtonsDisabled]]">
-        <iron-icon icon="shimless-icon:rma-log" class="button-icon"
-            hidden="[[!checked]]">
-        </iron-icon>
+        <iron-icon icon="shimless-icon:rma-log" class="button-icon"></iron-icon>
         <div class="button-text">
           <div class="button-label">
             <span>[[i18n('repairCompletedLogsButtonText')]]</span>
@@ -178,8 +176,7 @@
             disabled$="[[disableBatteryCutButton_(pluggedIn_,
             allButtonsDisabled)]]">
           <iron-icon id="batteryCutoffIcon"
-              icon="shimless-icon:battery-cutoff-disabled" class="button-icon"
-              hidden="[[!checked]]">
+              icon="shimless-icon:battery-cutoff-disabled" class="button-icon">
           </iron-icon>
           <div class="button-text">
             <div class="button-label">
