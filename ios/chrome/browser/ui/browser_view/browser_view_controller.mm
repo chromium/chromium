@@ -3896,20 +3896,25 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - NewTabPageCommands
 
 - (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
-  // Configure next NTP to be scrolled into |feedType|.
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.currentWebState);
-  if (NTPHelper) {
-    NTPHelper->SetNextNTPFeedType(feedType);
-    NTPHelper->SetNextNTPScrolledToFeed(YES);
-  }
+  // Dismiss any presenting modal. Ex. Follow management page.
+  [self
+      clearPresentedStateWithCompletion:^{
+        // Configure next NTP to be scrolled into |feedType|.
+        NewTabPageTabHelper* NTPHelper =
+            NewTabPageTabHelper::FromWebState(self.currentWebState);
+        if (NTPHelper) {
+          NTPHelper->SetNextNTPFeedType(feedType);
+          NTPHelper->SetNextNTPScrolledToFeed(YES);
+        }
 
-  // Navigate to NTP in same tab.
-  UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  UrlLoadParams urlLoadParams =
-      UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
-  urlLoadingBrowserAgent->Load(urlLoadParams);
+        // Navigate to NTP in same tab.
+        UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
+            UrlLoadingBrowserAgent::FromBrowser(self.browser);
+        UrlLoadParams urlLoadParams =
+            UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
+        urlLoadingBrowserAgent->Load(urlLoadParams);
+      }
+                         dismissOmnibox:YES];
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
