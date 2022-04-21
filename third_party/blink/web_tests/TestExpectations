@@ -7695,3 +7695,4 @@ crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-1.html [ F
 crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-2.html [ Failure Pass ]
 crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
 crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-gradient-gradient.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-image-color.html [ Failure Pass ]
