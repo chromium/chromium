@@ -16,7 +16,7 @@ namespace net {
 
 // The key used to identify sessions. Includes the quic::QuicServerId and socket
 // tag.
-class QUIC_EXPORT_PRIVATE QuicSessionKey {
+class NET_EXPORT_PRIVATE QuicSessionKey {
  public:
   QuicSessionKey();
   QuicSessionKey(const HostPortPair& host_port_pair,

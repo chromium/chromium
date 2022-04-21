@@ -6,14 +6,14 @@
 #define NET_QUIC_PLATFORM_IMPL_QUIC_CHROMIUM_CLOCK_H_
 
 #include "base/time/time.h"
+#include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
-#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_export.h"
 
 namespace quic {
 
 // Clock to efficiently retrieve an approximately accurate time from an
 // net::EpollServer.
-class QUIC_EXPORT_PRIVATE QuicChromiumClock : public QuicClock {
+class NET_EXPORT_PRIVATE QuicChromiumClock : public QuicClock {
  public:
   static QuicChromiumClock* GetInstance();
 

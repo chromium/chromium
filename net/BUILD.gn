@@ -993,8 +993,6 @@ component("net") {
     "ssl/ssl_server_config.h",
     "ssl/threaded_ssl_private_key.cc",
     "ssl/threaded_ssl_private_key.h",
-    "third_party/uri_template/uri_template.cc",
-    "third_party/uri_template/uri_template.h",
     "url_request/redirect_info.cc",
     "url_request/redirect_info.h",
     "url_request/redirect_util.cc",
@@ -1091,7 +1089,6 @@ component("net") {
     "//net/dns:mdns_client",
     "//net/dns/public",
     "//net/http:transport_security_state_generated_files",
-    "//net/third_party/quiche",
   ]
 
   if (enable_reporting) {
@@ -1684,12 +1681,12 @@ source_set("net_public_deps") {
   public_deps = [
     ":buildflags",
     ":net_nqe_proto",
+    ":uri_template",
     "//base",
     "//crypto",
     "//crypto:platform",
-    "//net/third_party/quiche:net_quic_proto",
     "//net/third_party/quiche:net_quic_test_tools_proto",
-    "//net/third_party/quiche:quiche_public_deps",
+    "//net/third_party/quiche:quiche",
     "//net/traffic_annotation",
     "//third_party/boringssl",
     "//url",
@@ -1700,6 +1697,19 @@ if (is_android) {
   java_cpp_enum("effective_connection_type_java") {
     sources = [ "//net/nqe/effective_connection_type.h" ]
   }
+}
+
+component("uri_template") {
+  sources = [
+    "third_party/uri_template/uri_template.cc",
+    "third_party/uri_template/uri_template.h",
+  ]
+  visibility = [
+    ":net_public_deps",
+    "//net/third_party/quiche",
+  ]
+  defines = [ "IS_URI_TEMPLATE_IMPL" ]
+  public_deps = [ "//base" ]
 }
 
 grit("net_resources") {

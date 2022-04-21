@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_export.h"
 
 namespace net {
 
@@ -19,7 +19,7 @@ namespace net {
 // This information may be stored on disk so does not include keys or other
 // sensitive information. Primarily it's intended for caching the QUIC server's
 // crypto config.
-class QUIC_EXPORT_PRIVATE QuicServerInfo {
+class NET_EXPORT_PRIVATE QuicServerInfo {
  public:
   // Enum to track failure reasons to read/load/write of QuicServerInfo to
   // and from disk cache.

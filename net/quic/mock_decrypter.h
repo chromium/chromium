@@ -9,9 +9,9 @@
 #include <cstdint>
 
 #include "base/compiler_specific.h"
+#include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
-#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_export.h"
 
 namespace net {
 

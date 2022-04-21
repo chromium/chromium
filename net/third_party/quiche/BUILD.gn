@@ -18,18 +18,7 @@ config("quiche_config") {
   cflags = [ "-Wno-shadow" ]
 }
 
-# Since //net and //net/third_party/quiche have a circular dependency on each
-# other, exporting dependencies from the :quiche target directly does not work.
-# Thus, all public dependencies for QUICHE should go into the target below,
-# which is in turn propagated to all of //net source sets.
-source_set("quiche_public_deps") {
-  visibility = [ "//net:net_public_deps" ]
-
-  public_configs = [ ":quiche_config" ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
-}
-
-source_set("quiche") {
+component("quiche") {
   sources = [
     "overrides/quiche_platform_impl/quic_flags_impl.cc",
     "overrides/quiche_platform_impl/quic_flags_impl.h",
@@ -671,27 +660,42 @@ source_set("quiche") {
     "src/quiche/spdy/core/zero_copy_output_buffer.h",
   ]
 
-  deps = [ "//net:net_deps" ]
-  public_deps = [ "//net:net_public_deps" ]
+  public_configs = [ ":quiche_config" ]
+
+  deps = [
+    "//net:uri_template",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/zlib",
+  ]
+
+  public_deps = [
+    "//base",
+    "//net/third_party/quiche:net_quic_proto",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+    "//url",
+  ]
+
+  defines = [ "IS_QUICHE_IMPL" ]
 }
 
 proto_library("net_quic_proto") {
-  visibility = [ "//net:net_public_deps" ]
+  visibility = [ ":quiche" ]
 
   sources = [
     "src/quiche/quic/core/proto/cached_network_parameters.proto",
     "src/quiche/quic/core/proto/crypto_server_config.proto",
     "src/quiche/quic/core/proto/source_address_token.proto",
   ]
-  cc_generator_options = "dllexport_decl=NET_EXPORT_PRIVATE:"
-  cc_include = "net/base/net_export.h"
+  cc_generator_options = "dllexport_decl=COMPONENT_EXPORT(QUICHE):"
+  cc_include = "base/component_export.h"
   component_build_force_source_set = true
 
   proto_in_dir = "src"
 
-  deps = [ "//net:net_export_header" ]
+  deps = [ "//base" ]
 
-  defines = [ "NET_IMPLEMENTATION" ]
+  defines = [ "IS_QUICHE_IMPL" ]
 
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
