@@ -8,11 +8,6 @@ import("//device/bluetooth/cast_bluetooth.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
-if (is_chromeos) {
-  import("//chromeos/dbus/config/use_real_dbus_clients.gni")
-} else if (use_bluez) {
-  use_real_dbus_clients = false
-}
 
 config("bluetooth_config") {
   if (is_win) {
@@ -453,6 +448,7 @@ component("bluetooth") {
         "floss/floss_manager_client.h",
       ]
       if (is_chromeos) {
+        import("//chromeos/dbus/config/use_real_dbus_clients.gni")
         configs += [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
         sources += [
           "chromeos/bluetooth_connection_logger.cc",
@@ -464,8 +460,11 @@ component("bluetooth") {
         if (is_chromeos_lacros) {
           deps += [ "//chromeos/lacros" ]
         }
+      } else {
+        use_real_dbus_clients = false
       }
       if (!use_real_dbus_clients) {
+        # Use fake D-Bus clients instead of real ones.
         sources += [
           "dbus/fake_bluetooth_adapter_client.cc",
           "dbus/fake_bluetooth_adapter_client.h",
@@ -519,8 +518,10 @@ component("bluetooth") {
           "floss/fake_floss_manager_client.h",
         ]
       }
-      deps += [ "//dbus" ]
-    } else {  # !use_dbus
+      if (use_dbus) {
+        deps += [ "//dbus" ]
+      }
+    } else {  # !use_bluez
       defines += [ "LINUX_WITHOUT_DBUS" ]
       sources += [
         "dbus/dbus_bluez_manager_wrapper_linux.h",
