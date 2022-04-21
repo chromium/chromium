@@ -455,6 +455,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
+  injector_->set_enable_mouse_lock(true);
   base::JSONReader::ValueWithError json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
@@ -613,6 +614,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
+  injector_->set_enable_mouse_lock(true);
   base::JSONReader::ValueWithError json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveMouse);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());

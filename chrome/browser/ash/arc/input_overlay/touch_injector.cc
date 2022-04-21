@@ -144,7 +144,9 @@ TouchInjector::~TouchInjector() {
 }
 
 void TouchInjector::ParseActions(const base::Value& root) {
-  ParseMouseLock(root);
+  if (enable_mouse_lock_)
+    ParseMouseLock(root);
+
   auto parsed_actions = ParseJsonToActions(target_window_, root);
   if (!parsed_actions.empty()) {
     std::move(parsed_actions.begin(), parsed_actions.end(),

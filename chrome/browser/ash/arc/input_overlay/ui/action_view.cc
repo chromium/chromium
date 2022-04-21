@@ -87,7 +87,7 @@ void ActionView::OnResetBinding() {
 }
 
 void ActionView::AddEditButton() {
-  if (!editable_ || menu_entry_)
+  if (!show_edit_button_ || !editable_ || menu_entry_)
     return;
 
   menu_entry_ =

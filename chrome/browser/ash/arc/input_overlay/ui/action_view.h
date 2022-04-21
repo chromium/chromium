@@ -82,6 +82,8 @@ class ActionView : public views::View {
   DisplayMode current_display_mode_ = DisplayMode::kNone;
   // Center position of the circle view.
   gfx::Point center_;
+  // TODO(cuicuirunan): Enable or remove this after MVP.
+  bool show_edit_button_ = false;
 
  private:
   void AddEditButton();

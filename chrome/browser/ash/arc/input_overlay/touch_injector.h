@@ -61,6 +61,8 @@ class TouchInjector : public ui::EventRewriter {
   void store_input_mapping_visible(bool enable) {
     input_mapping_visible_ = enable;
   }
+  bool enable_mouse_lock() { return enable_mouse_lock_; }
+  void set_enable_mouse_lock(bool enable) { enable_mouse_lock_ = true; }
 
   // Parse Json to actions.
   // Json value format:
@@ -168,6 +170,10 @@ class TouchInjector : public ui::EventRewriter {
   // Linked to input mapping toggle in the menu. Set it enabled by default. This
   // is to save status if display overlay is destroyed during window operations.
   bool input_mapping_visible_ = true;
+
+  // TODO(cuicuiruan): It can be removed after the mouse lock is enabled for
+  // post MVP.
+  bool enable_mouse_lock_ = false;
 
   // Key is the original touch id.
   // Value is a struct containing required info for this touch event.
