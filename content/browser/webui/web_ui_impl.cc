@@ -34,6 +34,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/url_constants.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {

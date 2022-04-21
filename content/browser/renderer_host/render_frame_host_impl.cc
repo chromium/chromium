@@ -42,6 +42,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"

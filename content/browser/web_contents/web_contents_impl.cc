@@ -141,6 +141,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/referrer_type_converters.h"
+#include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "net/base/url_util.h"
