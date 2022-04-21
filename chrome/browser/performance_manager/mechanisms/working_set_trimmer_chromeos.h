@@ -63,7 +63,7 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   // The function must be called on the UI thread.
   // |callback| is invoked upon completion.
   // |page_limit| is the maximum number of pages to reclaim
-  //             (arc::ArcSession::NoPageLimit for no limit)
+  //             (arc::ArcSession::kNoPageLimit for no limit)
   // Note: made virtual to ease unit testing (redefine in derived mock).
   virtual void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback,
                                    ArcVmReclaimType reclaim_type,

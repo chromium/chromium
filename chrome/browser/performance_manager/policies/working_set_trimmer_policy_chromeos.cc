@@ -335,7 +335,8 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
                  : mechanism::ArcVmReclaimType::kReclaimAll)
           : mechanism::ArcVmReclaimType::kReclaimNone;
 
-  bool is_first_trim_post_boot = false;
+  bool is_first_trim_post_boot =
+      WorkingSetTrimmerPolicyArcVm::kNotFirstReclaimPostBoot;
   const mechanism::ArcVmReclaimType reclaim_type =
       force_reclaim
           ? mechanism::ArcVmReclaimType::kReclaimAll
@@ -366,10 +367,10 @@ void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses(
   // so it must be done in the PM thread.
   // Checking that "this" has not yet been deleted is done by BindOnce()
   // at invocation time.
-  int page_limit = arc::ArcSession::NoPageLimit;
+  int page_limit = arc::ArcSession::kNoPageLimit;
   if (!is_first_trim_post_boot) {
     bool per_minute_limit_applied = false;
-    if (pages_per_minute != arc::ArcSession::NoPageLimit &&
+    if (pages_per_minute != arc::ArcSession::kNoPageLimit &&
         last_arcvm_trim_success_) {
       auto elapsed_mins =
           (base::TimeTicks::Now() - *last_arcvm_trim_success_).InMinutes();
@@ -379,7 +380,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses(
       }  // else, let the per-iteration limit prevail.
     }
 
-    if (max_pages_per_iteration != arc::ArcSession::NoPageLimit) {
+    if (max_pages_per_iteration != arc::ArcSession::kNoPageLimit) {
       // If set, the per-iteration max overrides the per-minute value.
       if (!per_minute_limit_applied || max_pages_per_iteration < page_limit)
         page_limit = max_pages_per_iteration;

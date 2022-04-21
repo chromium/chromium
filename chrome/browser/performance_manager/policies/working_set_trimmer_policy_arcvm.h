@@ -54,6 +54,8 @@ class WorkingSetTrimmerPolicyArcVm
   ~WorkingSetTrimmerPolicyArcVm() override;
 
   // WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate overrides.
+  static constexpr bool kYesFirstReclaimPostBoot = true;
+  static constexpr bool kNotFirstReclaimPostBoot = false;
   mechanism::ArcVmReclaimType IsEligibleForReclaim(
       const base::TimeDelta& arcvm_inactivity_time,
       mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,

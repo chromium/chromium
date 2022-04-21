@@ -148,8 +148,8 @@ struct TrimOnMemoryPressureParams {
   bool trim_arcvm_on_critical_pressure = false;
   bool trim_arcvm_on_first_memory_pressure_after_arcvm_boot = false;
   bool only_drop_caches_on_first_memory_pressure_after_arcvm_boot = false;
-  int trim_arcvm_max_pages_per_iteration = arc::ArcSession::NoPageLimit;
-  int trim_arcvm_pages_per_minute = arc::ArcSession::NoPageLimit;
+  int trim_arcvm_max_pages_per_iteration = arc::ArcSession::kNoPageLimit;
+  int trim_arcvm_pages_per_minute = arc::ArcSession::kNoPageLimit;
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

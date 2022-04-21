@@ -86,7 +86,7 @@ class FakeArcSession : public ArcSession {
   bool stop_requested_ = false;
   std::string upgrade_locale_param_;
   int trim_vm_memory_count_ = 0;
-  int last_trim_vm_page_limit_ = arc::ArcSession::NoPageLimit;
+  int last_trim_vm_page_limit_ = arc::ArcSession::kNoPageLimit;
   bool trim_success_ = true;
   std::string trim_fail_reason;
 };

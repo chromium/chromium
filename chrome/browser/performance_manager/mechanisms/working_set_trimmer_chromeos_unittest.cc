@@ -68,13 +68,13 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
       WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback) {
     trimmer_->TrimArcVmWorkingSet(std::move(callback),
                                   ArcVmReclaimType::kReclaimAll,
-                                  arc::ArcSession::NoPageLimit);
+                                  arc::ArcSession::kNoPageLimit);
   }
   void TrimArcVmWorkingSetDropPageCachesOnly(
       WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback) {
     trimmer_->TrimArcVmWorkingSet(std::move(callback),
                                   ArcVmReclaimType::kReclaimGuestPageCaches,
-                                  arc::ArcSession::NoPageLimit);
+                                  arc::ArcSession::kNoPageLimit);
   }
   void TrimArcVmWorkingSetWithPageLimit(
       WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback,

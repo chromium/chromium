@@ -103,7 +103,7 @@ class ArcSession {
   // Trims VM's memory by moving it to zram.
   // When the operation is done |callback| is called.
   // If nonzero, |page_limit| defines the max number of pages to reclaim.
-  static constexpr int NoPageLimit = 0;
+  static constexpr int kNoPageLimit = 0;
   using TrimVmMemoryCallback =
       base::OnceCallback<void(bool success, const std::string& failure_reason)>;
   virtual void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) = 0;
