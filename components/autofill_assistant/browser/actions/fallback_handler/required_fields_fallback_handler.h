@@ -18,10 +18,10 @@
 #include "components/autofill_assistant/browser/actions/fallback_handler/required_field.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 class ClientStatus;
+class ElementFinderResult;
 
 // A handler for required fields and fallback values, used by UseAddressAction
 // and UseCreditCardAction.

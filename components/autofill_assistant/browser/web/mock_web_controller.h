@@ -19,6 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
 struct RectF;
 
 class MockWebController : public WebController {

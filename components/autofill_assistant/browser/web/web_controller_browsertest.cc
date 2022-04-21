@@ -57,7 +57,8 @@
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
+#include "components/autofill_assistant/browser/web/element_finder_result_type.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_types.mojom.h"
@@ -3224,7 +3225,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   base::RunLoop button_run_loop;
   web_controller_->RunElementFinder(
       frame_element, Selector({"#shadowsection", "#shadowbutton"}),
-      ElementFinder::ResultType::kExactlyOneMatch,
+      ElementFinderResultType::kExactlyOneMatch,
       base::BindOnce(&WebControllerBrowserTest::OnFindElement,
                      base::Unretained(this), button_run_loop.QuitClosure(),
                      &button_status, &button_element));
@@ -3262,7 +3263,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
   base::RunLoop button_run_loop;
   web_controller_->RunElementFinder(
       fake_frame_element, Selector({"#button"}),
-      ElementFinder::ResultType::kExactlyOneMatch,
+      ElementFinderResultType::kExactlyOneMatch,
       base::BindOnce(&WebControllerBrowserTest::OnFindElement,
                      base::Unretained(this), button_run_loop.QuitClosure(),
                      &button_status, &button_element));

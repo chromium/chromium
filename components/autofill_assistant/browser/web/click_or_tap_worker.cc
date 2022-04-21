@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
 namespace autofill_assistant {

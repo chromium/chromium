@@ -20,10 +20,10 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/selector_observer.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
 class WebController;
 
 // Helper for checking a set of elements at the same time. It avoids duplicate

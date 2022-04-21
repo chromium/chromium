@@ -10,10 +10,11 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/rectf.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
 
 namespace autofill_assistant {
+class ClientStatus;
+class ElementFinderResult;
 
 // Worker class to get an element's bounding rectangle in viewport coordinates.
 // This returns the global coordinates of the element rect, summing up (and

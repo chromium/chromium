@@ -31,6 +31,7 @@ class PasswordChangeSuccessTracker;
 }
 
 namespace autofill_assistant {
+class ElementFinderResult;
 class UserModel;
 
 class MockActionDelegate : public ActionDelegate {

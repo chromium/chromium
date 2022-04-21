@@ -38,6 +38,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
 class ElementStore;
 class UserModel;
 class WaitForDomOperation;
