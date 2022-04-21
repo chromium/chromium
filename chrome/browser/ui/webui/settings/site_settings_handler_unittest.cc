@@ -190,7 +190,8 @@ class ContentSettingSourceSetter {
   ContentSettingsType content_type_;
 };
 
-class SiteSettingsHandlerTest : public testing::Test {
+class SiteSettingsHandlerTest : public testing::Test,
+                                public testing::WithParamInterface<bool> {
  public:
   SiteSettingsHandlerTest()
       : kNotifications(site_settings::ContentSettingsTypeToGroupName(
@@ -604,6 +605,11 @@ class SiteSettingsHandlerTest : public testing::Test {
 #endif
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service_;
 };
+
+// True if testing for handle clear unpartitioned usage with HTTPS scheme URL.
+// When set to true, the tests use HTTPS scheme as origin. When set to
+// false, the tests use HTTP scheme as origin.
+INSTANTIATE_TEST_SUITE_P(All, SiteSettingsHandlerTest, testing::Bool());
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
   // Test the JS -> C++ -> JS callback path for getting and setting defaults.
@@ -2596,13 +2602,14 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   EXPECT_EQ(0U, storage_and_cookie_list.size());
 }
 
-TEST_F(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
+TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   SetUpCookiesTreeModel();
 
   EXPECT_EQ(31, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   base::Value args(base::Value::Type::LIST);
-  args.Append("https://www.example.com/");
+  args.Append(GetParam() ? "https://www.example.com/"
+                         : "http://www.example.com/");
   handler()->HandleClearUnpartitionedUsage(args.GetList());
 
   // Confirm that only the unpartitioned items for example.com have been
@@ -2709,6 +2716,18 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             client_hints_settings.at(0).secondary_pattern);
   EXPECT_EQ(client_hints_dictionary, client_hints_settings.at(0).setting_value);
+
+  // Clear unpartitioned usage data through HTTPS scheme, make sure https site
+  // client hints have been cleared when the specific origin HTTPS scheme
+  // exist.
+  args.ClearList();
+  args.Append("http://www.google.com/");
+  handler()->HandleClearUnpartitionedUsage(args.GetList());
+
+  // Validate the client hint has been cleared.
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
+  EXPECT_EQ(0U, client_hints_settings.size());
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
