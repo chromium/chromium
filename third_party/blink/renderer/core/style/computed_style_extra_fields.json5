@@ -777,6 +777,17 @@
       field_template: "monotonic_flag",
       default_value: "false",
     },
+    // If this highlight pseudo matches only universal highlight rules (like
+    // ::selection) for both this element and our child, then the child need
+    // not apply any matched properties, because the result will be the same.
+    {
+      name: "DidMatchNonUniversalHighlights",
+      field_template: "primitive",
+      field_group: "inherited",
+      type_name: "bool",
+      default_value: "false",
+      inherited: true,
+    },
     {
       name: "ColorIsCurrentColor",
       field_template: "primitive",

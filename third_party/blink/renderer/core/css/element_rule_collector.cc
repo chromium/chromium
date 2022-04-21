@@ -660,6 +660,33 @@ void ElementRuleCollector::DidMatchRule(
     matched_rules_.push_back(MatchedRule(rule_data, layer_order,
                                          match_request.style_sheet_index,
                                          match_request.style_sheet));
+
+    if (IsHighlightPseudoElement(GetPseudoId())) {
+      // Determine whether the selector definitely matches the highlight pseudo
+      // of all elements, without any namespace limits or other conditions.
+      bool universal = false;
+      const CSSSelector& selector = rule_data->Selector();
+      if (CSSSelector::GetPseudoId(selector.GetPseudoType()) == GetPseudoId()) {
+        // When there is no default @namespace, *::selection and *|*::selection
+        // are stored without the star, so we are universal if there’s nothing
+        // before (e.g. x::selection) and nothing after (e.g. y ::selection).
+        universal = selector.IsLastInTagHistory();
+      } else if (const CSSSelector* next = selector.TagHistory()) {
+        // When there is a default @namespace, ::selection and *::selection (not
+        // universal) are stored as g_null_atom|*::selection, |*::selection (not
+        // universal) is stored as g_empty_atom|*::selection, and *|*::selection
+        // (the only universal form) is stored as g_star_atom|*::selection.
+        universal =
+            next->IsLastInTagHistory() &&
+            CSSSelector::GetPseudoId(next->GetPseudoType()) == GetPseudoId() &&
+            selector.Match() == CSSSelector::kTag &&
+            selector.TagQName().LocalName().IsNull() &&
+            selector.TagQName().Prefix() == g_star_atom;
+      }
+
+      if (!universal)
+        result_.SetMatchesNonUniversalHighlights();
+    }
   }
 }
 

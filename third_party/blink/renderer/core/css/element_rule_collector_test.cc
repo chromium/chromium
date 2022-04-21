@@ -7,11 +7,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -246,6 +250,83 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
               kMatchVisited);
     EXPECT_EQ(Match(element, ":host-context(:is(:visited, :link)) div", scope),
               kMatchAll);
+  }
+}
+
+TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
+  String markup =
+      "<html xmlns='http://www.w3.org/1999/xhtml'><body class='foo'>"
+      "<none xmlns=''/>"
+      "<bar xmlns='http://example.org/bar'/>"
+      "<default xmlns='http://example.org/default'/>"
+      "</body></html>";
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(markup.Utf8().data(), markup.length());
+  GetFrame().ForceSynchronousDocumentInstall("text/xml", data);
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+
+  // Creates a StyleSheetContents with selector and optional default @namespace.
+  auto sheet = [&](String selector,
+                   absl::optional<AtomicString> defaultNamespace) {
+    auto* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+    sheet->ParserAddNamespace("bar", "http://example.org/bar");
+    if (defaultNamespace)
+      sheet->ParserAddNamespace(g_null_atom, *defaultNamespace);
+    RuleSet& rules = sheet->EnsureRuleSet(
+        MediaQueryEvaluator(GetDocument().GetFrame()), kRuleHasNoSpecialState);
+    auto* rule = To<StyleRule>(CSSParser::ParseRule(
+        sheet->ParserContext(), sheet, selector + " { color: green }"));
+    rules.AddStyleRule(rule, kRuleHasNoSpecialState);
+    return sheet;
+  };
+
+  // Matches the element and pseudo and returns MatchesNonUniversalHighlights.
+  auto test = [&](Element& element, StyleSheetContents* sheet,
+                  PseudoId pseudo = kPseudoIdSelection) {
+    MatchResult result;
+    ElementResolveContext context{element};
+    ElementRuleCollector collector(context, StyleRecalcContext(),
+                                   SelectorFilter(), result, style.get(),
+                                   EInsideLink::kNotInsideLink);
+    collector.SetPseudoElementStyleRequest(StyleRequest{pseudo, nullptr});
+    collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr});
+    return result.MatchesNonUniversalHighlights();
+  };
+
+  Element& body = *GetDocument().body();
+  Element& none = *body.QuerySelector("none");
+  Element& bar = *body.QuerySelector("bar");
+  Element& def = *body.QuerySelector("default");
+  AtomicString defNs = "http://example.org/default";
+
+  // MatchesNonUniversalHighlights is only ever set for highlight pseudos.
+  EXPECT_FALSE(test(body, sheet("::before", {}), kPseudoIdBefore));
+  EXPECT_FALSE(test(body, sheet("body::before", {}), kPseudoIdBefore));
+
+  // Cases that only make sense without a default @namespace.
+  // ::selection kSubSelector :window-inactive
+  EXPECT_TRUE(test(body, sheet("::selection:window-inactive", {})));
+  EXPECT_TRUE(test(body, sheet("body::selection", {})));    // body::selection
+  EXPECT_TRUE(test(body, sheet(".foo::selection", {})));    // .foo::selection
+  EXPECT_TRUE(test(body, sheet("* ::selection", {})));      // ::selection *
+  EXPECT_TRUE(test(body, sheet("* body::selection", {})));  // body::selection *
+
+  // Cases that depend on whether there is a default @namespace.
+  EXPECT_FALSE(test(def, sheet("::selection", {})));     // ::selection
+  EXPECT_FALSE(test(def, sheet("*::selection", {})));    // ::selection
+  EXPECT_TRUE(test(def, sheet("::selection", defNs)));   // null|*::selection
+  EXPECT_TRUE(test(def, sheet("*::selection", defNs)));  // null|*::selection
+
+  // Cases that are independent of whether there is a default @namespace.
+  for (auto& ns : Vector<absl::optional<AtomicString>>{{}, defNs}) {
+    // no default ::selection, default *|*::selection
+    EXPECT_FALSE(test(body, sheet("*|*::selection", ns)));
+    // no default .foo::selection, default *|*.foo::selection
+    EXPECT_TRUE(test(body, sheet("*|*.foo::selection", ns)));
+    EXPECT_TRUE(test(none, sheet("|*::selection", ns)));  // empty|*::selection
+    EXPECT_TRUE(test(bar, sheet("bar|*::selection", ns)));  // bar|*::selection
   }
 }
 
