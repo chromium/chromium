@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 
 class Browser;
-class ReadAnythingContainerView;
 class ReadAnythingController;
 class SidePanelRegistry;
 
@@ -38,11 +37,12 @@ class ReadAnythingCoordinator
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;
 
-  std::unique_ptr<views::View> GetContainerView();
+  // Callback passed to SidePanelCoordinator. This function creates the
+  // container view and all its child views and returns it.
+  std::unique_ptr<views::View> CreateContainerView();
 
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
-  std::unique_ptr<ReadAnythingContainerView> container_view_;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

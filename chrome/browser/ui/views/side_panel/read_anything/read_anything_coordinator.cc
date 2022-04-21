@@ -23,28 +23,6 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
   // Create the controller.
   controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);
-
-  // Create the views.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
-      controller_.get(), model_.get()->GetFontModel());
-
-  auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
-      browser,
-      /* on_show_cb= */ base::RepeatingClosure(),
-      /* close_cb= */ base::RepeatingClosure(),
-      /* contents_wrapper= */
-      std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
-          /* webui_url= */ GURL(chrome::kChromeUIReadAnythingSidePanelURL),
-          /* browser_context= */ browser->profile(),
-          /* task_manager_string_id= */ IDS_READ_ANYTHING_TITLE,
-          /* webui_resizes_host= */ false,
-          /* esc_closes_ui= */ false));
-
-  // Create the component.
-  // Note that a coordinator would normally maintain ownership of these objects,
-  // but objects extending {ui/views/view.h} prefer ownership over raw pointers.
-  container_view_ = std::make_unique<ReadAnythingContainerView>(
-      std::move(toolbar), std::move(content_web_view));
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() = default;
@@ -55,7 +33,7 @@ void ReadAnythingCoordinator::CreateAndRegisterEntry(
       SidePanelEntry::Id::kReadAnything,
       l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TITLE),
       ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
-      base::BindRepeating(&ReadAnythingCoordinator::GetContainerView,
+      base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
                           base::Unretained(this))));
 }
 
@@ -73,8 +51,31 @@ void ReadAnythingCoordinator::RemoveModelObserver(
   model_->RemoveObserver(observer);
 }
 
-std::unique_ptr<views::View> ReadAnythingCoordinator::GetContainerView() {
-  return std::move(container_view_);
+std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
+  // Create the views.
+  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
+      controller_.get(), model_.get()->GetFontModel());
+
+  Browser* browser = &GetBrowser();
+  auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
+      browser,
+      /* on_show_cb= */ base::RepeatingClosure(),
+      /* close_cb= */ base::RepeatingClosure(),
+      /* contents_wrapper= */
+      std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
+          /* webui_url= */ GURL(chrome::kChromeUIReadAnythingSidePanelURL),
+          /* browser_context= */ browser->profile(),
+          /* task_manager_string_id= */ IDS_READ_ANYTHING_TITLE,
+          /* webui_resizes_host= */ false,
+          /* esc_closes_ui= */ false));
+
+  // Create the component.
+  // Note that a coordinator would normally maintain ownership of these objects,
+  // but objects extending {ui/views/view.h} prefer ownership over raw pointers.
+  auto container_view = std::make_unique<ReadAnythingContainerView>(
+      std::move(toolbar), std::move(content_web_view));
+
+  return std::move(container_view);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);
