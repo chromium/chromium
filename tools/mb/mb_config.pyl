@@ -631,8 +631,8 @@
     },
 
     'chromium.rust': {
-      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64',
-      'linux-rust-x64-rel': 'release_rust_linux_x64',
+      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64_reclient',
+      'linux-rust-x64-rel': 'release_rust_linux_x64_reclient',
       'android-rust-arm-dbg': 'debug_bot_rust_android_arm_reclient',
       'android-rust-arm-rel': 'release_rust_android_arm_reclient',
     },
@@ -2342,6 +2342,10 @@
       'debug_bot', 'enable_rust', 'x64',
     ],
 
+    'debug_bot_rust_linux_x64_reclient': [
+      'debug_bot_reclient', 'enable_rust', 'x64',
+    ],
+
     'debug_bot_x86_reclient': [
       'debug_bot_reclient', 'x86',
     ],
@@ -3297,6 +3301,10 @@
 
     'release_rust_linux_x64': [
       'release_trybot_minimal_symbols', 'enable_rust', 'x64',
+    ],
+
+    'release_rust_linux_x64_reclient': [
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'x64',
     ],
 
     'release_rust_intree_linux_x64': [
