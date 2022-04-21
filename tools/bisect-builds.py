@@ -57,6 +57,9 @@ VERSION_HISTORY_URL = ('https://versionhistory.googleapis.com/v1/chrome'
 
 OMAHA_REVISIONS_URL = ('https://omahaproxy.appspot.com/deps.json?version=%s')
 
+CRDASH_REVISIONS_URL = (
+    'https://chromiumdash.appspot.com/fetch_version?version=%s')
+
 # Search pattern to be matched in the JSON output from
 # CHROMIUM_GITHASH_TO_SVN_URL to get the chromium revision (svn revision).
 CHROMIUM_SEARCH_PATTERN_OLD = (
@@ -474,8 +477,9 @@ class PathContext(object):
       # Check for specifying a number before the available range.
       if maxrev < first_known_rev:
         msg = (
-            'First available bisect revision for %s is %d. Be sure to specify revision '
-            'numbers, not branch numbers.' % (archive, first_known_rev))
+            'First available bisect revision for %s is %d. Be sure to specify '
+            'revision numbers, not branch numbers.' %
+            (archive, first_known_rev))
         raise (RuntimeError(msg))
 
       # Check for specifying a number beyond the available range.
@@ -483,11 +487,11 @@ class PathContext(object):
         # Check for the special case of linux where bisect builds stopped at
         # revision 382086, around March 2016.
         if archive == 'linux':
-          msg = 'Last available bisect revision for %s is %d. Try linux64 instead.' % (
-              archive, last_known_rev)
+          msg = ('Last available bisect revision for %s is %d. Try linux64 '
+                 'instead.' % (archive, last_known_rev))
         else:
-          msg = 'Last available bisect revision for %s is %d. Try a different good/bad range.' % (
-              archive, last_known_rev)
+          msg = ('Last available bisect revision for %s is %d. Try a different '
+                 'good/bad range.' % (archive, last_known_rev))
         raise (RuntimeError(msg))
 
       # Otherwise give a generic message.
@@ -1090,6 +1094,8 @@ def GetRevision(revision_text):
   if type(revision_text) == type(0):
     return revision_text
 
+  arg_revision_text = revision_text
+
   # Translate from stable milestone name to the latest version number released
   # for that milestone, i.e.; 'M85' to '85.0.4183.121'.
   if revision_text[:1].upper() == 'M':
@@ -1107,18 +1113,25 @@ def GetRevision(revision_text):
         revision_text = '.'.join(match.groups())
         break
     if revision_text[:1].upper() == 'M':
-      raise Exception('No stable release matching %s found.' % revision_text)
+      raise Exception('No stable release matching %s found.' %
+                      arg_revision_text)
 
   # Translate from version number to commit position, also known as revision
-  # number.
+  # number. First read from Chromium Dash, then fall back to OmahaProxy, as CD
+  # data is more correct but only if it's available (crbug.com/1317667).
   if len(revision_text.split('.')) == 4:
-    response = urllib.urlopen(OMAHA_REVISIONS_URL % revision_text)
+    response = urllib.urlopen(CRDASH_REVISIONS_URL % revision_text)
     revision_details = json.loads(response.read())
-    revision_text = revision_details['chromium_base_position']
+    revision_text = revision_details.get('chromium_main_branch_position')
+    if not revision_text:
+      # OmahaProxy fallback.
+      response = urllib.urlopen(OMAHA_REVISIONS_URL % revision_text)
+      revision_details = json.loads(response.read())
+      revision_text = revision_details['chromium_base_position']
 
     if not revision_text:
-        raise Exception(
-            "No 'chromium_base_position' matching %s found." % chromium_base_position)
+      raise Exception("No 'chromium_base_position' matching %s found." %
+                      arg_revision_text)
 
   # Translate from text commit position to integer commit position.
   return int(revision_text)
