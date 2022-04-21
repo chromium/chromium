@@ -65,102 +65,138 @@ using SubstitutionMap = std::map<std::string, std::string>;
 // resource holding the content of the script.
 using ScriptResourceIds = std::map<UserScript::File*, absl::optional<int>>;
 
+// The source of script file from where it's read.
+enum class ReadScriptContentSource {
+  // ExtensionResource.
+  kFile,
+  // ResourceBundle.
+  kResouceBundle,
+};
+
 struct VerifyContentInfo {
   VerifyContentInfo(const scoped_refptr<ContentVerifier>& verifier,
                     const ExtensionId& extension_id,
                     const base::FilePath& extension_root,
                     const base::FilePath relative_path,
-                    const std::string& content)
+                    absl::optional<std::string> content)
       : verifier(verifier),
         extension_id(extension_id),
         extension_root(extension_root),
         relative_path(relative_path),
-        content(content) {}
+        content(std::move(content)) {}
+
+  // We explicitly disallow copying this because the `content` string may
+  // be quite large for different extension files.
+  VerifyContentInfo(const VerifyContentInfo&) = delete;
+  VerifyContentInfo& operator=(VerifyContentInfo&) = delete;
+
+  VerifyContentInfo(VerifyContentInfo&& other) = default;
+  VerifyContentInfo& operator=(VerifyContentInfo&& other) = default;
 
   scoped_refptr<ContentVerifier> verifier;
   ExtensionId extension_id;
   base::FilePath extension_root;
   base::FilePath relative_path;
-  std::string content;
+
+  // The content to verify, or nullopt if there was an error retrieving it
+  // from its associated file. Example of errors are: missing or unreadable
+  // file.
+  absl::optional<std::string> content;
 };
 
-// Verifies file contents as they are read.
-void VerifyContent(const VerifyContentInfo& info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(info.verifier);
-  scoped_refptr<ContentVerifyJob> job(info.verifier->CreateAndStartJobFor(
-      info.extension_id, info.extension_root, info.relative_path));
-  if (job.get()) {
-    job->Read(info.content.data(), info.content.size(), MOJO_RESULT_OK);
-    job->Done();
-  }
-}
-
-void ForwardVerifyContentToIO(const VerifyContentInfo& info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&VerifyContent, info));
-}
-
-// Loads user scripts from the extension who owns these scripts.
-bool LoadScriptContent(const mojom::HostID& host_id,
-                       UserScript::File* script_file,
-                       const absl::optional<int>& script_resource_id,
-                       const SubstitutionMap* localization_messages,
-                       const scoped_refptr<ContentVerifier>& verifier) {
-  DCHECK(script_file);
-  std::string content;
+// Reads and returns {content, source} of a |script_file|.
+//   - content contains the std::string content, or nullopt if the script file
+// couldn't be read.
+std::tuple<absl::optional<std::string>, ReadScriptContentSource>
+ReadScriptContent(UserScript::File* script_file,
+                  const absl::optional<int>& script_resource_id) {
   const base::FilePath& path = ExtensionResource::GetFilePath(
       script_file->extension_root(), script_file->relative_path(),
       ExtensionResource::SYMLINKS_MUST_RESOLVE_WITHIN_ROOT);
   if (path.empty()) {
     if (script_resource_id) {
       const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      content = rb.LoadDataResourceString(*script_resource_id);
-    } else {
-      LOG(WARNING) << "Failed to get file path to "
-                   << script_file->relative_path().value() << " from "
-                   << script_file->extension_root().value();
-      return false;
+      return {rb.LoadDataResourceString(*script_resource_id),
+              ReadScriptContentSource::kResouceBundle};
     }
-  } else {
-    if (!base::ReadFileToString(path, &content)) {
-      LOG(WARNING) << "Failed to load user script file: " << path.value();
-      return false;
-    }
-    if (verifier.get()) {
-      // Call VerifyContent() after yielding on UI thread so it is ensured that
-      // ContentVerifierIOData is populated at the time we call VerifyContent().
-      // Priority set explicitly to avoid unwanted task priority inheritance.
-      content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
-          ->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  &ForwardVerifyContentToIO,
-                  VerifyContentInfo(verifier, host_id.id,
-                                    script_file->extension_root(),
-                                    script_file->relative_path(), content)));
-    }
+    LOG(WARNING) << "Failed to get file path to "
+                 << script_file->relative_path().value() << " from "
+                 << script_file->extension_root().value();
+    return {absl::nullopt, ReadScriptContentSource::kFile};
   }
+
+  std::string content;
+  if (!base::ReadFileToString(path, &content)) {
+    LOG(WARNING) << "Failed to load user script file: " << path.value();
+    return {absl::nullopt, ReadScriptContentSource::kFile};
+  }
+  return {std::move(content), ReadScriptContentSource::kFile};
+}
+
+// Verifies file contents as they are read.
+void VerifyContent(VerifyContentInfo info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK(info.verifier);
+  scoped_refptr<ContentVerifyJob> job(info.verifier->CreateAndStartJobFor(
+      info.extension_id, info.extension_root, info.relative_path));
+  if (job.get()) {
+    if (info.content)
+      job->Read(info.content->data(), info.content->size(), MOJO_RESULT_OK);
+    else
+      job->Read("", 0u, MOJO_RESULT_NOT_FOUND);
+    job->Done();
+  }
+}
+
+void ForwardVerifyContentToIO(VerifyContentInfo info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&VerifyContent, std::move(info)));
+}
+
+// Loads user scripts from the extension who owns these scripts.
+void LoadScriptContent(const mojom::HostID& host_id,
+                       UserScript::File* script_file,
+                       const absl::optional<int>& script_resource_id,
+                       const SubstitutionMap* localization_messages,
+                       const scoped_refptr<ContentVerifier>& verifier) {
+  DCHECK(script_file);
+  auto [content, source] = ReadScriptContent(script_file, script_resource_id);
+
+  bool needs_content_verification = source == ReadScriptContentSource::kFile;
+  if (needs_content_verification && verifier.get()) {
+    // Note: |content| is nullopt here for missing / unreadable file. We still
+    // pass it through ContentVerifier to report content verification error.
+    VerifyContentInfo info(verifier, host_id.id, script_file->extension_root(),
+                           script_file->relative_path(), content);
+
+    // Call VerifyContent() after yielding on UI thread so it is ensured that
+    // ContentVerifierIOData is populated at the time we call VerifyContent().
+    // Priority set explicitly to avoid unwanted task priority inheritance.
+    content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&ForwardVerifyContentToIO, std::move(info)));
+  }
+
+  if (!content)
+    return;
 
   // Localize the content.
   if (localization_messages) {
     std::string error;
     MessageBundle::ReplaceMessagesWithExternalDictionary(*localization_messages,
-                                                         &content, &error);
+                                                         &*content, &error);
     if (!error.empty())
       LOG(WARNING) << "Failed to replace messages in script: " << error;
   }
 
   // Remove BOM from the content.
-  if (base::StartsWith(content, base::kUtf8ByteOrderMark,
+  if (base::StartsWith(*content, base::kUtf8ByteOrderMark,
                        base::CompareCase::SENSITIVE)) {
-    script_file->set_content(content.substr(strlen(base::kUtf8ByteOrderMark)));
+    script_file->set_content(content->substr(strlen(base::kUtf8ByteOrderMark)));
   } else {
-    script_file->set_content(content);
+    script_file->set_content(*content);
   }
-
-  return true;
 }
 
 void FillScriptFileResourceIds(const UserScript::FileList& script_files,

@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -133,9 +134,20 @@ class ContentVerifierTest : public ExtensionBrowserTest {
         test_data_dir_.AppendASCII("content_verifier/v1.crx"));
   }
 
+  // Types of modification used by `TestContentScriptExtension` method below.
+  enum class ScriptModificationAction {
+    // Alter script content.
+    kAlter,
+    // Delete the script file.
+    kDelete,
+    // Make the script unreadable.
+    kMakeUnreadable,
+  };
+
   void TestContentScriptExtension(const std::string& crx_relpath,
                                   const std::string& id,
-                                  const std::string& script_relpath) {
+                                  const std::string& script_relpath,
+                                  ScriptModificationAction action) {
     VerifierObserver verifier_observer;
 
     // Install the extension with content scripts. The initial read of the
@@ -168,10 +180,20 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     // expect to see a job failure due to the content script content hash not
     // being what was signed by the webstore.
     base::FilePath scriptfile = extension->path().AppendASCII(script_relpath);
-    std::string extra = "some_extra_function_call();";
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::AppendToFile(scriptfile, extra));
+      switch (action) {
+        case ScriptModificationAction::kAlter:
+          ASSERT_TRUE(
+              base::AppendToFile(scriptfile, "some_extra_function_call();"));
+          break;
+        case ScriptModificationAction::kDelete:
+          ASSERT_TRUE(base::DeleteFile(scriptfile));
+          break;
+        case ScriptModificationAction::kMakeUnreadable:
+          ASSERT_TRUE(base::MakeFileUnreadable(scriptfile));
+          break;
+      }
     }
     DisableExtension(id);
     job_observer.ExpectJobResult(id, script_relfilepath, Result::FAILURE);
@@ -306,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {
 
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
   TestContentScriptExtension("content_verifier/content_script.crx",
-                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js");
+                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js",
+                             ScriptModificationAction::kAlter);
 }
 
 // crbug.com/897059 tracks test flakiness.
@@ -318,7 +341,27 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, MAYBE_ContentScriptsInLocales) {
   TestContentScriptExtension("content_verifier/content_script_locales.crx",
                              "jaghonccckpcikmliipifpoodmeofoon",
-                             "_locales/en/content_script.js");
+                             "_locales/en/content_script.js",
+                             ScriptModificationAction::kAlter);
+}
+
+// Tests that a deleted content_script results in content verification failure.
+//
+// Regression test for crbug.com/1296310.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       DeletedContentScriptFailsContentVerification) {
+  TestContentScriptExtension("content_verifier/content_script.crx",
+                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js",
+                             ScriptModificationAction::kDelete);
+}
+
+// Tests that an unreadable content_script results in content verification
+// failure.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       UnreadableContentScriptFailsContentVerification) {
+  TestContentScriptExtension("content_verifier/content_script.crx",
+                             "jmllhlobpjcnnomjlipadejplhmheiif", "script.js",
+                             ScriptModificationAction::kMakeUnreadable);
 }
 
 // Tests the case of a corrupt extension that is force-installed by policy and
