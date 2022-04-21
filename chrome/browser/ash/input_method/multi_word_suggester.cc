@@ -206,7 +206,8 @@ SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
 
 bool MultiWordSuggester::TrySuggestWithSurroundingText(
     const std::u16string& text,
-    size_t cursor_pos) {
+    int cursor_pos,
+    int anchor_pos) {
   // MultiWordSuggester does not trigger a suggest based on surrounding text
   // events. It only triggers suggestions OnExternalSuggestionsUpdated.
   //

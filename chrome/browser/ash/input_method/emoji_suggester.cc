@@ -222,9 +222,23 @@ bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
 }
 
 bool EmojiSuggester::TrySuggestWithSurroundingText(const std::u16string& text,
-                                                   size_t cursor_pos) {
-  if (emoji_map_.empty() || text[text.length() - 1] != kSpaceChar)
+                                                   int cursor_pos,
+                                                   int anchor_pos) {
+  if (emoji_map_.empty())
     return false;
+
+  // All these below conditions are required for a emoji suggestion to be
+  // triggered.
+  // eg. "wow |" where '|' denotes cursor position should trigger an emoji
+  // suggestion.
+  int len = static_cast<int>(text.length());
+  if (!(len && cursor_pos == len     // text not empty and cursor is end of text
+        && cursor_pos == anchor_pos  // no selection
+        && text[cursor_pos - 1] == kSpaceChar  // space before cursor
+        )) {
+    return false;
+  }
+
   std::string last_word =
       base::ToLowerASCII(GetLastWord(base::UTF16ToUTF8(text)));
   if (!last_word.empty() && emoji_map_.count(last_word)) {

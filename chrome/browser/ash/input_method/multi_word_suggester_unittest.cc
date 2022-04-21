@@ -450,13 +450,14 @@ TEST_F(MultiWordSuggesterTest, HandlesMultipleRepeatingCharsWhenTracking) {
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"h", /*cursor_pos=*/1,
                                        /*anchor_pos=*/1);
-  suggester_->TrySuggestWithSurroundingText(u"h", /*cursor_pos=*/1);
+  suggester_->TrySuggestWithSurroundingText(u"h", /*cursor_pos=*/1,
+                                            /*anchor_pos=*/1);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"hh", /*cursor_pos=*/2,
                                        /*anchor_pos=*/2);
 
-  EXPECT_FALSE(
-      suggester_->TrySuggestWithSurroundingText(u"hh", /*cursor_pos=*/2));
+  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(
+      u"hh", /*cursor_pos=*/2, /*anchor_pos=*/2));
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
@@ -469,16 +470,19 @@ TEST_F(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
                                        /*anchor_pos=*/7);
-  suggester_->TrySuggestWithSurroundingText(u"hello h", /*cursor_pos=*/7);
+  suggester_->TrySuggestWithSurroundingText(u"hello h", /*cursor_pos=*/7,
+                                            /*anchor_pos=*/7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
                                        /*anchor_pos=*/7);
-  suggester_->TrySuggestWithSurroundingText(u"hello h", /*cursor_pos=*/7);
+  suggester_->TrySuggestWithSurroundingText(u"hello h", /*cursor_pos=*/7,
+                                            /*anchor_pos=*/7);
   suggester_->OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
                                        /*anchor_pos=*/7);
 
-  EXPECT_TRUE(
-      suggester_->TrySuggestWithSurroundingText(u"hello h", /*cursor_pos=*/7));
+  EXPECT_TRUE(suggester_->TrySuggestWithSurroundingText(u"hello h",
+                                                        /*cursor_pos=*/7,
+                                                        /*anchor_pos=*/7));
 }
 
 TEST_F(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
@@ -492,17 +496,17 @@ TEST_F(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
   suggester_->OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"hey there sam wher", 18, 18);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam wher", 18);
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam wher", 18, 18);
   suggester_->OnSurroundingTextChanged(u"hey there sam where", 19, 19);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where", 19);
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where", 19, 19);
   suggester_->OnSurroundingTextChanged(u"hey there sam where ", 20, 20);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ", 20);
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ", 20, 20);
   suggester_->OnSurroundingTextChanged(u"hey there sam where a", 21, 21);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where a", 21);
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where a", 21, 21);
   suggester_->OnSurroundingTextChanged(u"hey there sam where ar", 22, 22);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ar", 22);
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where ar", 22, 22);
   suggester_->OnSurroundingTextChanged(u"hey there sam where are", 23, 23);
-  suggester_->TrySuggestWithSurroundingText(u"hey there sam where are", 23);
+  suggester_->TrySuggestWithSurroundingText(u"hey there sam where are", 23, 23);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"where are you going");
@@ -521,9 +525,9 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"h", 1, 1);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
-  suggester_->TrySuggestWithSurroundingText(u"ho", 2);
+  suggester_->TrySuggestWithSurroundingText(u"ho", 2, 2);
   suggester_->OnSurroundingTextChanged(u"how", 3, 3);
-  suggester_->TrySuggestWithSurroundingText(u"how", 3);
+  suggester_->TrySuggestWithSurroundingText(u"how", 3, 3);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
@@ -542,9 +546,9 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"h", 1, 1);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"how ar", 6);
+  suggester_->TrySuggestWithSurroundingText(u"how ar", 6, 6);
   suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
-  suggester_->TrySuggestWithSurroundingText(u"how are yo", 10);
+  suggester_->TrySuggestWithSurroundingText(u"how are yo", 10, 10);
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
@@ -563,11 +567,11 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"h", 1, 1);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"how ar", 6);
+  suggester_->TrySuggestWithSurroundingText(u"how ar", 6, 6);
   suggester_->OnSurroundingTextChanged(u"how yo", 6, 6);
 
   // The consumer will handle dismissing the suggestion
-  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"how yo", 6));
+  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"how yo", 6, 6));
 }
 
 TEST_F(MultiWordSuggesterTest,
@@ -582,19 +586,19 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"this is some text", 17, 17);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"this is some text ", 18, 18);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text ", 18);
+  suggester_->TrySuggestWithSurroundingText(u"this is some text ", 18, 18);
   suggester_->OnSurroundingTextChanged(u"this is some text f", 19, 19);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19);
+  suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19, 19);
   suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text fo", 20);
+  suggester_->TrySuggestWithSurroundingText(u"this is some text fo", 20, 20);
   suggester_->OnSurroundingTextChanged(u"this is some text f", 19, 19);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19);
+  suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19, 19);
   suggester_->OnSurroundingTextChanged(u"this is some text ", 18, 18);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text ", 18);
+  suggester_->TrySuggestWithSurroundingText(u"this is some text ", 18, 18);
   suggester_->OnSurroundingTextChanged(u"this is some text", 17, 17);
 
   EXPECT_FALSE(
-      suggester_->TrySuggestWithSurroundingText(u"this is some text", 17));
+      suggester_->TrySuggestWithSurroundingText(u"this is some text", 17, 17));
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
@@ -608,13 +612,13 @@ TEST_F(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
   suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"this is some text for", 21, 21);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text for", 21);
+  suggester_->TrySuggestWithSurroundingText(u"this is some text for", 21, 21);
   suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
-  bool at_suggestion_point =
-      suggester_->TrySuggestWithSurroundingText(u"this is some text fo", 20);
+  bool at_suggestion_point = suggester_->TrySuggestWithSurroundingText(
+      u"this is some text fo", 20, 20);
   suggester_->OnSurroundingTextChanged(u"this is some text f", 19, 19);
   bool before_suggestion_point =
-      suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19);
+      suggester_->TrySuggestWithSurroundingText(u"this is some text f", 19, 19);
 
   EXPECT_TRUE(at_suggestion_point);
   EXPECT_FALSE(before_suggestion_point);
@@ -632,11 +636,11 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"this is some text fo", 20, 20);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"this is some text for", 21, 21);
-  suggester_->TrySuggestWithSurroundingText(u"this is some text for", 21);
+  suggester_->TrySuggestWithSurroundingText(u"this is some text for", 21, 21);
   suggester_->OnSurroundingTextChanged(u"this is some text for", 15, 15);
 
-  EXPECT_FALSE(
-      suggester_->TrySuggestWithSurroundingText(u"this is some text for", 15));
+  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(
+      u"this is some text for", 15, 15));
 }
 
 TEST_F(MultiWordSuggesterTest, DismissesSuggestionOnUserTypingFullSuggestion) {
@@ -650,14 +654,14 @@ TEST_F(MultiWordSuggesterTest, DismissesSuggestionOnUserTypingFullSuggestion) {
   suggester_->OnSurroundingTextChanged(u"how", 3, 3);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
-  suggester_->TrySuggestWithSurroundingText(u"how ", 4);
+  suggester_->TrySuggestWithSurroundingText(u"how ", 4, 4);
   suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
-  suggester_->TrySuggestWithSurroundingText(u"how a", 5);
+  suggester_->TrySuggestWithSurroundingText(u"how a", 5, 5);
   suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"how ar", 6);
+  suggester_->TrySuggestWithSurroundingText(u"how ar", 6, 6);
   suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
 
-  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"how are", 7));
+  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"how are", 7, 7));
 }
 
 TEST_F(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
@@ -709,7 +713,7 @@ TEST_F(MultiWordSuggesterTest,
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
-  suggester_->TrySuggestWithSurroundingText(u"why", 6);
+  suggester_->TrySuggestWithSurroundingText(u"why", 6, 6);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -727,7 +731,7 @@ TEST_F(MultiWordSuggesterTest,
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why", 3, 3);
-  suggester_->TrySuggestWithSurroundingText(u"why", 3);
+  suggester_->TrySuggestWithSurroundingText(u"why", 3, 3);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -822,13 +826,13 @@ TEST_F(MultiWordSuggesterTest,
        SurroundingTextChangesDoNotTriggerAnnouncements) {
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7);
+  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
   suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8);
+  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
   suggester_->OnSurroundingTextChanged(u"why aren'", 9, 9);
-  suggester_->TrySuggestWithSurroundingText(u"why aren'", 9);
+  suggester_->TrySuggestWithSurroundingText(u"why aren'", 9, 9);
   suggester_->OnSurroundingTextChanged(u"why aren't", 10, 10);
-  suggester_->TrySuggestWithSurroundingText(u"why aren't", 10);
+  suggester_->TrySuggestWithSurroundingText(u"why aren't", 10, 10);
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 0u);
 }
@@ -842,7 +846,7 @@ TEST_F(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7);
+  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
@@ -861,14 +865,14 @@ TEST_F(MultiWordSuggesterTest,
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7);
+  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8);
+  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
   suggester_->OnSurroundingTextChanged(u"why aren'", 9, 9);
-  suggester_->TrySuggestWithSurroundingText(u"why aren'", 9);
+  suggester_->TrySuggestWithSurroundingText(u"why aren'", 9, 9);
   suggester_->OnSurroundingTextChanged(u"why aren't", 10, 10);
-  suggester_->TrySuggestWithSurroundingText(u"why aren't", 10);
+  suggester_->TrySuggestWithSurroundingText(u"why aren't", 10, 10);
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
@@ -885,7 +889,7 @@ TEST_F(MultiWordSuggesterTest, AcceptingSuggestionTriggersAnnouncement) {
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7);
+  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
@@ -904,11 +908,11 @@ TEST_F(MultiWordSuggesterTest,
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7);
+  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
   suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8);
+  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
 }
@@ -922,7 +926,7 @@ TEST_F(MultiWordSuggesterTest, DismissingSuggestionTriggersAnnouncement) {
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7);
+  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->DismissSuggestion();
 
@@ -941,11 +945,11 @@ TEST_F(MultiWordSuggesterTest,
 
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", 7, 7);
-  suggester_->TrySuggestWithSurroundingText(u"why are", 7);
+  suggester_->TrySuggestWithSurroundingText(u"why are", 7, 7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->DismissSuggestion();
   suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
-  suggester_->TrySuggestWithSurroundingText(u"why aren", 8);
+  suggester_->TrySuggestWithSurroundingText(u"why aren", 8, 8);
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
 }

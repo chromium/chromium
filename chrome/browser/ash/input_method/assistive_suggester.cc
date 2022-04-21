@@ -509,33 +509,29 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
     int cursor_pos,
     int anchor_pos,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  int len = static_cast<int>(text.length());
-  if (cursor_pos > 0 && cursor_pos <= len && cursor_pos == anchor_pos &&
-      (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos])) &&
-      (base::IsAsciiWhitespace(text[cursor_pos - 1]) || IsSuggestionShown())) {
-    if (IsSuggestionShown()) {
-      return current_suggester_->TrySuggestWithSurroundingText(text,
-                                                               cursor_pos);
-    }
-    if (IsAssistPersonalInfoEnabled() &&
-        enabled_suggestions.personal_info_suggestions &&
-        personal_info_suggester_.TrySuggestWithSurroundingText(text,
-                                                               cursor_pos)) {
-      current_suggester_ = &personal_info_suggester_;
-      if (personal_info_suggester_.IsFirstShown()) {
-        RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
-      }
-      return true;
-    } else if (IsEmojiSuggestAdditionEnabled() &&
-               !IsEnhancedEmojiSuggestEnabled() &&
-               enabled_suggestions.emoji_suggestions &&
-               emoji_suggester_.TrySuggestWithSurroundingText(text,
-                                                              cursor_pos)) {
-      current_suggester_ = &emoji_suggester_;
-      RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
-      return true;
-    }
+  if (IsSuggestionShown()) {
+    return current_suggester_->TrySuggestWithSurroundingText(text, cursor_pos,
+                                                             anchor_pos);
   }
+  if (IsAssistPersonalInfoEnabled() &&
+      enabled_suggestions.personal_info_suggestions &&
+      personal_info_suggester_.TrySuggestWithSurroundingText(text, cursor_pos,
+                                                             anchor_pos)) {
+    current_suggester_ = &personal_info_suggester_;
+    if (personal_info_suggester_.IsFirstShown()) {
+      RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
+    }
+    return true;
+  }
+  if (IsEmojiSuggestAdditionEnabled() && !IsEnhancedEmojiSuggestEnabled() &&
+      enabled_suggestions.emoji_suggestions &&
+      emoji_suggester_.TrySuggestWithSurroundingText(text, cursor_pos,
+                                                     anchor_pos)) {
+    current_suggester_ = &emoji_suggester_;
+    RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
+    return true;
+  }
+  // No suggestions were shown.
   return false;
 }
 

@@ -36,7 +36,8 @@ class EmojiSuggester : public Suggester {
       const std::vector<ime::TextSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool TrySuggestWithSurroundingText(const std::u16string& text,
-                                     size_t cursor_pos) override;
+                                     int cursor_pos,
+                                     int anchor_pos) override;
   bool AcceptSuggestion(size_t index) override;
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;

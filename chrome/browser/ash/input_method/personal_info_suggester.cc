@@ -240,7 +240,8 @@ SuggestionStatus PersonalInfoSuggester::HandleKeyEvent(
 
 bool PersonalInfoSuggester::TrySuggestWithSurroundingText(
     const std::u16string& text,
-    size_t cursor_pos) {
+    int cursor_pos,
+    int anchor_pos) {
   // |text| could be very long, we get at most |kMaxTextBeforeCursorLength|
   // characters before cursor.
   int start_pos = cursor_pos >= kMaxTextBeforeCursorLength
@@ -270,6 +271,18 @@ bool PersonalInfoSuggester::TrySuggestWithSurroundingText(
     }
     return matched;
   } else {
+    // All these below conditions are required for a personal info suggestion to
+    // be triggered. eg. "my name is |" where '|' denotes cursor position should
+    // trigger a personal info suggestion.
+    int len = static_cast<int>(text.length());
+    if (!(cursor_pos > 0 && cursor_pos <= len &&  // cursor inside text
+          cursor_pos == anchor_pos &&             // no selection
+          text[cursor_pos - 1] == ' ' &&          // space before cursor
+          // cursor at end of line (no or new line char after cursor)
+          (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos])))) {
+      return false;
+    }
+
     suggestion_ = GetSuggestion(text_before_cursor);
     if (suggestion_.empty()) {
       if (proposed_action_type_ != AssistiveType::kGenericAction)
