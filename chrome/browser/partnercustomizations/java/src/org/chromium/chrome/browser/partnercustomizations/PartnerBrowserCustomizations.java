@@ -157,7 +157,6 @@ public class PartnerBrowserCustomizations {
      * @return True, if initialization is finished. Checking that there is no provider, or failing
      * to read provider is also considered initialization.
      */
-    @VisibleForTesting
     public boolean isInitialized() {
         return mIsInitialized;
     }

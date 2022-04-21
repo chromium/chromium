@@ -11,6 +11,6 @@ public class PartnerBookmarksDelegateImpl implements PartnerBookmarksDelegate {
     @Override
     @Nullable
     public PartnerBookmarkIterator createIterator() {
-        return null;
+        return PartnerBookmarksProviderIterator.createIfAvailable();
     }
 }

@@ -23,7 +23,6 @@ public class PartnerBookmarksFaviconThrottleTest {
 
     private PartnerBookmarksFaviconThrottle mFaviconThrottle;
 
-
     @Before
     public void setUp() {
         mFaviconThrottle = new PartnerBookmarksFaviconThrottle(TEST_PREFERENCES_NAME);

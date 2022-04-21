@@ -36,5 +36,7 @@ public class PartnerBookmark {
     List<PartnerBookmark> mEntries = new ArrayList<>();
 
     /** Closable iterator for available bookmarks. */
-    public interface BookmarkIterator extends Iterator<PartnerBookmark> { void close(); }
+    public interface BookmarkIterator extends Iterator<PartnerBookmark> {
+        void close();
+    }
 }
