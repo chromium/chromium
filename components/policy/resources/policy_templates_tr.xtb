@@ -2801,6 +2801,13 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="4025500273782820766">Gelecekte onay istemlerini atlamak için harici protokol iletişim kutusu açıldığında kullanıcıların, "Her zaman izin ver"i seçmelerine izin ver</translation>
 <translation id="402759845255257575">Hiçbir sitenin JavaScript çalıştırmasına izin verme</translation>
 <translation id="4027608872760987929">Varsayılan arama sağlayıcıyı etkinleştir</translation>
+<translation id="4027904270588278067">Politika ayarlanırsa Chrome'un dosya indirmek için kullandığı dizin yapılandırılır. Chrome, kullanıcıların bir dizin belirtmesine veya her seferinde indirme konumunun sorulmasını sağlayan işareti etkinleştirmiş olmasına bakılmaksızın burada sağlanan dizini kullanır.
+
+      Bu politika <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" /> politikasını geçersiz kılar.
+
+      Politika ayarlanmadan bırakılırsa Chrome varsayılan indirme dizinini kullanır ve kullanıcılar bunu değiştirebilir.
+
+      Not: Kullanabileceğiniz değişkenlerin listesine bakın (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4041577849977347218">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa, indirilen dosyalar güvenilir bir kaynaktan olsa bile Güvenli Tarama tarafından analiz edilmeye gönderilir.
 
       Politika, Devre dışı değerine ayarlanırsa, indirilen dosyalar güvenilir bir kaynaktan olduğunda Güvenli Tarama tarafından analiz edilmeye gönderilmez.
@@ -6007,6 +6014,13 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar depolama istatistiklerini bildirmez.
       İstisna: M95 ve önceki sürümlerde disk boyutu ile diskteki boş alan <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> tarafından kontrol edilir.</translation>
+<translation id="7719175048012980445">Politika ayarlanırsa Chrome'un dosyaları indirdiği varsayılan dizin değişir, ancak kullanıcılar dizini değiştirebilir.
+
+      Politika ayarlanmadan bırakılırsa Chrome, platforma özgü varsayılan dizinini kullanır.
+
+      <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> politikası ayarlanmışsa bu politikanın etkisi olmaz.
+
+      Not: Kullanabileceğiniz değişkenlerin listesine bakın (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> kullanıcı kimliği</translation>
 <translation id="7724161903134898864">Politikayı 1 değerine ayarlamak web sitelerinde pop-up'lara izin verir. Politikayı 2 değerine ayarlamak pop-up'ları engeller.
 

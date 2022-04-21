@@ -2779,6 +2779,13 @@
 <translation id="4025500273782820766">允许用户在系统显示外部协议对话框时选择“始终允许”，以跳过后续的确认提示</translation>
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
+<translation id="4027904270588278067">通过设置此政策，您可以配置供 Chrome 用于下载文件的目录。无论用户是指定了一个目录，还是开启了 flag，要求系统在每次下载前都向用户询问文件保存位置，Chrome 都会使用此政策中提供的目录。
+
+      此政策会覆盖 <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策。
+
+      如果您未设置此政策，Chrome 会使用默认下载目录，而且用户可以更改此目录。
+
+      注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
 <translation id="4041577849977347218">如果此政策已启用或未设置，系统将会发送下载的文件以供“安全浏览”功能进行分析，即使来源可信也是如此。
 
       如果此政策已停用，当来源可信时，系统不会发送下载的文件以供“安全浏览”功能进行分析。
@@ -5950,6 +5957,13 @@
 
       如果此政策已停用，则意味着已注册的设备不会报告存储统计信息。
       例外情况：对于 M95 及更低版本，磁盘大小和磁盘可用空间信息由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 控制。</translation>
+<translation id="7719175048012980445">通过设置此政策，您可以更改 Chrome 会将文件下载到的默认目录，但用户可以更改该目录。
+
+      如果您未设置此政策，Chrome 会使用自己的平台专用默认目录。
+
+      此政策只有在未设置 <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策的情况下才会生效。
+
+      注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 用户 ID</translation>
 <translation id="7724161903134898864">如果此政策设为 1，系统会允许网站显示弹出式窗口。如果此政策设为 2，系统会禁止网站显示弹出式窗口。
 

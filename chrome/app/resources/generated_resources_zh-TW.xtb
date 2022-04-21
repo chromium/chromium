@@ -907,6 +907,7 @@
     <ph name="BEGIN_PARAGRAPH2" />你也可以完全關閉 TPM 裝置。系統仍會透過軟體加密功能安全儲存你的資料，但會停用硬體支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />只要重新啟動並進入系統 BIOS/UEFI 設定，即可變更 TPM 設定。操作步驟會因裝置型號而有所不同。如需更多資訊，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 說明文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">尋找有害軟體</translation>
+<translation id="1852322248807969514">密碼已儲存至 <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
 <translation id="1854049213067042715">繼續進行還原程序。你可以將應用程式設為一律在啟動時還原，或前往「設定」頁面關閉還原功能。</translation>
 <translation id="1854180393107901205">停止投放</translation>
@@ -1862,6 +1863,7 @@
 <translation id="2783829359200813069">選取加密類型</translation>
 <translation id="2783952358106015700">透過「<ph name="APP_NAME" />」使用安全金鑰</translation>
 <translation id="2785873697295365461">檔案描述元</translation>
+<translation id="2787022501752539710">保留本機瀏覽資料，例如書籤、密碼、歷史記錄等</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">群組編號</translation>
@@ -5094,6 +5096,7 @@
 <translation id="6057381398996433816">這個網站已遭封鎖，無法使用動作感應器和光源感應器。</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6059652578941944813">憑證階層</translation>
+<translation id="6063284707309177505">建立 QR 圖碼</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。為了節省電池電量，你可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理設定中進行選取，讓系統只有在裝置接上充電器時才會啟動「Ok Google」。</translation>
 <translation id="6064217302520318294">螢幕鎖定</translation>
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>

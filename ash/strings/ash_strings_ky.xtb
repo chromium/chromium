@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">USB-C кабелиңиз Thunderbolt түзмөгүн колдоого албайт. Түзмөктүн майнаптуулугу чектелиши мүмкүн.</translation>
 <translation id="2108303511227308752">Alt + Backspace ыкчам баскычы өзгөртүлдү. Delete баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> + backspace баскычтарын басыңыз.</translation>
 <translation id="211328683600082144">МИКРОФОНДУ КҮЙГҮЗҮҮ</translation>
+<translation id="2123115117533398272">ChromeOS изилдөө үчүн жаңы материалдарды сунуштайт. Сапатын жакшыртуу максатында колдонуу статистикаңыз жөнөтүлөт (статистиканы бөлүшүүнү тандаган болсоңуз гана). <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Жаңы иш такта</translation>
 <translation id="2127372758936585790">Кубаты төмөн кубаттагыч</translation>
 <translation id="2132302418721800944">Толук экран режиминде жаздыруу</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2621713457727696555">Корголгон</translation>
 <translation id="263399434338050016">"Баарын тандоо"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Терезени сүрөткө тартып алуу</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2658778018866295321">Чыкылдатып, сүйрөө</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">Туташты</translation>
 <translation id="3378442621503952303">Профилге туташууда. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="3386978599540877378">толук экран режиминдеги лупа</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Кошумча жөндөөлөр</translation>
 <translation id="3410336247007142655">Караңгы теманын жөндөөлөрүн көрсөтүү</translation>
 <translation id="3413817803639110246">Азырынча бир да эскертме жок</translation>

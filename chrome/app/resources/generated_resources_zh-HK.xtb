@@ -919,6 +919,7 @@
     
 <ph name="BEGIN_PARAGRAPH3" />如要變更 TPM 設定，請重新啟動並進入系統的 BIOS/UEFI 設定。操作步驟根據裝置型號而有所不同。如需更多資料，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">尋找有害的軟件</translation>
+<translation id="1852322248807969514">密碼已儲存至 <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
 <translation id="1854049213067042715">繼續進行還原程序。您可在「設定」中將應用程式設定為一律在啟動或關閉時還原。</translation>
 <translation id="1854180393107901205">停止投放</translation>
@@ -1878,6 +1879,7 @@
 <translation id="2783829359200813069">選取加密類型</translation>
 <translation id="2783952358106015700">透過 <ph name="APP_NAME" /> 使用安全密鑰</translation>
 <translation id="2785873697295365461">檔案描述符</translation>
+<translation id="2787022501752539710">保留本機瀏覽資料 (書籤、密碼、記錄等)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2788468313014644040">群組號碼</translation>
@@ -4908,7 +4910,7 @@
 <translation id="5857090052475505287">新資料夾</translation>
 <translation id="5857171483910641802">系統會根據您經常瀏覽的網站提供捷徑建議</translation>
 <translation id="5857675236236529683">準備就緒後，即可在這裡查看閱讀清單</translation>
-<translation id="5858490737742085133">Terminal</translation>
+<translation id="5858490737742085133">終端機</translation>
 <translation id="5859603669299126575">藝術圖庫中的相簿</translation>
 <translation id="585979798156957858">外置 Meta 鍵</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -5113,6 +5115,7 @@
 <translation id="6057381398996433816">系統已封鎖此網站使用動作和光線感應器。</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6059652578941944813">憑證階層</translation>
+<translation id="6063284707309177505">建立 QR 碼</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與<ph name="SUPERVISED_USER_NAME" />的聲音相似，或有該人的錄音，便有可能存取該人的個人化結果。為節省電量，您可在<ph name="SUPERVISED_USER_NAME" />的「Google 助理」設定中選取，讓系統只有在裝置連接到電源時才啟動「Ok Google」。</translation>
 <translation id="6064217302520318294">螢幕鎖定</translation>
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>

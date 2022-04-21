@@ -2827,6 +2827,13 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 <translation id="4025500273782820766">향후 확인 메시지를 건너뛰는 외부 프로토콜 대화상자가 표시될 때 사용자가 '항상 허용'을 선택하도록 허용</translation>
 <translation id="402759845255257575">모든 사이트에서 자바스크립트 실행 허용 안함</translation>
 <translation id="4027608872760987929">기본 검색 공급자 사용</translation>
+<translation id="4027904270588278067">정책을 설정하면 Chrome에서 파일을 다운로드할 때 사용하는 디렉터리가 지정됩니다. Chrome은 사용자가 디렉터리를 직접 지정하든 매번 다운로드 위치를 묻도록 플래그를 사용 설정하든 관계없이 제공된 디렉터리를 사용합니다.
+
+      이 정책은 <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" /> 정책을 재정의합니다.
+
+      정책을 설정하지 않으면 Chrome에서 기본 다운로드 디렉터리를 사용하며 사용자가 이를 변경할 수 있습니다.
+
+      참고: 다음 페이지에서 사용 가능한 변수를 확인하세요. https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables</translation>
 <translation id="4041577849977347218">정책을 사용으로 설정하거나 설정하지 않으면 신뢰할 수 있는 출처에서 다운로드된 파일인 경우에도 세이프 브라우징 분석을 위해 전송됩니다.
 
       정책을 사용 안함으로 설정하면 신뢰할 수 있는 출처에서 다운로드된 파일은 세이프 브라우징 분석을 위해 전송되지 않습니다.
@@ -6040,6 +6047,13 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 
       정책을 사용 안함으로 설정하면 등록된 기기에서 저장 장치 통계를 보고하지 않습니다.
       예외: M95 이하에서는 디스크 크기 및 디스크 여유 공간이 <ph name="REPORT_DEVICE_HARDWARE_STATUS" />에 의해 제어됩니다.</translation>
+<translation id="7719175048012980445">정책을 설정하면 Chrome에서 파일을 다운로드하는 기본 디렉터리가 변경되지만, 사용자가 이 디렉터리를 변경할 수 있습니다.
+
+      정책을 설정하지 않으면 Chrome에서는 플랫폼별 기본 디렉터리를 사용합니다.
+
+      <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> 정책이 설정되어 있으면 이 정책은 아무런 영향을 미치지 않습니다.
+
+      참고: 다음 페이지에서 사용 가능한 변수를 확인하세요. https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 사용자 ID</translation>
 <translation id="7724161903134898864">정책을 1로 설정하면 웹사이트에서 팝업을 표시하도록 허용합니다. 정책을 2로 설정하면 팝업을 거부합니다.
 

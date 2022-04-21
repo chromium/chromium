@@ -215,7 +215,7 @@
 <translation id="2450814015951372393">Casetă de selectare</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462626033734746142">Grup buton radio</translation>
-<translation id="2467741090055146971">deselectați</translation>
+<translation id="2467741090055146971">deselectează</translation>
 <translation id="2471138580042810658">Titlu 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisc}few{# asteriscuri}other{# de asteriscuri}}</translation>
 <translation id="2490721194269245365">Maro roz</translation>
@@ -684,6 +684,8 @@
 <translation id="5623842676595125836">Jurnal</translation>
 <translation id="5628125749885014029">titlu 4</translation>
 <translation id="5632083598315326067">Simbol grafic</translation>
+<translation id="5648939288050772726">Felicitări! Ai învățat noțiunile de bază cu privire la folosirea ChromeVox. Reține că poți deschide oricând meniul de comenzi ChromeVox apăsând pe tasta de căutare + tasta punct. Pentru a afla mai multe despre ChromeVox și sistemul de operare Chrome, accesează următoarele articole.
+    Dacă ai terminat tutorialul, folosește ChromeVox pentru a naviga la butonul Închide și dă clic pe el.</translation>
 <translation id="5653397561111110475">Folosește funcțiile de accesibilitate pentru ecranul tactil al Chromebookului</translation>
 <translation id="5655682562155942719">Comenzi de accesare</translation>
 <translation id="56637627897541303">Zonă de text</translation>
@@ -851,7 +853,7 @@
 <translation id="6910211073230771657">Șters</translation>
 <translation id="6910969481785184048">Activează, dezactivează și oprește</translation>
 <translation id="6919104639734799681">Afișați lista de tabele</translation>
-<translation id="692135145298539227">ștergeți</translation>
+<translation id="692135145298539227">șterge</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6949846980769640811">Acvamarin mediu</translation>
 <translation id="6951482098621102657">Nu există un titlu de nivel 5 următor</translation>

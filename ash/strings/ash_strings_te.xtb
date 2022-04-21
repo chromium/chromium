@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">మీ USB-C కేబుల్ Thunderboltను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
 <translation id="2108303511227308752">Alt + బ్యాక్‌స్పేస్ కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. తొలగింపు కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ +బ్యాక్‌స్పేస్‌ను నొక్కండి.</translation>
 <translation id="211328683600082144">మైక్రోఫోన్‌ను ఆన్ చేయి</translation>
+<translation id="2123115117533398272">కొత్త కంటెంట్‌ను అన్వేషించడానికి ChromeOS సూచనలను చూపుతుంది. మీరు వినియోగ డేటాను షేర్ చేయడాన్ని ఎంచుకుంటే మాత్రమే క్వాలిటీని మెరుగుపరచడానికి గణాంకాలను పంపుతుంది. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">కొత్త డెస్క్</translation>
 <translation id="2127372758936585790">తక్కువ-పవర్ గల ఛార్జర్</translation>
 <translation id="2132302418721800944">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2621713457727696555">సురక్షితమైంది</translation>
 <translation id="263399434338050016">"అన్నింటినీ ఎంచుకోండి"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">విండోను క్యాప్చర్ చేయండి</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
 <translation id="2658778018866295321">క్లిక్ చేసి, లాగండి</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">కనెక్ట్ చేయబడింది</translation>
 <translation id="3378442621503952303">ప్రొఫైల్‌కు కనెక్ట్ చేస్తోంది. కొన్ని నిమిషాలు వేచి ఉండండి.</translation>
 <translation id="3386978599540877378">ఫుల్-స్క్రీన్‌ మాగ్నిఫైయర్</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">అదనపు సెట్టింగ్‌లు</translation>
 <translation id="3410336247007142655">ముదురు రంగు రూపం సెట్టింగ్‌లను చూపించు</translation>
 <translation id="3413817803639110246">ఇప్పటికీ చూడటానికి ఏమీ లేవు</translation>
