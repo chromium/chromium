@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 # The paths to Dawn's dependencies
+dawn_angle_dir = "//third_party/angle"
 dawn_glfw_dir = "//third_party/glfw/src"
 dawn_googletest_dir = "//third_party/googletest/src"
 dawn_jinja2_dir = "//third_party/jinja2"
