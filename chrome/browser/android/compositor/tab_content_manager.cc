@@ -297,7 +297,7 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
   skbitmap.setImmutable();
 
   if (thumbnail_cache_->CheckAndUpdateThumbnailMetaData(tab_id, url))
-    OnTabReadback(tab_id, nullptr, true, thumbnail_scale, aspect_ratio,
+    OnTabReadback(tab_id, nullptr, true, aspect_ratio, thumbnail_scale,
                   skbitmap);
 }
 
