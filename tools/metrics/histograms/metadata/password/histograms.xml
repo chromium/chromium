@@ -1942,6 +1942,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordExport.Event"
+    enum="PasswordExportEvent" expires_after="M106">
+  <owner>ioanap@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Measures the frequency of various password export events in settings menu.
+    Recorded when the user interacts with the password export menu item or
+    dialog. Curently logged only on Android.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordReuse.NumberOfMatches"
     units="credentials" expires_after="2022-10-09">
   <owner>vakh@chromium.org</owner>

@@ -70452,6 +70452,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Both"/>
 </enum>
 
+<enum name="PasswordExportEvent">
+  <int value="0" label="The user selected password export option"/>
+  <int value="1" label="Password export dismissed by the user"/>
+  <int value="2" label="Password export confirmed by the user"/>
+</enum>
+
 <enum name="PasswordFormQueryVolume">
   <int value="0" label="New password query"/>
   <int value="1" label="Current query"/>

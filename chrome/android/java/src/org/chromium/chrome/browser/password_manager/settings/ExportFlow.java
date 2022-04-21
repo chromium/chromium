@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.Toast;
 
@@ -101,6 +102,17 @@ public class ExportFlow {
         // If you add new values to HistogramExportResult, also update NUM_ENTRIES to match
         // its new size.
         int NUM_ENTRIES = 4;
+    }
+
+    // Values of the histogram recording password export related events.
+    @IntDef({PasswordExportEvent.EXPORT_OPTION_SELECTED, PasswordExportEvent.EXPORT_DISMISSED,
+            PasswordExportEvent.EXPORT_CONFIRMED, PasswordExportEvent.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PasswordExportEvent {
+        int EXPORT_OPTION_SELECTED = 0;
+        int EXPORT_DISMISSED = 1;
+        int EXPORT_CONFIRMED = 2;
+        int COUNT = 3;
     }
 
     /**
@@ -333,6 +345,10 @@ public class ExportFlow {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == AlertDialog.BUTTON_POSITIVE) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    PasswordSettings.PASSWORD_EXPORT_EVENT_HISTOGRAM,
+                                    PasswordExportEvent.EXPORT_CONFIRMED,
+                                    PasswordExportEvent.COUNT);
                             mExportState = ExportState.CONFIRMED;
                             // If the error dialog has been waiting, display it now, otherwise
                             // continue the export flow.
@@ -354,6 +370,10 @@ public class ExportFlow {
                         // cancel the export. This happens both when the user taps the negative
                         // button or when they tap outside of the dialog to dismiss it.
                         if (mExportState != ExportState.CONFIRMED) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    PasswordSettings.PASSWORD_EXPORT_EVENT_HISTOGRAM,
+                                    PasswordExportEvent.EXPORT_DISMISSED,
+                                    PasswordExportEvent.COUNT);
                             mExportState = ExportState.INACTIVE;
                         }
 
