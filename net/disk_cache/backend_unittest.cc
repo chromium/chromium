@@ -5329,3 +5329,111 @@ TEST_F(DiskCacheBackendTest, MemCacheBackwardsClock) {
   EXPECT_EQ(0, CalculateSizeOfEntriesBetween(base::Time(), base::Time::Max()));
   EXPECT_EQ(0, CalculateSizeOfAllEntries());
 }
+
+TEST_F(DiskCacheBackendTest, SimpleOpenOrCreateIndexError) {
+  // Exercise behavior of OpenOrCreateEntry in SimpleCache where the index
+  // incorrectly claims the entry is missing. Regression test for
+  // https://crbug.com/1316034
+  const char kKey[] = "http://example.org";
+
+  const int kBufSize = 256;
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+  CacheTestFillBuffer(buffer->data(), kBufSize, /*no_nulls=*/false);
+
+  SetSimpleCacheMode();
+  InitCache();
+
+  // Create an entry.
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry(kKey, &entry), IsOk());
+
+  EXPECT_EQ(kBufSize, WriteData(entry, /*index=*/1, /*offset=*/0, buffer.get(),
+                                /*len=*/kBufSize, /*truncate=*/false));
+  entry->Close();
+
+  // Mess up the index to say it's not there.
+  simple_cache_impl_->index()->Remove(
+      disk_cache::simple_util::GetEntryHashKey(kKey));
+
+  // Reopening with OpenOrCreateEntry should still work.
+  disk_cache::EntryResult result = OpenOrCreateEntry(kKey);
+  ASSERT_THAT(result.net_error(), IsOk());
+  ASSERT_TRUE(result.opened());
+  entry = result.ReleaseEntry();
+  EXPECT_EQ(kBufSize, entry->GetDataSize(/*index=*/1));
+  entry->Close();
+}
+
+TEST_F(DiskCacheBackendTest, SimpleOpenOrCreateIndexErrorOptimistic) {
+  // Exercise behavior of OpenOrCreateEntry in SimpleCache where the index
+  // incorrectly claims the entry is missing and we do an optimistic create.
+  // Covers a codepath adjacent to the one that caused https://crbug.com/1316034
+  const char kKey[] = "http://example.org";
+
+  SetSimpleCacheMode();
+  InitCache();
+
+  const int kBufSize = 256;
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+  CacheTestFillBuffer(buffer->data(), kBufSize, /*no_nulls=*/false);
+
+  // Create an entry.
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry(kKey, &entry), IsOk());
+  EXPECT_EQ(kBufSize, WriteData(entry, /*index=*/1, /*offset=*/0, buffer.get(),
+                                /*len=*/kBufSize, /*truncate=*/false));
+  entry->Close();
+
+  // Let all the I/O finish, so that OpenOrCreateEntry can try optimistic path.
+  RunUntilIdle();
+
+  // Mess up the index to say it's not there.
+  simple_cache_impl_->index()->Remove(
+      disk_cache::simple_util::GetEntryHashKey(kKey));
+
+  // Reopening with OpenOrCreateEntry should still work, but since the backend
+  // chose to be optimistic based on index, the result should be a fresh empty
+  // entry.
+  disk_cache::EntryResult result = OpenOrCreateEntry(kKey);
+  ASSERT_THAT(result.net_error(), IsOk());
+  ASSERT_FALSE(result.opened());
+  entry = result.ReleaseEntry();
+  EXPECT_EQ(0, entry->GetDataSize(/*index=*/1));
+  entry->Close();
+}
+
+TEST_F(DiskCacheBackendTest, SimpleDoomAfterBackendDestruction) {
+  // Test for when validating file headers/footers during close on simple
+  // backend fails. To get the header to be checked on close, there needs to be
+  // a stream 2, since 0/1 are validated on open, and no other operation must
+  // have happened to stream 2, since those will force it, too. A way of getting
+  // the validation to fail is to perform a doom on the file after the backend
+  // is destroyed, since that will truncated the files to mark them invalid. See
+  // https://crbug.com/1317884
+  const char kKey[] = "Key0";
+
+  const int kBufSize = 256;
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+  CacheTestFillBuffer(buffer->data(), kBufSize, /*no_nulls=*/false);
+
+  SetCacheType(net::SHADER_CACHE);
+  SetSimpleCacheMode();
+
+  InitCache();
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry(kKey, &entry), IsOk());
+
+  EXPECT_EQ(0, WriteData(entry, /*index=*/2, /*offset=*/1, buffer.get(),
+                         /*len=*/0, /*truncate=*/false));
+  entry->Close();
+
+  ASSERT_THAT(OpenEntry(kKey, &entry), IsOk());
+  cache_.reset();
+  simple_cache_impl_ = nullptr;  // Hygiene.
+
+  entry->Doom();
+  entry->Close();
+}
