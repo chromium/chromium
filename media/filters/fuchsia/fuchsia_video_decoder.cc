@@ -558,8 +558,8 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
                      base::Unretained(this), std::move(output_packet)));
 
   // Currently sysmem doesn't specify location of chroma samples relative to
-  // luma (see fxb/13677). Assume they are cosited with luma. YCbCr info here
-  // must match the values passed for the same buffer in
+  // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr info
+  // here must match the values passed for the same buffer in
   // ui::SysmemBufferCollection::CreateVkImage() (see
   // ui/ozone/platform/scenic/sysmem_buffer_collection.cc). |format_features|
   // are resolved later in the GPU process before this info is passed to Skia.

@@ -132,7 +132,7 @@ class RunTestPackageArgs:
   use_run_test_component: If True then the test package will be run hermetically
                           via 'run-test-component', rather than using 'run'.
   output_directory: If set, the output directory for CFv2 tests that use
-                    custom artifacts; see fxb/75690.
+                    custom artifacts; see fxbug.dev/75690.
   """
 
   def __init__(self):

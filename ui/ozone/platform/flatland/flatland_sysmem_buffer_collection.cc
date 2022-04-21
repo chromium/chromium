@@ -435,8 +435,8 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
 
     case fuchsia::sysmem::ColorSpaceType::REC709: {
       // Currently sysmem doesn't specify location of chroma samples relative to
-      // luma (see fxb/13677). Assume they are cosited with luma. YCbCr info
-      // here must match the values passed for the same buffer in
+      // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr
+      // info here must match the values passed for the same buffer in
       // FuchsiaVideoDecoder. |format_features| are resolved later in the GPU
       // process before the ycbcr info is passed to Skia.
       *ycbcr_info = gpu::VulkanYCbCrInfo(
