@@ -1,9 +1,5 @@
 # Being ported, https://crbug.com/1071095.
 
--All/EmergencyStopTracingTest.StopOnUIThread/0
--All/EmergencyStopTracingTest.StopOnUIThread/1
--All/SitePerProcessBrowserTest.RenderFrameProxyNotRecreatedDuringProcessShutdown/0
--All/SitePerProcessBrowserTest.RenderFrameProxyNotRecreatedDuringProcessShutdown/1
 -All/WorkerFromAnonymousIframeNikBrowserTest.SharedWorkerRequestIsDoneWithPartitionedNetworkState/0
 -All/WorkerFromAnonymousIframeNikBrowserTest.SharedWorkerRequestIsDoneWithPartitionedNetworkState/1
 -All/WorkerFromAnonymousIframeNikBrowserTest.SharedWorkerRequestIsDoneWithPartitionedNetworkState/2
@@ -11,8 +7,6 @@
 -ContentBrowserTest.RendererCrashCallStack
 -CrossPlatformAccessibilityBrowserTest.ControlsIdsForDateTimePopup
 -DirectSocketsTcpBrowserTest.OpenTcp_MDNS
--DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
--DohHttpsProtocolUpgradeBrowserTest.NoProtocolUpgrade
 -MojoSandboxTest.NotIsProcessSandboxed
 -PrerenderBrowserTest.AbandonIfRendererProcessCrashes
 -SitePerProcessDelegatedInkBrowserTest.MetadataAndPointGoThroughOOPIF
