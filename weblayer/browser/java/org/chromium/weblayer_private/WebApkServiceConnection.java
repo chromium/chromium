@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ResolveInfo;
 import android.os.IBinder;
 
 import org.chromium.base.ContextUtils;
@@ -40,14 +41,19 @@ class WebApkServiceConnection implements ServiceConnection {
         mPromiseServiceInterface = new Promise<>();
     }
 
+    private static Intent createChromeInstallServiceIntent() {
+        Intent intent = new Intent(BIND_WEBAPK_SCHEDULE_INSTALL_INTENT_ACTION);
+        intent.setPackage(CHROME_PACKAGE_NAME);
+        return intent;
+    }
+
     /**
      * Tries to bind to the service, returns a promise which will be fulfilled as
      * soon as the connection is established or rejected in the failure case.
      * This function must only be called once.
      */
     Promise<IWebApkInstallCoordinatorService> connect() {
-        Intent intent = new Intent(BIND_WEBAPK_SCHEDULE_INSTALL_INTENT_ACTION);
-        intent.setPackage(CHROME_PACKAGE_NAME);
+        Intent intent = createChromeInstallServiceIntent();
 
         try {
             mIsBound = mContext.bindService(intent, this, Context.BIND_AUTO_CREATE);
@@ -71,6 +77,15 @@ class WebApkServiceConnection implements ServiceConnection {
             mContext.unbindService(this);
         }
         mIsBound = false;
+    }
+
+    /**
+     * Returns if the {@link WebApkInstallCoordinatorService} is available.
+     */
+    public static boolean isInstallServiceAvailable() {
+        ResolveInfo info = ContextUtils.getApplicationContext().getPackageManager().resolveService(
+                createChromeInstallServiceIntent(), 0);
+        return info != null;
     }
 
     @Override

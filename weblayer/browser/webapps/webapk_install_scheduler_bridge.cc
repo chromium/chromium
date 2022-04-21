@@ -19,6 +19,12 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 using gfx::ConvertToJavaBitmap;
 
+// static
+bool WebApkInstallSchedulerBridge::IsInstallServiceAvailable() {
+  return Java_WebApkInstallSchedulerBridge_isInstallServiceAvailable(
+      base::android::AttachCurrentThread());
+}
+
 WebApkInstallSchedulerBridge::WebApkInstallSchedulerBridge(
     FinishCallback finish_callback) {
   finish_callback_ = std::move(finish_callback);

@@ -99,3 +99,8 @@ void WebApkInstallScheduler::OnResult(webapps::WebApkInstallResult result) {
   // TODO(swestphal): Handle install failure case (follow up CL).
   delete this;
 }
+
+// static
+bool WebApkInstallScheduler::IsInstallServiceAvailable() {
+  return WebApkInstallSchedulerBridge::IsInstallServiceAvailable();
+}

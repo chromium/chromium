@@ -50,6 +50,14 @@ public class WebApkInstallSchedulerBridge {
                 apkProto, primaryIcon, isPrimaryIconMaskable, mOnInstallCompleteCallback);
     }
 
+    /**
+     * Returns if the {@link WebApkInstallCoordinatorService} is available.
+     */
+    @CalledByNative
+    public static boolean isInstallServiceAvailable() {
+        return WebApkInstallSchedulerClient.isInstallServiceAvailable();
+    }
+
     @CalledByNative
     private void destroy() {
         // Remove the reference to the native side.

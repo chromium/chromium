@@ -44,6 +44,8 @@ class WebApkInstallScheduler {
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable);
 
+  static bool IsInstallServiceAvailable();
+
  private:
   WebApkInstallScheduler(const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,

@@ -32,6 +32,8 @@ class WebApkInstallSchedulerBridge {
       bool is_primary_icon_maskable,
       FinishCallback finish_callback);
 
+  static bool IsInstallServiceAvailable();
+
   void OnInstallFinished(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          jint result);

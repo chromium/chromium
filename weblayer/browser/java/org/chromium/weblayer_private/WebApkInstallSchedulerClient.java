@@ -92,4 +92,11 @@ public class WebApkInstallSchedulerClient {
                             onInstallFinishedCallback.onResult(WebApkInstallResult.FAILURE);
                         });
     }
+
+    /**
+     * Returns if the {@link WebApkInstallCoordinatorService} is available.
+     */
+    public static boolean isInstallServiceAvailable() {
+        return WebApkServiceConnection.isInstallServiceAvailable();
+    }
 }

@@ -77,7 +77,7 @@ bool WebLayerWebappsClient::IsInstallationInProgress(
 
 bool WebLayerWebappsClient::CanShowAppBanners(
     content::WebContents* web_contents) {
-  return true;
+  return WebApkInstallScheduler::IsInstallServiceAvailable();
 }
 
 void WebLayerWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
