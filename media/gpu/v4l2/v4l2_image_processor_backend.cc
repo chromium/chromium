@@ -30,17 +30,6 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 
-#define IOCTL_OR_ERROR_RETURN_VALUE(type, arg, value, type_str) \
-  do {                                                          \
-    if (device_->Ioctl(type, arg) != 0) {                       \
-      VPLOGF(1) << "ioctl() failed: " << type_str;              \
-      return value;                                             \
-    }                                                           \
-  } while (0)
-
-#define IOCTL_OR_ERROR_RETURN_FALSE(type, arg) \
-  IOCTL_OR_ERROR_RETURN_VALUE(type, arg, false, #type)
-
 namespace media {
 
 namespace {
@@ -376,6 +365,44 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
     output_planes[i].size = pix_mp.plane_fmt[i].sizeimage;
   }
 
+  // Capabilities check.
+  struct v4l2_capability caps {};
+  const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
+  if (device->Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
+    VPLOGF(1) << "VIDIOC_QUERYCAP failed";
+    return nullptr;
+  }
+  if ((caps.capabilities & kCapsRequired) != kCapsRequired) {
+    VLOGF(1) << "VIDIOC_QUERYCAP failed: "
+             << "caps check failed: 0x" << std::hex << caps.capabilities;
+    return nullptr;
+  }
+
+  // Set a few standard controls to default values.
+  struct v4l2_control rotation = {.id = V4L2_CID_ROTATE, .value = 0};
+  if (device->Ioctl(VIDIOC_S_CTRL, &rotation) != 0) {
+    VPLOGF(1) << "V4L2_CID_ROTATE failed";
+    return nullptr;
+  }
+
+  struct v4l2_control hflip = {.id = V4L2_CID_HFLIP, .value = 0};
+  if (device->Ioctl(VIDIOC_S_CTRL, &hflip) != 0) {
+    VPLOGF(1) << "V4L2_CID_HFLIP failed";
+    return nullptr;
+  }
+
+  struct v4l2_control vflip = {.id = V4L2_CID_VFLIP, .value = 0};
+  if (device->Ioctl(VIDIOC_S_CTRL, &vflip) != 0) {
+    VPLOGF(1) << "V4L2_CID_VFLIP failed";
+    return nullptr;
+  }
+
+  struct v4l2_control alpha = {.id = V4L2_CID_ALPHA_COMPONENT, .value = 255};
+  if (device->Ioctl(VIDIOC_S_CTRL, &alpha) != 0) {
+    VPLOGF(1) << "V4L2_CID_ALPHA_COMPONENT failed";
+    return nullptr;
+  }
+
   const v4l2_memory output_memory_type =
       output_mode == OutputMode::ALLOCATE
           ? V4L2_MEMORY_MMAP
@@ -391,7 +418,7 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
           input_memory_type, output_memory_type, output_mode, relative_rotation,
           num_buffers, std::move(error_cb)));
 
-  // Initialize at |backend_task_runner_|.
+  // Initialize at |backend_task_runner|.
   bool success = false;
   base::WaitableEvent done;
   auto init_cb = base::BindOnce(
@@ -418,22 +445,6 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
 void V4L2ImageProcessorBackend::Initialize(InitCB init_cb) {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
-
-  // Capabilities check.
-  struct v4l2_capability caps;
-  memset(&caps, 0, sizeof(caps));
-  const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
-  if (device_->Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
-    VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP";
-    std::move(init_cb).Run(false);
-    return;
-  }
-  if ((caps.capabilities & kCapsRequired) != kCapsRequired) {
-    VLOGF(1) << "Initialize(): ioctl() failed: VIDIOC_QUERYCAP: "
-             << "caps check failed: 0x" << std::hex << caps.capabilities;
-    std::move(init_cb).Run(false);
-    return;
-  }
 
   if (!CreateInputBuffers() || !CreateOutputBuffers()) {
     std::move(init_cb).Run(false);
@@ -667,28 +678,6 @@ bool V4L2ImageProcessorBackend::CreateInputBuffers() {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   DCHECK_EQ(input_queue_, nullptr);
-
-  struct v4l2_control control;
-  memset(&control, 0, sizeof(control));
-  control.id = V4L2_CID_ROTATE;
-  control.value = 0;
-  IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_CTRL, &control);
-
-  memset(&control, 0, sizeof(control));
-  control.id = V4L2_CID_HFLIP;
-  control.value = 0;
-  IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_CTRL, &control);
-
-  memset(&control, 0, sizeof(control));
-  control.id = V4L2_CID_VFLIP;
-  control.value = 0;
-  IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_CTRL, &control);
-
-  memset(&control, 0, sizeof(control));
-  control.id = V4L2_CID_ALPHA_COMPONENT;
-  control.value = 255;
-  if (device_->Ioctl(VIDIOC_S_CTRL, &control) != 0)
-    DVLOGF(4) << "V4L2_CID_ALPHA_COMPONENT is not supported";
 
   input_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
   return input_queue_ && AllocateV4L2Buffers(input_queue_.get(), num_buffers_,
