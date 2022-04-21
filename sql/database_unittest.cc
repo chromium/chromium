@@ -671,6 +671,56 @@ TEST_P(SQLDatabaseTest, GetCachedStatement_NoContents) {
       << "Comment";
 }
 
+TEST_P(SQLDatabaseTest, GetReadonlyStatement) {
+  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
+  ASSERT_TRUE(db_->Execute(kCreateSql));
+  ASSERT_TRUE(db_->Execute("INSERT INTO foo (value) VALUES (12)"));
+
+  // PRAGMA statements do not change the database file.
+  {
+    Statement s(db_->GetReadonlyStatement("PRAGMA analysis_limit"));
+    ASSERT_TRUE(s.Step());
+  }
+  {
+    Statement s(db_->GetReadonlyStatement("PRAGMA analysis_limit=100"));
+    ASSERT_TRUE(s.is_valid());
+  }
+
+  // Create and insert statements should fail, while the same queries as unique
+  // statement succeeds.
+  {
+    Statement s(db_->GetReadonlyStatement(
+        "CREATE TABLE IF NOT EXISTS foo (id INTEGER PRIMARY KEY, value)"));
+    ASSERT_FALSE(s.is_valid());
+    Statement s1(db_->GetUniqueStatement(
+        "CREATE TABLE IF NOT EXISTS foo (id INTEGER PRIMARY KEY, value)"));
+    ASSERT_TRUE(s1.is_valid());
+  }
+  {
+    Statement s(
+        db_->GetReadonlyStatement("INSERT INTO foo (value) VALUES (12)"));
+    ASSERT_FALSE(s.is_valid());
+    Statement s1(
+        db_->GetUniqueStatement("INSERT INTO foo (value) VALUES (12)"));
+    ASSERT_TRUE(s1.is_valid());
+  }
+  {
+    Statement s(
+        db_->GetReadonlyStatement("CREATE VIRTUAL TABLE bar USING module"));
+    ASSERT_FALSE(s.is_valid());
+    Statement s1(
+        db_->GetUniqueStatement("CREATE VIRTUAL TABLE bar USING module"));
+    ASSERT_TRUE(s1.is_valid());
+  }
+
+  // Select statement is successful.
+  {
+    Statement s(db_->GetReadonlyStatement("SELECT * FROM foo"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(s.ColumnInt(1), 12);
+  }
+}
+
 TEST_P(SQLDatabaseTest, IsSQLValid_NoContents) {
   EXPECT_DCHECK_DEATH(db_->IsSQLValid("")) << "Empty string";
   EXPECT_DCHECK_DEATH(db_->IsSQLValid(" ")) << "Space";

@@ -1432,11 +1432,17 @@ scoped_refptr<Database::StatementRef> Database::GetCachedStatement(
 
 scoped_refptr<Database::StatementRef> Database::GetUniqueStatement(
     const char* sql) {
-  return GetStatementImpl(sql);
+  return GetStatementImpl(sql, /*is_readonly=*/false);
+}
+
+scoped_refptr<Database::StatementRef> Database::GetReadonlyStatement(
+    const char* sql) {
+  return GetStatementImpl(sql, /*is_readonly=*/true);
 }
 
 scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
-    const char* sql) {
+    const char* sql,
+    bool is_readonly) {
   DCHECK(sql);
 
   // Return inactive statement.
@@ -1480,6 +1486,16 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
     DCHECK_NE(sqlite_result_code, SqliteResultCode::kRow)
         << "sqlite3_prepare_v3() returned unexpected non-error result code";
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr, sql);
+    return base::MakeRefCounted<StatementRef>(nullptr, nullptr, false);
+  }
+
+  // If readonly statement is expected and the statement is not readonly, return
+  // an invalid statement and close the created statement.
+  if (is_readonly && sqlite3_stmt_readonly(sqlite_statement) == 0) {
+    DLOG(ERROR) << "Readonly SQL statement failed readonly test " << sql;
+    // Make a `StatementRef` that will close the created statement.
+    base::MakeRefCounted<StatementRef>(this, sqlite_statement, true);
+
     return base::MakeRefCounted<StatementRef>(nullptr, nullptr, false);
   }
 

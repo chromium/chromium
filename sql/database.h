@@ -526,6 +526,13 @@ class COMPONENT_EXPORT(SQL) Database {
   // See GetCachedStatement above for examples and error information.
   scoped_refptr<StatementRef> GetUniqueStatement(const char* sql);
 
+  // Returns a non-cached statement same as `GetUniqueStatement()`, except
+  // returns an invalid statement if the statement makes direct changes to the
+  // database file. This readonly check does not include changes made by
+  // application-defined functions. See more at:
+  // https://www.sqlite.org/c3ref/stmt_readonly.html.
+  scoped_refptr<Database::StatementRef> GetReadonlyStatement(const char* sql);
+
   // Performs a passive checkpoint on the main attached database if it is in
   // WAL mode. Returns true if the checkpoint was successful and false in case
   // of an error. It is a no-op if the database is not in WAL mode.
@@ -810,7 +817,8 @@ class COMPONENT_EXPORT(SQL) Database {
                                         base::TimeDelta ms_timeout);
 
   // Implementation helper for GetUniqueStatement() and GetCachedStatement().
-  scoped_refptr<StatementRef> GetStatementImpl(const char* sql);
+  scoped_refptr<StatementRef> GetStatementImpl(const char* sql,
+                                               bool is_readonly);
 
   // Release page-cache memory if memory-mapped I/O is enabled and the database
   // was changed.  Passing true for |implicit_change_performed| allows
