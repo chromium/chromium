@@ -21,3 +21,7 @@ common_resource_exclusion_regex += "|-watch\b"
 #   ic_arrow_down_24dp
 # It saves XXkb to omit the config.
 common_resource_exclusion_regex += "|-ldpi\b"
+
+# Mediarouter has excessive .png files for animations. Remove some of them.
+# https://crbug.com/1147188
+common_resource_exclusion_regex += "|mediarouter.*?drawable-x?hdpi"
