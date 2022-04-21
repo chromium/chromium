@@ -144,7 +144,6 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     const SkPixmap* GetSkPixmap() {
       return image_pixel_locker_ ? image_pixel_locker_->GetSkPixmap() : nullptr;
     }
-    AlphaOp ImageAlphaOp() { return alpha_op_; }
 
    private:
     // Extracts the image and keeps track of its status, such as width, height,
@@ -155,7 +154,6 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     Image* image_;
     absl::optional<ImagePixelLocker> image_pixel_locker_;
     ImageHtmlDomSource image_html_dom_source_;
-    AlphaOp alpha_op_;
   };
 
   // Convert an SkColorType to the most appropriate DataFormat.

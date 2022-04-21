@@ -5169,29 +5169,7 @@ void WebGLRenderingContextBase::TexImageImpl(
   }
   DCHECK_EQ(image_extractor_pixmap->width(), image->width());
   DCHECK_EQ(image_extractor_pixmap->height(), image->height());
-
-  // ImageExtractor indicates a specific AlphaOp. Ensure that `params` and
-  // `pixmap`'s alpha type are configured to ensure operation be performed.
-  SkPixmap pixmap = *image_extractor_pixmap;
-  WebGLImageConversion::AlphaOp alpha_op = image_extractor.ImageAlphaOp();
-  switch (alpha_op) {
-    case WebGLImageConversion::kAlphaDoNothing:
-      params.unpack_premultiply_alpha =
-          pixmap.alphaType() == kPremul_SkAlphaType;
-      break;
-    case WebGLImageConversion::kAlphaDoPremultiply:
-      params.unpack_premultiply_alpha = true;
-      pixmap.reset(pixmap.info().makeAlphaType(kUnpremul_SkAlphaType),
-                   pixmap.addr(), pixmap.rowBytes());
-      break;
-    case WebGLImageConversion::kAlphaDoUnmultiply:
-      params.unpack_premultiply_alpha = false;
-      pixmap.reset(pixmap.info().makeAlphaType(kPremul_SkAlphaType),
-                   pixmap.addr(), pixmap.rowBytes());
-      break;
-  }
-
-  TexImageSkPixmap(params, &pixmap, image_has_flip_y);
+  TexImageSkPixmap(params, image_extractor_pixmap, image_has_flip_y);
 }
 
 bool WebGLRenderingContextBase::ValidateTexFunc(

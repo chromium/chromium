@@ -3755,54 +3755,36 @@ void WebGLImageConversion::ImageExtractor::ExtractImage(
 
   sk_sp<SkImage> skia_image =
       image_->PaintImageForCurrentFrame().GetSwSkImage();
-  SkImageInfo info =
-      skia_image ? SkImageInfo::MakeN32Premul(image_->width(), image_->height())
-                 : SkImageInfo::MakeUnknown();
-  alpha_op_ = kAlphaDoNothing;
-  bool has_alpha = skia_image ? !skia_image->isOpaque() : true;
+  if (image_->HasData() && image_html_dom_source_ == kHtmlDomImage) {
+    bool has_alpha = skia_image ? !skia_image->isOpaque() : true;
+    bool need_unpremultiplied = has_alpha && !premultiply_alpha;
+    bool need_color_conversion = !ignore_color_space && skia_image &&
+                                 skia_image->colorSpace() &&
+                                 !skia_image->colorSpace()->isSRGB();
+    if (!skia_image || ignore_color_space || need_unpremultiplied ||
+        need_color_conversion) {
+      // Attempt to get raw unpremultiplied image data.
+      const bool data_complete = true;
+      std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
+          image_->Data(), data_complete, ImageDecoder::kAlphaNotPremultiplied,
+          ImageDecoder::kDefaultBitDepth,
+          ignore_color_space ? ColorBehavior::Ignore()
+                             : ColorBehavior::TransformToSRGB()));
+      if (!decoder || !decoder->FrameCount())
+        return;
+      ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+      if (!frame || frame->GetStatus() != ImageFrame::kFrameComplete)
+        return;
+      has_alpha = frame->HasAlpha();
+      SkBitmap bitmap = frame->Bitmap();
+      if (!FrameIsValid(bitmap))
+        return;
 
-  bool need_unpremultiplied = has_alpha && !premultiply_alpha;
-  bool need_color_conversion = !ignore_color_space && skia_image &&
-                               skia_image->colorSpace() &&
-                               !skia_image->colorSpace()->isSRGB();
-  if ((!skia_image || ignore_color_space || need_unpremultiplied ||
-       need_color_conversion) &&
-      image_->HasData()) {
-    // Attempt to get raw unpremultiplied image data.
-    const bool data_complete = true;
-    std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
-        image_->Data(), data_complete, ImageDecoder::kAlphaNotPremultiplied,
-        ImageDecoder::kDefaultBitDepth,
-        ignore_color_space ? ColorBehavior::Ignore()
-                           : ColorBehavior::TransformToSRGB()));
-    if (!decoder || !decoder->FrameCount())
-      return;
-    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-    if (!frame || frame->GetStatus() != ImageFrame::kFrameComplete)
-      return;
-    has_alpha = frame->HasAlpha();
-    SkBitmap bitmap = frame->Bitmap();
-    if (!FrameIsValid(bitmap))
-      return;
-
-    // TODO(fmalita): Partial frames are not supported currently: only fully
-    // decoded frames make it through.  We could potentially relax this and
-    // use SkImage::MakeFromBitmap(bitmap) to make a copy.
-    skia_image = frame->FinalizePixelsAndGetImage();
-    info = bitmap.info();
-
-    if (has_alpha && premultiply_alpha)
-      alpha_op_ = kAlphaDoPremultiply;
-  } else if (!premultiply_alpha && has_alpha) {
-    // 1. For texImage2D with HTMLVideoElment input, assume no PremultiplyAlpha
-    //    had been applied and the alpha value for each pixel is 0xFF.  This is
-    //    true at present; if it is changed in the future it will need
-    //    adjustment accordingly.
-    // 2. For texImage2D with HTMLCanvasElement input in which alpha is already
-    //    premultiplied in this port, do AlphaDoUnmultiply if
-    //    UNPACK_PREMULTIPLY_ALPHA_WEBGL is set to false.
-    if (image_html_dom_source_ != kHtmlDomVideo)
-      alpha_op_ = kAlphaDoUnmultiply;
+      // TODO(fmalita): Partial frames are not supported currently: only fully
+      // decoded frames make it through.  We could potentially relax this and
+      // use SkImage::MakeFromBitmap(bitmap) to make a copy.
+      skia_image = frame->FinalizePixelsAndGetImage();
+    }
   }
 
   if (!skia_image)
@@ -3817,8 +3799,7 @@ void WebGLImageConversion::ImageExtractor::ExtractImage(
     return;
   }
 
-  image_pixel_locker_.emplace(std::move(skia_image), info.alphaType(),
-                              kN32_SkColorType);
+  image_pixel_locker_.emplace(std::move(skia_image));
 }
 
 unsigned WebGLImageConversion::GetChannelBitsByFormat(GLenum format) {

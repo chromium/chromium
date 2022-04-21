@@ -9,41 +9,21 @@
 
 namespace blink {
 
-namespace {
-
-bool InfoIsCompatible(const SkImageInfo& info,
-                      SkAlphaType alpha_type,
-                      SkColorType color_type) {
-  DCHECK_NE(alpha_type, kUnknown_SkAlphaType);
-
-  if (info.colorType() != color_type)
-    return false;
-
-  // kOpaque_SkAlphaType works regardless of the requested alphaType.
-  return info.alphaType() == alpha_type ||
-         info.alphaType() == kOpaque_SkAlphaType;
-}
-
-}  // anonymous namespace
-
-ImagePixelLocker::ImagePixelLocker(sk_sp<const SkImage> image,
-                                   SkAlphaType alpha_type,
-                                   SkColorType color_type)
+ImagePixelLocker::ImagePixelLocker(sk_sp<const SkImage> image)
     : image_(std::move(image)) {
   // If the image has in-RAM pixels and their format matches, use them directly.
   // TODO(fmalita): All current clients expect packed pixel rows.  Maybe we
   // could update them to support arbitrary rowBytes, and relax the check below.
   image_->peekPixels(&pixmap_);
-  if (pixmap_.addr() &&
-      InfoIsCompatible(pixmap_.info(), alpha_type, color_type) &&
-      pixmap_.rowBytes() == pixmap_.info().minRowBytes()) {
+  if (pixmap_.addr() && pixmap_.rowBytes() == pixmap_.info().minRowBytes()) {
     pixmap_valid_ = true;
     return;
   }
 
   // No luck, we need to read the pixels into our local buffer.
-  SkImageInfo info = SkImageInfo::Make(image_->width(), image_->height(),
-                                       color_type, alpha_type);
+  SkImageInfo info =
+      SkImageInfo::Make(image_->width(), image_->height(), image_->colorType(),
+                        image_->alphaType());
   size_t row_bytes = info.minRowBytes();
   size_t size = info.computeByteSize(row_bytes);
   if (0 == size)

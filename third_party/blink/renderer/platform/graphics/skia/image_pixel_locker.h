@@ -21,7 +21,7 @@ class ImagePixelLocker final {
   DISALLOW_NEW();
 
  public:
-  ImagePixelLocker(sk_sp<const SkImage>, SkAlphaType, SkColorType);
+  explicit ImagePixelLocker(sk_sp<const SkImage>);
   ImagePixelLocker(const ImagePixelLocker&) = delete;
   ImagePixelLocker& operator=(const ImagePixelLocker&) = delete;
 
