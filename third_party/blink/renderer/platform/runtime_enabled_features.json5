@@ -803,6 +803,11 @@
       name: "CSSTargetTextPseudoElement",
       status: "stable",
     },
+    // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
+    {
+      name: "CSSToggles",
+      status: "test",
+    },
     // Support for registered custom properties with <image> syntax.
     {
       name: "CSSVariables2ImageValues",
