@@ -150,7 +150,7 @@ bool IsRequestAllowed(network::ResourceRequest* request,
     if (rule->actions.size() != 1)
       continue;
 
-    if (rule->actions[0]->which() != mojom::UrlRequestAction::Tag::POLICY)
+    if (rule->actions[0]->which() != mojom::UrlRequestAction::Tag::kPolicy)
       continue;
 
     if (!RuleFiltersMatchRequest(request, rule))
@@ -214,23 +214,23 @@ void URLLoaderThrottle::ApplyRewrite(
     network::ResourceRequest* request,
     const mojom::UrlRequestActionPtr& rewrite) {
   switch (rewrite->which()) {
-    case mojom::UrlRequestAction::Tag::ADD_HEADERS:
+    case mojom::UrlRequestAction::Tag::kAddHeaders:
       ApplyAddHeaders(request, rewrite->get_add_headers());
       return;
-    case mojom::UrlRequestAction::Tag::REMOVE_HEADER:
+    case mojom::UrlRequestAction::Tag::kRemoveHeader:
       ApplyRemoveHeader(request, rewrite->get_remove_header());
       return;
-    case mojom::UrlRequestAction::Tag::SUBSTITUTE_QUERY_PATTERN:
+    case mojom::UrlRequestAction::Tag::kSubstituteQueryPattern:
       ApplySubstituteQueryPattern(request,
                                   rewrite->get_substitute_query_pattern());
       return;
-    case mojom::UrlRequestAction::Tag::REPLACE_URL:
+    case mojom::UrlRequestAction::Tag::kReplaceUrl:
       ApplyReplaceUrl(request, rewrite->get_replace_url());
       return;
-    case mojom::UrlRequestAction::Tag::APPEND_TO_QUERY:
+    case mojom::UrlRequestAction::Tag::kAppendToQuery:
       ApplyAppendToQuery(request, rewrite->get_append_to_query());
       return;
-    case mojom::UrlRequestAction::Tag::POLICY:
+    case mojom::UrlRequestAction::Tag::kPolicy:
       // "Policy" is interpreted elsewhere; it is a no-op for rewriting.
       return;
   }
