@@ -97,7 +97,6 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       const KURL& script_url,
       const SecurityOrigin*,
       const HttpsState&,
-      network::mojom::IPAddressSpace,
       const WebFetchClientSettingsObject& passed_settings_object);
 
   // Client must remain valid through the entire life time of the worker.

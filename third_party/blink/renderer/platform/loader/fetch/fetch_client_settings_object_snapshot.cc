@@ -18,7 +18,6 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
           fetch_client_setting_object.GetOutgoingReferrer(),
           fetch_client_setting_object.GetHttpsState(),
           fetch_client_setting_object.MimeTypeCheckForClassicWorkerScript(),
-          fetch_client_setting_object.GetAddressSpace(),
           fetch_client_setting_object.GetInsecureRequestsPolicy(),
           fetch_client_setting_object.GetUpgradeInsecureNavigationsSet()) {}
 
@@ -32,7 +31,6 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
           data->outgoing_referrer,
           data->https_state,
           data->mime_type_check_for_classic_worker_script,
-          data->address_space,
           data->insecure_requests_policy,
           data->insecure_navigations_set) {}
 
@@ -44,7 +42,6 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
     const String& outgoing_referrer,
     HttpsState https_state,
     AllowedByNosniff::MimeTypeCheck mime_type_check_for_classic_worker_script,
-    network::mojom::IPAddressSpace address_space,
     mojom::blink::InsecureRequestPolicy insecure_requests_policy,
     InsecureNavigationsSet insecure_navigations_set)
     : global_object_url_(global_object_url),
@@ -55,7 +52,6 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
       https_state_(https_state),
       mime_type_check_for_classic_worker_script_(
           mime_type_check_for_classic_worker_script),
-      address_space_(address_space),
       insecure_requests_policy_(insecure_requests_policy),
       insecure_navigations_set_(std::move(insecure_navigations_set)) {}
 

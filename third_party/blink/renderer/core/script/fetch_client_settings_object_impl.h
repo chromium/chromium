@@ -44,8 +44,6 @@ class CORE_EXPORT FetchClientSettingsObjectImpl final
   AllowedByNosniff::MimeTypeCheck MimeTypeCheckForClassicWorkerScript()
       const override;
 
-  network::mojom::IPAddressSpace GetAddressSpace() const override;
-
   mojom::blink::InsecureRequestPolicy GetInsecureRequestsPolicy()
       const override;
   const InsecureNavigationsSet& GetUpgradeInsecureNavigationsSet()

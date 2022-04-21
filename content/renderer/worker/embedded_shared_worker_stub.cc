@@ -123,7 +123,6 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       blink::WebString::FromUTF8(full_user_agent),
       blink::WebString::FromUTF8(reduced_user_agent), ua_metadata,
       ToWebContentSecurityPolicies(std::move(info->content_security_policies)),
-      info->creation_address_space,
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),
       devtools_worker_token, std::move(content_settings),

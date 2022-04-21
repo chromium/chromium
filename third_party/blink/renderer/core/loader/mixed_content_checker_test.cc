@@ -238,9 +238,6 @@ class TestFetchClientSettingsObject : public FetchClientSettingsObject {
       const override {
     return AllowedByNosniff::MimeTypeCheck::kStrict;
   }
-  network::mojom::IPAddressSpace GetAddressSpace() const override {
-    return network::mojom::IPAddressSpace::kLocal;
-  }
   const InsecureNavigationsSet& GetUpgradeInsecureNavigationsSet()
       const override {
     return set;

@@ -37,7 +37,6 @@ struct CrossThreadFetchClientSettingsObjectData {
       String outgoing_referrer,
       HttpsState https_state,
       AllowedByNosniff::MimeTypeCheck mime_type_check_for_classic_worker_script,
-      network::mojom::IPAddressSpace address_space,
       mojom::blink::InsecureRequestPolicy insecure_requests_policy,
       FetchClientSettingsObject::InsecureNavigationsSet
           insecure_navigations_set)
@@ -49,7 +48,6 @@ struct CrossThreadFetchClientSettingsObjectData {
         https_state(https_state),
         mime_type_check_for_classic_worker_script(
             mime_type_check_for_classic_worker_script),
-        address_space(address_space),
         insecure_requests_policy(insecure_requests_policy),
         insecure_navigations_set(std::move(insecure_navigations_set)) {}
   CrossThreadFetchClientSettingsObjectData(
@@ -65,7 +63,6 @@ struct CrossThreadFetchClientSettingsObjectData {
   const HttpsState https_state;
   const AllowedByNosniff::MimeTypeCheck
       mime_type_check_for_classic_worker_script;
-  const network::mojom::IPAddressSpace address_space;
   const mojom::blink::InsecureRequestPolicy insecure_requests_policy;
   const FetchClientSettingsObject::InsecureNavigationsSet
       insecure_navigations_set;
@@ -95,7 +92,6 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
       const String& outgoing_referrer,
       HttpsState https_state,
       AllowedByNosniff::MimeTypeCheck,
-      network::mojom::IPAddressSpace,
       mojom::blink::InsecureRequestPolicy,
       InsecureNavigationsSet);
 
@@ -113,10 +109,6 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
     return outgoing_referrer_;
   }
   HttpsState GetHttpsState() const override { return https_state_; }
-
-  network::mojom::IPAddressSpace GetAddressSpace() const override {
-    return address_space_;
-  }
 
   mojom::blink::InsecureRequestPolicy GetInsecureRequestsPolicy()
       const override {
@@ -139,8 +131,8 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
         global_object_url_.Copy(), base_url_.Copy(),
         security_origin_->IsolatedCopy(), referrer_policy_,
         outgoing_referrer_.IsolatedCopy(), https_state_,
-        mime_type_check_for_classic_worker_script_, address_space_,
-        insecure_requests_policy_, insecure_navigations_set_);
+        mime_type_check_for_classic_worker_script_, insecure_requests_policy_,
+        insecure_navigations_set_);
   }
 
  private:
@@ -152,7 +144,6 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   const HttpsState https_state_;
   const AllowedByNosniff::MimeTypeCheck
       mime_type_check_for_classic_worker_script_;
-  const network::mojom::IPAddressSpace address_space_;
 
   const mojom::blink::InsecureRequestPolicy insecure_requests_policy_;
   const InsecureNavigationsSet insecure_navigations_set_;

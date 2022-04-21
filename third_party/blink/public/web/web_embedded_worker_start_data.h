@@ -33,7 +33,6 @@
 
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -58,8 +57,6 @@ struct WebEmbeddedWorkerStartData {
   // to the same worker.
   base::UnguessableToken devtools_worker_token;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
-
-  network::mojom::IPAddressSpace address_space;
 
   WebFetchClientSettingsObject outside_fetch_client_settings_object;
 

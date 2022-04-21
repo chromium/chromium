@@ -37,7 +37,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
@@ -81,7 +80,6 @@ class BLINK_EXPORT WebSharedWorker {
       const WebString& reduced_user_agent,
       const UserAgentMetadata& ua_metadata,
       const WebVector<WebContentSecurityPolicy>& content_security_policies,
-      network::mojom::IPAddressSpace,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<mojom::WorkerContentSettingsProxyInterfaceBase>

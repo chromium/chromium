@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CLIENT_SETTINGS_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CLIENT_SETTINGS_OBJECT_H_
 
-#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -74,9 +73,6 @@ class PLATFORM_EXPORT FetchClientSettingsObject
   // TODO(crbug.com/794548): Remove this once we deprecate kLax.
   virtual AllowedByNosniff::MimeTypeCheck MimeTypeCheckForClassicWorkerScript()
       const = 0;
-
-  // https://wicg.github.io/cors-rfc1918/#address-space
-  virtual network::mojom::IPAddressSpace GetAddressSpace() const = 0;
 
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#insecure-requests-policy
   virtual mojom::blink::InsecureRequestPolicy GetInsecureRequestsPolicy()
