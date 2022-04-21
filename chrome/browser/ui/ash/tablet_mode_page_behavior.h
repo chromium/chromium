@@ -7,16 +7,14 @@
 
 #include <memory>
 
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "ui/display/display_observer.h"
 
 class BrowserTabStripTracker;
 
-// Holds tablet mode state in chrome. Observes ash for changes, then
-// synchronously fires all its observers. This allows all tablet mode code in
-// chrome to see a state change at the same time.
-class TabletModePageBehavior : public ash::TabletModeObserver,
+// Updates WebContents Blink preferences on tablet mode state change.
+class TabletModePageBehavior : public display::DisplayObserver,
                                public BrowserTabStripTrackerDelegate,
                                public TabStripModelObserver {
  public:
@@ -30,10 +28,8 @@ class TabletModePageBehavior : public ash::TabletModeObserver,
   // Notify the tablet mode change.
   void OnTabletModeToggled(bool enabled);
 
-  // ash::TabletModeObserver:
-  void OnTabletModeStarting() override;
-  void OnTabletModeEnding() override;
-  void OnTabletControllerDestroyed() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;

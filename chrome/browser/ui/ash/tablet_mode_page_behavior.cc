@@ -6,26 +6,26 @@
 
 #include <utility>
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/display/screen.h"
 
 TabletModePageBehavior::TabletModePageBehavior() {
-  ash::TabletMode::Get()->AddObserver(this);
-  OnTabletModeToggled(ash::TabletMode::Get()->InTabletMode());
+  display::Screen::GetScreen()->AddObserver(this);
+  OnTabletModeToggled(chromeos::TabletState::Get()->InTabletMode());
 }
 
 TabletModePageBehavior::~TabletModePageBehavior() {
-  // The Ash Shell and TabletMode instance should have been destroyed by now.
-  DCHECK(!ash::TabletMode::Get());
+  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void TabletModePageBehavior::OnTabletModeToggled(bool enabled) {
@@ -33,20 +33,23 @@ void TabletModePageBehavior::OnTabletModeToggled(bool enabled) {
   ui::TouchUiController::Get()->OnTabletModeToggled(enabled);
 }
 
-void TabletModePageBehavior::OnTabletModeStarting() {
-  OnTabletModeToggled(true);
-}
-
-void TabletModePageBehavior::OnTabletModeEnding() {
-  OnTabletModeToggled(false);
-}
-
-void TabletModePageBehavior::OnTabletControllerDestroyed() {
-  ash::TabletMode::Get()->RemoveObserver(this);
+void TabletModePageBehavior::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInTabletMode:
+      OnTabletModeToggled(true);
+      return;
+    case display::TabletState::kInClamshellMode:
+      OnTabletModeToggled(false);
+      return;
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+  }
 }
 
 bool TabletModePageBehavior::ShouldTrackBrowser(Browser* browser) {
-  return ash::TabletMode::Get()->InTabletMode();
+  return chromeos::TabletState::Get()->InTabletMode();
 }
 
 void TabletModePageBehavior::OnTabStripModelChanged(
