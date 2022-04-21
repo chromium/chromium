@@ -7734,6 +7734,7 @@ crbug.com/1024156 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Ski
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
 crbug.com/1318318 virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
 crbug.com/1318449 [ Mac10.14 ] http/tests/inspector-protocol/window-open-effective-opener.js [ Failure Pass ]
+crbug.com/1318561 [ Linux ] external/wpt/x-frame-options/get-decode-split.html [ Failure Pass ]
 
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Skip ]
