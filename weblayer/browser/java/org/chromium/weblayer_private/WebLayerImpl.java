@@ -66,6 +66,8 @@ import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.components.embedder_support.application.FirebaseConfig;
 import org.chromium.components.payments.PaymentDetailsUpdateService;
+import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
+import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
@@ -298,6 +300,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 (isAppDebuggable || isOsDebuggable) ? TraceEvent.ATRACE_TAG_APP : 0,
                 /*readCommandLine=*/true);
         TraceEvent.begin("WebLayer init");
+
+        WebApkValidator.init(
+                ChromeWebApkHostSignature.EXPECTED_SIGNATURE, ChromeWebApkHostSignature.PUBLIC_KEY);
 
         BuildInfo.setBrowserPackageInfo(packageInfo);
         BuildInfo.setFirebaseAppId(
