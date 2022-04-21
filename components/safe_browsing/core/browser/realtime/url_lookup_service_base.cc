@@ -406,10 +406,10 @@ void RealTimeUrlLookupServiceBase::SendRequest(
 
   // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
   // just below.
-  SendRequestInternal(std::move(resource_request), req_data, url,
-                      access_token_string, std::move(response_callback),
-                      callback_task_runner,
-                      request->population().user_population());
+  SendRequestInternal(
+      std::move(resource_request), req_data, url, access_token_string,
+      std::move(response_callback), callback_task_runner,
+      request->population().user_population(), is_sampled_report);
 
   callback_task_runner->PostTask(
       FROM_HERE,
@@ -425,7 +425,8 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
     absl::optional<std::string> access_token_string,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    ChromeUserPopulation::UserPopulation user_population) {
+    ChromeUserPopulation::UserPopulation user_population,
+    bool is_sampled_report) {
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        GetTrafficAnnotationTag());
@@ -439,7 +440,7 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
       url_loader_factory_.get(),
       base::BindOnce(&RealTimeUrlLookupServiceBase::OnURLLoaderComplete,
                      GetWeakPtr(), url, access_token_string, loader,
-                     user_population, base::TimeTicks::Now(),
+                     user_population, base::TimeTicks::Now(), is_sampled_report,
                      std::move(callback_task_runner)));
 
   pending_requests_[owned_loader.release()] = std::move(response_callback);
@@ -451,6 +452,7 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
     ChromeUserPopulation::UserPopulation user_population,
     base::TimeTicks request_start_time,
+    bool is_sampled_report,
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -466,9 +468,14 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
+  std::string report_type_suffix =
+      is_sampled_report ? ".SampledPing" : ".NormalPing";
   RecordNetworkResultWithAndWithoutSuffix("SafeBrowsing.RT.Network.Result",
                                           GetMetricSuffix(), net_error,
                                           response_code);
+  RecordHttpResponseOrErrorCode(
+      ("SafeBrowsing.RT.Network.Result" + report_type_suffix).c_str(),
+      net_error, response_code);
 
   if (response_code == net::HTTP_UNAUTHORIZED &&
       access_token_string.has_value()) {
@@ -481,6 +488,9 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
                                  response->ParseFromString(*response_body);
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.IsLookupSuccessful",
                                     GetMetricSuffix(), is_rt_lookup_successful);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.RT.IsLookupSuccessful" + report_type_suffix,
+      is_rt_lookup_successful);
   is_rt_lookup_successful ? HandleLookupSuccess() : HandleLookupError();
 
   MayBeCacheRealTimeUrlVerdict(url, *response);

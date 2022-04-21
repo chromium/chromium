@@ -1759,6 +1759,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.IsLookupSuccessful.{ReportType}"
+    enum="BooleanSuccess" expires_after="2023-04-11">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether the response of the real time URL lookup is successful when the
+    report type is {ReportType}. Logged on each resource check for which a
+    lookup request is sent to the server. A failure can be either a network
+    error or a parsing error.
+  </summary>
+  <token key="ReportType">
+    <variant name="NormalPing" summary="normal ping"/>
+    <variant name="SampledPing" summary="sampled ping"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.IsPopulationMbbOrEsb" enum="Boolean"
     expires_after="2022-08-21">
   <owner>drubery@chromium.org</owner>
@@ -1805,6 +1821,21 @@ chromium-metrics-reviews@google.com.
     Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the
     actual HTTP response code.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.Network.Result.{ReportType}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-04-11">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Response or error codes from SafeBrowsing real time URL lookups when the
+    report type is {ReportType}. Logged on each resource check for which a
+    lookup request is sent to the server.
+  </summary>
+  <token key="ReportType">
+    <variant name="NormalPing" summary="normal ping"/>
+    <variant name="SampledPing" summary="sampled ping"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Time" units="ms"

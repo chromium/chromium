@@ -229,7 +229,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       absl::optional<std::string> access_token_string,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      ChromeUserPopulation::UserPopulation user_population);
+      ChromeUserPopulation::UserPopulation user_population,
+      bool is_sampled_report);
 
   // Called when the response from the real-time lookup remote endpoint is
   // received. |url_loader| is the unowned loader that was used to send the
@@ -243,6 +244,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       network::SimpleURLLoader* url_loader,
       ChromeUserPopulation::UserPopulation user_population,
       base::TimeTicks request_start_time,
+      bool is_sampled_report,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
       std::unique_ptr<std::string> response_body);
 
