@@ -29,6 +29,8 @@ enum ContinueTaskCommandId {
   kOpenResult = 0,
   // Context Menu option to prevent the suggestion from showing.
   kRemoveResult = 1,
+  // Context Menu option to hide the continue section.
+  kHideContinueSection = 2,
 };
 
 // A view with a suggested task for the "Continue" section.

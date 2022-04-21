@@ -32,6 +32,7 @@
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -277,6 +278,9 @@ void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
       else
         RemoveResult();
       break;
+    case ContinueTaskCommandId::kHideContinueSection:
+      view_delegate_->SetHideContinueSection(true);
+      break;
     default:
       NOTREACHED();
   }
@@ -297,7 +301,12 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
       ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
                                      ui::kColorAshSystemUIMenuIcon));
-
+  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  // TODO(crbug.com/1317428): Localized string and custom icon.
+  context_menu_model_->AddItemWithIcon(
+      ContinueTaskCommandId::kHideContinueSection, u"Hide Continue Section",
+      ui::ImageModel::FromVectorIcon(kLockScreenPasswordInvisibleIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
   return context_menu_model_.get();
 }
 

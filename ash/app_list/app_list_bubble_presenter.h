@@ -71,6 +71,9 @@ class ASH_EXPORT AppListBubblePresenter
   // Switches to the assistant page. Requires the bubble to be open.
   void ShowEmbeddedAssistantUI();
 
+  // Updates the continue section visibility based on user preference.
+  void UpdateContinueSectionVisibility();
+
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // bubble launcher.
   void UpdateForNewSortingOrder(

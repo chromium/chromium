@@ -344,6 +344,11 @@ bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
   return bubble_view_->IsShowingEmbeddedAssistantUI();
 }
 
+void AppListBubblePresenter::UpdateContinueSectionVisibility() {
+  if (bubble_view_)
+    bubble_view_->UpdateContinueSectionVisibility();
+}
+
 void AppListBubblePresenter::UpdateForNewSortingOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,

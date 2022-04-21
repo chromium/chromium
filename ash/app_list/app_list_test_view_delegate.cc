@@ -157,6 +157,12 @@ bool AppListTestViewDelegate::HasValidProfile() const {
   return true;
 }
 
+bool AppListTestViewDelegate::ShouldHideContinueSection() const {
+  return false;
+}
+
+void AppListTestViewDelegate::SetHideContinueSection(bool hide) {}
+
 void AppListTestViewDelegate::GetSearchResultContextMenuModel(
     const std::string& result_id,
     GetContextMenuModelCallback callback) {

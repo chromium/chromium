@@ -32,6 +32,7 @@ class AppListNotifier;
 enum class AppListViewState;
 struct AppLaunchedMetricParams;
 
+// Wrapper for AppListControllerImpl, used by various app list views.
 class ASH_PUBLIC_EXPORT AppListViewDelegate {
  public:
   virtual ~AppListViewDelegate() = default;
@@ -218,6 +219,14 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Whether the controller has a valid profile, and hence a valid data model.
   // Returns false during startup and shutdown.
   virtual bool HasValidProfile() const = 0;
+
+  // Whether the user wants to hide the continue section and recent apps. Used
+  // by productivity launcher only.
+  virtual bool ShouldHideContinueSection() const = 0;
+
+  // Sets whether the user wants to hide the continue section and recent apps.
+  // Used by productivity launcher only.
+  virtual void SetHideContinueSection(bool hide) = 0;
 };
 
 }  // namespace ash

@@ -63,6 +63,10 @@ class ASH_EXPORT RecentAppsView : public AppListModelObserver,
   // view will not display any results.
   void SetModels(SearchModel* search_model, AppListModel* model);
 
+  // Updates the visibility of this view. The view may be hidden if there are
+  // not enough suggestions or if the user has chosen to hide it.
+  void UpdateVisibility();
+
   // Returns the number of AppListItemView children.
   int GetItemViewCount() const;
 

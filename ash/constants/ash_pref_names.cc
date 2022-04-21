@@ -132,8 +132,14 @@ const char kSyncOobeCompleted[] = "sync.oobe_completed";
 const char kLoginDisplayPasswordButtonEnabled[] =
     "login_display_password_button_enabled";
 
-// Boolean pref indicating whether the user has enabled Suggested Content.
+// Boolean pref indicating whether the user has enabled Suggested Content in
+// OS settings > Privacy > "Suggest new content to explore".
 const char kSuggestedContentEnabled[] = "settings.suggested_content_enabled";
+
+// Boolean value indicating the user has hidden the launcher continue section
+// (usually because they want more visual space available for apps).
+const char kLauncherContinueSectionHidden[] =
+    "launcher.continue_section_hidden";
 
 // Boolean value that indicates that the user has given feedback for removing
 // items from the continue section.

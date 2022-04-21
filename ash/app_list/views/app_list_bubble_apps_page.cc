@@ -28,6 +28,7 @@
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/pill_button.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -152,6 +153,25 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       kVerticalPaddingBetweenSections));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
+  // Add the button to show the continue section, wrapped in a view to center it
+  // horizontally.
+  {
+    auto* container =
+        scroll_contents->AddChildView(std::make_unique<views::View>());
+    auto* layout = container->SetLayoutManager(
+        std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+    layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
+    // TODO(crbug.com/1317428): Add expander icon to button.
+    // TODO(crbug.com/1317428): Localized label.
+    show_continue_section_button_ =
+        container->AddChildView(std::make_unique<PillButton>(
+            base::BindRepeating(
+                &AppListBubbleAppsPage::OnPressShowContinueSection,
+                base::Unretained(this)),
+            u"Show continue section", PillButton::Type::kIconless,
+            /*icon=*/nullptr));
+  }
+
   // Continue section row.
   continue_section_ =
       scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
@@ -211,6 +231,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scroll_view_->SetContents(std::move(scroll_contents));
 
   UpdateSuggestions();
+  UpdateContinueSectionVisibility();
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() {
@@ -612,9 +633,20 @@ ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {
   return scroll_view_->contents()->layer();
 }
 
+void AppListBubbleAppsPage::UpdateContinueSectionVisibility() {
+  // Show the "Show continue section" button if the continue section is hidden.
+  bool hide_continue_section = view_delegate_->ShouldHideContinueSection();
+  show_continue_section_button_->SetVisible(hide_continue_section);
+  // The continue section view and recent apps view manage their own visibility
+  // internally.
+  continue_section_->UpdateElementsVisibility();
+  recent_apps_->UpdateVisibility();
+  UpdateSeparatorVisibility();
+}
+
 void AppListBubbleAppsPage::UpdateSeparatorVisibility() {
-  separator_->SetVisible(recent_apps_->GetItemViewCount() > 0 ||
-                         continue_section_->GetTasksSuggestionsCount() > 0);
+  separator_->SetVisible(recent_apps_->GetVisible() ||
+                         continue_section_->GetVisible());
 }
 
 void AppListBubbleAppsPage::DestroyLayerForView(views::View* view) {
@@ -767,6 +799,11 @@ void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
                               : base::DoNothing();
   StartSlideInAnimation(view, vertical_offset, duration,
                         kSlideAnimationTweenType, cleanup);
+}
+
+void AppListBubbleAppsPage::OnPressShowContinueSection(const ui::Event& event) {
+  view_delegate_->SetHideContinueSection(false);
+  UpdateContinueSectionVisibility();
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

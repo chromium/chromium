@@ -1440,6 +1440,32 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
             AppListToastType::kReorderNudge);
 }
 
+// TODO(crbug.com/1317428): Switch to ContinueSectionViewWithReorderNudgeTest
+// when this feature works in tablet mode.
+TEST_F(ContinueSectionViewClamshellModeTest,
+       HidingContinueSectionHidesPrivacyNotice) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ASSERT_TRUE(IsPrivacyNoticeVisible());
+  ASSERT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+
+  // Simulate the user hiding the continue section.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+  EXPECT_FALSE(GetContinueSectionView()->GetVisible());
+
+  // The privacy notice is suppressed.
+  EXPECT_FALSE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kNone);
+}
+
 TEST_P(ContinueSectionViewWithReorderNudgeTest,
        DoNotShowPrivacyNoticeAndReorderNudgeAlternitively) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);

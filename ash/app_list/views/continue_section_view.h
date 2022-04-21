@@ -73,6 +73,10 @@ class ASH_EXPORT ContinueSectionView : public views::View,
 
   void SetNudgeController(AppListNudgeController* nudge_controller);
 
+  // Refresh the continue section element's visibility such as the privacy
+  // notice, the continue label and the continue section itself.
+  void UpdateElementsVisibility();
+
   ContinueTaskContainerView* suggestions_container() {
     return suggestions_container_;
   }
@@ -113,10 +117,6 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // section in the launcher.
   void MaybeCreatePrivacyNotice();
 
-  // Refresh the continue section element's visibility such as the privacy
-  // notice, the continue label and the continue section itself.
-  void UpdateElementsVisibility();
-
   // Removes the privacy notice from the view.
   void RemovePrivacyNotice();
 
@@ -139,6 +139,8 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // Starts the animation to dismiss the privacy notice toast only. This is used
   // when the privacy notice does not have enough items after an update.
   void MaybeAnimateOutPrivacyNotice();
+
+  AppListViewDelegate* const view_delegate_;
 
   // Controller for showing a modal dialog in the continue section.
   SearchResultPageDialogController* const dialog_controller_;

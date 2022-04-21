@@ -61,6 +61,8 @@ extern const char kLoginDisplayPasswordButtonEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuggestedContentEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLauncherContinueSectionHidden[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLauncherFeedbackOnContinueSectionSent[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLauncherResultEverLaunched[];

@@ -90,8 +90,10 @@ ContinueSectionView::ContinueSectionView(
     SearchResultPageDialogController* dialog_controller,
     int columns,
     bool tablet_mode)
-    : dialog_controller_(dialog_controller), tablet_mode_(tablet_mode) {
-  DCHECK(view_delegate);
+    : view_delegate_(view_delegate),
+      dialog_controller_(dialog_controller),
+      tablet_mode_(tablet_mode) {
+  DCHECK(view_delegate_);
 
   AppListModelProvider::Get()->AddObserver(this);
 
@@ -406,6 +408,18 @@ void ContinueSectionView::MaybeAnimateOutPrivacyNotice() {
 }
 
 void ContinueSectionView::UpdateElementsVisibility() {
+  // If the user chose to hide the section, set visibility false and reset the
+  // privacy toast.
+  if (view_delegate_->ShouldHideContinueSection()) {
+    SetVisible(false);
+    if (privacy_toast_) {
+      RemoveChildViewT(privacy_toast_);
+      privacy_toast_ = nullptr;
+      nudge_controller_->SetPrivacyNoticeShown(false);
+      privacy_notice_shown_timer_.AbandonAndStop();
+    }
+    return;
+  }
   const bool show_files_section = ShouldShowFilesSection();
   const bool show_privacy_notice = ShouldShowPrivacyNotice();
 

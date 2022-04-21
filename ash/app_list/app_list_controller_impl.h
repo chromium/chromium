@@ -203,6 +203,8 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override;
   bool HasValidProfile() const override;
+  bool ShouldHideContinueSection() const override;
+  void SetHideContinueSection(bool hide) override;
 
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;

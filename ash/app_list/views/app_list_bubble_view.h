@@ -82,6 +82,9 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // apps grid. Used for computing the bubble height on large screens.
   int GetHeightToFitAllApps() const;
 
+  // Updates the continue section visibility based on user preference.
+  void UpdateContinueSectionVisibility();
+
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list bubble view.
   void UpdateForNewSortingOrder(

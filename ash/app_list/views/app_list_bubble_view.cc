@@ -487,6 +487,10 @@ int AppListBubbleView::GetHeightToFitAllApps() const {
          search_box_view_->GetPreferredSize().height();
 }
 
+void AppListBubbleView::UpdateContinueSectionVisibility() {
+  apps_page_->UpdateContinueSectionVisibility();
+}
+
 void AppListBubbleView::UpdateForNewSortingOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
