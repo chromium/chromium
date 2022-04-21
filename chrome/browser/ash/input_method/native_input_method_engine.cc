@@ -713,6 +713,9 @@ void NativeInputMethodEngine::ImeObserver::ActivateTextClient(
 
 void NativeInputMethodEngine::ImeObserver::OnActivate(
     const std::string& engine_id) {
+  // Always hide the candidates window when switching input methods.
+  UpdateCandidatesWindow(nullptr);
+
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
   if (IsFstEngine(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
