@@ -158,8 +158,10 @@ class DeepScanningSideIconImageView : public DeepScanningBaseView,
                                             dialog()->GetSideImageLogoColor(),
                                             kSideImageSize));
     if (dialog()->is_result()) {
-      SetBackground(std::make_unique<CircleBackground>(
-          dialog()->GetSideImageBackgroundColor()));
+      ui::ColorId color = dialog()->GetSideImageBackgroundColor();
+      SetBackground(std::make_unique<CircleBackground>(color));
+      GetBackground()->SetNativeControlColor(
+          GetColorProvider()->GetColor(color));
     }
   }
 
@@ -888,13 +890,15 @@ ui::ColorId ContentAnalysisDialog::GetSideImageLogoColor() const {
 
   switch (dialog_state_) {
     case State::PENDING:
-      // Match the spinner in the pending state.
-      return ui::kColorThrobberPreconnect;
+      // In the dialog's pending state, the side image is just an enterprise
+      // logo surrounded by a throbber, so we use the throbber color for it.
+      return ui::kColorThrobber;
     case State::SUCCESS:
     case State::FAILURE:
     case State::WARNING:
-      // In a result state the background will have the result's color, so the
-      // logo should have the same color as the background.
+      // In a result state, the side image is a circle colored with the result's
+      // color and an enterprise logo in front of it, so the logo should have
+      // the same color as the dialog's overall background.
       return ui::kColorDialogBackground;
   }
 }
