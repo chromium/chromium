@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -1592,6 +1593,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // called inside PostProfileInit.
   content::WebUIControllerFactory::RegisterFactory(
       ChromeWebUIControllerFactory::GetInstance());
+  RegisterChromeWebUIConfigs();
   RegisterChromeUntrustedWebUIConfigs();
 
 #if BUILDFLAG(IS_ANDROID)
