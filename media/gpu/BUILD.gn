@@ -560,7 +560,7 @@ source_set("unit_tests") {
     sources += [ "vp8_decoder_unittest.cc" ]
   }
 
-  if (use_libgav1_parser) {
+  if (use_libgav1_parser && media_use_ffmpeg) {
     sources += [ "av1_decoder_unittest.cc" ]
     deps += [
       "//build:chromeos_buildflags",

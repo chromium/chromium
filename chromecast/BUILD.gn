@@ -92,11 +92,9 @@ cast_test_group("cast_tests") {
     "//cc:cc_unittests",
     "//chromecast/base:cast_base_unittests",
     "//chromecast/base/component:cast_component_unittests",
-    "//chromecast/cast_core:cast_cast_core_unittests",
     "//chromecast/common:cast_common_unittests",
     "//chromecast/crypto:cast_crypto_unittests",
     "//chromecast/device/bluetooth:cast_bluetooth_unittests",
-    "//chromecast/media:cast_media_unittests",
     "//chromecast/metrics:cast_metrics_unittest",
     "//chromecast/net:cast_net_unittests",
     "//chromecast/ui/display_settings:cast_display_settings_unittests",
@@ -112,7 +110,7 @@ cast_test_group("cast_tests") {
     "//ui/base:ui_base_unittests",
   ]
 
-  if (enable_chromecast_extensions) {
+  if (enable_chromecast_extensions && media_use_ffmpeg) {
     tests += [
       "//chromecast/browser/accessibility/flutter:cast_accessibility_unittests",
     ]
@@ -146,6 +144,13 @@ cast_test_group("cast_tests") {
     filters += [ sandbox_linux_unittests_filter ]
   }
 
+  if (media_use_ffmpeg) {
+    tests += [
+      "//chromecast/cast_core:cast_cast_core_unittests",
+      "//chromecast/media:cast_media_unittests",
+    ]
+  }
+
   if (is_linux || is_chromeos || is_fuchsia) {
     tests += [ "//chromecast/media/cma/backend:cast_audio_backend_unittests" ]
     cast_audio_backend_unittests_filter = {
@@ -177,11 +182,16 @@ cast_test_group("cast_tests") {
 
   if (!is_android && !is_fuchsia) {
     tests += [
-      ":cast_shell_browsertests",
-      ":cast_shell_unittests",
       "//ipc:ipc_tests",
       "//url:url_unittests",
     ]
+
+    if (media_use_ffmpeg) {
+      tests += [
+        ":cast_shell_browsertests",
+        ":cast_shell_unittests",
+      ]
+    }
 
     cast_shell_browsertests_filter = {
       test_name = "cast_shell_browsertests"

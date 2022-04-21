@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/mock_media_log.h"
+#include "media/base/video_decoder.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
