@@ -660,8 +660,14 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
                      1000 * (elapsed_late / (kIterations * kBatchSize)));
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1318120): Fix this test on Fuchsia and re-enable.
+#define MAYBE_EvictionPerformance DISABLED_EvictionPerformance
+#else
+#define MAYBE_EvictionPerformance EvictionPerformance
+#endif
 // Measures how quickly SimpleIndex can compute which entries to evict.
-TEST(SimpleIndexPerfTest, EvictionPerformance) {
+TEST(SimpleIndexPerfTest, MAYBE_EvictionPerformance) {
   const int kEntries = 10000;
 
   class NoOpDelegate : public disk_cache::SimpleIndexDelegate {
