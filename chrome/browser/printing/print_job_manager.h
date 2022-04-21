@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 
@@ -20,6 +21,7 @@ namespace printing {
 
 class JobEventDetails;
 class PrintJob;
+class PrintedDocument;
 class PrinterQuery;
 
 class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
@@ -67,6 +69,16 @@ class PrintJobManager {
 
   ~PrintJobManager();
 
+  using DocDoneCallbackList = base::RepeatingCallbackList<
+      void(PrintJob* job, PrintedDocument* document, int job_id)>;
+  using DocDoneCallback = DocDoneCallbackList::CallbackType;
+
+  // Call this method to be informed of DocDone events for all PrintJob
+  // instances.
+  // NOTE: If you need to be invoked of such events only for a specific
+  // instance, you should instead observe that instance via PrintJob::Observer.
+  base::CallbackListSubscription AddDocDoneCallback(DocDoneCallback callback);
+
   // On browser quit, we should wait to have the print job finished.
   void Shutdown();
 
@@ -92,6 +104,8 @@ class PrintJobManager {
   PrintJobs current_jobs_;
 
   scoped_refptr<PrintQueriesQueue> queue_;
+
+  DocDoneCallbackList callback_list_;
 
   bool is_shutdown_ = false;
 };

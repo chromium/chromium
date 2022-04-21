@@ -75,6 +75,11 @@ PrintJobManager::PrintJobManager() = default;
 
 PrintJobManager::~PrintJobManager() = default;
 
+base::CallbackListSubscription PrintJobManager::AddDocDoneCallback(
+    DocDoneCallback callback) {
+  return callback_list_.Add(callback);
+}
+
 scoped_refptr<PrintQueriesQueue> PrintJobManager::queue() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!queue_)
@@ -125,6 +130,11 @@ void PrintJobManager::OnPrintJobEvent(
       // Causes a AddRef().
       bool inserted = current_jobs_.insert(print_job).second;
       DCHECK(inserted);
+      break;
+    }
+    case JobEventDetails::DOC_DONE: {
+      callback_list_.Notify(print_job, event_details.document(),
+                            event_details.job_id());
       break;
     }
     case JobEventDetails::JOB_DONE: {
