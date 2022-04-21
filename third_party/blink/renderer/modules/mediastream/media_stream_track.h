@@ -43,8 +43,8 @@ class MODULES_EXPORT MediaStreamTrack
   };
 
   // TODO(1288839): Implement to recreate MST after transfer
-  static MediaStreamTrack* Create(ExecutionContext* context,
-                                  const base::UnguessableToken& token);
+  static MediaStreamTrack* Create(ScriptState* script_state,
+                                  const base::UnguessableToken& session_id);
 
   // MediaStreamTrack.idl
   virtual String kind() const = 0;

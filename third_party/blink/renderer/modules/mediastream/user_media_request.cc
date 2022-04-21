@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
+#include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -506,6 +507,7 @@ void UserMediaRequest::Succeed(MediaStreamDescriptor* stream_descriptor) {
     return;
 
   MediaStream::Create(GetExecutionContext(), stream_descriptor,
+                      transferred_track_,
                       WTF::Bind(&UserMediaRequest::OnMediaStreamInitialized,
                                 WrapPersistent(this)));
 }
@@ -624,6 +626,7 @@ void UserMediaRequest::ContextDestroyed() {
 void UserMediaRequest::Trace(Visitor* visitor) const {
   visitor->Trace(controller_);
   visitor->Trace(callbacks_);
+  visitor->Trace(transferred_track_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

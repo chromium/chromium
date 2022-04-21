@@ -4,14 +4,54 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 
 namespace blink {
 
-// static
-MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext*,
-                                           const base::UnguessableToken&) {
-  return MakeGarbageCollected<TransferredMediaStreamTrack>();
+namespace {
+
+class GetOpenDeviceRequestCallbacks final : public UserMediaRequest::Callbacks {
+ public:
+  ~GetOpenDeviceRequestCallbacks() override = default;
+
+  void OnSuccess(MediaStream* stream) override {}
+  void OnError(ScriptWrappable* callback_this_value,
+               const V8MediaStreamError* error) override {}
+};
+
+}  // namespace
+
+MediaStreamTrack* MediaStreamTrack::Create(
+    ScriptState* script_state,
+    const base::UnguessableToken& session_id) {
+  auto* window =
+      DynamicTo<LocalDOMWindow>(ExecutionContext::From(script_state));
+  if (!window)
+    return nullptr;
+
+  UserMediaController* user_media = UserMediaController::From(window);
+  MediaErrorState error_state;
+  // TODO(1288839): Set media_type, options, callbacks, surface appropriately
+  UserMediaRequest* request = UserMediaRequest::Create(
+      window, user_media, UserMediaRequest::MediaType::kDisplayMedia,
+      MediaStreamConstraints::Create(),
+      MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(), error_state,
+      IdentifiableSurface());
+
+  // TODO(1288839): Create a TransferredMediaStreamTrack implementing interfaces
+  // supporting BrowserCaptureMediaStreamTrack or FocusableMediaStreamTrack
+  // operations when needed (or support these behaviors in some other way).
+  TransferredMediaStreamTrack* transferred_media_stream_track =
+      MakeGarbageCollected<TransferredMediaStreamTrack>();
+
+  request->SetTransferData(session_id, transferred_media_stream_track);
+  request->Start();
+  return transferred_media_stream_track;
 }
 
 }  // namespace blink

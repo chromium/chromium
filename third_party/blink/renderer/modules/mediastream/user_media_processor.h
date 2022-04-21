@@ -147,6 +147,10 @@ class MODULES_EXPORT UserMediaProcessor
   class RequestInfo;
   using LocalStreamSources = HeapVector<Member<MediaStreamSource>>;
 
+  void GotOpenDevice(int32_t request_id,
+                     blink::mojom::blink::MediaStreamRequestResult result,
+                     blink::mojom::blink::GetOpenDeviceResponsePtr response);
+
   void OnStreamGenerated(int32_t request_id,
                          blink::mojom::blink::MediaStreamRequestResult result,
                          const String& label,

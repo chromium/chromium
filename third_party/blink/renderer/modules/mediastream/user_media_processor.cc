@@ -939,15 +939,27 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
       current_request_info_->stream_controls()->video.device_id.c_str()));
   current_request_info_->set_state(RequestInfo::State::kSentForGeneration);
 
-  // The browser replies to this request by invoking OnStreamGenerated().
-  GetMediaStreamDispatcherHost()->GenerateStream(
-      current_request_info_->request_id(),
-      *current_request_info_->stream_controls(),
-      current_request_info_->is_processing_user_gesture(),
-      blink::mojom::blink::StreamSelectionInfo::New(
-          strategy, requested_audio_capture_session_id),
-      WTF::Bind(&UserMediaProcessor::OnStreamGenerated,
-                WrapWeakPersistent(this), current_request_info_->request_id()));
+  // If SessionId is set, this request is for a transferred MediaStreamTrack and
+  // GetOpenDevice() should be called.
+  if (current_request_info_->request() &&
+      current_request_info_->request()->IsTransferredTrackRequest()) {
+    GetMediaStreamDispatcherHost()->GetOpenDevice(
+        current_request_info_->request_id(),
+        *current_request_info_->request()->GetSessionId(),
+        WTF::Bind(&UserMediaProcessor::GotOpenDevice, WrapWeakPersistent(this),
+                  current_request_info_->request_id()));
+  } else {
+    // The browser replies to this request by invoking OnStreamGenerated().
+    GetMediaStreamDispatcherHost()->GenerateStream(
+        current_request_info_->request_id(),
+        *current_request_info_->stream_controls(),
+        current_request_info_->is_processing_user_gesture(),
+        blink::mojom::blink::StreamSelectionInfo::New(
+            strategy, requested_audio_capture_session_id),
+        WTF::Bind(&UserMediaProcessor::OnStreamGenerated,
+                  WrapWeakPersistent(this),
+                  current_request_info_->request_id()));
+  }
 }
 
 WebMediaStreamDeviceObserver*
@@ -968,6 +980,30 @@ UserMediaProcessor::GetMediaStreamDeviceObserver() {
   }
 
   return media_stream_device_observer;
+}
+
+void UserMediaProcessor::GotOpenDevice(
+    int32_t request_id,
+    blink::mojom::blink::MediaStreamRequestResult result,
+    blink::mojom::blink::GetOpenDeviceResponsePtr response) {
+  if (result != MediaStreamRequestResult::OK) {
+    OnStreamGenerationFailed(request_id, result);
+    return;
+  }
+
+  Vector<MediaStreamDevice> audio_devices;
+  Vector<MediaStreamDevice> video_devices;
+
+  if (IsAudioInputMediaType(response->device.type)) {
+    audio_devices.push_back(response->device);
+  } else if (IsVideoInputMediaType(response->device.type)) {
+    video_devices.push_back(response->device);
+  } else {
+    NOTREACHED();
+  }
+
+  OnStreamGenerated(request_id, result, response->label, audio_devices,
+                    video_devices, response->pan_tilt_zoom_allowed);
 }
 
 void UserMediaProcessor::OnStreamGenerated(

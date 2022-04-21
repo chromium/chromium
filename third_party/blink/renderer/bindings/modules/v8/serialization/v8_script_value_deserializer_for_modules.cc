@@ -13,6 +13,7 @@
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
@@ -535,8 +536,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
   if (!ReadUnguessableToken(&session_id))
     return nullptr;
 
-  return MediaStreamTrack::Create(ExecutionContext::From(GetScriptState()),
-                                  session_id);
+  return MediaStreamTrack::Create(GetScriptState(), session_id);
 }
 
 }  // namespace blink

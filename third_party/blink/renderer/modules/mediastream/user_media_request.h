@@ -47,6 +47,7 @@ class MediaStream;
 class MediaStreamConstraints;
 class MediaStreamDescriptor;
 class ScriptWrappable;
+class TransferredMediaStreamTrack;
 class UserMediaController;
 
 class MODULES_EXPORT UserMediaRequest final
@@ -146,6 +147,19 @@ class MODULES_EXPORT UserMediaRequest final
 
   bool should_prefer_current_tab() const { return should_prefer_current_tab_; }
 
+  // Mark this request as an GetOpenDevice request for initializing a
+  // TransferredMediaStreamTrack from the deviced identified by session_id.
+  void SetTransferData(const base::UnguessableToken& session_id,
+                       TransferredMediaStreamTrack* track) {
+    transferred_track_session_id_ = session_id;
+    transferred_track_ = track;
+  }
+  absl::optional<base::UnguessableToken> GetSessionId() const {
+    return transferred_track_session_id_;
+  }
+  bool IsTransferredTrackRequest() const {
+    return !!transferred_track_session_id_;
+  }
   void Trace(Visitor*) const override;
 
  private:
@@ -162,6 +176,9 @@ class MODULES_EXPORT UserMediaRequest final
   Member<Callbacks> callbacks_;
   IdentifiableSurface surface_;
   bool is_resolved_ = false;
+
+  absl::optional<base::UnguessableToken> transferred_track_session_id_;
+  Member<TransferredMediaStreamTrack> transferred_track_;
 };
 
 }  // namespace blink
