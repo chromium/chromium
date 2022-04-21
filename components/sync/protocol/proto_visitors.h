@@ -21,6 +21,7 @@
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
+#include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/list_passwords_result.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -479,6 +480,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(dictionary);
   VISIT(extension);
   VISIT(extension_setting);
+  VISIT(history);
   VISIT(history_delete_directive);
   VISIT(managed_user_setting);
   VISIT(nigori);
@@ -685,6 +687,19 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   // |private_key| is deliberately omitted to avoid including sensitive
   // information in debugging output, which might be included in bug reports
   // etc.
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
+  VISIT(originator_cache_guid);
+  VISIT(originator_visit_id);
+  VISIT(url);
+  VISIT(title);
+  VISIT(hidden);
+  VISIT(visit_time_windows_epoch_micros);
+  VISIT(page_transition);
+  VISIT(originator_referring_visit_id);
+  VISIT(originator_opener_visit_id);
+  VISIT(visit_duration_micros);
 }
 
 VISIT_PROTO_FIELDS(

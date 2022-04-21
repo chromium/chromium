@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 sync_protocol_sources = [
+  "app_list_specifics.proto",
   "app_notification_specifics.proto",
   "app_setting_specifics.proto",
   "app_specifics.proto",
-  "app_list_specifics.proto",
   "arc_package_specifics.proto",
   "autofill_offer_specifics.proto",
   "autofill_specifics.proto",
@@ -28,6 +28,7 @@ sync_protocol_sources = [
   "gaia_password_reuse.proto",
   "get_updates_caller_info.proto",
   "history_delete_directive_specifics.proto",
+  "history_specifics.proto",
   "history_status.proto",
   "list_passwords_result.proto",
   "local_trusted_vault.proto",

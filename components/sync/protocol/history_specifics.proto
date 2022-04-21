@@ -1,0 +1,48 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for history entries.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Properties of history sync objects - this roughly represents one navigation,
+// and fields correspond to similarly named fields in history::VisitRow.
+message HistorySpecifics {
+  // Cache GUID of the client that produced this visit, aka the "originator".
+  optional string originator_cache_guid = 1;
+  // ID of the visit on the originator client, unique within that client.
+  optional int64 originator_visit_id = 2;
+
+  // URL that was visited.
+  optional string url = 3;
+  // Title of the page corresponding to this URL.
+  optional string title = 4;
+  // True if the URL should NOT be used for auto-complete.
+  optional bool hidden = 5;
+
+  // Timestamp of the visit, also called "global ID" in some places (e.g. in
+  // delete directives).
+  optional int64 visit_time_windows_epoch_micros = 6;
+  // The PageTransition for the visit.
+  optional int32 page_transition = 7;
+  // The ID of the visit, on the originator client, that was a referrer for
+  // this one, or 0 if no referrer exists.
+  optional int64 originator_referring_visit_id = 8;
+  // The ID of the visit, on the originator client, that opened this one, or 0
+  // if no opener exists.
+  optional int64 originator_opener_visit_id = 9;
+  // The duration of the visit, in microseconds. Zero if the visit hasn't been
+  // finished (or the duration wasn't updated for some other reason).
+  optional int64 visit_duration_micros = 10;
+}

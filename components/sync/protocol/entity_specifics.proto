@@ -28,6 +28,7 @@ import "components/sync/protocol/extension_specifics.proto";
 import "components/sync/protocol/favicon_image_specifics.proto";
 import "components/sync/protocol/favicon_tracking_specifics.proto";
 import "components/sync/protocol/history_delete_directive_specifics.proto";
+import "components/sync/protocol/history_specifics.proto";
 import "components/sync/protocol/managed_user_setting_specifics.proto";
 import "components/sync/protocol/managed_user_shared_setting_specifics.proto";
 import "components/sync/protocol/managed_user_specifics.proto";
@@ -153,6 +154,7 @@ message EntitySpecifics {
     // This is not included in model_type.h because it's currently only used by
     // the server and by Play Services. (crbug.com/1223853)
     WebauthnCredentialSpecifics webauthn_credential = 895275;
+    HistorySpecifics history = 963985;
   }
   reserved 218175;
   reserved "wifi_credential";

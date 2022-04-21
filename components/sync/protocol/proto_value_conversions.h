@@ -35,6 +35,7 @@ class EntitySpecifics;
 class ExtensionSettingSpecifics;
 class ExtensionSpecifics;
 class HistoryDeleteDirectiveSpecifics;
+class HistorySpecifics;
 class LinkedAppIconInfo;
 class ManagedUserSettingSpecifics;
 class NavigationRedirect;
@@ -147,6 +148,9 @@ std::unique_ptr<base::DictionaryValue> ExtensionSpecificsToValue(
 std::unique_ptr<base::DictionaryValue> HistoryDeleteDirectiveSpecificsToValue(
     const sync_pb::HistoryDeleteDirectiveSpecifics&
         history_delete_directive_specifics);
+
+std::unique_ptr<base::DictionaryValue> HistorySpecificsToValue(
+    const sync_pb::HistorySpecifics& history_specifics);
 
 std::unique_ptr<base::DictionaryValue> LinkedAppIconInfoToValue(
     const sync_pb::LinkedAppIconInfo& linked_app_icon_info);

@@ -27,7 +27,7 @@ message TypedUrlSpecifics {
   // this information (it's inferred by the history code from the transition
   // type for each visit).
   // optional int32 typed_count = 3; (deprecated)
-  // True if the URL should be used for auto-complete.
+  // True if the URL should NOT be used for auto-complete.
   optional bool hidden = 4;
   // The number of visits (includes page reloads).
   // repeated int64 visit = 5; (deprecated)
