@@ -7,10 +7,8 @@
 #include "base/base64url.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "components/cbor/reader.h"
-#include "device/fido/attestation_object.h"
-#include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_selection_criteria.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -19,9 +17,10 @@
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 
-namespace extensions {
+namespace extensions::webauthn_proxy {
 
 namespace {
 
@@ -95,26 +94,20 @@ std::vector<uint8_t> ToByteVector(const std::string& in) {
 base::Value ToValue(const device::PublicKeyCredentialRpEntity& relying_party) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey("id", relying_party.id);
-  if (relying_party.name) {
-    value.SetKey("name", base::Value(*relying_party.name));
-  }
-  if (relying_party.icon_url) {
-    value.SetKey("icon_url", base::Value(relying_party.icon_url->spec()));
-  }
+  // `PublicKeyCredentialEntity.name` is required in the IDL but optional on the
+  // mojo struct.
+  value.SetKey("name", base::Value(relying_party.name.value_or("")));
   return value;
 }
 
 base::Value ToValue(const device::PublicKeyCredentialUserEntity& user) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey("id", Base64UrlEncode(user.id));
-  if (user.name) {
-    value.SetKey("name", base::Value(*user.name));
-  }
-  if (user.icon_url) {
-    value.SetKey("icon_url", base::Value(user.icon_url->spec()));
-  }
+  // `PublicKeyCredentialEntity.name` is required in the IDL but optional on the
+  // mojo struct.
+  value.SetKey("name", base::Value(user.name.value_or("")));
   if (user.display_name) {
-    value.SetKey("display_name", base::Value(*user.display_name));
+    value.SetKey("displayName", base::Value(*user.display_name));
   }
   return value;
 }
@@ -126,7 +119,7 @@ base::Value ToValue(
     case device::CredentialType::kPublicKey:
       value.SetKey("type", base::Value(device::kPublicKey));
   }
-  value.SetIntKey("algorithm", params.algorithm);
+  value.SetIntKey("alg", params.algorithm);
   return value;
 }
 
@@ -141,7 +134,9 @@ base::Value ToValue(const device::PublicKeyCredentialDescriptor& descriptor) {
   for (const device::FidoTransportProtocol& transport : descriptor.transports) {
     transports.emplace_back(base::Value(ToString(transport)));
   }
-  value.SetKey("transports", base::Value(std::move(transports)));
+  if (!transports.empty()) {
+    value.SetKey("transports", base::Value(std::move(transports)));
+  }
   return value;
 }
 
@@ -219,6 +214,64 @@ base::Value ToValue(const blink::mojom::RemoteDesktopClientOverride&
   return value;
 }
 
+base::Value ToValue(const blink::mojom::ProtectionPolicy policy) {
+  switch (policy) {
+    case blink::mojom::ProtectionPolicy::UNSPECIFIED:
+      NOTREACHED();
+      return base::Value("invalid");
+    case blink::mojom::ProtectionPolicy::NONE:
+      return base::Value("userVerificationOptional");
+    case blink::mojom::ProtectionPolicy::UV_OR_CRED_ID_REQUIRED:
+      return base::Value("userVerificationOptionalWithCredentialIDList");
+    case blink::mojom::ProtectionPolicy::UV_REQUIRED:
+      return base::Value("userVerificationRequired");
+  }
+}
+
+base::Value ToValue(const device::LargeBlobSupport large_blob) {
+  switch (large_blob) {
+    case device::LargeBlobSupport::kNotRequested:
+      NOTREACHED();
+      return base::Value("invalid");
+    case device::LargeBlobSupport::kRequired:
+      return base::Value("required");
+    case device::LargeBlobSupport::kPreferred:
+      return base::Value("preferred");
+  }
+}
+
+base::Value ToValue(const device::CableDiscoveryData& cable_authentication) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  switch (cable_authentication.version) {
+    case device::CableDiscoveryData::Version::INVALID:
+      NOTREACHED();
+      break;
+    case device::CableDiscoveryData::Version::V1:
+      value.SetKey("version", base::Value(1));
+      value.SetKey(
+          "clientEid",
+          base::Value(Base64UrlEncode(cable_authentication.v1->client_eid)));
+      value.SetKey("authenticatorEid",
+                   base::Value(Base64UrlEncode(
+                       cable_authentication.v1->authenticator_eid)));
+      value.SetKey("sessionPreKey",
+                   base::Value(Base64UrlEncode(
+                       cable_authentication.v1->session_pre_key)));
+      break;
+    case device::CableDiscoveryData::Version::V2:
+      value.SetKey("version", base::Value(2));
+      value.SetKey(
+          "clientEid",
+          base::Value(Base64UrlEncode(cable_authentication.v2->experiments)));
+      value.SetKey("authenticatorEid", base::Value(""));
+      value.SetKey("sessionPreKey",
+                   base::Value(Base64UrlEncode(
+                       cable_authentication.v2->server_link_data)));
+      break;
+  }
+  return value;
+}
+
 absl::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
     const base::Value& value) {
   if (!value.is_string()) {
@@ -241,7 +294,7 @@ NullableAuthenticatorAttachmentFromValue(const base::Value& value) {
   if (attachment_name == "platform") {
     return device::AuthenticatorAttachment::kPlatform;
   } else if (attachment_name == "cross-platform") {
-    return device::AuthenticatorAttachment::kPlatform;
+    return device::AuthenticatorAttachment::kCrossPlatform;
   }
   return absl::nullopt;
 }
@@ -274,12 +327,56 @@ base::Value ToValue(
   }
   value.SetKey("attestation", ToValue(options->attestation));
 
-  if (options->remote_desktop_client_override) {
-    value.SetPath({"extensions", "remoteDesktopClientOverride"},
-                  ToValue(*options->remote_desktop_client_override));
+  base::Value::Dict& extensions =
+      value.GetDict().Set("extensions", base::Value::Dict())->GetDict();
+
+  if (options->hmac_create_secret) {
+    extensions.Set("hmacCreateSecret", true);
   }
 
-  // TODO(https://crbug.com/1231802): Serialize remaining extensions.
+  if (options->protection_policy !=
+      blink::mojom::ProtectionPolicy::UNSPECIFIED) {
+    extensions.Set("credentialProtectionPolicy",
+                   ToValue(options->protection_policy));
+    extensions.Set("enforceCredentialProtectionPolicy",
+                   base::Value(options->enforce_protection_policy));
+  }
+
+  if (options->appid_exclude) {
+    extensions.Set("appIdExclude", base::Value(*options->appid_exclude));
+  }
+
+  if (options->cred_props) {
+    extensions.Set("credProps", base::Value(true));
+  }
+
+  if (options->large_blob_enable != device::LargeBlobSupport::kNotRequested) {
+    base::Value large_blob_value(base::Value::Type::DICTIONARY);
+    large_blob_value.GetDict().Set("support",
+                                   ToValue(options->large_blob_enable));
+    extensions.Set("largeBlob", std::move(large_blob_value));
+  }
+
+  DCHECK(!options->is_payment_credential_creation);
+
+  if (options->cred_blob) {
+    extensions.Set("credBlob", Base64UrlEncode(*options->cred_blob));
+  }
+
+  if (options->google_legacy_app_id_support) {
+    extensions.Set("googleLegacyAppidSupport", base::Value(true));
+  }
+
+  if (options->min_pin_length_requested) {
+    extensions.Set("minPinLength", base::Value(true));
+  }
+
+  if (options->remote_desktop_client_override) {
+    extensions.Set("remoteDesktopClientOverride",
+                   ToValue(*options->remote_desktop_client_override));
+  }
+
+  DCHECK(!options->prf_enable);
 
   return value;
 }
@@ -299,12 +396,45 @@ base::Value ToValue(
 
   value.SetKey("userVerification", ToValue(options->user_verification));
 
-  if (options->remote_desktop_client_override) {
-    value.SetPath({"extensions", "remoteDesktopClientOverride"},
-                  ToValue(*options->remote_desktop_client_override));
+  base::Value::Dict& extensions =
+      value.GetDict().Set("extensions", base::Value::Dict())->GetDict();
+
+  if (options->appid) {
+    extensions.Set("appid", base::Value(*options->appid));
   }
 
-  // TODO(https://crbug.com/1231802): Serialize remaining extensions.
+  std::vector<base::Value> cable_authentication_data;
+  for (const device::CableDiscoveryData& cable :
+       options->cable_authentication_data) {
+    cable_authentication_data.push_back(ToValue(cable));
+  }
+  if (!cable_authentication_data.empty()) {
+    extensions.Set("cableAuthentication",
+                   base::Value(std::move(cable_authentication_data)));
+  }
+
+  if (options->get_cred_blob) {
+    extensions.Set("getCredBlob", true);
+  }
+
+  if (options->large_blob_read || options->large_blob_write) {
+    base::Value large_blob_value(base::Value::Type::DICTIONARY);
+    if (options->large_blob_read) {
+      large_blob_value.GetDict().Set({"read"}, base::Value(true));
+    }
+    if (options->large_blob_write) {
+      large_blob_value.GetDict().Set(
+          {"write"}, base::Value(Base64UrlEncode(*options->large_blob_write)));
+    }
+    extensions.Set("largeBlob", std::move(large_blob_value));
+  }
+
+  if (options->remote_desktop_client_override) {
+    extensions.Set("remoteDesktopClientOverride",
+                   ToValue(*options->remote_desktop_client_override));
+  }
+
+  DCHECK(!options->prf);
 
   return value;
 }
@@ -346,38 +476,51 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   }
   response->authenticator_attachment = *authenticator_attachment;
 
-  const base::Value* response_dict = value.FindDictKey("response");
-  if (!response_dict) {
+  const base::Value* attestation_response = value.FindDictKey("response");
+  if (!attestation_response) {
     return nullptr;
   }
 
+  absl::optional<std::string> authenticator_data =
+      Base64UrlDecodeStringKey(*attestation_response, "authenticatorData");
+  if (!authenticator_data) {
+    return nullptr;
+  }
+  response->info->authenticator_data = ToByteVector(*authenticator_data);
+
+  absl::optional<std::string> attestation_object =
+      Base64UrlDecodeStringKey(*attestation_response, "attestationObject");
+  if (!attestation_object) {
+    return nullptr;
+  }
+  response->attestation_object = ToByteVector(*attestation_object);
+
   absl::optional<std::string> client_data_json =
-      Base64UrlDecodeStringKey(*response_dict, "clientDataJSON");
+      Base64UrlDecodeStringKey(*attestation_response, "clientDataJSON");
   if (!client_data_json) {
     return nullptr;
   }
   response->info->client_data_json = ToByteVector(*client_data_json);
 
-  absl::optional<std::string> attestation_object_bytes =
-      Base64UrlDecodeStringKey(*response_dict, "attestationObject");
-  if (!attestation_object_bytes) {
+  // publicKey is required but nullable.
+  auto [ok, opt_public_key] =
+      Base64UrlDecodeNullableStringKey(*attestation_response, "publicKey");
+  if (!ok) {
     return nullptr;
   }
-  absl::optional<cbor::Value> attestation_object_cbor = cbor::Reader::Read(
-      base::as_bytes(base::make_span(*attestation_object_bytes)));
-  if (!attestation_object_cbor) {
-    return nullptr;
+  if (opt_public_key) {
+    response->public_key_der = ToByteVector(*opt_public_key);
   }
-  absl::optional<device::AttestationObject> attestation_object =
-      device::AttestationObject::Parse(*attestation_object_cbor);
-  if (!attestation_object) {
-    return nullptr;
-  }
-  response->attestation_object = ToByteVector(*attestation_object_bytes);
-  response->info->authenticator_data =
-      attestation_object->authenticator_data().SerializeToByteArray();
 
-  const base::Value* transports = response_dict->FindListKey("transports");
+  absl::optional<int> public_key_algorithm =
+      attestation_response->FindIntKey("publicKeyAlgorithm");
+  if (!public_key_algorithm) {
+    return nullptr;
+  }
+  response->public_key_algo = *public_key_algorithm;
+
+  const base::Value* transports =
+      attestation_response->FindListKey("transports");
   if (!transports) {
     return nullptr;
   }
@@ -390,7 +533,43 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     response->transports.push_back(*transport);
   }
 
-  // TODO(https://crbug.com/1231802): Parse getClientExtensionResults().
+  const base::Value* client_extension_results =
+      value.FindDictKey("clientExtensionResults");
+  if (!client_extension_results) {
+    return nullptr;
+  }
+  absl::optional<bool> cred_blob =
+      client_extension_results->FindBoolKey("credBlob");
+  if (cred_blob) {
+    response->echo_cred_blob = true;
+    response->cred_blob = *cred_blob;
+  }
+  const base::Value* cred_props =
+      client_extension_results->FindDictKey("credProps");
+  if (cred_props) {
+    response->echo_cred_props = true;
+    absl::optional<bool> rk = cred_props->FindBoolKey("rk");
+    if (rk) {
+      response->has_cred_props_rk = true;
+      response->cred_props_rk = *rk;
+    }
+  }
+  const absl::optional<bool> hmac_create_secret =
+      client_extension_results->FindBoolKey("hmacCreateSecret");
+  if (hmac_create_secret) {
+    response->echo_hmac_create_secret = true;
+    response->hmac_create_secret = *hmac_create_secret;
+  }
+  const base::Value* large_blob =
+      client_extension_results->FindDictKey("largeBlob");
+  if (large_blob) {
+    response->echo_large_blob = true;
+    const absl::optional<bool> supported = large_blob->FindBoolKey("supported");
+    if (!supported) {
+      return nullptr;
+    }
+    response->supports_large_blob = *supported;
+  }
 
   return response;
 }
@@ -432,27 +611,27 @@ GetAssertionResponseFromValue(const base::Value& value) {
   }
   response->authenticator_attachment = *authenticator_attachment;
 
-  const base::Value* response_dict = value.FindDictKey("response");
-  if (!response_dict) {
+  const base::Value* assertion_response = value.FindDictKey("response");
+  if (!assertion_response) {
     return nullptr;
   }
 
   absl::optional<std::string> client_data_json =
-      Base64UrlDecodeStringKey(*response_dict, "clientDataJSON");
+      Base64UrlDecodeStringKey(*assertion_response, "clientDataJSON");
   if (!client_data_json) {
     return nullptr;
   }
   response->info->client_data_json = ToByteVector(*client_data_json);
 
   absl::optional<std::string> authenticator_data =
-      Base64UrlDecodeStringKey(*response_dict, "authenticatorData");
+      Base64UrlDecodeStringKey(*assertion_response, "authenticatorData");
   if (!authenticator_data) {
     return nullptr;
   }
   response->info->authenticator_data = ToByteVector(*authenticator_data);
 
   absl::optional<std::string> signature =
-      Base64UrlDecodeStringKey(*response_dict, "signature");
+      Base64UrlDecodeStringKey(*assertion_response, "signature");
   if (!signature) {
     return nullptr;
   }
@@ -460,14 +639,54 @@ GetAssertionResponseFromValue(const base::Value& value) {
 
   // userHandle is non-optional but nullable.
   auto [ok, opt_user_handle] =
-      Base64UrlDecodeNullableStringKey(*response_dict, "userHandle");
+      Base64UrlDecodeNullableStringKey(*assertion_response, "userHandle");
   if (!ok) {
     return nullptr;
   }
   if (opt_user_handle) {
     response->user_handle = ToByteVector(*opt_user_handle);
   }
+
+  const base::Value* client_extension_results =
+      value.FindDictKey("clientExtensionResults");
+  if (!client_extension_results) {
+    return nullptr;
+  }
+  const absl::optional<bool> app_id =
+      client_extension_results->FindBoolKey("appid");
+  if (app_id) {
+    response->echo_appid_extension = true;
+    response->appid_extension = *app_id;
+  }
+  if (client_extension_results->FindKey("getCredBlob")) {
+    absl::optional<std::string> cred_blob =
+        Base64UrlDecodeStringKey(*client_extension_results, "getCredBlob");
+    if (!cred_blob) {
+      return nullptr;
+    }
+    response->get_cred_blob = ToByteVector(*cred_blob);
+    response->echo_get_cred_blob = true;
+  }
+  const base::Value* large_blob =
+      client_extension_results->FindDictKey("largeBlob");
+  if (large_blob) {
+    response->echo_large_blob = true;
+    if (large_blob->FindStringKey("blob")) {
+      absl::optional<std::string> blob =
+          Base64UrlDecodeStringKey(*large_blob, "blob");
+      if (!blob) {
+        return nullptr;
+      }
+      response->large_blob = ToByteVector(*blob);
+    }
+    const absl::optional<bool> written = large_blob->FindBoolKey("written");
+    if (written) {
+      response->echo_large_blob_written = true;
+      response->large_blob_written = *written;
+    }
+  }
+
   return response;
 }
 
-}  // namespace extensions
+}  // namespace extensions::webauthn_proxy
