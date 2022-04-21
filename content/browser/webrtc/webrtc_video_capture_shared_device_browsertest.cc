@@ -46,15 +46,15 @@ struct TestParams {
   media::mojom::VideoBufferHandle::Tag GetExpectedBufferHandleTag() const {
     switch (buffer_type_to_request) {
       case media::VideoCaptureBufferType::kSharedMemory:
-        return media::mojom::VideoBufferHandle::Tag::UNSAFE_SHMEM_REGION;
+        return media::mojom::VideoBufferHandle::Tag::kUnsafeShmemRegion;
       case media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor:
         return media::mojom::VideoBufferHandle::Tag::
-            SHARED_MEMORY_VIA_RAW_FILE_DESCRIPTOR;
+            kSharedMemoryViaRawFileDescriptor;
       case media::VideoCaptureBufferType::kMailboxHolder:
         NOTREACHED();
-        return media::mojom::VideoBufferHandle::Tag::UNSAFE_SHMEM_REGION;
+        return media::mojom::VideoBufferHandle::Tag::kUnsafeShmemRegion;
       case media::VideoCaptureBufferType::kGpuMemoryBuffer:
-        return media::mojom::VideoBufferHandle::Tag::GPU_MEMORY_BUFFER_HANDLE;
+        return media::mojom::VideoBufferHandle::Tag::kGpuMemoryBufferHandle;
     }
   }
 };
