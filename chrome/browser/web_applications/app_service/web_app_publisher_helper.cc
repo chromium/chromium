@@ -432,8 +432,8 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 
     auto permission = apps::mojom::Permission::New();
     permission->permission_type = GetPermissionType(type);
-    permission->value = apps::mojom::PermissionValue::New();
-    permission->value->set_tristate_value(setting_val);
+    permission->value =
+        apps::mojom::PermissionValue::NewTristateValue(setting_val);
     permission->is_managed =
         setting_info.source == content_settings::SETTING_SOURCE_POLICY;
 

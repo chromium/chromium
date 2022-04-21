@@ -208,20 +208,22 @@ PermissionValuePtr ConvertMojomPermissionValueToPermissionValue(
 
 apps::mojom::PermissionValuePtr ConvertPermissionValueToMojomPermissionValue(
     const PermissionValuePtr& permission_value) {
-  auto mojom_permission_value = apps::mojom::PermissionValue::New();
   if (!permission_value) {
-    return mojom_permission_value;
+    return nullptr;
   }
 
   if (permission_value->bool_value.has_value()) {
-    mojom_permission_value->set_bool_value(
+    return apps::mojom::PermissionValue::NewBoolValue(
         permission_value->bool_value.value());
   }
   if (permission_value->tristate_value.has_value()) {
-    mojom_permission_value->set_tristate_value(ConvertTriStateToMojomTriState(
-        permission_value->tristate_value.value()));
+    return apps::mojom::PermissionValue::NewTristateValue(
+        ConvertTriStateToMojomTriState(
+            permission_value->tristate_value.value()));
   }
-  return mojom_permission_value;
+
+  NOTREACHED();
+  return nullptr;
 }
 
 PermissionPtr ConvertMojomPermissionToPermission(
