@@ -228,10 +228,6 @@
         <button id="open-timer-panel" tabindex="0" aria-haspopup="true">
         <button id="open-grid-panel" tabindex="0" aria-haspopup="true">
         <button id="open-mirror-panel" tabindex="0" aria-haspopup="true">
-        <input type="checkbox" id="toggle-fps" tabindex="0"
-               i18n-label="toggle_60fps_button"
-               i18n-tooltip-true="label_60fps"
-               i18n-tooltip-false="label_30fps">
       </div>
       <div class="top-stripe left-stripe buttons circle">
         <button id="open-settings" tabindex="0"
@@ -524,6 +520,12 @@
       <label class="menu-item circle resolution-option inkdrop">
         <input class="icon" type="radio" tabindex="0">
         <span></span>
+        <div class="fps-buttons">
+          <button class="fps-button fps-30" i18n-aria="label_30fps"
+                  tabindex="0">
+          <button class="fps-button fps-60" i18n-aria="label_60fps"
+                  tabindex="0">
+        </div>
       </label>
     </template>
     <template id="video-profile-option-template">

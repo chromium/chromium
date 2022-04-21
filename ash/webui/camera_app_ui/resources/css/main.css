@@ -670,14 +670,6 @@ body:is(.scan) #open-mirror-panel:disabled {
   background-image: url(/images/camera_button_mic_off.svg);
 }
 
-body.fps-30 #toggle-fps {
-  background-image: url(/images/camera_button_fps_30.svg);
-}
-
-body.fps-60 #toggle-fps {
-  background-image: url(/images/camera_button_fps_60.svg);
-}
-
 #open-settings {
   background-image: url(/images/camera_button_settings.svg);
 }
@@ -1462,4 +1454,33 @@ body:not(.video) #settings-video-resolution {
   padding-inline-end: 60px;
   padding-inline-start: 60px;
   text-align: initial;
+}
+
+.fps-buttons {
+  height: 40px;
+  position: absolute;
+  right: 39px;
+}
+
+.fps-button {
+  height: 40px;
+  margin-inline-end: 8px;
+  margin-inline-start: 8px;
+  width: 40px;
+}
+
+#view-video-resolution-settings .fps-30 {
+  background-image: url(/images/camera_button_fps_30_unchecked.svg);
+}
+
+#view-video-resolution-settings .fps-30.checked {
+  background-image: url(/images/camera_button_fps_30_checked.svg);
+}
+
+#view-video-resolution-settings .fps-60 {
+  background-image: url(/images/camera_button_fps_60_unchecked.svg);
+}
+
+#view-video-resolution-settings .fps-60.checked {
+  background-image: url(/images/camera_button_fps_60_checked.svg);
 }

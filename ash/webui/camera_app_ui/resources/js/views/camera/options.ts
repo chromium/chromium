@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
-import {assert, assertInstanceof} from '../../assert.js';
+import {assert} from '../../assert.js';
 import {
   CameraConfig,
   CameraInfo,
@@ -16,14 +16,9 @@ import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
 import * as newFeatureToast from '../../new_feature_toast.js';
 import * as state from '../../state.js';
-import {Facing, Mode, Resolution, ViewName} from '../../type.js';
+import {Facing, Mode, ViewName} from '../../type.js';
 import * as util from '../../util.js';
 import {OptionPanelOptions, PTZPanelOptions, StateOption} from '../view.js';
-
-/**
- * All supported constant fps options of video recording.
- */
-const SUPPORTED_CONSTANT_FPS = [30, 60];
 
 /**
  * Creates a controller for the options of Camera view.
@@ -39,8 +34,6 @@ export class Options implements CameraUI {
 
   private readonly openTimerPanel =
       dom.get('#open-timer-panel', HTMLButtonElement);
-
-  private readonly toggleFps = dom.get('#toggle-fps', HTMLInputElement);
 
   private readonly openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
 
@@ -95,31 +88,6 @@ export class Options implements CameraUI {
 
     state.addObserver(state.State.TAKING, () => {
       this.updateOptionAvailability();
-    });
-    this.toggleFps.addEventListener('click', (e) => {
-      if (state.get(state.State.TAKING) || !this.cameraAvailable) {
-        e.preventDefault();
-        return;
-      }
-    });
-    this.toggleFps.addEventListener('change', () => {
-      if (this.currentConfig === null) {
-        return;
-      }
-      const prefFps = this.toggleFps.checked ? 60 : 30;
-      this.updateVideoConstFpsOption(prefFps);
-      const resolution = assertInstanceof(
-          this.cameraManager.getCaptureResolution(), Resolution);
-      const reconfiguring = this.cameraManager.setPrefVideoConstFps(
-          this.currentConfig.deviceId, resolution, prefFps);
-      if (reconfiguring === null) {
-        return;
-      }
-      state.set(state.State.MODE_SWITCHING, true);
-      (async () => {
-        const hasError = !await reconfiguring;
-        state.set(state.State.MODE_SWITCHING, false, {hasError});
-      })();
     });
   }
 
@@ -286,13 +254,6 @@ export class Options implements CameraUI {
     });
   }
 
-  private updateVideoConstFpsOption(prefFps: number|null) {
-    this.toggleFps.checked = prefFps === 60;
-    for (const fps of SUPPORTED_CONSTANT_FPS) {
-      state.set(state.assertState(`fps-${fps}`), fps === prefFps);
-    }
-  }
-
   onUpdateCapability(cameraInfo: CameraInfo): void {
     state.set(state.State.MULTI_CAMERA, cameraInfo.devicesInfo.length >= 2);
   }
@@ -302,36 +263,6 @@ export class Options implements CameraUI {
     this.updateMirroring();
     this.audioTrack = this.cameraManager.getAudioTrack();
     this.updateAudioByMic();
-
-    for (const fps of SUPPORTED_CONSTANT_FPS) {
-      state.set(
-          state.assertState(`fps-${fps}`),
-          fps === this.cameraManager.getConstFps());
-    }
-
-    this.toggleFps.hidden = (() => {
-      if (config.mode !== Mode.VIDEO) {
-        return true;
-      }
-      if (config.facing !== Facing.EXTERNAL) {
-        return true;
-      }
-      if (this.currentConfig === null) {
-        return true;
-      }
-      const info = this.cameraManager.getCameraInfo().getCamera3DeviceInfo(
-          this.currentConfig.deviceId);
-      if (info === null) {
-        return true;
-      }
-      const constFpses = info.fpsRanges.filter(
-          ({minFps, maxFps}) =>
-              minFps === maxFps && SUPPORTED_CONSTANT_FPS.includes(minFps));
-      return constFpses.length <= 1;
-    })();
-    if (!this.toggleFps.hidden) {
-      this.updateVideoConstFpsOption(this.cameraManager.getConstFps());
-    }
   }
 
   onCameraAvailable(): void {
@@ -346,8 +277,6 @@ export class Options implements CameraUI {
 
   private updateOptionAvailability(): void {
     this.openMirrorPanel.disabled = !this.allowModifyMirrorState();
-    this.toggleFps.disabled =
-        !this.cameraAvailable || state.get(state.State.TAKING);
   }
 
   /**

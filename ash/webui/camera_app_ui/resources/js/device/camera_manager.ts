@@ -384,12 +384,21 @@ export class CameraManager implements EventListener {
    * Sets fps of constant video recording on currently opened camera and
    * resolution.
    */
-  setPrefVideoConstFps(deviceId: string, r: Resolution, fps: number):
-      Promise<boolean>|null {
-    return this.setCapturePref(deviceId, () => {
+  setPrefVideoConstFps(
+      deviceId: string, level: VideoResolutionLevel, fps: number,
+      shouldReconfigure: boolean): Promise<boolean>|null {
+    // We only need to reconfigure the stream if the FPS preference has been
+    // changed for selected resolution level.
+    if (shouldReconfigure) {
+      return this.setCapturePref(deviceId, () => {
+        this.scheduler.reconfigurer.capturePreferrer.setPrefVideoConstFps(
+            deviceId, level, fps, shouldReconfigure);
+      });
+    } else {
       this.scheduler.reconfigurer.capturePreferrer.setPrefVideoConstFps(
-          deviceId, r, fps);
-    });
+          deviceId, level, fps, shouldReconfigure);
+      return null;
+    }
   }
 
   /**

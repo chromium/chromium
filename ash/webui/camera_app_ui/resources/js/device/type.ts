@@ -17,6 +17,12 @@ import {CaptureCandidate} from './capture_candidate.js';
 import {DeviceInfoUpdater} from './device_info_updater.js';
 import {CaptureHandler} from './mode/index.js';
 
+/**
+ * All supported constant fps options of video recording.
+ */
+export const SUPPORTED_CONSTANT_FPS = [30, 60];
+
+
 export interface ModeConstraints {
   kind: 'default'|'exact';
   mode: Mode;
@@ -132,5 +138,10 @@ export type VideoResolutionOptionGroup =
 
 export interface VideoResolutionOption extends BaseSettingsOption {
   resolutionLevel: VideoResolutionLevel;
+  fpsOptions: VideoFpsOption[];
+}
+
+export interface VideoFpsOption extends BaseSettingsOption {
+  constFps: number;
   resolutions: Resolution[];
 }

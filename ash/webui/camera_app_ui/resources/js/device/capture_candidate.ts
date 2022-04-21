@@ -12,6 +12,7 @@ export interface CaptureCandidate {
   deviceId: string;
   resolution: Resolution|null;
   getStreamConstraintsCandidates(): StreamConstraints[];
+  getConstFps(): number|null;
 }
 
 export abstract class Camera3CaptureCandidate implements CaptureCandidate {
@@ -26,6 +27,10 @@ export abstract class Camera3CaptureCandidate implements CaptureCandidate {
   }
 
   abstract getStreamConstraintsCandidates(): StreamConstraints[];
+
+  getConstFps(): number|null {
+    return null;
+  }
 
   /**
    * Sorts the preview resolution (rp) according to the capture resolution
@@ -140,6 +145,10 @@ export class VideoCaptureCandidate extends Camera3CaptureCandidate {
       },
     ];
   }
+
+  override getConstFps(): number|null {
+    return this.constFps;
+  }
 }
 
 export class MultiStreamVideoCaptureCandidate extends VideoCaptureCandidate {
@@ -190,5 +199,9 @@ export class FakeCameraCaptureCandidate implements CaptureCandidate {
         },
       },
     ];
+  }
+
+  getConstFps(): number|null {
+    return null;
   }
 }

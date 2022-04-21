@@ -248,6 +248,11 @@ class Reconfigurer {
           mode: c.mode,
           captureCandidate: c.captureCandidate,
         };
+        if (this.config.mode === Mode.VIDEO) {
+          const fps = this.config.captureCandidate.getConstFps();
+          state.set(state.State.FPS_30, fps === 30);
+          state.set(state.State.FPS_60, fps === 60);
+        }
         this.capturePreferrer.onUpdateConfig(this.config);
         await this.listener.onUpdateConfig(this.config);
 

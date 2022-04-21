@@ -4,13 +4,14 @@
 
 import {CameraManager} from '../../device/index.js';
 import {
+  SUPPORTED_CONSTANT_FPS,
   VideoResolutionOption,
   VideoResolutionOptionGroup,
 } from '../../device/type.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
-import {Facing, ViewName} from '../../type.js';
+import {Facing, Resolution, ViewName} from '../../type.js';
 import {instantiateTemplate, setupI18nElements} from '../../util.js';
 
 import {BaseSettings} from './base.js';
@@ -76,7 +77,33 @@ export class VideoResolutionSettings extends BaseSettings {
         loadTimeData.getI18nMessage(util.getLabelFromFacing(facing));
     span.setAttribute('aria-label', `${deviceName} ${text}`);
 
-    const resolution = option.resolutions[0];
+    // Currently FPS buttons are only supported on external cameras.
+    const showFpsButton =
+        option.fpsOptions.length > 1 && facing === Facing.EXTERNAL;
+    let resolution = new Resolution();
+    for (const fps of SUPPORTED_CONSTANT_FPS) {
+      const fpsButton =
+          dom.getFrom(optionElement, `.fps-${fps}`, HTMLButtonElement);
+      fpsButton.hidden = !showFpsButton;
+
+      const fpsOption =
+          option.fpsOptions.find((fpsOption) => fpsOption.constFps === fps);
+      const checked = fpsOption?.checked ?? false;
+      fpsButton.classList.toggle('checked', checked);
+      if (!checked) {
+        fpsButton.addEventListener('click', () => {
+          // We don't want to reconfigure the stream when changing the FPS
+          // preference for resolution level which is not currently selected.
+          const shouldReconfigure =
+              option.checked && this.cameraManager.getDeviceId() === deviceId;
+          this.cameraManager.setPrefVideoConstFps(
+              deviceId, option.resolutionLevel, fps, shouldReconfigure);
+        });
+      } else {
+        resolution = fpsOption?.resolutions[0] ?? new Resolution();
+      }
+    }
+
     const input = dom.getFrom(optionElement, 'input', HTMLInputElement);
     input.dataset['width'] = resolution.width.toString();
     input.dataset['height'] = resolution.height.toString();
