@@ -69,13 +69,13 @@ void XRDepthManager::ProcessDepthInformation(
              << static_cast<uint32_t>(depth_data->which());
 
     switch (depth_data->which()) {
-      case device::mojom::blink::XRDepthData::Tag::DATA_STILL_VALID:
+      case device::mojom::blink::XRDepthData::Tag::kDataStillValid:
         // Stale depth buffer is still the most recent information we have.
         // Current API shape is not well-suited to return data pertaining to
         // older frames, so we just discard the data we previously got and will
         // not set the new one.
         break;
-      case device::mojom::blink::XRDepthData::Tag::UPDATED_DEPTH_DATA:
+      case device::mojom::blink::XRDepthData::Tag::kUpdatedDepthData:
         // We got new depth buffer - store the current depth data as a member.
         depth_data_ = std::move(depth_data->get_updated_depth_data());
         break;
