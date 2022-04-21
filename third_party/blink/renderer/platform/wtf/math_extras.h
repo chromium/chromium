@@ -301,18 +301,9 @@ template <typename T>
 constexpr T DefaultMaximumForClamp() {
   return std::numeric_limits<T>::max();
 }
-// This basically reimplements C++11's std::numeric_limits<T>::lowest().
 template <typename T>
 constexpr T DefaultMinimumForClamp() {
-  return std::numeric_limits<T>::min();
-}
-template <>
-constexpr float DefaultMinimumForClamp<float>() {
-  return -std::numeric_limits<float>::max();
-}
-template <>
-constexpr double DefaultMinimumForClamp<double>() {
-  return -std::numeric_limits<double>::max();
+  return std::numeric_limits<T>::lowest();
 }
 
 // And, finally, the actual function for people to call.
