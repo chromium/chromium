@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (C) 2013 The Android Open Source Project
 #
@@ -78,7 +78,7 @@ def _GetApkPackageName(apk_path):
 
   aapt_path = host_paths.GetAaptPath()
   aapt_output = subprocess.check_output(
-      [aapt_path, 'dump', 'badging', apk_path]).split('\n')
+      [aapt_path, 'dump', 'badging', apk_path], encoding='utf8').split('\n')
   for line in aapt_output:
     match = _PACKAGE_NAME_RE.match(line)
     if match:
