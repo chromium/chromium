@@ -3,8 +3,5 @@
 -HeadlessBrowserTest.ServerWantsClientCertificate
 -HeadlessBrowserTestWithProxy.SetProxyConfig
 
-# https://crbug.com/1090930
--DomTreeExtractionBrowserTest.RunAsyncTest
-
 # https://crbug.com/1090970
 -HeadlessProtocolBrowserTest.VirtualTimeVideo
