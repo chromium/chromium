@@ -85657,6 +85657,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="65652" label="Destination root"/>
 </enum>
 
+<enum name="SpeculativeRenderFrameHostType">
+  <int value="0" label="Does not exist"/>
+  <int value="1" label="Exists, not pending commit"/>
+  <int value="2" label="Exists, pending commit"/>
+</enum>
+
 <enum name="SpeculativeRestoreApplicability">
   <int value="0" label="Applicable"/>
   <int value="1" label="Not applicable (tablet)"/>

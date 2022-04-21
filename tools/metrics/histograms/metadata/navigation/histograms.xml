@@ -874,6 +874,17 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.NavigationRequestCreation.SpeculativeRFHExisted"
+    enum="SpeculativeRenderFrameHostType" expires_after="2022-06-30">
+  <owner>rakina@chromium.org</owner>
+  <owner>dcheng@chromium.org</owner>
+  <summary>
+    Records whether a speculative RenderFrameHost for an older navigation
+    existed when a new NavigationRequest is created, causing the speculative
+    RenderFrameHost to be deleted.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.OnBeforeUnloadBrowserToRendererIpcTime" units="ms"
     expires_after="M110">
   <owner>sky@chromium.org</owner>
@@ -1248,6 +1259,16 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
     Warning: this histogram was expired after M85 and brought back 2021-04-13;
     data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.UndoCommit.IsSpeculativeRenderFrameLive"
+    enum="BooleanPresent" expires_after="2022-06-30">
+  <owner>rakina@chromium.org</owner>
+  <owner>dcheng@chromium.org</owner>
+  <summary>
+    Records whether a speculative RenderFrame is live when UndoCommitNavigation
+    is called.
   </summary>
 </histogram>
 
