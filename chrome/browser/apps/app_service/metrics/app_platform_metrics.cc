@@ -119,7 +119,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kWeb: {
       apps::AppTypeName app_type_name =
           apps::GetAppTypeNameForWebAppWindow(profile, app_id, window);
-      if (app_type_name == apps::AppTypeName::kChromeBrowser) {
+      if (app_type_name == apps::AppTypeName::kChromeBrowser ||
+          app_type_name == apps::AppTypeName::kStandaloneBrowser) {
         return apps::AppTypeNameV2::kWebTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
         return apps::AppTypeNameV2::kSystemWeb;
@@ -169,7 +170,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kWeb: {
       apps::AppTypeName app_type_name =
           apps::GetAppTypeNameForWebApp(profile, app_id, container);
-      if (app_type_name == apps::AppTypeName::kChromeBrowser) {
+      if (app_type_name == apps::AppTypeName::kChromeBrowser ||
+          app_type_name == apps::AppTypeName::kStandaloneBrowser) {
         return apps::AppTypeNameV2::kWebTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
         return apps::AppTypeNameV2::kSystemWeb;

@@ -8,11 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -151,10 +153,23 @@ std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
 }  // namespace
 
 // Tests for app platform metrics service.
-class AppPlatformMetricsServiceTest : public testing::Test {
+class AppPlatformMetricsServiceTest : public testing::Test,
+                                      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     AddRegularUser("user@test.com");
+
+    if (IsLacrosPrimary()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kLacrosSupport,
+                                ash::features::kLacrosPrimary},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {},
+          /*disabled_features=*/{ash::features::kLacrosSupport,
+                                 ash::features::kLacrosPrimary});
+    }
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
@@ -775,6 +790,8 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     ASSERT_EQ(1, count);
   }
 
+  bool IsLacrosPrimary() const { return GetParam(); }
+
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
     return test_ukm_recorder_.get();
   }
@@ -806,6 +823,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> testing_profile_;
   syncer::TestSyncService* sync_service_ = nullptr;
   base::HistogramTester histogram_tester_;
@@ -820,7 +838,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 };
 
 // Tests OnNewDay() is called after more than one day passes.
-TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDay) {
+TEST_P(AppPlatformMetricsServiceTest, MoreThanOneDay) {
   task_environment_.FastForwardBy(base::Days(1) + base::Hours(1));
   VerifyMetrics();
   EXPECT_EQ(AppPlatformMetricsService::GetDayIdForTesting(base::Time::Now()),
@@ -828,7 +846,7 @@ TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDay) {
 }
 
 // Tests OnNewDay() is called at midnight.
-TEST_F(AppPlatformMetricsServiceTest, UntilMidnight) {
+TEST_P(AppPlatformMetricsServiceTest, UntilMidnight) {
   task_environment_.FastForwardBy(base::Hours(3));
   VerifyMetrics();
   EXPECT_EQ(AppPlatformMetricsService::GetDayIdForTesting(base::Time::Now()),
@@ -836,7 +854,7 @@ TEST_F(AppPlatformMetricsServiceTest, UntilMidnight) {
 }
 
 // Tests OnNewDay() is not called before midnight.
-TEST_F(AppPlatformMetricsServiceTest, LessThanOneDay) {
+TEST_P(AppPlatformMetricsServiceTest, LessThanOneDay) {
   task_environment_.FastForwardBy(base::Hours(1));
   histogram_tester().ExpectTotalCount(
       AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
@@ -847,7 +865,7 @@ TEST_F(AppPlatformMetricsServiceTest, LessThanOneDay) {
 
 // Tests OnNewDay() is called after one day passes, even when the device is
 // idle.
-TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDayDeviceIdle) {
+TEST_P(AppPlatformMetricsServiceTest, MoreThanOneDayDeviceIdle) {
   SetScreenOff(true);
   SetSuspendImminent();
   task_environment_.FastForwardBy(base::Days(1));
@@ -857,7 +875,7 @@ TEST_F(AppPlatformMetricsServiceTest, MoreThanOneDayDeviceIdle) {
 }
 
 // Tests the UMA metrics that count the number of installed apps.
-TEST_F(AppPlatformMetricsServiceTest, InstallApps) {
+TEST_P(AppPlatformMetricsServiceTest, InstallApps) {
   task_environment_.FastForwardBy(base::Hours(3));
   VerifyMetrics();
 
@@ -869,7 +887,7 @@ TEST_F(AppPlatformMetricsServiceTest, InstallApps) {
       /*expected_count=*/2);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
+TEST_P(AppPlatformMetricsServiceTest, BrowserWindow) {
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
 
@@ -930,7 +948,7 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
 }
 
 // Tests the UMA metrics when launching an app in one day .
-TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
+TEST_P(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
   std::string app_id = "aa";
   InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
                 InstallSource::kPlayStore);
@@ -977,7 +995,7 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
 }
 
 // Tests the UMA metrics when launching an app multiple days.
-TEST_F(AppPlatformMetricsServiceTest, OpenWindowInMultipleDays) {
+TEST_P(AppPlatformMetricsServiceTest, OpenWindowInMultipleDays) {
   std::string app_id = "aa";
   InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
                 InstallSource::kPlayStore);
@@ -1024,7 +1042,7 @@ TEST_F(AppPlatformMetricsServiceTest, OpenWindowInMultipleDays) {
 }
 
 // Tests the UMA metrics when an app window is reactivated.
-TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
+TEST_P(AppPlatformMetricsServiceTest, ReactiveWindow) {
   std::string app_id = "aa";
   InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
                 InstallSource::kPlayStore);
@@ -1121,7 +1139,7 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
 
 // Tests the app running percentage UMA metrics when launch a browser window
 // and an ARC app in one day.
-TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
+TEST_P(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
   // Launch a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1164,7 +1182,7 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
                                       /*expected_count=*/1, AppTypeName::kArc);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
+TEST_P(AppPlatformMetricsServiceTest, UsageTime) {
   // Create an ARC app window.
   std::string app_id = "aa";
   InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
@@ -1229,7 +1247,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
+TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkm) {
   // Create a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1260,7 +1278,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
+TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
   // Create a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1331,7 +1349,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
   VerifyAppUsageTimeUkm(url, /*duration=*/1200000, AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
+TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
   // Create a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1372,7 +1390,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest,
+TEST_P(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowswer) {
   // Create a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
@@ -1436,7 +1454,7 @@ TEST_F(AppPlatformMetricsServiceTest,
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest,
+TEST_P(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser) {
   // Create a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
@@ -1529,7 +1547,7 @@ TEST_F(AppPlatformMetricsServiceTest,
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
+TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
   // Create a browser window.
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1597,7 +1615,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
+TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
   // Create a StandaloneBrowser window, and set it as activated for
   // `kLacrosAppId`.
   auto window1 = std::make_unique<aura::Window>(nullptr);
@@ -1638,7 +1656,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
                         AppTypeName::kStandaloneBrowserExtension);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
+TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   // Verify the apps installed during the init phase.
   VerifyInstalledAppsUkm("app://com.google.A", AppTypeName::kArc,
                          apps::mojom::InstallReason::kUser,
@@ -1679,7 +1697,7 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
                          InstallTime::kRunning);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
+TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
@@ -1765,9 +1783,16 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
                             apps::mojom::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             apps::mojom::LaunchSource::kFromTest));
-  VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
-                      apps::mojom::LaunchSource::kFromTest);
-  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
+  if (IsLacrosPrimary()) {
+    VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kStandaloneBrowser,
+                        apps::mojom::LaunchSource::kFromTest);
+    VerifyAppLaunchPerAppTypeHistogram(2 /*Launch `kStandaloneBrowser` + `w2`*/,
+                                       AppTypeName::kStandaloneBrowser);
+  } else {
+    VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
+                        apps::mojom::LaunchSource::kFromTest);
+    VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
+  }
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
 
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
@@ -1781,7 +1806,7 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kSystemWeb);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
+TEST_P(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
@@ -1811,6 +1836,10 @@ TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
                          AppTypeName::kStandaloneBrowserExtension,
                          apps::mojom::UninstallSource::kAppList);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppPlatformMetricsServiceTest,
+                         testing::Bool() /* IsLacrosPrimary */);
 
 // Tests for app platform input metrics.
 class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
@@ -1934,7 +1963,7 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
 };
 
 // Verify no more input event is recorded when the window is destroyed.
-TEST_F(AppPlatformInputMetricsTest, WindowIsDestroyed) {
+TEST_P(AppPlatformInputMetricsTest, WindowIsDestroyed) {
   ModifyInstance(/*app_id=*/"a", window(), kActive);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
@@ -1951,7 +1980,7 @@ TEST_F(AppPlatformInputMetricsTest, WindowIsDestroyed) {
             InputEventSource::kMouse);
 }
 
-TEST_F(AppPlatformInputMetricsTest, MouseEvent) {
+TEST_P(AppPlatformInputMetricsTest, MouseEvent) {
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
@@ -1961,7 +1990,7 @@ TEST_F(AppPlatformInputMetricsTest, MouseEvent) {
             InputEventSource::kMouse);
 }
 
-TEST_F(AppPlatformInputMetricsTest, StylusEvent) {
+TEST_P(AppPlatformInputMetricsTest, StylusEvent) {
   ModifyInstance(/*app_id=*/"w", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnFiveMinutes();
@@ -1971,7 +2000,7 @@ TEST_F(AppPlatformInputMetricsTest, StylusEvent) {
             InputEventSource::kStylus);
 }
 
-TEST_F(AppPlatformInputMetricsTest, TouchEvents) {
+TEST_P(AppPlatformInputMetricsTest, TouchEvents) {
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kTouch);
   CreateInputEvent(InputEventSource::kTouch);
@@ -1982,7 +2011,7 @@ TEST_F(AppPlatformInputMetricsTest, TouchEvents) {
             InputEventSource::kTouch);
 }
 
-TEST_F(AppPlatformInputMetricsTest, KeyEvents) {
+TEST_P(AppPlatformInputMetricsTest, KeyEvents) {
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kKeyboard);
   app_platform_input_metrics()->OnFiveMinutes();
@@ -2019,7 +2048,7 @@ TEST_F(AppPlatformInputMetricsTest, KeyEvents) {
   EXPECT_TRUE(base::Contains(counts, 2));
 }
 
-TEST_F(AppPlatformInputMetricsTest, MultipleEvents) {
+TEST_P(AppPlatformInputMetricsTest, MultipleEvents) {
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kMouse);
   CreateInputEvent(InputEventSource::kMouse);
@@ -2060,7 +2089,7 @@ TEST_F(AppPlatformInputMetricsTest, MultipleEvents) {
   EXPECT_EQ(1, stylus_event_count);
 }
 
-TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
+TEST_P(AppPlatformInputMetricsTest, BrowserWindow) {
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
   auto browser = CreateBrowser();
@@ -2150,7 +2179,7 @@ TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
             /*event_count=*/1, InputEventSource::kStylus);
 }
 
-TEST_F(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
+TEST_P(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kKeyboard);
   CreateInputEvent(InputEventSource::kStylus);
@@ -2224,7 +2253,7 @@ TEST_F(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   ASSERT_EQ(3U, entries.size());
 }
 
-TEST_F(AppPlatformInputMetricsTest, LacrosWindow) {
+TEST_P(AppPlatformInputMetricsTest, LacrosWindow) {
   ModifyInstance(app_constants::kLacrosAppId, window(), kActiveInstanceState);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnTwoHours();
@@ -2233,7 +2262,7 @@ TEST_F(AppPlatformInputMetricsTest, LacrosWindow) {
             InputEventSource::kStylus);
 }
 
-TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
+TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
   ModifyInstance(MuxId(profile(), kChromeAppId), window(),
                  kActiveInstanceState);
   CreateInputEvent(InputEventSource::kKeyboard);
@@ -2243,7 +2272,7 @@ TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
             InputEventSource::kKeyboard);
 }
 
-TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
+TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
   ModifyInstance(MuxId(profile(), kExtensionId), window(),
                  kActiveInstanceState);
   CreateInputEvent(InputEventSource::kMouse);
@@ -2252,5 +2281,9 @@ TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
             AppTypeName::kStandaloneBrowserExtension, /*event_count=*/1,
             InputEventSource::kMouse);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppPlatformInputMetricsTest,
+                         testing::Bool() /* IsLacrosPrimary */);
 
 }  // namespace apps

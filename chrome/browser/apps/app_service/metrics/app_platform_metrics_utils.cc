@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
@@ -114,42 +115,40 @@ constexpr int kUsageTimeBuckets = 50;
 AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
                                     apps::mojom::LaunchContainer container) {
-  apps::AppTypeName type_name = apps::AppTypeName::kChromeBrowser;
+  AppTypeName default_type_name = web_app::IsWebAppsCrosapiEnabled()
+                                      ? AppTypeName::kStandaloneBrowser
+                                      : AppTypeName::kChromeBrowser;
+  AppTypeName type_name = default_type_name;
   WindowMode window_mode = WindowMode::kBrowser;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForOneApp(
-          app_id, [&type_name, &window_mode](const apps::AppUpdate& update) {
-            DCHECK(update.AppType() == apps::AppType::kWeb ||
-                   update.AppType() == apps::AppType::kSystemWeb);
+  AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache().ForOneApp(
+      app_id, [&type_name, &window_mode](const AppUpdate& update) {
+        DCHECK(update.AppType() == AppType::kWeb ||
+               update.AppType() == AppType::kSystemWeb);
 
-            // For system web apps, the install source is |kSystem|.
-            // The app type may be kSystemWeb (system web apps in Ash when
-            // Lacros web apps are enabled), or kWeb (all other cases).
-            type_name = (update.InstallReason() == apps::InstallReason::kSystem)
-                            ? apps::AppTypeName::kSystemWeb
-                            : apps::AppTypeName::kWeb;
-            window_mode = update.WindowMode();
-          });
+        // For system web apps, the install source is |kSystem|.
+        // The app type may be kSystemWeb (system web apps in Ash when
+        // Lacros web apps are enabled), or kWeb (all other cases).
+        type_name = (update.InstallReason() == InstallReason::kSystem)
+                        ? AppTypeName::kSystemWeb
+                        : AppTypeName::kWeb;
+        window_mode = update.WindowMode();
+      });
 
-  if (type_name != apps::AppTypeName::kWeb) {
+  if (type_name != AppTypeName::kWeb) {
     return type_name;
   }
 
   switch (container) {
     case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      return apps::AppTypeName::kWeb;
+      return AppTypeName::kWeb;
     case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      return apps::AppTypeName::kChromeBrowser;
+      return default_type_name;
     default:
       break;
   }
 
-  if (window_mode == WindowMode::kBrowser) {
-    return apps::AppTypeName::kChromeBrowser;
-  }
-
-  return apps::AppTypeName::kWeb;
+  return window_mode == WindowMode::kBrowser ? default_type_name
+                                             : AppTypeName::kWeb;
 }
 
 bool IsBrowser(aura::Window* window) {
