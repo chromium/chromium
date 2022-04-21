@@ -222,8 +222,8 @@
       dark: "rgba($white_rgb, 0.2)",
     },
     highlight_color_focus: {
-      light: "rgba($black_rgb, 0.06)",
-      dark: "rgba($white_rgb, 0.08)",
+      light: "rgba($black_rgb, $ripple_opacity)",
+      dark: "rgba($white_rgb, $ripple_opacity)",
     },
     highlight_color_green: {
       light: "rgb($google_green_50_rgb)",
@@ -238,13 +238,13 @@
       dark: "rgba($google_yellow_600_rgb, 0.3)",
     },
     ripple_color: {
-      light: "rgba($black_rgb, 0.06)",
-      dark: "rgba($white_rgb, 0.08)",
+      light: "rgba($black_rgb, $ripple_opacity)",
+      dark: "rgba($white_rgb, $ripple_opacity)",
       generate_per_mode: true,
     },
     ripple_color_prominent: {
-      light: "rgba($color_prominent_rgb, 0.06)",
-      dark: "rgba($color_prominent_rgb, 0.08)",
+      light: "rgba($color_prominent_rgb, $ripple_opacity)",
+      dark: "rgba($color_prominent_rgb, $ripple_opacity)",
     },
 
     /* =========================================================================
@@ -255,10 +255,7 @@
       dark: "rgba($white_rgb, 0.1)",
     },
 
-    menu_item_bg_color_focus: {
-      light: "rgba($black_rgb, 0.06)",
-      dark: "rgba($white_rgb, 0.08)",
-    },
+    menu_item_bg_color_focus: "$highlight_color_focus",
     menu_item_ripple_color: "$ripple_color",
 
     radio_button_color: "$color_prominent",
@@ -505,6 +502,8 @@
 
     button_primary_ripple_opacity: { light: 0.32, dark: 0.16 },
     button_secondary_ripple_opacity: { light: 0.1, dark: 0.16 },
+
+    ripple_opacity: { light: 0.06, dark: 0.08},
 
     second_tone_opacity: 0.3,
   },
