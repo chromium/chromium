@@ -505,8 +505,8 @@ ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   // Register the buffer with the receiver if it is new.
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_gpu_memory_buffer_handle(std::move(buffer.handle));
+        media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+            std::move(buffer.handle));
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     buffer_ids_known_by_receiver_.push_back(buffer_id);
   }
