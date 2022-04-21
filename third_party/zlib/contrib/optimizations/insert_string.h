@@ -73,8 +73,22 @@ local INLINE Pos insert_string_simd(deflate_state* const s, const Pos str) {
 
 #endif // TARGET_CPU_WITH_CRC
 
+/**
+ * Some applications need to match zlib DEFLATE output exactly [3]. Use the
+ * canonical zlib Rabin-Karp rolling hash [1,2] in that case.
+ *
+ *  [1] For a description of the Rabin and Karp algorithm, see "Algorithms"
+ *      book by R. Sedgewick, Addison-Wesley, p252.
+ *  [2] https://www.euccas.me/zlib/#zlib_rabin_karp and also "rolling hash"
+ *      https://en.wikipedia.org/wiki/Rolling_hash
+ *  [3] crbug.com/1316541 AOSP incremental client APK package OTA upgrades.
+ */
+#ifdef CHROMIUM_ZLIB_NO_CASTAGNOLI
+#define USE_ZLIB_RABIN_KARP_ROLLING_HASH
+#endif
+
 /* ===========================================================================
- * Update a hash value with the given input byte
+ * Update a hash value with the given input byte (Rabin-Karp rolling hash)
  * IN  assertion: all calls to UPDATE_HASH are made with consecutive input
  *    characters, so that a running hash key can be computed from the previous
  *    key instead of complete recalculation each time.
