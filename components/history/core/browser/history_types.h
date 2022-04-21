@@ -885,9 +885,13 @@ struct Cluster {
   std::vector<std::u16string> keywords;
   // Whether the cluster should be shown prominently on UI surfaces.
   bool should_show_on_prominent_ui_surfaces = true;
+
   // A suitable label for the cluster. Will be nullopt if no suitable label
   // could be determined.
   absl::optional<std::u16string> label;
+
+  // The positions within the label that match the search query, if it exists.
+  query_parser::Snippet::MatchPositions label_match_positions;
 
   // A floating point score that's positive if the cluster matches the user's
   // search query, and zero otherwise. This score changes depending on the

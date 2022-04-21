@@ -157,6 +157,12 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
     cluster_mojom->id = cluster.cluster_id;
     if (cluster.label) {
       cluster_mojom->label = base::UTF16ToUTF8(*cluster.label);
+      for (const auto& match : cluster.label_match_positions) {
+        auto match_mojom = mojom::MatchPosition::New();
+        match_mojom->begin = match.first;
+        match_mojom->end = match.second;
+        cluster_mojom->label_match_positions.push_back(std::move(match_mojom));
+      }
     }
 
     for (const auto& visit : cluster.visits) {

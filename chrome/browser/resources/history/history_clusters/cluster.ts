@@ -18,7 +18,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
 import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
 import {ClusterAction, MetricsProxyImpl, VisitAction} from './metrics_proxy.js';
-import {insertHighlightedTextIntoElement} from './utils.js';
+import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a cluster.
@@ -283,8 +283,8 @@ class HistoryClusterElement extends PolymerElement {
   }
 
   private computeLabel_(): string {
-    insertHighlightedTextIntoElement(
-        this.$.label, this.cluster.label!, this.query);
+    insertHighlightedTextWithMatchesIntoElement(
+        this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
     return this.cluster.label!;
   }
 

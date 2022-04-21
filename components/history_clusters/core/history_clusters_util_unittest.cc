@@ -62,14 +62,16 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
                            GetHardcodedClusterVisit(1),
                        },
                        {u"apples", u"Red Oranges"},
-                       /*should_show_on_prominent_ui_surfaces=*/false));
+                       /*should_show_on_prominent_ui_surfaces=*/false,
+                       /*label=*/u"LabelOne"));
   all_clusters.push_back(
       history::Cluster(2,
                        {
                            GetHardcodedClusterVisit(2),
                        },
                        {},
-                       /*should_show_on_prominent_ui_surfaces=*/true));
+                       /*should_show_on_prominent_ui_surfaces=*/true,
+                       /*label=*/u"LabelTwo"));
 
   struct TestData {
     std::string query;
@@ -105,6 +107,8 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
       // Verify that we DON'T match if the query spans both the visit and
       // keywords.
       {"goog red", false, false},
+      // Verify that we can find clusters by label.
+      {"labeltwo", false, true},
   };
 
   for (size_t i = 0; i < std::size(test_data); ++i) {

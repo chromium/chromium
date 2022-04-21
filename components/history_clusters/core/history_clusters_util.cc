@@ -41,14 +41,18 @@ bool DoesQueryMatchClusterKeywords(
 // Flags any elements within `cluster_visits` that match `find_nodes`. The
 // matching is deliberately meant to closely mirror the History implementation.
 // Returns the total score of matching visits, and returns 0 if no visits match.
-float MarkMatchesAndGetScore(
-    const query_parser::QueryNodeVector& find_nodes,
-    std::vector<history::ClusterVisit>* cluster_visits) {
-  DCHECK(cluster_visits);
-
+float MarkMatchesAndGetScore(const query_parser::QueryNodeVector& find_nodes,
+                             history::Cluster* cluster) {
+  DCHECK(cluster);
   float total_matching_visit_score = 0.0;
 
-  for (auto& visit : *cluster_visits) {
+  if (cluster->label &&
+      query_parser::QueryParser::DoesQueryMatch(
+          *(cluster->label), find_nodes, &(cluster->label_match_positions))) {
+    total_matching_visit_score += 1.0;
+  }
+
+  for (auto& visit : cluster->visits) {
     bool match_found = false;
 
     // Search through the visible elements and highlight match positions.
@@ -198,7 +202,7 @@ void ApplySearchQuery(const std::string& query,
 
   for (auto& cluster : all_clusters) {
     const float total_matching_visit_score =
-        MarkMatchesAndGetScore(find_nodes, &cluster.visits);
+        MarkMatchesAndGetScore(find_nodes, &cluster);
     DCHECK_GE(total_matching_visit_score, 0);
     if (total_matching_visit_score > 0 &&
         GetConfig().rescore_visits_within_clusters_for_query) {
