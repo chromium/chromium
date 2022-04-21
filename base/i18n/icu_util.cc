@@ -10,6 +10,8 @@
 #include <windows.h>
 #endif
 
+#include <string.h>
+
 #include <memory>
 #include <string>
 
@@ -407,7 +409,7 @@ static void U_CALLCONV TraceICUData(const void* context,
     }
     case UTRACE_UBRK_CREATE_LINE: {
       const char* lb_type = va_arg(args, const char*);
-      auto lb_type_len = std::strlen(lb_type);
+      auto lb_type_len = strlen(lb_type);
       va_end(args);
       ICUCreateInstance value;
       if (lb_type_len < 6) {
