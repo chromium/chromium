@@ -7381,6 +7381,21 @@
             ]
         }
     ],
+    "UIViewWindowObserving": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UIViewWindowObserving"
+                    ]
+                }
+            ]
+        }
+    ],
     "UMA-NonUniformity-Trial-1-Percent": [
         {
             "platforms": [
