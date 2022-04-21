@@ -167,7 +167,7 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
   bubble_widget->Show();
 
   BubbleBorder* border = bubble_delegate->GetBubbleFrameView()->bubble_border_;
-  EXPECT_EQ(bubble_delegate->color(), border->background_color());
+  EXPECT_EQ(bubble_delegate->color(), border->color());
   EXPECT_EQ(anchor_widget.get(), bubble_widget->parent());
 
   EXPECT_FALSE(bubble_observer.widget_closed());

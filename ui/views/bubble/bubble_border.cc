@@ -247,13 +247,9 @@ constexpr int BubbleBorder::kVisibleArrowLength;
 constexpr int BubbleBorder::kVisibleArrowRadius;
 constexpr int BubbleBorder::kVisibleArrowBuffer;
 
-BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, SkColor color)
-    : arrow_(arrow),
-      arrow_offset_(0),
-      shadow_(shadow),
-      background_color_(color),
-      use_theme_background_color_(false) {
-  DCHECK(shadow_ < SHADOW_COUNT);
+BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, ui::ColorId color_id)
+    : arrow_(arrow), shadow_(shadow), color_id_(color_id) {
+  DCHECK_LT(shadow_, SHADOW_COUNT);
 }
 
 BubbleBorder::~BubbleBorder() = default;
@@ -275,6 +271,11 @@ gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
 
 void BubbleBorder::SetCornerRadius(int corner_radius) {
   corner_radius_ = corner_radius;
+}
+
+void BubbleBorder::SetColor(SkColor color) {
+  requested_color_ = color;
+  UpdateColor(nullptr);
 }
 
 gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
@@ -494,6 +495,10 @@ gfx::Size BubbleBorder::GetMinimumSize() const {
   return GetSizeForContentsSize(gfx::Size());
 }
 
+void BubbleBorder::OnViewThemeChanged(View* view) {
+  UpdateColor(view);
+}
+
 gfx::Size BubbleBorder::GetSizeForContentsSize(
     const gfx::Size& contents_size) const {
   // Enlarge the contents size by the thickness of the border images.
@@ -648,6 +653,15 @@ SkRRect BubbleBorder::GetClientRect(const View& view) const {
                              corner_radius());
 }
 
+void BubbleBorder::UpdateColor(View* view) {
+  const SkColor computed_color =
+      view ? view->GetColorProvider()->GetColor(color_id_)
+           : gfx::kPlaceholderColor;
+  color_ = requested_color_.value_or(computed_color);
+  if (view)
+    view->SchedulePaint();
+}
+
 void BubbleBorder::PaintNoShadow(const View& view, gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped(canvas);
   canvas->sk_canvas()->clipRRect(GetClientRect(view), SkClipOp::kDifference,
@@ -696,7 +710,7 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
       GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kBorder),
       flags);
 
-  flags.setColor(background_color());
+  flags.setColor(color());
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setStrokeWidth(1.0);
   flags.setAntiAlias(true);
@@ -709,7 +723,7 @@ void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(border_->background_color());
+  flags.setColor(border_->color());
   gfx::RectF bounds(view->GetLocalBounds());
   bounds.Inset(gfx::InsetsF(border_->GetInsets()));
 

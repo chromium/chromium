@@ -273,10 +273,8 @@ ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
   constexpr auto kPadding = gfx::Insets::VH(5, 10);
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);
-  SkColor color =
-      widget->GetColorProvider()->GetColor(ui::kColorDialogBackground);
   frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW, color));
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW));
   return frame;
 }
 

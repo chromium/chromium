@@ -208,8 +208,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
       : views::BubbleFrameView(gfx::Insets(), gfx::Insets()),
         buttons_(buttons) {
     auto border = std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::FLOAT, views::BubbleBorder::DIALOG_SHADOW,
-        gfx::kPlaceholderColor);
+        views::BubbleBorder::FLOAT, views::BubbleBorder::DIALOG_SHADOW);
     border->SetCornerRadius(kCornerRadiusDip);
     views::BubbleFrameView::SetBubbleBorder(std::move(border));
   }

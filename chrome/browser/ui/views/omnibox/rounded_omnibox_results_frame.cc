@@ -187,7 +187,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   // Initialize the shadow.
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::Arrow::NONE,
-      views::BubbleBorder::Shadow::STANDARD_SHADOW, gfx::kPlaceholderColor);
+      views::BubbleBorder::Shadow::STANDARD_SHADOW);
   border->SetCornerRadius(corner_radius);
   border->set_md_shadow_elevation(kElevation);
   SetBorder(std::move(border));

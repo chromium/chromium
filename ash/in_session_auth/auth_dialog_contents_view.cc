@@ -334,8 +334,8 @@ AuthDialogContentsView::AuthDialogContentsView(
       auth_metadata_(auth_metadata) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW,
-      kBackgroundColor);
+      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW);
+  border->SetColor(kBackgroundColor);
   border->SetCornerRadius(kCornerRadius);
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));

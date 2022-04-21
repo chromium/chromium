@@ -532,7 +532,8 @@ BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
   frame->SetFootnoteView(DisownFootnoteView());
 
   std::unique_ptr<BubbleBorder> border =
-      std::make_unique<BubbleBorder>(arrow(), GetShadow(), color());
+      std::make_unique<BubbleBorder>(arrow(), GetShadow());
+  border->SetColor(color());
   if (CustomShadowsSupported() && GetParams().round_corners)
     border->SetCornerRadius(GetCornerRadius());
 

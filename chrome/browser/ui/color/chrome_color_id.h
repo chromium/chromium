@@ -240,6 +240,8 @@
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
+  /* Profiles colors. */ \
+  E_CPONLY(kColorProfilesReauthDialogBorder) \
   /* PWA colors. */ \
   E_CPONLY(kColorPwaBackground) \
   E_CPONLY(kColorPwaMenuButtonIcon) \

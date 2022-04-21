@@ -122,10 +122,8 @@ class NativeDialogContainer : public views::DialogDelegateView {
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     auto frame = std::make_unique<FullSizeBubbleFrameView>();
-    auto border = std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::FLOAT, kShadowType, gfx::kPlaceholderColor);
-    border->set_use_theme_background_color(true);
-    frame->SetBubbleBorder(std::move(border));
+    frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
+        views::BubbleBorder::FLOAT, kShadowType));
     return frame;
   }
 };

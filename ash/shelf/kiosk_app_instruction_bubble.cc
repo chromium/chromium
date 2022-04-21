@@ -67,9 +67,8 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
   CreateBubble();
 
   auto bubble_border =
-      std::make_unique<views::BubbleBorder>(arrow(), GetShadow(), color());
+      std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
   bubble_border->set_insets(GetBubbleInsets());
-  bubble_border->set_use_theme_background_color(true);
   bubble_border->SetCornerRadius(
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));

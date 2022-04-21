@@ -183,9 +183,9 @@ ADD_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
 
 SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
-  std::unique_ptr<views::BubbleBorder> bubble_border(new views::BubbleBorder(
-      views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW,
-      kSubtleNotificationBackgroundColor));
+  auto bubble_border = std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
+  bubble_border->SetColor(kSubtleNotificationBackgroundColor);
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border.get()));
   SetBorder(std::move(bubble_border));
 

@@ -90,8 +90,9 @@ std::unique_ptr<NonClientFrameView> InfoBubble::CreateNonClientFrameView(
   DCHECK(!frame_);
   auto frame = std::make_unique<InfoBubbleFrame>(margins());
   frame->set_available_bounds(anchor_widget()->GetWindowBoundsInScreen());
-  frame->SetBubbleBorder(
-      std::make_unique<BubbleBorder>(arrow(), GetShadow(), color()));
+  auto border = std::make_unique<BubbleBorder>(arrow(), GetShadow());
+  border->SetColor(color());
+  frame->SetBubbleBorder(std::move(border));
   frame_ = frame.get();
   return frame;
 }

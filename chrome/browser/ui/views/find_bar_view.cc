@@ -440,11 +440,9 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
 
 void FindBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const ui::ColorProvider* color_provider = GetColorProvider();
-  SkColor bg_color = color_provider->GetColor(kColorFindBarBackground);
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      bg_color);
+      kColorFindBarBackground);
 
   border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMedium));
@@ -452,7 +450,9 @@ void FindBarView::OnThemeChanged() {
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
 
-  match_count_text_->SetBackgroundColor(bg_color);
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  match_count_text_->SetBackgroundColor(
+      color_provider->GetColor(kColorFindBarBackground));
   match_count_text_->SetEnabledColor(
       color_provider->GetColor(kColorFindBarMatchCount));
   separator_->SetColor(color_provider->GetColor(kColorFindBarSeparator));

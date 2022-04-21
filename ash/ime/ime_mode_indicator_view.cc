@@ -103,8 +103,9 @@ ImeModeIndicatorView::CreateNonClientFrameView(views::Widget* widget) {
   auto frame = std::make_unique<ModeIndicatorFrameView>();
   // arrow adjustment in BubbleDialogDelegateView is unnecessary because arrow
   // of this bubble is always center.
-  frame->SetBubbleBorder(
-      std::make_unique<views::BubbleBorder>(arrow(), GetShadow(), color()));
+  auto border = std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
+  border->SetColor(color());
+  frame->SetBubbleBorder(std::move(border));
   return frame;
 }
 

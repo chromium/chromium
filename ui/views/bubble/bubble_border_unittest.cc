@@ -211,8 +211,8 @@ TEST_F(BubbleBorderTest, IsArrowAtCenter) {
 }
 
 TEST_F(BubbleBorderTest, GetSizeForContentsSizeTest) {
-  views::BubbleBorder border(BubbleBorder::NONE, BubbleBorder::NO_SHADOW_LEGACY,
-                             SK_ColorWHITE);
+  views::BubbleBorder border(BubbleBorder::NONE,
+                             BubbleBorder::NO_SHADOW_LEGACY);
 
   const gfx::Insets kInsets = border.GetInsets();
 
@@ -294,7 +294,7 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
   for (int i = 0; i < BubbleBorder::SHADOW_COUNT; ++i) {
     const BubbleBorder::Shadow shadow = static_cast<BubbleBorder::Shadow>(i);
     SCOPED_TRACE(testing::Message() << "BubbleBorder::Shadow: " << shadow);
-    views::BubbleBorder border(BubbleBorder::TOP_LEFT, shadow, SK_ColorWHITE);
+    views::BubbleBorder border(BubbleBorder::TOP_LEFT, shadow);
 
     const gfx::Rect kAnchor(100, 100, 20, 30);
     const gfx::Size kContentSize(500, 600);
@@ -378,7 +378,7 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
 
 TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   views::BubbleBorder border(BubbleBorder::TOP_LEFT,
-                             BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+                             BubbleBorder::STANDARD_SHADOW);
   const gfx::Insets kInsets = border.GetInsets();
   border.set_visible_arrow(true);
 
@@ -1026,7 +1026,7 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
   for (auto test_case : test_cases) {
     gfx::Rect bubble_bounds_copy = bubble_bounds;
     views::BubbleBorder border(BubbleBorder::Arrow::NONE,
-                               BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+                               BubbleBorder::STANDARD_SHADOW);
     border.set_arrow(test_case.supplied_arrow);
     EXPECT_EQ(
         border.AddArrowToBubbleCornerAndPointTowardsAnchor(
@@ -1074,7 +1074,7 @@ TEST_F(BubbleBorderTest,
 
   for (auto test_case : test_cases) {
     views::BubbleBorder border(BubbleBorder::Arrow::NONE,
-                               BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+                               BubbleBorder::STANDARD_SHADOW);
     border.set_arrow(test_case.supplied_arrow);
     EXPECT_EQ(border.AddArrowToBubbleCornerAndPointTowardsAnchor(
                   element_bounds, true, test_case.bubble_bounds),
@@ -1177,8 +1177,7 @@ TEST_F(BubbleBorderTest, MoveContentsBoundsToPlaceVisibleArrow) {
 
   for (const auto& test_case : test_cases) {
     // Create a bubble border with a visible arrow.
-    views::BubbleBorder border(test_case.arrow, BubbleBorder::STANDARD_SHADOW,
-                               SK_ColorWHITE);
+    views::BubbleBorder border(test_case.arrow, BubbleBorder::STANDARD_SHADOW);
     border.set_visible_arrow(true);
 
     // Create, move and verify the contents bounds.

@@ -1202,6 +1202,8 @@ void View::Paint(const PaintInfo& parent_paint_info) {
 
 void View::SetBackground(std::unique_ptr<Background> b) {
   background_ = std::move(b);
+  if (background_ && GetWidget())
+    background_->OnViewThemeChanged(this);
   SchedulePaint();
 }
 
@@ -1212,6 +1214,8 @@ Background* View::GetBackground() const {
 void View::SetBorder(std::unique_ptr<Border> b) {
   const gfx::Rect old_contents_bounds = GetContentsBounds();
   border_ = std::move(b);
+  if (border_ && GetWidget())
+    border_->OnViewThemeChanged(this);
 
   // Conceptually, this should be PreferredSizeChanged(), but for some view
   // hierarchies that triggers synchronous add/remove operations that are unsafe

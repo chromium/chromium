@@ -429,10 +429,10 @@ ui::LayerType TrayBubbleView::GetLayerType() const {
 std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
     Widget* widget) {
   // Create the customized bubble border.
-  std::unique_ptr<BubbleBorder> bubble_border = std::make_unique<BubbleBorder>(
-      arrow(), BubbleBorder::NO_SHADOW,
-      params_.bg_color.value_or(gfx::kPlaceholderColor));
-  bubble_border->set_use_theme_background_color(!params_.bg_color);
+  std::unique_ptr<BubbleBorder> bubble_border =
+      std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
+  if (params_.bg_color.has_value())
+    bubble_border->SetColor(params_.bg_color.value());
   if (params_.corner_radius)
     bubble_border->SetCornerRadius(params_.corner_radius);
   bubble_border->set_avoid_shadow_overlap(true);

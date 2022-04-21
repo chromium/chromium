@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
@@ -109,7 +110,9 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // arrow if one is present.
   static constexpr int kVisibleArrowBuffer = 12;
 
-  BubbleBorder(Arrow arrow, Shadow shadow, SkColor color);
+  BubbleBorder(Arrow arrow,
+               Shadow shadow,
+               ui::ColorId color_id = ui::kColorDialogBackground);
 
   BubbleBorder(const BubbleBorder&) = delete;
   BubbleBorder& operator=(const BubbleBorder&) = delete;
@@ -172,16 +175,9 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Get the shadow type.
   Shadow shadow() const { return shadow_; }
 
-  // Get or set the background color for the bubble and arrow body.
-  void set_background_color(SkColor color) { background_color_ = color; }
-  SkColor background_color() const { return background_color_; }
-
-  // If true, the background color should be determined by the host's
-  // ColorProvider.
-  void set_use_theme_background_color(bool use_theme_background_color) {
-    use_theme_background_color_ = use_theme_background_color;
-  }
-  bool use_theme_background_color() { return use_theme_background_color_; }
+  // Get or set the color for the bubble and arrow body.
+  void SetColor(SkColor color);
+  SkColor color() const { return color_; }
 
   // Sets a desired pixel distance between the arrow tip and the outside edge of
   // the neighboring border image. For example:        |----offset----|
@@ -215,6 +211,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
+  void OnViewThemeChanged(View* view) override;
 
   // Sets and activates the visible |arrow|. The position of the visible arrow
   // on the edge of the |bubble_bounds| is determined using the
@@ -283,6 +280,10 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // draw over the contents of the bubble.
   SkRRect GetClientRect(const View& view) const;
 
+  // Sets `color_` appropriately, using `view` to obtain a ColorProvider.
+  // `view` may be null if `requested_color_` is set.
+  void UpdateColor(View* view);
+
   // Paint for the NO_SHADOW shadow type. This just paints transparent pixels
   // to make the window shape based on insets and GetBorderCornerRadius().
   void PaintNoShadow(const View& view, gfx::Canvas* canvas);
@@ -295,7 +296,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   void PaintVisibleArrow(const View& view, gfx::Canvas* canvas);
 
   Arrow arrow_;
-  int arrow_offset_;
+  int arrow_offset_ = 0;
   // Corner radius for the bubble border. If supplied the border will use
   // material design.
   int corner_radius_ = 0;
@@ -306,16 +307,16 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   mutable gfx::Rect visible_arrow_rect_;
 
   Shadow shadow_;
-  // Elevation for the MD shadow.
   absl::optional<int> md_shadow_elevation_;
-  SkColor background_color_;
-  bool use_theme_background_color_;
+  ui::ColorId color_id_;
+  absl::optional<SkColor> requested_color_;
+  SkColor color_ = gfx::kPlaceholderColor;
   bool avoid_shadow_overlap_ = false;
   absl::optional<gfx::Insets> insets_;
 };
 
-// A Background that clips itself to the specified BubbleBorder and uses
-// the background color of the BubbleBorder.
+// A Background that clips itself to the specified BubbleBorder and uses the
+// color of the BubbleBorder.
 class VIEWS_EXPORT BubbleBackground : public Background {
  public:
   explicit BubbleBackground(BubbleBorder* border) : border_(border) {}

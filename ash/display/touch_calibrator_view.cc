@@ -310,10 +310,12 @@ class HintBox : public views::View {
 
 HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
     : border_radius_(border_radius) {
-  SetBorder(std::make_unique<views::BubbleBorder>(
+  auto border = std::make_unique<views::BubbleBorder>(
       base::i18n::IsRTL() ? views::BubbleBorder::RIGHT_CENTER
                           : views::BubbleBorder::LEFT_CENTER,
-      views::BubbleBorder::NO_SHADOW, SK_ColorWHITE));
+      views::BubbleBorder::NO_SHADOW);
+  border->SetColor(SK_ColorWHITE);
+  SetBorder(std::move(border));
 
   arrow_width_ = (GetInsets().right() - GetInsets().left()) *
                  (base::i18n::IsRTL() ? 1 : -1);

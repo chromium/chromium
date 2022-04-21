@@ -42,8 +42,8 @@ ProgressBarDialogView::ProgressBarDialogView(bool is_multiple_files)
   constexpr int kCornerRadius = 12;
 
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      GetDialogBackgroundBaseColor());
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+  border->SetColor(GetDialogBackgroundBaseColor());
   border->SetCornerRadius(kCornerRadius);
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));

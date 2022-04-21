@@ -399,11 +399,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   if (use_ash_system_ui_layout)
     shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
 #endif
-
-  const SkColor color =
-      GetWidget() ? GetColorProvider()->GetColor(id) : gfx::kPlaceholderColor;
-  auto bubble_border =
-      std::make_unique<BubbleBorder>(arrow_, shadow_type, color);
+  auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type, id);
   if (use_ash_system_ui_layout || border_radius > 0) {
     bubble_border->SetCornerRadius(border_radius);
 

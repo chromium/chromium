@@ -40,11 +40,7 @@ class CandidateWindowBorder : public views::BubbleBorder {
  public:
   CandidateWindowBorder()
       : views::BubbleBorder(views::BubbleBorder::TOP_CENTER,
-                            views::BubbleBorder::STANDARD_SHADOW,
-                            gfx::kPlaceholderColor),
-        offset_(0) {
-    set_use_theme_background_color(true);
-  }
+                            views::BubbleBorder::STANDARD_SHADOW) {}
   CandidateWindowBorder(const CandidateWindowBorder&) = delete;
   CandidateWindowBorder& operator=(const CandidateWindowBorder&) = delete;
   ~CandidateWindowBorder() override = default;
@@ -88,7 +84,7 @@ class CandidateWindowBorder : public views::BubbleBorder {
 
   gfx::Insets GetInsets() const override { return gfx::Insets(); }
 
-  int offset_;
+  int offset_ = 0;
 };
 
 // Computes the page index. For instance, if the page size is 9, and the
