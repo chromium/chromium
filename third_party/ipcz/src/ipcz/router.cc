@@ -16,6 +16,16 @@ Router::Router() = default;
 
 Router::~Router() = default;
 
+bool Router::IsPeerClosed() {
+  absl::MutexLock lock(&mutex_);
+  return (status_.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) != 0;
+}
+
+bool Router::IsRouteDead() {
+  absl::MutexLock lock(&mutex_);
+  return (status_.flags & IPCZ_PORTAL_STATUS_DEAD) != 0;
+}
+
 void Router::QueryStatus(IpczPortalStatus& status) {
   absl::MutexLock lock(&mutex_);
   const size_t size = std::min(status.size, status_.size);
@@ -23,15 +33,118 @@ void Router::QueryStatus(IpczPortalStatus& status) {
   status.size = size;
 }
 
-void Router::CloseRoute() {
+bool Router::HasLocalPeer(Router& router) {
   absl::MutexLock lock(&mutex_);
-  outward_link_.reset();
+  return outward_link_->HasLocalPeer(router);
+}
+
+IpczResult Router::SendOutboundParcel(Parcel& parcel) {
+  Ref<RouterLink> link;
+  {
+    absl::MutexLock lock(&mutex_);
+    link = outward_link_;
+    parcel.set_sequence_number(next_outbound_sequence_number_);
+    next_outbound_sequence_number_ =
+        SequenceNumber{next_outbound_sequence_number_.value() + 1};
+  }
+
+  ABSL_ASSERT(link);
+  link->AcceptParcel(parcel);
+  return IPCZ_RESULT_OK;
+}
+
+void Router::CloseRoute() {
+  SequenceNumber sequence_length;
+  Ref<RouterLink> link;
+  {
+    absl::MutexLock lock(&mutex_);
+    link = std::move(outward_link_);
+    sequence_length = next_outbound_sequence_number_;
+  }
+
+  ABSL_ASSERT(link);
+  link->AcceptRouteClosure(sequence_length);
 }
 
 void Router::SetOutwardLink(Ref<RouterLink> link) {
   absl::MutexLock lock(&mutex_);
   ABSL_ASSERT(!outward_link_);
   outward_link_ = std::move(link);
+}
+
+bool Router::AcceptInboundParcel(Parcel& parcel) {
+  absl::MutexLock lock(&mutex_);
+  const SequenceNumber sequence_number = parcel.sequence_number();
+  if (!inbound_parcels_.Push(sequence_number, std::move(parcel))) {
+    return false;
+  }
+
+  status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
+  status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
+  return true;
+}
+
+bool Router::AcceptRouteClosureFrom(LinkType link_type,
+                                    SequenceNumber sequence_length) {
+  ABSL_ASSERT(link_type == LinkType::kCentral);
+  absl::MutexLock lock(&mutex_);
+  if (!inbound_parcels_.SetFinalSequenceLength(sequence_length)) {
+    return false;
+  }
+
+  status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
+  if (inbound_parcels_.IsSequenceFullyConsumed()) {
+    status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
+  }
+  return true;
+}
+
+IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
+                                        void* data,
+                                        size_t* num_bytes,
+                                        IpczHandle* handles,
+                                        size_t* num_handles) {
+  absl::MutexLock lock(&mutex_);
+  if (inbound_parcels_.IsSequenceFullyConsumed()) {
+    return IPCZ_RESULT_NOT_FOUND;
+  }
+  if (!inbound_parcels_.HasNextElement()) {
+    return IPCZ_RESULT_UNAVAILABLE;
+  }
+
+  Parcel& p = inbound_parcels_.NextElement();
+  const bool allow_partial = (flags & IPCZ_GET_PARTIAL) != 0;
+  const size_t data_capacity = num_bytes ? *num_bytes : 0;
+  const size_t handles_capacity = num_handles ? *num_handles : 0;
+  const size_t data_size =
+      allow_partial ? std::min(p.data_size(), data_capacity) : p.data_size();
+  const size_t handles_size = allow_partial
+                                  ? std::min(p.num_objects(), handles_capacity)
+                                  : p.num_objects();
+  if (num_bytes) {
+    *num_bytes = data_size;
+  }
+  if (num_handles) {
+    *num_handles = handles_size;
+  }
+
+  const bool consuming_whole_parcel =
+      data_capacity >= data_size && handles_capacity >= handles_size;
+  if (!consuming_whole_parcel && !allow_partial) {
+    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
+  }
+
+  memcpy(data, p.data_view().data(), data_size);
+  const bool ok = inbound_parcels_.Consume(
+      data_size, absl::MakeSpan(handles, handles_size));
+  ABSL_ASSERT(ok);
+
+  status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
+  status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
+  if (inbound_parcels_.IsSequenceFullyConsumed()) {
+    status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
+  }
+  return IPCZ_RESULT_OK;
 }
 
 }  // namespace ipcz

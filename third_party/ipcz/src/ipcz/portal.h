@@ -10,6 +10,7 @@
 
 #include "ipcz/api_object.h"
 #include "ipcz/ipcz.h"
+#include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -36,9 +37,20 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
 
   // APIObject:
   IpczResult Close() override;
+  bool CanSendFrom(Portal& sender) override;
 
   // ipcz portal API implementation:
   IpczResult QueryStatus(IpczPortalStatus& status);
+
+  IpczResult Put(absl::Span<const uint8_t> data,
+                 absl::Span<const IpczHandle> handles,
+                 const IpczPutLimits* limits);
+
+  IpczResult Get(IpczGetFlags flags,
+                 void* data,
+                 size_t* num_data_bytes,
+                 IpczHandle* handles,
+                 size_t* num_handles);
 
  private:
   ~Portal() override;

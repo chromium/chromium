@@ -11,6 +11,9 @@
 
 namespace ipcz {
 
+class Parcel;
+class Router;
+
 // A RouterLink represents one endpoint of a link between two Routers. All
 // subclasses must be thread-safe.
 class RouterLink : public RefCounted {
@@ -19,6 +22,18 @@ class RouterLink : public RefCounted {
 
   // Indicates what type of link this is. See LinkType documentation.
   virtual LinkType GetType() const = 0;
+
+  // Returns true iff this is a LocalRouterLink whose peer router is `router`.
+  virtual bool HasLocalPeer(const Router& router) = 0;
+
+  // Passes a parcel to the Router on the other side of this link to be queued
+  // and/or router further.
+  virtual void AcceptParcel(Parcel& parcel) = 0;
+
+  // Notifies the Router on the other side of the link that the route has been
+  // closed from this side. `sequence_length` is the total number of parcels
+  // transmitted from the closed side before it was closed.
+  virtual void AcceptRouteClosure(SequenceNumber sequence_length) = 0;
 
  protected:
   ~RouterLink() override = default;

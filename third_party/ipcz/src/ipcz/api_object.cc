@@ -10,4 +10,8 @@ APIObject::APIObject(ObjectType type) : type_(type) {}
 
 APIObject::~APIObject() = default;
 
+bool APIObject::CanSendFrom(Portal& sender) {
+  return false;
+}
+
 }  // namespace ipcz

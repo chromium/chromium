@@ -156,6 +156,8 @@ ipcz_source_set("impl") {
   public = [
     "ipcz/api_object.h",
     "ipcz/node.h",
+    "ipcz/parcel.h",
+    "ipcz/parcel_queue.h",
     "ipcz/portal.h",
     "ipcz/router.h",
     "ipcz/sequence_number.h",
@@ -172,6 +174,8 @@ ipcz_source_set("impl") {
     "ipcz/node.cc",
     "ipcz/node_name.cc",
     "ipcz/node_name.h",
+    "ipcz/parcel.cc",
+    "ipcz/parcel_queue.cc",
     "ipcz/portal.cc",
     "ipcz/router.cc",
     "ipcz/router_link.h",
@@ -208,6 +212,7 @@ ipcz_source_set("ipcz_tests_sources") {
 
   sources = [
     "api_test.cc",
+    "ipcz/parcel_queue_test.cc",
     "ipcz/sequenced_queue_test.cc",
     "test/test_base.cc",
     "test/test_base.h",

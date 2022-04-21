@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "ipcz/ipcz.h"
 #include "reference_drivers/single_process_reference_driver.h"
 #include "test/test_base.h"
@@ -24,17 +26,11 @@ TEST_F(APITest, Unimplemented) {
                                 IPCZ_NO_FLAGS, nullptr));
 
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
-            ipcz().Put(IPCZ_INVALID_HANDLE, nullptr, 0, nullptr, 0,
-                       IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
             ipcz().BeginPut(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr,
                             nullptr, nullptr));
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
             ipcz().EndPut(IPCZ_INVALID_HANDLE, 0, nullptr, 0, IPCZ_NO_FLAGS,
                           nullptr));
-  EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
-            ipcz().Get(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, nullptr,
-                       nullptr, nullptr, nullptr));
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
             ipcz().BeginGet(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr,
                             nullptr, nullptr, nullptr));
@@ -164,9 +160,111 @@ TEST_F(APITest, QueryPortalStatus) {
   EXPECT_EQ(0u, status.num_remote_parcels);
   EXPECT_EQ(0u, status.num_remote_bytes);
 
-  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(a, IPCZ_NO_FLAGS, nullptr));
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(b, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().QueryPortalStatus(a, IPCZ_NO_FLAGS, nullptr, &status));
+  EXPECT_EQ(IPCZ_PORTAL_STATUS_PEER_CLOSED,
+            status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED);
+  EXPECT_EQ(IPCZ_PORTAL_STATUS_DEAD, status.flags & IPCZ_PORTAL_STATUS_DEAD);
+
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(a, IPCZ_NO_FLAGS, nullptr));
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
 }
+
+TEST_F(APITest, PutGet) {
+  IpczHandle node;
+  ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
+                    nullptr, &node);
+  IpczHandle a, b;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, &a, &b));
+
+  // Get from an empty portal.
+  char data[4];
+  size_t num_bytes = 4;
+  EXPECT_EQ(IPCZ_RESULT_UNAVAILABLE, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, data,
+                                                &num_bytes, nullptr, nullptr));
+
+  // A portal can't transfer itself or its peer.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Put(a, nullptr, 0, &a, 1, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Put(a, nullptr, 0, &b, 1, IPCZ_NO_FLAGS, nullptr));
+
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().Put(a, "hi", 2, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().Put(a, "bye", 3, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().Put(a, nullptr, 0, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+
+  IpczHandle c, d;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().OpenPortals(node, IPCZ_NO_FLAGS, nullptr, &c, &d));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().Put(a, nullptr, 0, &d, 1, IPCZ_NO_FLAGS, nullptr));
+  d = IPCZ_INVALID_HANDLE;
+
+  IpczPortalStatus status = {.size = sizeof(status)};
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().QueryPortalStatus(b, IPCZ_NO_FLAGS, nullptr, &status));
+  EXPECT_EQ(4u, status.num_local_parcels);
+  EXPECT_EQ(5u, status.num_local_bytes);
+
+  // Insufficient data storage.
+  num_bytes = 0;
+  EXPECT_EQ(IPCZ_RESULT_RESOURCE_EXHAUSTED,
+            ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, data, &num_bytes, nullptr,
+                       nullptr));
+  EXPECT_EQ(2u, num_bytes);
+
+  num_bytes = 4;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, data,
+                                       &num_bytes, nullptr, nullptr));
+  EXPECT_EQ(2u, num_bytes);
+  EXPECT_EQ("hi", std::string(data, 2));
+
+  num_bytes = 4;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, data,
+                                       &num_bytes, nullptr, nullptr));
+  EXPECT_EQ(3u, num_bytes);
+  EXPECT_EQ("bye", std::string(data, 3));
+
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().QueryPortalStatus(b, IPCZ_NO_FLAGS, nullptr, &status));
+  EXPECT_EQ(2u, status.num_local_parcels);
+  EXPECT_EQ(0u, status.num_local_bytes);
+
+  // Getting an empty parcel requires no storage.
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr,
+                                       nullptr, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().QueryPortalStatus(b, IPCZ_NO_FLAGS, nullptr, &status));
+  EXPECT_EQ(1u, status.num_local_parcels);
+  EXPECT_EQ(0u, status.num_local_bytes);
+
+  // Insufficient handle storage.
+  EXPECT_EQ(IPCZ_RESULT_RESOURCE_EXHAUSTED,
+            ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr, nullptr, nullptr,
+                       nullptr));
+
+  size_t num_handles = 1;
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Get(b, IPCZ_NO_FLAGS, nullptr, nullptr,
+                                       nullptr, &d, &num_handles));
+  EXPECT_EQ(1u, num_handles);
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(d, IPCZ_NO_FLAGS, nullptr));
+
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().QueryPortalStatus(c, IPCZ_NO_FLAGS, nullptr, &status));
+  EXPECT_EQ(IPCZ_PORTAL_STATUS_PEER_CLOSED,
+            status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED);
+  EXPECT_EQ(IPCZ_PORTAL_STATUS_DEAD, status.flags & IPCZ_PORTAL_STATUS_DEAD);
+
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(a, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(b, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(c, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+}
+
 }  // namespace
 }  // namespace ipcz

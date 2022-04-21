@@ -116,7 +116,14 @@ IpczResult Put(IpczHandle portal_handle,
                size_t num_handles,
                uint32_t flags,
                const IpczPutOptions* options) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
+  if (!portal) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+  return portal->Put(
+      absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
+      absl::MakeSpan(handles, num_handles),
+      options ? options->limits : nullptr);
 }
 
 IpczResult BeginPut(IpczHandle portal_handle,
@@ -143,7 +150,11 @@ IpczResult Get(IpczHandle portal_handle,
                size_t* num_bytes,
                IpczHandle* handles,
                size_t* num_handles) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
+  if (!portal) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+  return portal->Get(flags, data, num_bytes, handles, num_handles);
 }
 
 IpczResult BeginGet(IpczHandle portal_handle,

@@ -57,4 +57,18 @@ LinkType LocalRouterLink::GetType() const {
   return state_->type();
 }
 
+bool LocalRouterLink::HasLocalPeer(const Router& router) {
+  return state_->side(side_.opposite()).get() == &router;
+}
+
+void LocalRouterLink::AcceptParcel(Parcel& parcel) {
+  Router& receiver = *state_->side(side_.opposite());
+  receiver.AcceptInboundParcel(parcel);
+}
+
+void LocalRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
+  Router& receiver = *state_->side(side_.opposite());
+  receiver.AcceptRouteClosureFrom(state_->type(), sequence_length);
+}
+
 }  // namespace ipcz

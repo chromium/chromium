@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ipcz/ipcz.h"
+#include "ipcz/parcel_queue.h"
 #include "ipcz/router_link.h"
 #include "ipcz/sequence_number.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
@@ -38,9 +39,27 @@ class Router : public RefCounted {
 
   Router();
 
+  // Indicates whether the terminal router on the other side of the central link
+  // is known to be closed.
+  bool IsPeerClosed();
+
+  // Indicates whether the terminal router on the other side of the central link
+  // is known to be closed AND there are no more inbound parcels to be
+  // retrieved.
+  bool IsRouteDead();
+
   // Fills in an IpczPortalStatus corresponding to the current state of this
   // Router.
   void QueryStatus(IpczPortalStatus& status);
+
+  // Returns true iff this Router's outward link is a LocalRouterLink between
+  // `this` and `other`.
+  bool HasLocalPeer(Router& router);
+
+  // Attempts to send an outbound parcel originating from this Router. Called
+  // only as a direct result of a Put() or EndPut() call on the router's owning
+  // portal.
+  IpczResult SendOutboundParcel(Parcel& parcel);
 
   // Closes this side of the Router's own route. Only called on a Router to
   // which a Portal is currently attached, and only by that Portal.
@@ -57,14 +76,38 @@ class Router : public RefCounted {
   // within this call.
   void SetOutwardLink(Ref<RouterLink> link);
 
+  // Accepts an inbound parcel from the outward edge of this router, either to
+  // queue it for retrieval or forward it further inward.
+  bool AcceptInboundParcel(Parcel& parcel);
+
+  // Accepts notification that the other end of the route has been closed and
+  // that the close end transmitted a total of `sequence_length` parcels before
+  // closing.
+  bool AcceptRouteClosureFrom(LinkType link_type,
+                              SequenceNumber sequence_length);
+
+  // Retrieves the next available inbound parcel from this Router, if present.
+  IpczResult GetNextInboundParcel(IpczGetFlags flags,
+                                  void* data,
+                                  size_t* num_bytes,
+                                  IpczHandle* handles,
+                                  size_t* num_handles);
+
  private:
   ~Router() override;
 
   absl::Mutex mutex_;
 
+  // The SequenceNumber of the next outbound parcel to be sent from this router.
+  SequenceNumber next_outbound_sequence_number_ ABSL_GUARDED_BY(mutex_){0};
+
   // The current computed portal status to be reflected by a portal controlling
   // this router, iff this is a terminal router.
   IpczPortalStatus status_ ABSL_GUARDED_BY(mutex_) = {sizeof(status_)};
+
+  // Parcels received from the other end of the route. If this is a terminal
+  // router, these may be retrieved by the application via a controlling portal.
+  ParcelQueue inbound_parcels_ ABSL_GUARDED_BY(mutex_);
 
   // A link to this router's peer.
   //

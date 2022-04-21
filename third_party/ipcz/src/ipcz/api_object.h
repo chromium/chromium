@@ -11,6 +11,8 @@
 
 namespace ipcz {
 
+class Portal;
+
 // Base class for any object which can be referenced by an IpczHandle.
 //
 // A subclass T should inherit from APIObjectImpl<T, U> rather than inheriting
@@ -48,6 +50,10 @@ class APIObject : public RefCounted {
   // Closes this underlying object, ceasing its operations and freeing its
   // resources ASAP.
   virtual IpczResult Close() = 0;
+
+  // Indicates whether it's possible to send this object from `sender`. By
+  // default the answer is NO.
+  virtual bool CanSendFrom(Portal& sender);
 
  protected:
   ~APIObject() override;
