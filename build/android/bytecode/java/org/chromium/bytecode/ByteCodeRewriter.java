@@ -70,20 +70,19 @@ public abstract class ByteCodeRewriter {
                         new ByteArrayInputStream(currentEntryBytes);
                 ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
                 boolean handled = processClassEntry(entry, currentEntryInputStream, outputBuffer);
+
+                ZipEntry newEntry = new ZipEntry(entry.getName());
+                newEntry.setTime(entry.getTime());
+                zipOutputStream.putNextEntry(newEntry);
                 if (handled) {
-                    ZipEntry newEntry = new ZipEntry(entry.getName());
-                    zipOutputStream.putNextEntry(newEntry);
                     zipOutputStream.write(outputBuffer.toByteArray(), 0, outputBuffer.size());
-                    zipOutputStream.closeEntry();
                 } else {
-                    ZipEntry newEntry = new ZipEntry(entry.getName());
-                    zipOutputStream.putNextEntry(newEntry);
                     // processClassEntry may have advanced currentEntryInputStream, so reset it to
                     // copy zip entry contents unmodified.
                     currentEntryInputStream.reset();
                     currentEntryInputStream.transferTo(zipOutputStream);
-                    zipOutputStream.closeEntry();
                 }
+                zipOutputStream.closeEntry();
             }
 
             zipOutputStream.finish();
