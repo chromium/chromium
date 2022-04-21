@@ -65,6 +65,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   METADATA_HEADER(EcheTray);
 
   using GracefulCloseCallback = base::OnceCallback<void()>;
+  using GracefulGoBackCallback = base::RepeatingCallback<void()>;
 
   explicit EcheTray(Shelf* shelf);
   EcheTray(const EcheTray&) = delete;
@@ -105,15 +106,27 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // `offset` will bring the icon back to its original size.
   void ResizeIcon(int offset_dip);
 
-  // Sets graceful close callback functiion. When close Eche Bubble, it will
+  // Sets graceful close callback function. When close Eche Bubble, it will
   // notify to Eche Web to release connection resource.  Be aware that once this
   // is set, close button will not call PurgeAndClose() but rely on Eche Web to
   // close window when connection resource is released; if it is not set, then
-  // it will immediaely call PurgeAndClose() to close window.
+  // it will immediately call PurgeAndClose() to close window.
   void SetGracefulCloseCallback(GracefulCloseCallback graceful_close_callback);
+
+  // Sets graceful go back callback function. When users click the ArrowBack
+  // button in the Eche Bubble, `graceful_go_back_callback` will notify Eche
+  // web content to send the GoBack key event. Be aware that once this is set,
+  // the ArrowBack button will call `web_view.GoBack()` and run
+  // `graceful_go_back_callback` together and rely on Eche web content to send
+  // the GoBack key event to the server when the ArrowBack button is clicked; if
+  // this is not set, then the ArrowBack button will immediately call
+  // `web_view.GoBack()` to go back the previous page.
+  void SetGracefulGoBackCallback(
+      GracefulGoBackCallback graceful_go_back_callback);
 
   views::Button* GetMinimizeButtonForTesting() const;
   views::Button* GetCloseButtonForTesting() const;
+  views::Button* GetArrowBackButtonForTesting() const;
 
   // Initializes the bubble with given parameters. If there is any previous
   // bubble already shown with a different URL it is going to be closed. The
@@ -210,12 +223,14 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   AshWebView* web_view_ = nullptr;
 
   GracefulCloseCallback graceful_close_callback_;
+  GracefulGoBackCallback graceful_go_back_callback_;
 
   // The unload timer to force close EcheTray in case unload error.
   std::unique_ptr<base::DelayTimer> unload_timer_;
 
   views::Button* close_button_ = nullptr;
   views::Button* minimize_button_ = nullptr;
+  views::Button* arrow_back_button_ = nullptr;
 
   // Observers
   base::ScopedObservation<SessionControllerImpl, SessionObserver>

@@ -90,6 +90,9 @@ class EcheAppManager : public KeyedService {
   // This trigger Eche Web to release connection resource.
   void CloseStream();
 
+  // This trigger Eche Web to go back the previous page.
+  void StreamGoBack();
+
   // KeyedService:
   void Shutdown() override;
 

@@ -66,6 +66,12 @@ void EnsureStreamClose(Profile* profile) {
   eche_app_manager->CloseStream();
 }
 
+void StreamGoBack(Profile* profile) {
+  EcheAppManager* eche_app_manager =
+      EcheAppManagerFactory::GetForProfile(profile);
+  eche_app_manager->StreamGoBack();
+}
+
 void LaunchWebApp(const std::string& package_name,
                   const absl::optional<int64_t>& notification_id,
                   const std::u16string& visible_name,
@@ -107,7 +113,8 @@ void LaunchWebApp(const std::string& package_name,
 
   if (features::IsEcheCustomWidgetEnabled()) {
     return LaunchBubble(gurl, icon, visible_name,
-                        base::BindOnce(&EnsureStreamClose, profile));
+                        base::BindOnce(&EnsureStreamClose, profile),
+                        base::BindRepeating(&StreamGoBack, profile));
   }
   web_app::SystemAppLaunchParams params;
   params.url = gurl;

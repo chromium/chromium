@@ -115,7 +115,11 @@ interface DisplayStreamHandler {
 // Enum representing stream action from Eche SWA. Numerical values should not
 // be changed because they must stay in sync with value on for Eche Web app.
 enum StreamAction {
+    // Notify the stream should be close.
     kStreamActionClose,
+
+    // Notify the stream should go back to the previous page.
+    kStreamActionGoBack,
 };
 
 // A generic interface to observe stream action from Eche SWA native code for

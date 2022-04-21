@@ -23,11 +23,13 @@ namespace eche_app {
 void LaunchBubble(const GURL& url,
                   const gfx::Image& icon,
                   const std::u16string& visible_name,
-                  EcheTray::GracefulCloseCallback graceful_close_callback) {
+                  EcheTray::GracefulCloseCallback graceful_close_callback,
+                  EcheTray::GracefulGoBackCallback graceful_go_back_callback) {
   auto* eche_tray = ash::GetEcheTray();
   DCHECK(eche_tray);
   eche_tray->LoadBubble(url, icon, visible_name);
   eche_tray->SetGracefulCloseCallback(std::move(graceful_close_callback));
+  eche_tray->SetGracefulGoBackCallback(std::move(graceful_go_back_callback));
 }
 
 void CloseBubble() {

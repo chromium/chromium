@@ -301,6 +301,13 @@ void EcheTray::SetGracefulCloseCallback(
   graceful_close_callback_ = std::move(graceful_close_callback);
 }
 
+void EcheTray::SetGracefulGoBackCallback(
+    GracefulGoBackCallback graceful_go_back_callback) {
+  if (!graceful_go_back_callback)
+    return;
+  graceful_go_back_callback_ = std::move(graceful_go_back_callback);
+}
+
 void EcheTray::StartGracefulClose() {
   if (!graceful_close_callback_) {
     PurgeAndClose();
@@ -388,8 +395,16 @@ gfx::Size EcheTray::CalculateSizeForEche() const {
 }
 
 void EcheTray::OnArrowBackActivated() {
-  if (web_view_)
+  if (web_view_) {
+    // TODO(b/228909439): Call `web_view_` GoBack with
+    // `graceful_go_back_callback_` together to avoid the back button not
+    // working when the stream action GoBack isn’t ready in web content yet.
+    // Remove this when the stream action GoBack is ready in web content.
     web_view_->GoBack();
+
+    if (graceful_go_back_callback_)
+      graceful_go_back_callback_.Run();
+  }
 }
 
 std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
@@ -402,7 +417,7 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // Add arrowback button
-  header->AddChildView(
+  arrow_back_button_ = header->AddChildView(
       CreateButton(base::BindRepeating(&EcheTray::OnArrowBackActivated,
                                        weak_factory_.GetWeakPtr()),
                    kEcheArrowBackIcon, IDS_APP_ACCNAME_BACK));
@@ -441,6 +456,10 @@ views::Button* EcheTray::GetMinimizeButtonForTesting() const {
 
 views::Button* EcheTray::GetCloseButtonForTesting() const {
   return close_button_;
+}
+
+views::Button* EcheTray::GetArrowBackButtonForTesting() const {
+  return arrow_back_button_;
 }
 
 views::ImageButton* EcheTray::GetIcon() {

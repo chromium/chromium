@@ -36,8 +36,6 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
   EcheStreamStatusChangeHandler& operator=(
       const EcheStreamStatusChangeHandler&) = delete;
 
-  void CloseStream();
-
   // mojom::DisplayStreamHandler:
   void StartStreaming() override;
   void OnStreamStatusChanged(mojom::StreamStatus status) override;
@@ -48,6 +46,9 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
   void RemoveObserver(Observer* observer);
 
   void Bind(mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver);
+
+  void CloseStream();
+  void StreamGoBack();
 
  protected:
   void NotifyStartStreaming();

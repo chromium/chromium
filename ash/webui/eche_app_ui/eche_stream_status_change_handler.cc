@@ -46,18 +46,30 @@ void EcheStreamStatusChangeHandler::SetStreamActionObserver(
   observer_remote_.Bind(std::move(observer));
 }
 
-void EcheStreamStatusChangeHandler::Bind(
-    mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
-  display_stream_receiver_.reset();
-  display_stream_receiver_.Bind(std::move(receiver));
-}
-
 void EcheStreamStatusChangeHandler::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
 void EcheStreamStatusChangeHandler::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+void EcheStreamStatusChangeHandler::Bind(
+    mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
+  display_stream_receiver_.reset();
+  display_stream_receiver_.Bind(std::move(receiver));
+}
+
+void EcheStreamStatusChangeHandler::CloseStream() {
+  if (!observer_remote_.is_bound())
+    return;
+  observer_remote_->OnStreamAction(mojom::StreamAction::kStreamActionClose);
+}
+
+void EcheStreamStatusChangeHandler::StreamGoBack() {
+  if (!observer_remote_.is_bound())
+    return;
+  observer_remote_->OnStreamAction(mojom::StreamAction::kStreamActionGoBack);
 }
 
 void EcheStreamStatusChangeHandler::NotifyStartStreaming() {
@@ -69,12 +81,6 @@ void EcheStreamStatusChangeHandler::NotifyStreamStatusChanged(
     mojom::StreamStatus status) {
   for (auto& observer : observer_list_)
     observer.OnStreamStatusChanged(status);
-}
-
-void EcheStreamStatusChangeHandler::CloseStream() {
-  if (!observer_remote_.is_bound())
-    return;
-  observer_remote_->OnStreamAction(mojom::StreamAction::kStreamActionClose);
 }
 
 }  // namespace eche_app

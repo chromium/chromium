@@ -22,6 +22,7 @@ namespace ash {
 namespace {
 
 bool is_web_content_unloaded_ = false;
+size_t num_web_content_go_back_calls_ = 0;
 
 void UnloadWebContent() {
   is_web_content_unloaded_ = true;
@@ -29,6 +30,14 @@ void UnloadWebContent() {
 
 void ResetUnloadWebContent() {
   is_web_content_unloaded_ = false;
+}
+
+void WebContentGoBack() {
+  ++num_web_content_go_back_calls_;
+}
+
+void ResetWebContentGoBack() {
+  num_web_content_go_back_calls_ = 0;
 }
 
 SkBitmap TestBitmap() {
@@ -257,6 +266,23 @@ TEST_F(EcheTrayTest, EcheTrayCloseButtonClicked) {
   ClickButton(eche_tray()->GetCloseButtonForTesting());
 
   EXPECT_TRUE(is_web_content_unloaded_);
+}
+
+TEST_F(EcheTrayTest, EcheTrayBackButtonClicked) {
+  ResetWebContentGoBack();
+  eche_tray()->SetGracefulGoBackCallback(
+      base::BindRepeating(&WebContentGoBack));
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  ClickButton(eche_tray()->GetArrowBackButtonForTesting());
+
+  EXPECT_EQ(1u, num_web_content_go_back_calls_);
+
+  ClickButton(eche_tray()->GetArrowBackButtonForTesting());
+
+  EXPECT_EQ(2u, num_web_content_go_back_calls_);
 }
 
 }  // namespace ash

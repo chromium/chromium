@@ -137,12 +137,16 @@ void EcheAppManager::BindDisplayStreamHandlerInterface(
   stream_status_change_handler_->Bind(std::move(receiver));
 }
 
+AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
+  return apps_access_manager_.get();
+}
+
 void EcheAppManager::CloseStream() {
   stream_status_change_handler_->CloseStream();
 }
 
-AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
-  return apps_access_manager_.get();
+void EcheAppManager::StreamGoBack() {
+  stream_status_change_handler_->StreamGoBack();
 }
 
 // NOTE: These should be destroyed in the opposite order of how these objects

@@ -24,7 +24,8 @@ namespace eche_app {
 void LaunchBubble(const GURL& url,
                   const gfx::Image& icon,
                   const std::u16string& visible_name,
-                  EcheTray::GracefulCloseCallback graceful_close_callback);
+                  EcheTray::GracefulCloseCallback graceful_close_callback,
+                  EcheTray::GracefulGoBackCallback graceful_go_back_callback);
 
 // It is called from chrome/browser/ash/eche_app/eche_app_manager_factory.cc.
 void CloseBubble();
