@@ -1458,7 +1458,16 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
   if (have_image_contexts)
     promise_image_access_helper_.EndAccess();
 
+  constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
+  constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
+  constexpr int kHistogramTimeBuckets = 50;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
   output_device_->ScheduleOverlays(std::move(overlays));
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Gpu.OutputSurface.ScheduleOverlaysUs",
+      base::TimeTicks::Now() - start_time, kHistogramMinTime, kHistogramMaxTime,
+      kHistogramTimeBuckets);
 #else
   DCHECK(image_contexts.empty());
   output_device_->ScheduleOverlays(std::move(overlays));

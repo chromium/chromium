@@ -991,12 +991,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.IOSurface.CATransactionTime" units="ms"
-    expires_after="2020-08-23">
+<histogram name="GPU.IOSurface.CATransactionTimeUs" units="microseconds"
+    expires_after="2022-12-01">
+  <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
     The time that it took to update the CALayer tree and commit the transaction.
-    This is often affected by IOSurface paging.
+    This is often affected by IOSurface paging. This metric is only collected on
+    Mac, which only has high-resolution clocks.
   </summary>
 </histogram>
 
@@ -1024,12 +1026,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.Mac.Backpressure" units="ms" expires_after="M80">
+<histogram name="Gpu.Mac.BackpressureUs" units="microseconds"
+    expires_after="2022-12-01">
+  <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
-  <owner>khushalsagar@chromium.org</owner>
   <summary>
     The time that the GPU's main CPU thread spends waiting for previous frames'
-    GPU work to complete. Recorded at every frame.
+    GPU work to complete. Recorded at every frame. This metric is only collected
+    on Mac, which only has high-resolution clocks.
   </summary>
 </histogram>
 
@@ -1153,6 +1157,18 @@ chromium-metrics-reviews@google.com.
     Records if any connected monitor is HDR capable. Recorded when the gpu
     process starts. Only recorded on Windows as of M-61. If monitor enumeration
     fails, this metric will not be provided.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.OutputSurface.ScheduleOverlaysUs" units="microseconds"
+    expires_after="2022-12-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <summary>
+    The time that the GPU's main CPU thread spends producing pending CALayer
+    tree on Mac. Recorded when Skia output surface schedules overlays at every
+    frame. This metric is only collected on Mac, which only has high-resolution
+    clocks.
   </summary>
 </histogram>
 

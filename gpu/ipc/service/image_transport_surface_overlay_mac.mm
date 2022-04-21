@@ -126,10 +126,18 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
     gl::GLSurface::PresentationCallback presentation_callback) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::SwapBuffersInternal");
 
+  constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
+  constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
+  constexpr int kHistogramTimeBuckets = 50;
+
   // Do a GL fence for flush to apply back-pressure before drawing.
   {
-    SCOPED_UMA_HISTOGRAM_TIMER("Gpu.Mac.Backpressure");
+    base::TimeTicks start_time = base::TimeTicks::Now();
     ApplyBackpressure();
+
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Gpu.Mac.BackpressureUs", base::TimeTicks::Now() - start_time,
+        kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   }
 
   // Update the CALayer tree in the GPU process.
@@ -137,9 +145,12 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
   {
     TRACE_EVENT0("gpu", "CommitPendingTreesToCA");
     ca_layer_tree_coordinator_->CommitPendingTreesToCA();
-    base::TimeTicks after_transaction_time = base::TimeTicks::Now();
-    UMA_HISTOGRAM_TIMES("GPU.IOSurface.CATransactionTime",
-                        after_transaction_time - before_transaction_time);
+
+    base::TimeDelta transaction_time =
+        base::TimeTicks::Now() - before_transaction_time;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.IOSurface.CATransactionTimeUs", transaction_time,
+        kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   }
 
   // Populate the swap-complete parameters to send to the browser.
