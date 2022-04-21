@@ -285,11 +285,7 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
     // this check ahead of checking whether any credential matched, as otherwise
     // an attacker could deliberately pass an invalid icon and do a timing
     // attack to see if a credential matches.
-    // Before SecurePaymentConfirmationAPIV3, the iconMustBeShown option is not
-    // available and we always reject in this case.
-    if (!base::FeatureList::IsEnabled(
-            features::kSecurePaymentConfirmationAPIV3) ||
-        request->mojo_request->instrument->iconMustBeShown) {
+    if (request->mojo_request->instrument->iconMustBeShown) {
       request->delegate->OnPaymentAppCreationError(
           errors::kInvalidIcon, AppCreationFailureReason::ICON_DOWNLOAD_FAILED);
       request->delegate->OnDoneCreatingPaymentApps();

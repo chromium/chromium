@@ -67,31 +67,15 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "the \"instrument.icon\" field.");
     return nullptr;
   }
-  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV3Enabled()) {
-    if ((!request->hasPayeeOrigin() && !request->hasPayeeName()) ||
-        (request->hasPayeeOrigin() && request->payeeOrigin().IsEmpty()) ||
-        (request->hasPayeeName() && request->payeeName().IsEmpty())) {
-      exception_state.ThrowTypeError(
-          "The \"secure-payment-confirmation\" method requires a non-empty "
-          "\"payeeOrigin\" or \"payeeName\" field.");
-      return nullptr;
-    }
-    if (request->hasPayeeOrigin()) {
-      KURL payee_url(request->payeeOrigin());
-      if (!payee_url.IsValid() || !payee_url.ProtocolIs("https")) {
-        exception_state.ThrowTypeError(
-            "The \"secure-payment-confirmation\" method requires a valid HTTPS "
-            "URL in the \"payeeOrigin\" field.");
-        return nullptr;
-      }
-    }
-  } else {
-    if (!request->hasPayeeOrigin() || request->payeeOrigin().IsEmpty()) {
-      exception_state.ThrowTypeError(
-          "The \"secure-payment-confirmation\" method requires a non-empty "
-          "\"payeeOrigin\" field.");
-      return nullptr;
-    }
+  if ((!request->hasPayeeOrigin() && !request->hasPayeeName()) ||
+      (request->hasPayeeOrigin() && request->payeeOrigin().IsEmpty()) ||
+      (request->hasPayeeName() && request->payeeName().IsEmpty())) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"payeeOrigin\" or \"payeeName\" field.");
+    return nullptr;
+  }
+  if (request->hasPayeeOrigin()) {
     KURL payee_url(request->payeeOrigin());
     if (!payee_url.IsValid() || !payee_url.ProtocolIs("https")) {
       exception_state.ThrowTypeError(
@@ -100,13 +84,11 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
       return nullptr;
     }
   }
-  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV3Enabled()) {
-    if (request->rpId().IsEmpty()) {
-      exception_state.ThrowTypeError(
-          "The \"secure-payment-confirmation\" method requires a non-empty "
-          "\"rpId\" field.");
-      return nullptr;
-    }
+  if (request->rpId().IsEmpty()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"rpId\" field.");
+    return nullptr;
   }
 
   return mojo::ConvertTo<
