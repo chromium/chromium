@@ -147,6 +147,9 @@ const base::Feature kUseNewDownloadWarnings{"UseNewDownloadWarnings",
 const base::Feature kVisualFeaturesSizes{"VisualFeaturesSizes",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kVisualFeaturesInCsppPings{
+    "VisualFeaturesInCsppPings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should
 // be set to true if the experiment state should be listed on

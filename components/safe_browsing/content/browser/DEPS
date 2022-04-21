@@ -10,6 +10,7 @@ include_rules = [
   "+components/sessions/content",
   "+components/sessions/core/session_id.h",
   "+components/version_info",
+  "+components/zoom",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
