@@ -2404,12 +2404,12 @@ void URLLoader::ReportFlaggedResponseCookies() {
          url_request_->maybe_stored_cookies()) {
       if (ShouldNotifyAboutCookie(
               cookie_line_and_access_result.access_result.status)) {
-        mojom::CookieOrLinePtr cookie_or_line = mojom::CookieOrLine::New();
+        mojom::CookieOrLinePtr cookie_or_line;
         if (cookie_line_and_access_result.cookie.has_value()) {
-          cookie_or_line->set_cookie(
+          cookie_or_line = mojom::CookieOrLine::NewCookie(
               cookie_line_and_access_result.cookie.value());
         } else {
-          cookie_or_line->set_cookie_string(
+          cookie_or_line = mojom::CookieOrLine::NewCookieString(
               cookie_line_and_access_result.cookie_string);
         }
 
