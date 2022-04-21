@@ -979,8 +979,9 @@ LocalizedError::PageState LocalizedError::GetPageState(
   } else {
     result.strings.SetStringPath("title", failed_url_string);
 
-    // If we do not have a meaningful hostname to display, show the scheme.
-    if (host_name.empty() && !failed_url.IsStandard()) {
+    // If the page is blocked by policy, and no hostname is available to show,
+    // instead show the scheme.
+    if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR && host_name.empty()) {
       options.heading_resource_id = IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME;
       host_name = base::UTF8ToUTF16(failed_url.scheme());
     }
