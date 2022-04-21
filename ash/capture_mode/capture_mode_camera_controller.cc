@@ -276,17 +276,28 @@ gfx::Size CalculatePreviewInitialSize() {
 }
 
 // Returns the appropriate `message_id` for ChromeVox alert on setting camera
-// preview snap position.
-int GetMessageIdForSnapPosition(CameraPreviewSnapPosition snap_position) {
+// preview snap position. `for_collision_avoidance` indicates whether the
+// preview snap position updating happens because of its bounds overlap with
+// other system surfaces.
+int GetMessageIdForSnapPosition(CameraPreviewSnapPosition snap_position,
+                                bool for_collision_avoidance) {
   switch (snap_position) {
     case CameraPreviewSnapPosition::kTopRight:
-      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_RIGHT;
+      return for_collision_avoidance
+                 ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_RIGHT_ON_CONFLICT
+                 : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_RIGHT;
     case CameraPreviewSnapPosition::kTopLeft:
-      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_LEFT;
+      return for_collision_avoidance
+                 ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_LEFT_ON_CONFLICT
+                 : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_LEFT;
     case CameraPreviewSnapPosition::kBottomRight:
-      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_RIGHT;
+      return for_collision_avoidance
+                 ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_RIGHT_ON_CONFLICT
+                 : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_RIGHT;
     case CameraPreviewSnapPosition::kBottomLeft:
-      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT;
+      return for_collision_avoidance
+                 ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT_ON_CONFLICT
+                 : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT;
   }
 }
 
@@ -493,7 +504,7 @@ void CaptureModeCameraController::SetCameraPreviewSnapPosition(
   // Trigger a11y alert on setting camera preview snap position even though the
   // snap position may actually not change.
   capture_mode_util::TriggerAccessibilityAlert(
-      GetMessageIdForSnapPosition(value));
+      GetMessageIdForSnapPosition(value, /*for_collision_avoidance=*/false));
 
   camera_preview_snap_position_ = value;
   MaybeUpdatePreviewWidget(animate);
@@ -855,7 +866,12 @@ gfx::Rect CaptureModeCameraController::CalculatePreviewWidgetTargetBounds(
       wm::ConvertRectToScreen(parent, &preview_bounds_in_screen);
 
     if (!preview_bounds_in_screen.Intersects(collision_rect_screen)) {
-      camera_preview_snap_position_ = snap_position;
+      if (snap_position != camera_preview_snap_position_) {
+        camera_preview_snap_position_ = snap_position;
+        capture_mode_util::TriggerAccessibilityAlert(
+            GetMessageIdForSnapPosition(snap_position,
+                                        /*for_collision_avoidance=*/true));
+      }
       // Notice return `preview_bounds` instead of `preview_bounds_in_screen`,
       // since it's the target bounds for camera preview in its parent's
       // coordinate system.

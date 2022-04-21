@@ -4040,6 +4040,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT" desc="Alert spoken by screen readers when camera preview being snapped to lower left corner">
         Camera snapped to lower left corner
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_RIGHT_ON_CONFLICT" desc="Alert spoken by screen readers when camera preview being snapped to upper right corner because its bounds overlap with other system surface.">
+        Camera snapped to upper right corner. Conflict with system surface.
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_LEFT_ON_CONFLICT" desc="Alert spoken by screen readers when camera preview being snapped to upper left corner because its bounds overlap with other system surface.">
+        Camera snapped to upper left corner. Conflict with system surface.
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_RIGHT_ON_CONFLICT" desc="Alert spoken by screen readers when camera preview being snapped to lower right corner because its bounds overlap with other system surface.">
+        Camera snapped to lower right corner. Conflict with system surface.
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT_ON_CONFLICT" desc="Alert spoken by screen readers when camera preview being snapped to lower left corner because its bounds overlap with other system surface.">
+        Camera snapped to lower left corner. Conflict with system surface.
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_RECORD_MICROPHONE" desc="Alert spoken by screen readers when user tabs to record microphone setting.">
         Record microphone <ph name="CURRENT_STATE">$1<ex>off</ex></ph>, Press enter to turn microphone recording <ph name="NEW_STATE">$2<ex>on</ex></ph>
       </message>
