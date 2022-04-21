@@ -1,6 +1,12 @@
 <style include="privacy-guide-fragment-shared"></style>
 <template is="dom-if" if="[[enablePrivacyGuide2_]]">
   <div class="header-phase2" focus-element tabindex="-1">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/safe_browsing_graphic_dark_v2.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/safe_browsing_graphic_v2.svg">
+    </picture>
     <h2 class="header-label-phase2">
       $i18n{privacyGuideSafeBrowsingCardHeader}
     </h2>

@@ -54,8 +54,47 @@
     padding-bottom: var(--privacy-guide-footer-total-height);
     position: relative;
   }
+
+  #background  {
+    height: 100px;
+    left: 50%;
+    position: absolute;
+    top: 24px;
+    transform: translateX(-50%);
+    width: 360px;
+  }
+
+  #background picture {
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
 </style>
 <div id="privacyGuideCard" on-keydown="onKeyDown_" part="privacyGuideCard">
+  <div id="background" aria-hidden="true"
+      hidden$="[[!showBackground_(privacyGuideStep_, isPrivacyGuideV2)]]">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/clouds_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/clouds_graphic.svg">
+    </picture>
+    <picture>
+      <source
+          srcset="./images/privacy_guide/hills_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/hills_graphic.svg">
+    </picture>
+    <picture>
+      <source
+          srcset="./images/privacy_guide/horizon_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/horizon_graphic.svg">
+    </picture>
+  </div>
   <cr-view-manager id="viewManager">
     <privacy-guide-welcome-fragment id="[[privacyGuideStepEnum_.WELCOME]]"
         class="managed-fragment" on-start-button-click="onNextButtonClick_"

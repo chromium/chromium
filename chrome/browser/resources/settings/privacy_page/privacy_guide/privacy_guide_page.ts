@@ -112,6 +112,12 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       isManaged_: {
         type: Boolean,
         value: false,
+      },
+
+      isPrivacyGuideV2: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false,
       }
     };
   }
@@ -134,6 +140,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   // The privacy guide flag is only enabled when the user was not managed at
   // the time settings were loaded, so this is default false.
   private isManaged_: boolean = false;
+  private isPrivacyGuideV2: boolean = false;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -395,7 +402,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         this.navigateForward_();
       }
     } else {
-      if (this.animationsEnabled_ && playAnimation) {
+      if (this.animationsEnabled_ && playAnimation && !this.isPrivacyGuideV2) {
         // In the LTR mode, the user scrolls LTR, and the animation makes it
         // the next page slide in RTL. If the user scrolls back or if
         // the display mode is RTL, the animation is inverted.
@@ -502,6 +509,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         isLtr ? this.navigateForward_() : this.navigateBackward_();
         break;
     }
+  }
+
+  private showBackground_(): boolean {
+    return this.isPrivacyGuideV2 && this.showAnySettingFragment_();
   }
 }
 
