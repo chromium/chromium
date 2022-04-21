@@ -4,9 +4,7 @@
 
 // ARIA reflection
 // https://w3c.github.io/aria/#idl-interface
-[
-    RuntimeEnabled=AccessibilityObjectModel
-] interface mixin AccessibilityRole {
+interface mixin AccessibilityRole {
   [CEReactions, Reflect] attribute DOMString? role;
 };
 

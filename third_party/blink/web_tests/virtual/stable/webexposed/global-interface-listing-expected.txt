@@ -1845,6 +1845,7 @@ interface Element : Node
     getter part
     getter prefix
     getter previousElementSibling
+    getter role
     getter scrollHeight
     getter scrollLeft
     getter scrollTop
@@ -1960,6 +1961,7 @@ interface Element : Node
     setter onwebkitfullscreenerror
     setter outerHTML
     setter part
+    setter role
     setter scrollLeft
     setter scrollTop
     setter slot
@@ -2006,6 +2008,7 @@ interface ElementInternals
     getter ariaValueText
     getter form
     getter labels
+    getter role
     getter shadowRoot
     getter states
     getter validationMessage
@@ -2055,6 +2058,7 @@ interface ElementInternals
     setter ariaValueMin
     setter ariaValueNow
     setter ariaValueText
+    setter role
 interface EncodedAudioChunk
     attribute @@toStringTag
     getter byteLength
