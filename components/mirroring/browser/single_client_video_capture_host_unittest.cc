@@ -160,7 +160,7 @@ class MockVideoCaptureObserver final
   MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
   MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));
   void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
-    if (result->which() == media::mojom::VideoCaptureResult::Tag::STATE)
+    if (result->which() == media::mojom::VideoCaptureResult::Tag::kState)
       OnStateChangedCall(result->get_state());
     else
       OnVideoCaptureErrorCall(result->get_error_code());

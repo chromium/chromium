@@ -94,7 +94,7 @@ void VideoCaptureClient::RequestRefreshFrame() {
 void VideoCaptureClient::OnStateChanged(
     media::mojom::VideoCaptureResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result->which() == media::mojom::VideoCaptureResult::Tag::STATE) {
+  if (result->which() == media::mojom::VideoCaptureResult::Tag::kState) {
     media::mojom::VideoCaptureState state = result->get_state();
     DVLOG(2) << __func__ << " state: " << state;
     switch (state) {
