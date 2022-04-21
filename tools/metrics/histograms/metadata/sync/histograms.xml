@@ -967,17 +967,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Startup.PolicyLoadStartupDelay" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2022-10-17">
   <owner>ydago@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
     The time spent waiting for policies to load before starting the sync engine.
+    This is recorded every time the sync engine is started after having to wait
+    for the browser policies from all sources to be loaded. In case the policy
+    service already had all of its policies loaded by the time the sync ending
+    starts, this records base::TimeDelta().
   </summary>
 </histogram>
 
-<histogram name="Sync.Startup.PolicyLoadTimeout2" enum="Boolean"
-    expires_after="2022-04-17">
+<histogram name="Sync.Startup.PolicyLoadTimeout2" enum="BooleanTimedOut"
+    expires_after="2022-10-17">
   <owner>ydago@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
