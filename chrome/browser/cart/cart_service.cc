@@ -77,9 +77,9 @@ bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
 }
 
 absl::optional<base::Value> JSONToDictionary(int resource_id) {
-  base::StringPiece json_resource(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id));
-  absl::optional<base::Value> value = base::JSONReader::Read(json_resource);
+  absl::optional<base::Value> value = base::JSONReader::Read(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          resource_id));
   DCHECK(value && value.has_value() && value->is_dict());
   return value;
 }

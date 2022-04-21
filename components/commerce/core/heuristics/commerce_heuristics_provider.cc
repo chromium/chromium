@@ -33,8 +33,9 @@ const std::map<std::string, std::string>& GetCartPatternMapping() {
     const base::Value json(
         base::JSONReader::Read(
             commerce::kCartPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_CART_DOMAIN_CART_URL_REGEX_JSON)
+                ? ui::ResourceBundle::GetSharedInstance()
+                      .LoadDataResourceString(
+                          IDR_CART_DOMAIN_CART_URL_REGEX_JSON)
                 : commerce::kCartPatternMapping.Get())
             .value());
     DCHECK(json.is_dict());
@@ -52,8 +53,9 @@ const std::map<std::string, std::string>& GetCheckoutPatternMapping() {
     const base::Value json(
         base::JSONReader::Read(
             commerce::kCheckoutPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_CHECKOUT_URL_REGEX_DOMAIN_MAPPING_JSON)
+                ? ui::ResourceBundle::GetSharedInstance()
+                      .LoadDataResourceString(
+                          IDR_CHECKOUT_URL_REGEX_DOMAIN_MAPPING_JSON)
                 : commerce::kCheckoutPatternMapping.Get())
             .value());
     DCHECK(json.is_dict());

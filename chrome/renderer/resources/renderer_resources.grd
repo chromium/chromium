@@ -14,9 +14,9 @@
       <include name="IDR_DISABLED_PLUGIN_HTML" file="plugins/disabled_plugin.html" flattenhtml="true" type="BINDATA" />
       <include name="IDR_PDF_PLUGIN_HTML" file="plugins/pdf_plugin.html" flattenhtml="true" type="BINDATA" />
       <include name="IDR_CART_PRODUCT_EXTRACTION_JS" file="cart/cart-product-extraction.js" type="BINDATA"/>
-      <include name="IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON" file="cart/cart_domain_product_id_regex.json" type="BINDATA"/>
-      <include name="IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON" file="cart/skip_add_to_cart_request_domain_mapping.json" type="BINDATA"/>
-      <include name="IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON" file="cart/purchase_url_regex_domain_mapping.json" type="BINDATA"/>
+      <include name="IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON" file="cart/cart_domain_product_id_regex.json" compress="gzip" type="BINDATA"/>
+      <include name="IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON" file="cart/skip_add_to_cart_request_domain_mapping.json" compress="gzip" type="BINDATA"/>
+      <include name="IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON" file="cart/purchase_url_regex_domain_mapping.json" compress="gzip" type="BINDATA"/>
 
       <!-- Extension libraries. -->
       <if expr="enable_extensions">

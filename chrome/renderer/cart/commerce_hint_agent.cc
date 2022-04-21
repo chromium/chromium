@@ -288,8 +288,9 @@ const std::map<std::string, std::string>& GetPurchaseURLPatternMapping() {
     const base::Value json(
         base::JSONReader::Read(
             kPurchaseURLPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON)
+                ? ui::ResourceBundle::GetSharedInstance()
+                      .LoadDataResourceString(
+                          IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON)
                 : kPurchaseURLPatternMapping.Get())
             .value());
     DCHECK(json.is_dict());
@@ -400,8 +401,9 @@ const std::map<std::string, std::string>& GetSkipAddToCartMapping() {
     const base::Value json(
         base::JSONReader::Read(
             kSkipAddToCartMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON)
+                ? ui::ResourceBundle::GetSharedInstance()
+                      .LoadDataResourceString(
+                          IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON)
                 : kSkipAddToCartMapping.Get())
             .value());
     DCHECK(json.is_dict());
@@ -565,9 +567,9 @@ const WebString& GetProductExtractionScript(
         }
         const std::string id_extraction_map =
             kProductIdPatternMapping.Get().empty()
-                ? std::string(ui::ResourceBundle::GetSharedInstance()
-                                  .GetRawDataResource(
-                                      IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON))
+                ? ui::ResourceBundle::GetSharedInstance()
+                      .LoadDataResourceString(
+                          IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON)
                 : kProductIdPatternMapping.Get();
         script_string = "var idExtractionMap = " + id_extraction_map + ";\n" +
                         script_string;
