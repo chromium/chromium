@@ -8610,6 +8610,124 @@ const CSSValue* WebkitTextStrokeWidth::CSSValueFromComputedStyleInternal(
   return ZoomAdjustedPixelValue(style.TextStrokeWidth(), style);
 }
 
+const CSSValue* ToggleGroup::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return css_parsing_utils::ConsumeIdent(range);
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeToggleGroup, range, context);
+}
+
+const CSSValue* ToggleGroup::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  const auto* toggle_group = style.ToggleGroup();
+  if (!toggle_group)
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+
+  CSSValueList* result_list = CSSValueList::CreateCommaSeparated();
+  for (const auto& item : toggle_group->Groups()) {
+    CSSValueList* item_list = CSSValueList::CreateSpaceSeparated();
+    item_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(item.Name()));
+    switch (item.Scope()) {
+      case ToggleScope::kWide:
+        break;
+      case ToggleScope::kNarrow:
+        item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kSelf));
+        break;
+    }
+    result_list->Append(*item_list);
+  }
+  return result_list;
+}
+
+const CSSValue* ToggleRoot::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return css_parsing_utils::ConsumeIdent(range);
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeToggleSpecifier, range, context);
+}
+
+const CSSValue* ToggleRoot::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  const auto* toggle_root = style.ToggleRoot();
+  if (!toggle_root)
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+
+  CSSValueList* result_list = CSSValueList::CreateCommaSeparated();
+  for (const auto& item : toggle_root->Roots()) {
+    CSSValueList* item_list = CSSValueList::CreateSpaceSeparated();
+    item_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(item.Name()));
+    if (item.MaximumState() != 1 || item.InitialState() != 0) {
+      CSSValueList* number_list = CSSValueList::CreateSlashSeparated();
+      if (item.InitialState() != 0) {
+        number_list->Append(*CSSNumericLiteralValue::Create(
+            item.InitialState(), CSSPrimitiveValue::UnitType::kInteger));
+      }
+      number_list->Append(*CSSNumericLiteralValue::Create(
+          item.MaximumState(), CSSPrimitiveValue::UnitType::kInteger));
+      item_list->Append(*number_list);
+    }
+    if (item.IsSticky())
+      item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kSticky));
+    if (item.IsGroup())
+      item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kGroup));
+    switch (item.Scope()) {
+      case ToggleScope::kWide:
+        break;
+      case ToggleScope::kNarrow:
+        item_list->Append(*CSSIdentifierValue::Create(CSSValueID::kSelf));
+        break;
+    }
+    result_list->Append(*item_list);
+  }
+  return result_list;
+}
+
+const CSSValue* ToggleTrigger::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return css_parsing_utils::ConsumeIdent(range);
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeToggleTrigger, range, context);
+}
+
+const CSSValue* ToggleTrigger::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  const auto* toggle_trigger = style.ToggleTrigger();
+  if (!toggle_trigger)
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+
+  CSSValueList* result_list = CSSValueList::CreateCommaSeparated();
+  for (const auto& item : toggle_trigger->Triggers()) {
+    CSSValueList* item_list = CSSValueList::CreateSpaceSeparated();
+    item_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(item.Name()));
+    switch (item.Mode()) {
+      case ToggleTriggerMode::kAdd:
+        DCHECK_EQ(item.Value(), 1u);
+        break;
+      case ToggleTriggerMode::kSet:
+        item_list->Append(*CSSNumericLiteralValue::Create(
+            item.Value(), CSSPrimitiveValue::UnitType::kInteger));
+        break;
+    }
+    result_list->Append(*item_list);
+  }
+  return result_list;
+}
+
 const CSSValue* WebkitTransformOriginX::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

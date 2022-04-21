@@ -2375,4 +2375,124 @@ ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
   return flags;
 }
 
+scoped_refptr<ToggleGroupList> StyleBuilderConverter::ConvertToggleGroup(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(ident->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+
+  scoped_refptr<ToggleGroupList> result = ToggleGroupList::Create();
+  for (const auto& item : To<CSSValueList>(value)) {
+    const auto* item_list = To<CSSValueList>(item.Get());
+    DCHECK_LE(1u, item_list->length());
+    DCHECK_LE(item_list->length(), 2u);
+    const AtomicString& name =
+        To<CSSCustomIdentValue>(item_list->Item(0)).Value();
+    ToggleScope scope = ToggleScope::kWide;
+    if (item_list->length() == 2u) {
+      DCHECK_EQ(To<CSSIdentifierValue>(item_list->Item(1)).GetValueID(),
+                CSSValueID::kSelf);
+      scope = ToggleScope::kNarrow;
+    }
+
+    result->Append(ToggleGroup(name, scope));
+  }
+  return result;
+}
+scoped_refptr<ToggleRootList> StyleBuilderConverter::ConvertToggleRoot(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(ident->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+
+  scoped_refptr<ToggleRootList> result = ToggleRootList::Create();
+  for (const auto& item : To<CSSValueList>(value)) {
+    const auto* item_list = To<CSSValueList>(item.Get());
+    DCHECK_LE(1u, item_list->length());
+    const AtomicString& name =
+        To<CSSCustomIdentValue>(item_list->Item(0)).Value();
+
+    wtf_size_t index = 1u;
+
+    uint32_t initial_state = 0;
+    uint32_t maximum_state = 1;
+    if (index < item_list->length()) {
+      if (const auto* number_list =
+              DynamicTo<CSSValueList>(item_list->Item(index))) {
+        ++index;
+        DCHECK_LE(1u, number_list->length());
+        DCHECK_LE(number_list->length(), 2u);
+        if (number_list->length() == 2u) {
+          initial_state =
+              To<CSSPrimitiveValue>(number_list->Item(0)).GetValue<uint32_t>();
+        }
+        maximum_state =
+            To<CSSPrimitiveValue>(number_list->Last()).GetValue<uint32_t>();
+      }
+    }
+
+    bool is_sticky = false;
+    if (index < item_list->length() &&
+        To<CSSIdentifierValue>(item_list->Item(index)).GetValueID() ==
+            CSSValueID::kSticky) {
+      ++index;
+      is_sticky = true;
+    }
+
+    bool is_group = false;
+    if (index < item_list->length() &&
+        To<CSSIdentifierValue>(item_list->Item(index)).GetValueID() ==
+            CSSValueID::kGroup) {
+      ++index;
+      is_group = true;
+    }
+
+    ToggleScope scope = ToggleScope::kWide;
+    if (index < item_list->length() &&
+        To<CSSIdentifierValue>(item_list->Item(index)).GetValueID() ==
+            CSSValueID::kSelf) {
+      ++index;
+      scope = ToggleScope::kNarrow;
+    }
+    DCHECK_EQ(item_list->length(), index);
+
+    result->Append(ToggleRoot(name, initial_state, maximum_state, is_sticky,
+                              is_group, scope));
+  }
+  return result;
+}
+scoped_refptr<ToggleTriggerList> StyleBuilderConverter::ConvertToggleTrigger(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(ident->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+
+  scoped_refptr<ToggleTriggerList> result = ToggleTriggerList::Create();
+  for (const auto& item : To<CSSValueList>(value)) {
+    const auto* item_list = To<CSSValueList>(item.Get());
+    DCHECK_LE(1u, item_list->length());
+    DCHECK_LE(item_list->length(), 2u);
+    const AtomicString& name =
+        To<CSSCustomIdentValue>(item_list->Item(0)).Value();
+    ToggleTriggerMode mode;
+    uint32_t value;
+    if (item_list->length() == 2u) {
+      mode = ToggleTriggerMode::kSet;
+      value = To<CSSPrimitiveValue>(item_list->Item(1)).GetValue<uint32_t>();
+    } else {
+      mode = ToggleTriggerMode::kAdd;
+      value = 1;
+    }
+
+    result->Append(ToggleTrigger(name, mode, value));
+  }
+  return result;
+}
+
 }  // namespace blink

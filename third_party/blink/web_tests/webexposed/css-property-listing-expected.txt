@@ -371,6 +371,9 @@ All changes to this list should go through Blink's feature review process: http:
     text-transform
     text-underline-offset
     text-underline-position
+    toggle-group
+    toggle-root
+    toggle-trigger
     top
     touch-action
     transform
@@ -742,6 +745,9 @@ All changes to this list should go through Blink's feature review process: http:
     text-emphasis
         text-emphasis-color
         text-emphasis-style
+    toggle
+        toggle-root
+        toggle-trigger
     transition
         transition-delay
         transition-duration

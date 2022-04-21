@@ -335,6 +335,9 @@ text-shadow: none
 text-size-adjust: auto
 text-transform: none
 text-underline-position: auto
+toggle-group: none
+toggle-root: none
+toggle-trigger: none
 top: auto
 touch-action: auto
 transform: none

@@ -316,6 +316,16 @@ class StyleBuilderConverter {
       const Document&,
       const CSSValueList& scheme_list,
       Vector<AtomicString>* color_schemes);
+
+  static scoped_refptr<ToggleGroupList> ConvertToggleGroup(
+      const StyleResolverState&,
+      const CSSValue&);
+  static scoped_refptr<ToggleRootList> ConvertToggleRoot(
+      const StyleResolverState&,
+      const CSSValue&);
+  static scoped_refptr<ToggleTriggerList> ConvertToggleTrigger(
+      const StyleResolverState&,
+      const CSSValue&);
 };
 
 template <typename T>

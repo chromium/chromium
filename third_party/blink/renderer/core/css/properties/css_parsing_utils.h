@@ -83,8 +83,10 @@ CSSPrimitiveValue* ConsumeInteger(
     CSSParserTokenRange&,
     const CSSParserContext&,
     double minimum_value = -std::numeric_limits<double>::max());
-CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(CSSParserTokenRange&,
-                                              const CSSParserContext&);
+CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
+    CSSParserTokenRange&,
+    const CSSParserContext&,
+    CSSPrimitiveValue::ValueRange = CSSPrimitiveValue::ValueRange::kInteger);
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenRange&,
                                           const CSSParserContext&);
 bool ConsumeNumberRaw(CSSParserTokenRange&,
@@ -465,6 +467,10 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   bool use_legacy_parsing);
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange&);
+
+CSSValue* ConsumeToggleGroup(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeToggleTrigger(CSSParserTokenRange&, const CSSParserContext&);
 
 CSSValue* ConsumeTransformValue(CSSParserTokenRange&,
                                 const CSSParserContext&,

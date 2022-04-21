@@ -43,6 +43,9 @@ class CORE_EXPORT StylePropertySerializer {
   String AsText() const;
   String SerializeShorthand(CSSPropertyID) const;
 
+  static bool IsValidToggleShorthand(const CSSValue* toggle_root,
+                                     const CSSValue* toggle_trigger);
+
  private:
   String GetCommonValue(const StylePropertyShorthand&) const;
   String BorderPropertyValue(const StylePropertyShorthand&,

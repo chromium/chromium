@@ -109,6 +109,12 @@ blink_core_sources_style = [
   "text_decoration_thickness.cc",
   "text_decoration_thickness.h",
   "text_size_adjust.h",
+  "toggle_group.h",
+  "toggle_group_list.h",
+  "toggle_root.h",
+  "toggle_root_list.h",
+  "toggle_trigger.h",
+  "toggle_trigger_list.h",
   "unzoomed_length.h",
 ]
 

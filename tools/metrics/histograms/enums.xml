@@ -60144,6 +60144,10 @@ Called by update_use_counter_css.py.-->
   <int value="712" label="page-transition-tag"/>
   <int value="713" label="object-view-box"/>
   <int value="714" label="object-overflow"/>
+  <int value="715" label="toggle-group"/>
+  <int value="716" label="toggle-root"/>
+  <int value="717" label="toggle-trigger"/>
+  <int value="718" label="toggle"/>
 </enum>
 
 <enum name="MappedEditingCommands">

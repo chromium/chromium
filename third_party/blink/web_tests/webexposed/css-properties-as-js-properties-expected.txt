@@ -430,6 +430,10 @@ textSizeAdjust
 textTransform
 textUnderlineOffset
 textUnderlinePosition
+toggle
+toggleGroup
+toggleRoot
+toggleTrigger
 top
 touchAction
 transform

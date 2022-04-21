@@ -740,14 +740,36 @@ CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
 // function with this behavior allows us to implement [1] gradually.
 //
 // [1] https://drafts.csswg.org/css-values-4/#calc-type-checking
-CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(CSSParserTokenRange& range,
-                                              const CSSParserContext& context) {
+CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    CSSPrimitiveValue::ValueRange value_range) {
   CSSParserTokenRange int_range(range);
-  if (CSSPrimitiveValue* value = ConsumeInteger(int_range, context)) {
+  double minimum_value = -std::numeric_limits<double>::max();
+  switch (value_range) {
+    case CSSPrimitiveValue::ValueRange::kAll:
+      NOTREACHED() << "unexpected value range for integer parsing";
+      [[fallthrough]];
+    case CSSPrimitiveValue::ValueRange::kInteger:
+      minimum_value = -std::numeric_limits<double>::max();
+      break;
+    case CSSPrimitiveValue::ValueRange::kNonNegative:
+      NOTREACHED() << "unexpected value range for integer parsing";
+      [[fallthrough]];
+    case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
+      minimum_value = 0.0;
+      break;
+    case CSSPrimitiveValue::ValueRange::kPositiveInteger:
+      minimum_value = 1.0;
+      break;
+  }
+  if (CSSPrimitiveValue* value =
+          ConsumeInteger(int_range, context, minimum_value)) {
     range = int_range;
     return value;
   }
-  MathFunctionParser math_parser(range, context);
+
+  MathFunctionParser math_parser(range, context, value_range);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (calculation->Category() != kCalcNumber)
       return nullptr;
@@ -5059,6 +5081,122 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange& range) {
 
   if (!list->length())
     return nullptr;
+  return list;
+}
+
+CSSValue* ConsumeToggleGroup(CSSParserTokenRange& range,
+                             const CSSParserContext& context) {
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return nullptr;
+  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
+  if (!toggle_name)
+    return nullptr;
+
+  CSSIdentifierValue* self_value = ConsumeIdent<CSSValueID::kSelf>(range);
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*toggle_name);
+  if (self_value)
+    list->Append(*self_value);
+
+  return list;
+}
+
+CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange& range,
+                                 const CSSParserContext& context) {
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return nullptr;
+  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
+  if (!toggle_name)
+    return nullptr;
+
+  CSSPrimitiveValue* initial_state_value = nullptr;
+  CSSPrimitiveValue* maximum_state_value = nullptr;
+  CSSIdentifierValue* sticky_value = nullptr;
+  CSSIdentifierValue* group_value = nullptr;
+  CSSIdentifierValue* self_value = nullptr;
+
+  while (!range.AtEnd()) {
+    if (!sticky_value) {
+      sticky_value = ConsumeIdent<CSSValueID::kSticky>(range);
+      if (sticky_value)
+        continue;
+    }
+    if (!group_value) {
+      group_value = ConsumeIdent<CSSValueID::kGroup>(range);
+      if (group_value)
+        continue;
+    }
+    if (!self_value) {
+      self_value = ConsumeIdent<CSSValueID::kSelf>(range);
+      if (self_value)
+        continue;
+    }
+    if (!maximum_state_value) {
+      DCHECK(!initial_state_value);
+
+      // [ <integer [0,∞]> / ]? <integer [1,∞]>
+      CSSParserTokenRange saved_range(range);
+      initial_state_value = ConsumeIntegerOrNumberCalc(
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
+      if (initial_state_value) {
+        if (!ConsumeSlashIncludingWhitespace(range)) {
+          // Retry as just <integer [1,∞]>.
+          range = saved_range;
+          initial_state_value = nullptr;
+        }
+
+        maximum_state_value = ConsumeIntegerOrNumberCalc(
+            range, context, CSSPrimitiveValue::ValueRange::kPositiveInteger);
+        if (maximum_state_value)
+          continue;
+        // Note: If this is ever used in a context where it could be
+        // followed by another slash, we'd need to retry here if we
+        // didn't already retry above, or better separate the code for
+        // parsing two numbers from the code for parsing one.
+        range = saved_range;
+        initial_state_value = nullptr;
+      }
+    }
+    break;
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*toggle_name);
+  if (maximum_state_value) {
+    CSSValueList* number_list = CSSValueList::CreateSlashSeparated();
+    if (initial_state_value) {
+      number_list->Append(*initial_state_value);
+    }
+    number_list->Append(*maximum_state_value);
+    list->Append(*number_list);
+  }
+  if (sticky_value)
+    list->Append(*sticky_value);
+  if (group_value)
+    list->Append(*group_value);
+  if (self_value)
+    list->Append(*self_value);
+
+  return list;
+}
+
+CSSValue* ConsumeToggleTrigger(CSSParserTokenRange& range,
+                               const CSSParserContext& context) {
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return nullptr;
+  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
+  if (!toggle_name)
+    return nullptr;
+
+  CSSPrimitiveValue* target_value = ConsumeIntegerOrNumberCalc(
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*toggle_name);
+  if (target_value)
+    list->Append(*target_value);
+
   return list;
 }
 

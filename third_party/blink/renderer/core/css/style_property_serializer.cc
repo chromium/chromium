@@ -599,6 +599,18 @@ String StylePropertySerializer::SerializeShorthand(
       return PageBreakPropertyValue(pageBreakBeforeShorthand());
     case CSSPropertyID::kPageBreakInside:
       return PageBreakPropertyValue(pageBreakInsideShorthand());
+    case CSSPropertyID::kToggle: {
+      const CSSValue* toggle_root =
+          property_set_.GetPropertyCSSValue(GetCSSPropertyToggleRoot());
+      DCHECK(toggle_root);
+      const CSSValue* toggle_trigger =
+          property_set_.GetPropertyCSSValue(GetCSSPropertyToggleTrigger());
+      DCHECK(toggle_trigger);
+      if (!IsValidToggleShorthand(toggle_root, toggle_trigger)) {
+        return g_empty_string;
+      }
+      return toggle_root->CssText();
+    }
     case CSSPropertyID::kGridColumnGap:
     case CSSPropertyID::kGridGap:
     case CSSPropertyID::kGridRowGap:
@@ -1619,6 +1631,43 @@ String StylePropertySerializer::ContainIntrinsicSizeValue() const {
     return res;
   // Otherwise just serialize them in sequence.
   return GetShorthandValue(containIntrinsicSizeShorthand());
+}
+
+bool StylePropertySerializer::IsValidToggleShorthand(
+    const CSSValue* toggle_root,
+    const CSSValue* toggle_trigger) {
+  if (const auto* toggle_root_ident =
+          DynamicTo<CSSIdentifierValue>(toggle_root)) {
+    DCHECK_EQ(toggle_root_ident->GetValueID(), CSSValueID::kNone);
+    if (const auto* toggle_trigger_ident =
+            DynamicTo<CSSIdentifierValue>(toggle_trigger)) {
+      DCHECK_EQ(toggle_trigger_ident->GetValueID(), CSSValueID::kNone);
+      return true;
+    }
+    return false;
+  }
+
+  const auto* toggle_trigger_list = DynamicTo<CSSValueList>(toggle_trigger);
+  if (!toggle_trigger_list)
+    return false;
+  const auto* toggle_root_list = To<CSSValueList>(toggle_root);
+  wtf_size_t length = toggle_trigger_list->length();
+  if (length != toggle_root_list->length())
+    return false;
+  for (wtf_size_t i = 0; i < length; ++i) {
+    const auto& toggle_root_item = To<CSSValueList>(toggle_root_list->Item(i));
+    const auto& toggle_trigger_item =
+        To<CSSValueList>(toggle_trigger_list->Item(i));
+    if (toggle_trigger_item.length() > 1u) {
+      DCHECK_EQ(toggle_trigger_item.length(), 2u);
+      return false;
+    }
+    if (!base::ValuesEquivalent(&toggle_root_item.Item(0),
+                                &toggle_trigger_item.Item(0))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace blink

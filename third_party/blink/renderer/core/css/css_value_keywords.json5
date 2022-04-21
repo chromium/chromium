@@ -102,7 +102,7 @@
     "slashed-zero",
 
     //
-    // font-weigth
+    // font-weight
     //
     "normal",
     "bold",
@@ -1473,5 +1473,9 @@
 
     // Layered @import rule
     "layer",
+
+    // toggle-root
+    "group",
+    "self",
   ],
 }
