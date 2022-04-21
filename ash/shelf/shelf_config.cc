@@ -418,7 +418,8 @@ SkColor ShelfConfig::GetShelfControlButtonColor() const {
       session_state == session_manager::SessionState::ACTIVE) {
     return is_in_app() ? SK_ColorTRANSPARENT : GetDefaultShelfColor();
   }
-  if (session_state == session_manager::SessionState::OOBE) {
+  if (!features::IsDarkLightModeEnabled() &&
+      session_state == session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
   return AshColorProvider::Get()->GetControlsLayerColor(

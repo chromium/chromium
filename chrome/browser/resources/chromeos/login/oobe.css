@@ -123,7 +123,7 @@ span.bold {
 }
 
 #version-labels {
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-secondary);
   font-size: 13px;
   margin: 10px;
   position: relative;
