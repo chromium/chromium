@@ -692,26 +692,24 @@ class Dictionary {
 And we can use it like so:
 
 ```cpp
-ValuePtr value = Value::New();
-value->set_int_value(42);
+ValuePtr value = Value::NewIntValue(42);
 CHECK(value->is_int_value());
-CHECK_EQ(value->which(), Value::Tag::INT_VALUE);
+CHECK_EQ(value->which(), Value::Tag::kIntValue);
 
 value->set_float_value(42);
 CHECK(value->is_float_value());
-CHECK_EQ(value->which(), Value::Tag::FLOAT_VALUE);
+CHECK_EQ(value->which(), Value::Tag::kFloatValue);
 
 value->set_string_value("bananas");
 CHECK(value->is_string_value());
-CHECK_EQ(value->which(), Value::Tag::STRING_VALUE);
+CHECK_EQ(value->which(), Value::Tag::kStringValue);
 ```
 
 Finally, note that if a union value is not currently occupied by a given field,
 attempts to access that field will DCHECK:
 
 ```cpp
-ValuePtr value = Value::New();
-value->set_int_value(42);
+ValuePtr value = Value::NewIntValue(42);
 LOG(INFO) << "Value is " << value->string_value();  // DCHECK!
 ```
 
