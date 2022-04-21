@@ -2439,9 +2439,6 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   // to recompute the bit once scrollbars have been updated.
   UpdateSelfPaintingLayer();
 
-  if (diff.NeedsLayout())
-    MarkAncestorChainForFlagsUpdate();
-
   // A scroller that changes background color might become opaque or not
   // opaque, which in turn affects whether it can be composited on low-DPI
   // screens.
