@@ -538,10 +538,13 @@ void PreloadHelper::ModulePreloadIfNeeded(
     }
   }
 
-  // Step 12. "Fetch a single module script given url, settings object,
-  // destination, options, settings object, "client", and with the top-level
-  // module fetch flag set. Wait until algorithm asynchronously completes with
-  // result." [spec text]
+  // Step 12. "Fetch a modulepreload module script graph given url, destination,
+  // settings object, and options. Wait until the algorithm asynchronously
+  // completes with result." [spec text]
+  //
+  // https://wicg.github.io/import-maps/#wait-for-import-maps
+  modulator->SetAcquiringImportMapsState(
+      Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
   modulator->FetchSingle(request, window->Fetcher(),
                          ModuleGraphLevel::kDependentModuleFetch,
                          ModuleScriptCustomFetchType::kNone, client);
