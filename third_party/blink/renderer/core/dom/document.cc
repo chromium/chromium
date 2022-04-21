@@ -6716,6 +6716,13 @@ void Document::FinishedParsing() {
 
     frame->Loader().FinishedParsing();
 
+    if (parser) {
+      if (SourceKeyedCachedMetadataHandler* metadata_handler =
+              parser->GetInlineScriptCacheHandler()) {
+        metadata_handler->LogUsageMetrics();
+      }
+    }
+
     if (frame->GetFrameScheduler())
       frame->GetFrameScheduler()->OnDomContentLoaded();
 

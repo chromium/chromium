@@ -156,6 +156,13 @@ class SingleCachedMetadataHandler : public CachedMetadataHandler {
     // Do nothing.
   }
 
+  // Called if the code cache data was used. Intended for logging.
+  virtual void DidUseCodeCache() {}
+
+  // Called when a code cache will eventually be generated. It won't necessarily
+  // be generated immediately. Intended for logging.
+  virtual void WillProduceCodeCache() {}
+
  protected:
   SingleCachedMetadataHandler() = default;
 

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SOURCE_KEYED_CACHED_METADATA_HANDLER_H_
 
 #include <stdint.h>
+
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
@@ -48,6 +49,9 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
 
   void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
 
+  // Called after all inline scripts have been loaded to log metrics.
+  void LogUsageMetrics();
+
  private:
   // Keys are SHA-256, which are 256/8 = 32 bytes.
   static constexpr size_t kKeySize = 32;
@@ -82,6 +86,9 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
   std::unique_ptr<CachedMetadataSender> sender_;
 
   const WTF::TextEncoding encoding_;
+
+  bool did_use_code_cache_ = false;
+  bool will_generate_code_cache_ = false;
 };
 
 }  // namespace blink

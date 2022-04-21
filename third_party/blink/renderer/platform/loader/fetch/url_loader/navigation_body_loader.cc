@@ -86,6 +86,11 @@ void NavigationBodyLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
   // TODO(horo, kinuko): Make a test to cover this function.
   // TODO(https://crbug.com/930000): Add support for inline script code caching
   // with the service worker service.
+  base::UmaHistogramBoolean(
+      base::StrCat({"V8.InlineCodeCache.",
+                    is_main_frame_ ? "MainFrame" : "Subframe",
+                    ".CacheTimesMatch"}),
+      true);
   client_->BodyCodeCacheReceived(std::move(data));
 }
 
@@ -198,7 +203,14 @@ void NavigationBodyLoader::ContinueWithCodeCache(
 
   // Check that the times match to ensure that the code cache data is for this
   // response. See https://crbug.com/1099587.
-  if (response_head_response_time != code_cache_response_time_)
+  const bool is_cache_usable =
+      (response_head_response_time == code_cache_response_time_);
+  base::UmaHistogramBoolean(
+      base::StrCat({"V8.InlineCodeCache.",
+                    is_main_frame_ ? "MainFrame" : "Subframe",
+                    ".CacheTimesMatch"}),
+      is_cache_usable);
+  if (!is_cache_usable)
     code_cache_data_ = mojo_base::BigBuffer();
 
   auto weak_self = weak_factory_.GetWeakPtr();

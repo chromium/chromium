@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -70,6 +71,12 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
   size_t GetCodeCacheSize() const override {
     // No need to implement this because it is attributed to |parent_|.
     return 0;
+  }
+
+  void DidUseCodeCache() override { parent_->did_use_code_cache_ = true; }
+
+  void WillProduceCodeCache() override {
+    parent_->will_generate_code_cache_ = true;
   }
 
  private:
@@ -228,6 +235,13 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
   if (size > 0) {
     cached_metadata_map_.clear();
   }
+}
+
+void SourceKeyedCachedMetadataHandler::LogUsageMetrics() {
+  base::UmaHistogramBoolean("V8.InlineCodeCache.UsedPreviouslyGeneratedCache",
+                            did_use_code_cache_);
+  base::UmaHistogramBoolean("V8.InlineCodeCache.WillGenerateCache",
+                            will_generate_code_cache_);
 }
 
 void SourceKeyedCachedMetadataHandler::SendToPlatform(

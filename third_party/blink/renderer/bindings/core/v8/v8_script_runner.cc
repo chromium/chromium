@@ -178,7 +178,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       v8::MaybeLocal<v8::Script> script =
           v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                       v8::ScriptCompiler::kConsumeCodeCache);
-
+      cache_handler->DidUseCodeCache();
       // The ScriptState has an associated context. We expect the current
       // context to match the context associated with Script context when
       // compiling the script for main world. Hence it is safe to use the
@@ -338,6 +338,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         // previously.
         SingleCachedMetadataHandler* cache_handler = params.CacheHandler();
         DCHECK(cache_handler);
+        cache_handler->DidUseCodeCache();
         // TODO(leszeks): Add support for passing in ScriptCacheConsumer.
         v8::ScriptCompiler::Source source(
             code, origin,
@@ -517,8 +518,9 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
 
     v8::Local<v8::Script> script;
 
-    if (classic_script->CacheHandler()) {
-      classic_script->CacheHandler()->Check(
+    SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+    if (cache_handler) {
+      cache_handler->Check(
           ExecutionContext::GetCodeCacheHostFromContext(execution_context),
           classic_script->SourceText());
     }
@@ -551,6 +553,11 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
 
       if (produce_cache_options ==
               V8CodeCache::ProduceCacheOptions::kProduceCodeCache &&
+          cache_handler) {
+        cache_handler->WillProduceCodeCache();
+      }
+      if (produce_cache_options ==
+              V8CodeCache::ProduceCacheOptions::kProduceCodeCache &&
           base::FeatureList::IsEnabled(features::kCacheCodeOnIdle)) {
         auto delay =
             base::Milliseconds(features::kCacheCodeOnIdleDelayParam.Get());
@@ -565,7 +572,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
                       // script state as a weak persistent.
                       WrapPersistent(script_state),
                       v8::Global<v8::Script>(isolate, script),
-                      WrapPersistent(classic_script->CacheHandler()),
+                      WrapPersistent(cache_handler),
                       classic_script->SourceText().length(),
                       classic_script->SourceUrl(),
                       classic_script->StartPosition()),
@@ -574,9 +581,9 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
         V8CodeCache::ProduceCache(
             isolate,
             ExecutionContext::GetCodeCacheHostFromContext(execution_context),
-            script, classic_script->CacheHandler(),
-            classic_script->SourceText().length(), classic_script->SourceUrl(),
-            classic_script->StartPosition(), produce_cache_options);
+            script, cache_handler, classic_script->SourceText().length(),
+            classic_script->SourceUrl(), classic_script->StartPosition(),
+            produce_cache_options);
       }
     }
 
