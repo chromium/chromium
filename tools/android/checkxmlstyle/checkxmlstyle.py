@@ -39,15 +39,13 @@ def IncludedFiles(input_api, allow_list=helpers.INCLUDED_PATHS):
   return input_api.AffectedFiles(include_deletes=False, file_filter=files)
 
 
-"""
-This class has two jobs. It allows us to delay searching directories for color
-state list files unless we actually find a color reference to check against. And
-additionally it's a convenient mock point for tests to specify files in a
-slightly more robust way than relying on real color state list file names.
-"""
-
-
 class LazyColorStateListSet:
+  """
+  This class has two jobs. It allows us to delay searching directories for color
+  state list files unless we actually find a color reference to check against.
+  And additionally it's a convenient mock point for tests to specify files in a
+  slightly more robust way than relying on real color state list file names.
+  """
   _color_set_or_none = None
 
   def get(self):
@@ -58,7 +56,6 @@ class LazyColorStateListSet:
     for color_dir in helpers.COLOR_STATE_LIST_DIRS:
       for color_file in os.listdir(color_dir):
         if '.' in color_file:
-          print(color_file)
           self._color_set_or_none.add(color_file[:color_file.index('.')])
     return self._color_set_or_none
 
@@ -80,6 +77,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
   # Add more checks here
   return result
+
 
 ### color resources below ###
 def _CheckColorFormat(input_api, output_api):
