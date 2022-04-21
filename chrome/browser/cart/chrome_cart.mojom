@@ -18,6 +18,14 @@ struct MerchantCart {
   string discount_text;
 };
 
+// The current status of the consent. This is used when user has acted on the
+// consent. UNSPECIFIED is the default state.
+enum ConsentStatus {
+  ACCEPTED = 0,
+  DISMISSED = 1,
+  REJECTED = 2
+};
+
 // Browser-side handler for requests from JS.
 interface CartHandler {
   // Returns the merchant carts in chrome cart.
@@ -57,6 +65,8 @@ interface CartHandler {
   // Stores in profile prefs that user has shown interest in the
   // consent.
   OnDiscountConsentContinued();
+  // Shows the native consent dialog and returns the consent status.
+  ShowNativeConsentDialog() => (ConsentStatus consent_status);
   // Returns whether the rule-based discount feature is enabled.
   GetDiscountEnabled() => (bool enabled);
   // Sets whether the rule-based discount feature is enabled.

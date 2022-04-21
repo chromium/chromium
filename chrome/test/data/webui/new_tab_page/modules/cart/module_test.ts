@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
+import {CartHandlerRemote, ConsentStatus} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
 import {chromeCartDescriptor, ChromeCartModuleElement, ChromeCartProxy, DiscountConsentCard, DiscountConsentVariation} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -563,7 +563,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Act.
       let waitForLeftScrollVisibilityChange =
           eventToPromise('left-scroll-hide', moduleElement);
-      let waitForRightScrollVisibilityChange =
+      const waitForRightScrollVisibilityChange =
           eventToPromise('right-scroll-show', moduleElement);
       moduleElement.style.width = '480px';
       await waitForLeftScrollVisibilityChange;
@@ -632,7 +632,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals(4, cartItems.length);
 
       // Act.
-      let waitForLeftScrollVisibilityChange =
+      const waitForLeftScrollVisibilityChange =
           eventToPromise('left-scroll-hide', moduleElement);
       let waitForRightScrollVisibilityChange =
           eventToPromise('right-scroll-hide', moduleElement);
@@ -929,7 +929,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Act.
     let waitForLeftScrollVisibilityChange =
         eventToPromise('left-scroll-hide', moduleElement);
-    let waitForRightScrollVisibilityChange =
+    const waitForRightScrollVisibilityChange =
         eventToPromise('right-scroll-show', moduleElement);
     moduleElement.style.width = '560px';
     await waitForLeftScrollVisibilityChange;
@@ -1398,6 +1398,102 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             assertEquals(
                 1, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
           });
+    });
+
+    suite('Native Dialog consent variation', () => {
+      let consentCard: DiscountConsentCard;
+
+      setup(async () => {
+        loadTimeData.overrideValues({
+          modulesCartDiscountConsentVariation:
+              DiscountConsentVariation.NativeDialog
+        });
+
+        const carts = [
+          {
+            merchant: 'Foo',
+            cartUrl: {url: 'https://foo.com'},
+            productImageUrls: []
+          },
+          {
+            merchant: 'Boo',
+            cartUrl: {url: 'https://Boo.com'},
+            productImageUrls: [],
+          },
+        ];
+        handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
+        moduleElement =
+            await chromeCartDescriptor.initialize(0) as ChromeCartModuleElement;
+        assertTrue(!!moduleElement);
+        document.body.append(moduleElement);
+        moduleElement.$.consentCardElement.render();
+
+        consentCard = $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
+      });
+
+      test('Verify consent card hides on status callback', async () => {
+        // Arrange.
+        assertEquals(true, isVisible(consentCard));
+        handler.setResultFor(
+            'showNativeConsentDialog',
+            Promise.resolve({consentStatus: ConsentStatus.DISMISSED}));
+        const transitionEndEvent =
+            eventToPromise('transitionend', moduleElement.$.consentContainer);
+
+        // Act.
+        nextStep(consentCard);
+        await flushTasks();
+        await transitionEndEvent;
+
+        // Assert.
+        assertEquals(false, isVisible(consentCard));
+      });
+
+      test('Verify consent toast shows after acceptance', async () => {
+        // Arrange.
+        const consentToast = moduleElement.$.confirmDiscountConsentToast;
+        assertEquals(true, isVisible(consentCard));
+        handler.setResultFor(
+            'showNativeConsentDialog',
+            Promise.resolve({consentStatus: ConsentStatus.ACCEPTED}));
+        const transitionEndEvent =
+            eventToPromise('transitionend', moduleElement.$.consentContainer);
+
+        // Act.
+        nextStep(consentCard);
+        await flushTasks();
+        await transitionEndEvent;
+
+        // Assert.
+        assertEquals(false, isVisible(consentCard));
+        assertEquals(true, consentToast.open);
+        assertEquals(
+            'Accept confirmation!',
+            moduleElement.$.confirmDiscountConsentMessage.innerText);
+      });
+
+      test('Verify consent toast shows after rejection', async () => {
+        // Arrange.
+        const consentToast = moduleElement.$.confirmDiscountConsentToast;
+        assertEquals(true, isVisible(consentCard));
+        handler.setResultFor(
+            'showNativeConsentDialog',
+            Promise.resolve({consentStatus: ConsentStatus.REJECTED}));
+        const transitionEndEvent =
+            eventToPromise('transitionend', moduleElement.$.consentContainer);
+
+        // Act.
+        nextStep(consentCard);
+        await flushTasks();
+        await transitionEndEvent;
+
+        // Assert.
+        assertEquals(false, isVisible(consentCard));
+        assertEquals(true, consentToast.open);
+        assertEquals(
+            'Reject confirmation!',
+            moduleElement.$.confirmDiscountConsentMessage.innerText);
+      });
     });
   });
 });
