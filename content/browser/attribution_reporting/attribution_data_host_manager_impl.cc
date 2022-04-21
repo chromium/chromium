@@ -178,16 +178,21 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
   data_hosts_in_source_mode_++;
 }
 
-void AttributionDataHostManagerImpl::RegisterNavigationDataHost(
+bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     const blink::AttributionSrcToken& attribution_src_token) {
-  navigation_data_host_map_.emplace(
+  auto [it, inserted] = navigation_data_host_map_.try_emplace(
       attribution_src_token,
       NavigationDataHost{.data_host = std::move(data_host),
                          .register_time = base::TimeTicks::Now()});
+  // Should only be possible with a misbehaving renderer.
+  if (!inserted)
+    return false;
+
   data_hosts_in_source_mode_++;
 
   RecordNavigationDataHostStatus(NavigationDataHostStatus::kRegistered);
+  return true;
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(

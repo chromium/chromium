@@ -34,8 +34,9 @@ class AttributionDataHostManager {
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in
   // `NotifyNavigationForDataHost()` called with the same
-  // `attribution_src_token`.
-  virtual void RegisterNavigationDataHost(
+  // `attribution_src_token`. Returns `false` if `attribution_src_token` was
+  // already registered.
+  virtual bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) = 0;
 

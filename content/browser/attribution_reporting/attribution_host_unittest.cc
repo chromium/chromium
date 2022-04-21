@@ -55,6 +55,7 @@ using ConversionMeasurementOperation =
 
 using testing::_;
 using testing::Mock;
+using testing::Return;
 
 const char kConversionUrl[] = "https://b.com";
 
@@ -417,6 +418,28 @@ TEST_F(AttributionHostTest, NavigationDataHostOnInsecurePage_BadMessage) {
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used with a secure top-level "
       "frame.",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
+  ON_CALL(*mock_data_host_manager_, RegisterNavigationDataHost)
+      .WillByDefault(Return(false));
+
+  contents()->NavigateAndCommit(GURL("https://top.example"));
+  SetCurrentTargetFrameForTesting(main_rfh());
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  conversion_host_mojom()->RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      blink::AttributionSrcToken());
+
+  EXPECT_EQ(
+      "Renderer attempted to register a data host with a duplicate "
+      "AttribtionSrcToken.",
       bad_message_observer.WaitForBadMessage());
 }
 

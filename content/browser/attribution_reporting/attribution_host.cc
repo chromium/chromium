@@ -333,11 +333,17 @@ void AttributionHost::RegisterNavigationDataHost(
     return;
   }
 
-  if (!attribution_manager->GetDataHostManager())
+  auto* data_host_manager = attribution_manager->GetDataHostManager();
+  if (!data_host_manager)
     return;
 
-  attribution_manager->GetDataHostManager()->RegisterNavigationDataHost(
-      std::move(data_host), attribution_src_token);
+  if (!data_host_manager->RegisterNavigationDataHost(std::move(data_host),
+                                                     attribution_src_token)) {
+    mojo::ReportBadMessage(
+        "Renderer attempted to register a data host with a duplicate "
+        "AttribtionSrcToken.");
+    return;
+  }
 }
 
 // static

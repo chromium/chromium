@@ -1611,4 +1611,51 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 2, 1);
 }
 
+TEST_F(AttributionDataHostManagerImplTest,
+       DuplicateAttributionSrcToken_NotRegistered) {
+  EXPECT_CALL(mock_manager_, HandleSource(SourceEventIdIs(1)));
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote1,
+      data_host_remote2;
+
+  {
+    base::HistogramTester histograms;
+
+    EXPECT_TRUE(data_host_manager_.RegisterNavigationDataHost(
+        data_host_remote1.BindNewPipeAndPassReceiver(), attribution_src_token));
+
+    // This one should not be registered, as `attribution_src_token` is already
+    // associated with a receiver.
+    EXPECT_FALSE(data_host_manager_.RegisterNavigationDataHost(
+        data_host_remote2.BindNewPipeAndPassReceiver(), attribution_src_token));
+
+    // kRegistered = 0.
+    histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus", 0, 1);
+  }
+
+  const url::Origin destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, url::Origin::Create(GURL("https://page.example")),
+      destination_origin);
+
+  auto source_data = blink::mojom::AttributionSourceData::New();
+  source_data->source_event_id = 1;
+  source_data->destination = destination_origin;
+  source_data->reporting_origin =
+      url::Origin::Create(GURL("https://reporter.example"));
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregatable_source =
+      blink::mojom::AttributionAggregatableSource::New();
+  data_host_remote1->SourceDataAvailable(source_data.Clone());
+  data_host_remote1.FlushForTesting();
+
+  source_data->source_event_id = 2;
+  data_host_remote2->SourceDataAvailable(std::move(source_data));
+  data_host_remote2.FlushForTesting();
+}
+
 }  // namespace content
