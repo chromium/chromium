@@ -93,7 +93,7 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
 }
 
 const base::Feature kAndroidNdkVideoEncoder{"AndroidNdkVideoEncoder",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 static bool InitMediaCodec() {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
