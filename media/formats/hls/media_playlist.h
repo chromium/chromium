@@ -33,6 +33,10 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // may be copied independently of this Playlist.
   const std::vector<MediaSegment>& GetSegments() const { return segments_; }
 
+  // Returns the target duration (maximum length of any segment, rounded to the
+  // nearest integer) for this playlist.
+  base::TimeDelta GetTargetDuration() const { return target_duration_; }
+
   // Returns the sum of the duration of all segments in this playlist.
   // Computed via the 'EXTINF' attribute, so may be slightly longer than the
   // actual duration.
@@ -63,9 +67,11 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   MediaPlaylist(GURL uri,
                 types::DecimalInteger version,
                 bool independent_segments,
+                base::TimeDelta target_duration,
                 std::vector<MediaSegment> segments,
                 absl::optional<PlaylistType> playlist_type);
 
+  base::TimeDelta target_duration_;
   std::vector<MediaSegment> segments_;
   base::TimeDelta computed_duration_;
   absl::optional<PlaylistType> playlist_type_;

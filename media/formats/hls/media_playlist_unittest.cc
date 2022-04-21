@@ -41,6 +41,9 @@ MultivariantPlaylist CreateMultivariantPlaylist(
 TEST(HlsMediaPlaylistTest, XDiscontinuityTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+  builder.ExpectPlaylist(HasVersion, 1);
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   // Default discontinuity state is false
   builder.AppendLine("#EXTINF:9.9,\t");
@@ -78,6 +81,9 @@ TEST(HlsMediaPlaylistTest, XDiscontinuityTag) {
 TEST(HlsMediaPlaylistTest, XGapTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+  builder.ExpectPlaylist(HasVersion, 1);
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   // Default gap state is false
   builder.AppendLine("#EXTINF:9.9,\t");
@@ -115,8 +121,10 @@ TEST(HlsMediaPlaylistTest, XGapTag) {
 TEST(HlsMediaPlaylistTest, Segments) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
   builder.AppendLine("#EXT-X-VERSION:5");
   builder.ExpectPlaylist(HasVersion, 5);
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   builder.AppendLine("#EXTINF:9.2,\t");
   builder.AppendLine("video.ts");
@@ -150,6 +158,20 @@ TEST(HlsMediaPlaylistTest, Segments) {
   builder.ExpectSegment(IsGap, false);
   builder.ExpectSegment(HasUri, GURL("http://foo/bar.ts"));
 
+  // Segments must not exceed the playlist's target duration when rounded to the
+  // nearest integer
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXTINF:10.499,bar");
+    fork.AppendLine("bar.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectOk();
+
+    fork.AppendLine("#EXTINF:10.5,baz");
+    fork.AppendLine("baz.ts");
+    fork.ExpectError(ParseStatusCode::kMediaSegmentExceedsTargetDuration);
+  }
+
   builder.ExpectOk();
 }
 
@@ -161,8 +183,10 @@ TEST(HlsMediaPlaylistTest, Segments) {
 TEST(HlsMediaPlaylistTest, VariableSubstitution) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
   builder.AppendLine("#EXT-X-VERSION:8");
   builder.ExpectPlaylist(HasVersion, 8);
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
 
   builder.AppendLine(R"(#EXT-X-DEFINE:NAME="ROOT",VALUE="http://video.com")");
   builder.AppendLine(R"(#EXT-X-DEFINE:NAME="MOVIE",VALUE="some_video/low")");
@@ -285,6 +309,7 @@ TEST(HlsMediaPlaylistTest, VariableSubstitution) {
 TEST(HlsMediaPlaylistTest, PlaylistType) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
 
   // Without the EXT-X-PLAYLIST-TYPE tag, the playlist has no type.
   {
@@ -342,6 +367,7 @@ TEST(HlsMediaPlaylistTest, PlaylistType) {
 TEST(HlsMediaPlaylistTest, MultivariantPlaylistTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
 
   // Media playlists may not contain tags exclusive to multivariant playlists
   for (TagName name = ToTagName(MultivariantPlaylistTagName::kMinValue);
@@ -363,6 +389,7 @@ TEST(HlsMediaPlaylistTest, XIndependentSegmentsTagInParent) {
   MediaPlaylistTestBuilder builder;
   builder.SetParent(&parent1);
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
   builder.ExpectPlaylist(HasIndependentSegments, true);
   builder.ExpectOk();
 
@@ -376,6 +403,7 @@ TEST(HlsMediaPlaylistTest, XIndependentSegmentsTagInParent) {
   builder = MediaPlaylistTestBuilder();
   builder.SetParent(&parent2);
   builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
   {
     auto fork = builder;
     fork.ExpectPlaylist(HasIndependentSegments, false);
@@ -385,6 +413,38 @@ TEST(HlsMediaPlaylistTest, XIndependentSegmentsTagInParent) {
   builder.ExpectPlaylist(HasIndependentSegments, true);
   builder.ExpectOk();
   EXPECT_FALSE(parent2.AreSegmentsIndependent());
+}
+
+TEST(HlsMediaPlaylistTest, XTargetDurationTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // The XTargetDurationTag tag is required
+  builder.ExpectError(ParseStatusCode::kMediaPlaylistMissingTargetDuration);
+
+  // The XTargetDurationTag must appear exactly once
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(10));
+  builder.ExpectOk();
+
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-TARGETDURATION:10");
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-TARGETDURATION:11");
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+
+  // The XTargetDurationTag must be a valid DecimalInteger (unsigned)
+  for (base::StringPiece x : {"-1", "0.5", "-1.5", "999999999999999999999"}) {
+    MediaPlaylistTestBuilder builder2;
+    builder2.AppendLine("#EXTM3U");
+    builder2.AppendLine("#EXT-X-TARGETDURATION:", x);
+    builder2.ExpectError(ParseStatusCode::kMalformedTag);
+  }
 }
 
 }  // namespace media::hls

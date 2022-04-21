@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/time/time.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/media_segment.h"
 #include "media/formats/hls/playlist_test_builder.h"
@@ -80,6 +81,13 @@ inline void HasType(absl::optional<PlaylistType> type,
                     const base::Location& from,
                     const MediaPlaylist& playlist) {
   EXPECT_EQ(playlist.GetPlaylistType(), type) << from.ToString();
+}
+
+// Checks that the media playlist has the given Target Duration.
+inline void HasTargetDuration(base::TimeDelta value,
+                              const base::Location& from,
+                              const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.GetTargetDuration(), value) << from.ToString();
 }
 
 // Checks that the latest media segment has the given duration.

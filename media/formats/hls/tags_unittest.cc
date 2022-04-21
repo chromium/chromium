@@ -394,4 +394,37 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(tag.codecs, "bar,baz");
 }
 
+TEST(HlsTagsTest, ParseXTargetDurationTag) {
+  RunTagIdenficationTest<XTargetDurationTag>("#EXT-X-TARGETDURATION:10\n",
+                                             "10");
+
+  // Content is required
+  ErrorTest<XTargetDurationTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("", ParseStatusCode::kMalformedTag);
+
+  // Content must be a valid decimal-integer
+  ErrorTest<XTargetDurationTag>("-1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("-1.5", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("-.5", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>(".5", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("0.5", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("9999999999999999999999",
+                                ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("one", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>(" 1 ", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("1,", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("{$X}", ParseStatusCode::kMalformedTag);
+
+  auto tag = OkTest<XTargetDurationTag>("0");
+  EXPECT_EQ(tag.duration, 0u);
+  tag = OkTest<XTargetDurationTag>("1");
+  EXPECT_EQ(tag.duration, 1u);
+  tag = OkTest<XTargetDurationTag>("10");
+  EXPECT_EQ(tag.duration, 10u);
+  tag = OkTest<XTargetDurationTag>("14");
+  EXPECT_EQ(tag.duration, 14u);
+  tag = OkTest<XTargetDurationTag>("999999999999999999");
+  EXPECT_EQ(tag.duration, 999999999999999999u);
+}
+
 }  // namespace media::hls

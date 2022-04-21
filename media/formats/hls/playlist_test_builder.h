@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_HLS_PLAYLIST_TEST_BUILDER_H_
 
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -32,15 +33,18 @@ class PlaylistTestBuilder {
   // Sets the URI for the playlist being built.
   void SetUri(GURL uri) { uri_ = std::move(uri); }
 
-  // Appends text to the playlist, without a trailing newline.
-  void Append(base::StringPiece text) {
-    source_.append(text.data(), text.size());
+  // Appends fragments of text to the playlist, without a trailing newline.
+  template <typename... T>
+  void Append(base::StringPiece text1, T&&... rem) {
+    for (auto text : {text1, base::StringPiece(rem)...}) {
+      source_.append(text.data(), text.size());
+    }
   }
 
-  // Appends a new line to the playlist.
-  void AppendLine(base::StringPiece line) {
-    Append(line);
-    Append("\n");
+  // Appends fragments of text to the playlist, followed by a newline.
+  template <typename... T>
+  void AppendLine(base::StringPiece part1, T&&... rem) {
+    this->Append(part1, std::forward<T>(rem)..., "\n");
   }
 
   // Adds a new expectation for the playlist, which will be checked during

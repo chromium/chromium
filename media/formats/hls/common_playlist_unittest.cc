@@ -21,11 +21,21 @@ using Implementations =
     testing::Types<MultivariantPlaylistTestBuilder, MediaPlaylistTestBuilder>;
 TYPED_TEST_SUITE(HlsCommonPlaylistTest, Implementations);
 
+// Adds any additional tags not relevant to these tests, but that are required
+// for this playlist type to be successfully parsed.
+void AddRequiredTags(MultivariantPlaylistTestBuilder&) {
+  // None required
+}
+void AddRequiredTags(MediaPlaylistTestBuilder& builder) {
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+}
+
 }  // namespace
 
 TYPED_TEST(HlsCommonPlaylistTest, BadLineEndings) {
   TypeParam builder;
   builder.AppendLine("#EXTM3U");
+  AddRequiredTags(builder);
 
   {
     // Double carriage-return is not allowed
@@ -74,12 +84,14 @@ TYPED_TEST(HlsCommonPlaylistTest, MissingM3u) {
   builder = TypeParam();
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXTM3U");
+  AddRequiredTags(builder);
   builder.ExpectOk();
 }
 
 TYPED_TEST(HlsCommonPlaylistTest, UnknownTag) {
   TypeParam builder;
   builder.AppendLine("#EXTM3U");
+  AddRequiredTags(builder);
 
   // Unrecognized tags should not result in an error
   builder.AppendLine("#EXT-UNKNOWN-TAG");
@@ -89,6 +101,7 @@ TYPED_TEST(HlsCommonPlaylistTest, UnknownTag) {
 TYPED_TEST(HlsCommonPlaylistTest, VersionChecks) {
   TypeParam builder;
   builder.AppendLine("#EXTM3U");
+  AddRequiredTags(builder);
 
   {
     // Default version is 1
@@ -129,6 +142,7 @@ TYPED_TEST(HlsCommonPlaylistTest, VersionChecks) {
 TYPED_TEST(HlsCommonPlaylistTest, XIndependentSegmentsTag) {
   TypeParam builder;
   builder.AppendLine("#EXTM3U");
+  AddRequiredTags(builder);
 
   // Without the 'EXT-X-INDEPENDENT-SEGMENTS' tag, the default is 'false'.
   {

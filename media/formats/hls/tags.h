@@ -147,6 +147,18 @@ struct MEDIA_EXPORT XStreamInfTag {
   absl::optional<std::string> codecs;
 };
 
+// Represents the contents of the #EXT-X-TARGETDURATION tag.
+struct XTargetDurationTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXTargetDuration;
+  static MEDIA_EXPORT ParseStatus::Or<XTargetDurationTag> Parse(TagItem);
+
+  // The upper bound on the duration (in seconds) of all media segments in the
+  // media playlist. The EXTINF duration of each Media Segment in a Playlist
+  // file, when rounded to the nearest integer, MUST be less than or equal to
+  // this duration.
+  types::DecimalInteger duration;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

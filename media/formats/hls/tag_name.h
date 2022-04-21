@@ -51,6 +51,7 @@ enum class MultivariantPlaylistTagName : TagName {
 enum class MediaPlaylistTagName : TagName {
   kMinValue = static_cast<TagName>(MultivariantPlaylistTagName::kMaxValue) + 1,
   kInf = kMinValue,
+  kXTargetDuration,
   kXEndList,
   kXIFramesOnly,
   kXDiscontinuity,

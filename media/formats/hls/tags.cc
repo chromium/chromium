@@ -401,4 +401,19 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   return out;
 }
 
+ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
+  DCHECK(tag.GetName() == ToTagName(XTargetDurationTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  auto duration = types::ParseDecimalInteger(*tag.GetContent());
+  if (duration.has_error()) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(duration).error());
+  }
+
+  return XTargetDurationTag{.duration = std::move(duration).value()};
+}
+
 }  // namespace media::hls
