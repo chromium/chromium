@@ -21,17 +21,22 @@ class AppListControllerDelegate;
 class Profile;
 class StandaloneBrowserExtensionAppContextMenu;
 
+namespace ash {
+enum class AppListItemContext;
+}
+
 namespace extensions {
 class ContextMenuMatcher;
 }
 
+// Creates context menus for app items in the app list.
 class AppServiceContextMenu : public app_list::AppContextMenu {
  public:
   AppServiceContextMenu(app_list::AppContextMenuDelegate* delegate,
                         Profile* profile,
                         const std::string& app_id,
                         AppListControllerDelegate* controller,
-                        bool add_sort_options);
+                        ash::AppListItemContext item_context);
   ~AppServiceContextMenu() override;
 
   AppServiceContextMenu(const AppServiceContextMenu&) = delete;
@@ -78,8 +83,8 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
 
   apps::AppServiceProxy* const proxy_;
 
-  // A flag that determines if sort options should be added to the context menu.
-  bool add_sort_options_ = false;
+  // Where this item is being shown (e.g. the apps grid or recent apps).
+  const ash::AppListItemContext item_context_;
 
   base::WeakPtrFactory<AppServiceContextMenu> weak_ptr_factory_{this};
 };

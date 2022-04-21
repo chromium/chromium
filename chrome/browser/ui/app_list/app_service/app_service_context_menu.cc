@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -126,10 +128,10 @@ AppServiceContextMenu::AppServiceContextMenu(
     Profile* profile,
     const std::string& app_id,
     AppListControllerDelegate* controller,
-    bool add_sort_options)
+    ash::AppListItemContext item_context)
     : AppContextMenu(delegate, profile, app_id, controller),
       proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)),
-      add_sort_options_(add_sort_options) {
+      item_context_(item_context) {
   proxy_->AppRegistryCache().ForOneApp(
       app_id, [this](const apps::AppUpdate& update) {
         app_type_ = apps_util::IsInstalled(update.Readiness())
@@ -248,6 +250,10 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
 
     case ash::REORDER_BY_COLOR:
       RequestAppListSort(profile(), ash::AppListSortOrder::kColor);
+      break;
+
+    case ash::HIDE_CONTINUE_SECTION:
+      ash::AppListController::Get()->HideContinueSection();
       break;
 
     default:
@@ -392,9 +398,10 @@ void AppServiceContextMenu::OnGetMenuModel(
     }
   }
 
-  if (add_sort_options_) {
+  const ui::ColorId color_id = apps::GetColorIdForMenuItemIcon();
+  if (item_context_ == ash::AppListItemContext::kAppsGrid &&
+      ash::features::IsLauncherAppSortEnabled()) {
     reorder_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
-    const ui::ColorId color_id = apps::GetColorIdForMenuItemIcon();
     // As all the options below are only for tests and are expected to change in
     // the future, the strings are directly written as the parameters.
     reorder_submenu_->AddItemWithIcon(
@@ -418,6 +425,16 @@ void AppServiceContextMenu::OnGetMenuModel(
         reorder_submenu_.get(),
         ui::ImageModel::FromVectorIcon(
             GetMenuItemVectorIcon(ash::REORDER_SUBMENU, /*string_id=*/-1),
+            color_id));
+  }
+
+  if (item_context_ == ash::AppListItemContext::kRecentApps) {
+    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+    // TODO(crbug.com/1317428): Localized string.
+    menu_model->AddItemWithIcon(
+        ash::HIDE_CONTINUE_SECTION, u"Hide Continue Section",
+        ui::ImageModel::FromVectorIcon(
+            GetMenuItemVectorIcon(ash::HIDE_CONTINUE_SECTION, /*string_id=*/-1),
             color_id));
   }
 

@@ -102,16 +102,14 @@ class ASH_PUBLIC_EXPORT AppListClient {
                             int event_flags,
                             ash::AppListLaunchedFrom launched_from) = 0;
   // Returns the context menu model for the item with |id|, or an empty array if
-  // there is currently no menu for the item (e.g. during install). Requests
-  // adding sort options that can sort the app list in the menu model if
-  // `add_sort_options` is true, where the value of `add_sort_options` is
-  // determined by the context of the AppListItemView and if the app list sort
-  // feature is enabled.
+  // there is currently no menu for the item (e.g. during install).
+  // `item_context` is where the item is being shown (e.g. apps grid or recent
+  // apps).
   using GetContextMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetContextMenuModel(int profile_id,
                                    const std::string& id,
-                                   bool add_sort_options,
+                                   AppListItemContext item_context,
                                    GetContextMenuModelCallback callback) = 0;
   // Invoked when a "quick setting" is changed.
   virtual void OnQuickSettingsChanged(

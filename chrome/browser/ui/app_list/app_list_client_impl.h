@@ -99,7 +99,7 @@ class AppListClientImpl
                     ash::AppListLaunchedFrom launched_from) override;
   void GetContextMenuModel(int profile_id,
                            const std::string& id,
-                           bool add_sort_options,
+                           ash::AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
   void OnAppListVisibilityWillChange(bool visible) override;
   void OnAppListVisibilityChanged(bool visible) override;

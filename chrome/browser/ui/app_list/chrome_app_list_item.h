@@ -112,7 +112,7 @@ class ChromeAppListItem {
   // takes the ownership of the returned menu model.
   using GetMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
-  virtual void GetContextMenuModel(bool add_sort_options,
+  virtual void GetContextMenuModel(ash::AppListItemContext item_context,
                                    GetMenuModelCallback callback);
 
   // Returns true iff this item was badged because it's an extension app that

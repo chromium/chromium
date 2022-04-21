@@ -39,7 +39,7 @@ class AppServiceAppItem : public ChromeAppListItem,
   void LoadIcon() override;
   void Activate(int event_flags) override;
   const char* GetItemType() const override;
-  void GetContextMenuModel(bool add_sort_options,
+  void GetContextMenuModel(ash::AppListItemContext item_context,
                            GetMenuModelCallback callback) override;
   app_list::AppContextMenu* GetAppContextMenu() override;
 

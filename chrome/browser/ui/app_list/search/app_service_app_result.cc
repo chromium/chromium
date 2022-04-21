@@ -116,7 +116,8 @@ void AppServiceAppResult::GetContextMenuModel(GetMenuModelCallback callback) {
   }
 
   context_menu_ = std::make_unique<AppServiceContextMenu>(
-      this, profile(), app_id(), controller(), /*add_sort_options=*/false);
+      this, profile(), app_id(), controller(),
+      ash::AppListItemContext::kSearchResults);
   context_menu_->GetMenuModel(std::move(callback));
 }
 

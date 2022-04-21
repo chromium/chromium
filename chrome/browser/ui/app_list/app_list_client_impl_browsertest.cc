@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowContextMenu) {
   base::RunLoop run_loop;
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
   item->GetContextMenuModel(
-      /*add_sort_options=*/false,
+      ash::AppListItemContext::kNone,
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
             menu_model = std::move(created_menu);

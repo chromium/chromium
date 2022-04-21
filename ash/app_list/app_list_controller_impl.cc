@@ -445,6 +445,10 @@ bool AppListControllerImpl::IsVisible() {
   return IsVisible(absl::nullopt);
 }
 
+void AppListControllerImpl::HideContinueSection() {
+  SetHideContinueSection(true);
+}
+
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (IsKioskSession())
@@ -1414,10 +1418,10 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
 
 void AppListControllerImpl::GetContextMenuModel(
     const std::string& id,
-    bool add_sort_options,
+    AppListItemContext item_context,
     GetContextMenuModelCallback callback) {
   if (client_)
-    client_->GetContextMenuModel(profile_id_, id, add_sort_options,
+    client_->GetContextMenuModel(profile_id_, id, item_context,
                                  std::move(callback));
 }
 

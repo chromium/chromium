@@ -110,6 +110,7 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
   bool IsVisible() override;
+  void HideContinueSection() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -176,7 +177,7 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
                     int event_flags,
                     AppListLaunchedFrom launched_from) override;
   void GetContextMenuModel(const std::string& id,
-                           bool add_sort_options,
+                           AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       AppListViewState target_state) override;

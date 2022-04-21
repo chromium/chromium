@@ -131,7 +131,7 @@ std::unique_ptr<ui::SimpleMenuModel> GetContextMenuModel(
   base::RunLoop run_loop;
   std::unique_ptr<ui::SimpleMenuModel> menu;
   item->GetContextMenuModel(
-      /*add_sort_options=*/false,
+      ash::AppListItemContext::kNone,
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
             menu = std::move(created_menu);
@@ -275,7 +275,7 @@ class AppContextMenuTest : public AppListTestBase {
     controller_->SetExtensionLaunchType(profile(), app_id, launch_type);
 
     AppServiceContextMenu menu(menu_delegate(), profile(), app_id, controller(),
-                               /*add_sort_options=*/false);
+                               ash::AppListItemContext::kNone);
     std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
     ASSERT_NE(nullptr, menu_model);
 
@@ -321,7 +321,7 @@ class AppContextMenuTest : public AppListTestBase {
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     AppServiceContextMenu menu(menu_delegate(), profile(),
                                app_constants::kChromeAppId, controller(),
-                               /*add_sort_options=*/false);
+                               ash::AppListItemContext::kNone);
     std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
     ASSERT_NE(nullptr, menu_model);
 
@@ -372,10 +372,39 @@ TEST_F(AppContextMenuTest, ChromeApp) {
   TestChromeApp();
 }
 
+TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kProductivityLauncher};
+
+  scoped_refptr<extensions::Extension> app = MakeChromeApp();
+  service_->AddExtension(app.get());
+  app_service_test().SetUp(profile());
+  app_service_test().FlushMojoCalls();
+
+  // Simulate a context menu in the recent apps row.
+  AppServiceContextMenu menu(menu_delegate(), profile(),
+                             app_constants::kChromeAppId, controller(),
+                             ash::AppListItemContext::kRecentApps);
+  std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
+  ASSERT_NE(nullptr, menu_model);
+
+  // The usual chrome menu items appear.
+  std::vector<MenuState> states;
+  AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_WINDOW), &states);
+  AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW),
+              &states);
+  AddToStates(menu, MenuState(ash::SHOW_APP_INFO), &states);
+
+  // A separator item and the hide continue section item appear at the end.
+  AddToStates(menu, MenuState(), &states);
+  AddToStates(menu, MenuState(ash::HIDE_CONTINUE_SECTION), &states);
+  ValidateMenuState(menu_model.get(), states);
+}
+
 TEST_F(AppContextMenuTest, NonExistingExtensionApp) {
   AppServiceContextMenu menu(menu_delegate(), profile(),
                              "some_non_existing_extension_app", controller(),
-                             /*add_sort_options=*/false);
+                             ash::AppListItemContext::kNone);
   std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
   EXPECT_EQ(nullptr, menu_model);
 }
@@ -713,7 +742,7 @@ TEST_F(AppContextMenuLacrosTest, LacrosApp) {
   // Create the context menu.
   AppServiceContextMenu menu(menu_delegate(), profile(),
                              app_constants::kLacrosAppId, controller(),
-                             /*add_sort_options=*/false);
+                             ash::AppListItemContext::kNone);
   std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
   ASSERT_NE(menu_model, nullptr);
 

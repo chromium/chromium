@@ -66,6 +66,9 @@ enum CommandId {
   REORDER_BY_NAME_REVERSE_ALPHABETICAL = 302,
   REORDER_BY_COLOR = 303,
 
+  // Used by the launcher recent apps items via AppServiceContextMenu.
+  HIDE_CONTINUE_SECTION = 400,
+
   // Range of command ids reserved for launching app shortcuts from context
   // menu for Android app. Used by AppContextMenu and ShelfContextMenu.
   LAUNCH_APP_SHORTCUT_FIRST = 1000,

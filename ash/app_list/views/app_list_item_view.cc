@@ -765,13 +765,13 @@ void AppListItemView::ShowContextMenuForViewImpl(
     return;
   waiting_for_context_menu_options_ = true;
 
-  // If this item view is in the AppsGridView with the app sort feature enabled,
-  // request the context menu model to add sort options that can sort the app
-  // list.
-  bool add_sort_options = features::IsLauncherAppSortEnabled() &&
-                          context_ == Context::kAppsGridView;
+  // When the context menu comes from the apps grid it has sorting options. When
+  // it comes from recent apps it has an option to hide the continue section.
+  AppListItemContext item_context = context_ == Context::kAppsGridView
+                                        ? AppListItemContext::kAppsGrid
+                                        : AppListItemContext::kRecentApps;
   view_delegate_->GetContextMenuModel(
-      item_weak_->id(), add_sort_options,
+      item_weak_->id(), item_context,
       base::BindOnce(&AppListItemView::OnContextMenuModelReceived,
                      weak_ptr_factory_.GetWeakPtr(), point, source_type));
 }

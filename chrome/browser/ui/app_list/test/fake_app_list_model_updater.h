@@ -65,7 +65,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
   void GetContextMenuModel(const std::string& id,
-                           bool add_sort_options,
+                           ash::AppListItemContext item_context,
                            GetMenuModelCallback callback) override;
   size_t BadgedItemCount() override;
 

@@ -147,6 +147,18 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   IconColor icon_color;
 };
 
+// Where an app list item is being shown. Used for context menu.
+enum class AppListItemContext {
+  // Used in tests when the context doesn't matter.
+  kNone,
+  // The apps grid (the common case).
+  kAppsGrid,
+  // Recent apps (part of productivity launcher).
+  kRecentApps,
+  // Search results (part of peeking launcher).
+  kSearchResults,
+};
+
 // All possible orders to sort app list items.
 // Note: Do not change the order of these as they are used for metrics.
 enum class AppListSortOrder {

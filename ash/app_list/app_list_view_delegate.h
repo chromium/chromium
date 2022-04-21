@@ -106,11 +106,10 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
 
   // Returns the context menu model for a ChromeAppListItem with |id|, or
   // nullptr if there is currently no menu for the item (e.g. during install).
-  // Requests the menu model to include sort options that can sort the app list
-  // if `add_sort_options` is true. Note the returned menu model is owned by
-  // that item.
+  // `item_context` indicates which piece of UI is showing the item (e.g. apps
+  // grid or recent apps). Note the returned menu model is owned by that item.
   virtual void GetContextMenuModel(const std::string& id,
-                                   bool add_sort_options,
+                                   AppListItemContext item_context,
                                    GetContextMenuModelCallback callback) = 0;
 
   // Returns an animation observer if the |target_state| is interesting to the

@@ -39,6 +39,7 @@ class TestAppListController : public ash::AppListController {
       const absl::optional<ash::AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure) override;
+  void HideContinueSection() override {}
 };
 
 }  // namespace test

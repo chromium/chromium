@@ -1079,7 +1079,7 @@ class SystemWebAppNewWindowMenuItemTest
     base::RunLoop run_loop;
     std::unique_ptr<ui::SimpleMenuModel> menu;
     item->GetContextMenuModel(
-        /*add_sort_options=*/false,
+        ash::AppListItemContext::kNone,
         base::BindLambdaForTesting(
             [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
               menu = std::move(created_menu);

@@ -368,7 +368,7 @@ void AppListClientImpl::ActivateItem(int profile_id,
 void AppListClientImpl::GetContextMenuModel(
     int profile_id,
     const std::string& id,
-    bool add_sort_options,
+    ash::AppListItemContext item_context,
     GetContextMenuModelCallback callback) {
   auto* requested_model_updater = profile_model_mappings_[profile_id];
   if (requested_model_updater != current_model_updater_ ||
@@ -377,7 +377,7 @@ void AppListClientImpl::GetContextMenuModel(
     return;
   }
   requested_model_updater->GetContextMenuModel(
-      id, add_sort_options,
+      id, item_context,
       base::BindOnce(
           [](GetContextMenuModelCallback callback,
              std::unique_ptr<ui::SimpleMenuModel> menu_model) {
