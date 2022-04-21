@@ -77,6 +77,56 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
   base::TimeDelta duration_;
 };
 
+// This is the class that simulates the behavior of
+// `FrameHeader::FrameAnimatorView` which may recreate the window layer in the
+// middle of setting the animation of the old and new layer.
+class FrameAnimator : public ui::ImplicitAnimationObserver {
+ public:
+  explicit FrameAnimator(aura::Window* window) : window_(window) {
+    // Set up an animation which will be stopped before the old layer animation.
+    SetOpacityAnimation(window_->layer());
+  }
+
+  FrameAnimator(const FrameAnimator&) = delete;
+  FrameAnimator& operator=(const FrameAnimator&) = delete;
+  ~FrameAnimator() override = default;
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override {
+    // Once the initial animation is stopped by the old layer, start a new
+    // opacity animation and recreate the window layer at the same time. The
+    // opacity animation will be stopped when the layer set opacity and the
+    // layer is destroyed.
+    if (!animation_started_)
+      StartAnimation();
+    else
+      layer_owner_.reset();
+  }
+
+ private:
+  // Set an opacity animation which should last longer than the cross fade
+  // animation.
+  void SetOpacityAnimation(ui::Layer* layer) {
+    layer->SetOpacity(1.f);
+    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+    settings.AddObserver(this);
+    settings.SetTransitionDuration(base::Milliseconds(1000));
+    layer->SetOpacity(0.f);
+  }
+
+  // Recreate the window layer and start a new opacity animation.
+  void StartAnimation() {
+    layer_owner_ =
+        std::make_unique<ui::LayerTreeOwner>(window_->RecreateLayer());
+    SetOpacityAnimation(layer_owner_->root());
+    animation_started_ = true;
+  }
+
+  aura::Window* window_;
+  std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
+  bool animation_started_ = false;
+};
+
 TEST_F(WindowAnimationsTest, HideShowBrightnessGrayscaleAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -225,6 +275,18 @@ TEST_F(WindowAnimationsTest, CrossFadeThenRecreate) {
   std::unique_ptr<ui::LayerTreeOwner> tree = wm::RecreateLayers(window.get());
   window.reset();
   tree->root()->GetAnimator()->StopAnimating();
+}
+
+// Tests that if the window layer is recreated after setting the old layer's
+// animation (e.g., by `FrameHeader::FrameAnimatorView::StartAnimation`). There
+// should be no crash. Regression test for https://crbug.com/1313977.
+TEST_F(WindowAnimationsTest, RecreateWhenSettingCrossFade) {
+  auto window = CreateTestWindow(gfx::Rect(100, 100));
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  auto frame_animator = std::make_unique<FrameAnimator>(window.get());
+  WindowState::Get(window.get())->Maximize();
 }
 
 TEST_F(WindowAnimationsTest, LockAnimationDuration) {
