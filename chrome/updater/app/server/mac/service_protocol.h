@@ -63,6 +63,15 @@
 - (void)getAppStatesWithReply:
     (void (^_Nonnull)(CRUAppStatesWrapper* _Nullable apps))reply;
 
+- (void)runInstallerWithAppId:(NSString* _Nonnull)appId
+                installerPath:(NSString* _Nonnull)installerPath
+                  installArgs:(NSString* _Nullable)installArgs
+                  installData:(NSString* _Nullable)installData
+              installSettings:(NSString* _Nullable)installSettings
+                  updateState:(CRUUpdateStateObserver* _Nonnull)updateState
+                        reply:(void (^_Nonnull)(
+                                  updater::UpdateService::Result rc))reply;
+
 @end
 
 // Protocol for the XPC update service internal tasks of the Updater.

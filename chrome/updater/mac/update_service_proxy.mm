@@ -173,6 +173,29 @@ using base::SysUTF8ToNSString;
                         reply:reply];
 }
 
+- (void)runInstallerWithAppId:(NSString* _Nonnull)appId
+                installerPath:(NSString* _Nonnull)installerPath
+                  installArgs:(NSString* _Nullable)installArgs
+                  installData:(NSString* _Nullable)installData
+              installSettings:(NSString* _Nullable)installSettings
+                  updateState:(id<CRUUpdateStateObserving> _Nonnull)updateState
+                        reply:(void (^_Nonnull)(
+                                  updater::UpdateService::Result rc))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply(updater::UpdateService::Result::kServiceFailed);
+  };
+
+  [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      runInstallerWithAppId:appId
+              installerPath:installerPath
+                installArgs:installArgs
+                installData:installData
+            installSettings:installSettings
+                updateState:updateState
+                      reply:reply];
+}
 @end
 
 namespace updater {
@@ -319,10 +342,26 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
                                       StateChangeCallback state_update,
                                       Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
 
-  // TODO(crbug.com/1286574): implement.
-  NOTIMPLEMENTED();
+  __block base::OnceCallback<void(UpdateService::Result)> block_callback =
+      std::move(callback);
+  auto reply = ^(updater::UpdateService::Result rc) {
+    callback_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(block_callback), rc));
+  };
+
+  base::scoped_nsprotocol<id<CRUUpdateStateObserving>> stateObserver(
+      [[CRUUpdateStateObserver alloc]
+          initWithRepeatingCallback:state_update
+                     callbackRunner:callback_runner_]);
+
+  [client_ runInstallerWithAppId:SysUTF8ToNSString(app_id)
+                   installerPath:base::mac::FilePathToNSString(installer_path)
+                     installArgs:SysUTF8ToNSString(install_args)
+                     installData:SysUTF8ToNSString(install_data)
+                 installSettings:SysUTF8ToNSString(install_settings)
+                     updateState:stateObserver.get()
+                           reply:reply];
 }
 
 void UpdateServiceProxy::Reset() {

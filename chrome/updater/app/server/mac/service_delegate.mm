@@ -252,6 +252,61 @@
       FROM_HERE, base::BindOnce(&updater::UpdateService::GetAppStates, _service,
                                 std::move(cb)));
 }
+
+- (void)runInstallerWithAppId:(NSString* _Nonnull)appId
+                installerPath:(NSString* _Nonnull)installerPath
+                  installArgs:(NSString* _Nullable)installArgs
+                  installData:(NSString* _Nullable)installData
+              installSettings:(NSString* _Nullable)installSettings
+                  updateState:(CRUUpdateStateObserver* _Nonnull)updateState
+                        reply:(void (^_Nonnull)(
+                                  updater::UpdateService::Result rc))reply {
+  auto cb =
+      base::BindOnce(base::RetainBlock(^(updater::UpdateService::Result rc) {
+        VLOG(0) << "Run installer complete: result_code = " << rc;
+        if (reply)
+          reply(rc);
+
+        _appServer->TaskCompleted();
+      }));
+
+  auto sccb = base::BindRepeating(base::RetainBlock(^(
+      const updater::UpdateService::UpdateState& state) {
+    NSString* version = base::SysUTF8ToNSString(
+        state.next_version.IsValid() ? state.next_version.GetString() : "");
+
+    base::scoped_nsobject<CRUUpdateStateStateWrapper> updateStateStateWrapper(
+        [[CRUUpdateStateStateWrapper alloc]
+            initWithUpdateStateState:state.state]);
+    base::scoped_nsobject<CRUErrorCategoryWrapper> errorCategoryWrapper(
+        [[CRUErrorCategoryWrapper alloc]
+            initWithErrorCategory:state.error_category]);
+
+    base::scoped_nsobject<CRUUpdateStateWrapper> updateStateWrapper(
+        [[CRUUpdateStateWrapper alloc]
+              initWithAppId:base::SysUTF8ToNSString(state.app_id)
+                      state:updateStateStateWrapper.get()
+                    version:version
+            downloadedBytes:state.downloaded_bytes
+                 totalBytes:state.total_bytes
+            installProgress:state.install_progress
+              errorCategory:errorCategoryWrapper.get()
+                  errorCode:state.error_code
+                  extraCode:state.extra_code1]);
+    [updateState observeUpdateState:updateStateWrapper.get()];
+  }));
+
+  _appServer->TaskStarted();
+  _callbackRunner->PostTask(
+      FROM_HERE, base::BindOnce(&updater::UpdateService::RunInstaller, _service,
+                                base::SysNSStringToUTF8(appId),
+                                base::mac::NSStringToFilePath(installerPath),
+                                base::SysNSStringToUTF8(installArgs),
+                                base::SysNSStringToUTF8(installData),
+                                base::SysNSStringToUTF8(installSettings),
+                                std::move(sccb), std::move(cb)));
+}
+
 @end
 
 // CRUUpdateServiceXPCFilterUnprivileged is an implementation of UpdateService
@@ -334,6 +389,19 @@
 - (void)getAppStatesWithReply:(void (^_Nonnull)(CRUAppStatesWrapper*))reply {
   // Cross-user gets a restricted view of the app states.
   [_service getAppStatesWithReply:reply restrictedView:YES];
+}
+
+- (void)runInstallerWithAppId:(NSString* _Nonnull)appId
+                installerPath:(NSString* _Nonnull)installerPath
+                  installArgs:(NSString* _Nullable)installArgs
+                  installData:(NSString* _Nullable)installData
+              installSettings:(NSString* _Nullable)installSettings
+                  updateState:(CRUUpdateStateObserver* _Nonnull)updateState
+                        reply:(void (^_Nonnull)(
+                                  updater::UpdateService::Result rc))reply {
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
+  if (reply)
+    reply(updater::UpdateService::Result::kServiceFailed);
 }
 @end
 

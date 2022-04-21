@@ -29,6 +29,14 @@ NSXPCInterface* GetXPCUpdateServicingInterface() {
       argumentIndex:4
             ofReply:NO];
 
+  [updateCheckingInterface
+       setInterface:updateStateObservingInterface
+        forSelector:@selector
+        (runInstallerWithAppId:
+                 installerPath:installArgs:installData:installSettings
+                              :updateState:reply:)
+      argumentIndex:5
+            ofReply:NO];
   return updateCheckingInterface;
 }
 
