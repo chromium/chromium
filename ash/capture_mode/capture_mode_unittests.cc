@@ -5185,12 +5185,44 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
     test_api.StopVideoRecording();
     EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
 
-    histogram_tester_.ExpectBucketCount(
+    histogram_tester_.ExpectUniqueSample(
         GetCaptureModeHistogramName(
             kProjectorCaptureConfigurationHistogramBase),
         GetConfiguration(CaptureModeType::kVideo, capture_source), 1);
 
     WaitForCaptureFileToBeSaved();
+  }
+}
+
+// Tests that metrics are recorded correctly for screen recording length
+// entering from projector in both clamshell and tablet mode.
+TEST_P(ProjectorCaptureModeIntegrationTests,
+       ProjectorScreenRecordingLengthMetrics) {
+  const auto capture_source = GetParam();
+  constexpr char kProjectorRecordTimeHistogramBase[] =
+      "Ash.CaptureModeController.Projector.ScreenRecordingLength";
+  ash::CaptureModeTestApi test_api;
+
+  const bool kTabletEnabledStates[]{false, true};
+
+  for (const bool tablet_enabled : kTabletEnabledStates) {
+    if (tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    StartRecordingForProjectorFromSource(capture_source);
+    WaitForSeconds(5);
+    test_api.StopVideoRecording();
+    EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+
+    WaitForCaptureFileToBeSaved();
+
+    histogram_tester_.ExpectUniqueSample(
+        GetCaptureModeHistogramName(kProjectorRecordTimeHistogramBase),
+        /*seconds=*/5, /*count=*/1);
   }
 }
 
