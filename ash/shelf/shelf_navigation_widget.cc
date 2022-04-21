@@ -433,7 +433,7 @@ void ShelfNavigationWidget::Delegate::UpdateOpaqueBackground() {
 
   // The opaque background does not show up when there are two buttons.
   gfx::Rect opaque_background_bounds =
-      GetFirstButtonBounds(shelf_->IsHorizontalAlignment());
+      GetMirroredRect(GetFirstButtonBounds(shelf_->IsHorizontalAlignment()));
   opaque_background_.SetBounds(opaque_background_bounds);
   opaque_background_.SetBackgroundBlur(
       ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
