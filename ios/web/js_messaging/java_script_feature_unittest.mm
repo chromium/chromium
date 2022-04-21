@@ -38,7 +38,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureScript) {
       web::JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame;
   auto feature_script2 =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "common", document_end_injection_time, target_frames_main);
+          "common_js", document_end_injection_time, target_frames_main);
 
   EXPECT_EQ(document_end_injection_time, feature_script2.GetInjectionTime());
   EXPECT_EQ(target_frames_main, feature_script2.GetTargetFrames());
@@ -163,7 +163,8 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
 
   const web::JavaScriptFeature::FeatureScript feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "plugin_placeholder", document_end_injection_time, target_frames_all,
+          "plugin_placeholder_js", document_end_injection_time,
+          target_frames_all,
           web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
               kReinjectOnDocumentRecreation,
           base::BindRepeating(^NSDictionary<NSString*, NSString*>*() {
@@ -178,7 +179,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
   EXPECT_EQ(0ul, feature.GetDependentFeatures().size());
   auto feature_scripts = feature.GetScripts();
   ASSERT_EQ(1ul, feature_scripts.size());
-  NSString* original_script = web::GetPageScript(@"plugin_placeholder");
+  NSString* original_script = web::GetPageScript(@"plugin_placeholder_js");
   NSString* final_script = feature_scripts[0].GetScriptString();
 
   EXPECT_NSEQ(feature_script.GetScriptString(), final_script);
@@ -207,7 +208,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithDependentFeature) {
       web::JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame;
   const web::JavaScriptFeature::FeatureScript feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "common", document_end_injection_time, target_frames_main);
+          "common_js", document_end_injection_time, target_frames_main);
 
   auto page_content_world =
       web::JavaScriptFeature::ContentWorld::kPageContentWorld;

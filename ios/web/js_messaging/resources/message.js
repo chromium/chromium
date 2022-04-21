@@ -7,7 +7,9 @@
  * the native code.
  */
 
-// Requires functions from base.js and common.js
+goog.provide('__crWeb.message');
+
+// Requires __crWeb.base and __crWeb.common.
 
 /**
  * Namespace for this module.
@@ -19,6 +21,8 @@ __gCrWeb.message = {};
 // minification.
 __gCrWeb['message'] = __gCrWeb.message;
 
+/* Beginning of anonymous object. */
+(function() {
 /**
  * Boolean to track if messaging is suspended. While suspended, messages will be
  * queued and sent once messaging is no longer suspended.
@@ -433,3 +437,5 @@ __gCrWeb.message['getExistingFrames'] = function() {
     );
   }
 };
+
+}());

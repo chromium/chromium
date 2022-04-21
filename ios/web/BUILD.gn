@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/js_compile.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -636,43 +636,48 @@ test("ios_web_inttests") {
   assert_no_deps = ios_assert_no_deps
 }
 
-optimize_js("plugin_placeholder_js") {
+js_compile_bundle("plugin_placeholder_js") {
   visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.pluginPlaceholder"
 
-  primary_script = "web_state/js/resources/plugin_placeholder.js"
   sources = [ "web_state/js/resources/plugin_placeholder.js" ]
 }
 
-optimize_js("share_workaround_js") {
+js_compile_bundle("share_workaround_js") {
   visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.shareWorkaround"
 
-  primary_script = "web_state/js/resources/share_workaround.js"
   sources = [ "web_state/js/resources/share_workaround.js" ]
 }
 
-optimize_js("base_js") {
+js_compile_bundle("base_js") {
   visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.base"
 
-  primary_script = "web_state/js/resources/base.js"
   sources = [ "web_state/js/resources/base.js" ]
 }
 
-optimize_js("common_js") {
+js_compile_bundle("common_js") {
   visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.common"
 
-  primary_script = "web_state/js/resources/common.js"
   sources = [ "web_state/js/resources/common.js" ]
 }
 
-optimize_js("message_js") {
+js_compile_bundle("message_js") {
   visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.message"
 
-  primary_script = "js_messaging/resources/message.js"
   sources = [ "js_messaging/resources/message.js" ]
 }
 
-optimize_js("js_resources") {
-  primary_script = "js_messaging/resources/window_id.js"
+js_compile_checked("js_resources") {
+  js_modules = [
+    "//ios/web/web_state/js/resources/base.js",
+    "//ios/web/web_state/js/resources/common.js",
+    "//ios/web/js_messaging/resources/message.js",
+  ]
+
   sources = [ "js_messaging/resources/window_id.js" ]
 }
 

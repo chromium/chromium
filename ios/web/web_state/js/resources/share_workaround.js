@@ -7,6 +7,8 @@
  * See crbug.com/1122059.
  */
 
+goog.provide('__crWeb.shareWorkaround');
+
 /** Beginning of anonymous object */
 (function() {
 
