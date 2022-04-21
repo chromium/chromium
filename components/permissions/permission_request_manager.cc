@@ -823,8 +823,7 @@ void PermissionRequestManager::FinalizeCurrentRequests(
     PermissionsClient::Get()->OnPromptResolved(
         browser_context, request->request_type(), permission_action,
         request->requesting_origin(), DetermineCurrentRequestUIDisposition(),
-        DetermineCurrentRequestUIDispositionReasonForUMA(),
-        request->GetGestureType(), quiet_ui_reason);
+        quiet_ui_reason);
 
     PermissionEmbargoStatus embargo_status =
         PermissionEmbargoStatus::NOT_EMBARGOED;
