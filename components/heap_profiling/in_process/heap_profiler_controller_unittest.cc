@@ -72,12 +72,9 @@ class HeapProfilerControllerTest : public ::testing::Test {
     // Clear any samples set in the global SamplingHeapProfiler before the
     // ScopedMuteHookedSamplesForTesting was created.
     base::SamplingHeapProfiler::Get()->ClearSamplesForTesting();
-    base::PoissonAllocationSampler::Get()->SuppressRandomnessForTest(true);
   }
 
   ~HeapProfilerControllerTest() override {
-    base::PoissonAllocationSampler::Get()->SuppressRandomnessForTest(false);
-
     // Remove any callback that was set in StartHeapProfiling.
     metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
         base::DoNothing());
@@ -120,6 +117,8 @@ class HeapProfilerControllerTest : public ::testing::Test {
   // allocations aren't sampled while TaskEnvironment creates a thread. The
   // sampling is crashing in the hooked FreeFunc on some test bots.
   base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting mute_hooks_;
+  base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting
+      suppress_randomness_;
 
   // Create `feature_list_` before `task_environment_` and destroy it after to
   // avoid a race in destruction.
