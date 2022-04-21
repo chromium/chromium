@@ -1088,9 +1088,10 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   static const char16_t kPhoneF16[] = u"1-800-555-0199 #321";
   static const char kPhoneG[] = "+1 (800) 555.0199;ext=321";
   static const char16_t kPhoneG16[] = u"+1 (800) 555.0199;ext=321";
-  static const char16_t kMergedShortNumber[] = u"5550199";
-  static const char16_t kMergedShortNumberExt[] = u"5550199 ext. 321";
-  static const char16_t kMergedFullNumber[] = u"+1 800-555-0199";
+  static const char16_t kMergedShortNumber[] = u"555-0199";
+  static const char16_t kMergedShortNumberExt[] = u"555-0199 ext. 321";
+  static const char16_t kMergedNationalNumber[] = u"(800) 555-0199";
+  static const char16_t kMergedNationalNumberExt[] = u"(800) 555-0199 ext. 321";
   static const char16_t kMergedFullNumberExt[] = u"+1 800-555-0199 ext. 321";
 
   AutofillProfile profile_a = CreateProfileWithPhoneNumber(kPhoneA);
@@ -1105,8 +1106,8 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   MergePhoneNumbersAndExpect(profile_a, profile_a, kPhoneA16);
   MergePhoneNumbersAndExpect(profile_a, profile_b, kMergedShortNumber);
   MergePhoneNumbersAndExpect(profile_a, profile_c, kMergedShortNumberExt);
-  MergePhoneNumbersAndExpect(profile_a, profile_d, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_a, profile_e, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_a, profile_d, kMergedNationalNumber);
+  MergePhoneNumbersAndExpect(profile_a, profile_e, kMergedNationalNumberExt);
   MergePhoneNumbersAndExpect(profile_a, profile_f, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_a, profile_g, kMergedFullNumberExt);
 
@@ -1114,8 +1115,8 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   MergePhoneNumbersAndExpect(profile_b, profile_a, kMergedShortNumber);
   MergePhoneNumbersAndExpect(profile_b, profile_b, kPhoneB16);
   MergePhoneNumbersAndExpect(profile_b, profile_c, kMergedShortNumberExt);
-  MergePhoneNumbersAndExpect(profile_b, profile_d, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_b, profile_e, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_b, profile_d, kMergedNationalNumber);
+  MergePhoneNumbersAndExpect(profile_b, profile_e, kMergedNationalNumberExt);
   MergePhoneNumbersAndExpect(profile_b, profile_f, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_b, profile_g, kMergedFullNumberExt);
 
@@ -1123,25 +1124,25 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   MergePhoneNumbersAndExpect(profile_c, profile_a, kMergedShortNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_b, kMergedShortNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_c, kPhoneC16);
-  MergePhoneNumbersAndExpect(profile_c, profile_d, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_e, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_c, profile_d, kMergedNationalNumberExt);
+  MergePhoneNumbersAndExpect(profile_c, profile_e, kMergedNationalNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_f, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_g, kMergedFullNumberExt);
 
   // Profile D
-  MergePhoneNumbersAndExpect(profile_d, profile_a, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_d, profile_b, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_d, profile_c, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_d, profile_a, kMergedNationalNumber);
+  MergePhoneNumbersAndExpect(profile_d, profile_b, kMergedNationalNumber);
+  MergePhoneNumbersAndExpect(profile_d, profile_c, kMergedNationalNumberExt);
   MergePhoneNumbersAndExpect(profile_d, profile_d, kPhoneD16);
-  MergePhoneNumbersAndExpect(profile_d, profile_e, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_d, profile_e, kMergedNationalNumberExt);
   MergePhoneNumbersAndExpect(profile_d, profile_f, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_d, profile_g, kMergedFullNumberExt);
 
   // Profile E
-  MergePhoneNumbersAndExpect(profile_e, profile_a, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_b, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_c, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_d, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_e, profile_a, kMergedNationalNumberExt);
+  MergePhoneNumbersAndExpect(profile_e, profile_b, kMergedNationalNumberExt);
+  MergePhoneNumbersAndExpect(profile_e, profile_c, kMergedNationalNumberExt);
+  MergePhoneNumbersAndExpect(profile_e, profile_d, kMergedNationalNumberExt);
   MergePhoneNumbersAndExpect(profile_e, profile_e, kPhoneE16);
   MergePhoneNumbersAndExpect(profile_e, profile_f, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_e, profile_g, kMergedFullNumberExt);
@@ -1423,7 +1424,7 @@ TEST_P(AutofillProfileComparatorTest,
   // values.
   EXPECT_FALSE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          existing_profile, existing_profile));
+          existing_profile, existing_profile, kLocale));
 
   // Test for most settings visible types that a change is correctly recognized.
   for (ServerFieldType changed_type :
@@ -1433,7 +1434,7 @@ TEST_P(AutofillProfileComparatorTest,
     AutofillProfile new_profile = existing_profile;
     EXPECT_FALSE(
         AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-            existing_profile, new_profile));
+            existing_profile, new_profile, kLocale));
 
     // Change one of the settings visible values and test that the function
     // returns true.
@@ -1442,7 +1443,7 @@ TEST_P(AutofillProfileComparatorTest,
         changed_type, existing_profile.GetRawInfo(changed_type) + u"_edited");
     EXPECT_TRUE(
         AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-            existing_profile, new_profile));
+            existing_profile, new_profile, kLocale));
   }
 
   // The rest of the test is only applicable for structured names.
@@ -1457,7 +1458,7 @@ TEST_P(AutofillProfileComparatorTest,
       NAME_FIRST, base::ToUpperASCII(existing_profile.GetRawInfo(NAME_FIRST)));
   EXPECT_FALSE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-          existing_profile, new_profile));
+          existing_profile, new_profile, kLocale));
 }
 
 TEST_P(AutofillProfileComparatorTest, GetProfileDifference) {

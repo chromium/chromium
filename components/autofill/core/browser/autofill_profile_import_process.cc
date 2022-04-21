@@ -107,7 +107,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // merge can  be considered as a silent update that does not need to get
     // user confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-            *existing_profile, merged_profile)) {
+            *existing_profile, merged_profile, app_locale_)) {
       if (allow_only_silent_updates_) {
         ++number_of_unchanged_profiles;
         continue;

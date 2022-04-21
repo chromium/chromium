@@ -675,6 +675,8 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   }
 
   // Figure out a country code hint.
+  // TODO(crbug.com/1313862) |GetNonEmptyOf()| prefers |p1| in case both are
+  // non empty.
   const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
   std::string region = UTF16ToUTF8(GetNonEmptyOf(p1, p2, kCountryCode));
   if (region.empty())
@@ -695,9 +697,25 @@ bool AutofillProfileComparator::MergePhoneNumbers(
     return false;
   }
 
+  // `country_code()` defaults to the provided `region`. But if one of the
+  // numbers is in international format, we should prefer that country code.
+  auto HasInternationalCountryCode =
+      [](const ::i18n::phonenumbers::PhoneNumber& number) {
+        return number.country_code_source() !=
+               ::i18n::phonenumbers::PhoneNumber::FROM_DEFAULT_COUNTRY;
+      };
+
   ::i18n::phonenumbers::PhoneNumber merged_number;
-  DCHECK_EQ(n1.country_code(), n2.country_code());
-  merged_number.set_country_code(n1.country_code());
+  // There are three cases for country codes:
+  // - Both numbers are in international format, so because the numbers are
+  //   mergeable, they are equal.
+  // - Both are not in international format, so their country codes both default
+  //   to `region`.
+  // - One of them is in international format, so we prefer that country code.
+  DCHECK(HasInternationalCountryCode(n1) != HasInternationalCountryCode(n2) ||
+         n1.country_code() == n2.country_code());
+  merged_number.set_country_code(
+      HasInternationalCountryCode(n1) ? n1.country_code() : n2.country_code());
   merged_number.set_national_number(
       std::max(n1.national_number(), n2.national_number()));
   if (n1.has_extension() && !n1.extension().empty()) {
@@ -714,9 +732,15 @@ bool AutofillProfileComparator::MergePhoneNumbers(
         std::max(n1.number_of_leading_zeros(), n2.number_of_leading_zeros()));
   }
 
+  // Format the `merged_number` in international format only if at least one
+  // of the country codes was derived from the number itself. This is done
+  // consistently with `::autofill::i18n::FormatValidatedNumber()` and
+  // `::autofill::i18n::ParsePhoneNumber()`, which backs the `PhoneNumber`
+  // implementation.
   PhoneNumberUtil::PhoneNumberFormat format =
-      region.empty() ? PhoneNumberUtil::NATIONAL
-                     : PhoneNumberUtil::INTERNATIONAL;
+      HasInternationalCountryCode(n1) || HasInternationalCountryCode(n2)
+          ? PhoneNumberUtil::INTERNATIONAL
+          : PhoneNumberUtil::NATIONAL;
 
   std::string new_number;
   phone_util->Format(merged_number, format, &new_number);
@@ -1005,12 +1029,12 @@ bool AutofillProfileComparator::MergeBirthdates(const AutofillProfile& p1,
 
 bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
     const AutofillProfile& p1,
-    const AutofillProfile& p2) {
-
+    const AutofillProfile& p2,
+    const std::string& app_locale) {
   // Return true if at least one value corresponding to the settings visible
   // types is different between the two profiles.
   return base::ranges::any_of(GetUserVisibleTypes(), [&](const auto type) {
-    return p1.GetRawInfo(type) != p2.GetRawInfo(type);
+    return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
 }
 
@@ -1033,8 +1057,8 @@ bool AutofillProfileComparator::IsMergeCandidate(
 
   // If the two profiles have at least one settings-visible value that is
   // different, |existing_profile| is a merge candidate.
-  return ProfilesHaveDifferentSettingsVisibleValues(merged_profile,
-                                                    existing_profile);
+  return ProfilesHaveDifferentSettingsVisibleValues(
+      merged_profile, existing_profile, app_locale);
 }
 
 // static

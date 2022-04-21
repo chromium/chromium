@@ -1436,15 +1436,16 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
       ConstructFormStructureFromTypeValuePairs(conflicting_type_value_pairs);
 
   std::vector<std::pair<ServerFieldType, std::string>>
-      resulting_type_value_pairs{{NAME_FULL, kDefaultFullName},
-                                 {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-                                 {ADDRESS_HOME_CITY, kDefaultCity},
-                                 {ADDRESS_HOME_STATE, kDefaultState},
-                                 {ADDRESS_HOME_ZIP, kDefaultZip},
-                                 // The phone number is spelled differently.
-                                 {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
-                                 // Country information is added.
-                                 {ADDRESS_HOME_COUNTRY, "US"}};
+      resulting_type_value_pairs{
+          {NAME_FULL, kDefaultFullName},
+          {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+          {ADDRESS_HOME_CITY, kDefaultCity},
+          {ADDRESS_HOME_STATE, kDefaultState},
+          {ADDRESS_HOME_ZIP, kDefaultZip},
+          // The phone number remains in domestic format.
+          {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
+          // Country information is added.
+          {ADDRESS_HOME_COUNTRY, "US"}};
 
   // Verify that importing the conflicting profile will result in an update of
   // the existing profile rather than creating a new one.

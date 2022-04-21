@@ -82,7 +82,8 @@ class AutofillProfileComparator {
   // settings-visible value that is different.
   static bool ProfilesHaveDifferentSettingsVisibleValues(
       const AutofillProfile& p1,
-      const AutofillProfile& p2);
+      const AutofillProfile& p2,
+      const std::string& app_locale);
 
   // Returns true if |text| is empty or contains only skippable characters. A
   // character is skippable if it is punctuation or white space.
