@@ -28,14 +28,31 @@ void PowerMonitorMessageBroadcaster::Bind(
 void PowerMonitorMessageBroadcaster::AddClient(
     mojo::PendingRemote<device::mojom::PowerMonitorClient>
         power_monitor_client) {
-  clients_.Add(std::move(power_monitor_client));
-  if (base::PowerMonitor::IsInitialized())
-    OnPowerStateChange(base::PowerMonitor::IsOnBatteryPower());
+  mojo::RemoteSetElementId element_id =
+      clients_.Add(std::move(power_monitor_client));
+
+  if (!base::PowerMonitor::IsInitialized())
+    return;
+
+  bool on_battery_power = base::PowerMonitor::IsOnBatteryPower();
+
+  // If the state has changed since we last checked, update all clients.
+  if (on_battery_power != on_battery_power_) {
+    OnPowerStateChange(on_battery_power);
+    return;
+  }
+
+  // New clients default to on_battery_power == false. Only update this new
+  // client if on_battery_power_ == true;
+  if (on_battery_power_) {
+    clients_.Get(element_id)->PowerStateChange(on_battery_power_);
+  }
 }
 
 void PowerMonitorMessageBroadcaster::OnPowerStateChange(bool on_battery_power) {
+  on_battery_power_ = on_battery_power;
   for (auto& client : clients_)
-    client->PowerStateChange(on_battery_power);
+    client->PowerStateChange(on_battery_power_);
 }
 
 void PowerMonitorMessageBroadcaster::OnSuspend() {

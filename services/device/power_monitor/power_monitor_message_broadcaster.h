@@ -45,6 +45,7 @@ class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
  private:
   mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
   mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
+  bool on_battery_power_ = false;
 };
 
 }  // namespace device

@@ -46,10 +46,12 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
                            PowerMessageReceiveBroadcast);
   FRIEND_TEST_ALL_PREFIXES(PowerMonitorMessageBroadcasterTest,
                            PowerMessageBroadcast);
+  FRIEND_TEST_ALL_PREFIXES(PowerMonitorMessageBroadcasterTest,
+                           PowerClientUpdateWhenOnBattery);
 
   // Client holds the mojo connection. It is created on the main thread, and
   // destroyed on task runner's thread. Unless otherwise noted, all its methods
-  // all called on the task runner's thread.
+  // are called on the task runner's thread.
   class Client : public device::mojom::PowerMonitorClient {
    public:
     Client();
