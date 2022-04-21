@@ -853,14 +853,14 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& block_device_result = probe_result->block_device_result;
     if (!block_device_result.is_null()) {
       switch (block_device_result->which()) {
-        case cros_healthd::NonRemovableBlockDeviceResult::Tag::ERROR: {
+        case cros_healthd::NonRemovableBlockDeviceResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting block device info: "
                      << block_device_result->get_error()->msg;
           break;
         }
 
         case cros_healthd::NonRemovableBlockDeviceResult::Tag::
-            BLOCK_DEVICE_INFO: {
+            kBlockDeviceInfo: {
           em::StorageStatus* const storage_status_out =
               response_params_.device_status->mutable_storage_status();
           for (const auto& storage :
@@ -893,15 +893,16 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             const auto& vendor_id = storage->vendor_id;
             switch (vendor_id->which()) {
               case chromeos::cros_healthd::mojom::BlockDeviceVendor::Tag::
-                  NVME_SUBSYSTEM_VENDOR:
+                  kNvmeSubsystemVendor:
                 disk_info_out->set_nvme_subsystem_vendor(
                     vendor_id->get_nvme_subsystem_vendor());
                 break;
               case chromeos::cros_healthd::mojom::BlockDeviceVendor::Tag::
-                  EMMC_OEMID:
+                  kEmmcOemid:
                 disk_info_out->set_emmc_oemid(vendor_id->get_emmc_oemid());
                 break;
-              case chromeos::cros_healthd::mojom::BlockDeviceVendor::Tag::OTHER:
+              case chromeos::cros_healthd::mojom::BlockDeviceVendor::Tag::
+                  kOther:
                 disk_info_out->set_other_vendor(vendor_id->get_other());
                 break;
             }
@@ -910,16 +911,16 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             const auto& product_id = storage->product_id;
             switch (product_id->which()) {
               case chromeos::cros_healthd::mojom::BlockDeviceProduct::Tag::
-                  NVME_SUBSYSTEM_DEVICE:
+                  kNvmeSubsystemDevice:
                 disk_info_out->set_nvme_subsystem_device(
                     product_id->get_nvme_subsystem_device());
                 break;
               case chromeos::cros_healthd::mojom::BlockDeviceProduct::Tag::
-                  EMMC_PNM:
+                  kEmmcPnm:
                 disk_info_out->set_emmc_pnm(product_id->get_emmc_pnm());
                 break;
               case chromeos::cros_healthd::mojom::BlockDeviceProduct::Tag::
-                  OTHER:
+                  kOther:
                 disk_info_out->set_other_product(product_id->get_other());
                 break;
             }
@@ -928,16 +929,16 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             const auto& revision = storage->revision;
             switch (revision->which()) {
               case chromeos::cros_healthd::mojom::BlockDeviceRevision::Tag::
-                  NVME_PCIE_REV:
+                  kNvmePcieRev:
                 disk_info_out->set_nvme_hardware_rev(
                     revision->get_nvme_pcie_rev());
                 break;
               case chromeos::cros_healthd::mojom::BlockDeviceRevision::Tag::
-                  EMMC_PRV:
+                  kEmmcPrv:
                 disk_info_out->set_emmc_hardware_rev(revision->get_emmc_prv());
                 break;
               case chromeos::cros_healthd::mojom::BlockDeviceRevision::Tag::
-                  OTHER:
+                  kOther:
                 disk_info_out->set_other_hardware_rev(revision->get_other());
                 break;
             }
@@ -946,17 +947,17 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             const auto& fw_version = storage->firmware_version;
             switch (fw_version->which()) {
               case chromeos::cros_healthd::mojom::BlockDeviceFirmware::Tag::
-                  NVME_FIRMWARE_REV:
+                  kNvmeFirmwareRev:
                 disk_info_out->set_nvme_firmware_rev(
                     fw_version->get_nvme_firmware_rev());
                 break;
               case chromeos::cros_healthd::mojom::BlockDeviceFirmware::Tag::
-                  EMMC_FWREV:
+                  kEmmcFwrev:
                 disk_info_out->set_emmc_firmware_rev(
                     fw_version->get_emmc_fwrev());
                 break;
               case chromeos::cros_healthd::mojom::BlockDeviceFirmware::Tag::
-                  OTHER:
+                  kOther:
                 disk_info_out->set_other_firmware_rev(fw_version->get_other());
                 break;
             }
@@ -987,13 +988,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& battery_result = probe_result->battery_result;
     if (!battery_result.is_null()) {
       switch (battery_result->which()) {
-        case cros_healthd::BatteryResult::Tag::ERROR: {
+        case cros_healthd::BatteryResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting battery info: "
                      << battery_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::BatteryResult::Tag::BATTERY_INFO: {
+        case cros_healthd::BatteryResult::Tag::kBatteryInfo: {
           const auto& battery_info = battery_result->get_battery_info();
           // Device does not have a battery.
           if (battery_info.is_null())
@@ -1037,13 +1038,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& cpu_result = probe_result->cpu_result;
     if (!cpu_result.is_null()) {
       switch (cpu_result->which()) {
-        case cros_healthd::CpuResult::Tag::ERROR: {
+        case cros_healthd::CpuResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting CPU info: "
                      << cpu_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::CpuResult::Tag::CPU_INFO: {
+        case cros_healthd::CpuResult::Tag::kCpuInfo: {
           const auto& cpu_info = cpu_result->get_cpu_info();
 
           if (cpu_info.is_null()) {
@@ -1113,13 +1114,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& timezone_result = probe_result->timezone_result;
     if (!timezone_result.is_null()) {
       switch (timezone_result->which()) {
-        case cros_healthd::TimezoneResult::Tag::ERROR: {
+        case cros_healthd::TimezoneResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting timezone info: "
                      << timezone_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::TimezoneResult::Tag::TIMEZONE_INFO: {
+        case cros_healthd::TimezoneResult::Tag::kTimezoneInfo: {
           const auto& timezone_info = timezone_result->get_timezone_info();
           em::TimezoneInfo* const timezone_info_out =
               response_params_.device_status->mutable_timezone_info();
@@ -1135,13 +1136,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& memory_result = probe_result->memory_result;
     if (!memory_result.is_null()) {
       switch (memory_result->which()) {
-        case cros_healthd::MemoryResult::Tag::ERROR: {
+        case cros_healthd::MemoryResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting memory info: "
                      << memory_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::MemoryResult::Tag::MEMORY_INFO: {
+        case cros_healthd::MemoryResult::Tag::kMemoryInfo: {
           const auto& memory_info = memory_result->get_memory_info();
           em::MemoryInfo* const memory_info_out =
               response_params_.device_status->mutable_memory_info();
@@ -1161,13 +1162,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& backlight_result = probe_result->backlight_result;
     if (!backlight_result.is_null()) {
       switch (backlight_result->which()) {
-        case cros_healthd::BacklightResult::Tag::ERROR: {
+        case cros_healthd::BacklightResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting backlight info: "
                      << backlight_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::BacklightResult::Tag::BACKLIGHT_INFO: {
+        case cros_healthd::BacklightResult::Tag::kBacklightInfo: {
           for (const auto& backlight : backlight_result->get_backlight_info()) {
             em::BacklightInfo* const backlight_info_out =
                 response_params_.device_status->add_backlight_info();
@@ -1187,13 +1188,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& fan_result = probe_result->fan_result;
     if (!fan_result.is_null()) {
       switch (fan_result->which()) {
-        case cros_healthd::FanResult::Tag::ERROR: {
+        case cros_healthd::FanResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting fan info: "
                      << fan_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::FanResult::Tag::FAN_INFO: {
+        case cros_healthd::FanResult::Tag::kFanInfo: {
           for (const auto& fan : fan_result->get_fan_info()) {
             em::FanInfo* const fan_info_out =
                 response_params_.device_status->add_fan_info();
@@ -1211,13 +1212,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& bluetooth_result = probe_result->bluetooth_result;
     if (!bluetooth_result.is_null()) {
       switch (bluetooth_result->which()) {
-        case cros_healthd::BluetoothResult::Tag::ERROR: {
+        case cros_healthd::BluetoothResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting Bluetooth info: "
                      << bluetooth_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::BluetoothResult::Tag::BLUETOOTH_ADAPTER_INFO: {
+        case cros_healthd::BluetoothResult::Tag::kBluetoothAdapterInfo: {
           for (const auto& adapter :
                bluetooth_result->get_bluetooth_adapter_info()) {
             em::BluetoothAdapterInfo* const adapter_info_out =
@@ -1242,13 +1243,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& system_result = probe_result->system_result;
     if (!system_result.is_null()) {
       switch (system_result->which()) {
-        case cros_healthd::SystemResult::Tag::ERROR: {
+        case cros_healthd::SystemResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting system info: "
                      << system_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::SystemResult::Tag::SYSTEM_INFO: {
+        case cros_healthd::SystemResult::Tag::kSystemInfo: {
           const auto& system_info = system_result->get_system_info();
           em::SystemStatus* const system_status_out =
               response_params_.device_status->mutable_system_status();
@@ -1307,13 +1308,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     const auto& system_result_v2 = probe_result->system_result_v2;
     if (!system_result_v2.is_null()) {
       switch (system_result_v2->which()) {
-        case cros_healthd::SystemResultV2::Tag::ERROR: {
+        case cros_healthd::SystemResultV2::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting system info v2: "
                      << system_result_v2->get_error()->msg;
           break;
         }
 
-        case cros_healthd::SystemResultV2::Tag::SYSTEM_INFO_V2: {
+        case cros_healthd::SystemResultV2::Tag::kSystemInfoV2: {
           const auto& system_info_v2 = system_result_v2->get_system_info_v2();
           em::SmbiosInfo* const smbios_info_out =
               response_params_.device_status->mutable_smbios_info();
@@ -1355,13 +1356,13 @@ class DeviceStatusCollectorState : public StatusCollectorState {
         probe_result->stateful_partition_result;
     if (!stateful_partition_result.is_null()) {
       switch (stateful_partition_result->which()) {
-        case cros_healthd::StatefulPartitionResult::Tag::ERROR: {
+        case cros_healthd::StatefulPartitionResult::Tag::kError: {
           LOG(ERROR) << "cros_healthd: Error getting Stateful Partition info: "
                      << stateful_partition_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::StatefulPartitionResult::Tag::PARTITION_INFO: {
+        case cros_healthd::StatefulPartitionResult::Tag::kPartitionInfo: {
           const auto& partition_info =
               stateful_partition_result->get_partition_info();
           if (partition_info.is_null()) {
