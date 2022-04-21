@@ -28,7 +28,7 @@
   }
 
   for (const genericFontFamily of genericFamilyNames) {
-    let {dp} = await testRunner.startHTML(
+    let {session, dp} = await testRunner.startHTML(
         `<html>
           <style>
             @font-face {
@@ -67,6 +67,9 @@
     const fontFamilies = {};
     fontFamilies[genericFontFamily] = 'Ahem';
     await dp.Page.setFontFamilies({fontFamilies});
+
+    // Force re-layout to make sure the font list is up-to-date.
+    session.evaluate('document.body.offsetTop;');
 
     // Log overridden generic font.
     await logPlatformFonts('.test');

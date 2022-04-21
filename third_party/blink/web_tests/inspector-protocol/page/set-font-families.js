@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  var {dp} = await testRunner.startHTML(
+  var {session, dp} = await testRunner.startHTML(
     `<html>
       <style>
         @font-face {
@@ -53,6 +53,9 @@
     fixed: "Ahem", // Corresponds to the "monospace" font-family.
     monospace: "Times", // Ignored, not a valid property of FontFamilies.
   }});
+
+  // Force re-layout to make sure the font list is up-to-date.
+  session.evaluate('document.body.offsetTop;');
 
   // Log the custom Ahem font inherited from the body.
   await logPlatformFonts('.inherited_font');

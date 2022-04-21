@@ -6971,7 +6971,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/frame-model-instru
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-position/fixed-z-index-blend.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-paint/timeline-pre-paint.js [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/page/set-font-families.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/layout-instability/recent-input.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/performance/perf-metrics.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/event-timing/event-retarget.html [ Failure Pass ]
@@ -7714,10 +7713,6 @@ crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-ps
 
 crbug.com/1316341 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
 crbug.com/1316341 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
-
-# Sheriff 2022-04-18
-crbug.com/1316559 [ Mac11-arm64 ] inspector-protocol/page/set-font-families-generic-names.js [ Failure Pass ]
-crbug.com/1316559 [ Win7 ] inspector-protocol/page/set-font-families-generic-names.js [ Failure Pass ]
 
 # Sheriff 2022-04-18
 crbug.com/1317007 [ Mac ] external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
