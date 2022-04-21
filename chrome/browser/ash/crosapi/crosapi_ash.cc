@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
+#include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
@@ -153,6 +154,7 @@ CrosapiAsh::CrosapiAsh()
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
+      extension_info_private_ash_(std::make_unique<ExtensionInfoPrivateAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
@@ -624,6 +626,11 @@ void CrosapiAsh::BindDriveIntegrationService(
 void CrosapiAsh::BindEchoPrivate(
     mojo::PendingReceiver<mojom::EchoPrivate> receiver) {
   echo_private_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindExtensionInfoPrivate(
+    mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) {
+  extension_info_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindStructuredMetricsService(

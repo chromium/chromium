@@ -24,6 +24,7 @@ import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
+import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
@@ -102,8 +103,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 72
-// Next method id: 75
+// Next version: 73
+// Next method id: 76
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -237,6 +238,11 @@ interface Crosapi {
   // confirm the device is a ChromeOS device.
   [MinVersion=71] BindEchoPrivate@74(
       pending_receiver<EchoPrivate> receiver);
+
+  // ExtensionInfoPrivate is a service that allows trusted extensions in Lacros
+  // to get and set system properties. Implemented in Ash.
+  [MinVersion=72] BindExtensionInfoPrivate@75(
+      pending_receiver<ExtensionInfoPrivate> receiver);
 
   // Binds the extension publisher service, which allows Lacros to connect its
   // extensions to the app service.
