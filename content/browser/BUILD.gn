@@ -1098,6 +1098,8 @@ source_set("browser") {
     "interest_group/debuggable_auction_worklet_tracker.h",
     "interest_group/interest_group_manager_impl.cc",
     "interest_group/interest_group_manager_impl.h",
+    "interest_group/interest_group_permissions_checker.cc",
+    "interest_group/interest_group_permissions_checker.h",
     "interest_group/interest_group_storage.cc",
     "interest_group/interest_group_storage.h",
     "interest_group/interest_group_update_manager.cc",

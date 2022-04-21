@@ -223,18 +223,14 @@ void AdAuctionServiceImpl::JoinInterestGroup(
     return;
   }
 
-  // Disallow setting interest groups for another origin. Eventually, this will
-  // need to perform a fetch to check for cross-origin permissions to add an
-  // interest group.
-  if (origin() != group.owner)
-    return;
-
   blink::InterestGroup updated_group = group;
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
   if (updated_group.expiry > max_expiry)
     updated_group.expiry = max_expiry;
-  GetInterestGroupManager().JoinInterestGroup(std::move(updated_group),
-                                              main_frame_url_);
+
+  GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
+      std::move(group), main_frame_url_, origin(),
+      GetFrame()->GetNetworkIsolationKey(), *GetFrameURLLoaderFactory());
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
@@ -252,7 +248,7 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
   // is not considered a bad message because the renderer cannot currently check
   // for this state.
   if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kLeave, origin())) {
+          ContentBrowserClient::InterestGroupApiOperation::kLeave, owner)) {
     return;
   }
 
@@ -263,10 +259,9 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
     return;
   }
 
-  if (owner != origin())
-    return;
-
-  GetInterestGroupManager().LeaveInterestGroup(owner, name);
+  GetInterestGroupManager().CheckPermissionsAndLeaveInterestGroup(
+      owner, name, origin(), GetFrame()->GetNetworkIsolationKey(),
+      *GetFrameURLLoaderFactory());
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {

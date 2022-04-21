@@ -171,6 +171,10 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
   GetSafeWeakWrapper();
 
+  // Returns the total number of requests received during the lifetime of
+  // `this`, pending and completed. Useful for catching duplicate requests.
+  size_t total_requests() const { return total_requests_; }
+
  private:
   bool CreateLoaderAndStartInternal(const GURL& url,
                                     mojom::URLLoaderClient* client);
@@ -202,6 +206,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
   Interceptor interceptor_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
+  size_t total_requests_ = 0;
 };
 
 }  // namespace network

@@ -122,6 +122,8 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& url_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  ++total_requests_;
+
   if (interceptor_)
     interceptor_.Run(url_request);
 

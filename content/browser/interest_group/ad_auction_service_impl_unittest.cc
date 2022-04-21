@@ -252,6 +252,14 @@ class NetworkResponder {
   bool RequestHandler(URLLoaderInterceptor::RequestParams* params) {
     base::AutoLock auto_lock(lock_);
 
+    // Cross-origin iframe handling is covered by integration tests, for cases
+    // that request .well-known URLs.
+    if (params->url_request.url.path_piece() ==
+        "/.well-known/interest-group/permissions/") {
+      CHECK(false);
+      return false;
+    }
+
     // Check if this is a non-update error.
     if (params->url_request.url.path() == non_update_error_path_) {
       CHECK(non_update_error_ != net::OK);
@@ -734,38 +742,6 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupWrongOwnerOrigin) {
   EXPECT_EQ(0, GetJoinCount(kOriginB, kInterestGroupName));
 }
 
-// Test joining an interest group with a cross-site owner.
-TEST_F(AdAuctionServiceImplTest, JoinInterestFromCrossSiteIFrame) {
-  // Create a subframe and use it to send the join request.
-  content::RenderFrameHostTester* rfh_tester =
-      content::RenderFrameHostTester::For(main_rfh());
-  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
-  subframe =
-      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe);
-
-  blink::InterestGroup interest_group = CreateInterestGroup();
-  interest_group.owner = kOriginC;
-  JoinInterestGroupAndFlush(interest_group, subframe);
-  JoinInterestGroupAndFlush(CreateInterestGroup(), subframe);
-
-  // Subframes from origin C with a top frame of A should be able to join groups
-  // with C as the owner, but the subframe from C should not be able to join
-  // groups for A.
-  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
-  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
-
-  subframe =
-      NavigationSimulator::NavigateAndCommitFromDocument(kUrlB, subframe);
-  interest_group = CreateInterestGroup();
-  interest_group.owner = kOriginB;
-  JoinInterestGroupAndFlush(interest_group, subframe);
-
-  // Subframes from origin B with a top frame of A should not (by policy) be
-  // allowed to join groups with B as the owner.
-  EXPECT_EQ(0, GetJoinCount(kOriginB, kInterestGroupName));
-  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
-}
-
 // Test joining an interest group with a disallowed URL. Doesn't
 // exhaustively test all cases, as the validation function has its own unit
 // tests. This is just to make sure those are hooked up.
@@ -803,67 +779,6 @@ TEST_F(AdAuctionServiceImplTest, JoinMassiveInterestGroupFails) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 0u);
-}
-
-// Check that cross-origin leave interest group operations don't work.
-TEST_F(AdAuctionServiceImplTest, LeaveInterestGroupWrongOwnerOrigin) {
-  // https://a.test/ joins an interest group.
-  JoinInterestGroupAndFlush(CreateInterestGroup());
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-
-  // https://b.test/ cannot leave https://a.test/'s interest group.
-  NavigateAndCommit(kUrlB);
-  LeaveInterestGroupAndFlush(kOriginA, kInterestGroupName);
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-
-  // https://a.test/ can leave its own interest group.
-  NavigateAndCommit(GURL("https://a.test/"));
-  LeaveInterestGroupAndFlush(kOriginA, kInterestGroupName);
-  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
-}
-
-// Test leaving an interest group with a cross-site owner.
-TEST_F(AdAuctionServiceImplTest, LeaveInterestFromCrossSiteIFrame) {
-  // Join interest group from c.
-  NavigateAndCommit(kUrlC);
-
-  blink::InterestGroup interest_group = CreateInterestGroup();
-  interest_group.owner = kOriginC;
-  JoinInterestGroupAndFlush(interest_group);
-
-  NavigateAndCommit(kUrlB);
-  interest_group.owner = kOriginB;
-  JoinInterestGroupAndFlush(interest_group);
-
-  NavigateAndCommit(kUrlA);
-  JoinInterestGroupAndFlush(CreateInterestGroup());
-
-  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-
-  // Create a subframe and use it to send the leave request.
-  content::RenderFrameHostTester* rfh_tester =
-      content::RenderFrameHostTester::For(main_rfh());
-  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
-  subframe =
-      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe);
-
-  LeaveInterestGroupAndFlush(kOriginC, kInterestGroupName, subframe);
-  LeaveInterestGroupAndFlush(kOriginA, kInterestGroupName, subframe);
-
-  subframe = rfh_tester->AppendChild("subframe");
-  subframe =
-      NavigationSimulator::NavigateAndCommitFromDocument(kUrlB, subframe);
-
-  LeaveInterestGroupAndFlush(kOriginB, kInterestGroupName, subframe);
-
-  // Subframes from origin C with a top frame of A should be able to leave
-  // groups with C as the owner, but the subframe from C should not be able to
-  // leave groups for A. Pages with a top frame that is not B are not allowed
-  // to leave B's interest groups (controlled by IsInterestGroupAPIAllowed)
-  EXPECT_EQ(0, GetJoinCount(kOriginC, kInterestGroupName));
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
 }
 
 // Non-HTTPS interest groups should be rejected, and result in the pipe being

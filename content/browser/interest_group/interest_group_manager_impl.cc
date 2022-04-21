@@ -46,6 +46,35 @@ void InterestGroupManagerImpl::GetAllInterestGroupJoiningOrigins(
       .Then(std::move(callback));
 }
 
+void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
+    blink::InterestGroup group,
+    const GURL& joining_url,
+    const url::Origin& frame_origin,
+    const net::NetworkIsolationKey& network_isolation_key,
+    network::mojom::URLLoaderFactory& url_loader_factory) {
+  url::Origin interest_group_owner = group.owner;
+  permissions_checker_.CheckPermissions(
+      InterestGroupPermissionsChecker::Operation::kJoin, frame_origin,
+      interest_group_owner, network_isolation_key, url_loader_factory,
+      base::BindOnce(
+          &InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked,
+          base::Unretained(this), std::move(group), joining_url));
+}
+
+void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
+    const url::Origin& owner,
+    const std::string& name,
+    const url::Origin& frame_origin,
+    const net::NetworkIsolationKey& network_isolation_key,
+    network::mojom::URLLoaderFactory& url_loader_factory) {
+  permissions_checker_.CheckPermissions(
+      InterestGroupPermissionsChecker::Operation::kLeave, frame_origin, owner,
+      network_isolation_key, url_loader_factory,
+      base::BindOnce(
+          &InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked,
+          base::Unretained(this), owner, name));
+}
+
 void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
                                                  const GURL& joining_url) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kJoin,
@@ -139,6 +168,22 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
     base::RepeatingCallback<void(base::Time)> callback) const {
   impl_.AsyncCall(&InterestGroupStorage::GetLastMaintenanceTimeForTesting)
       .Then(std::move(callback));
+}
+
+void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
+    blink::InterestGroup group,
+    const GURL& joining_url,
+    bool can_join) {
+  if (can_join)
+    JoinInterestGroup(std::move(group), joining_url);
+}
+
+void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(
+    const url::Origin& owner,
+    const std::string& name,
+    bool can_leave) {
+  if (can_leave)
+    LeaveInterestGroup(owner, name);
 }
 
 void InterestGroupManagerImpl::GetInterestGroupsForUpdate(

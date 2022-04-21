@@ -152,15 +152,6 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
     return false;
   }
 
-  if (!execution_context.GetSecurityOrigin()->IsSameOriginWith(owner.get())) {
-    exception_state.ThrowTypeError(String::Format(
-        "owner '%s' for AuctionAdInterestGroup with name '%s' match frame "
-        "origin '%s'.",
-        input.owner().Utf8().c_str(), input.name().Utf8().c_str(),
-        execution_context.GetSecurityOrigin()->ToRawString().Utf8().c_str()));
-    return false;
-  }
-
   output.owner = std::move(owner);
   return true;
 }

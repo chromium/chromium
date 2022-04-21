@@ -17,6 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/browser/interest_group/interest_group_update_manager.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
@@ -71,6 +72,31 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       base::OnceCallback<void(std::vector<url::Origin>)> callback) override;
 
   /******** Proxy function calls to InterestGroupsStorage **********/
+
+  // Checks if `frame_origin` can join the specified InterestGroup, performing
+  // .well-known fetches if needed. If joining is allowed, then joins the
+  // interest group. `network_isolation_key` must be the NetworkIsolationKey
+  // associated with `url_loader_factory`. `url_loader_factory` is the factory
+  // for renderer frame where navigator.joinInterestGroup() was invoked, and
+  // will be used for the .well-known fetch if one is needed.
+  //
+  // See JoinInterestGroup() for more details on how the join operation is
+  // performed.
+  void CheckPermissionsAndJoinInterestGroup(
+      blink::InterestGroup group,
+      const GURL& joining_url,
+      const url::Origin& frame_origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      network::mojom::URLLoaderFactory& url_loader_factory);
+
+  // Same as CheckPermissionsAndJoinInterestGroup(), except for a leave
+  // operation.
+  void CheckPermissionsAndLeaveInterestGroup(
+      const url::Origin& owner,
+      const std::string& name,
+      const url::Origin& frame_origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      network::mojom::URLLoaderFactory& url_loader_factory);
 
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
@@ -153,6 +179,17 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // database.
   friend class InterestGroupUpdateManager;
 
+  // Callbacks for CheckPermissionsAndJoinInterestGroup() and
+  // CheckPermissionsAndLeaveInterestGroup(), respectively. Call
+  // JoinInterestGroup() and LeaveInterestGroup() if the results of the
+  // permissions check allows it.
+  void OnJoinInterestGroupPermissionsChecked(blink::InterestGroup group,
+                                             const GURL& joining_url,
+                                             bool can_join);
+  void OnLeaveInterestGroupPermissionsChecked(const url::Origin& owner,
+                                              const std::string& name,
+                                              bool can_leave);
+
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update
   // the `next_update_after` field such that a subsequent
@@ -206,6 +243,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Therefore, `update_manager_` *must* be declared after fields used by those
   // methods so that updates are cancelled before those fields are destroyed.
   InterestGroupUpdateManager update_manager_;
+
+  // Checks if a frame can join or leave an interest group. Global so that
+  // pending operations can continue after a page has been navigate away from.
+  InterestGroupPermissionsChecker permissions_checker_;
 };
 
 }  // namespace content
