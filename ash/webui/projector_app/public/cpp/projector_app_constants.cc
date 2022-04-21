@@ -21,8 +21,10 @@ const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/app/";
 const char kChromeUITrustedAnnotatorUrl[] = "chrome://projector-annotator/";
 const char kChromeUIUntrustedAnnotatorUrl[] =
     "chrome-untrusted://projector-annotator/";
-const char kChromeUIAnnotatorUrl[] =
+const char kChromeUITrustedAnnotatorAppUrl[] =
     "chrome://projector-annotator/annotator/annotator_embedder.html";
+const char kChromeUIUntrustedAnnotatorAppUrl[] =
+    "chrome-untrusted://projector-annotator/annotator/annotator.html";
 
 const char kChromeUITrustedProjectorSwaAppId[] =
     "fgnpbdobngpkonkajbmelfhjkemaddhp";

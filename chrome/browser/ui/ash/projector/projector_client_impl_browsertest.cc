@@ -83,7 +83,9 @@ class ProjectorClientTest : public InProcessBrowserTest {
  public:
   ProjectorClientTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kProjector, features::kOnDeviceSpeechRecognition}, {});
+        {features::kProjector, features::kProjectorAnnotator,
+         features::kOnDeviceSpeechRecognition},
+        {});
   }
 
   ~ProjectorClientTest() override = default;
@@ -104,12 +106,14 @@ class ProjectorClientTest : public InProcessBrowserTest {
   // 404 error.
   void VerifyUrlValid(const char* url) {
     GURL gurl(url);
-    EXPECT_TRUE(gurl.is_valid());
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    EXPECT_TRUE(gurl.is_valid()) << "url isn't valid: " << url;
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl))
+        << "navigating to url failed: " << url;
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
-              content::PAGE_TYPE_NORMAL);
+              content::PAGE_TYPE_NORMAL)
+        << "page has unexpected errors: " << url;
   }
 
   drive::DriveIntegrationService* CreateDriveIntegrationService(
@@ -137,9 +141,13 @@ class ProjectorClientTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This test verifies that the Projector app WebUI URL is valid.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlValid) {
+// This test verifies that the (un)trusted Projector app and annotator WebUI
+// URLs are valid.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
   VerifyUrlValid(kChromeUITrustedProjectorAppUrl);
+  VerifyUrlValid(kChromeUIUntrustedProjectorAppUrl);
+  VerifyUrlValid(kChromeUITrustedAnnotatorAppUrl);
+  VerifyUrlValid(kChromeUIUntrustedAnnotatorAppUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {

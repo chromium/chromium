@@ -44,7 +44,7 @@ inline const std::string& GetLocale() {
 void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
   if (!ash::features::IsProjectorAnnotatorEnabled())
     return;
-  web_view->LoadInitialURL(GURL(ash::kChromeUIAnnotatorUrl));
+  web_view->LoadInitialURL(GURL(ash::kChromeUITrustedAnnotatorAppUrl));
 }
 
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)

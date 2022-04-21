@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -226,13 +227,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
 
   // URL remains unchanged.
   EXPECT_EQ(tab->GetVisibleURL(), untrusted_url);
-  // Verify the document language. We must use the deprecated
-  // ExecuteScriptAndExtract*() instead of EvalJs() due to CSP.
-  std::string lang;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "domAutomationController.send(document.documentElement.lang)",
-      &lang));
-  EXPECT_EQ(lang, "en-US");
 }
 
 // Verifies that navigating to chrome://projector/app/ does not redirect but
@@ -258,6 +252,21 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
 
   // URL remains unchanged.
   EXPECT_EQ(tab->GetVisibleURL(), trusted_url);
+}
+
+// Verifies that navigating to chrome-untrusted://projector-annotator does not
+// lead to a crash. Prevents a regression to b/229124074.
+IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
+                       UntrustedAnnotatorNavigationDoesNotCrash) {
+  GURL untrusted_annotator_url(kChromeUIUntrustedAnnotatorUrl);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), untrusted_annotator_url));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_ERROR);
+  EXPECT_EQ(tab->GetVisibleURL(), untrusted_annotator_url);
 }
 
 class ProjectorNavigationThrottleDisabledTest : public InProcessBrowserTest {
@@ -372,5 +381,39 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
             content::PAGE_TYPE_ERROR);
   EXPECT_EQ(tab->GetVisibleURL(), trusted_annotator_url);
 }
+
+class ProjectorNavigationThrottleLocaleTest
+    : public ProjectorNavigationThrottleTest,
+      public testing::WithParamInterface<std::string> {
+ protected:
+  std::string locale() const { return GetParam(); }
+};
+
+// Verifies that the Projector app can detect locale changes.
+IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleLocaleTest,
+                       UntrustedNavigationLocaleDetection) {
+  g_browser_process->SetApplicationLocale(locale());
+
+  GURL untrusted_url(kChromeUIUntrustedProjectorAppUrl);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), untrusted_url));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  // Verify the document language. We must use the deprecated
+  // ExecuteScriptAndExtract*() instead of EvalJs() due to CSP.
+  std::string lang;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, "domAutomationController.send(document.documentElement.lang)",
+      &lang));
+  EXPECT_EQ(lang, locale());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProjectorNavigationThrottleLocaleTest,
+                         /*locale=*/testing::Values("en-US", "zh-CN"));
 
 }  // namespace ash
