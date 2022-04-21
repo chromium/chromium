@@ -6,8 +6,10 @@
 
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
@@ -33,9 +35,11 @@
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/google/core/common/google_util.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -58,6 +62,8 @@
 #include "components/permissions/permission_request_manager.h"
 #else
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #endif
 
@@ -81,6 +87,58 @@ bool ShouldUseQuietUI(content::WebContents* web_contents,
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   return type == ContentSettingsType::NOTIFICATIONS &&
          manager->ShouldCurrentRequestUseQuietUI();
+}
+#else
+// Triggers the post-prompt HaTS survey if enabled by field trials for this
+// `request_type` and `action`.
+void TriggerPostPromptHatsSurveyIfEnabled(
+    Profile* profile,
+    permissions::RequestType request_type,
+    permissions::PermissionAction action,
+    permissions::PermissionPromptDisposition prompt_disposition,
+    permissions::PermissionPromptDispositionReason prompt_disposition_reason,
+    permissions::PermissionRequestGestureType gesture_type) {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kPermissionsPostPromptSurvey)) {
+    return;
+  }
+
+  const std::string action_string =
+      permissions::PermissionUmaUtil::GetPermissionActionString(action);
+  DCHECK(!action_string.empty());
+  if (!base::EqualsCaseInsensitiveASCII(
+          action_string,
+          permissions::feature_params::kPermissionsPostPromptSurveyActionFilter
+              .Get())) {
+    return;
+  }
+
+  std::string request_type_string =
+      permissions::PermissionUmaUtil::GetRequestTypeString(request_type);
+  DCHECK(!request_type_string.empty());
+  if (!base::EqualsCaseInsensitiveASCII(
+          request_type_string,
+          permissions::feature_params::
+              kPermissionsPostPromptSurveyRequestTypeFilter.Get())) {
+    return;
+  }
+
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service)
+    return;
+
+  hats_service->LaunchSurvey(
+      kHatsSurveyTriggerPermissionsPostPrompt, base::DoNothing(),
+      base::DoNothing(),
+      {{permissions::kPermissionsPostPromptSurveyHadGestureKey,
+        gesture_type == permissions::PermissionRequestGestureType::GESTURE}},
+      {{permissions::kPermissionsPostPromptSurveyPromptDispositionKey,
+        permissions::PermissionUmaUtil::GetPromptDispositionString(
+            prompt_disposition)},
+       {permissions::kPermissionsPostPromptSurveyPromptDispositionReasonKey,
+        permissions::PermissionUmaUtil::GetPromptDispositionReasonString(
+            prompt_disposition_reason)}});
 }
 #endif
 
@@ -255,6 +313,8 @@ void ChromePermissionsClient::OnPromptResolved(
     permissions::PermissionAction action,
     const GURL& origin,
     permissions::PermissionPromptDisposition prompt_disposition,
+    permissions::PermissionPromptDispositionReason prompt_disposition_reason,
+    permissions::PermissionRequestGestureType gesture_type,
     absl::optional<QuietUiReason> quiet_ui_reason) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
@@ -275,6 +335,12 @@ void ChromePermissionsClient::OnPromptResolved(
           ExemptOriginFromFutureRevocations(profile, origin);
     }
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  TriggerPostPromptHatsSurveyIfEnabled(profile, request_type, action,
+                                       prompt_disposition,
+                                       prompt_disposition_reason, gesture_type);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 absl::optional<bool>

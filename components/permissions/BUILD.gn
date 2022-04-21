@@ -5,6 +5,8 @@
 # TODO(698985): Make `permissions_common` source_set.
 component("permissions_common") {
   sources = [
+    "constants.cc",
+    "constants.h",
     "features.cc",
     "features.h",
     "permission_request_enums.h",
@@ -25,8 +27,6 @@ source_set("permissions") {
     "chooser_controller.h",
     "chooser_title_util.cc",
     "chooser_title_util.h",
-    "constants.cc",
-    "constants.h",
     "contexts/accessibility_permission_context.cc",
     "contexts/accessibility_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
