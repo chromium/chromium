@@ -436,21 +436,21 @@ class BrowserWindow : public ui::BaseWindow {
       const GURL& url,
       bool show_back_button) = 0;
 
-  // Shows the "send tab to self" bubble.
+  // Shows the "send tab to self" bubble. This must only be called as a direct
+  // result of user action.
   virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
       content::WebContents* contents,
-      send_tab_to_self::SendTabToSelfBubbleController* controller,
-      bool is_user_gesture) = 0;
+      send_tab_to_self::SendTabToSelfBubbleController* controller) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the PageActionIconView for the Sharing Hub.
   virtual views::Button* GetSharingHubIconButton() = 0;
 #else
-  // Shows the Sharing Hub bubble.
+  // Shows the Sharing Hub bubble. This must only be called as a direct result
+  // of user action.
   virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
       content::WebContents* contents,
-      sharing_hub::SharingHubBubbleController* controller,
-      bool is_user_gesture) = 0;
+      sharing_hub::SharingHubBubbleController* controller) = 0;
 #endif
 
   // Shows the translate bubble.

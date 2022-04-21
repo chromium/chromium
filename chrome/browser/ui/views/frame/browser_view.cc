@@ -2351,12 +2351,7 @@ SharingDialog* BrowserView::ShowSharingDialog(
 
 send_tab_to_self::SendTabToSelfBubbleView* BrowserView::ShowSendTabToSelfBubble(
     content::WebContents* web_contents,
-    send_tab_to_self::SendTabToSelfBubbleController* controller,
-    bool is_user_gesture) {
-  if (!is_user_gesture) {
-    return nullptr;
-  }
-
+    send_tab_to_self::SendTabToSelfBubbleController* controller) {
   PageActionIconType icon_type =
       sharing_hub::SharingHubOmniboxEnabled(web_contents->GetBrowserContext())
           ? PageActionIconType::kSharingHub
@@ -2372,6 +2367,7 @@ send_tab_to_self::SendTabToSelfBubbleView* BrowserView::ShowSendTabToSelfBubble(
     bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
+  // This is always triggered due to a user gesture, c.f. method documentation.
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
   return bubble;
 }
@@ -2384,8 +2380,7 @@ views::Button* BrowserView::GetSharingHubIconButton() {
 #else
 sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
     content::WebContents* web_contents,
-    sharing_hub::SharingHubBubbleController* controller,
-    bool is_user_gesture) {
+    sharing_hub::SharingHubBubbleController* controller) {
   sharing_hub::SharingHubBubbleViewImpl* bubble =
       new sharing_hub::SharingHubBubbleViewImpl(
           toolbar_button_provider()->GetAnchorView(
@@ -2398,9 +2393,8 @@ sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
     bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture
-                   ? sharing_hub::SharingHubBubbleViewImpl::USER_GESTURE
-                   : sharing_hub::SharingHubBubbleViewImpl::AUTOMATIC);
+  // This is always triggered due to a user gesture, c.f. method documentation.
+  bubble->Show(sharing_hub::SharingHubBubbleViewImpl::USER_GESTURE);
 
   return bubble;
 }

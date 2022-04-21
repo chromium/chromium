@@ -166,15 +166,13 @@ class TestBrowserWindow : public BrowserWindow {
 #endif  //  !define(OS_ANDROID)
   send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
       content::WebContents* contents,
-      send_tab_to_self::SendTabToSelfBubbleController* controller,
-      bool is_user_gesture) override;
+      send_tab_to_self::SendTabToSelfBubbleController* controller) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   views::Button* GetSharingHubIconButton() override;
 #else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
       content::WebContents* contents,
-      sharing_hub::SharingHubBubbleController* controller,
-      bool is_user_gesture) override;
+      sharing_hub::SharingHubBubbleController* controller) override;
 #endif
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,

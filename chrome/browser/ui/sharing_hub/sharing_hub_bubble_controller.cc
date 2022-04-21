@@ -125,7 +125,7 @@ void SharingHubBubbleController::ShowBubble() {
   ShowSharesheet(browser->window()->GetSharingHubIconButton());
 #else
   sharing_hub_bubble_view_ =
-      browser->window()->ShowSharingHubBubble(web_contents(), this, true);
+      browser->window()->ShowSharingHubBubble(web_contents(), this);
 #endif
 
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);

@@ -277,8 +277,7 @@ TestBrowserWindow::ShowScreenshotCapturedBubble(
 send_tab_to_self::SendTabToSelfBubbleView*
 TestBrowserWindow::ShowSendTabToSelfBubble(
     content::WebContents* contents,
-    send_tab_to_self::SendTabToSelfBubbleController* controller,
-    bool is_user_gesture) {
+    send_tab_to_self::SendTabToSelfBubbleController* controller) {
   return nullptr;
 }
 
@@ -289,8 +288,7 @@ views::Button* TestBrowserWindow::GetSharingHubIconButton() {
 #else
 sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
     content::WebContents* contents,
-    sharing_hub::SharingHubBubbleController* controller,
-    bool is_user_gesture) {
+    sharing_hub::SharingHubBubbleController* controller) {
   return nullptr;
 }
 #endif

@@ -69,7 +69,7 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
     web_contents->SetUserData(TestSendTabToSelfBubbleController::UserDataKey(),
                               base::WrapUnique(controller));
     BrowserView::GetBrowserViewForBrowser(browser())->ShowSendTabToSelfBubble(
-        web_contents, controller, true);
+        web_contents, controller);
   }
 };
 
