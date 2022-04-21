@@ -408,6 +408,16 @@ const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
 const char kIOSOmniboxUpdatedPopupUIDescription[] =
     "Enable the new SwiftUI Popup implementation";
 
+const char kOptimizationGuideModelDownloadingName[] =
+    "Allow optimization guide model downloads";
+const char kOptimizationGuideModelDownloadingDescription[] =
+    "Enables the optimization guide to download prediction models.";
+
+const char kOptimizationTargetPredictionDescription[] =
+    "Enables prediction of optimization targets";
+const char kOptimizationTargetPredictionName[] =
+    "Enables usage of optimization guide TFLite models.";
+
 const char kPasswordReuseDetectionName[] =
     "PhishGuard password reuse detection";
 const char kPasswordReuseDetectionDescription[] =
@@ -530,6 +540,10 @@ const char kTabsSearchRegularResultsSuggestedActionsName[] =
 const char kTabsSearchRegularResultsSuggestedActionsDescription[] =
     "Enables the suggested actions section in the regular tabs page when the "
     "search mode is enabled.";
+
+const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
+const char kTFLiteLanguageDetectionDescription[] =
+    "Uses TFLite for language detection in place of CLD3";
 
 const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =

@@ -373,6 +373,15 @@ extern const char kOmniboxNewImplementationDescription[];
 extern const char kIOSOmniboxUpdatedPopupUIName[];
 extern const char kIOSOmniboxUpdatedPopupUIDescription[];
 
+// Title and description for the flag to enable TFLite model downloading.
+extern const char kOptimizationGuideModelDownloadingName[];
+extern const char kOptimizationGuideModelDownloadingDescription[];
+
+// Title and description for the flag to enable the prediction of optimization
+// targets.
+extern const char kOptimizationTargetPredictionDescription[];
+extern const char kOptimizationTargetPredictionName[];
+
 // Title and description for the flag to enable PhishGuard password reuse
 // detection.
 extern const char kPasswordReuseDetectionName[];
@@ -476,6 +485,10 @@ extern const char kTabsSearchDescription[];
 // suggested actions feature.
 extern const char kTabsSearchRegularResultsSuggestedActionsName[];
 extern const char kTabsSearchRegularResultsSuggestedActionsDescription[];
+
+// Title and description for the flag to enable TFLite for language detection.
+extern const char kTFLiteLanguageDetectionName[];
+extern const char kTFLiteLanguageDetectionDescription[];
 
 // Title and description for the flag to enable the toolbar container
 // implementation.

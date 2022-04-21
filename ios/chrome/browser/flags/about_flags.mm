@@ -58,6 +58,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/translate/core/common/translate_util.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/crash_report/features.h"
@@ -862,6 +863,22 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
+    {"enable-tflite-language-detection",
+     flag_descriptions::kTFLiteLanguageDetectionName,
+     flag_descriptions::kTFLiteLanguageDetectionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionEnabled)},
+    {"optimization-guide-model-downloading",
+     flag_descriptions::kOptimizationGuideModelDownloadingName,
+     flag_descriptions::kOptimizationGuideModelDownloadingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kOptimizationGuideModelDownloading)},
+    {"optimization-target-prediction",
+     flag_descriptions::kOptimizationTargetPredictionName,
+     flag_descriptions::kOptimizationTargetPredictionDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kOptimizationTargetPrediction)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

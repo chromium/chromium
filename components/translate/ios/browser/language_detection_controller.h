@@ -27,6 +27,8 @@ class NavigationContext;
 
 namespace translate {
 
+class LanguageDetectionModel;
+
 // Maximum length of the extracted text returned by |-extractTextContent|.
 // Matches desktop implementation.
 extern const size_t kMaxIndexChars;
@@ -34,6 +36,7 @@ extern const size_t kMaxIndexChars;
 class LanguageDetectionController : public web::WebStateObserver {
  public:
   LanguageDetectionController(web::WebState* web_state,
+                              LanguageDetectionModel* language_detection_model,
                               PrefService* prefs);
 
   LanguageDetectionController(const LanguageDetectionController&) = delete;
@@ -77,6 +80,8 @@ class LanguageDetectionController : public web::WebStateObserver {
 
   // Subscription for JS message.
   base::CallbackListSubscription subscription_;
+
+  LanguageDetectionModel* language_detection_model_ = nullptr;
 
   BooleanPrefMember translate_enabled_;
   std::string content_language_header_;

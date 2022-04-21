@@ -14,7 +14,6 @@
 #include "components/translate/core/browser/page_translated_details.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_step.h"
-#include "components/translate/core/common/language_detection_details.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
@@ -50,7 +49,9 @@ WebViewTranslateClient::WebViewTranslateClient(
     translate::TranslateAcceptLanguages* accept_languages)
     : pref_service_(pref_service),
       translate_manager_(this, translate_ranker, language_model),
-      translate_driver_(web_state, &translate_manager_),
+      translate_driver_(web_state,
+                        &translate_manager_,
+                        /*translate_model_service*/ nullptr),
       accept_languages_(accept_languages) {
   DCHECK(pref_service_);
   DCHECK(accept_languages_);

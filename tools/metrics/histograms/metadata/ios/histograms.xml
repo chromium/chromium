@@ -1515,6 +1515,16 @@ chromium-metrics-reviews@google.com.
   <summary>[iOS] Reports how the thumbstrip was opened.</summary>
 </histogram>
 
+<histogram name="IOS.Translate.PageLoad.LanguageDetectionMethod"
+    enum="LanguageDetectionMethod" expires_after="2023-03-24">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The method used to detect language in the web page during the
+    CLD3-&gt;TFlite transition.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
     expires_after="2022-07-03">
   <owner>gambard@chromium.org</owner>
