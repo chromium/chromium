@@ -14,6 +14,8 @@
 // the state.
 class CredentialLeakDialogController : public PasswordBaseDialogController {
  public:
+  ~CredentialLeakDialogController() override = default;
+
   // Called when the user cancels the dialog by clicking a button.
   virtual void OnCancelDialog() = 0;
 
@@ -45,9 +47,6 @@ class CredentialLeakDialogController : public PasswordBaseDialogController {
 
   // Checks whether the dialog should show cancel button.
   virtual bool ShouldShowCancelButton() const = 0;
-
- protected:
-  ~CredentialLeakDialogController() override = default;
 };
 
 #endif  //  CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_H_
