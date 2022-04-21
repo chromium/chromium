@@ -201,7 +201,8 @@ namespace declarativeNetRequest {
     // characters. This is matched against a url where the host is encoded in
     // the punycode format (in case of internationalized domains) and any other
     // non-ascii characters are url encoded in utf-8.
-    // For example, when the request url is http://abc.рф?q=ф, the
+    // For example, when the request url is
+    // http://abc.&#x0440;&#x0444;?q=&#x0444;, the
     // <code>urlFilter</code> will be matched against the url
     // http://abc.xn--p1ai/?q=%D1%84.
     DOMString? urlFilter;

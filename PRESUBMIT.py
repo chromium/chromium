@@ -2593,6 +2593,10 @@ def _GetJSONParseError(input_api, filename, eat_comments=True):
 def _GetIDLParseError(input_api, filename):
     try:
         contents = input_api.ReadFile(filename)
+        for i, char in enumerate(contents):
+          if not char.isascii():
+            return ('Non-ascii character "%s" (ord %d) found at offset %d.'
+                    % (char, ord(char), i))
         idl_schema = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                             'tools', 'json_schema_compiler',
                                             'idl_schema.py')
