@@ -176,7 +176,7 @@ TokenAuthority GetAuthorityForToken(const std::string& board,
     }
     // Volteer is released, so it is allowed as long as hardware checks pass.
     return TokenAuthority::kAllowedRequiresHardwareChecks;
-  } else if (board == "brya" || board == "adlrvp") {
+  } else if (board == "brya" || board == "adlrvp" || board == "brask") {
     if (H(hash_of_current_token, "tPl24iMxXNR,w$h6,g") ==
         "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=") {
       LOG(WARNING) << "Vendor token provided for " << board
