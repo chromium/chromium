@@ -23,8 +23,6 @@ function testGamepadStateOneConnected() {
 function testNoChangeReturnsSameObjects() {
     // Check that accessing gamepad state fetches the same objects until their
     // values change.
-    assert_equals(navigator.getGamepads(),
-                  navigator.getGamepads(), 'gamepad arrays differ');
     assert_equals(navigator.getGamepads()[0],
                   navigator.getGamepads()[0], 'gamepad objects differ');
     assert_equals(navigator.getGamepads()[0].axes,
