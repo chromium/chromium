@@ -83,10 +83,12 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // then notifies LoginShelfView to update its own UI.
   void UpdateAfterSessionChange();
 
-  // Sets the contents of the kiosk app menu, as well as the callback used when
-  // a menu item is selected.
-  void SetKioskApps(
-      const std::vector<KioskAppMenuEntry>& kiosk_apps,
+  // Sets the contents of the kiosk app menu.
+  void SetKioskApps(const std::vector<KioskAppMenuEntry>& kiosk_apps);
+
+  // Sets the callback used when a menu item is selected, as well as when the
+  // kiosk menu is opened.
+  void ConfigureKioskCallbacks(
       const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
       const base::RepeatingClosure& on_show_menu);
 

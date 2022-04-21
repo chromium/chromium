@@ -135,8 +135,8 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   views::Widget* GetLoginWindowWidget() override;
 
   // KioskAppMenu:
-  void SetKioskApps(
-      const std::vector<KioskAppMenuEntry>& kiosk_apps,
+  void SetKioskApps(const std::vector<KioskAppMenuEntry>& kiosk_apps) override;
+  void ConfigureKioskCallbacks(
       const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
       const base::RepeatingClosure& on_show_menu) override;
 

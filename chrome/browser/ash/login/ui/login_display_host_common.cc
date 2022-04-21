@@ -581,6 +581,7 @@ void LoginDisplayHostCommon::ShutdownDisplayHost() {
 }
 
 void LoginDisplayHostCommon::OnStartSignInScreenCommon() {
+  kiosk_app_menu_controller_.ConfigureKioskCallbacks();
   kiosk_app_menu_controller_.SendKioskApps();
 }
 

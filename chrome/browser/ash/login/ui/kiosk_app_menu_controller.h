@@ -25,6 +25,7 @@ class KioskAppMenuController : public KioskAppManagerObserver {
 
   // Manually dispatch kiosk app data to Ash.
   void SendKioskApps();
+  void ConfigureKioskCallbacks();
 
   // KioskAppManagerObserver:
   void OnKioskAppDataChanged(const std::string& app_id) override;

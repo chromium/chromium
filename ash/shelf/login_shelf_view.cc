@@ -364,12 +364,7 @@ class KioskAppsButton : public views::MenuButton,
   }
 
   // Replace the existing items list with a new list of kiosk app menu items.
-  void SetApps(
-      const std::vector<KioskAppMenuEntry>& kiosk_apps,
-      const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
-      const base::RepeatingClosure& on_show_menu) {
-    launch_app_callback_ = launch_app;
-    on_show_menu_ = on_show_menu;
+  void SetApps(const std::vector<KioskAppMenuEntry>& kiosk_apps) {
     kiosk_apps_ = kiosk_apps;
     Clear();
     const gfx::Size kAppIconSize(16, 16);
@@ -385,6 +380,13 @@ class KioskAppsButton : public views::MenuButton,
     if (menu_runner_ && menu_runner_->IsRunning()) {
       DisplayMenu();
     }
+  }
+
+  void ConfigureKioskCallbacks(
+      const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
+      const base::RepeatingClosure& on_show_menu) {
+    launch_app_callback_ = launch_app;
+    on_show_menu_ = on_show_menu;
   }
 
   bool HasApps() const { return !kiosk_apps_.empty(); }
@@ -452,7 +454,7 @@ class KioskAppsButton : public views::MenuButton,
 
  private:
   base::RepeatingCallback<void(const KioskAppMenuEntry&)> launch_app_callback_;
-  base::RepeatingCallback<void()> on_show_menu_;
+  base::RepeatingClosure on_show_menu_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::vector<KioskAppMenuEntry> kiosk_apps_;
 
@@ -726,15 +728,15 @@ void LoginShelfView::OnKioskMenuShown(
 }
 
 void LoginShelfView::SetKioskApps(
-    const std::vector<KioskAppMenuEntry>& kiosk_apps,
-    const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
-    const base::RepeatingCallback<void()>& on_show_menu) {
-  const auto show_kiosk_menu_callback =
-      base::BindRepeating(&LoginShelfView::OnKioskMenuShown,
-                          weak_ptr_factory_.GetWeakPtr(), on_show_menu);
-
-  kiosk_apps_button_->SetApps(kiosk_apps, launch_app, show_kiosk_menu_callback);
+    const std::vector<KioskAppMenuEntry>& kiosk_apps) {
+  kiosk_apps_button_->SetApps(kiosk_apps);
   UpdateUi();
+}
+
+void LoginShelfView::ConfigureKioskCallbacks(
+    const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
+    const base::RepeatingClosure& on_show_menu) {
+  kiosk_apps_button_->ConfigureKioskCallbacks(launch_app, on_show_menu);
 }
 
 void LoginShelfView::SetLoginDialogState(OobeDialogState state) {

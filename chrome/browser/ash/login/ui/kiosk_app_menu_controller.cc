@@ -34,6 +34,7 @@ KioskAppMenuController::~KioskAppMenuController() = default;
 
 void KioskAppMenuController::OnKioskAppDataChanged(const std::string& app_id) {
   SendKioskApps();
+  ConfigureKioskCallbacks();
 }
 
 void KioskAppMenuController::OnKioskAppDataLoadFailure(
@@ -71,12 +72,7 @@ void KioskAppMenuController::SendKioskApps() {
     }
   }
 
-  KioskAppMenu::Get()->SetKioskApps(
-      output,
-      base::BindRepeating(&KioskAppMenuController::LaunchApp,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&KioskAppMenuController::OnMenuWillShow,
-                          weak_factory_.GetWeakPtr()));
+  KioskAppMenu::Get()->SetKioskApps(output);
   KioskAppLaunchError::Error error = KioskAppLaunchError::Get();
   if (error == KioskAppLaunchError::Error::kNone)
     return;
@@ -86,6 +82,14 @@ void KioskAppMenuController::SendKioskApps() {
 
   LoginScreen::Get()->ShowKioskAppError(
       KioskAppLaunchError::GetErrorMessage(error));
+}
+
+void KioskAppMenuController::ConfigureKioskCallbacks() {
+  KioskAppMenu::Get()->ConfigureKioskCallbacks(
+      base::BindRepeating(&KioskAppMenuController::LaunchApp,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&KioskAppMenuController::OnMenuWillShow,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void KioskAppMenuController::LaunchApp(const KioskAppMenuEntry& app) {

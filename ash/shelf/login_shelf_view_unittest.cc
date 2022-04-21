@@ -256,7 +256,7 @@ TEST_P(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
 
@@ -271,7 +271,7 @@ TEST_P(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
 
   // |reboot_on_shutdown| is initially off
   EXPECT_TRUE(ShowsShelfButtons(
@@ -342,14 +342,14 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterKioskAppsLoaded) {
                                  LoginShelfView::kAddUser}));
 
   std::vector<KioskAppMenuEntry> kiosk_apps(2);
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
   EXPECT_TRUE(ShowsShelfButtons(
       {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest,
        LoginShelfView::kAddUser, LoginShelfView::kApps}));
   EXPECT_TRUE(
       AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
 
-  login_shelf_view_->SetKioskApps({}, {}, {});
+  login_shelf_view_->SetKioskApps({});
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
                                  LoginShelfView::kBrowseAsGuest,
                                  LoginShelfView::kAddUser}));
@@ -438,7 +438,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   // By default apps button is hidden during gaia sign in
   login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
   // Apps button is hidden during SAML_PASSWORD_CONFIRM STATE
@@ -459,7 +459,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
       AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
 
   // Kiosk app button is hidden when no app exists.
-  login_shelf_view_->SetKioskApps({}, {}, {});
+  login_shelf_view_->SetKioskApps({});
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kAddUser}));
 
@@ -483,7 +483,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
 
   // Only Shutdown button should be available if some device blocking
   // screen is shown (e.g. Device Disabled, or Update Required).
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
   login_shelf_view_->SetLoginDialogState(OobeDialogState::BLOCKING);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 }
@@ -1458,7 +1458,7 @@ TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldShowKioskInstructionBubble) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
 
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
@@ -1472,7 +1472,7 @@ TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldHideKioskInstructionBubble) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
 
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
@@ -1487,7 +1487,7 @@ TEST_P(LoginShelfViewWithKioskLicenseTest,
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(0);
-  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  login_shelf_view_->SetKioskApps(kiosk_apps);
 
   EXPECT_FALSE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());

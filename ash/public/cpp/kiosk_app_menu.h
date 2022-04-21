@@ -44,13 +44,16 @@ class ASH_PUBLIC_EXPORT KioskAppMenu {
   // Returns the singleton instance.
   static KioskAppMenu* Get();
 
-  // Update the kiosk app data. |launch_app| will be called if the user selects
-  // an item (app) from the menu. |on_show_menu| will be called when the menu
-  // will be displayed.
+  // Update the kiosk app data.
   virtual void SetKioskApps(
-      const std::vector<KioskAppMenuEntry>& kiosk_apps,
+      const std::vector<KioskAppMenuEntry>& kiosk_apps) = 0;
+
+  // Configure the kiosk callbacks. |launch_app| will be called if the user
+  // selects an item (app) from the menu. |on_show_menu| will be called when the
+  // menu will be displayed.
+  virtual void ConfigureKioskCallbacks(
       const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
-      const base::RepeatingCallback<void()>& on_show_menu) = 0;
+      const base::RepeatingClosure& on_show_menu) = 0;
 
  protected:
   KioskAppMenu();
