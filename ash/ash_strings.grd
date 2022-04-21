@@ -4025,6 +4025,21 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SELECTED_CAMERA_CHANGED" desc="Alert spoken by screen readers when the selected camera gets changed.">
         Camera input set to <ph name="CAMERA_NAME">$1</ph>.
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_FOCUSED" desc="Alert spoken by screen readers when camera preview is focused.">
+        Camera preview, press control + arrow keys to move the preview to a different corner
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_RIGHT" desc="Alert spoken by screen readers when camera preview being snapped to upper right corner">
+        Camera snapped to upper right corner
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_LEFT" desc="Alert spoken by screen readers when camera preview being snapped to upper left corner">
+        Camera snapped to upper left corner
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_RIGHT" desc="Alert spoken by screen readers when camera preview being snapped to lower right corner">
+        Camera snapped to lower right corner
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT" desc="Alert spoken by screen readers when camera preview being snapped to lower left corner">
+        Camera snapped to lower left corner
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_RECORD_MICROPHONE" desc="Alert spoken by screen readers when user tabs to record microphone setting.">
         Record microphone <ph name="CURRENT_STATE">$1<ex>off</ex></ph>, Press enter to turn microphone recording <ph name="NEW_STATE">$2<ex>on</ex></ph>
       </message>

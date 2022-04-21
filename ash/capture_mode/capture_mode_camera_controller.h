@@ -190,8 +190,10 @@ class ASH_EXPORT CaptureModeCameraController
   void MaybeReparentPreviewWidget();
 
   // Sets `camera_preview_snap_position_` and updates the preview widget's
-  // bounds accordingly.
-  void SetCameraPreviewSnapPosition(CameraPreviewSnapPosition value);
+  // bounds accordingly. If `animate` is set to true, the camera preview will
+  // animate to its new snap position.
+  void SetCameraPreviewSnapPosition(CameraPreviewSnapPosition value,
+                                    bool animate = false);
 
   // Updates the bounds and visibility of `camera_preview_widget_` according to
   // the current state of the capture surface within which the camera preview
@@ -286,13 +288,12 @@ class ASH_EXPORT CaptureModeCameraController
       const gfx::Size& preview_size,
       CameraPreviewSnapPosition snap_position) const;
 
-  // Called by `EndDraggingPreview`, updating `camera_preview_snap_position_`
-  // according to the current position of the `camera_preview_view_`.
-  void UpdateSnapPositionOnDragEnded();
+  // Returns the new snap position of the camera preview on drag ended.
+  CameraPreviewSnapPosition CalculateSnapPositionOnDragEnded() const;
 
   // Returns the current bounds of camemra preview widget that match the
   // coordinate system of the confine bounds.
-  gfx::Rect GetCurrentBoundsMatchingConfineBoundsCoordinates();
+  gfx::Rect GetCurrentBoundsMatchingConfineBoundsCoordinates() const;
 
   // Does post works for camera preview after RefreshCameraPreview(). It
   // triggers a11y alert based on `was_preview_visible_before` and the current

@@ -49,6 +49,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_properties.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -179,10 +180,6 @@ views::Widget::InitParams CreateWidgetParams(const gfx::Rect& bounds) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.parent = CaptureModeController::Get()->GetCameraPreviewParentWindow();
   params.bounds = bounds;
-  // Need to set `params.child` to true here, otherwise camera preview widget
-  // will be added as a transient child to `params.parent`. For more details,
-  // please check `NativeWidgetAura::InitNativeWidget`.
-  params.child = true;
   params.name = "CameraPreviewWidget";
   return params;
 }
@@ -276,6 +273,21 @@ gfx::Size CalculatePreviewInitialSize() {
     max_shorter_side = std::max(max_shorter_side, shorter_side);
   }
   return gfx::Size(max_shorter_side, max_shorter_side);
+}
+
+// Returns the appropriate `message_id` for ChromeVox alert on setting camera
+// preview snap position.
+int GetMessageIdForSnapPosition(CameraPreviewSnapPosition snap_position) {
+  switch (snap_position) {
+    case CameraPreviewSnapPosition::kTopRight:
+      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_RIGHT;
+    case CameraPreviewSnapPosition::kTopLeft:
+      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_UPPER_LEFT;
+    case CameraPreviewSnapPosition::kBottomRight:
+      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_RIGHT;
+    case CameraPreviewSnapPosition::kBottomLeft:
+      return IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_SNAPPED_TO_LOWER_LEFT;
+  }
 }
 
 // Defines a window targeter that will be installed on the camera preview
@@ -451,15 +463,21 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
   if (!camera_preview_widget_)
     return;
 
+  // Remove the camera preview from its transient parent if it has one. And
+  // reparenting it to the corresponding parent again. This is done to keep
+  // the camera preview in a correct state that is not a transient child of
+  // its parent.
+  auto* native_window = camera_preview_widget_->GetNativeWindow();
+  if (auto* transient_parent = wm::GetTransientParent(native_window))
+    wm::RemoveTransientChild(transient_parent, native_window);
+
   const bool was_visible_before = camera_preview_widget_->IsVisible();
   auto* controller = CaptureModeController::Get();
-  DCHECK(!controller->is_recording_in_progress());
   auto* parent = controller->GetCameraPreviewParentWindow();
   DCHECK(parent);
-  auto* native_window = camera_preview_widget_->GetNativeWindow();
-
   if (parent != native_window->parent())
     views::Widget::ReparentNativeView(native_window, parent);
+  DCHECK(!wm::GetTransientParent(native_window));
 
   MaybeUpdatePreviewWidget();
   if (was_visible_before != camera_preview_widget_->IsVisible()) {
@@ -470,12 +488,15 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
 }
 
 void CaptureModeCameraController::SetCameraPreviewSnapPosition(
-    CameraPreviewSnapPosition value) {
-  if (camera_preview_snap_position_ == value)
-    return;
+    CameraPreviewSnapPosition value,
+    bool animate) {
+  // Trigger a11y alert on setting camera preview snap position even though the
+  // snap position may actually not change.
+  capture_mode_util::TriggerAccessibilityAlert(
+      GetMessageIdForSnapPosition(value));
 
   camera_preview_snap_position_ = value;
-  MaybeUpdatePreviewWidget();
+  MaybeUpdatePreviewWidget(animate);
 }
 
 void CaptureModeCameraController::MaybeUpdatePreviewWidget(bool animate) {
@@ -550,9 +571,8 @@ void CaptureModeCameraController::EndDraggingPreview(
     const gfx::PointF& screen_location,
     bool is_touch) {
   ContinueDraggingPreview(screen_location);
-  UpdateSnapPositionOnDragEnded();
-
-  MaybeUpdatePreviewWidget(/*animate=*/true);
+  SetCameraPreviewSnapPosition(CalculateSnapPositionOnDragEnded(),
+                               /*animate=*/true);
 
   is_drag_in_progress_ = false;
   camera_preview_view_->RefreshResizeButtonVisibility();
@@ -775,7 +795,7 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     layer->SetFillsBoundsOpaquely(false);
     layer->SetMasksToBounds(true);
 
-    MaybeUpdatePreviewWidget(/*animate=*/false);
+    MaybeReparentPreviewWidget();
   }
 
   DCHECK(camera_preview_view_);
@@ -884,7 +904,8 @@ gfx::Rect CaptureModeCameraController::GetPreviewWidgetBoundsForSnapPosition(
   return gfx::Rect(origin, preview_size);
 }
 
-void CaptureModeCameraController::UpdateSnapPositionOnDragEnded() {
+CameraPreviewSnapPosition
+CaptureModeCameraController::CalculateSnapPositionOnDragEnded() const {
   const gfx::Point center_point_of_preview_widget =
       GetCurrentBoundsMatchingConfineBoundsCoordinates().CenterPoint();
   const gfx::Point center_point_of_confine_bounds =
@@ -893,20 +914,20 @@ void CaptureModeCameraController::UpdateSnapPositionOnDragEnded() {
           .CenterPoint();
 
   if (center_point_of_preview_widget.x() < center_point_of_confine_bounds.x()) {
-    if (center_point_of_preview_widget.y() < center_point_of_confine_bounds.y())
-      camera_preview_snap_position_ = CameraPreviewSnapPosition::kTopLeft;
-    else
-      camera_preview_snap_position_ = CameraPreviewSnapPosition::kBottomLeft;
-  } else {
-    if (center_point_of_preview_widget.y() < center_point_of_confine_bounds.y())
-      camera_preview_snap_position_ = CameraPreviewSnapPosition::kTopRight;
-    else
-      camera_preview_snap_position_ = CameraPreviewSnapPosition::kBottomRight;
+    return center_point_of_preview_widget.y() <
+                   center_point_of_confine_bounds.y()
+               ? CameraPreviewSnapPosition::kTopLeft
+               : CameraPreviewSnapPosition::kBottomLeft;
   }
+
+  return center_point_of_preview_widget.y() < center_point_of_confine_bounds.y()
+             ? CameraPreviewSnapPosition::kTopRight
+             : CameraPreviewSnapPosition::kBottomRight;
 }
 
-gfx::Rect CaptureModeCameraController::
-    GetCurrentBoundsMatchingConfineBoundsCoordinates() {
+gfx::Rect
+CaptureModeCameraController::GetCurrentBoundsMatchingConfineBoundsCoordinates()
+    const {
   aura::Window* preview_window = camera_preview_widget_->GetNativeWindow();
   aura::Window* parent = preview_window->parent();
   if (parent->GetProperty(wm::kUsesScreenCoordinatesKey))

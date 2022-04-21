@@ -20,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -118,11 +119,11 @@ bool CameraPreviewView::MaybeHandleKeyEvent(const ui::KeyEvent* event) {
         current_snap_position, /*going_up=*/key_code == ui::VKEY_UP);
   }
 
-  if (new_snap_position == current_snap_position)
-    return false;
-
-  camera_controller_->SetCameraPreviewSnapPosition(new_snap_position);
-  return true;
+  // Still call `SetCameraPreviewSnapPosition` even if the snap position does
+  // not change. As we still want to trigger a11y alert in this case.
+  camera_controller_->SetCameraPreviewSnapPosition(new_snap_position,
+                                                   /*animate=*/true);
+  return new_snap_position == current_snap_position;
 }
 
 void CameraPreviewView::RefreshResizeButtonVisibility() {
@@ -234,6 +235,13 @@ void CameraPreviewView::Layout() {
   DCHECK_EQ(width(), height());
   camera_video_renderer_.host_window()->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(height() / 2.f));
+}
+
+void CameraPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  views::View::GetAccessibleNodeData(node_data);
+  node_data->SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_FOCUSED));
+  node_data->role = ax::mojom::Role::kVideo;
 }
 
 views::View* CameraPreviewView::GetView() {

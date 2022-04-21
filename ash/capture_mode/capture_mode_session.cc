@@ -1035,6 +1035,9 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
+  if (event->type() != ui::ET_KEY_PRESSED)
+    return;
+
   auto* camera_controller = controller_->camera_controller();
   auto* camera_preview_view =
       camera_controller ? camera_controller->camera_preview_view() : nullptr;
@@ -1042,9 +1045,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     event->StopPropagation();
     return;
   }
-
-  if (event->type() != ui::ET_KEY_PRESSED)
-    return;
 
   // We create an owned heap-allocated boolean to pass it to `deferred_runner`
   // and hold a pointer to the boolean to be able to change its value to control

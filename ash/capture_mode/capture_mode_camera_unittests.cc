@@ -64,6 +64,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -1230,13 +1231,15 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetAfterTypeSwitched) {
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
   EXPECT_TRUE(camera_preview_widget);
-  auto* parent = camera_preview_widget->GetNativeWindow()->parent();
+  auto* camera_preview_window = camera_preview_widget->GetNativeWindow();
   const auto* selected_window =
       controller->capture_mode_session()->GetSelectedWindow();
-  ASSERT_EQ(parent, selected_window);
+  ASSERT_EQ(camera_preview_window->parent(), selected_window);
 
   // Verify that camera preview is at the bottom right corner of the window.
   VerifyPreviewAlignment(selected_window->GetBoundsInScreen());
+  // `camera_preview_window` should not have a transient parent.
+  EXPECT_FALSE(wm::GetTransientParent(camera_preview_window));
 }
 
 // Tests that audio and camera menu groups should be hidden from the settings
@@ -1642,7 +1645,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
   // Tests that the camera preview is focusable in fullscreen capture.
   auto* camera_preview_view = camera_controller->camera_preview_view();
   auto* resize_button = GetPreviewResizeButton();
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
   EXPECT_TRUE(camera_preview_view->has_focus());
@@ -1731,7 +1734,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
   // Tests that the camera preview is focusable in region capture.
   auto* camera_preview_view = camera_controller->camera_preview_view();
   auto* resize_button = GetPreviewResizeButton();
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/15);
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/15);
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
   EXPECT_TRUE(camera_preview_view->has_focus());
@@ -1797,7 +1800,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
   // be shown inside it.
   auto* camera_preview_view = camera_controller->camera_preview_view();
   auto* resize_button = GetPreviewResizeButton();
-  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
   EXPECT_TRUE(test_api.GetHighlightableWindow(window2.get())->has_focus());
@@ -2500,6 +2503,15 @@ TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnap) {
 
   // Verify that by default the snap position should be `kBottomRight` and
   // camera preview is placed at the correct position.
+  EXPECT_EQ(CameraPreviewSnapPosition::kBottomRight,
+            camera_controller->camera_preview_snap_position());
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Drag the camera preview for a small distance. Tests that even though the
+  // snap position does not change, the preview should be snapped back to its
+  // previous position.
+  DragPreviewToPoint(preview_widget, {capture_bounds_center_point.x() + 20,
+                                      capture_bounds_center_point.y() + 20});
   EXPECT_EQ(CameraPreviewSnapPosition::kBottomRight,
             camera_controller->camera_preview_snap_position());
   VerifyPreviewAlignment(GetCaptureBoundsInScreen());
