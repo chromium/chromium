@@ -266,6 +266,14 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     // iron-list will render incorrectly. Force relayout by invalidating the
     // iron-list when this element becomes visible.
     afterNextRender(this, () => this.$.grid.fire('iron-resize'));
+
+    // When showing the user a list of photos that previously failed to load,
+    // we should automatically retry loading the list. Placeholders should be
+    // shown while loading is in progress.
+    if (this.photos_ === null && !this.photosLoading_) {
+      fetchGooglePhotosPhotos(this.wallpaperProvider_, this.getStore());
+      this.photosByRow_ = getPlaceholders();
+    }
   }
 
   /** Invoked on selection of a photo. */

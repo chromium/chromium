@@ -523,6 +523,36 @@ suite('GooglePhotosPhotosTest', function() {
     assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
   });
 
+  test('reattempts failed photos load on show', async () => {
+    // Set values returned by |wallpaperProvider|.
+    wallpaperProvider.setGooglePhotosCount(1);
+    wallpaperProvider.setGooglePhotosPhotos(undefined);
+
+    // Initialize Google Photos data in the |personalizationStore|.
+    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    wallpaperProvider.reset();
+
+    // Initialize |googlePhotosPhotosElement| in hidden state.
+    googlePhotosPhotosElement = initElement(GooglePhotosPhotos, {hidden: true});
+    await waitAfterNextRender(googlePhotosPhotosElement);
+
+    // Verify that showing |googlePhotosPhotosElement| results in an automatic
+    // reattempt to fetch photos.
+    assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+    googlePhotosPhotosElement.hidden = false;
+    await waitAfterNextRender(googlePhotosPhotosElement);
+    assertDeepEquals(
+        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos'),
+        [/*itemId=*/ null, /*albumId=*/ null, /*resumeToken=*/ null]);
+
+    // Only placeholders should be present while loading.
+    const selector = 'wallpaper-grid-item:not([hidden]).photo';
+    const photoSelector = `${selector}:not([placeholder])`;
+    const placeholderSelector = `${selector}[placeholder]`;
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
+    assertNotEquals(querySelectorAll(placeholderSelector)!.length, 0);
+  });
+
   test('selects photo', async () => {
     const photo: GooglePhotosPhoto = {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
