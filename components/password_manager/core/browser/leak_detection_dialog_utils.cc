@@ -106,9 +106,12 @@ std::u16string GetDescription(CredentialLeakType leak_type) {
       password_manager_util::UsesPasswordManagerGoogleBranding(
           IsSyncingPasswordsNormally(leak_type));
 #else
-  // TODO(crbug.com/1309480): Update to support Desktop branding.
-  const bool uses_password_manager_updated_naming = false;
-  const bool uses_password_manager_google_branding = false;
+  const bool uses_password_manager_updated_naming =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop);
+  const bool uses_password_manager_google_branding =
+      password_manager_util::UsesPasswordManagerGoogleBranding(
+          IsSyncingPasswordsNormally(leak_type));
 #endif
   if (uses_password_manager_updated_naming) {
     if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
@@ -163,8 +166,9 @@ std::u16string GetTitle(CredentialLeakType leak_type) {
   const bool uses_password_manager_updated_naming =
       password_manager::features::UsesUnifiedPasswordManagerUi();
 #else
-  // TODO(crbug.com/1309480): Update to support Desktop branding.
-  const bool uses_password_manager_updated_naming = false;
+  const bool uses_password_manager_updated_naming =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop);
 #endif
   if (uses_password_manager_updated_naming) {
     return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)

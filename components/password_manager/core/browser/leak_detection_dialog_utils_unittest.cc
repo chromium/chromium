@@ -45,74 +45,44 @@ const struct {
                     IsSyncing(false),
                     HasChangeScript(false)),
      IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS) || \
-    (BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING))
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
      IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
-#elif BUILDFLAG(IS_ANDROID) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#elif !BUILDFLAG(GOOGLE_CHROME_BRANDING)
      IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED,
-#else
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
 #endif
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(false),
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
-#else
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
-#endif
+     IDS_OK, IDS_CLOSE, IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(false),
                     IsReused(true),
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
      IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
-     IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM,
-#else
-     IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE,
-     IDS_CREDENTIAL_LEAK_TITLE_CHECK,
-#endif
-     true, true},
+     IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true},
     {CreateLeakType(IsSaved(false),
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(true)),
-     IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
-#else
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
-#endif
+     IDS_OK, IDS_CLOSE, IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(true),
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
-#else
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
-#endif
+     IDS_OK, IDS_CLOSE, IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(true),
                     IsReused(true),
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
      IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
-     IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM,
-#else
-     IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE,
-     IDS_CREDENTIAL_LEAK_TITLE_CHECK,
-#endif
-     true, true},
+     IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true},
 };
 
 struct BulkCheckParams {
@@ -155,6 +125,9 @@ class CredentialLeakDialogUtilsTest : public testing::Test {
 #elif BUILDFLAG(IS_ANDROID)
     feature_list_.InitAndEnableFeature(
         features::kUnifiedPasswordManagerAndroid);
+#else
+    feature_list_.InitAndEnableFeature(
+        features::kUnifiedPasswordManagerDesktop);
 #endif
   }
 
