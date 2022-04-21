@@ -37,7 +37,6 @@ promise_test(async t => {
   assert_equals(msg.data.body, "{{host}}");
   msg = await onmessage();
   assert_equals(msg.data.type, "deprecation");
-  assert_equals(msg.data.id,
-      "WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader");
+  assert_equals(msg.data.id, "4085");
 }, "Deprecation warning for setting document.domain");
 </script>

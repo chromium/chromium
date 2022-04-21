@@ -419,7 +419,7 @@ void AuditsIssue::ReportSharedArrayBufferIssue(
 
 // static
 void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
-                                         const DeprecationIssueType& type_enum,
+                                         DeprecationIssueType type_enum,
                                          const String& legacy_message,
                                          const String& legacy_type) {
   // We currently support two modes: untranslated with legacy message and type
@@ -430,13 +430,132 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
     type = protocol::Audits::DeprecationIssueTypeEnum::Untranslated;
   } else {
     CHECK(legacy_message.IsEmpty() && legacy_type.IsEmpty());
+    // Please keep this alphabetized.
     switch (type_enum) {
+      case DeprecationIssueType::kAuthorizationCoveredByWildcard:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            AuthorizationCoveredByWildcard;
+        break;
+      case DeprecationIssueType::kCookieWithTruncatingChar:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            CookieWithTruncatingChar;
+        break;
+      case DeprecationIssueType::kCrossOriginAccessBasedOnDocumentDomain:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            CrossOriginAccessBasedOnDocumentDomain;
+        break;
+      case DeprecationIssueType::kCrossOriginWindowAlert:
+        type =
+            protocol::Audits::DeprecationIssueTypeEnum::CrossOriginWindowAlert;
+        break;
+      case DeprecationIssueType::kCrossOriginWindowConfirm:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            CrossOriginWindowConfirm;
+        break;
       case DeprecationIssueType::kDeprecationExample:
         type = protocol::Audits::DeprecationIssueTypeEnum::DeprecationExample;
         break;
-      default:
-        LOG(FATAL) << "Feature " << static_cast<int>(type_enum)
-                   << " is not translated.";
+      case DeprecationIssueType::
+          kDocumentDomainSettingWithoutOriginAgentClusterHeader:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            DocumentDomainSettingWithoutOriginAgentClusterHeader;
+        break;
+      case DeprecationIssueType::kGeolocationInsecureOrigin:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            GeolocationInsecureOrigin;
+        break;
+      case DeprecationIssueType::kGeolocationInsecureOriginDeprecatedNotRemoved:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            GeolocationInsecureOriginDeprecatedNotRemoved;
+        break;
+      case DeprecationIssueType::kGetUserMediaInsecureOrigin:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            GetUserMediaInsecureOrigin;
+        break;
+      case DeprecationIssueType::kLegacyConstraintGoogCpuOveruseDetection:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            LegacyConstraintGoogCpuOveruseDetection;
+        break;
+      case DeprecationIssueType::kLegacyConstraintGoogIPv6:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            LegacyConstraintGoogIPv6;
+        break;
+      case DeprecationIssueType::kLegacyConstraintGoogScreencastMinBitrate:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            LegacyConstraintGoogScreencastMinBitrate;
+        break;
+      case DeprecationIssueType::kLegacyConstraintGoogSuspendBelowMinBitrate:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            LegacyConstraintGoogSuspendBelowMinBitrate;
+        break;
+      case DeprecationIssueType::kLocalCSSFileExtensionRejected:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            LocalCSSFileExtensionRejected;
+        break;
+      case DeprecationIssueType::kNotificationInsecureOrigin:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            NotificationInsecureOrigin;
+        break;
+      case DeprecationIssueType::kObsoleteWebRtcCipherSuite:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            ObsoleteWebRtcCipherSuite;
+        break;
+      case DeprecationIssueType::kPictureSourceSrc:
+        type = protocol::Audits::DeprecationIssueTypeEnum::PictureSourceSrc;
+        break;
+      case DeprecationIssueType::kPrefixedCancelAnimationFrame:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedCancelAnimationFrame;
+        break;
+      case DeprecationIssueType::kPrefixedRequestAnimationFrame:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedRequestAnimationFrame;
+        break;
+      case DeprecationIssueType::kRTCConstraintEnableDtlsSrtpFalse:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            RTCConstraintEnableDtlsSrtpFalse;
+        break;
+      case DeprecationIssueType::kRTCConstraintEnableDtlsSrtpTrue:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            RTCConstraintEnableDtlsSrtpTrue;
+        break;
+      case DeprecationIssueType::
+          kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics;
+        break;
+      case DeprecationIssueType::
+          kRTCPeerConnectionLegacyCreateWithMediaConstraints:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            RTCPeerConnectionLegacyCreateWithMediaConstraints;
+        break;
+      case DeprecationIssueType::kRTPDataChannel:
+        type = protocol::Audits::DeprecationIssueTypeEnum::RTPDataChannel;
+        break;
+      case DeprecationIssueType::kSharedArrayBufferConstructedWithoutIsolation:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            SharedArrayBufferConstructedWithoutIsolation;
+        break;
+      case DeprecationIssueType::kUntranslated:
+        LOG(FATAL) << "Feature " << legacy_type << " is not translated.";
+        break;
+      case DeprecationIssueType::
+          kV8SharedArrayBufferConstructedInExtensionWithoutIsolation:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            V8SharedArrayBufferConstructedInExtensionWithoutIsolation;
+        break;
+      case DeprecationIssueType::kWebCodecsVideoFrameDefaultTimestamp:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            WebCodecsVideoFrameDefaultTimestamp;
+        break;
+      case DeprecationIssueType::kXHRJSONEncodingDetection:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            XHRJSONEncodingDetection;
+        break;
+      case DeprecationIssueType::
+          kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload;
         break;
     }
   }

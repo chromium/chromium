@@ -36,9 +36,39 @@ class InspectorIssue;
 }
 }  // namespace protocol
 
+// Please keep this alphabetized.
 enum class DeprecationIssueType {
+  kAuthorizationCoveredByWildcard,
+  kCookieWithTruncatingChar,
+  kCrossOriginAccessBasedOnDocumentDomain,
+  kCrossOriginWindowAlert,
+  kCrossOriginWindowConfirm,
   kDeprecationExample,
+  kDocumentDomainSettingWithoutOriginAgentClusterHeader,
+  kGeolocationInsecureOrigin,
+  kGeolocationInsecureOriginDeprecatedNotRemoved,
+  kGetUserMediaInsecureOrigin,
+  kLegacyConstraintGoogCpuOveruseDetection,
+  kLegacyConstraintGoogIPv6,
+  kLegacyConstraintGoogScreencastMinBitrate,
+  kLegacyConstraintGoogSuspendBelowMinBitrate,
+  kLocalCSSFileExtensionRejected,
+  kNotificationInsecureOrigin,
+  kObsoleteWebRtcCipherSuite,
+  kPictureSourceSrc,
+  kPrefixedCancelAnimationFrame,
+  kPrefixedRequestAnimationFrame,
+  kRTCConstraintEnableDtlsSrtpFalse,
+  kRTCConstraintEnableDtlsSrtpTrue,
+  kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics,
+  kRTCPeerConnectionLegacyCreateWithMediaConstraints,
+  kRTPDataChannel,
+  kSharedArrayBufferConstructedWithoutIsolation,
   kUntranslated,
+  kV8SharedArrayBufferConstructedInExtensionWithoutIsolation,
+  kWebCodecsVideoFrameDefaultTimestamp,
+  kXHRJSONEncodingDetection,
+  kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload,
 };
 
 enum class RendererCorsIssueCode {
@@ -142,7 +172,7 @@ class CORE_EXPORT AuditsIssue {
   // `type` is the enum used to differentiate messages.
   // `legacy_message` and `legacy_type` are for untranslated deprecations.
   static void ReportDeprecationIssue(ExecutionContext* execution_context,
-                                     const DeprecationIssueType& type,
+                                     DeprecationIssueType type,
                                      const String& legacy_message,
                                      const String& legacy_type);
 

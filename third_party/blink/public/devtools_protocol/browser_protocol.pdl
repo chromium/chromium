@@ -743,8 +743,37 @@ experimental domain Audits
 
   type DeprecationIssueType extends string
     enum
+      AuthorizationCoveredByWildcard
+      CookieWithTruncatingChar
+      CrossOriginAccessBasedOnDocumentDomain
+      CrossOriginWindowAlert
+      CrossOriginWindowConfirm
       DeprecationExample
+      DocumentDomainSettingWithoutOriginAgentClusterHeader
+      GeolocationInsecureOrigin
+      GeolocationInsecureOriginDeprecatedNotRemoved
+      GetUserMediaInsecureOrigin
+      LegacyConstraintGoogCpuOveruseDetection
+      LegacyConstraintGoogIPv6
+      LegacyConstraintGoogScreencastMinBitrate
+      LegacyConstraintGoogSuspendBelowMinBitrate
+      LocalCSSFileExtensionRejected
+      NotificationInsecureOrigin
+      ObsoleteWebRtcCipherSuite
+      PictureSourceSrc
+      PrefixedCancelAnimationFrame
+      PrefixedRequestAnimationFrame
+      RTCConstraintEnableDtlsSrtpFalse
+      RTCConstraintEnableDtlsSrtpTrue
+      RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics
+      RTCPeerConnectionLegacyCreateWithMediaConstraints
+      RTPDataChannel
+      SharedArrayBufferConstructedWithoutIsolation
       Untranslated
+      V8SharedArrayBufferConstructedInExtensionWithoutIsolation
+      WebCodecsVideoFrameDefaultTimestamp
+      XHRJSONEncodingDetection
+      XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload
 
   # This issue tracks information needed to print a deprecation message.
   # The formatting is inherited from the old console.log version, see more at:

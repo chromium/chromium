@@ -4,14 +4,14 @@
 <script src="resources/intervention.js"></script>
 
 <div id="target" style="padding: 10px; background-color: blue;">
-  <p>Testing ReportingObserver's |buffered| option.</p>
+  <p>Testing ReportingObserver's `buffered` option.</p>
 </div>
 
 <script>
 async_test(function(test) {
   var observer1 = new ReportingObserver(function(reports, observer) {
     test.step(function() {
-      // Both reports should be observed, since the |buffered| option is set to
+      // Both reports should be observed, since the `buffered` option is set to
       // true.
       assert_equals(reports.length, 2);
     });
@@ -31,11 +31,11 @@ async_test(function(test) {
 async_test(function(test) {
   var observer2 = new ReportingObserver(function(reports, observer) {
     test.step(function() {
-      // Only the second report should be observed, since the |buffered| option
+      // Only the second report should be observed, since the `buffered` option
       // is set to false by default.
       assert_equals(reports.length, 1);
       assert_equals(reports[0].type, "deprecation");
-      assert_equals(reports[0].body.id, "PrefixedRequestAnimationFrame");
+      assert_equals(reports[0].body.id, "14");
     });
 
     test.done();
@@ -45,7 +45,7 @@ async_test(function(test) {
   // and one after calling observe().
   causeIntervention();
   observer2.observe();
-  webkitRequestAnimationFrame(() => {});  // id = "PrefixedCancelAnimationFrame"
+  webkitRequestAnimationFrame(() => {});  // id = "kPrefixedCancelAnimationFrame"
   observer2.disconnect();
 }, "Buffered reports not observed");
 </script>

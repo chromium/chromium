@@ -4,7 +4,7 @@
 <script src="resources/intervention.js"></script>
 
 <div id="target" style="padding: 10px; background-color: blue;">
-  <p>Testing ReportingObserver's |types| option.</p>
+  <p>Testing ReportingObserver's `types` option.</p>
 </div>
 
 <script>
@@ -12,10 +12,10 @@ async_test(function(test) {
   var observer1 = new ReportingObserver(function(reports, observer) {
     test.step(function() {
       // Only the deprecation report should be observed, as specified by the
-      // |types| option.
+      // `types` option.
       assert_equals(reports.length, 1);
       assert_equals(reports[0].type, "deprecation");
-      assert_equals(reports[0].body.id, "PrefixedRequestAnimationFrame");
+      assert_equals(reports[0].body.id, "14");
     });
 
     test.done();
@@ -23,7 +23,7 @@ async_test(function(test) {
   observer1.observe();
 
   // Generate a deprecation report and an intervention report.
-  // id = "PrefixedRequestAnimationFrame"
+  // id = "kPrefixedRequestAnimationFrame"
   webkitRequestAnimationFrame(() => {});
   causeIntervention();
 
@@ -34,7 +34,7 @@ async_test(function(test) {
 async_test(function(test) {
   var observer2 = new ReportingObserver(function(reports, observer) {
     test.step(function() {
-      // Both reports should be observed, since there is no |types| filter
+      // Both reports should be observed, since there is no `types` filter
       // specified.
       assert_equals(reports.length, 2);
     });
