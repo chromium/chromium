@@ -38,6 +38,10 @@
 #include "base/android/build_info.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -86,10 +90,13 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-    // Skip these tests on Mac because of failures: https://crbug.com/1315962
+    // Skip these tests on older Mac because of failures:
+    // https://crbug.com/1315962, https://crbug.com/1084565
     // This is OK because disk cache sandboxing is targeting Android. Running
     // these tests in other platforms is just for development productivity.
-    GTEST_SKIP();
+    if (base::mac::IsAtMostOS10_14()) {
+      GTEST_SKIP();
+    }
 #endif
 
     // These assertions need to precede ContentBrowserTest::SetUp to prevent the
