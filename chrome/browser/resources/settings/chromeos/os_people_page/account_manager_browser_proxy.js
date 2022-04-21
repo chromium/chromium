@@ -62,11 +62,6 @@ export class AccountManagerBrowserProxy {
    * @param {?boolean} isAvailableInArc new ARC availability value
    */
   changeArcAvailability(account, isAvailableInArc) {}
-
-  /**
-   * Displays the Account Manager welcome dialog if required.
-   */
-  showWelcomeDialogIfRequired() {}
 }
 
 /**
@@ -101,11 +96,6 @@ export class AccountManagerBrowserProxyImpl {
   /** @override */
   changeArcAvailability(account, isAvailableInArc) {
     chrome.send('changeArcAvailability', [account, isAvailableInArc]);
-  }
-
-  /** @override */
-  showWelcomeDialogIfRequired() {
-    chrome.send('showWelcomeDialogIfRequired');
   }
 
   /** @return {!AccountManagerBrowserProxy} */

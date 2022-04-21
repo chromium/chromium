@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_welcome_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_dialog.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
@@ -227,11 +226,6 @@ void AccountManagerUIHandler::RegisterMessages() {
       "removeAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleRemoveAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "showWelcomeDialogIfRequired",
-      base::BindRepeating(
-          &AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired,
-          weak_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "changeArcAvailability",
       base::BindRepeating(&AccountManagerUIHandler::HandleChangeArcAvailability,
@@ -452,11 +446,6 @@ void AccountManagerUIHandler::HandleRemoveAccount(
             l10n_util::GetStringFUTF16(
                 IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE,
                 base::UTF8ToUTF16(email)));
-}
-
-void AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired(
-    const base::Value::List& args) {
-  chromeos::AccountManagerWelcomeDialog::ShowIfRequired();
 }
 
 void AccountManagerUIHandler::HandleChangeArcAvailability(

@@ -147,7 +147,6 @@ Polymer({
       return;
     }
 
-    this.browserProxy_.showWelcomeDialogIfRequired();
     this.attemptDeepLink();
   },
 

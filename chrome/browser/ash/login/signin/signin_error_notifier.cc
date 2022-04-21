@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_welcome_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -353,24 +352,8 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
 
 void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
     absl::optional<int> button_index) {
-  if (profile_->IsChild() && !profile_->GetPrefs()->GetBoolean(
-                                 prefs::kEduCoexistenceArcMigrationCompleted)) {
-    if (!AccountManagerWelcomeDialog::ShowIfRequiredForEduCoexistence()) {
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
-    }
-    return;
-  }
-
-  if (!AccountManagerWelcomeDialog::ShowIfRequired()) {
-    // The welcome dialog was not shown (because it has been shown too many
-    // times already). Take users to Account Manager UI directly.
-    // Note: If the welcome dialog was shown, we don't need to do anything.
-    // Closing that dialog takes users to Account Manager UI.
-
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
-  }
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
 }
 
 }  // namespace ash

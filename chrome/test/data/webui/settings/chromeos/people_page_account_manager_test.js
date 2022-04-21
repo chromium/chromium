@@ -19,7 +19,6 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
       'reauthenticateAccount',
       'removeAccount',
       'changeArcAvailability',
-      'showWelcomeDialogIfRequired',
     ]);
   }
 
@@ -95,11 +94,6 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
   changeArcAvailability(account, isAvailableInArc) {
     this.methodCalled('changeArcAvailability', [account, isAvailableInArc]);
   }
-
-  /** @override */
-  showWelcomeDialogIfRequired() {
-    this.methodCalled('showWelcomeDialogIfRequired');
-  }
 }
 
 /** @implements {AccountManagerBrowserProxy} */
@@ -111,7 +105,6 @@ class TestAccountManagerBrowserProxyForUnmanagedAccounts extends
       'addAccount',
       'reauthenticateAccount',
       'removeAccount',
-      'showWelcomeDialogIfRequired',
     ]);
   }
 
@@ -271,12 +264,6 @@ suite('AccountManagerTests', function() {
     assertEquals(1, browserProxy.getCallCount('getAccounts'));
     cr.webUIListenerCallback('accounts-changed');
     assertEquals(2, browserProxy.getCallCount('getAccounts'));
-  });
-
-  test('WelcomeScreenIsShownIfRequired', function() {
-    // We have navigated to |routes.ACCOUNT_MANAGER| in |setup|. A
-    // welcome screen should be shown if required.
-    assertGT(browserProxy.getCallCount('showWelcomeDialogIfRequired'), 0);
   });
 
   test('ManagementStatusForManagedAccounts', async function() {

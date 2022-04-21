@@ -755,6 +755,12 @@ const char kPluginsMetadata[] = "plugins.metadata";
 const char kPluginsResourceCacheUpdate[] = "plugins.resource_cache_update";
 #endif
 
+// Deprecated 04/2022
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kAccountManagerNumTimesWelcomeScreenShown[] =
+    "account_manager.num_times_welcome_screen_shown";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -986,6 +992,10 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kShowReadingListInBookmarkBar, true);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kAccountManagerNumTimesWelcomeScreenShown, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1927,6 +1937,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 03/2022
   profile_prefs->ClearPref(kShowReadingListInBookmarkBar);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 04/2022
+  profile_prefs->ClearPref(kAccountManagerNumTimesWelcomeScreenShown);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

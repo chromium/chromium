@@ -172,11 +172,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kPerformanceTracingEnabled, false);
 
-  // This pref is device specific and must not be synced.
-  registry->RegisterIntegerPref(
-      ::prefs::kAccountManagerNumTimesWelcomeScreenShown,
-      0 /* default_value */);
-
   registry->RegisterBooleanPref(
       ::prefs::kTapToClickEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);

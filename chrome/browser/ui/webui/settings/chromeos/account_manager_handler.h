@@ -87,9 +87,6 @@ class AccountManagerUIHandler
   // WebUI "removeAccount" message callback.
   void HandleRemoveAccount(const base::Value::List& args);
 
-  // WebUI "showWelcomeDialogIfRequired" message callback.
-  void HandleShowWelcomeDialogIfRequired(const base::Value::List& args);
-
   // WebUI "changeArcAvailability" message callback.
   void HandleChangeArcAvailability(const base::Value::List& args);
 

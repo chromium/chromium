@@ -23,7 +23,6 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
       'addAccount',
       'reauthenticateAccount',
       'removeAccount',
-      'showWelcomeDialogIfRequired',
     ]);
   }
 
@@ -78,11 +77,6 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
   /** @override */
   removeAccount(account) {
     this.methodCalled('removeAccount', account);
-  }
-
-  /** @override */
-  showWelcomeDialogIfRequired() {
-    this.methodCalled('showWelcomeDialogIfRequired');
   }
 }
 
