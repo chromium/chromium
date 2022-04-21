@@ -143,7 +143,7 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
   EXPECT_TRUE(injector);
   // The action number should be adjusted with the data in the
   // org.chromium.arc.testapp.inputoverlay.json.
-  EXPECT_EQ(2, (int)injector->actions().size());
+  EXPECT_EQ(3, (int)injector->actions().size());
 
   EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
   WindowFocus(arc_window->GetWindow(), nullptr);
