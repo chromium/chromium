@@ -122,8 +122,7 @@
       role="list" aria-label="$i18n{relatedSearchesHeader}"
       on-related-search-clicked="onRelatedSearchClicked_">
     <template is="dom-repeat" items="[[cluster.relatedSearches]]">
-      <search-query search-query="[[item]]" query="[[query]]"
-          index="[[index]]" role="listitem">
+      <search-query search-query="[[item]]" index="[[index]]" role="listitem">
       </search-query>
     </template>
   </div>
