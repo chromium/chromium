@@ -32,7 +32,7 @@ class GestureConfigurationAura : public GestureConfiguration {
 
  private:
   GestureConfigurationAura() : GestureConfiguration() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS, use 6 which is derived from the android's default(8),
     // multiplied by base dpi ratio(0.75).  See crbug.com/1083120 for more
     // details.
