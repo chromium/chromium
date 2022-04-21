@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
@@ -23,7 +21,6 @@ import android.text.TextUtils;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +37,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -351,43 +347,6 @@ public class ReturnToChromeTest {
 
     /**
      * Test that overview mode is triggered if the delay is shorter than the interval between
-     * stop and start. Also test the first meaningful paint UMA.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single"})
-    @FlakyTest(message = "crbug.com/1040896")
-    public void testTabSwitcherModeTriggeredBeyondThreshold_UMA() throws Exception {
-        // clang-format on
-        testTabSwitcherModeTriggeredBeyondThreshold();
-
-        assertThat(mActivityTestRule.getActivity().isTablet()).isFalse();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    RecordHistogram.getHistogramTotalCountForTesting(
-                            ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT),
-                    Matchers.is(1));
-        });
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT
-                        + ReturnToChromeExperimentsUtil.coldStartBucketName(true)));
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT
-                        + ReturnToChromeExperimentsUtil.coldStartBucketName(true)
-                        + ReturnToChromeExperimentsUtil.numThumbnailsBucketName(
-                                mActivityTestRule.getActivity()
-                                        .getTabModelSelector()
-                                        .getTotalTabCount())));
-    }
-
-    /**
-     * Test that overview mode is triggered if the delay is shorter than the interval between
      * stop and start.
      */
     @Test
@@ -415,43 +374,6 @@ public class ReturnToChromeTest {
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
 
         assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-    }
-
-    /**
-     * Test that overview mode is triggered if the delay is shorter than the interval between
-     * stop and start. Also test the first meaningful paint UMA.
-     */
-    @Test
-    @MediumTest
-    @Feature({"ReturnToChrome"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single"})
-    @FlakyTest(message = "crbug.com/1040896")
-    public void testTabSwitcherModeTriggeredBeyondThreshold_WarmStart_UMA() throws Exception {
-        // clang-format on
-        testTabSwitcherModeTriggeredBeyondThreshold_WarmStart();
-
-        assertThat(mActivityTestRule.getActivity().isTablet()).isFalse();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    RecordHistogram.getHistogramTotalCountForTesting(
-                            ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT),
-                    Matchers.is(2));
-        });
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT
-                        + ReturnToChromeExperimentsUtil.coldStartBucketName(false)));
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT
-                        + ReturnToChromeExperimentsUtil.coldStartBucketName(false)
-                        + ReturnToChromeExperimentsUtil.numThumbnailsBucketName(
-                                mActivityTestRule.getActivity()
-                                        .getTabModelSelector()
-                                        .getTotalTabCount())));
     }
 
     /**

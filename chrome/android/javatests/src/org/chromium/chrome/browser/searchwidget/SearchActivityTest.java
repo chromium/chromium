@@ -419,7 +419,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/1075804")
+    @FlakyTest(message = "crbug.com/1133547")
     public void testRealPromoDialogInterruption() throws Exception {
         // Start the Activity.  It should pause when the promo dialog appears.
         mTestDelegate.shouldShowRealSearchDialog = true;

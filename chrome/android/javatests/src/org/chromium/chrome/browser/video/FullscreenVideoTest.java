@@ -74,10 +74,9 @@ public class FullscreenVideoTest {
     /**
      * Test that when playing a fullscreen video, hitting the back button will let the tab
      * exit fullscreen mode without changing its URL.
-     *
-     * @MediumTest
      */
     @Test
+    @MediumTest
     @FlakyTest(message = "crbug.com/458368")
     public void testExitFullscreenNotifiesTabObservers() {
         String url = mTestServerRule.getServer().getURL(

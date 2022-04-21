@@ -376,7 +376,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(MVTParams.class)
-    @FlakyTest(message = "crbug.com/1075804")
+    @FlakyTest(message = "crbug.com/1036500")
     public void testRemoveMostVisitedItem(boolean isScrollableMVTEnabled)
             throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);

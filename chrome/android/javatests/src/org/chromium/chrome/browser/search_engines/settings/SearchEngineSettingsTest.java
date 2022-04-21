@@ -128,13 +128,10 @@ public class SearchEngineSettingsTest {
      * Make sure that when a user switches to a search engine that uses HTTP, the location
      * permission is not added.
      */
-    /*
-     * @SmallTest
-     * @Feature({"Preferences"})
-     * BUG=crbug.com/540706
-     */
     @Test
-    @FlakyTest
+    @SmallTest
+    @Feature({"Preferences"})
+    @FlakyTest(message = "crbug.com/540706")
     @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/540706")
     public void testSearchEnginePreferenceHttp() throws Exception {
         ensureTemplateUrlServiceLoaded();
