@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -36,12 +36,15 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 }
 
-html_to_js("web_components") {
-  js_files = [ "whats_new_app.ts" ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = [ "whats_new_app.html" ]
 }
 
-copy("copy_proxy") {
-  sources = [ "//chrome/browser/resources/whats_new/whats_new_proxy.ts" ]
+copy("copy_ts_files") {
+  sources = [
+    "whats_new_app.ts",
+    "whats_new_proxy.ts",
+  ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -52,6 +55,7 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "whats_new_app.ts",
+    "whats_new_app.html.ts",
     "whats_new_proxy.ts",
   ]
   deps = [
@@ -60,7 +64,7 @@ ts_library("build_ts") {
     "//ui/webui/resources/js/browser_command:build_ts",
   ]
   extra_deps = [
-    ":copy_proxy",
-    ":web_components",
+    ":copy_ts_files",
+    ":html_wrapper_files",
   ]
 }

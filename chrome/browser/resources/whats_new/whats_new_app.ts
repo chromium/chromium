@@ -10,8 +10,9 @@ import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './whats_new_app.html.js';
 import {WhatsNewProxyImpl} from './whats_new_proxy.js';
 
 type CommandData = {
@@ -28,6 +29,10 @@ type BrowserCommandMessageData = {
 export class WhatsNewAppElement extends PolymerElement {
   static get is() {
     return 'whats-new-app';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -116,10 +121,6 @@ export class WhatsNewAppElement extends PolymerElement {
         console.warn('Received invalid command: ' + commandId);
       }
     });
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 customElements.define(WhatsNewAppElement.is, WhatsNewAppElement);
