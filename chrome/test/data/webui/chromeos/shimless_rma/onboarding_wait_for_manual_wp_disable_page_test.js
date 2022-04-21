@@ -64,39 +64,4 @@ export function onboardingWaitForManualWpDisablePageTest() {
         component.shadowRoot.querySelector('#manuallyDisableHwwpInstructions');
     assertFalse(manualDisableComponent.hidden);
   });
-
-  test('HwwpEnabledDisablesNext', async () => {
-    await initializeWaitForManualWpDisablePage();
-
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
-
-    assertTrue(savedError instanceof Error);
-    assertEquals(
-        savedError.message, 'Hardware Write Protection is not disabled.');
-    assertEquals(savedResult, undefined);
-  });
-
-  test('HwwpDisabledEnablesNext', async () => {
-    const resolver = new PromiseResolver();
-    await initializeWaitForManualWpDisablePage();
-    service.triggerHardwareWriteProtectionObserver(false, 0);
-    await flushTasks();
-    service.writeProtectManuallyDisabled = () => {
-      return resolver.promise;
-    };
-
-    const expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
-
-    assertDeepEquals(savedResult, expectedResult);
-  });
 }

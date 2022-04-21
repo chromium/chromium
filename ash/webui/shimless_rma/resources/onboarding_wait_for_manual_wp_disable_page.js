@@ -10,7 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
+import {disableAllButtons} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -73,23 +73,30 @@ export class OnboardingWaitForManualWpDisablePage extends
     this.hwwpEnabled_ = enabled;
 
     if(!this.hidden) {
-      // TODO(gavindodd): Should this automatically progress to the next state?
-      if (this.hwwpEnabled_) {
-        disableNextButton(this);
-      } else {
-        enableNextButton(this);
+      if (!this.hwwpEnabled_) {
+        disableAllButtons(this, /*showBusyStateOverlay=*/ false);
+        // TODO(swifton): Hide the cancel button.
       }
     }
   }
 
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (!this.hwwpEnabled_) {
-      return this.shimlessRmaService_.writeProtectManuallyDisabled();
-    } else {
-      return Promise.reject(
-          new Error('Hardware Write Protection is not disabled.'));
-    }
+  /**
+   * @return {string}
+   * @protected
+   */
+  getPageTitle_() {
+    return this.hwwpEnabled_ ? this.i18n('manuallyDisableWpTitleText') :
+                               this.i18n('manuallyDisableWpTitleTextReboot');
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getInstructions_() {
+    return this.hwwpEnabled_ ?
+        this.i18n('manuallyDisableWpInstructionsText') :
+        this.i18n('manuallyDisableWpInstructionsTextReboot');
   }
 }
 

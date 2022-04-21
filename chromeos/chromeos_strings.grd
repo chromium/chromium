@@ -2872,6 +2872,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE" translateable="false" desc="The title for the page to manually disable write-protect on the device.">
         Manually disable write-protect
       </message>
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS_REBOOT" translateable="false" desc="The text instructions that inform the technician that the device will reboot.">
+        System will restart after verifying Write Protection status
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE_REBOOT" translateable="false" desc="The title for the page that informs the technician that the device will reboot.">
+        Preparing for restart...
+      </message>
       <!-- Restock mainboard page -->
       <message name="IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE" translateable="false" desc="The title for the page notifying user device is in a good state for restocking the mainboard.">
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
