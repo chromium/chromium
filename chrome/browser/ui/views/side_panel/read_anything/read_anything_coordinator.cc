@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"

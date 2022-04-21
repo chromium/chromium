@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_PAGE_HANDLER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
@@ -18,6 +21,14 @@ using read_anything::mojom::ContentNodePtr;
 using read_anything::mojom::Page;
 using read_anything::mojom::PageHandler;
 
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingPageHandler
+//
+//  A handler of the Read Anything app
+//  (chrome/browser/resources/side_panel/read_anything/app.ts).
+//  This class is created and owned by ReadAnythingUI and has the same lifetime
+//  as the Side Panel view.
+//
 class ReadAnythingPageHandler : public PageHandler,
                                 public ReadAnythingModel::Observer {
  public:

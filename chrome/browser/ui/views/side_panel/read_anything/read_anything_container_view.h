@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTAINER_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "ui/views/view.h"
@@ -12,7 +14,14 @@
 class ReadAnythingToolbarView;
 class ReadAnythingUI;
 
-// Generic View to hold the entirety of the "Read Anything" component.
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingContainerView
+//
+//  A class that holds all of the Read Anything UI. This includes a toolbar,
+//  which is a View, and the Read Anything contents pane, which is a WebUI.
+//  This class is created by the ReadAnythingCoordinator and owned by the Side
+//  Panel View. It has the same lifetime as the Side Panel view.
+//
 class ReadAnythingContainerView : public views::View {
  public:
   explicit ReadAnythingContainerView(

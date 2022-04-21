@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MODEL_H_
 
+#include <memory>
+#include <string>
 #include <vector>
+
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
@@ -13,6 +16,13 @@
 
 using read_anything::mojom::ContentNodePtr;
 
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingFontModel
+//
+//  A class that stores the data for the font combobox.
+//  This class is owned by the ReadAnythingModel and has the same lifetime as
+//  the browser.
+//
 class ReadAnythingFontModel : public ui::ComboboxModel {
  public:
   ReadAnythingFontModel();
@@ -34,6 +44,13 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   std::vector<std::u16string> font_choices_;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingModel
+//
+//  A class that stores data for the Read Anything feature.
+//  This class is owned by the ReadAnythingCoordinator and has the same lifetime
+//  as the browser.
+//
 class ReadAnythingModel {
  public:
   class Observer : public base::CheckedObserver {

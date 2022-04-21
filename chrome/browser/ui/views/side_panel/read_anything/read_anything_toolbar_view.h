@@ -10,7 +10,13 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view.h"
 
-// Generic View for the toolbar of the Read Anything side panel.
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingToolbarView
+//
+//  The toolbar for Read Anything.
+//  This class is created by the ReadAnythingCoordinator and owned by the
+//  ReadAnythingContainerView. It has the same lifetime as the Side Panel view.
+//
 class ReadAnythingToolbarView : public views::View {
  public:
   class Delegate {

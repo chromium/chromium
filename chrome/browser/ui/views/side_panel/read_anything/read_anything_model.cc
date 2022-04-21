@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 

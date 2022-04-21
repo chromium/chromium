@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
@@ -18,6 +20,17 @@ struct AXTreeUpdate;
 
 class Browser;
 
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingController
+//
+//  A class that controls the Read Anything feature. This class does all of the
+//  business logic of this feature and updates the model.
+//  The controller is meant to be internal to the Read Anything feature and
+//  classes outside this feature should not be making calls to it. The
+//  coordinator is the external-facing API.
+//  This class is owned by the ReadAnythingCoordinator and has the same lifetime
+//  as the browser.
+//
 class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
                                public ReadAnythingPageHandler::Delegate {
  public:

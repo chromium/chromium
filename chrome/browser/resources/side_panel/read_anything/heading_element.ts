@@ -23,6 +23,10 @@ export class HeadingElement extends PolymerElement {
 
   contentNode: ContentNode;
 
+  /////////////////////////////////////
+  // Called by heading_element.html. //
+  /////////////////////////////////////
+
   private isH1_(): boolean {
     return this.contentNode.headingLevel === 1;
   }

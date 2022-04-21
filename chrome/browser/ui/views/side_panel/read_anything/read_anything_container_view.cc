@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"

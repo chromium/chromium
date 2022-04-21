@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 
+#include <string>
+#include <vector>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"

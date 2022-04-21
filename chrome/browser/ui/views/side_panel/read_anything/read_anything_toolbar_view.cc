@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_provider.h"

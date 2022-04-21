@@ -74,6 +74,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
   }
 
+  /////////////////////////
+  // Called by app.html. //
+  /////////////////////////
+
   private isParagraph_(contentNode: ContentNode): boolean {
     return contentNode.type === ContentType.kParagraph;
   }
@@ -81,6 +85,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private isHeading_(contentNode: ContentNode): boolean {
     return contentNode.type === ContentType.kHeading;
   }
+
+  ////////////////////////////////////////////////////////////
+  // Called by ReadAnythingPageHandler via callback router. //
+  ////////////////////////////////////////////////////////////
 
   showContent_(contentNodes: ContentNode[]) {
     this.content_ = contentNodes;

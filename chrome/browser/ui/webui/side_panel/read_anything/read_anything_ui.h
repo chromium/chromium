@@ -15,7 +15,12 @@
 
 class ReadAnythingPageHandler;
 
-// WebUI that holds the distilled page contents.
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingUI
+//
+//  A WebUI that holds distilled page contents for the Read Anything feature.
+//  This class has the same lifetime as the Side Panel view.
+//
 class ReadAnythingUI : public ui::MojoBubbleWebUIController,
                        public read_anything::mojom::PageHandlerFactory {
  public:

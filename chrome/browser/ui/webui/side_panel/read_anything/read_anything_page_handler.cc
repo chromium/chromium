@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
