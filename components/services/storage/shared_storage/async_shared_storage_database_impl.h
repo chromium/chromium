@@ -16,6 +16,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/shared_storage/async_shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
+#include "url/origin.h"
 
 namespace base {
 class FilePath;
@@ -39,6 +40,7 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
   using GetResult = SharedStorageDatabase::GetResult;
+  using BudgetResult = SharedStorageDatabase::BudgetResult;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
@@ -114,6 +116,13 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   void FetchOrigins(
       base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
           callback) override;
+  void MakeBudgetWithdrawal(
+      url::Origin context_origin,
+      double bits_debit,
+      base::OnceCallback<void(OperationResult)> callback) override;
+  void GetRemainingBudget(
+      url::Origin context_origin,
+      base::OnceCallback<void(BudgetResult)> callback) override;
 
   // Gets the underlying database for tests.
   base::SequenceBound<SharedStorageDatabase>*
@@ -133,6 +142,21 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   // Overrides the `SpecialStoragePolicy` for tests.
   void OverrideSpecialStoragePolicyForTesting(
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+
+  // Overrides the clock used to check the time.
+  void OverrideClockForTesting(base::Clock* clock, base::OnceClosure callback);
+
+  // Calls `callback` with the number of entries (including stale entries) in
+  // the table `budget_mapping` for `context_origin`, or with -1 in case of
+  // database initialization failure or SQL error.
+  void GetNumBudgetEntriesForTesting(url::Origin context_origin,
+                                     base::OnceCallback<void(int)> callback);
+
+  // Calls `callback` with the total number of entries in the table for all
+  // origins, or with -1 in case of database initialization failure or SQL
+  // error.
+  void GetTotalNumBudgetEntriesForTesting(
+      base::OnceCallback<void(int)> callback);
 
  private:
   // Instances should be obtained from the `Create()` factory method.

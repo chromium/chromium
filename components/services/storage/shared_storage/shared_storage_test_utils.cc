@@ -16,7 +16,6 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "sql/database.h"
@@ -30,13 +29,16 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type)
     : type(type) {
   DCHECK(type == Type::DB_IS_OPEN || type == Type::DB_STATUS ||
          type == Type::DB_DESTROY || type == Type::DB_TRIM_MEMORY ||
-         type == Type::DB_FETCH_ORIGINS || type == Type::DB_PURGE_STALE);
+         type == Type::DB_FETCH_ORIGINS ||
+         type == Type::DB_GET_TOTAL_NUM_BUDGET);
 }
 
 TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type,
                                                         url::Origin origin)
     : type(type), origin(std::move(origin)) {
-  DCHECK(type == Type::DB_LENGTH || type == Type::DB_CLEAR);
+  DCHECK(type == Type::DB_LENGTH || type == Type::DB_CLEAR ||
+         type == Type::DB_GET_REMAINING_BUDGET ||
+         type == Type::DB_GET_NUM_BUDGET);
 }
 
 TestDatabaseOperationReceiver::DBOperation::DBOperation(
@@ -47,6 +49,7 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(
   DCHECK(type == Type::DB_GET || type == Type::DB_SET ||
          type == Type::DB_APPEND || type == Type::DB_DELETE ||
          type == Type::DB_KEYS || type == Type::DB_ENTRIES ||
+         type == Type::DB_MAKE_BUDGET_WITHDRAWAL ||
          type == Type::DB_OVERRIDE_TIME);
 }
 
@@ -157,6 +160,26 @@ TestDatabaseOperationReceiver::MakeGetResultCallback(
     GetResult* out_result) {
   return base::BindOnce(&TestDatabaseOperationReceiver::GetResultCallbackBase,
                         base::Unretained(this), current_operation, out_result);
+}
+
+void TestDatabaseOperationReceiver::BudgetResultCallbackBase(
+    const DBOperation& current_operation,
+    BudgetResult* out_result,
+    BudgetResult result) {
+  DCHECK(out_result);
+  *out_result = std::move(result);
+
+  if (ExpectationsMet(current_operation) && loop_.running())
+    Finish();
+}
+
+base::OnceCallback<void(BudgetResult)>
+TestDatabaseOperationReceiver::MakeBudgetResultCallback(
+    const DBOperation& current_operation,
+    BudgetResult* out_result) {
+  return base::BindOnce(
+      &TestDatabaseOperationReceiver::BudgetResultCallbackBase,
+      base::Unretained(this), current_operation, out_result);
 }
 
 void TestDatabaseOperationReceiver::OperationResultCallbackBase(
@@ -481,11 +504,12 @@ std::string PrintToString(const PurgeMatchingOriginsParams& p) {
 }
 
 void VerifySharedStorageTablesAndColumns(sql::Database& db) {
-  // `meta`, `values_mapping`, and `per_origin_mapping`.
-  EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
+  // `meta`, `values_mapping`, `per_origin_mapping`, and budget_mapping.
+  EXPECT_EQ(4u, sql::test::CountSQLTables(&db));
 
-  // Implicit index on `meta` and `per_origin_mapping_last_used_time_idx`.
-  EXPECT_EQ(2u, sql::test::CountSQLIndices(&db));
+  // Implicit index on `meta`, `per_origin_mapping_last_used_time_idx`,
+  // and budget_mapping_origin_time_stamp_idx.
+  EXPECT_EQ(3u, sql::test::CountSQLIndices(&db));
 
   // `key` and `value`.
   EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "meta"));
@@ -513,6 +537,14 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   if (!GetTestDataSharedStorageDir(&dir))
     return false;
   return sql::test::CreateDatabaseFromSQL(db_path, dir.AppendASCII(ascii_path));
+}
+
+std::string TimeDeltaToString(base::TimeDelta delta) {
+  return base::StrCat({base::NumberToString(delta.InMilliseconds()), "ms"});
+}
+
+BudgetResult MakeBudgetResultForSqlError() {
+  return BudgetResult(0.0, OperationResult::kSqlError);
 }
 
 }  // namespace storage

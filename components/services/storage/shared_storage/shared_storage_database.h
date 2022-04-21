@@ -33,7 +33,7 @@ class TimeDelta;
 
 namespace sql {
 class Statement;
-}
+}  // namespace sql
 
 namespace url {
 class Origin;
@@ -108,11 +108,25 @@ class SharedStorageDatabase {
     absl::optional<std::u16string> data;
     OperationResult result = OperationResult::kSqlError;
     GetResult();
-    GetResult(const GetResult&);
+    GetResult(const GetResult&) = delete;
     GetResult(GetResult&&);
     ~GetResult();
-    GetResult& operator=(const GetResult&);
+    GetResult& operator=(const GetResult&) = delete;
     GetResult& operator=(GetResult&&);
+  };
+
+  // Bundles a double `bits` representing the available bits remaining for the
+  // queried origin along with a field indicating whether the database retrieval
+  // was free of SQL errors.
+  struct BudgetResult {
+    double bits = 0.0;
+    OperationResult result = OperationResult::kSqlError;
+    BudgetResult(const BudgetResult&) = delete;
+    BudgetResult(BudgetResult&&);
+    BudgetResult(double bits, OperationResult result);
+    ~BudgetResult();
+    BudgetResult& operator=(const BudgetResult&) = delete;
+    BudgetResult& operator=(BudgetResult&&);
   };
 
   // When `db_path` is empty, the database will be opened in memory only.
@@ -237,8 +251,17 @@ class SharedStorageDatabase {
       bool perform_storage_cleanup = false);
 
   // Clear all entries for all origins whose `last_read_time` falls before
-  // `base::Time::Now() - window_to_be_deemed_active`. Returns whether the
-  // transaction was successful.
+  // `clock_->Now() - window_to_be_deemed_active`. Also purges, for all origins,
+  // all privacy budget withdrawals that have `time_stamps` older than
+  // `clock_->Now() - budget_interval_`.  Returns whether the transaction was
+  // successful.
+  //
+  // Note that `budget_interval_` may be different from
+  // `window_to_be_deemed_active`, and the latter only applies to the staleness
+  // of origins in `values_mapping`.
+  //
+  // TODO(crbug.com/1317487): Remove the `window_to_be_deemed_active` parameter
+  // by sending via `SharedStorageDatabaseOptions` in the constructor.
   [[nodiscard]] OperationResult PurgeStaleOrigins(
       base::TimeDelta window_to_be_deemed_active);
 
@@ -246,6 +269,18 @@ class SharedStorageDatabase {
   // `mojom::StorageUsageInfoPtr` for each origin currently using shared storage
   // in this profile.
   [[nodiscard]] std::vector<mojom::StorageUsageInfoPtr> FetchOrigins();
+
+  // Makes a withdrawal of `bits_debit` stamped with the current time from the
+  // privacy budget of `context_origin`.
+  [[nodiscard]] OperationResult MakeBudgetWithdrawal(url::Origin context_origin,
+                                                     double bits_debit);
+
+  // Determines the number of bits remaining in the privacy budget of
+  // `context_origin`, where only withdrawals within the most recent
+  // `budget_interval_` are counted as still valid, and returns this information
+  // bundled with an `OperationResult` value to indicate whether the database
+  // retrieval was successful.
+  [[nodiscard]] BudgetResult GetRemainingBudget(url::Origin context_origin);
 
   // Returns whether the SQLite database is open.
   [[nodiscard]] bool IsOpenForTesting() const;
@@ -264,6 +299,16 @@ class SharedStorageDatabase {
   // Overrides the `SpecialStoragePolicy` for tests.
   void OverrideSpecialStoragePolicyForTesting(
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+
+  // Gets the number of entries (including stale entries) in the table
+  // `budget_mapping` for `context_origin`. Returns -1 in case of database
+  // initialization failure or SQL error.
+  [[nodiscard]] int64_t GetNumBudgetEntriesForTesting(
+      url::Origin context_origin);
+
+  // Returns the total number of entries in the table for all origins, or -1 in
+  // case of database initialization failure or SQL error.
+  [[nodiscard]] int64_t GetTotalNumBudgetEntriesForTesting();
 
   // Populates the database in order to test integration with
   // `content::StoragePartitionImpl` while keeping in this file the parts of
@@ -338,12 +383,12 @@ class SharedStorageDatabase {
                                      base::Time new_last_used_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Updates `last_used_time` to `base::Time::Now()` for `context_origin`.
+  // Updates `last_used_time` to `clock_->Now()` for `context_origin`.
   [[nodiscard]] bool UpdateLastUsedTime(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Updates `length` by `delta` for `context_origin`. If `should_update_time`
-  // is true, also updates `last_used_time` to `base::Time::Now()`.
+  // is true, also updates `last_used_time` to `clock_->Now()`.
   [[nodiscard]] bool UpdateLength(const std::string& context_origin,
                                   int64_t delta,
                                   bool should_update_time = true)
@@ -373,7 +418,7 @@ class SharedStorageDatabase {
   [[nodiscard]] bool HasCapacity(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // The database containing the actual data.
+  // Database containing the actual data.
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Contains the version information.
@@ -386,17 +431,17 @@ class SharedStorageDatabase {
   // Only set to true if `DBExists()
   DBFileStatus db_file_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The path to the database, if file-backed.
+  // Path to the database, if file-backed.
   base::FilePath db_path_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The owning partition's storage policy.
+  // Owning partition's storage policy.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The maximum allowed number of entries per origin.
+  // Maximum allowed number of entries per origin.
   const int64_t max_entries_per_origin_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The maximum size of a string input from any origin's script. Applies
+  // Maximum size of a string input from any origin's script. Applies
   // separately to both script keys and script values.
   size_t max_string_length_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -406,6 +451,13 @@ class SharedStorageDatabase {
   // Maximum number of keys or key-value pairs returned per batch by the
   // async `Keys()` and `Entries()` iterators, respectively.
   size_t max_iterator_batch_size_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Maximum number of bits of entropy allowed per origin to output via the
+  // Shared Storage API.
+  const double bit_budget_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Interval over which `bit_budget_` is defined.
+  const base::TimeDelta budget_interval_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Clock used to determine current time. Can be overridden in tests.
   raw_ptr<base::Clock> clock_ GUARDED_BY_CONTEXT(sequence_checker_);

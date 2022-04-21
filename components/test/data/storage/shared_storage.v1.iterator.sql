@@ -236,5 +236,7 @@ INSERT INTO "values_mapping" VALUES ('http://chromium.org','Z','valueZ');
 CREATE TABLE per_origin_mapping(context_origin TEXT NOT NULL PRIMARY KEY,last_used_time INTEGER NOT NULL,length INTEGER NOT NULL) WITHOUT ROWID;
 INSERT INTO "per_origin_mapping" VALUES ('http://google.com',13266954476192362,201);
 INSERT INTO "per_origin_mapping" VALUES ('http://chromium.org',13268941676192362,26);
+CREATE TABLE budget_mapping(id INTEGER NOT NULL PRIMARY KEY,context_origin TEXT NOT NULL,time_stamp INTEGER NOT NULL,bits_debit REAL NOT NULL);
 CREATE INDEX IF NOT EXISTS per_origin_mapping_last_used_time_idx ON per_origin_mapping(last_used_time);
+CREATE INDEX IF NOT EXISTS budget_mapping_origin_time_stamp_idx ON budget_mapping(context_origin,time_stamp);
 COMMIT;

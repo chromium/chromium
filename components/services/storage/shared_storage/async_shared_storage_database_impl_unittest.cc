@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
@@ -49,10 +50,15 @@ using InitStatus = SharedStorageDatabase::InitStatus;
 using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
+using BudgetResult = SharedStorageDatabase::BudgetResult;
 using DBOperation = TestDatabaseOperationReceiver::DBOperation;
 using Type = DBOperation::Type;
 using DBType = SharedStorageTestDBType;
 
+const int kBudgetIntervalHours = 24;
+const int kOriginStalenessThresholdHours = 1;
+const int kOriginStalenessThresholdDays = 1;
+const int kBitBudget = 8;
 const int kMaxEntriesPerOrigin = 5;
 const int kMaxStringLength = 100;
 
@@ -90,7 +96,10 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
   virtual void InitSharedStorageFeature() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageInitTries", "1"}});
+        {{"MaxSharedStorageInitTries", "1"},
+         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
+         {"SharedStorageBudgetInterval",
+          TimeDeltaToString(base::Hours(kBudgetIntervalHours))}});
   }
 
   virtual DBType GetType() { return DBType::kInMemory; }
@@ -159,16 +168,9 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     receiver_->WaitForOperations();
   }
 
-  void VerifySharedStorageTablesAndColumnsSync() {
+  void RunTask(base::OnceCallback<bool(SharedStorageDatabase*)> task) {
     DCHECK(async_database_);
     DCHECK(GetImpl()->GetSequenceBoundDatabaseForTesting());
-
-    auto task = base::BindOnce([](SharedStorageDatabase* db) -> bool {
-      auto* sql_db = db->db();
-      EXPECT_TRUE(sql_db);
-      VerifySharedStorageTablesAndColumns(*sql_db);
-      return true;
-    });
 
     base::test::TestFuture<bool> future;
 
@@ -188,6 +190,17 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
         std::move(wrapped_task));
 
     EXPECT_TRUE(future.Get());
+  }
+
+  void VerifySharedStorageTablesAndColumnsSync() {
+    auto task = base::BindOnce([](SharedStorageDatabase* db) -> bool {
+      auto* sql_db = db->db();
+      EXPECT_TRUE(sql_db);
+      VerifySharedStorageTablesAndColumns(*sql_db);
+      return true;
+    });
+
+    RunTask(std::move(task));
   }
 
   void IsOpen(bool* out_boolean) {
@@ -226,15 +239,6 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     return future.Get();
   }
 
-  void TrimMemory() {
-    DCHECK(async_database_);
-    DCHECK(receiver_);
-
-    auto callback =
-        receiver_->MakeOnceClosure(DBOperation(Type::DB_TRIM_MEMORY));
-    async_database_->TrimMemory(std::move(callback));
-  }
-
   void OverrideLastUsedTime(url::Origin context_origin,
                             base::Time new_last_used_time,
                             bool* out_success) {
@@ -249,6 +253,75 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
         out_success);
     GetImpl()->OverrideLastUsedTimeForTesting(
         std::move(context_origin), new_last_used_time, std::move(callback));
+  }
+
+  void OverrideClockSync(base::Clock* clock) {
+    DCHECK(async_database_);
+
+    base::RunLoop loop;
+    GetImpl()->OverrideClockForTesting(clock, loop.QuitClosure());
+    loop.Run();
+  }
+
+  void AdvanceClockAsync(base::TimeDelta delta) {
+    auto task = base::BindOnce(
+        [](base::SimpleTestClock* clock, base::TimeDelta delta,
+           SharedStorageDatabase* db) -> bool {
+          clock->Advance(delta);
+          return true;
+        },
+        &clock_, delta);
+
+    RunTask(std::move(task));
+  }
+
+  void GetNumBudgetEntries(url::Origin context_origin, int* out_result) {
+    DCHECK(out_result);
+    DCHECK(async_database_);
+    DCHECK(receiver_);
+
+    *out_result = -1;
+    auto callback = receiver_->MakeIntCallback(
+        DBOperation(Type::DB_GET_NUM_BUDGET, context_origin), out_result);
+    GetImpl()->GetNumBudgetEntriesForTesting(std::move(context_origin),
+                                             std::move(callback));
+  }
+
+  int GetNumBudgetEntriesSync(url::Origin context_origin) {
+    DCHECK(async_database_);
+
+    base::test::TestFuture<int> future;
+    GetImpl()->GetNumBudgetEntriesForTesting(std::move(context_origin),
+                                             future.GetCallback());
+    return future.Get();
+  }
+
+  void GetTotalNumBudgetEntries(int* out_result) {
+    DCHECK(out_result);
+    DCHECK(async_database_);
+    DCHECK(receiver_);
+
+    *out_result = -1;
+    auto callback = receiver_->MakeIntCallback(
+        DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET), out_result);
+    GetImpl()->GetTotalNumBudgetEntriesForTesting(std::move(callback));
+  }
+
+  int GetTotalNumBudgetEntriesSync() {
+    DCHECK(async_database_);
+
+    base::test::TestFuture<int> future;
+    GetImpl()->GetTotalNumBudgetEntriesForTesting(future.GetCallback());
+    return future.Get();
+  }
+
+  void TrimMemory() {
+    DCHECK(async_database_);
+    DCHECK(receiver_);
+
+    auto callback =
+        receiver_->MakeOnceClosure(DBOperation(Type::DB_TRIM_MEMORY));
+    async_database_->TrimMemory(std::move(callback));
   }
 
   void Get(url::Origin context_origin,
@@ -270,7 +343,7 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     base::test::TestFuture<GetResult> future;
     async_database_->Get(std::move(context_origin), std::move(key),
                          future.GetCallback());
-    return future.Get();
+    return future.Take();
   }
 
   void Set(url::Origin context_origin,
@@ -513,6 +586,62 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
                                        std::move(callback));
   }
 
+  OperationResult PurgeStaleOriginsSync(
+      base::TimeDelta window_to_be_deemed_active) {
+    DCHECK(async_database_);
+
+    base::test::TestFuture<OperationResult> future;
+    async_database_->PurgeStaleOrigins(window_to_be_deemed_active,
+                                       future.GetCallback());
+    return future.Get();
+  }
+
+  void MakeBudgetWithdrawal(url::Origin context_origin,
+                            double bits_debit,
+                            OperationResult* out_result) {
+    DCHECK(out_result);
+    DCHECK(async_database_);
+    DCHECK(receiver_);
+
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_MAKE_BUDGET_WITHDRAWAL, context_origin,
+                    {base::NumberToString16(bits_debit)}),
+        out_result);
+    async_database_->MakeBudgetWithdrawal(std::move(context_origin), bits_debit,
+                                          std::move(callback));
+  }
+
+  OperationResult MakeBudgetWithdrawalSync(const url::Origin& context_origin,
+                                           double bits_debit) {
+    DCHECK(async_database_);
+
+    base::test::TestFuture<OperationResult> future;
+    async_database_->MakeBudgetWithdrawal(std::move(context_origin), bits_debit,
+                                          future.GetCallback());
+    return future.Get();
+  }
+
+  void GetRemainingBudget(url::Origin context_origin,
+                          BudgetResult* out_result) {
+    DCHECK(out_result);
+    DCHECK(async_database_);
+    DCHECK(receiver_);
+
+    auto callback = receiver_->MakeBudgetResultCallback(
+        DBOperation(Type::DB_GET_REMAINING_BUDGET, context_origin), out_result);
+    async_database_->GetRemainingBudget(std::move(context_origin),
+                                        std::move(callback));
+  }
+
+  BudgetResult GetRemainingBudgetSync(const url::Origin& context_origin) {
+    DCHECK(async_database_);
+
+    base::test::TestFuture<BudgetResult> future;
+    async_database_->GetRemainingBudget(std::move(context_origin),
+                                        future.GetCallback());
+    return future.Take();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -522,6 +651,7 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
   std::unique_ptr<TestDatabaseOperationReceiver> receiver_;
   base::ScopedTempDir temp_dir_;
   base::FilePath file_name_;
+  base::SimpleTestClock clock_;
 };
 
 class AsyncSharedStorageDatabaseImplFromFileV1Test
@@ -536,6 +666,12 @@ class AsyncSharedStorageDatabaseImplFromFileV1Test
 TEST_F(AsyncSharedStorageDatabaseImplFromFileV1Test, Version1_LoadFromFile) {
   ASSERT_TRUE(async_database_);
 
+  // Override the clock and set to the last time in the file that is used to
+  // make a budget withdrawal.
+  OverrideClockSync(&clock_);
+  clock_.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13269546593856733)));
+
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   EXPECT_EQ(GetSync(google_com, u"key1").data, u"value1");
   EXPECT_EQ(GetSync(google_com, u"key2").data, u"value2");
@@ -544,19 +680,63 @@ TEST_F(AsyncSharedStorageDatabaseImplFromFileV1Test, Version1_LoadFromFile) {
   // columns until after the first call to `GetSync()`.
   VerifySharedStorageTablesAndColumnsSync();
 
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+
   std::vector<url::Origin> origins;
   for (const auto& info : FetchOriginsSync())
     origins.push_back(info->origin);
   EXPECT_THAT(
       origins,
-      ElementsAre(url::Origin::Create(GURL("http://abc.xyz")),
-                  url::Origin::Create(GURL("http://chromium.org")), google_com,
-                  url::Origin::Create(GURL("http://google.org")),
+      ElementsAre(abc_xyz, url::Origin::Create(GURL("http://chromium.org")),
+                  google_com, url::Origin::Create(GURL("http://google.org")),
                   url::Origin::Create(GURL("http://growwithgoogle.com")),
                   url::Origin::Create(GURL("http://gv.com")),
                   url::Origin::Create(GURL("http://waymo.com")),
                   url::Origin::Create(GURL("http://withgoogle.com")),
                   url::Origin::Create(GURL("http://youtube.com"))));
+
+  EXPECT_DOUBLE_EQ(kBitBudget - 5.3, GetRemainingBudgetSync(abc_xyz).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(google_com).bits);
+}
+
+class AsyncSharedStorageDatabaseImplFromFileV1NoBudgetTableTest
+    : public AsyncSharedStorageDatabaseImplFromFileV1Test {
+ public:
+  const char* GetRelativeFilePath() override {
+    return "shared_storage.v1.no_budget_table.sql";
+  }
+};
+
+// Test loading version 1 database without budget table.
+TEST_F(AsyncSharedStorageDatabaseImplFromFileV1NoBudgetTableTest,
+       Version1_LoadFromFileNoBudgetTable) {
+  ASSERT_TRUE(async_database_);
+
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  EXPECT_EQ(GetSync(google_com, u"key1").data, u"value1");
+  EXPECT_EQ(GetSync(google_com, u"key2").data, u"value2");
+
+  // Because the SQL database is lazy-initialized, wait to verify tables and
+  // columns until after the first call to `GetSync()`.
+  VerifySharedStorageTablesAndColumnsSync();
+
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : FetchOriginsSync())
+    origins.push_back(info->origin);
+  EXPECT_THAT(
+      origins,
+      ElementsAre(abc_xyz, url::Origin::Create(GURL("http://chromium.org")),
+                  google_com, url::Origin::Create(GURL("http://google.org")),
+                  url::Origin::Create(GURL("http://growwithgoogle.com")),
+                  url::Origin::Create(GURL("http://gv.com")),
+                  url::Origin::Create(GURL("http://waymo.com")),
+                  url::Origin::Create(GURL("http://withgoogle.com")),
+                  url::Origin::Create(GURL("http://youtube.com"))));
+
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(abc_xyz).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(google_com).bits);
 }
 
 struct InitFailureTestCase {
@@ -638,7 +818,10 @@ class AsyncSharedStorageDatabaseImplParamTest
         {{"MaxSharedStorageEntriesPerOrigin",
           base::NumberToString(kMaxEntriesPerOrigin)},
          {"MaxSharedStorageStringLength",
-          base::NumberToString(kMaxStringLength)}});
+          base::NumberToString(kMaxStringLength)},
+         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
+         {"SharedStorageBudgetInterval",
+          TimeDeltaToString(base::Hours(kBudgetIntervalHours))}});
   }
 };
 
@@ -698,6 +881,113 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, SyncOperations) {
 
   EXPECT_EQ(OperationResult::kSuccess, ClearSync(kOrigin1));
   EXPECT_EQ(0, LengthSync(kOrigin1));
+}
+
+// Synchronously tests budget operations.
+TEST_P(AsyncSharedStorageDatabaseImplParamTest, SyncMakeBudgetWithdrawal) {
+  OverrideClockSync(&clock_);
+  clock_.SetNow(base::Time::Now());
+
+  // There should be no entries in the budget table.
+  EXPECT_EQ(0, GetTotalNumBudgetEntriesSync());
+
+  // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
+  // budgets should be returned as the max possible.
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+
+  // A withdrawal for `kOrigin1` doesn't affect `kOrigin2`.
+  EXPECT_EQ(OperationResult::kSuccess,
+            MakeBudgetWithdrawalSync(kOrigin1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
+
+  // An additional withdrawal for `kOrigin1` at or near the same time as the
+  // previous one is debited appropriately.
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin1, 2.5));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
+                   GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_EQ(2, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(2, GetTotalNumBudgetEntriesSync());
+
+  // A withdrawal for `kOrigin2` doesn't affect `kOrigin1`.
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin2, 3.4));
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
+                   GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_EQ(2, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin2));
+  EXPECT_EQ(3, GetTotalNumBudgetEntriesSync());
+
+  // Advance halfway through the lookback window.
+  clock_.Advance(base::Hours(kBudgetIntervalHours) / 2);
+
+  // Remaining budgets continue to take into account the withdrawals above, as
+  // they are still within the lookback window.
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
+                   GetRemainingBudgetSync(kOrigin1).bits);
+
+  // An additional withdrawal for `kOrigin1` at a later time from previous ones
+  // is debited appropriately.
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin1, 1.0));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0,
+                   GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_EQ(3, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin2));
+  EXPECT_EQ(4, GetTotalNumBudgetEntriesSync());
+
+  // Advance to the end of the initial lookback window, plus an additional
+  // microsecond to move past that window.
+  clock_.Advance(base::Hours(kBudgetIntervalHours) / 2 + base::Microseconds(1));
+
+  // Now only the single debit made within the current lookback window is
+  // counted, although the entries are still in the table because we haven't
+  // called `PurgeStaleOriginsSync()`.
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_EQ(3, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin2));
+  EXPECT_EQ(4, GetTotalNumBudgetEntriesSync());
+
+  // After `PurgeStaleOriginsSync()` runs, there will only be the most
+  // recent debit left in the budget table.
+  //
+  // Note: The parameter for PurgeStaleOriginsSync() isn't relevant here.
+  EXPECT_EQ(OperationResult::kSuccess,
+            PurgeStaleOriginsSync(base::Days(kOriginStalenessThresholdDays)));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(0, GetNumBudgetEntriesSync(kOrigin2));
+  EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
+
+  // Advance to where the last debit should no longer be in the lookback window.
+  clock_.Advance(base::Hours(kBudgetIntervalHours) / 2);
+
+  // Remaining budgets should be back at the max, although there is still an
+  // entry in the table.
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
+
+  // After `PurgeStaleOriginsSync()` runs, the budget table will be empty.
+  //
+  // Note: The parameter for PurgeStaleOriginsSync() isn't relevant here.
+  EXPECT_EQ(OperationResult::kSuccess,
+            PurgeStaleOriginsSync(base::Days(kOriginStalenessThresholdDays)));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_EQ(0, GetTotalNumBudgetEntriesSync());
 }
 
 // Verifies that the async operations are executed in order and without races.
@@ -827,6 +1117,298 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, AsyncOperations) {
 
   EXPECT_EQ(OperationResult::kSuccess, result9);
   EXPECT_EQ(0, length5);
+}
+
+TEST_P(AsyncSharedStorageDatabaseImplParamTest, AsyncMakeBudgetWithdrawal) {
+  OverrideClockSync(&clock_);
+  clock_.SetNow(base::Time::Now());
+
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+
+  // need to fix operations
+  std::queue<DBOperation> operation_list;
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+
+  operation_list.push(DBOperation(Type::DB_MAKE_BUDGET_WITHDRAWAL, kOrigin1,
+                                  {base::NumberToString16(1.75)}));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  operation_list.push(DBOperation(Type::DB_MAKE_BUDGET_WITHDRAWAL, kOrigin1,
+                                  {base::NumberToString16(2.5)}));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  operation_list.push(DBOperation(Type::DB_MAKE_BUDGET_WITHDRAWAL, kOrigin2,
+                                  {base::NumberToString16(3.4)}));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+
+  operation_list.push(DBOperation(Type::DB_MAKE_BUDGET_WITHDRAWAL, kOrigin1,
+                                  {base::NumberToString16(1.0)}));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  operation_list.push(DBOperation(
+      Type::DB_PURGE_STALE, {TestDatabaseOperationReceiver::SerializeTimeDelta(
+                                base::Days(kOriginStalenessThresholdDays))}));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_NUM_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  operation_list.push(DBOperation(
+      Type::DB_PURGE_STALE, {TestDatabaseOperationReceiver::SerializeTimeDelta(
+                                base::Days(kOriginStalenessThresholdDays))}));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin1));
+  operation_list.push(DBOperation(Type::DB_GET_REMAINING_BUDGET, kOrigin2));
+  operation_list.push(DBOperation(Type::DB_GET_TOTAL_NUM_BUDGET));
+
+  SetExpectedOperationList(std::move(operation_list));
+
+  // There should be no entries in the budget table.
+  int total_entries1 = -1;
+  GetTotalNumBudgetEntries(&total_entries1);
+
+  // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
+  // budgets should be returned as the max possible.
+  BudgetResult budget_result1 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result1);
+  BudgetResult budget_result2 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result2);
+
+  // A withdrawal for `kOrigin1` doesn't affect `kOrigin2`.
+  OperationResult operation_result1 = OperationResult::kSqlError;
+  MakeBudgetWithdrawal(kOrigin1, 1.75, &operation_result1);
+  BudgetResult budget_result3 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result3);
+  BudgetResult budget_result4 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result4);
+  int num_entries1 = -1;
+  GetNumBudgetEntries(kOrigin1, &num_entries1);
+  int total_entries2 = -1;
+  GetTotalNumBudgetEntries(&total_entries2);
+
+  // An additional withdrawal for `kOrigin1` at or near the same time as the
+  // previous one is debited appropriately.
+  OperationResult operation_result2 = OperationResult::kSqlError;
+  MakeBudgetWithdrawal(kOrigin1, 2.5, &operation_result2);
+  BudgetResult budget_result5 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result5);
+  BudgetResult budget_result6 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result6);
+  int num_entries2 = -1;
+  GetNumBudgetEntries(kOrigin1, &num_entries2);
+  int total_entries3 = -1;
+  GetTotalNumBudgetEntries(&total_entries3);
+
+  // A withdrawal for `kOrigin2` doesn't affect `kOrigin1`.
+  OperationResult operation_result3 = OperationResult::kSqlError;
+  MakeBudgetWithdrawal(kOrigin2, 3.4, &operation_result3);
+  BudgetResult budget_result7 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result7);
+  BudgetResult budget_result8 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result8);
+  int num_entries3 = -1;
+  GetNumBudgetEntries(kOrigin1, &num_entries3);
+  int num_entries4 = -1;
+  GetNumBudgetEntries(kOrigin2, &num_entries4);
+  int total_entries4 = -1;
+  GetTotalNumBudgetEntries(&total_entries4);
+
+  // Advance halfway through the lookback window.
+  AdvanceClockAsync(base::Hours(kBudgetIntervalHours / 2));
+
+  // Remaining budgets continue to take into account the withdrawals above, as
+  // they are still within the lookback window.
+  BudgetResult budget_result9 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result9);
+  BudgetResult budget_result10 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result10);
+
+  // An additional withdrawal for `kOrigin1` at a later time from previous ones
+  // is debited appropriately.
+  OperationResult operation_result4 = OperationResult::kSqlError;
+  MakeBudgetWithdrawal(kOrigin1, 1.0, &operation_result4);
+  BudgetResult budget_result11 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result11);
+  BudgetResult budget_result12 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result12);
+  int num_entries5 = -1;
+  GetNumBudgetEntries(kOrigin1, &num_entries5);
+  int num_entries6 = -1;
+  GetNumBudgetEntries(kOrigin2, &num_entries6);
+  int total_entries5 = -1;
+  GetTotalNumBudgetEntries(&total_entries5);
+
+  // Advance to the end of the initial lookback window, plus an additional
+  // microsecond to move past that window.
+  AdvanceClockAsync(base::Hours(kBudgetIntervalHours / 2) +
+                    base::Microseconds(1));
+
+  // Now only the single debit made within the current lookback window is
+  // counted, although the entries are still in the table because we haven't
+  // called `PurgeStaleOrigins()`.
+  BudgetResult budget_result13 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result13);
+  BudgetResult budget_result14 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result14);
+  int num_entries7 = -1;
+  GetNumBudgetEntries(kOrigin1, &num_entries7);
+  int num_entries8 = -1;
+  GetNumBudgetEntries(kOrigin2, &num_entries8);
+  int total_entries6 = -1;
+  GetTotalNumBudgetEntries(&total_entries6);
+
+  // After `PurgeStaleOrigins()` runs, there will only be the most
+  // recent debit left in the budget table.
+  OperationResult operation_result5 = OperationResult::kSqlError;
+  PurgeStaleOrigins(base::Days(kOriginStalenessThresholdDays),
+                    &operation_result5);
+  BudgetResult budget_result15 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result15);
+  BudgetResult budget_result16 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result16);
+  int num_entries9 = -1;
+  GetNumBudgetEntries(kOrigin1, &num_entries9);
+  int num_entries10 = -1;
+  GetNumBudgetEntries(kOrigin2, &num_entries10);
+  int total_entries7 = -1;
+  GetTotalNumBudgetEntries(&total_entries7);
+
+  // Advance to where the last debit should no longer be in the lookback window.
+  AdvanceClockAsync(base::Hours(kBudgetIntervalHours / 2));
+
+  // Remaining budgets should be back at the max, although there is still an
+  // entry in the table.
+  BudgetResult budget_result17 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result17);
+  BudgetResult budget_result18 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result18);
+  int num_entries11 = -1;
+  GetNumBudgetEntries(kOrigin1, &num_entries11);
+  int total_entries8 = -1;
+  GetTotalNumBudgetEntries(&total_entries8);
+
+  // After `PurgeStaleOrigins()` runs, the budget table will be empty.
+  OperationResult operation_result6 = OperationResult::kSqlError;
+  PurgeStaleOrigins(base::Days(kOriginStalenessThresholdDays),
+                    &operation_result6);
+  BudgetResult budget_result19 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin1, &budget_result19);
+  BudgetResult budget_result20 = MakeBudgetResultForSqlError();
+  GetRemainingBudget(kOrigin2, &budget_result20);
+  int total_entries9 = -1;
+  GetTotalNumBudgetEntries(&total_entries9);
+
+  WaitForOperations();
+  EXPECT_TRUE(is_finished());
+
+  // There should be no entries in the budget table.
+  EXPECT_EQ(0, total_entries1);
+
+  // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
+  // budgets should be returned as the max possible.
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result1.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result2.bits);
+
+  // A withdrawal for `kOrigin1` doesn't affect `kOrigin2`.
+  EXPECT_EQ(OperationResult::kSuccess, operation_result1);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, budget_result3.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result4.bits);
+  EXPECT_EQ(1, num_entries1);
+  EXPECT_EQ(1, total_entries2);
+
+  // An additional withdrawal for `kOrigin1` at or near the same time as the
+  // previous one is debited appropriately.
+  EXPECT_EQ(OperationResult::kSuccess, operation_result2);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5, budget_result5.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result6.bits);
+  EXPECT_EQ(2, num_entries2);
+  EXPECT_EQ(2, total_entries3);
+
+  // A withdrawal for `kOrigin2` doesn't affect `kOrigin1`.
+  EXPECT_EQ(OperationResult::kSuccess, operation_result3);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, budget_result7.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5, budget_result8.bits);
+  EXPECT_EQ(2, num_entries3);
+  EXPECT_EQ(1, num_entries4);
+  EXPECT_EQ(3, total_entries4);
+
+  // Remaining budgets continue to take into account the withdrawals above, as
+  // they are still within the lookback window.
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, budget_result9.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5, budget_result10.bits);
+
+  // An additional withdrawal for `kOrigin1` at a later time from previous ones
+  // is debited appropriately.
+  EXPECT_EQ(OperationResult::kSuccess, operation_result4);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0, budget_result11.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, budget_result12.bits);
+  EXPECT_EQ(3, num_entries5);
+  EXPECT_EQ(1, num_entries6);
+  EXPECT_EQ(4, total_entries5);
+
+  // Now only the single debit made within the current lookback window is
+  // counted, although the entries are still in the table because we haven't
+  // called `PurgeStaleOrigins()`.
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, budget_result13.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result14.bits);
+  EXPECT_EQ(3, num_entries7);
+  EXPECT_EQ(1, num_entries8);
+  EXPECT_EQ(4, total_entries6);
+
+  // After `PurgeStaleOrigins()` runs, there will only be the most
+  // recent debit left in the budget table.
+  EXPECT_EQ(OperationResult::kSuccess, operation_result5);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, budget_result15.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result16.bits);
+  EXPECT_EQ(1, num_entries9);
+  EXPECT_EQ(0, num_entries10);
+  EXPECT_EQ(1, total_entries7);
+
+  // Remaining budgets should be back at the max, although there is still an
+  // entry in the table.
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result17.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result18.bits);
+  EXPECT_EQ(1, num_entries11);
+  EXPECT_EQ(1, total_entries8);
+
+  // After `PurgeStaleOrigins()` runs, the budget table will be empty.
+  EXPECT_EQ(OperationResult::kSuccess, operation_result6);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result19.bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, budget_result20.bits);
+  EXPECT_EQ(0, total_entries9);
 }
 
 TEST_P(AsyncSharedStorageDatabaseImplParamTest,
@@ -1035,8 +1617,8 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   operation_list.push(DBOperation(Type::DB_STATUS));
 
   operation_list.push(DBOperation(
-      Type::DB_PURGE_STALE,
-      {TestDatabaseOperationReceiver::SerializeTimeDelta(base::Days(1))}));
+      Type::DB_PURGE_STALE, {TestDatabaseOperationReceiver::SerializeTimeDelta(
+                                base::Days(kOriginStalenessThresholdDays))}));
 
   operation_list.push(
       DBOperation(Type::DB_SET, kOrigin1,
@@ -1106,8 +1688,8 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
       Type::DB_OVERRIDE_TIME, kOrigin1,
       {TestDatabaseOperationReceiver::SerializeTime(override_time1)}));
   operation_list.push(DBOperation(
-      Type::DB_PURGE_STALE,
-      {TestDatabaseOperationReceiver::SerializeTimeDelta(base::Days(1))}));
+      Type::DB_PURGE_STALE, {TestDatabaseOperationReceiver::SerializeTimeDelta(
+                                base::Days(kOriginStalenessThresholdDays))}));
 
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin1));
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin2));
@@ -1120,8 +1702,8 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
       Type::DB_OVERRIDE_TIME, kOrigin3,
       {TestDatabaseOperationReceiver::SerializeTime(override_time2)}));
   operation_list.push(DBOperation(
-      Type::DB_PURGE_STALE,
-      {TestDatabaseOperationReceiver::SerializeTimeDelta(base::Hours(1))}));
+      Type::DB_PURGE_STALE, {TestDatabaseOperationReceiver::SerializeTimeDelta(
+                                base::Hours(kOriginStalenessThresholdHours))}));
 
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin1));
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin2));
@@ -1155,7 +1737,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   DBStatus(&status1);
 
   OperationResult result1 = OperationResult::kSqlError;
-  PurgeStaleOrigins(base::Days(1), &result1);
+  PurgeStaleOrigins(base::Days(kOriginStalenessThresholdDays), &result1);
 
   OperationResult result2 = OperationResult::kSqlError;
   Set(kOrigin1, u"key1", u"value1", &result2);
@@ -1202,7 +1784,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   OverrideLastUsedTime(kOrigin1, override_time1, &success1);
 
   OperationResult result12 = OperationResult::kSqlError;
-  PurgeStaleOrigins(base::Days(1), &result12);
+  PurgeStaleOrigins(base::Days(kOriginStalenessThresholdDays), &result12);
 
   int length5 = -1;
   Length(kOrigin1, &length5);
@@ -1220,7 +1802,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   OverrideLastUsedTime(kOrigin3, override_time2, &success2);
 
   OperationResult result13 = OperationResult::kSqlError;
-  PurgeStaleOrigins(base::Hours(1), &result13);
+  PurgeStaleOrigins(base::Hours(kOriginStalenessThresholdHours), &result13);
 
   int length9 = -1;
   Length(kOrigin1, &length9);

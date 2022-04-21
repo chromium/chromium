@@ -60,6 +60,7 @@ SharedStorageManager::~SharedStorageManager() {
 void SharedStorageManager::OnMemoryPressure(
     base::OnceCallback<void()> callback,
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  DCHECK(callback);
   DCHECK(database_);
 
   // TODO(cammie): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
@@ -97,13 +98,14 @@ void SharedStorageManager::OnOperationResult(OperationResult result) {
 void SharedStorageManager::Get(url::Origin context_origin,
                                std::u16string key,
                                base::OnceCallback<void(GetResult)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   auto new_callback = base::BindOnce(
       [](base::WeakPtr<SharedStorageManager> manager,
          base::OnceCallback<void(GetResult)> callback, GetResult result) {
         if (manager)
           manager->OnOperationResult(result.result);
-        std::move(callback).Run(result);
+        std::move(callback).Run(std::move(result));
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
@@ -117,6 +119,7 @@ void SharedStorageManager::Set(
     std::u16string value,
     base::OnceCallback<void(OperationResult)> callback,
     SharedStorageDatabase::SetBehavior behavior) {
+  DCHECK(callback);
   DCHECK(database_);
   database_->Set(std::move(context_origin), std::move(key), std::move(value),
                  GetOperationResultCallback(std::move(callback)), behavior);
@@ -127,6 +130,7 @@ void SharedStorageManager::Append(
     std::u16string key,
     std::u16string value,
     base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   database_->Append(std::move(context_origin), std::move(key), std::move(value),
                     GetOperationResultCallback(std::move(callback)));
@@ -136,6 +140,7 @@ void SharedStorageManager::Delete(
     url::Origin context_origin,
     std::u16string key,
     base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   database_->Delete(std::move(context_origin), std::move(key),
                     GetOperationResultCallback(std::move(callback)));
@@ -143,6 +148,7 @@ void SharedStorageManager::Delete(
 
 void SharedStorageManager::Length(url::Origin context_origin,
                                   base::OnceCallback<void(int)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   auto new_callback = base::BindOnce(
       [](base::WeakPtr<SharedStorageManager> manager,
@@ -164,6 +170,7 @@ void SharedStorageManager::Keys(
         shared_storage_worklet::mojom::SharedStorageEntriesListener>
         pending_listener,
     base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   database_->Keys(std::move(context_origin), std::move(pending_listener),
                   GetOperationResultCallback(std::move(callback)));
@@ -175,6 +182,7 @@ void SharedStorageManager::Entries(
         shared_storage_worklet::mojom::SharedStorageEntriesListener>
         pending_listener,
     base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   database_->Entries(std::move(context_origin), std::move(pending_listener),
                      GetOperationResultCallback(std::move(callback)));
@@ -183,6 +191,7 @@ void SharedStorageManager::Entries(
 void SharedStorageManager::Clear(
     url::Origin context_origin,
     base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   database_->Clear(std::move(context_origin),
                    GetOperationResultCallback(std::move(callback)));
@@ -194,6 +203,7 @@ void SharedStorageManager::PurgeMatchingOrigins(
     base::Time end,
     base::OnceCallback<void(OperationResult)> callback,
     bool perform_storage_cleanup) {
+  DCHECK(callback);
   DCHECK(database_);
   database_->PurgeMatchingOrigins(
       std::move(origin_matcher), begin, end,
@@ -207,8 +217,38 @@ void SharedStorageManager::FetchOrigins(
   database_->FetchOrigins(std::move(callback));
 }
 
+void SharedStorageManager::MakeBudgetWithdrawal(
+    url::Origin context_origin,
+    double bits_debit,
+    base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_->MakeBudgetWithdrawal(
+      std::move(context_origin), bits_debit,
+      GetOperationResultCallback(std::move(callback)));
+}
+
+void SharedStorageManager::GetRemainingBudget(
+    url::Origin context_origin,
+    base::OnceCallback<void(BudgetResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  auto new_callback = base::BindOnce(
+      [](base::WeakPtr<SharedStorageManager> manager,
+         base::OnceCallback<void(BudgetResult)> callback, BudgetResult result) {
+        if (manager)
+          manager->OnOperationResult(result.result);
+        std::move(callback).Run(std::move(result));
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  database_->GetRemainingBudget(std::move(context_origin),
+                                std::move(new_callback));
+}
+
 void SharedStorageManager::SetOnDBDestroyedCallbackForTesting(
     base::OnceCallback<void(bool)> callback) {
+  DCHECK(callback);
   on_db_destroyed_callback_for_testing_ = std::move(callback);
 }
 
@@ -216,6 +256,7 @@ void SharedStorageManager::OverrideLastUsedTimeForTesting(
     url::Origin context_origin,
     base::Time new_last_used_time,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK(callback);
   DCHECK(database_);
   static_cast<AsyncSharedStorageDatabaseImpl*>(database_.get())
       ->OverrideLastUsedTimeForTesting(  // IN-TEST
@@ -234,6 +275,49 @@ void SharedStorageManager::OverrideSpecialStoragePolicyForTesting(
 void SharedStorageManager::OverrideDatabaseForTesting(
     std::unique_ptr<AsyncSharedStorageDatabase> override_async_database) {
   database_ = std::move(override_async_database);
+}
+
+void SharedStorageManager::GetNumBudgetEntriesForTesting(
+    url::Origin context_origin,
+    base::OnceCallback<void(int)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  auto new_callback = base::BindOnce(
+      [](base::WeakPtr<SharedStorageManager> manager,
+         base::OnceCallback<void(int)> callback, int num_entries) {
+        OperationResult result = (num_entries != -1)
+                                     ? OperationResult::kSuccess
+                                     : OperationResult::kSqlError;
+        if (manager)
+          manager->OnOperationResult(result);
+        std::move(callback).Run(num_entries);
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  static_cast<AsyncSharedStorageDatabaseImpl*>(database_.get())
+      ->GetNumBudgetEntriesForTesting(  // IN-TEST
+          std::move(context_origin), std::move(new_callback));
+}
+
+void SharedStorageManager::GetTotalNumBudgetEntriesForTesting(
+    base::OnceCallback<void(int)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  auto new_callback = base::BindOnce(
+      [](base::WeakPtr<SharedStorageManager> manager,
+         base::OnceCallback<void(int)> callback, int num_entries) {
+        OperationResult result = (num_entries != -1)
+                                     ? OperationResult::kSuccess
+                                     : OperationResult::kSqlError;
+        if (manager)
+          manager->OnOperationResult(result);
+        std::move(callback).Run(num_entries);
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  static_cast<AsyncSharedStorageDatabaseImpl*>(database_.get())
+      ->GetTotalNumBudgetEntriesForTesting(  // IN-TEST
+          std::move(new_callback));
 }
 
 void SharedStorageManager::DestroyAndRecreateDatabase() {
@@ -278,6 +362,7 @@ void SharedStorageManager::OnDatabaseDestroyed(bool recreate_in_memory,
 base::OnceCallback<void(SharedStorageManager::OperationResult)>
 SharedStorageManager::GetOperationResultCallback(
     base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
   return base::BindOnce(
       [](base::WeakPtr<SharedStorageManager> manager,
          base::OnceCallback<void(OperationResult)> callback,
@@ -290,6 +375,10 @@ SharedStorageManager::GetOperationResultCallback(
 }
 
 void SharedStorageManager::PurgeStaleOrigins() {
+  // TODO(crbug.com/1317487): Move this DCHECK for
+  // `options_->origin_staleness_threshold` to `SharedStorageOptions` after
+  // removing the parameter from `SharedStorageDatabase::PurgeStaleOrigins()`
+  // and passing into the database constructor instead.
   DCHECK(!options_->origin_staleness_threshold.is_zero());
   DCHECK(database_);
 

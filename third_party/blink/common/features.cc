@@ -244,6 +244,10 @@ const base::FeatureParam<int> kMaxSharedStorageInitTries = {
     &kSharedStorageAPI, "MaxSharedStorageInitTries", 2};
 const base::FeatureParam<int> kMaxSharedStorageIteratorBatchSize = {
     &kSharedStorageAPI, "MaxSharedStorageIteratorBatchSize", 100};
+const base::FeatureParam<int> kSharedStorageBitBudget = {
+    &kSharedStorageAPI, "SharedStorageBitBudget", 12};
+const base::FeatureParam<base::TimeDelta> kSharedStorageBudgetInterval = {
+    &kSharedStorageAPI, "SharedStorageBudgetInterval", base::Hours(24)};
 const base::FeatureParam<base::TimeDelta>
     kSharedStorageStaleOriginPurgeInitialInterval = {
         &kSharedStorageAPI, "SharedStorageStaleOriginPurgeInitialInterval",

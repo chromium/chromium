@@ -43,6 +43,8 @@ using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 
+const int kBudgetIntervalHours = 24;
+const int kBitBudget = 8;
 const int kMaxEntriesPerOrigin = 5;
 const int kMaxEntriesPerOriginForIteratorTest = 1000;
 const int kMaxStringLength = 100;
@@ -91,7 +93,10 @@ class SharedStorageDatabaseTest : public testing::Test {
   virtual void InitSharedStorageFeature() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageInitTries", "1"}});
+        {{"MaxSharedStorageInitTries", "1"},
+         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
+         {"SharedStorageBudgetInterval",
+          TimeDeltaToString(base::Hours(kBudgetIntervalHours))}});
   }
 
  protected:
@@ -107,6 +112,112 @@ class SharedStorageDatabaseTest : public testing::Test {
 // Test loading version 1 database.
 TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
   db_ = LoadFromFile("shared_storage.v1.sql");
+  ASSERT_TRUE(db_);
+
+  // Override the clock and set to the last time in the file that is used to
+  // make a budget withdrawal.
+  db_->OverrideClockForTesting(&clock_);
+  clock_.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13269546593856733)));
+
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  EXPECT_EQ(db_->Get(google_com, u"key1").data, u"value1");
+  EXPECT_EQ(db_->Get(google_com, u"key2").data, u"value2");
+
+  // Because the SQL database is lazy-initialized, wait to verify tables and
+  // columns until after the first call to `Get()`.
+  ASSERT_TRUE(SqlDB());
+  VerifySharedStorageTablesAndColumns(*SqlDB());
+
+  url::Origin youtube_com = url::Origin::Create(GURL("http://youtube.com/"));
+  EXPECT_EQ(1L, db_->Length(youtube_com));
+
+  url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
+  EXPECT_EQ(db_->Get(chromium_org, u"a").data, u"");
+
+  TestSharedStorageEntriesListener listener(
+      task_environment_.GetMainThreadTaskRunner());
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(chromium_org, listener.BindNewPipeAndPassRemote()));
+  listener.Flush();
+  EXPECT_THAT(listener.TakeKeys(), ElementsAre(u"a", u"b", u"c"));
+  EXPECT_EQ("", listener.error_message());
+  EXPECT_EQ(1U, listener.BatchCount());
+  listener.VerifyNoError();
+
+  url::Origin google_org = url::Origin::Create(GURL("http://google.org/"));
+  EXPECT_EQ(
+      db_->Get(google_org, u"1").data,
+      u"fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "fffffffffffffffff");
+  EXPECT_EQ(db_->Get(google_org,
+                     u"ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "fffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                     "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                .data,
+            u"k");
+
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+  url::Origin grow_with_google_com =
+      url::Origin::Create(GURL("http://growwithgoogle.com"));
+  url::Origin gv_com = url::Origin::Create(GURL("http://gv.com"));
+  url::Origin waymo_com = url::Origin::Create(GURL("http://waymo.com"));
+  url::Origin withgoogle_com =
+      url::Origin::Create(GURL("http://withgoogle.com"));
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : db_->FetchOrigins())
+    origins.push_back(info->origin);
+  EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
+                                   google_org, grow_with_google_com, gv_com,
+                                   waymo_com, withgoogle_com, youtube_com));
+
+  EXPECT_DOUBLE_EQ(kBitBudget - 5.3, db_->GetRemainingBudget(abc_xyz).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(chromium_org).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(google_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 4.0, db_->GetRemainingBudget(google_org).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.2,
+                   db_->GetRemainingBudget(grow_with_google_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(gv_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 4.2, db_->GetRemainingBudget(waymo_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0,
+                   db_->GetRemainingBudget(withgoogle_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(youtube_com).bits);
+
+  EXPECT_TRUE(db_->Destroy());
+}
+
+// Test loading version 1 database with no budget tables.
+TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
+  db_ = LoadFromFile("shared_storage.v1.no_budget_table.sql");
   ASSERT_TRUE(db_);
 
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
@@ -174,17 +285,31 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
                 .data,
             u"k");
 
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+  url::Origin grow_with_google_com =
+      url::Origin::Create(GURL("http://growwithgoogle.com"));
+  url::Origin gv_com = url::Origin::Create(GURL("http://gv.com"));
+  url::Origin waymo_com = url::Origin::Create(GURL("http://waymo.com"));
+  url::Origin withgoogle_com =
+      url::Origin::Create(GURL("http://withgoogle.com"));
+
   std::vector<url::Origin> origins;
   for (const auto& info : db_->FetchOrigins())
     origins.push_back(info->origin);
-  EXPECT_THAT(
-      origins,
-      ElementsAre(
-          url::Origin::Create(GURL("http://abc.xyz")), chromium_org, google_com,
-          google_org, url::Origin::Create(GURL("http://growwithgoogle.com")),
-          url::Origin::Create(GURL("http://gv.com")),
-          url::Origin::Create(GURL("http://waymo.com")),
-          url::Origin::Create(GURL("http://withgoogle.com")), youtube_com));
+  EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
+                                   google_org, grow_with_google_com, gv_com,
+                                   waymo_com, withgoogle_com, youtube_com));
+
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(abc_xyz).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(chromium_org).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(google_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(google_org).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   db_->GetRemainingBudget(grow_with_google_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(gv_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(waymo_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(withgoogle_com).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(youtube_com).bits);
 
   EXPECT_TRUE(db_->Destroy());
 }
@@ -260,7 +385,10 @@ class SharedStorageDatabaseParamTest
         {{"MaxSharedStorageEntriesPerOrigin",
           base::NumberToString(kMaxEntriesPerOrigin)},
          {"MaxSharedStorageStringLength",
-          base::NumberToString(kMaxStringLength)}});
+          base::NumberToString(kMaxStringLength)},
+         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
+         {"SharedStorageBudgetInterval",
+          TimeDeltaToString(base::Hours(kBudgetIntervalHours))}});
   }
 };
 
@@ -562,6 +690,112 @@ TEST_P(SharedStorageDatabaseParamTest, FetchOrigins) {
   for (const auto& info : db_->FetchOrigins())
     origins.push_back(info->origin);
   EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
+}
+
+TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
+  clock_.SetNow(base::Time::Now());
+
+  // There should be no entries in the budget table.
+  EXPECT_EQ(0L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
+  // budgets should be returned as the max possible.
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+
+  // A withdrawal for `kOrigin1` doesn't affect `kOrigin2`.
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // An additional withdrawal for `kOrigin1` at or near the same time as the
+  // previous one is debited appropriately.
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin1, 2.5));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
+                   db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(2L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(2L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // A withdrawal for `kOrigin2` doesn't affect `kOrigin1`.
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin2, 3.4));
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
+                   db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_EQ(2L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_EQ(3L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // Advance halfway through the lookback window.
+  clock_.Advance(base::Hours(kBudgetIntervalHours) / 2);
+
+  // Remaining budgets continue to take into account the withdrawals above, as
+  // they are still within the lookback window.
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
+                   db_->GetRemainingBudget(kOrigin1).bits);
+
+  // An additional withdrawal for `kOrigin1` at a later time from previous ones
+  // is debited appropriately.
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin1, 1.0));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0,
+                   db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_EQ(4L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // Advance to the end of the initial lookback window, plus an additional
+  // microsecond to move past that window.
+  clock_.Advance(base::Hours(kBudgetIntervalHours) / 2 + base::Microseconds(1));
+
+  // Now only the single debit made within the current lookback window is
+  // counted, although the entries are still in the table because we haven't
+  // called `PurgeStaleWithdrawals()`.
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_EQ(4L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // After `PurgeStaleOrigins()` runs, there will only be the most recent
+  // debit left in the budget table.
+  //
+  // Note: The parameter for PurgeStaleOrigins() isn't relevant here.
+  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStaleOrigins(base::Days(30)));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // Advance to where the last debit should no longer be in the lookback window.
+  clock_.Advance(base::Hours(kBudgetIntervalHours) / 2);
+
+  // Remaining budgets should be back at the max, although there is still an
+  // entry in the table.
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // After `PurgeStaleOrigins()` runs, the budget table will be empty.
+  //
+  // Note: The parameter for PurgeStaleOrigins() isn't relevant here.
+  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStaleOrigins(base::Days(30)));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(0L, db_->GetTotalNumBudgetEntriesForTesting());
 }
 
 class SharedStorageDatabasePurgeMatchingOriginsParamTest

@@ -62,10 +62,25 @@ const int kCurrentVersionNumber = 1;
   if (!db.Execute(kPerOriginMappingSql))
     return false;
 
+  static constexpr char kBudgetMappingSql[] =
+      "CREATE TABLE IF NOT EXISTS budget_mapping("
+      "id INTEGER NOT NULL PRIMARY KEY,"
+      "context_origin TEXT NOT NULL,"
+      "time_stamp INTEGER NOT NULL,"
+      "bits_debit REAL NOT NULL)";
+  if (!db.Execute(kBudgetMappingSql))
+    return false;
+
   static constexpr char kLastUsedTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS per_origin_mapping_last_used_time_idx "
       "ON per_origin_mapping(last_used_time)";
   if (!db.Execute(kLastUsedTimeIndexSql))
+    return false;
+
+  static constexpr char kOriginTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS budget_mapping_origin_time_stamp_idx "
+      "ON budget_mapping(context_origin,time_stamp)";
+  if (!db.Execute(kOriginTimeIndexSql))
     return false;
 
   return true;
@@ -75,17 +90,23 @@ const int kCurrentVersionNumber = 1;
 
 SharedStorageDatabase::GetResult::GetResult() = default;
 
-SharedStorageDatabase::GetResult::GetResult(const GetResult&) = default;
-
 SharedStorageDatabase::GetResult::GetResult(GetResult&&) = default;
 
 SharedStorageDatabase::GetResult::~GetResult() = default;
 
 SharedStorageDatabase::GetResult& SharedStorageDatabase::GetResult::operator=(
-    const GetResult&) = default;
-
-SharedStorageDatabase::GetResult& SharedStorageDatabase::GetResult::operator=(
     GetResult&&) = default;
+
+SharedStorageDatabase::BudgetResult::BudgetResult(BudgetResult&&) = default;
+
+SharedStorageDatabase::BudgetResult::BudgetResult(double bits,
+                                                  OperationResult result)
+    : bits(bits), result(result) {}
+
+SharedStorageDatabase::BudgetResult::~BudgetResult() = default;
+
+SharedStorageDatabase::BudgetResult&
+SharedStorageDatabase::BudgetResult::operator=(BudgetResult&&) = default;
 
 SharedStorageDatabase::SharedStorageDatabase(
     base::FilePath db_path,
@@ -95,21 +116,23 @@ SharedStorageDatabase::SharedStorageDatabase(
            // accessing the database while we're running, and this will give
            // somewhat improved perf.
            .exclusive_locking = true,
+           // We DCHECK that the page size is valid in the constructor for
+           // `SharedStorageOptions`.
            .page_size = options->max_page_size,
            .cache_size = options->max_cache_size}),
       db_path_(std::move(db_path)),
       special_storage_policy_(std::move(special_storage_policy)),
+      // We DCHECK that these `options` fields are all positive in the
+      // constructor for `SharedStorageOptions`.
       max_entries_per_origin_(int64_t{options->max_entries_per_origin}),
+      max_string_length_(static_cast<size_t>(options->max_string_length)),
+      max_init_tries_(static_cast<size_t>(options->max_init_tries)),
+      max_iterator_batch_size_(
+          static_cast<size_t>(options->max_iterator_batch_size)),
+      bit_budget_(static_cast<double>(options->bit_budget)),
+      budget_interval_(options->budget_interval),
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(db_path_.empty() || db_path_.IsAbsolute());
-  DCHECK_GT(max_entries_per_origin_, 0);
-  DCHECK_GT(options->max_init_tries, 0);
-  DCHECK_GT(options->max_string_length, 0);
-  DCHECK_GT(options->max_iterator_batch_size, 0);
-  max_string_length_ = static_cast<size_t>(options->max_string_length);
-  max_init_tries_ = static_cast<size_t>(options->max_init_tries);
-  max_iterator_batch_size_ =
-      static_cast<size_t>(options->max_iterator_batch_size);
   db_file_status_ = db_path_.empty() ? DBFileStatus::kNoPreexistingFile
                                      : DBFileStatus::kNotChecked;
 }
@@ -605,25 +628,21 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::PurgeStaleOrigins(
       return OperationResult::kInitFailure;
   }
 
-  base::Time threshold = clock_->Now() - window_to_be_deemed_active;
-
   static constexpr char kSelectSql[] =
       "SELECT context_origin FROM per_origin_mapping "
       "WHERE last_used_time<? "
       "ORDER BY last_used_time";
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindTime(0, threshold);
+  sql::Statement select_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  select_statement.BindTime(0, clock_->Now() - window_to_be_deemed_active);
 
   std::vector<std::string> stale_origins;
 
-  while (statement.Step())
-    stale_origins.push_back(statement.ColumnString(0));
+  while (select_statement.Step())
+    stale_origins.push_back(select_statement.ColumnString(0));
 
-  if (!statement.Succeeded())
+  if (!select_statement.Succeeded())
     return OperationResult::kSqlError;
-
-  if (stale_origins.empty())
-    return OperationResult::kSuccess;
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin())
@@ -633,6 +652,16 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::PurgeStaleOrigins(
     if (!Purge(origin))
       return OperationResult::kSqlError;
   }
+
+  static constexpr char kDeleteSql[] =
+      "DELETE FROM budget_mapping WHERE time_stamp<?";
+
+  sql::Statement delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+  delete_statement.BindTime(0, clock_->Now() - budget_interval_);
+
+  if (!delete_statement.Run())
+    return OperationResult::kSqlError;
 
   if (!transaction.Commit())
     return OperationResult::kSqlError;
@@ -664,6 +693,60 @@ std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins() {
     return {};
 
   return fetched_origin_infos;
+}
+
+SharedStorageDatabase::OperationResult
+SharedStorageDatabase::MakeBudgetWithdrawal(url::Origin context_origin,
+                                            double bits_debit) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(bits_debit, 0.0);
+
+  if (LazyInit(DBCreationPolicy::kCreateIfAbsent) != InitStatus::kSuccess)
+    return OperationResult::kInitFailure;
+
+  static constexpr char kInsertSql[] =
+      "INSERT INTO budget_mapping(context_origin,time_stamp,bits_debit)"
+      "VALUES(?,?,?)";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
+  statement.BindString(0, SerializeOrigin(context_origin));
+  statement.BindTime(1, clock_->Now());
+  statement.BindDouble(2, bits_debit);
+
+  if (!statement.Run())
+    return OperationResult::kSqlError;
+  return OperationResult::kSuccess;
+}
+
+SharedStorageDatabase::BudgetResult SharedStorageDatabase::GetRemainingBudget(
+    url::Origin context_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
+    // We do not return an error if the database doesn't exist, but only if it
+    // pre-exists on disk and yet fails to initialize.
+    if (db_status_ == InitStatus::kUnattempted)
+      return BudgetResult(bit_budget_, OperationResult::kSuccess);
+    else
+      return BudgetResult(0.0, OperationResult::kInitFailure);
+  }
+
+  static constexpr char kSelectSql[] =
+      "SELECT SUM(bits_debit) FROM budget_mapping "
+      "WHERE context_origin=? AND time_stamp>=?";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, SerializeOrigin(context_origin));
+  statement.BindTime(1, clock_->Now() - budget_interval_);
+
+  double total_debits = 0.0;
+  if (statement.Step())
+    total_debits = statement.ColumnDouble(0);
+
+  if (!statement.Succeeded())
+    return BudgetResult(0.0, OperationResult::kSqlError);
+
+  return BudgetResult(bit_budget_ - total_debits, OperationResult::kSuccess);
 }
 
 bool SharedStorageDatabase::IsOpenForTesting() const {
@@ -698,6 +781,54 @@ void SharedStorageDatabase::OverrideSpecialStoragePolicyForTesting(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   special_storage_policy_ = std::move(special_storage_policy);
+}
+
+int64_t SharedStorageDatabase::GetNumBudgetEntriesForTesting(
+    url::Origin context_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
+    // We do not return an error if the database doesn't exist, but only if it
+    // pre-exists on disk and yet fails to initialize.
+    if (db_status_ == InitStatus::kUnattempted)
+      return 0;
+    else
+      return -1;
+  }
+
+  static constexpr char kSelectSql[] =
+      "SELECT COUNT(*) FROM budget_mapping "
+      "WHERE context_origin=?";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, SerializeOrigin(context_origin));
+
+  if (statement.Step())
+    return statement.ColumnInt64(0);
+
+  return -1;
+}
+
+int64_t SharedStorageDatabase::GetTotalNumBudgetEntriesForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
+    // We do not return an error if the database doesn't exist, but only if it
+    // pre-exists on disk and yet fails to initialize.
+    if (db_status_ == InitStatus::kUnattempted)
+      return 0;
+    else
+      return -1;
+  }
+
+  static constexpr char kSelectSql[] = "SELECT COUNT(*) FROM budget_mapping";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+
+  if (statement.Step())
+    return statement.ColumnInt64(0);
+
+  return -1;
 }
 
 bool SharedStorageDatabase::PopulateDatabaseForTesting(url::Origin origin1,

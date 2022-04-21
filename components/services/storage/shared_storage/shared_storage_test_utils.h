@@ -35,6 +35,7 @@ using InitStatus = SharedStorageDatabase::InitStatus;
 using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
+using BudgetResult = SharedStorageDatabase::BudgetResult;
 using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
 // For categorizing test databases.
@@ -64,9 +65,13 @@ class TestDatabaseOperationReceiver {
       DB_PURGE_MATCHING = 11,
       DB_PURGE_STALE = 12,
       DB_FETCH_ORIGINS = 13,
-      DB_IS_OPEN = 14,
-      DB_STATUS = 15,
-      DB_OVERRIDE_TIME = 16,
+      DB_MAKE_BUDGET_WITHDRAWAL = 14,
+      DB_GET_REMAINING_BUDGET = 15,
+      DB_IS_OPEN = 16,
+      DB_STATUS = 17,
+      DB_OVERRIDE_TIME = 18,
+      DB_GET_NUM_BUDGET = 19,
+      DB_GET_TOTAL_NUM_BUDGET = 20,
     } type;
     url::Origin origin;
     std::vector<std::u16string> params;
@@ -109,6 +114,13 @@ class TestDatabaseOperationReceiver {
   base::OnceCallback<void(GetResult)> MakeGetResultCallback(
       const DBOperation& current_operation,
       GetResult* out_result);
+
+  void BudgetResultCallbackBase(const DBOperation& current_operation,
+                                BudgetResult* out_result,
+                                BudgetResult result);
+  base::OnceCallback<void(BudgetResult)> MakeBudgetResultCallback(
+      const DBOperation& current_operation,
+      BudgetResult* out_result);
 
   void OperationResultCallbackBase(const DBOperation& current_operation,
                                    OperationResult* out_result,
@@ -304,6 +316,10 @@ void VerifySharedStorageTablesAndColumns(sql::Database& db);
 
 [[nodiscard]] bool CreateDatabaseFromSQL(const base::FilePath& db_path,
                                          const char* ascii_path);
+
+[[nodiscard]] std::string TimeDeltaToString(base::TimeDelta delta);
+
+[[nodiscard]] BudgetResult MakeBudgetResultForSqlError();
 
 }  // namespace storage
 

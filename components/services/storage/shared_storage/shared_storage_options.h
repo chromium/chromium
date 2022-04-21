@@ -16,8 +16,8 @@ struct SharedStorageDatabaseOptions;
 // Bundles Finch-configurable constants for the `SharedStorageManager`,
 // `AsyncSharedStorageDatabase`, and `SharedStorageDatabase` classes.
 struct SharedStorageOptions {
-  // The static `Create()` method accesses field trial params to populate one or
-  // more attributes, and so must be called on the main thread.
+  // Accesses field trial params to populate one or more attributes, and so must
+  // be called on the main thread.
   static std::unique_ptr<SharedStorageOptions> Create();
 
   SharedStorageOptions(int max_page_size,
@@ -26,6 +26,8 @@ struct SharedStorageOptions {
                        int max_string_length,
                        int max_init_tries,
                        int max_iterator_batch_size,
+                       int bit_budget,
+                       base::TimeDelta budget_interval,
                        base::TimeDelta stale_origin_purge_initial_interval,
                        base::TimeDelta stale_origin_purge_recurring_interval,
                        base::TimeDelta origin_staleness_threshold);
@@ -34,20 +36,20 @@ struct SharedStorageOptions {
   // be forwarded to `AsyncSharedStorageDatabase` and `SharedStorageDatabase`.
   std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions();
 
-  // The max size of a database page, in bytes. Must be a power of 2 between
+  // Maximum size of a database page, in bytes. Must be a power of 2 between
   // 512 and 65536 inclusive.
   const int max_page_size;
 
-  // The max size of the database cache, in pages.
+  // Maximum size of the database cache, in pages.
   const int max_cache_size;
 
-  // The maximum number of entries allowed per origin.
+  // Maximum number of entries allowed per origin.
   const int max_entries_per_origin;
 
-  // The maximum allowed string length for each script key or script value.
+  // Maximum allowed string length for each script key or script value.
   const int max_string_length;
 
-  // The maximum number of times that `SharedStorageDatabase` will try to
+  // Maximum number of times that `SharedStorageDatabase` will try to
   // initialize the SQL database.
   const int max_init_tries;
 
@@ -55,14 +57,21 @@ struct SharedStorageOptions {
   // async `Keys()` and `Entries()` iterators, respectively.
   const int max_iterator_batch_size;
 
-  // The initial interval at which stale origins are purged.
+  // Maximum number of bits of entropy allowed per origin to output via the
+  // Shared Storage API.
+  const int bit_budget;
+
+  // Interval over which `bit_budget` is defined.
+  const base::TimeDelta budget_interval;
+
+  // Initial interval at which stale origins are purged.
   const base::TimeDelta stale_origin_purge_initial_interval;
 
-  // The recurring interval at which stale origins are purged. May differ from
+  // Recurring interval at which stale origins are purged. May differ from
   // the initial interval.
   const base::TimeDelta stale_origin_purge_recurring_interval;
 
-  // The amount of time that an origin needs to be inactive in order for it to
+  // Amount of time that an origin needs to be inactive in order for it to
   // be deemed stale.
   const base::TimeDelta origin_staleness_threshold;
 };
@@ -80,28 +89,37 @@ struct SharedStorageDatabaseOptions {
                                int max_entries_per_origin,
                                int max_string_length,
                                int max_init_tries,
-                               int max_iterator_batch_size);
+                               int max_iterator_batch_size,
+                               int bit_budget,
+                               base::TimeDelta budget_interval);
 
-  // The max size of a database page, in bytes. Must be a power of 2 between
+  // Maximum size of a database page, in bytes. Must be a power of 2 between
   // 512 and 65536 inclusive.
   const int max_page_size;
 
-  // The max size of the database cache, in pages.
+  // Maximum size of the database cache, in pages.
   const int max_cache_size;
 
-  // The maximum number of entries allowed per origin.
+  // Maximum number of entries allowed per origin.
   const int max_entries_per_origin;
 
-  // The maximum allowed string length for each script key or script value.
+  // Maximum allowed string length for each script key or script value.
   const int max_string_length;
 
-  // The maximum number of times that `SharedStorageDatabase` will try to
+  // Maximum number of times that `SharedStorageDatabase` will try to
   // initialize the SQL database.
   const int max_init_tries;
 
   // Maximum number of keys or key-value pairs returned per batch by the
   // async `Keys()` and `Entries()` iterators, respectively.
   const int max_iterator_batch_size;
+
+  // Maximum number of bits of entropy allowed per origin to output via the
+  // Shared Storage API.
+  const int bit_budget;
+
+  // Interval over which `bit_budget` is defined.
+  const base::TimeDelta budget_interval;
 };
 
 }  // namespace storage

@@ -39,6 +39,7 @@ class AsyncSharedStorageDatabase {
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
   using GetResult = SharedStorageDatabase::GetResult;
+  using BudgetResult = SharedStorageDatabase::BudgetResult;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
@@ -58,11 +59,12 @@ class AsyncSharedStorageDatabase {
 
   // `TrimMemory()`, `Get()`, `Set()`, `Append()`, `Delete()`, `Clear()`,
   // `Length()`, `Keys()`, `Entries()`, `PurgeMatchingOrigins()`,
-  // `PurgeStaleOrigins()`, and `FetchOrigins()` are all async versions of the
-  // corresponding methods in `storage::SharedStorageDatabase`, with the
-  // modification that `Set()` and `Append()` take a boolean callback to
-  // indicate that a value was set or appended, rather than a long integer
-  // callback with the row number for the next available row.
+  // `PurgeStaleOrigins()`, `FetchOrigins()`, `MakeBudgetWithdrawal()`, and
+  // `GetRemainingBudget()` are all async versions of the corresponding methods
+  // in `storage::SharedStorageDatabase`, with the modification that `Set()` and
+  // `Append()` take a boolean callback to indicate that a value was set or
+  // appended, rather than a long integer callback with the row number for the
+  // next available row.
   //
   // It is OK to call these async methods even if the database has failed to
   // initialize, as there is an alternate code path to handle this case that
@@ -182,7 +184,13 @@ class AsyncSharedStorageDatabase {
       bool perform_storage_cleanup = false) = 0;
 
   // Clear all entries for all origins whose `last_read_time` falls before
-  // `base::Time::Now() - window_to_be_deemed_active`.
+  // `SharedStorageDatabase::clock_->Now() - window_to_be_deemed_active`. Also
+  // purges, for all origins, all privacy budget withdrawals that have
+  // `time_stamps` older than `SharedStorageDatabase::clock_->Now() -
+  // SharedStorageDatabase::budget_interval_`.
+  //
+  // TODO(crbug.com/1317487): Remove the `window_to_be_deemed_active` parameter
+  // by sending via `SharedStorageDatabaseOptions` in the constructor.
   virtual void PurgeStaleOrigins(
       base::TimeDelta window_to_be_deemed_active,
       base::OnceCallback<void(OperationResult)> callback) = 0;
@@ -193,6 +201,22 @@ class AsyncSharedStorageDatabase {
   virtual void FetchOrigins(
       base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
           callback) = 0;
+
+  // Makes a withdrawal of `bits_debit` stamped with the current time from the
+  // privacy budget of `context_origin`.
+  virtual void MakeBudgetWithdrawal(
+      url::Origin context_origin,
+      double bits_debit,
+      base::OnceCallback<void(OperationResult)> callback) = 0;
+
+  // Determines the number of bits remaining in the privacy budget of
+  // `context_origin`, where only withdrawals within the most recent
+  // `budget_interval_` are counted as still valid, and calls `callback` with
+  // this information bundled with an `OperationResult` value to indicate
+  // whether the database retrieval was successful.
+  virtual void GetRemainingBudget(
+      url::Origin context_origin,
+      base::OnceCallback<void(BudgetResult)> callback) = 0;
 };
 
 }  // namespace storage

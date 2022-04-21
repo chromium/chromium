@@ -40,6 +40,7 @@ class SharedStorageManager {
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
   using GetResult = SharedStorageDatabase::GetResult;
+  using BudgetResult = SharedStorageDatabase::BudgetResult;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
@@ -213,6 +214,20 @@ class SharedStorageManager {
       base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
           callback);
 
+  // Makes a withdrawal of `bits_debit` stamped with the current time from the
+  // privacy budget of `context_origin`.
+  void MakeBudgetWithdrawal(url::Origin context_origin,
+                            double bits_debit,
+                            base::OnceCallback<void(OperationResult)> callback);
+
+  // Determines the number of bits remaining in the privacy budget of
+  // `context_origin`, where only withdrawals within the most recent
+  // `budget_interval_` are counted as still valid, and calls `callback` with
+  // this information bundled with an `OperationResult` value to indicate
+  // whether the database retrieval was successful.
+  void GetRemainingBudget(url::Origin context_origin,
+                          base::OnceCallback<void(BudgetResult)> callback);
+
   void SetOnDBDestroyedCallbackForTesting(
       base::OnceCallback<void(bool)> callback);
 
@@ -226,6 +241,18 @@ class SharedStorageManager {
   void OverrideDatabaseForTesting(
       std::unique_ptr<AsyncSharedStorageDatabase> override_async_database);
 
+  // Calls `callback` with the number of entries (including stale entries) in
+  // the table `budget_mapping` for `context_origin`, or with -1 in case of
+  // database initialization failure or SQL error.
+  void GetNumBudgetEntriesForTesting(url::Origin context_origin,
+                                     base::OnceCallback<void(int)> callback);
+
+  // Calls `callback` with the total number of entries in the table for all
+  // origins, or with -1 in case of database initialization failure or SQL
+  // error.
+  void GetTotalNumBudgetEntriesForTesting(
+      base::OnceCallback<void(int)> callback);
+
  private:
   void DestroyAndRecreateDatabase();
   void OnDatabaseDestroyed(bool recreate_in_memory, bool success);
@@ -235,8 +262,14 @@ class SharedStorageManager {
       base::OnceCallback<void(OperationResult)> callback);
 
   // Purges the data for any origins that haven't been written to or read from
-  // for more than the `origin_staleness_threshold_`.
+  // for more than the `origin_staleness_threshold_`. Also purges, for all
+  // origins, all privacy budget withdrawals that have `time_stamps` older than
+  // the current time minus `SharedStorageDatabase::budget_interval_`.
   void PurgeStaleOrigins();
+
+  // Processes the result of purging stale origins, then purges all privacy
+  // budget withdrawals that have `time_stamps` older than the current time
+  // minus `SharedStorageDatabase::budget_interval_`
 
   // Starts the `timer_` for the next call to `PurgeStaleOrigins()`.
   void OnStaleOriginsPurged(OperationResult result);
