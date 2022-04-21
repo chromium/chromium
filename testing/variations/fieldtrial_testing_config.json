@@ -3167,9 +3167,9 @@
             ],
             "experiments": [
                 {
-                    "name": "DynamicAudioTimeout_50_20211125",
+                    "name": "DynamicAudioTimeout_95_20211125",
                     "params": {
-                        "buffer_duration_percent": "0.5"
+                        "buffer_duration_percent": "0.95"
                     },
                     "enable_features": [
                         "DynamicAudioTimeout"
