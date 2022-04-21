@@ -79,25 +79,30 @@ bool SetTCPKeepAlive(int fd, bool enable, int delay) {
   if (!enable)
     return true;
 
+  // A delay of 0 doesn't work, and is the default, so ignore that and rely on
+  // whatever the OS defaults are once we turned it on above.
+  if (delay) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Setting the keepalive interval varies by platform.
+    // Setting the keepalive interval varies by platform.
 
-  // Set seconds until first TCP keep alive.
-  if (setsockopt(fd, SOL_TCP, TCP_KEEPIDLE, &delay, sizeof(delay))) {
-    PLOG(ERROR) << "Failed to set TCP_KEEPIDLE on fd: " << fd;
-    return false;
-  }
-  // Set seconds between TCP keep alives.
-  if (setsockopt(fd, SOL_TCP, TCP_KEEPINTVL, &delay, sizeof(delay))) {
-    PLOG(ERROR) << "Failed to set TCP_KEEPINTVL on fd: " << fd;
-    return false;
-  }
+    // Set seconds until first TCP keep alive.
+    if (setsockopt(fd, SOL_TCP, TCP_KEEPIDLE, &delay, sizeof(delay))) {
+      PLOG(ERROR) << "Failed to set TCP_KEEPIDLE on fd: " << fd;
+      return false;
+    }
+    // Set seconds between TCP keep alives.
+    if (setsockopt(fd, SOL_TCP, TCP_KEEPINTVL, &delay, sizeof(delay))) {
+      PLOG(ERROR) << "Failed to set TCP_KEEPINTVL on fd: " << fd;
+      return false;
+    }
 #elif BUILDFLAG(IS_APPLE)
-  if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &delay, sizeof(delay))) {
-    PLOG(ERROR) << "Failed to set TCP_KEEPALIVE on fd: " << fd;
-    return false;
-  }
+    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &delay, sizeof(delay))) {
+      PLOG(ERROR) << "Failed to set TCP_KEEPALIVE on fd: " << fd;
+      return false;
+    }
 #endif
+  }
+
   return true;
 }
 
