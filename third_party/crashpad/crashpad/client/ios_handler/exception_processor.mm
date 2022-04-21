@@ -294,7 +294,7 @@ static __attribute__((noinline)) id HANDLE_UNCAUGHT_NSEXCEPTION(
   SetNSExceptionAnnotations(exception, name, reason);
   LOG(WARNING) << "Handling Objective-C exception name: " << name
                << " reason: " << reason << " with sinkhole: " << sinkhole;
-  NativeCPUContext cpu_context;
+  NativeCPUContext cpu_context{};
   CaptureContext(&cpu_context);
 
   ExceptionPreprocessorState* preprocessor_state =

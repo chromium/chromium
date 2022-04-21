@@ -303,6 +303,7 @@ void InProcessHandler::SaveSnapshot(
   if (database_status != CrashReportDatabase::kNoError) {
     Metrics::ExceptionCaptureResult(
         Metrics::CaptureResult::kPrepareNewCrashReportFailed);
+    return;
   }
   process_snapshot.SetReportID(new_report->ReportID());
 
@@ -317,6 +318,7 @@ void InProcessHandler::SaveSnapshot(
   if (!minidump.WriteEverything(new_report->Writer())) {
     Metrics::ExceptionCaptureResult(
         Metrics::CaptureResult::kMinidumpWriteFailed);
+    return;
   }
   UUID uuid;
   database_status =
@@ -324,6 +326,7 @@ void InProcessHandler::SaveSnapshot(
   if (database_status != CrashReportDatabase::kNoError) {
     Metrics::ExceptionCaptureResult(
         Metrics::CaptureResult::kFinishedWritingCrashReportFailed);
+    return;
   }
 
   if (upload_thread_) {

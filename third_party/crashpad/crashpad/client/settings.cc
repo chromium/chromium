@@ -93,6 +93,11 @@ Settings::ScopedLockedFileHandle& Settings::ScopedLockedFileHandle::operator=(
   return *this;
 }
 
+Settings::ScopedLockedFileHandle::~ScopedLockedFileHandle() {
+  // Call reset() to ensure the lock is released before the ios_background_task.
+  reset();
+}
+
 #endif  // BUILDFLAG(IS_IOS)
 
 namespace internal {
