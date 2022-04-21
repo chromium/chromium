@@ -37,7 +37,6 @@ constexpr int kIconSizeDip = 16;
 constexpr int kSpaceBetweenTopRowAndHintViewsDip = 4;
 constexpr int kSpaceBetweenHintLabelsDip = 4;
 constexpr int kSpaceBetweenIconAndTextDip = 4;
-constexpr int kMaxLabelWidthDip = 400;
 constexpr int kMaxNumHints = 5;
 constexpr SkColor kDefaultTextAndIconColorPrimary = SK_ColorBLACK;
 constexpr SkColor kDefaultTextAndIconColorSecondary = SK_ColorDKGRAY;
@@ -82,20 +81,14 @@ void SetImageHelper(views::ImageView* image_view, const gfx::VectorIcon& icon) {
 
 std::unique_ptr<views::Label> CreateLabelView(views::Label** destination_view,
                                               const std::u16string& text,
-                                              SkColor color,
-                                              bool multi_line) {
-  auto builder =
-      views::Builder<views::Label>()
-          .CopyAddressTo(destination_view)
-          .SetText(text)
-          .SetEnabledColor(color)
-          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-          .SetMultiLine(multi_line);
-
-  if (multi_line)
-    builder.SetMaximumWidth(kMaxLabelWidthDip).SetAllowCharacterBreak(true);
-
-  return std::move(builder).Build();
+                                              SkColor color) {
+  return views::Builder<views::Label>()
+      .CopyAddressTo(destination_view)
+      .SetText(text)
+      .SetEnabledColor(color)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetMultiLine(false)
+      .Build();
 }
 
 int ToMessageId(DictationBubbleHintType hint_type) {
@@ -136,8 +129,8 @@ class ASH_EXPORT TopRowView : public views::View {
                                  kDictationBubbleMacroSucceededIcon));
     AddChildView(
         CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
-    AddChildView(CreateLabelView(&label_, std::u16string(),
-                                 text_color_primary(), /*multi_line=*/true));
+    AddChildView(
+        CreateLabelView(&label_, std::u16string(), text_color_primary()));
   }
 
   TopRowView(const TopRowView&) = delete;
@@ -162,18 +155,9 @@ class ASH_EXPORT TopRowView : public views::View {
     macro_failed_image_->SetVisible(icon ==
                                     DictationBubbleIconType::kMacroFail);
 
-    // Update label. The intended behavior for this mutli-line label is to
-    // accommodate text until its maximum width has been reached, then start a
-    // new line. To force this behavior, we need to destroy the existing label
-    // and recreate it. If we don't, then the width of the label can potentially
-    // get set to a value less than `kMaxLabelWidthDip`, causing the label to
-    // wrap before `kMaxLabelWidthDip` has been reached.
-    RemoveChildView(label_);
-    const bool has_text = text.has_value();
-    std::u16string label_text = has_text ? text.value() : std::u16string();
-    AddChildView(CreateLabelView(&label_, label_text, text_color_primary(),
-                                 /*multi_line=*/true));
-    label_->SetVisible(has_text);
+    // Update label.
+    label_->SetVisible(text.has_value());
+    label_->SetText(text.has_value() ? text.value() : std::u16string());
     SizeToPreferredSize();
   }
 
@@ -251,8 +235,7 @@ class ASH_EXPORT HintView : public views::View {
       // The first label should use the secondary text color. All other labels
       // should use the primary text color.
       SkColor color = i == 0 ? secondary : primary;
-      AddChildView(CreateLabelView(&labels_[i], std::u16string(), color,
-                                   /*multi_line=*/false));
+      AddChildView(CreateLabelView(&labels_[i], std::u16string(), color));
     }
   }
 
