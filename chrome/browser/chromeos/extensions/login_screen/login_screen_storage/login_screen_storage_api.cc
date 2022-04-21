@@ -72,10 +72,10 @@ void LoginScreenStorageExtensionFunction::OnDataRetrieved(
     crosapi::mojom::LoginScreenStorageRetrieveResultPtr result) {
   using Result = crosapi::mojom::LoginScreenStorageRetrieveResult;
   switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
+    case Result::Tag::kErrorMessage:
       Respond(Error(result->get_error_message()));
       return;
-    case Result::Tag::DATA:
+    case Result::Tag::kData:
       Respond(OneArgument(base::Value(result->get_data())));
       return;
   }
