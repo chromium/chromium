@@ -345,8 +345,6 @@ interface CSSImageValue : CSSStyleValue {
 
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]
 interface CSSColorValue : CSSStyleValue {
-    readonly attribute CSSKeywordValue colorSpace;
-    CSSColorValue to(CSSKeywordish colorSpace);
     [Exposed=Window] static (CSSColorValue or CSSStyleValue) parse(USVString cssText);
 };
 

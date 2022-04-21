@@ -14,17 +14,17 @@ partial dictionary RequestInit {
 };
 
 partial interface HTMLImageElement {
-    [CEReactions] attribute DOMString fetchpriority;
+    [CEReactions] attribute DOMString fetchPriority;
 };
 
 partial interface HTMLLinkElement {
-    [CEReactions] attribute DOMString fetchpriority;
+    [CEReactions] attribute DOMString fetchPriority;
 };
 
 partial interface HTMLScriptElement {
-    [CEReactions] attribute DOMString fetchpriority;
+    [CEReactions] attribute DOMString fetchPriority;
 };
 
 partial interface HTMLIFrameElement {
-    [CEReactions] attribute DOMString fetchpriority;
+    [CEReactions] attribute DOMString fetchPriority;
 };

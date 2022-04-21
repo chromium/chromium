@@ -68,12 +68,12 @@ interface mixin ReadableStreamGenericReader {
 interface ReadableStreamDefaultReader {
   constructor(ReadableStream stream);
 
-  Promise<ReadableStreamDefaultReadResult> read();
+  Promise<ReadableStreamReadResult> read();
   undefined releaseLock();
 };
 ReadableStreamDefaultReader includes ReadableStreamGenericReader;
 
-dictionary ReadableStreamDefaultReadResult {
+dictionary ReadableStreamReadResult {
   any value;
   boolean done;
 };
@@ -82,15 +82,10 @@ dictionary ReadableStreamDefaultReadResult {
 interface ReadableStreamBYOBReader {
   constructor(ReadableStream stream);
 
-  Promise<ReadableStreamBYOBReadResult> read(ArrayBufferView view);
+  Promise<ReadableStreamReadResult> read(ArrayBufferView view);
   undefined releaseLock();
 };
 ReadableStreamBYOBReader includes ReadableStreamGenericReader;
-
-dictionary ReadableStreamBYOBReadResult {
-  (ArrayBufferView or undefined) value;
-  boolean done;
-};
 
 [Exposed=*]
 interface ReadableStreamDefaultController {

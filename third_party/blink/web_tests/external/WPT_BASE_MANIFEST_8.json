@@ -148315,6 +148315,32 @@
        {}
       ]
      ],
+     "highlight-cascade-005.html": [
+      "008f56aded9f2b7be43e346189f5a7b552065064",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-cascade-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "highlight-cascade-006.xhtml": [
+      "fb6d07f8f0b6b420a3fcf71480055756b09a1901",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-cascade-006-ref.xhtml",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "highlight-painting-001.html": [
       "ef253e6117c94ef63f9be97eaac0d94667c9fce3",
       [
@@ -278943,6 +278969,14 @@
       "f9bf83f9c1d63b50b61b96a4edadc1241d3c640b",
       []
      ],
+     "highlight-cascade-005-ref.html": [
+      "20d2b0bdb3a1dc84e9d285e0b1d350dde45320f3",
+      []
+     ],
+     "highlight-cascade-006-ref.xhtml": [
+      "df0a56123e033dd4536bc0425353c82bd2d0156b",
+      []
+     ],
      "highlight-painting-001-ref.html": [
       "c5d8814a8252b0a8e4be1b43f635cd7b11f548fc",
       []
@@ -286172,6 +286206,16 @@
       ]
      }
     },
+    "css-toggle": {
+     "parsing": {
+      "support": {
+       "toggle-root-values.js": [
+        "85239db0ffb3dc386ef83e42ac59510c9686ce30",
+        []
+       ]
+      }
+     }
+    },
     "css-transforms": {
      "3d-scene-with-iframe-001-ref.html": [
       "d984f8a6e9d6f9c221affc07628f8b353dccb010",
@@ -287872,7 +287916,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "e07eda7a795049d3c02129977896c6609d4f08dc",
+      "99290ab2a3862aa7aec0eeaa5f7b8fb1fdfffe36",
       []
      ],
      "resources": {
@@ -292736,7 +292780,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "13902b46d8e33774f6ba5826cb9098101f0bd91f",
+      "93a036bb4e5416d8370b546888dd24991865b6ca",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -292748,7 +292792,7 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "d7037030fcd48be32c694e2884c170bb42d20d55",
+      "4be4d34b52312a509a3cb2719045de8f17a9d3e0",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -319879,7 +319923,7 @@
      []
     ],
     "css-typed-om.idl": [
-     "238add0ca8f2d8db96f510c5bbcc8030ff241e24",
+     "595a424e01461e6cad1f364eb5c233dbbcf1e02a",
      []
     ],
     "cssom-view.idl": [
@@ -320243,7 +320287,7 @@
      []
     ],
     "priority-hints.idl": [
-     "5eca6dabdc1a2f6fc57bf902ad92358bc7ffe629",
+     "15c90bbe1ab7e22f9bbcb8bfac99d3b6341a07f8",
      []
     ],
     "private-click-measurement.idl": [
@@ -320359,7 +320403,7 @@
      []
     ],
     "streams.idl": [
-     "278f1c53c2f1cddd32b3381c8e37b5f37c890c07",
+     "fd5420f16a09673c0cb52294682f3728d996d042",
      []
     ],
     "sub-apps.tentative.idl": [
@@ -327960,7 +328004,7 @@
       []
      ],
      "fake-serial.js": [
-      "1a0f4b521787332a65179af2db675b913f6278e7",
+      "2ce781efe23e9dbfd0406e8f3afcd9c0fcb1fa12",
       []
      ],
      "generic_sensor_mocks.js": [
@@ -328752,14 +328796,6 @@
     ],
     "README.md": [
      "7040cf0a9d000d25367033a9ec5a5ebbb4690398",
-     []
-    ],
-    "idlharness.https.any-expected.txt": [
-     "92f6b5a5617b14b9ffb4400cef0ac895c6c07d95",
-     []
-    ],
-    "idlharness.https.any.worker-expected.txt": [
-     "3a4db392a975b9eb6f2c52b54f895be60d71eb40",
      []
     ],
     "resources": {
@@ -394624,6 +394660,101 @@
       ]
      ]
     },
+    "css-toggle": {
+     "parsing": {
+      "toggle-computed.tentative.html": [
+       "36445d312a5758358a117408c9ebc24006cd092c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-group-computed.tentative.html": [
+       "39548ecaa8a187171e606b67217643563ca83947",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-group-invalid.tentative.html": [
+       "faff3483f1e266fd90d9099860451174b323600d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-group-valid.tentative.html": [
+       "53587d3b09f882eafbdee6e6d5ca7d080381cde9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-invalid.tentative.html": [
+       "8f460ff1446c70c06e568f203650a324e7b1d6c9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-root-computed.tentative.html": [
+       "fa7fd7ad51091ed96a5ffb0df0b8bcae377ca687",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-root-invalid.tentative.html": [
+       "76e208a3e599f30a307092499e5506846d68d47f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-root-valid.tentative.html": [
+       "8f943f1cb9eb755e22c5e2fb1f19b00a0e522313",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-trigger-computed.tentative.html": [
+       "571cac91f0224e15c141f32c9c513e41ff6ade68",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-trigger-invalid.tentative.html": [
+       "333cfbaa2e6bca12dc6381bd0b355d87a7a437a0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-trigger-valid.tentative.html": [
+       "d64b3cd43b9b5e4a953585717a7f607dd8938c6f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-valid.tentative.html": [
+       "a02099c996e9719e7ac4b500a2db275695d2ebb8",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "toggle-shorthand-serialization.tentative.html": [
+      "e98a481964176b7cab02a17c4f6aa93d8792bf2b",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-transforms": {
      "2d-rotate-js.html": [
       "11597fb31995880ef333e5fcafe488c349cbd01d",
@@ -395976,7 +396107,7 @@
      },
      "stylevalue-subclasses": {
       "cssColorValue.html": [
-       "f86948d7aefb5ae1e831b1072f7b999d9f32b9f2",
+       "59a03c138d52e5f42c5deee49525ea6a00fada37",
        [
         null,
         {}
@@ -520274,6 +520405,47 @@
      ],
      [
       "serial/serialPort_events.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "/serial/resources/common.js"
+        ],
+        [
+         "script",
+         "resources/automation.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "serialPort_forget.https.any.js": [
+     "8c0d96f69528600d0830dade68f70ba2f3197e09",
+     [
+      "serial/serialPort_forget.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "/serial/resources/common.js"
+        ],
+        [
+         "script",
+         "resources/automation.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "serial/serialPort_forget.https.any.worker.html",
       {
        "script_metadata": [
         [
