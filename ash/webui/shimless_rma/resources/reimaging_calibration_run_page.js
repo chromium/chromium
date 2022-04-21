@@ -50,14 +50,6 @@ export class ReimagingCalibrationRunPage extends
         type: Boolean,
         value: false,
       },
-
-      /**
-       * @protected
-       */
-      calibrationStatusMessage_: {
-        type: String,
-        value: '',
-      }
     };
   }
 
@@ -71,8 +63,6 @@ export class ReimagingCalibrationRunPage extends
 
     this.shimlessRmaService_.observeCalibrationProgress(
         this.calibrationObserverReceiver_.$.bindNewPipeAndPassRemote());
-
-    this.calibrationStatusMessage_ = this.i18n('runCalibrationStartingText');
   }
 
   /** @return {!Promise<!StateResult>} */
@@ -87,10 +77,7 @@ export class ReimagingCalibrationRunPage extends
    * Implements CalibrationObserver.onCalibrationUpdated()
    * @param {!CalibrationComponentStatus} componentStatus
    */
-  onCalibrationUpdated(componentStatus) {
-    this.calibrationStatusMessage_ =
-        this.getCalibrationStatusString_(componentStatus);
-  }
+  onCalibrationUpdated(componentStatus) {}
 
   /**
    * Implements CalibrationObserver.onCalibrationUpdated()
@@ -99,8 +86,6 @@ export class ReimagingCalibrationRunPage extends
   onCalibrationStepComplete(status) {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
-        this.calibrationStatusMessage_ =
-            this.i18n('runCalibrationCompleteText');
         this.calibrationComplete_ = true;
         enableNextButton(this);
         break;
@@ -111,16 +96,6 @@ export class ReimagingCalibrationRunPage extends
             this, () => this.shimlessRmaService_.continueCalibration());
         break;
     }
-  }
-
-  /**
-   * @param {!CalibrationComponentStatus} status
-   * @return {string}
-   * @private
-   */
-  getCalibrationStatusString_(status) {
-    const componentType = this.i18n(ComponentTypeToId[status.component]);
-    return this.i18n('runCalibrationCalibratingComponent', componentType);
   }
 
   /**

@@ -2819,15 +2819,6 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE_TITLE" translateable="false" desc="Title for the page shown when component calibration steps are complete.">
         Calibration complete
       </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE" translateable="false" desc="Message to display when all component calibration steps are complete.">
-        Completed
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_STARTING" translateable="false" desc="Message to display when when waiting for calibration to start.">
-        Calibration starting...
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATING_COMPONENT" translateable="false" desc="Status message for a single component while it's being calibrated.">
-        Calibrating <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph>...
-      </message>
       <!-- OS update page -->
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE" translateable="false" desc="Title of ChromeOS update page.">
         Make sure ChromeOS is up to date

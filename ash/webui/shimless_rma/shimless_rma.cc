@@ -190,10 +190,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"runCalibrationTitleText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE},
       {"runCalibrationCompleteTitleText",
        IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE_TITLE},
-      {"runCalibrationCompleteText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE},
-      {"runCalibrationStartingText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_STARTING},
-      {"runCalibrationCalibratingComponent",
-       IDS_SHIMLESS_RMA_RUN_CALIBRATING_COMPONENT},
       // Device provisioning page
       {"provisioningPageTitleText", IDS_SHIMLESS_RMA_PROVISIONING_TITLE},
       {"provisioningPageInProgressText",
