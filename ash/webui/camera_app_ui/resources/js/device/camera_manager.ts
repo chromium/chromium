@@ -6,7 +6,6 @@ import {
   assert,
   assertExists,
   assertInstanceof,
-  assertString,
 } from '../assert.js';
 import * as error from '../error.js';
 import {Point} from '../geometry.js';
@@ -16,13 +15,16 @@ import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
 import {
+  AspectRatioSet,
   ErrorLevel,
   ErrorType,
   Facing,
   Mode,
   PerfEvent,
+  PhotoResolutionLevel,
   PreviewVideo,
   Resolution,
+  VideoResolutionLevel,
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
@@ -40,6 +42,9 @@ import {
   CameraUI,
   CameraViewUI,
   ModeConstraints,
+  PhotoAspectRatioOptionListener,
+  PhotoResolutionOptionListener,
+  VideoResolutionOptionListener,
 } from './type.js';
 
 class ResumeStateWatchdog {
@@ -143,8 +148,8 @@ export class CameraManager implements EventListener {
     return assertExists(this.scheduler.cameraInfo);
   }
 
-  private getDeviceId(): string {
-    return assertString(this.scheduler.reconfigurer.config?.deviceId);
+  getDeviceId(): string|null {
+    return this.scheduler.reconfigurer.config?.deviceId ?? null;
   }
 
   getPreviewVideo(): PreviewVideo {
@@ -333,29 +338,45 @@ export class CameraManager implements EventListener {
     return this.tryReconfigure(setPref) ?? false;
   }
 
-  getPrefPhotoResolution(deviceId: string): Resolution|null {
-    return this.scheduler.reconfigurer.capturePreferrer.getPrefPhotoResolution(
-        deviceId);
+  addPhotoResolutionOptionListener(listener: PhotoResolutionOptionListener):
+      void {
+    this.scheduler.reconfigurer.capturePreferrer
+        .addPhotoResolutionOptionListener(listener);
   }
 
-  setPrefPhotoResolution(deviceId: string, r: Resolution):
-      Promise<boolean>|null {
-    return this.setCapturePref(deviceId, () => {
-      this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolution(
-          deviceId, r);
+  addPhotoAspectRatioOptionListener(listener: PhotoAspectRatioOptionListener):
+      void {
+    this.scheduler.reconfigurer.capturePreferrer
+        .addPhotoAspectRatioOptionListener(listener);
+  }
+
+  addVideoResolutionOptionListener(listener: VideoResolutionOptionListener):
+      void {
+    this.scheduler.reconfigurer.capturePreferrer
+        .addVideoResolutionOptionListener(listener);
+  }
+
+  setPrefPhotoResolutionLevel(deviceId: string, level: PhotoResolutionLevel):
+      void {
+    this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolutionLevel(
+          deviceId, level);
     });
   }
 
-  getPrefVideoResolution(deviceId: string): Resolution|null {
-    return this.scheduler.reconfigurer.capturePreferrer.getPrefVideoResolution(
-        deviceId);
+  setPrefPhotoAspectRatioSet(deviceId: string, aspectRatioSet: AspectRatioSet):
+      void {
+    this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoAspectRatioSet(
+          deviceId, aspectRatioSet);
+    });
   }
 
-  setPrefVideoResolution(deviceId: string, r: Resolution):
-      Promise<boolean>|null {
-    return this.setCapturePref(deviceId, () => {
-      this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolution(
-          deviceId, r);
+  setPrefVideoResolutionLevel(deviceId: string, level: VideoResolutionLevel):
+      void {
+    this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolutionLevel(
+          deviceId, level);
     });
   }
 

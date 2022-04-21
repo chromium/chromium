@@ -698,7 +698,7 @@ body.should-handle-intent-result #open-settings {
 #view-review,
 #view-flash,
 #view-settings,
-#view-resolution-settings,
+#view-photo-aspect-ratio-settings,
 #view-photo-resolution-settings,
 #view-video-resolution-settings,
 #view-expert-settings,
@@ -723,7 +723,7 @@ body.view-ptz-panel #view-ptz-panel,
 body.view-review #view-review,
 body.view-flash #view-flash,
 body.view-settings #view-settings,
-body.view-resolution-settings #view-resolution-settings,
+body.view-photo-aspect-ratio-settings #view-photo-aspect-ratio-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
 body.view-video-resolution-settings #view-video-resolution-settings,
 body.view-expert-settings #view-expert-settings,
@@ -735,7 +735,7 @@ body.view-splash #view-splash {
   visibility: visible;
 }
 
-body.view-resolution-settings #view-resolution-settings,
+body.view-photo-aspect-ratio-settings #view-photo-aspect-ratio-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
 body.view-video-resolution-settings #view-video-resolution-settings,
 body.view-expert-settings #view-expert-settings,
@@ -744,17 +744,15 @@ body.view-settings #view-settings {
   transition: opacity 0ms;
 }
 
+body.view-photo-aspect-ratio-settings #view-settings,
+html[dir=ltr] body.view-photo-aspect-ratio-settings .left-stripe,
+html[dir=rtl] body.view-photo-aspect-ratio-settings .right-stripe,
 html[dir=ltr] body.view-settings .left-stripe,
 html[dir=rtl] body.view-settings .right-stripe,
-body.view-resolution-settings #view-settings,
-html[dir=ltr] body.view-resolution-settings .left-stripe,
-html[dir=rtl] body.view-resolution-settings .right-stripe,
 body.view-photo-resolution-settings #view-settings,
-body.view-photo-resolution-settings #view-resolution-settings,
 html[dir=ltr] body.view-photo-resolution-settings .left-stripe,
 html[dir=rtl] body.view-photo-resolution-settings .right-stripe,
 body.view-video-resolution-settings #view-settings,
-body.view-video-resolution-settings #view-resolution-settings,
 html[dir=ltr] body.view-video-resolution-settings .left-stripe,
 html[dir=rtl] body.view-video-resolution-settings .right-stripe,
 body.view-expert-settings #view-settings,
@@ -1186,10 +1184,6 @@ label.menu-item:hover {
   margin-top: 5px;
 }
 
-.menu-item .description span {
-  display: none;
-}
-
 body:not(.has-front-camera) #settings-front-photores,
 body:not(.has-front-camera) #settings-front-videores,
 body:not(.has-back-camera) #settings-back-photores,
@@ -1256,12 +1250,19 @@ html[dir=rtl] .menu-header .icon {
   background-image: url(/images/settings_timer_duration.svg);
 }
 
-body.no-resolution-settings #settings-resolution {
+body.no-resolution-settings #settings-photo-aspect-ratio,
+body.no-resolution-settings #settings-photo-resolution,
+body.no-resolution-settings #settings-video-resolution {
   display: none;
 }
 
-#settings-resolution .icon {
+#settings-photo-resolution .icon,
+#settings-video-resolution .icon {
   background-image: url(/images/settings_resolution.svg);
+}
+
+#settings-photo-aspect-ratio .icon {
+  background-image: url(/images/settings_aspect_ratio.svg);
 }
 
 #settings-expert .icon {
@@ -1431,4 +1432,38 @@ body:not(.mode-switching):not(.streaming) #spinner {
 #options-container .menu-item span {
   color: var(--grey-100);
   margin-inline-start: 4px;
+}
+
+body.video #settings-photo-aspect-ratio,
+body.video #settings-photo-resolution {
+  display: none;
+}
+
+body:not(.video) #settings-video-resolution {
+  display: none;
+}
+
+.label-item {
+  color: var(--grey-500);
+  font: 500 13px/20px var(--default-font-family);
+  margin: 9px 0 3px 0;
+  padding-inline-start: 26px;
+}
+
+.resolution-option span {
+  margin-inline-start: 4px;
+}
+
+.text-item {
+  align-items: center;
+  color: var(--grey-500);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font: 400 13px var(--default-font-family);
+  height: 64px;
+  justify-content: center;
+  padding-inline-end: 60px;
+  padding-inline-start: 60px;
+  text-align: initial;
 }

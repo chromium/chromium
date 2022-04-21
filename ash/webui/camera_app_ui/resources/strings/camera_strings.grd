@@ -638,6 +638,45 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for spoken feedback to turn off the grid button." name="IDS_ARIA_GRID_OFF">
         Grid off
       </message>
+      <message desc="Text showing on the settings page when under photo mode." name="IDS_PHOTO_SETTINGS">
+        Photo settings
+      </message>
+      <message desc="Text showing on the settings page when under video mode." name="IDS_VIDEO_SETTINGS">
+        Video settings
+      </message>
+      <message desc="Text of the settings button to choose aspect ratio of the captured photo." name="IDS_PHOTO_ASPECT_RATIO_BUTTON">
+        Photo aspect ratio
+      </message>
+      <message desc="Label of the option to specify the largest resolution in the resolution settings" name="IDS_LABEL_FULL_RESOLUTION">
+        Full resolution
+      </message>
+      <message desc="Label of the option to specify the medium resolution in the resolution settings" name="IDS_LABEL_MEDIUM_RESOLUTION">
+        Medium resolution
+      </message>
+      <message desc="Label of the option to select other aspect ratio rather than the common ones (4:3, 16:9)." name="IDS_LABEL_OTHER_ASPECT_RATIO">
+        Others
+      </message>
+      <message desc="Label to indicate that there is no resolution option to choose under the selected aspect ratio" name="IDS_LABEL_NO_RESOLUTION_OPTION">
+        This camera cannot change resolution
+      </message>
+      <message desc="Label for spoken feedback to read out aspect ratio: 4:3." name="IDS_ARIA_ASPECT_RATIO_4_TO_3">
+        4 to 3
+      </message>
+      <message desc="Label for spoken feedback to read out aspect ratio: 16:9." name="IDS_ARIA_ASPECT_RATIO_16_TO_9">
+        16 to 9
+      </message>
+      <message desc="Label of the 4K video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_4K">
+        4K
+      </message>
+      <message desc="Label of the Quad HD (QHD) video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_QUAD_HD">
+        Quad HD
+      </message>
+      <message desc="Label of the Full HD video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_FULL_HD">
+        Full HD
+      </message>
+      <message desc="Label of the HD video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_HD">
+        HD
+      </message>
     </messages>
   </release>
 </grit>

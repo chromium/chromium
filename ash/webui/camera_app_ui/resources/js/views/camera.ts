@@ -63,7 +63,7 @@ import {Dialog} from './dialog.js';
 import {OptionPanel} from './option_panel.js';
 import {PTZPanel} from './ptz_panel.js';
 import * as review from './review.js';
-import {PrimarySettings} from './settings.js';
+import {PrimarySettings} from './settings/primary.js';
 import {View} from './view.js';
 import {WarningType} from './warning.js';
 

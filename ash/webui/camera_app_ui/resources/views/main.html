@@ -349,10 +349,34 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div id="settings-header" i18n-text="settings_button"></div>
         </div>
-        <button id="settings-resolution" class="menu-item inkdrop expandable"
-                tabindex="0">
+        <button id="settings-photo-resolution"class="menu-item inkdrop
+                expandable" tabindex="0">
           <div class="icon"></div>
-          <div i18n-text="camera_resolution_button">
+          <div>
+            <div i18n-text="photo_resolution_button"></div>
+            <div class="description">
+              <span></span>
+            </div>
+          </div>
+        </button>
+        <button id="settings-video-resolution" class="menu-item inkdrop
+                expandable" tabindex="0">
+          <div class="icon"></div>
+          <div>
+            <div i18n-text="video_resolution_button"></div>
+            <div class="description">
+              <span></span>
+            </div>
+          </div>
+        </button>
+        <button id="settings-photo-aspect-ratio" class="menu-item inkdrop
+                expandable" tabindex="0">
+          <div class="icon"></div>
+          <div>
+            <div i18n-text="photo_aspect_ratio_button"></div>
+            <div class="description">
+              <span></span>
+            </div>
           </div>
         </button>
         <button id="settings-expert" class="menu-item inkdrop expandable"
@@ -371,62 +395,8 @@
         </button>
       </div>
     </div>
-    <div id="view-resolution-settings" class="settings">
-      <div class="menu">
-        <div class="menu-header circle">
-          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
-          <div i18n-text="camera_resolution_button"></div>
-        </div>
-        <div id="builtin-photo-header" class="menu-item"
-          i18n-text="label_switch_take_photo_button"></div>
-        <button id="settings-front-photores" class="menu-item resol-item
-                photo-item inkdrop expandable" tabindex="0"
-                aria-describedby="front-photores-desc">
-          <div>
-            <div i18n-text="label_front_camera"></div>
-            <div id="front-photores-desc" class="description"
-                 aria-hidden="true">
-              <span></span>
-            </div>
-          </div>
-        </button>
-        <button id="settings-back-photores"
-                class="menu-item resol-item photo-item inkdrop expandable"
-                tabindex="0" aria-describedby="back-photores-desc">
-          <div>
-            <div i18n-text="label_back_camera"></div>
-            <div id="back-photores-desc" class="description" aria-hidden="true">
-              <span></span>
-            </div>
-          </div>
-        </button>
-        <div id="builtin-video-header" class="menu-item"
-          i18n-text="label_switch_record_video_button"></div>
-        <button id="settings-front-videores"
-                class="menu-item resol-item video-item inkdrop expandable"
-                tabindex="0" aria-describedby="front-videores-desc">
-          <div>
-            <div i18n-text="label_front_camera"></div>
-            <div id="front-videores-desc" class="description"
-                 aria-hidden="true">
-              <span></span>
-            </div>
-          </div>
-        </button>
-        <button id="settings-back-videores"
-                class="menu-item resol-item video-item inkdrop expandable"
-                tabindex="0" aria-describedby="back-videores-desc">
-          <div>
-            <div i18n-text="label_back_camera"></div>
-            <div id="back-videores-desc" class="description" aria-hidden="true">
-              <span></span>
-            </div>
-          </div>
-        </button>
-      </div>
-    </div>
     <div id="view-photo-resolution-settings" class="settings">
-      <div class="menu" data-name="photores">
+      <div class="menu">
         <div class="menu-header circle">
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-text="photo_resolution_button"></div>
@@ -438,6 +408,14 @@
         <div class="menu-header circle">
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-text="video_resolution_button"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-photo-aspect-ratio-settings" class="settings">
+      <div class="menu" data-name="aspectratios">
+        <div class="menu-header circle">
+          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
+          <div i18n-text="photo_aspect_ratio_button"></div>
         </div>
       </div>
     </div>
@@ -533,33 +511,27 @@
       <video id="preview-video" class="preview-content" aria-hidden="true"
         muted></video>
     </template>
+    <template id="resolution-label-template">
+      <div class="label-item">
+        <span></span>
+      </div>
+    </template>
+    <template id="resolution-text-template">
+      <div class="text-item">
+        <span></span>
+      </div>
+    </template>
     <template id="resolution-item-template">
       <label class="menu-item circle resolution-option inkdrop">
         <input class="icon" type="radio" tabindex="0">
         <span></span>
       </label>
     </template>
-    <template id="extcam-resolution-item-template">
-        <div class="menu-item external-camera title-item"
-          i18n-text="label_external_camera"></div>
-        <button class="menu-item external-camera resol-item photo-item inkdrop
-                expandable" tabindex="0">
-          <div>
-            <div i18n-text="photo_resolution_button"></div>
-            <div class="description" aria-hidden="true">
-              <span></span>
-            </div>
-          </div>
-        </button>
-        <button class="menu-item external-camera resol-item video-item inkdrop
-                expandable" tabindex="0">
-          <div>
-            <div i18n-text="video_resolution_button"></div>
-            <div class="description" aria-hidden="true">
-              <span></span>
-            </div>
-          </div>
-        </button>
+    <template id="video-resolution-item-template">
+      <label class="menu-item circle resolution-option inkdrop">
+        <input class="icon" type="radio" tabindex="0">
+        <span></span>
+      </label>
     </template>
     <template id="video-profile-option-template">
       <option></option>

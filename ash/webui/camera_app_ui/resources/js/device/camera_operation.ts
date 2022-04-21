@@ -25,10 +25,7 @@ import {
   CaptureCandidate,
   FakeCameraCaptureCandidate,
 } from './capture_candidate.js';
-import {
-  CaptureCandidatePreferrer,
-  DefaultPreferrer,
-} from './capture_candidate_preferrer.js';
+import {CaptureCandidatePreferrer} from './capture_candidate_preferrer.js';
 import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Modes, Video} from './mode/index.js';
 import {Preview} from './preview.js';
@@ -72,7 +69,7 @@ class Reconfigurer {
 
   private shouldSuspend = false;
 
-  readonly capturePreferrer: CaptureCandidatePreferrer = new DefaultPreferrer();
+  readonly capturePreferrer = new CaptureCandidatePreferrer();
 
   constructor(
       private readonly preview: Preview,
@@ -145,10 +142,9 @@ class Reconfigurer {
         let candidates: CaptureCandidate[];
         let photoResolutions;
         if (deviceOperator !== null) {
+          assert(cameraInfo.camera3DevicesInfo !== null);
           candidates = this.capturePreferrer.getSortedCandidates(
-              assertInstanceof(
-                  cameraInfo.getCamera3DeviceInfo(deviceId), Camera3DeviceInfo),
-              mode);
+              cameraInfo.camera3DevicesInfo, deviceId, mode);
           photoResolutions = await deviceOperator.getPhotoResolutions(deviceId);
         } else {
           candidates =
@@ -252,6 +248,7 @@ class Reconfigurer {
           mode: c.mode,
           captureCandidate: c.captureCandidate,
         };
+        this.capturePreferrer.onUpdateConfig(this.config);
         await this.listener.onUpdateConfig(this.config);
 
         return true;
