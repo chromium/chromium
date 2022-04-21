@@ -7372,8 +7372,15 @@ class SitePerProcessDelegatedInkBrowserTest
 // Test confirms that a point hitting an OOPIF that is requesting delegated ink
 // trails results in the metadata being correctly sent to the child's
 // RenderWidgetHost and is usable for sending delegated ink points.
+// TODO(https://crbug.com/1318221): Fix and enable the test on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_MetadataAndPointGoThroughOOPIF \
+  DISABLED_MetadataAndPointGoThroughOOPIF
+#else
+#define MAYBE_MetadataAndPointGoThroughOOPIF MetadataAndPointGoThroughOOPIF
+#endif
 IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
-                       MetadataAndPointGoThroughOOPIF) {
+                       MAYBE_MetadataAndPointGoThroughOOPIF) {
   // Delegated ink is only supported on Skia Renderer for now.
   if (!features::IsUsingSkiaRenderer())
     return;
