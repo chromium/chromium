@@ -731,8 +731,6 @@ TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
   CheckDelegateCalls();
 }
 
-// TODO(https://crbug.com/1260291): Enable this test on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that the login error is displayed and that the account is removed.
 TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
   // Set expectations.
@@ -748,7 +746,6 @@ TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
-#endif
 
 // Tests that the sync disabled message is displayed and that the account is
 // removed upon the ABORT_SYNC action.
@@ -836,8 +833,6 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
   CheckDelegateCalls();
 }
 
-// TODO(https://crbug.com/1260291): Enable this test on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Aborts the flow after the cross account dialog.
 TEST_F(TurnSyncOnHelperTest, CrossAccountAbort) {
   // Set expectations.
@@ -874,7 +869,6 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
-#endif
 
 // Merge data after the cross account dialog.
 TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
