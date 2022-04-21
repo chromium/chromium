@@ -6,6 +6,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_data_driven_test.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_data_driven_test_results.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
@@ -38,15 +39,16 @@ class TextFragmentGenerationNavigationTest
   TextFragmentAnchor* GetTextFragmentAnchor();
 
   // SharedHighlightingDataDrivenTest:
-  void GenerateAndNavigate(std::string html_content,
-                           std::string* start_parent_id,
-                           int start_offset_in_parent,
-                           absl::optional<int> start_text_offset,
-                           std::string* end_parent_id,
-                           int end_offset_in_parent,
-                           absl::optional<int> end_text_offset,
-                           std::string selected_text,
-                           std::string* highlight_text) override;
+  shared_highlighting::SharedHighlightingDataDrivenTestResults
+  GenerateAndNavigate(std::string html_content,
+                      std::string* start_parent_id,
+                      int start_offset_in_parent,
+                      absl::optional<int> start_text_offset,
+                      std::string* end_parent_id,
+                      int end_offset_in_parent,
+                      absl::optional<int> end_text_offset,
+                      std::string selected_text,
+                      std::string* highlight_text) override;
 
   void LoadHTML(String url, String html_content);
 
@@ -144,18 +146,18 @@ String TextFragmentGenerationNavigationTest::GenerateSelector(
 
 String TextFragmentGenerationNavigationTest::GetHighlightedText() {
   TextFragmentAnchor* anchor = GetTextFragmentAnchor();
-  if (!anchor || anchor->DirectiveFinderPairs().size() <= 0) {
+  if (!anchor || anchor->DirectiveFinderPairs().size() != 1) {
     // Returns a null string, distinguishable from an empty string.
     return String();
   }
 
   auto directive_finder_pairs = anchor->DirectiveFinderPairs();
-  EXPECT_EQ(1u, directive_finder_pairs.size());
   return PlainText(
       directive_finder_pairs[0].second.Get()->FirstMatch()->ToEphemeralRange());
 }
 
-void TextFragmentGenerationNavigationTest::GenerateAndNavigate(
+shared_highlighting::SharedHighlightingDataDrivenTestResults
+TextFragmentGenerationNavigationTest::GenerateAndNavigate(
     std::string html_content,
     std::string* start_parent_id,
     int start_offset_in_parent,
@@ -172,11 +174,13 @@ void TextFragmentGenerationNavigationTest::GenerateAndNavigate(
   RangeInFlatTree* selection_range = GetSelectionRange(
       start_parent_id, start_offset_in_parent, start_text_offset, end_parent_id,
       end_offset_in_parent, end_text_offset);
-  ASSERT_EQ(String::FromUTF8(selected_text.c_str()),
-            PlainText(selection_range->ToEphemeralRange()));
 
   // Generate text fragment selector.
   String selector = GenerateSelector(*selection_range);
+
+  if (selector.IsEmpty()) {
+    return shared_highlighting::SharedHighlightingDataDrivenTestResults();
+  }
 
   // Navigate to generated link to text.
   String link_to_text_url = base_url + "#:~:text=" + selector;
@@ -185,15 +189,18 @@ void TextFragmentGenerationNavigationTest::GenerateAndNavigate(
   RunAsyncMatchingTasks();
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
-
-  String actual_highlighted_text = GetHighlightedText();
-  ASSERT_TRUE(actual_highlighted_text);
+  String actual_highlighted_text = GetDocument().Markers().Markers().size() == 1
+                                       ? GetHighlightedText()
+                                       : String();
 
   String expected_highlighted_text =
       highlight_text != nullptr ? String::FromUTF8(highlight_text->c_str())
                                 : String();
-  EXPECT_EQ(expected_highlighted_text, actual_highlighted_text);
+
+  return shared_highlighting::SharedHighlightingDataDrivenTestResults{
+      .generation_success = true,
+      .highlighting_success =
+          expected_highlighted_text == actual_highlighted_text};
 }
 
 TEST_P(TextFragmentGenerationNavigationTest,

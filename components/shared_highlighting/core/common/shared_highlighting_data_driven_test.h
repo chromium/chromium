@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/values.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_data_driven_test_results.h"
 #include "testing/data_driven_testing/data_driven_test.h"
 
 namespace shared_highlighting {
@@ -28,15 +29,16 @@ class SharedHighlightingDataDrivenTest : public testing::DataDrivenTest {
   // DataDrivenTest:
   void GenerateResults(const std::string& input, std::string* output) override;
 
-  virtual void GenerateAndNavigate(std::string html_content,
-                                   std::string* start_parent_id,
-                                   int start_offset_in_parent,
-                                   absl::optional<int> start_text_offset,
-                                   std::string* end_parent_id,
-                                   int end_offset_in_parent,
-                                   absl::optional<int> end_text_offset,
-                                   std::string selected_text,
-                                   std::string* highlight_text) = 0;
+  virtual SharedHighlightingDataDrivenTestResults GenerateAndNavigate(
+      std::string html_content,
+      std::string* start_parent_id,
+      int start_offset_in_parent,
+      absl::optional<int> start_text_offset,
+      std::string* end_parent_id,
+      int end_offset_in_parent,
+      absl::optional<int> end_text_offset,
+      std::string selected_text,
+      std::string* highlight_text) = 0;
 };
 
 }  // namespace shared_highlighting

@@ -43,6 +43,9 @@ const char kEndTextOffsetField[] = "endTextOffset";
 const char kSelectedTextField[] = "selectedText";
 const char kHighlightTextField[] = "highlightText";
 
+const std::string kTestSuccess = "Success";
+const std::string kTestFailure = "Failure";
+
 // Reads |file| into |content|, and converts Windows line-endings to Unix ones.
 // Returns true on success.
 bool ReadFile(const base::FilePath& file, std::string* content) {
@@ -134,9 +137,15 @@ void SharedHighlightingDataDrivenTest::GenerateResults(const std::string& input,
 
   std::string html_content;
   ReadFile(GetHtmlDir().AppendASCII(html_file_name), &html_content);
-  GenerateAndNavigate(html_content, start_parent_id, start_offset_in_parent,
-                      start_text_offset, end_parent_id, end_offset_in_parent,
-                      end_text_offset, selected_text, highlight_text);
+  auto results = GenerateAndNavigate(
+      html_content, start_parent_id, start_offset_in_parent, start_text_offset,
+      end_parent_id, end_offset_in_parent, end_text_offset, selected_text,
+      highlight_text);
+
+  *output = "GENERATION: " +
+            (results.generation_success ? kTestSuccess : kTestFailure) + "\n" +
+            "HIGHLIGHTING: " +
+            (results.highlighting_success ? kTestSuccess : kTestFailure) + "\n";
 }
 
 }  // namespace shared_highlighting

@@ -55,6 +55,7 @@ source_set("data_driven_testing") {
   sources = [
     "shared_highlighting_data_driven_test.cc",
     "shared_highlighting_data_driven_test.h",
+    "shared_highlighting_data_driven_test_results.h",
   ]
   data = [
     "//components/test/data/shared_highlighting/",
