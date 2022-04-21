@@ -373,6 +373,16 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
   store().AddLogin(form_with_affiliation);
   RunUntilIdle();
 
+  // Some weak, reused and secure credentials that should be ignored.
+  PasswordForm form_weak = MakeSavedAndroidPassword(kExampleOrg, kUsername1);
+  AddIssueToForm(&form_weak, InsecureType::kWeak);
+  store().AddLogin(form_weak);
+  PasswordForm form_reused = MakeSavedAndroidPassword(kExampleCom, kUsername2);
+  AddIssueToForm(&form_reused, InsecureType::kReused);
+  store().AddLogin(form_reused);
+  store().AddLogin(MakeSavedAndroidPassword(kExampleOrg, kUsername2));
+
+  EXPECT_THAT(manager().GetCompromisedCredentialsCount(), 2);
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
       UnorderedElementsAre(
