@@ -28,16 +28,8 @@ void PostAnnouncementNotification(NSString* announcement,
       notification_info);
 }
 void NotifyMacEvent(AXPlatformNodeCocoa* target, ax::mojom::Event event_type) {
-  // When this is fired and VoiceOver is running, a blocking AppKit call will
-  // attempt to ascend the hierarchy. Don't fire AXMenuOpened if we don't yet
-  // have a window.
-  if (event_type == ax::mojom::Event::kMenuPopupStart) {
-    if (auto* node = ui::AXPlatformNode::FromNativeViewAccessible(target)) {
-      if (!node->GetDelegate()->GetNSWindow())
-        return;
-    }
-  }
-
+  if (![target AXWindow])
+    return;
   NSString* notification =
       [AXPlatformNodeCocoa nativeNotificationFromAXEvent:event_type];
   if (notification)
