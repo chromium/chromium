@@ -2024,7 +2024,10 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
           NSString* failingURLString =
               error.userInfo[NSURLErrorFailingURLStringErrorKey];
           NSURL* failingURL = [NSURL URLWithString:failingURLString];
-          NSURLRequest* URLRequest = [NSURLRequest requestWithURL:failingURL];
+          NSMutableURLRequest* URLRequest =
+              [NSMutableURLRequest requestWithURL:failingURL];
+          [URLRequest setValue:kSimulatedErrorHeaderValue
+              forHTTPHeaderField:kErrorHeaderField];
           if (errorHTML) {
             NSString* injectedHTML =
                 [reloadPageHTMLTemplate stringByAppendingString:errorHTML];
