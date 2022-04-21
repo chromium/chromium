@@ -23,6 +23,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/kiosk_app_instruction_bubble.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 #include "ash/shelf/shelf_widget.h"
@@ -716,11 +717,23 @@ void LoginShelfView::InstallTestUiUpdateDelegate(
   test_ui_update_delegate_ = std::move(delegate);
 }
 
+void LoginShelfView::OnKioskMenuShown(
+    const base::RepeatingClosure& on_kiosk_menu_shown) {
+  if (kiosk_instruction_bubble_)
+    kiosk_instruction_bubble_->GetWidget()->Hide();
+
+  on_kiosk_menu_shown.Run();
+}
+
 void LoginShelfView::SetKioskApps(
     const std::vector<KioskAppMenuEntry>& kiosk_apps,
     const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
     const base::RepeatingCallback<void()>& on_show_menu) {
-  kiosk_apps_button_->SetApps(kiosk_apps, launch_app, on_show_menu);
+  const auto show_kiosk_menu_callback =
+      base::BindRepeating(&LoginShelfView::OnKioskMenuShown,
+                          weak_ptr_factory_.GetWeakPtr(), on_show_menu);
+
+  kiosk_apps_button_->SetApps(kiosk_apps, launch_app, show_kiosk_menu_callback);
   UpdateUi();
 }
 
@@ -797,6 +810,10 @@ void LoginShelfView::SetButtonOpacity(float target_opacity) {
                        ShelfConfig::Get()->DimAnimationTween());
 }
 
+void LoginShelfView::SetKioskLicenseModeForTesting(bool is_kiosk_license_mode) {
+  kiosk_license_mode_ = is_kiosk_license_mode;
+}
+
 std::unique_ptr<ScopedGuestButtonBlocker>
 LoginShelfView::GetScopedGuestButtonBlocker() {
   return std::make_unique<LoginShelfView::ScopedGuestButtonBlockerImpl>(
@@ -834,6 +851,11 @@ void LoginShelfView::HandleLocaleChange() {
       button->SetAccessibleName(button->GetText());
     }
   }
+}
+
+KioskAppInstructionBubble*
+LoginShelfView::GetKioskInstructionBubbleForTesting() {
+  return kiosk_instruction_bubble_;
 }
 
 ShelfShutdownConfirmationBubble*
@@ -901,9 +923,26 @@ void LoginShelfView::UpdateUi() {
   // Show add user button when it's in login screen and Oobe UI dialog is not
   // visible. The button should not appear if the device is not connected to a
   // network.
-  GetViewByID(kAddUser)->SetVisible(!dialog_visible && is_login_primary);
+  GetViewByID(kAddUser)->SetVisible(!kiosk_license_mode_ && !dialog_visible &&
+                                    is_login_primary);
   kiosk_apps_button_->SetVisible(kiosk_apps_button_->HasApps() &&
                                  ShouldShowAppsButton());
+  if (kiosk_license_mode_) {
+    // Create the bubble once the login shelf view is available for anchoring.
+    if (!kiosk_instruction_bubble_ && GetWidget()) {
+      Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+      kiosk_instruction_bubble_ = new KioskAppInstructionBubble(
+          GetViewByID(kApps), shelf->alignment(),
+          shelf->shelf_widget()->GetShelfBackgroundColor());
+    }
+    if (kiosk_instruction_bubble_) {
+      // Show kiosk instructions if the kiosk app button is visible.
+      if (kiosk_apps_button_->GetVisible())
+        kiosk_instruction_bubble_->GetWidget()->Show();
+      else
+        kiosk_instruction_bubble_->GetWidget()->Hide();
+    }
+  }
 
   GetViewByID(kOsInstall)->SetVisible(ShouldShowOsInstallButton());
 
@@ -1001,6 +1040,7 @@ bool LoginShelfView::ShouldShowShutdownButton() const {
 // only signin option), the guest button should be shown if allowed by policy
 // and OOBE.
 // 6. There are no scoped guest buttons blockers active.
+// 7. The device is not in kiosk license mode.
 bool LoginShelfView::ShouldShowGuestButton() const {
   if (!allow_guest_)
     return false;
@@ -1018,6 +1058,9 @@ bool LoginShelfView::ShouldShowGuestButton() const {
     return is_first_signin_step_;
 
   if (session_state != SessionState::LOGIN_PRIMARY)
+    return false;
+
+  if (kiosk_license_mode_)
     return false;
 
   return true;

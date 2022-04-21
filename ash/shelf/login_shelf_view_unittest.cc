@@ -1426,10 +1426,81 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
+class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {
+ public:
+  LoginShelfViewWithKioskLicenseTest() = default;
+
+  LoginShelfViewWithKioskLicenseTest(
+      const LoginShelfViewWithKioskLicenseTest&) = delete;
+  LoginShelfViewWithKioskLicenseTest& operator=(
+      const LoginShelfViewWithKioskLicenseTest&) = delete;
+
+  ~LoginShelfViewWithKioskLicenseTest() override = default;
+
+ protected:
+  // Check whether the kiosk instruction bubble is visible.
+  bool IsKioskInstructionBubbleVisible() {
+    return login_shelf_view_->GetKioskInstructionBubbleForTesting() &&
+           login_shelf_view_->GetKioskInstructionBubbleForTesting()
+               ->GetWidget()
+               ->IsVisible();
+  }
+
+  void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode) {
+    login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
+  }
+};
+
+// Checks that kiosk app button and kiosk instruction appears if device is with
+// kiosk license.
+TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldShowKioskInstructionBubble) {
+  SetKioskLicenseModeForTesting(true);
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  std::vector<KioskAppMenuEntry> kiosk_apps(1);
+  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+
+  EXPECT_TRUE(
+      login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
+  EXPECT_TRUE(IsKioskInstructionBubbleVisible());
+}
+
+// Checks that kiosk app button appears and kiosk instruction hidden if device
+// is not with kiosk license.
+TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldHideKioskInstructionBubble) {
+  SetKioskLicenseModeForTesting(false);
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  std::vector<KioskAppMenuEntry> kiosk_apps(1);
+  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+
+  EXPECT_TRUE(
+      login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
+  EXPECT_FALSE(IsKioskInstructionBubbleVisible());
+}
+
+// Checks that kiosk app button appears and kiosk instruction hidden if device
+// is with kiosk license and no kiosk app is set up.
+TEST_P(LoginShelfViewWithKioskLicenseTest,
+       ShouldNotShowKioskInstructionBubble) {
+  SetKioskLicenseModeForTesting(true);
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  std::vector<KioskAppMenuEntry> kiosk_apps(0);
+  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+
+  EXPECT_FALSE(
+      login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
+  EXPECT_FALSE(IsKioskInstructionBubbleVisible());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, LoginShelfViewTest, testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All, OsInstallButtonTest, testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          LoginShelfViewWithShutdownConfirmationTest,
+                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         LoginShelfViewWithKioskLicenseTest,
                          testing::Bool());
 
 }  // namespace
