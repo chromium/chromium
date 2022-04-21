@@ -124,12 +124,11 @@ local INLINE Pos insert_string(deflate_state* const s, const Pos str) {
  * significantly improves data compression speed.
  *
  * Note: the generated compressed output is a valid DEFLATE stream but will
- * differ from vanilla zlib output ...
+ * differ from canonical zlib output ...
  */
 #if defined(CHROMIUM_ZLIB_NO_CASTAGNOLI)
-/* ... so this build-time option can used to disable the SIMD symbol hasher
- * if matching vanilla zlib DEFLATE output is required.
- */ (;) /* FALLTHOUGH */
+/* ... so this build-time option can be used to disable the SIMD symbol hasher.
+ */ /* FALLTHOUGH */
 #elif defined(TARGET_CPU_WITH_CRC) && defined(CRC32_SIMD_SSE42_PCLMUL)
   if (x86_cpu_enable_simd)
     return insert_string_simd(s, str);
