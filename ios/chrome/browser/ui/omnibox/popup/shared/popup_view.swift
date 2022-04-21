@@ -313,14 +313,24 @@ struct PopupView: View {
 
 struct PopupView_Previews: PreviewProvider {
   static var previews: some View {
-    PopupView(
-      model: PopupModel(
-        matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil)
-    )
-    .environment(\.sizeCategory, .accessibilityExtraLarge)
+    let sample =
+      PopupView(
+        model: PopupModel(
+          matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil)
+      )
 
-    PopupView(
-      model: PopupModel(
-        matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil))
+    sample.environment(\.popupUIVariation, .one)
+    sample.environment(\.popupUIVariation, .two)
+
+    let darkSample = sample.environment(\.colorScheme, .dark)
+
+    darkSample.environment(\.popupUIVariation, .one)
+    darkSample.environment(\.popupUIVariation, .two)
+
+    let sampleWithExtraLargeFont =
+      sample.environment(\.sizeCategory, .accessibilityExtraLarge)
+
+    sampleWithExtraLargeFont.environment(\.popupUIVariation, .one)
+    sampleWithExtraLargeFont.environment(\.popupUIVariation, .two)
   }
 }
