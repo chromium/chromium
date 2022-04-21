@@ -62,15 +62,14 @@ else:
 cmd.extend(['-l%s/usr/lib' % sysroot, '-O', '-e', binary])
 
 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                        cwd=sysroot)
+                        cwd=sysroot, encoding='utf-8')
 (stdout, stderr) = proc.communicate()
 exit_code = proc.wait()
 if exit_code != 0:
-  print('dpkg-shlibdeps failed with exit code ' + str(exit_code))
-  print('stderr was ' + stderr)
+  print('dpkg-shlibdeps failed with exit code %d' % exit_code)
+  print('stderr was:\n%s' % stderr)
   sys.exit(1)
 
-stdout = stdout.decode('utf8')
 SHLIBS_DEPENDS_PREFIX = 'shlibs:Depends='
 deps_str = ''
 for line in stdout.split('\n'):
