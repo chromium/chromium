@@ -4,8 +4,11 @@
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 
+#include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -41,6 +44,16 @@ bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
 base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
   if (!GetAccessCodeCastEnabledPref(pref_service)) {
     return base::Seconds(0);
+  }
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (IsCommandLineSwitchSupported() &&
+      command_line->HasSwitch(switches::kAccessCodeCastDeviceDurationSwitch)) {
+    int value;
+    base::StringToInt(command_line->GetSwitchValueASCII(
+                          switches::kAccessCodeCastDeviceDurationSwitch),
+                      &value);
+    return base::Seconds(value);
   }
   return base::Seconds(
       pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));

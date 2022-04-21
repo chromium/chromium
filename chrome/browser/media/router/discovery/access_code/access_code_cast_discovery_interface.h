@@ -62,8 +62,6 @@ class AccessCodeCastDiscoveryInterface {
   // AddSinkResultCode::OK is returned.
   void ValidateDiscoveryAccessCode(DiscoveryDeviceCallback callback);
 
-  static void EnableCommandLineSupportForTesting();
-
  private:
   friend class AccessCodeCastDiscoveryInterfaceTest;
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastDiscoveryInterfaceTest,

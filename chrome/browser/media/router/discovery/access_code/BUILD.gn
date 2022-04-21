@@ -12,14 +12,18 @@ proto_library("discovery_resources_proto") {
 
 static_library("access_code_cast_feature") {
   sources = [
+    "access_code_cast_constants.cc",
+    "access_code_cast_constants.h",
     "access_code_cast_feature.cc",
     "access_code_cast_feature.h",
   ]
   public_deps = [ "//base" ]
   deps = [
+    "//chrome/common:channel_info",
     "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",
     "//components/user_prefs:user_prefs",
+    "//components/version_info:channel",
   ]
 }
 
@@ -53,7 +57,6 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin:identity_manager_provider",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
-      "//chrome/common:channel_info",
       "//components/cast_channel:cast_channel",
       "//components/keyed_service/content:content",
       "//components/leveldb_proto:leveldb_proto",
@@ -61,7 +64,6 @@ if (!is_android) {
       "//components/signin/public/base:base",
       "//components/signin/public/identity_manager:identity_manager",
       "//components/user_manager:user_manager",
-      "//components/version_info:channel",
       "//services/preferences/public/cpp:cpp",
     ]
   }

@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -56,9 +57,8 @@ const char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
 const char kMockScope[] = "mock_scope";
 const char kMockEndpoint[] = "https://my-endpoint.com";
 const char kHttpMethod[] = "POST";
-const char kContentType[] = "mock_content_type";
+const char kMockContentType[] = "mock_content_type";
 const char kEmail[] = "mock_email@gmail.com";
-const char kDiscoveryEndpointSwitch[] = "access-code-cast-url";
 const char kDefaultURL[] = "https://castedumessaging-pa.googleapis.com";
 
 const char kMalformedResponse[] = "{{{foo_device:::broken}}";
@@ -181,16 +181,16 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     Profile* profile = profile_manager()->CreateTestingProfile("foo_email");
 
-    AccessCodeCastDiscoveryInterface::EnableCommandLineSupportForTesting();
+    EnableCommandLineSupportForTesting();
 
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
     endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-        kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod, kContentType,
-        std::vector<std::string>{kMockScope}, kMockTimeoutMs, kMockPostData,
-        TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
+        kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
+        kMockContentType, std::vector<std::string>{kMockScope}, kMockTimeoutMs,
+        kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
         identity_test_env_.identity_manager());
 
     logger_ = std::make_unique<LoggerImpl>();
@@ -460,7 +460,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, CommandLineSwitch) {
             fetcher->GetUrlForTesting());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(kDiscoveryEndpointSwitch,
+  command_line->AppendSwitchASCII(switches::kDiscoveryEndpointSwitch,
                                   std::string(kMockEndpoint) + "/v1/receivers");
   fetcher = stub_interface()->CreateEndpointFetcher("foobar");
   EXPECT_EQ(std::string(kMockEndpoint) + "/v1/receivers/foobar",
