@@ -94,10 +94,10 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
     static std::string CookieOrLineToString(
         const mojom::CookieOrLinePtr& cookie_or_line) {
       switch (cookie_or_line->which()) {
-        case mojom::CookieOrLine::Tag::COOKIE:
+        case mojom::CookieOrLine::Tag::kCookie:
           return net::CanonicalCookie::BuildCookieLine(
               {cookie_or_line->get_cookie()});
-        case mojom::CookieOrLine::Tag::COOKIE_STRING:
+        case mojom::CookieOrLine::Tag::kCookieString:
           return cookie_or_line->get_cookie_string();
       }
     }
@@ -737,7 +737,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
           mojom::CookieAccessDetails::Type::kRead, "https://example.com/test/",
           net::SiteForCookies(),
           CookieOrLine("cookie-name=cookie-value",
-                       mojom::CookieOrLine::Tag::COOKIE),
+                       mojom::CookieOrLine::Tag::kCookie),
           testing::AllOf(
               net::IsInclude(),
               net::HasExactlyWarningReasonsForTesting(
@@ -769,7 +769,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
               mojom::CookieAccessDetails::Type::kRead,
               "https://example.com/test/", net::SiteForCookies(),
               CookieOrLine("cookie-name=cookie-value",
-                           mojom::CookieOrLine::Tag::COOKIE),
+                           mojom::CookieOrLine::Tag::kCookie),
               net::CookieInclusionStatus::MakeFromReasonsForTesting(
                   {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
                   {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
@@ -807,7 +807,7 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
         ElementsAre(MatchesCookieOp(
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
-            CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::COOKIE),
+            CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
             net::CookieInclusionStatus::MakeFromReasonsForTesting(
                 {},
                 {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
@@ -831,7 +831,7 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
         ElementsAre(MatchesCookieOp(
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
-            CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::COOKIE),
+            CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
             net::CookieInclusionStatus::MakeFromReasonsForTesting(
                 {},
                 {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
@@ -889,7 +889,7 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
                         mojom::CookieAccessDetails::Type::kRead,
                         kDefaultUrlWithPath, net::SiteForCookies(),
                         CookieOrLine(cookie_name_field,
-                                     mojom::CookieOrLine::Tag::COOKIE),
+                                     mojom::CookieOrLine::Tag::kCookie),
                         net::CookieInclusionStatus::MakeFromReasonsForTesting(
                             {}, {net::CookieInclusionStatus::
                                      WARN_SAMESITE_NONE_REQUIRED}))));
@@ -931,7 +931,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicyWarnActual) {
                   mojom::CookieAccessDetails::Type::kRead,
                   "https://example.com/test/", net::SiteForCookies(),
                   CookieOrLine("cookie-name=cookie-value",
-                               mojom::CookieOrLine::Tag::COOKIE),
+                               mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
                       std::vector<net::CookieInclusionStatus::ExclusionReason>{
                           net::CookieInclusionStatus::
@@ -1005,7 +1005,7 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
                 mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
                 net::SiteForCookies(),
                 CookieOrLine("cookie-name=cookie-value",
-                             mojom::CookieOrLine::Tag::COOKIE),
+                             mojom::CookieOrLine::Tag::kCookie),
                 net::CookieInclusionStatus::MakeFromReasonsForTesting(
                     {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
                     expected_warnings))));
@@ -1179,7 +1179,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
       ElementsAre(MatchesCookieOp(
           mojom::CookieAccessDetails::Type::kChange, "https://example.com/",
           net::SiteForCookies(),
-          CookieOrLine("A=B", mojom::CookieOrLine::Tag::COOKIE),
+          CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
           testing::AllOf(
               net::IsInclude(),
               net::HasExactlyWarningReasonsForTesting(
@@ -1207,7 +1207,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
           MatchesCookieOp(
               mojom::CookieAccessDetails::Type::kChange, "https://example.com/",
               net::SiteForCookies(),
-              CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::COOKIE),
+              CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::kCookie),
               net::HasExactlyExclusionReasonsForTesting(
                   std::vector<net::CookieInclusionStatus::ExclusionReason>{
                       net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}))));
@@ -1234,7 +1234,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
               mojom::CookieAccessDetails::Type::kRead,
               "https://example.com/test/",
               net::SiteForCookies::FromUrl(GURL("https://example.com/")),
-              CookieOrLine("A=B", mojom::CookieOrLine::Tag::COOKIE),
+              CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
               net::IsInclude())));
 }
 
@@ -1251,7 +1251,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
               ElementsAre(MatchesCookieOp(
                   mojom::CookieAccessDetails::Type::kChange,
                   "https://example.com/", net::SiteForCookies(),
-                  CookieOrLine("A=B", mojom::CookieOrLine::Tag::COOKIE),
+                  CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
                   net::HasExactlyExclusionReasonsForTesting(
                       std::vector<net::CookieInclusionStatus::ExclusionReason>{
                           net::CookieInclusionStatus::
@@ -1274,7 +1274,7 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
           mojom::CookieAccessDetails::Type::kChange, kDefaultUrlWithPath,
           net::SiteForCookies(),
           CookieOrLine("name=value;SameParty",
-                       mojom::CookieOrLine::Tag::COOKIE_STRING),
+                       mojom::CookieOrLine::Tag::kCookieString),
           net::HasExactlyExclusionReasonsForTesting(
               std::vector<net::CookieInclusionStatus::ExclusionReason>{
                   net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}))));
@@ -1340,7 +1340,7 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
                 mojom::CookieAccessDetails::Type::kChange,
                 "https://example.com/test/", net::SiteForCookies(),
                 CookieOrLine("new-name=new-value",
-                             mojom::CookieOrLine::Tag::COOKIE),
+                             mojom::CookieOrLine::Tag::kCookie),
                 net::HasExactlyExclusionReasonsForTesting(
                     std::vector<net::CookieInclusionStatus::ExclusionReason>{
                         net::CookieInclusionStatus::

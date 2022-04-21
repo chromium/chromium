@@ -618,13 +618,13 @@ StartMonitorBodyReadFromNetBeforePausedHistogram(
 
 std::string CookieOrLineToString(const mojom::CookieOrLinePtr& cookie_or_line) {
   switch (cookie_or_line->which()) {
-    case mojom::CookieOrLine::Tag::COOKIE:
+    case mojom::CookieOrLine::Tag::kCookie:
       return base::StrCat({
           cookie_or_line->get_cookie().Name(),
           "=",
           cookie_or_line->get_cookie().Value(),
       });
-    case mojom::CookieOrLine::Tag::COOKIE_STRING:
+    case mojom::CookieOrLine::Tag::kCookieString:
       return cookie_or_line->get_cookie_string();
   }
 }
@@ -5117,7 +5117,7 @@ TEST_F(URLLoaderTest, CookieReporting) {
         cookie_observer.observed_cookies(),
         testing::ElementsAre(MatchesCookieDetails(
             CookieAccessType::kChange,
-            CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), true)));
+            CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie), true)));
   }
 
   {
@@ -5150,7 +5150,7 @@ TEST_F(URLLoaderTest, CookieReporting) {
         cookie_observer.observed_cookies(),
         testing::ElementsAre(MatchesCookieDetails(
             CookieAccessType::kRead,
-            CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), true)));
+            CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie), true)));
   }
 
   {
@@ -5184,11 +5184,11 @@ TEST_F(URLLoaderTest, CookieReporting) {
         testing::ElementsAre(
             MatchesCookieDetails(
                 CookieAccessType::kRead,
-                CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), true),
+                CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie), true),
             MatchesCookieDetails(
                 CookieAccessType::kChange,
                 CookieOrLine("invalid=foo;SameParty",
-                             mojom::CookieOrLine::Tag::COOKIE_STRING),
+                             mojom::CookieOrLine::Tag::kCookieString),
                 false)));
   }
 }
@@ -5229,7 +5229,7 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
               testing::ElementsAre(MatchesCookieDetails(
                   CookieAccessType::kChange,
                   CookieOrLine("server-redirect=true",
-                               mojom::CookieOrLine::Tag::COOKIE),
+                               mojom::CookieOrLine::Tag::kCookie),
                   true)));
   // Make sure that this has the pre-redirect URL, not the post-redirect one.
   EXPECT_EQ(redirecting_url, cookie_observer.observed_cookies()[0].url);
@@ -5272,7 +5272,7 @@ TEST_F(URLLoaderTest, CookieReportingAuth) {
                 testing::ElementsAre(MatchesCookieDetails(
                     CookieAccessType::kChange,
                     CookieOrLine("got_challenged=true",
-                                 mojom::CookieOrLine::Tag::COOKIE),
+                                 mojom::CookieOrLine::Tag::kCookie),
                     true)));
   }
 }
@@ -5787,7 +5787,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     EXPECT_THAT(cookie_observer.observed_cookies(),
                 testing::ElementsAre(MatchesCookieDetails(
                     CookieAccessType::kChange,
-                    CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE),
+                    CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie),
                     false /* is_included */)));
     EXPECT_TRUE(cookie_observer.observed_cookies()[0]
                     .status.HasExactlyExclusionReasonsForTesting(
@@ -5838,7 +5838,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         cookie_observer.observed_cookies(),
         testing::ElementsAre(MatchesCookieDetails(
             CookieAccessType::kChange,
-            CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), false)));
+            CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie), false)));
     EXPECT_TRUE(
         cookie_observer.observed_cookies()[0]
             .status.HasExactlyExclusionReasonsForTesting(
@@ -5880,7 +5880,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         cookie_observer.observed_cookies(),
         testing::ElementsAre(MatchesCookieDetails(
             CookieAccessType::kChange,
-            CookieOrLine("d=e", mojom::CookieOrLine::Tag::COOKIE), true)));
+            CookieOrLine("d=e", mojom::CookieOrLine::Tag::kCookie), true)));
   }
 }
 
