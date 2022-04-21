@@ -145,14 +145,12 @@ class HistoryClustersService : public base::SupportsUserData,
   // `QueryClustersState` instead.
   //
   // Returns the freshest clusters created from the user visit history based on
-  // `query`, `begin_time`, and `continuation_params`.
+  // `query`, `begin_time`, and `end_time`.
   // - `begin_time` is an inclusive lower bound. In the general case where the
   //   caller wants to traverse to the start of history, `base::Time()` should
   //   be used.
-  // - `continuation_params` represents where the previous request left off. It
-  //   should be set to the default initialized
-  //   `QueryClustersContinuationParams`
-  //   if the caller wants the newest visits.
+  // - `end_time` is an exclusive upper bound and should be set to
+  //   `base::Time()` if the caller wants the newest visits.
   // The returned clusters are sorted in reverse-chronological order based on
   // their highest scoring visit. The visits within each cluster are sorted by
   // score, from highest to lowest.
@@ -161,7 +159,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // behind QueryClustersState.
   void QueryClusters(ClusteringRequestSource clustering_request_source,
                      base::Time begin_time,
-                     QueryClustersContinuationParams continuation_params,
+                     base::Time end_time,
                      QueryClustersCallback callback,
                      base::CancelableTaskTracker* task_tracker);
 
@@ -205,18 +203,17 @@ class HistoryClustersService : public base::SupportsUserData,
       KeywordSet* cache,
       URLKeywordSet* url_cache,
       std::vector<history::Cluster> clusters,
-      QueryClustersContinuationParams continuation_params);
+      base::Time continuation_end_time);
 
   // Internally used callback for `QueryClusters()`.
-  void OnGotHistoryVisits(
-      ClusteringRequestSource clustering_request_source,
-      base::TimeTicks query_visits_start,
-      QueryClustersCallback callback,
-      std::vector<history::AnnotatedVisit> annotated_visits,
-      QueryClustersContinuationParams continuation_params) const;
+  void OnGotHistoryVisits(ClusteringRequestSource clustering_request_source,
+                          base::TimeTicks query_visits_start,
+                          QueryClustersCallback callback,
+                          std::vector<history::AnnotatedVisit> annotated_visits,
+                          base::Time continuation_end_time) const;
 
   // Runs on UI thread. Internally used callback for `OnGotHistoryVisits()`.
-  void OnGotRawClusters(QueryClustersContinuationParams continuation_params,
+  void OnGotRawClusters(base::Time continuation_end_time,
                         base::TimeTicks cluster_start_time,
                         QueryClustersCallback callback,
                         std::vector<history::Cluster> clusters) const;

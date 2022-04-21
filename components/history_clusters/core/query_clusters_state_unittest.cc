@@ -43,7 +43,7 @@ class QueryClustersStateTest : public testing::Test {
                 result = std::move(cluster_batch);
                 loop.Quit();
               }),
-          raw_clusters, {});
+          raw_clusters, base::Time());
       loop.Run();
     }
     return result;
