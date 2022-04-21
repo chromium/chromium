@@ -27,28 +27,15 @@ if (enable_java_templates) {
     use_final_fields = false
   }
 
-  java_library("build_config_java") {
-    supports_android = true
-    srcjar_deps = [ ":build_config_gen" ]
-    jar_excluded_patterns = [ "*/build/BuildConfig.class" ]
-  }
-
   write_native_libraries_java("native_libraries_gen") {
     use_final_fields = false
   }
 
-  android_library("native_libraries_java") {
-    srcjar_deps = [ ":native_libraries_gen" ]
-
-    # New version of NativeLibraries.java (with the actual correct values) will
-    # be created when creating an apk.
-    jar_excluded_patterns = [ "*/NativeLibraries.class" ]
-  }
-
-  android_library("build_java") {
-    public_deps = [
-      ":build_config_java",
-      ":native_libraries_java",
+  java_library("build_java") {
+    supports_android = true
+    srcjar_deps = [
+      ":build_config_gen",
+      ":native_libraries_gen",
     ]
     sources = [
       "java/src/org/chromium/base/annotations/CheckDiscard.java",
@@ -59,6 +46,12 @@ if (enable_java_templates) {
       "java/src/org/chromium/base/annotations/MockedInTests.java",
       "java/src/org/chromium/base/annotations/UsedByReflection.java",
     ]
+
+    jar_excluded_patterns = [ "*/build/BuildConfig.class" ]
+
+    # New version of NativeLibraries.java (with the actual correct values) will
+    # be created when creating an apk.
+    jar_excluded_patterns += [ "*/NativeLibraries.class" ]
   }
 }
 

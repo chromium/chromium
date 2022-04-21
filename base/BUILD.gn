@@ -3948,7 +3948,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/annotations/NativeMethods.java",
     ]
 
-    deps = [ "//build/android:build_config_java" ]
+    deps = [ "//build/android:build_java" ]
   }
 
   java_cpp_features("java_features_srcjar") {
