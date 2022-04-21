@@ -68,6 +68,19 @@ std::u16string GetLocalisedName(
   return base::UTF8ToUTF16(localised_name);
 }
 
+absl::optional<std::vector<std::u16string>> GetPlatforms(
+    const apps::proto::App& app) {
+  if (app.available_stores_size() == 0) {
+    return absl::nullopt;
+  }
+
+  std::vector<std::u16string> store_names;
+  for (const auto& store : app.available_stores()) {
+    store_names.push_back(base::UTF8ToUTF16(store.store_label()));
+  }
+  return store_names;
+}
+
 }  // namespace
 
 namespace apps {
@@ -102,8 +115,9 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
     if (!AvailableInCurrentLocale(app_with_locale.locale_availability())) {
       continue;
     }
-    auto extras = std::make_unique<GameExtras>(
-        absl::nullopt, GameExtras::Source::kTestSource, GURL());
+    auto extras =
+        std::make_unique<GameExtras>(GetPlatforms(app_with_locale.app()),
+                                     GameExtras::Source::kTestSource, GURL());
     results.push_back(Result(
         AppSource::kGames, app_with_locale.app().app_id_for_platform(),
         GetLocalisedName(app_with_locale.locale_availability(), profile_),
