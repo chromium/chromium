@@ -33,6 +33,16 @@ import SwiftUI
     return suggestion.supportsDeletion
   }
 
+  /// Some suggestions are answers that are displayed inline, such as for weather or calculator.
+  var hasAnswer: Bool {
+    return suggestion.hasAnswer
+  }
+
+  /// Suggested number of lines to format |detailText|.
+  var numberOfLines: Int {
+    return suggestion.numberOfLines
+  }
+
   /// The pedal for this suggestion.
   var pedal: OmniboxPedal? {
     return suggestion.pedal

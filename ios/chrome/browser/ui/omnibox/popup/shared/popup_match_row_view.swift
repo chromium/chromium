@@ -91,12 +91,19 @@ struct PopupMatchRowView: View {
               .accessibilityHidden(true)
 
             if let subtitle = match.detailText, !subtitle.string.isEmpty {
-              OmniboxText(subtitle, highlightColor: isHighlighted ? foregroundColorPrimary : nil)
-                .font(.footnote)
-                .foregroundColor(foregroundColorSecondary)
-                .lineLimit(1)
-                .truncatedWithGradient()
-                .accessibilityHidden(true)
+              let subtitleView = OmniboxText(
+                subtitle, highlightColor: isHighlighted ? foregroundColorPrimary : nil
+              )
+              .font(.footnote)
+              .foregroundColor(foregroundColorSecondary)
+              .lineLimit(match.hasAnswer ? match.numberOfLines : 1)
+              .accessibilityHidden(true)
+
+              if match.hasAnswer {
+                subtitleView
+              } else {
+                subtitleView.truncatedWithGradient()
+              }
             }
           }
           .allowsHitTesting(false)
