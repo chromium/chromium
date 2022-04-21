@@ -41,7 +41,9 @@ CloudPolicyCore::CloudPolicyCore(
       network_connection_tracker_getter_(
           std::move(network_connection_tracker_getter)) {}
 
-CloudPolicyCore::~CloudPolicyCore() = default;
+CloudPolicyCore::~CloudPolicyCore() {
+  Disconnect();
+};
 
 void CloudPolicyCore::Connect(std::unique_ptr<CloudPolicyClient> client) {
   CHECK(!client_);
