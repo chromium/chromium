@@ -24,6 +24,7 @@ class MoveToAccountStoreBubbleView : public PasswordBubbleViewBase {
   void AddedToWidget() override;
   MoveToAccountStoreBubbleController* GetController() override;
   const MoveToAccountStoreBubbleController* GetController() const override;
+  ui::ImageModel GetWindowIcon() override;
 
   // Called when the favicon is loaded. If |favicon| isn't empty, it updates
   // |favicon| in |moving_banner_|
