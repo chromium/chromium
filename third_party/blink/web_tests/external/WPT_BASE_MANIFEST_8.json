@@ -377158,6 +377158,13 @@
        {}
       ]
      ],
+     "scope-specificity.html": [
+      "b39ce9e7b9606094ed93ef99d182f917501bed8a",
+      [
+       null,
+       {}
+      ]
+     ],
      "unset-value-storage.html": [
       "97a27ff67b4ff0a15f279c6ca82190bf0009267f",
       [
@@ -377503,10 +377510,12 @@
       ]
      ],
      "contain-inline-size-replaced.html": [
-      "38f10d3ce4ad40b2b5bbb169d5bb96cad473c12e",
+      "8345fab80bd997d6aac42109bf80fe68c61dbe84",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "contain-paint-049.html": [
