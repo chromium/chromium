@@ -1172,7 +1172,12 @@ TEST_F(IDNSpoofCheckerTest, GetSimilarTopDomain) {
       {u"subdomain.test.net", ""},
       // An IDN subdomain of a top domain should not return a similar top domain
       // result.
-      {u"subdómain.test.net", ""}};
+      {u"subdómain.test.net", ""},
+      // Test cases for https://crbug.com/1250993:
+      {u"tesł.net", "test.net"},
+      {u"łest.net", "test.net"},
+      {u"łesł.net", "test.net"},
+  };
   for (const TestCase& test_case : kTestCases) {
     const TopDomainEntry entry =
         IDNSpoofChecker().GetSimilarTopDomain(test_case.hostname);
@@ -1392,10 +1397,58 @@ TEST(IDNSpoofCheckerNoFixtureTest, AlternativeSkeletons) {
       {u"œœœœœœœœœœœœœœœœœœœœœœœœœœœœœœ", 0, {}},
       {u"œœœœœœœœœœœœœœœœœœœœœœœœœœœœœœ", 1, {}},
       {u"œœœœœœœœœœœœœœœœœœœœœœœœœœœœœœ", 2, {}},
-      {u"œœœœœœœœœœœœœœœœœœœœœœœœœœœœœœ", 100, {}}};
+      {u"œœœœœœœœœœœœœœœœœœœœœœœœœœœœœœ", 100, {}},
+
+      {u"łwiłłer", 0, {}},
+      {u"łwiłłer", 1, {u"łwiłłer"}},
+      {u"łwiłłer",
+       2,
+       {u"\x142wi\x142ler",
+        u"\x142wi\x142\x142"
+        u"er"}},
+      {u"łwiłłer",
+       100,
+       {u"lwiller",
+        u"lwilter",
+        u"lwil\x142"
+        u"er",
+        u"lwitler",
+        u"lwitter",
+        u"lwit\x142"
+        u"er",
+        u"lwi\x142ler",
+        u"lwi\x142ter",
+        u"lwi\x142\x142"
+        u"er",
+        u"twiller",
+        u"twilter",
+        u"twil\x142"
+        u"er",
+        u"twitler",
+        u"twitter",
+        u"twit\x142"
+        u"er",
+        u"twi\x142ler",
+        u"twi\x142ter",
+        u"twi\x142\x142"
+        u"er",
+        u"\x142willer",
+        u"\x142wilter",
+        u"\x142wil\x142"
+        u"er",
+        u"\x142witler",
+        u"\x142witter",
+        u"\x142wit\x142"
+        u"er",
+        u"\x142wi\x142ler",
+        u"\x142wi\x142ter",
+        u"\x142wi\x142\x142"
+        u"er"}},
+  };
   SkeletonMap skeleton_map;
   skeleton_map[u'œ'] = {"ce", "oe"};
   skeleton_map[u'þ'] = {"b", "p"};
+  skeleton_map[u'ł'] = {"l", "t"};
 
   for (const TestCase& test_case : kTestCases) {
     const auto strings = SkeletonGenerator::GenerateSupplementalHostnames(
