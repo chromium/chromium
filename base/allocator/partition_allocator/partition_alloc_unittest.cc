@@ -23,6 +23,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
@@ -34,7 +35,6 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/callback.h"
-#include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -170,7 +170,7 @@ void AllocateRandomly(
 }
 
 void HandleOOM(size_t unused_size) {
-  LOG(FATAL) << "Out of memory";
+  PA_LOG(FATAL) << "Out of memory";
 }
 
 int g_dangling_raw_ptr_detected_count = 0;
@@ -396,9 +396,9 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     // platform's OOM-killing behavior. OOM-killing makes this test flaky on
     // low-memory devices.
     if (!IsLargeMemoryDevice()) {
-      LOG(WARNING)
+      PA_LOG(WARNING)
           << "Skipping test on this device because of crbug.com/678782";
-      LOG(FATAL) << "Passed DoReturnNullTest";
+      PA_LOG(FATAL) << "Passed DoReturnNullTest";
     }
 
     ASSERT_TRUE(SetAddressSpaceLimit());
@@ -459,7 +459,7 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     allocator.root()->Free(ptrs);
 
     EXPECT_TRUE(ClearAddressSpaceLimit());
-    LOG(FATAL) << "Passed DoReturnNullTest";
+    PA_LOG(FATAL) << "Passed DoReturnNullTest";
   }
 
   void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);

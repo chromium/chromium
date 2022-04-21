@@ -44,7 +44,6 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
 #include "base/immediate_crash.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"

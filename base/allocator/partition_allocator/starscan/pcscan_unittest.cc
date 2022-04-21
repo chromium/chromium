@@ -10,11 +10,11 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,7 +43,7 @@ struct DisableStackScanningScope final {
 class PartitionAllocPCScanTestBase : public testing::Test {
  public:
   PartitionAllocPCScanTestBase() {
-    PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
+    PartitionAllocGlobalInit([](size_t) { PA_LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit GigaCage, therefore
     // we need to make sure that the card table is recommitted for each run.
     PCScan::ReinitForTesting(

@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -335,9 +335,9 @@ void LogResults(int thread_count,
                 AllocatorType alloc_type,
                 uint64_t total_laps_per_second,
                 uint64_t min_laps_per_second) {
-  LOG(INFO) << "RESULTSCSV: " << thread_count << ","
-            << static_cast<int>(alloc_type) << "," << total_laps_per_second
-            << "," << min_laps_per_second;
+  PA_LOG(INFO) << "RESULTSCSV: " << thread_count << ","
+               << static_cast<int>(alloc_type) << "," << total_laps_per_second
+               << "," << min_laps_per_second;
 }
 
 void RunTest(int thread_count,

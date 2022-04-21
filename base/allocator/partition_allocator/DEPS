@@ -21,7 +21,6 @@ include_rules = [
     "+base/immediate_crash.h",
     "+base/lazy_instance.h",
     "+base/location.h",
-    "+base/logging.h",
     "+base/logging_buildflags.h",
     "+base/mac/foundation_util.h",
     "+base/mac/mac_util.h",
@@ -48,6 +47,7 @@ include_rules = [
     "+build/build_config.h",
     "+build/buildflag.h",
     "+build/chromecast_buildflags.h",
+    "+testing/gmock/include/gmock/gmock.h",
     "+testing/gtest/include/gtest/gtest.h",
     "+testing/perf/perf_result_reporter.h",
 ]
