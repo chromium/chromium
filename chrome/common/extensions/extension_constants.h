@@ -166,6 +166,8 @@ extern const char kGnubbyAppId[];
 extern const char kGnubbyV3ExtensionId[];
 // The extension id of the GCSE.
 extern const char kGCSEExtensionId[];
+// The extension id of the Contact Center Insights chrome component extension.
+extern const char kContactCenterInsightsExtensionId[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Accessibility Common extension.

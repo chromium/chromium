@@ -77,6 +77,8 @@ const char kAssessmentAssistantExtensionId[] =
 const char kGnubbyAppId[] = "beknehfpfkghjoafdifaflglpjkojoco";
 const char kGnubbyV3ExtensionId[] = "lfboplenmmjcmpbkeemecobbadnmpfhi";
 const char kGCSEExtensionId[] = "cfmgaohenjcikllcgjpepfadgbflcjof";
+const char kContactCenterInsightsExtensionId[] =
+    "oebfonohdfogiaaaelfmjlkjbgdbaahf";
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAccessibilityCommonExtensionId[] =

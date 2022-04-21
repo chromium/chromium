@@ -29,6 +29,15 @@
         <include name="IDR_HANGOUT_SERVICES_BACKGROUND_HTML" file="hangout_services/background.html" type="BINDATA" />
         <include name="IDR_HANGOUT_SERVICES_THUNK_JS" file="hangout_services/thunk.js" type="BINDATA" />
       </if>
+
+      <!-- Contact Center Insights extension, enabled on managed ChromeOS devices -->
+      <if expr="chromeos_ash or chromeos_lacros">
+        <include name="IDR_CONTACT_CENTER_INSIGHTS_BACKGROUND_JS" file="chromeos/contact_center_insights/background.js" type="BINDATA" />
+        <include name="IDR_CONTACT_CENTER_INSIGHTS_BACKGROUND_WRAPPER_JS" file="chromeos/contact_center_insights/background_wrapper.js" type="BINDATA" />
+        <!-- Generated dependency bundle used by the extension for reporting purposes -->
+        <include name="IDR_CONTACT_CENTER_INSIGHTS_CCAAS_DEPS_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/contact_center_insights/ccaas_deps.js" use_base_dir="false" resource_path="chromeos/contact_center_insights/ccaas_deps.js" type="BINDATA" />
+      </if>
+
       <if expr="not is_android">
         <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="feedback/html/bluetooth_logs_info.html" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="feedback/html/assistant_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />

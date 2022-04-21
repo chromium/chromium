@@ -179,6 +179,9 @@ if (enable_js_type_check) {
     if (is_linux || is_chromeos) {
       deps += [ "certificate_viewer:closure_compile" ]
     }
+    if (is_chromeos) {
+      deps += [ "chromeos/contact_center_insights:closure_compile" ]
+    }
   }
 }
 
@@ -189,6 +192,12 @@ if (!is_android) {
     defines = chrome_grit_defines
     if (enable_hangout_services_extension) {
       defines += [ "enable_hangout_services_extension" ]
+    }
+
+    # Some resources within component_extension_resources.grd are generated at
+    # build time so we include them as explicit dependencies here
+    if (is_chromeos) {
+      deps = [ "chromeos/contact_center_insights:generate_ccaas_deps" ]
     }
 
     outputs = [
