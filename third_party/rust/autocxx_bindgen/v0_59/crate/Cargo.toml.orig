@@ -15,7 +15,7 @@ readme = "README.md"
 repository = "https://github.com/adetaylor/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
-version = "0.59.15"
+version = "0.59.16"
 edition = "2018"
 build = "build.rs"
 
@@ -30,12 +30,6 @@ include = [
 
 [lib]
 path = "src/lib.rs"
-
-[[bin]]
-name = "bindgen"
-path = "src/main.rs"
-doc = false
-required-features = ["clap"]
 
 [dev-dependencies]
 diff = "0.1"

@@ -1,7 +1,7 @@
 <p align="center"><img src="design/logo.png" alt="once_cell"></p>
 
 
-[![Build Status](https://travis-ci.org/matklad/once_cell.svg?branch=master)](https://travis-ci.org/matklad/once_cell)
+[![Build Status](https://github.com/matklad/once_cell/actions/workflows/ci.yaml/badge.svg)](https://github.com/matklad/once_cell/actions)
 [![Crates.io](https://img.shields.io/crates/v/once_cell.svg)](https://crates.io/crates/once_cell)
 [![API reference](https://docs.rs/once_cell/badge.svg)](https://docs.rs/once_cell/)
 

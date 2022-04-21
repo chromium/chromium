@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "autocxx-bindgen"
-version = "0.59.15"
+version = "0.59.16"
 authors = [
     "Jyun-Yan You <jyyou.tw@gmail.com>",
     "Emilio Cobos Álvarez <emilio@crisal.io>",
@@ -47,12 +47,6 @@ repository = "https://github.com/adetaylor/rust-bindgen"
 
 [lib]
 path = "src/lib.rs"
-
-[[bin]]
-name = "bindgen"
-path = "src/main.rs"
-doc = false
-required-features = ["clap"]
 
 [dependencies.bitflags]
 version = "1.0.3"

@@ -16,7 +16,8 @@ include_cpp! {
 use ffi::*;
 
 pub fn serialize_url(scheme: &str, host: &str, port: u16) -> String {
-    let o: UniquePtr<url::Origin> = url::Origin::CreateFromNormalizedTuple(scheme, host, port);
+    let o: UniquePtr<url::Origin> =
+        url::Origin::CreateFromNormalizedTuple(scheme, host, port).within_unique_ptr();
     let serialized: UniquePtr<CxxString> = o.Serialize();
     serialized.to_str().unwrap().to_string()
 }

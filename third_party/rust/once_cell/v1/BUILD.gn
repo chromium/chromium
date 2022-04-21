@@ -18,7 +18,7 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.9.0"
+  cargo_pkg_version = "1.10.0"
   cargo_pkg_authors = "Aleksey Kladov <aleksey.kladov@gmail.com>"
   cargo_pkg_name = "once_cell"
   cargo_pkg_description = "Single assignment cells and lazy values."

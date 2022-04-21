@@ -843,21 +843,21 @@ impl CodeGenerator for Type {
                     item.used_template_params(ctx);
 
                 let is_opaque = item.is_opaque(ctx, &());
-                let (inner_rust_type, inner_annotations) = if is_opaque {
+                let inner_rust_type = if is_opaque {
                     outer_params = vec![];
-                    (self.to_opaque(ctx, item), RustTyAnnotation::None)
+                    self.to_opaque(ctx, item)
                 } else {
                     // Its possible that we have better layout information than
                     // the inner type does, so fall back to an opaque blob based
                     // on our layout if converting the inner item fails.
-                    let (mut inner_ty, inner_annotations) = inner_item
+                    let (mut inner_ty, _) = inner_item
                         .try_to_rust_ty_or_opaque(ctx, &())
                         .map(|ty| ty.to_outer_type())
                         .unwrap_or_else(|_| {
                             (self.to_opaque(ctx, item), RustTyAnnotation::None)
                         });
                     inner_ty.append_implicit_template_params(ctx, inner_item);
-                    (inner_ty, inner_annotations)
+                    inner_ty
                 };
 
                 {
@@ -891,20 +891,15 @@ impl CodeGenerator for Type {
                     quote! {}
                 };
                 let mut semantic_annotations = CppSemanticAttributeSingle::new(ctx.options());
-                match inner_annotations {
-                    RustTyAnnotation::None | RustTyAnnotation::Reference
-                        if has_unused_template_args =>
-                    {
-                        semantic_annotations.discards_template_param();
-                    }
-                    RustTyAnnotation::None |
-                    RustTyAnnotation::Opaque |
-                    RustTyAnnotation::Reference |
-                    RustTyAnnotation::RValueReference => {}
-                    RustTyAnnotation::HasUnusedTemplateArgs => {
-                        semantic_annotations.discards_template_param();
-                    }
-                };
+                // We are handling (essentially) type X = Y;
+                // We want to denote only if X has unused template params, e.g.
+                // type X<A> = Y;
+                // We don't want to note whether Y has unused template params, e.g.
+                // type X = Y<B>
+                // because that information will be recorded against the definition of Y.
+                if has_unused_template_args {
+                    semantic_annotations.discards_template_param();
+                }
                 tokens.append_all(semantic_annotations.result());
 
                 let alias_style = if ctx.options().type_alias.matches(&name) {

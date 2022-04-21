@@ -63,7 +63,7 @@ config("test") {
 group("autocxx_rustdeps") {
   # Depend upon cxx as well as autocxx due to https://github.com/google/autocxx/issues/36
   public_deps = [
-    "//third_party/rust/autocxx/v0_20:lib",
+    "//third_party/rust/autocxx/v0_21:lib",
     "//third_party/rust/cxx/v1:lib",
   ]
 }

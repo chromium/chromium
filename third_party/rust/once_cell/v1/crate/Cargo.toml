@@ -12,9 +12,9 @@
 [package]
 edition = "2018"
 name = "once_cell"
-version = "1.9.0"
+version = "1.10.0"
 authors = ["Aleksey Kladov <aleksey.kladov@gmail.com>"]
-exclude = ["*.png", "*.svg", "/Cargo.lock.msrv", "/.travis.yml", "/run-miri-tests.sh", "rustfmt.toml"]
+exclude = ["*.png", "*.svg", "/Cargo.lock.msrv", "rustfmt.toml"]
 description = "Single assignment cells and lazy values."
 documentation = "https://docs.rs/once_cell"
 readme = "README.md"
@@ -57,7 +57,7 @@ version = "0.1"
 optional = true
 
 [dependencies.parking_lot]
-version = "0.11"
+version = "0.12"
 optional = true
 default_features = false
 [dev-dependencies.crossbeam-utils]

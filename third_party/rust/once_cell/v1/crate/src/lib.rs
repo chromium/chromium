@@ -482,7 +482,7 @@ pub mod unsync {
             }
         }
 
-        /// Like [`set`](Self::set), but also returns a referce to the final cell value.
+        /// Like [`set`](Self::set), but also returns a reference to the final cell value.
         ///
         /// # Example
         /// ```
@@ -1116,7 +1116,7 @@ pub mod sync {
     }
 
     // We never create a `&F` from a `&Lazy<T, F>` so it is fine to not impl
-    // `Sync` for `F`. we do create a `&mut Option<F>` in `force`, but this is
+    // `Sync` for `F`. We do create a `&mut Option<F>` in `force`, but this is
     // properly synchronized, so it only happens once so it also does not
     // contribute to this impl.
     unsafe impl<T, F: Send> Sync for Lazy<T, F> where OnceCell<T>: Sync {}
