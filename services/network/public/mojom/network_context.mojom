@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
@@ -825,7 +826,9 @@ interface NetworkContextClient {
 //
 // NetworkContext is implemented by the network service. It is a trusted
 // interface that must not be sent to an untrusted process like a renderer
-// process. Only the browser process should have access to it.
+// process. Only the browser process or privileged utilities should have access
+// to it.
+[RequireContext=sandbox.mojom.Context.kPrivilegedUtility]
 interface NetworkContext {
   // Sets a client for this network context.
   SetClient(pending_remote<NetworkContextClient> client);

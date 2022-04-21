@@ -9,7 +9,10 @@ import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   generate_java = true
-  sources = [ "sandbox.mojom" ]
+  sources = [
+    "context.mojom",
+    "sandbox.mojom",
+  ]
 
   enabled_features = []
   if (enable_oop_printing) {

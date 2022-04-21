@@ -14,6 +14,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
@@ -200,6 +201,7 @@ interface NetworkService {
   SetSSLKeyLogFile(mojo_base.mojom.File file);
 
   // Creates a new network context with the given parameters.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   CreateNetworkContext(pending_receiver<NetworkContext> context,
                        NetworkContextParams params);
 

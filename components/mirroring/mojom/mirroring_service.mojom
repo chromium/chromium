@@ -8,6 +8,7 @@ import "components/mirroring/mojom/cast_message_channel.mojom";
 import "components/mirroring/mojom/resource_provider.mojom";
 import "components/mirroring/mojom/session_observer.mojom";
 import "components/mirroring/mojom/session_parameters.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -26,6 +27,7 @@ interface MirroringService {
   // to the mirroring receiver. |inbound_channel| receives the cast messages
   // from the mirroring receiver to this service.
   // To stop the session, just close the message pipe.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   Start(SessionParameters params,
         gfx.mojom.Size max_resolution,
         pending_remote<SessionObserver> observer,
