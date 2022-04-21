@@ -84,10 +84,10 @@ void EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult(
     crosapi::mojom::GetNetworkDetailsResultPtr result) {
   using Result = crosapi::mojom::GetNetworkDetailsResult;
   switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
+    case Result::Tag::kErrorMessage:
       Respond(Error(result->get_error_message()));
       return;
-    case Result::Tag::NETWORK_DETAILS:
+    case Result::Tag::kNetworkDetails:
       api::enterprise_networking_attributes::NetworkDetails network_details;
 
       absl::optional<net::IPAddress> ipv4_address =
