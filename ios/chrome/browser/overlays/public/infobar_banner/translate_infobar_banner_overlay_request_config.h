@@ -27,9 +27,9 @@ class TranslateBannerRequestConfig
   ~TranslateBannerRequestConfig() override;
 
   // The source language name.
-  std::u16string source_language() const { return source_language_; }
+  const std::u16string& source_language() const { return source_language_; }
   // The target language name.
-  std::u16string target_language() const { return target_language_; }
+  const std::u16string& target_language() const { return target_language_; }
   // The current TranslateStep Translate is in.
   translate::TranslateStep translate_step() const { return translate_step_; }
   // The name of the banner's icon image.
@@ -43,11 +43,11 @@ class TranslateBannerRequestConfig
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
   // The InfoBar causing this banner.
-  infobars::InfoBar* infobar_ = nullptr;
+  infobars::InfoBar* const infobar_;
   // Configuration data extracted from |infobar_|'s translate delegate.
   std::u16string source_language_;
   std::u16string target_language_;
-  NSString* icon_image_name_ = nil;
+  NSString* const icon_image_name_;
   translate::TranslateStep translate_step_;
 };
 
