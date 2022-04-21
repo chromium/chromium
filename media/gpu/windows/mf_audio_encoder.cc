@@ -510,6 +510,7 @@ void MFAudioEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
 void MFAudioEncoder::Flush(EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(done_cb);
+  done_cb = BindToCurrentLoop(std::move(done_cb));
 
   if (!initialized_) {
     std::move(done_cb).Run(

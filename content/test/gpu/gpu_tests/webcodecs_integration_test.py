@@ -5,6 +5,7 @@
 import os
 import sys
 import json
+import itertools
 
 import gpu_path_util
 from gpu_tests import gpu_integration_test
@@ -18,7 +19,7 @@ four_colors_img_path = os.path.join(data_path, 'four-colors.y4m')
 frame_sources = [
     'camera', 'capture', 'offscreen', 'arraybuffer', 'hw_decoder', 'sw_decoder'
 ]
-codecs = ['avc1.42001E', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08']
+video_codecs = ['avc1.42001E', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08']
 accelerations = ['prefer-hardware', 'prefer-software']
 
 
@@ -31,6 +32,13 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options):
+    tests = itertools.chain(cls.GenerateFrameTests(), cls.GenerateVideoTests(),
+                            cls.GenerateAudioTests())
+    for test in tests:
+      yield test
+
+  @classmethod
+  def GenerateFrameTests(cls):
     for source_type in frame_sources:
       yield ('WebCodecs_DrawImage_' + source_type, 'draw-image.html', ({
           'source_type':
@@ -45,6 +53,19 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           source_type
       }))
 
+  @classmethod
+  def GenerateAudioTests(cls):
+    yield ('WebCodecs_AudioEncoding_AAC_LC', 'audio-encode-decode.html', ({
+        'codec':
+        'mp4a.67',
+        'sample_rate':
+        48000,
+        'channels':
+        2
+    }))
+
+  @classmethod
+  def GenerateVideoTests(cls):
     yield ('WebCodecs_WebRTCPeerConnection_Window',
            'webrtc-peer-connection.html', ({
                'use_worker': False
@@ -54,14 +75,14 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                'use_worker': True
            }))
 
-    for codec in codecs:
+    for codec in video_codecs:
       yield ('WebCodecs_EncodeDecode_' + codec, 'encode-decode.html', ({
           'codec':
           codec
       }))
 
     for source_type in frame_sources:
-      for codec in codecs:
+      for codec in video_codecs:
         for acc in accelerations:
           args = (source_type, codec, acc)
           yield ('WebCodecs_Encode_%s_%s_%s' % args, 'encode.html', ({
@@ -73,7 +94,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               acc
           }))
 
-    for codec in codecs:
+    for codec in video_codecs:
       for acc in accelerations:
         for bitrate_mode in ['constant', 'variable']:
           for latency_mode in ['realtime', 'quality']:
@@ -88,7 +109,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                        'latency_mode': latency_mode
                    }))
 
-    for codec in codecs:
+    for codec in video_codecs:
       for layers in [2, 3]:
         args = (codec, layers)
         yield ('WebCodecs_SVC_%s_layers_%d' % args, 'svc.html', ({
@@ -98,7 +119,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
             layers
         }))
 
-    for codec in codecs:
+    for codec in video_codecs:
       for acc in accelerations:
         args = (codec, acc)
         yield ('WebCodecs_EncodeColorSpace_%s_%s' % args,

@@ -151,6 +151,7 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
       return true;
     }
     case media::AudioCodec::kAAC: {
+#if BUILDFLAG(IS_WIN)
       if (!VerifyParameterValues(config->options.channels, exception_state,
                                  "Unsupported number of channels.",
                                  {1, 2, 6})) {
@@ -167,10 +168,14 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
                                  "Unsupported sample rate.", {44100, 48000})) {
         return false;
       }
-    }
       if (base::FeatureList::IsEnabled(features::kPlatformAudioEncoder))
         return true;
       [[fallthrough]];
+#else
+      // At this point we only support AAC on Windows.
+      return false;
+#endif  // IS_WIN
+    }
     default:
       if (exception_state) {
         exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,

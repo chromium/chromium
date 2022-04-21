@@ -12,7 +12,7 @@ namespace features {
 
 // Allows usage of OS-level (platform) audio encoders.
 const base::Feature kPlatformAudioEncoder{"PlatformAudioEncoder",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When the audio service in a separate process, kill it when a hang is
 // detected. It will be restarted when needed.
