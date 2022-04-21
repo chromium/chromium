@@ -145,7 +145,7 @@ public class MerchantTrustMessageSchedulerTest {
                 mockPropteryModel, 4.7, mockMessagesContext, 2000, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
-        Assert.assertNull(callbackHelper.getResult());
+        Assert.assertNotNull(callbackHelper.getResult());
         verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
         verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
         verify(mMockMessageDispatcher, times(0))
