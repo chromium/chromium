@@ -493,18 +493,10 @@ Output = class {
     return this;
   }
 
-  /**
-   * Executes all specified output.
-   */
+  /** Executes all specified output. */
   go() {
     // Speech.
-    let queueMode = QueueMode.QUEUE;
-    if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
-      queueMode =
-          /** @type{QueueMode} */ (Output.forceModeForNextSpeechUtterance_);
-    } else if (this.queueMode_ !== undefined) {
-      queueMode = /** @type{QueueMode} */ (this.queueMode_);
-    }
+    let queueMode = this.determineQueueMode_();
 
     if (this.speechBuffer_.length > 0) {
       Output.forceModeForNextSpeechUtterance_ = undefined;
@@ -606,6 +598,17 @@ Output = class {
     if (this.speechCategory_ !== TtsCategory.LIVE && this.drawFocusRing_) {
       ChromeVoxState.instance.setFocusBounds(this.locations_);
     }
+  }
+
+  /** @return {QueueMode} */
+  determineQueueMode_() {
+    if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
+      return Output.forceModeForNextSpeechUtterance_;
+    }
+    if (this.queueMode_ !== undefined) {
+      return this.queueMode_;
+    }
+    return QueueMode.QUEUE;
   }
 
   /**
