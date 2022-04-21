@@ -8,6 +8,8 @@ static_library("common") {
   sources = [
     "node_data.cc",
     "node_data.h",
+    "switches.cc",
+    "switches.h",
   ]
 }
 
