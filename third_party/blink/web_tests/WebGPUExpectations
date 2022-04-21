@@ -587,10 +587,6 @@ crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,ex
 # Handling of base_vertex base_instance is not implemented for indirect draws on D3D12.
 crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;* [ Failure ]
 
-# Device lost is triggered unexpectedly.
-crbug.com/dawn/1278 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";depthOrArrayLayers=32;dimension="3d";format="r8unorm";mipLevel=2;* [ Failure ]
-crbug.com/dawn/1278 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";depthOrArrayLayers=32;dimension="3d";format="r8snorm";mipLevel=2;* [ Failure ]
-
 # (Intel-only) StoreOpClear handling is overclearing resources that should be preserved
 crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rg32float";uninitializeMethod="StoreOpClear";canaryOnCreation=true;* [ Failure ]
 crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rgba32float";uninitializeMethod="StoreOpClear";canaryOnCreation=true;* [ Failure ]
@@ -612,8 +608,6 @@ crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,ex
 
 # Various issues with 3D textures
 crbug.com/dawn/1288 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:dimension="3d";* [ Failure ]
-crbug.com/dawn/1289 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:mip_levels:dimension="3d";* [ Failure ]
-crbug.com/dawn/1289 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:dimension="3d";* [ Failure ]
 
 # FXC failures on Windows
 crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,barrier:workgroup_barrier_store_load:* [ Failure ]
