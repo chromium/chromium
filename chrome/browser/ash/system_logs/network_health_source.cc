@@ -97,52 +97,52 @@ std::string GetProblemsString(
   using chromeos::network_diagnostics::mojom::RoutineProblems;
   std::string problemsStr;
   switch (problems->which()) {
-    case RoutineProblems::Tag::LAN_CONNECTIVITY_PROBLEMS:
+    case RoutineProblems::Tag::kLanConnectivityProblems:
       problemsStr = ProblemsToStr(problems->get_lan_connectivity_problems());
       break;
-    case RoutineProblems::Tag::SIGNAL_STRENGTH_PROBLEMS:
+    case RoutineProblems::Tag::kSignalStrengthProblems:
       problemsStr = ProblemsToStr(problems->get_signal_strength_problems());
       break;
-    case RoutineProblems::Tag::GATEWAY_CAN_BE_PINGED_PROBLEMS:
+    case RoutineProblems::Tag::kGatewayCanBePingedProblems:
       problemsStr =
           ProblemsToStr(problems->get_gateway_can_be_pinged_problems());
       break;
-    case RoutineProblems::Tag::HAS_SECURE_WIFI_CONNECTION_PROBLEMS:
+    case RoutineProblems::Tag::kHasSecureWifiConnectionProblems:
       problemsStr =
           ProblemsToStr(problems->get_has_secure_wifi_connection_problems());
       break;
-    case RoutineProblems::Tag::DNS_RESOLVER_PRESENT_PROBLEMS:
+    case RoutineProblems::Tag::kDnsResolverPresentProblems:
       problemsStr =
           ProblemsToStr(problems->get_dns_resolver_present_problems());
       break;
-    case RoutineProblems::Tag::DNS_LATENCY_PROBLEMS:
+    case RoutineProblems::Tag::kDnsLatencyProblems:
       problemsStr = ProblemsToStr(problems->get_dns_latency_problems());
       break;
-    case RoutineProblems::Tag::DNS_RESOLUTION_PROBLEMS:
+    case RoutineProblems::Tag::kDnsResolutionProblems:
       problemsStr = ProblemsToStr(problems->get_dns_resolution_problems());
       break;
-    case RoutineProblems::Tag::CAPTIVE_PORTAL_PROBLEMS:
+    case RoutineProblems::Tag::kCaptivePortalProblems:
       problemsStr = ProblemsToStr(problems->get_captive_portal_problems());
       break;
-    case RoutineProblems::Tag::HTTP_FIREWALL_PROBLEMS:
+    case RoutineProblems::Tag::kHttpFirewallProblems:
       problemsStr = ProblemsToStr(problems->get_http_firewall_problems());
       break;
-    case RoutineProblems::Tag::HTTPS_FIREWALL_PROBLEMS:
+    case RoutineProblems::Tag::kHttpsFirewallProblems:
       problemsStr = ProblemsToStr(problems->get_https_firewall_problems());
       break;
-    case RoutineProblems::Tag::HTTPS_LATENCY_PROBLEMS:
+    case RoutineProblems::Tag::kHttpsLatencyProblems:
       problemsStr = ProblemsToStr(problems->get_https_latency_problems());
       break;
-    case RoutineProblems::Tag::VIDEO_CONFERENCING_PROBLEMS:
+    case RoutineProblems::Tag::kVideoConferencingProblems:
       problemsStr = ProblemsToStr(problems->get_video_conferencing_problems());
       break;
-    case RoutineProblems::Tag::ARC_HTTP_PROBLEMS:
+    case RoutineProblems::Tag::kArcHttpProblems:
       problemsStr = ProblemsToStr(problems->get_arc_http_problems());
       break;
-    case RoutineProblems::Tag::ARC_DNS_RESOLUTION_PROBLEMS:
+    case RoutineProblems::Tag::kArcDnsResolutionProblems:
       problemsStr = ProblemsToStr(problems->get_arc_dns_resolution_problems());
       break;
-    case RoutineProblems::Tag::ARC_PING_PROBLEMS:
+    case RoutineProblems::Tag::kArcPingProblems:
       problemsStr = ProblemsToStr(problems->get_arc_ping_problems());
       break;
   }
