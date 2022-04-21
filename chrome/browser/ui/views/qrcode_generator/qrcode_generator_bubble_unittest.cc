@@ -47,7 +47,8 @@ TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
 
   auto image = QRCodeGeneratorBubble::AddQRCodeQuietZone(
       base_image,
-      gfx::Size(kBaseSizeDip / kTileToDip, kBaseSizeDip / kTileToDip));
+      gfx::Size(kBaseSizeDip / kTileToDip, kBaseSizeDip / kTileToDip),
+      SK_ColorTRANSPARENT);
 
   EXPECT_EQ(base_image.width(), kBaseSizeDip);
   EXPECT_EQ(base_image.height(), kBaseSizeDip);

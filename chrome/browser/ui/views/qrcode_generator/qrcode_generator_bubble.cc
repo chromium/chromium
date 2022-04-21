@@ -68,10 +68,10 @@ constexpr bool IsSquare(gfx::Size size) {
   return size.width() == size.height();
 }
 
-gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size) {
+gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size.width(), size.height());
-  bitmap.eraseColor(SK_ColorTRANSPARENT);
+  bitmap.eraseColor(color);
   return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
 }
 
@@ -158,9 +158,9 @@ void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
   ShrinkAndHideDisplay(center_error_label_);
   bottom_error_label_->SetVisible(false);
   download_button_->SetEnabled(true);
-  UpdateQRImage(
-      AddQRCodeQuietZone(gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap),
-                         response->data_size));
+  UpdateQRImage(AddQRCodeQuietZone(
+      gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap), response->data_size,
+      GetColorProvider()->GetColor(kColorQrCodeBackground)));
 }
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
@@ -173,7 +173,8 @@ void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
 }
 
 void QRCodeGeneratorBubble::DisplayPlaceholderImage() {
-  UpdateQRImage(CreateBackgroundImageSkia(GetQRCodeImageSize()));
+  UpdateQRImage(
+      CreateBackgroundImageSkia(GetQRCodeImageSize(), SK_ColorTRANSPARENT));
 }
 
 void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
@@ -378,7 +379,8 @@ const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
 // static
 gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
     const gfx::ImageSkia& image,
-    const gfx::Size& qr_size) {
+    const gfx::Size& qr_size,
+    SkColor background_color) {
   const gfx::Size image_size(image.width(), image.height());
 
   DCHECK(IsSquare(image_size));
@@ -393,7 +395,7 @@ gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
                              kQuietZoneSizeTiles * tile_size * 2);
 
   auto final_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      CreateBackgroundImageSkia(background_size), image);
+      CreateBackgroundImageSkia(background_size, background_color), image);
   DCHECK(IsSquare(gfx::Size(final_image.width(), final_image.height())));
   return final_image;
 }
