@@ -16,6 +16,7 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
 import {getBatteryPercentage, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {BluetoothDeviceProperties, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 /**
  * @constructor
@@ -39,7 +40,7 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
   static get properties() {
     return {
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {!BluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -63,15 +64,14 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
    * Only show specific battery information if the device is
    * Connected and there exists information for that device.
    *
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @param {!BatteryType} batteryType
    * @return {boolean}
    * @protected
    */
   shouldShowBatteryTypeInfo_(device, batteryType) {
-    if (device.connectionState !==
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected ||
+    if (device.connectionState !== DeviceConnectionState.kConnected ||
         !hasTrueWirelessImages(device)) {
       return false;
     }
@@ -85,7 +85,7 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
    * We also display the default image alongside the "Disconnected" label when
    * the device is disconnected.
    *
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @return {boolean}
    * @protected
@@ -108,20 +108,18 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
 
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @return {boolean}
    * @protected
    */
   isDeviceNotConnected_(device) {
-    return device.connectionState ===
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected ||
-        device.connectionState ===
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting;
+    return device.connectionState === DeviceConnectionState.kNotConnected ||
+        device.connectionState === DeviceConnectionState.kConnecting;
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @param {!BatteryType} batteryType
    * @return {string}
@@ -141,7 +139,7 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @param {!BatteryType} batteryType
    * @return {string}

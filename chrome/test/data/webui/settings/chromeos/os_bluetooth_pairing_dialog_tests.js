@@ -19,12 +19,7 @@ suite('OsBluetoothPairingDialogTest', function() {
   /** @type {!FakeBluetoothConfig} */
   let bluetoothConfig;
 
-  /** @type {!chromeos.bluetoothConfig.mojom} */
-  let mojom;
-
   setup(function() {
-    mojom = chromeos.bluetoothConfig.mojom;
-
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
 

@@ -15,6 +15,7 @@ import './bluetooth_icons.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {BatteryType} from './bluetooth_types.js';
 import {getBatteryPercentage} from './bluetooth_utils.js';
@@ -59,7 +60,7 @@ export class BluetoothBatteryIconPercentageElement extends
   static get properties() {
     return {
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {!BluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -99,7 +100,7 @@ export class BluetoothBatteryIconPercentageElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @param {!BatteryType} batteryType
    * @return {boolean}
@@ -131,7 +132,7 @@ export class BluetoothBatteryIconPercentageElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @param {!BatteryType} batteryType
    * @return {string}
@@ -171,7 +172,7 @@ export class BluetoothBatteryIconPercentageElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   * @param {!BluetoothDeviceProperties}
    *     device
    * @param {!BatteryType} batteryType
    * @return {string}

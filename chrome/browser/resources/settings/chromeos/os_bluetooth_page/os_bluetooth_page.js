@@ -20,8 +20,7 @@ import './os_bluetooth_pairing_dialog.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
+import {BluetoothSystemProperties, BluetoothSystemState, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 /**
  * @constructor
@@ -49,7 +48,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
       },
 
       /**
-       * @private {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @private {!BluetoothSystemProperties}
        */
       systemProperties_: Object,
 
@@ -65,12 +64,12 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
     super();
 
     /**
-     * @private {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver}
+     * @private {!SystemPropertiesObserverReceiver}
      */
     this.systemPropertiesObserverReceiver_ =
-        new chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver(
+        new SystemPropertiesObserverReceiver(
             /**
-             * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+             * @type {!SystemPropertiesObserverInterface}
              */
             (this));
   }
@@ -83,7 +82,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   /**
    * SystemPropertiesObserverInterface override
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+   * @param {!BluetoothSystemProperties}
    *     properties
    */
   onPropertiesUpdated(properties) {
@@ -110,9 +109,8 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
     }
 
     return this.systemProperties_.systemState ===
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled ||
-        this.systemProperties_.systemState ===
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabling;
+        BluetoothSystemState.kEnabled ||
+        this.systemProperties_.systemState === BluetoothSystemState.kEnabling;
   }
 }
 

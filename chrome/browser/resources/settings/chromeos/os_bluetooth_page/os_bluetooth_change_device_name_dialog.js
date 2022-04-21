@@ -14,10 +14,7 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
-
-const mojom = chromeos.bluetoothConfig.mojom;
+import {PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 /** @type {number} */
 const MAX_INPUT_LENGTH = 32;
@@ -44,7 +41,7 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
   static get properties() {
     return {
       /**
-       * @private {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+       * @private {!PairedBluetoothDeviceProperties}
        */
       device: {
         type: Object,

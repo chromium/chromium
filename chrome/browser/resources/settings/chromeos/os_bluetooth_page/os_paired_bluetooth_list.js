@@ -13,6 +13,7 @@ import './os_paired_bluetooth_list_item.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 /**
  * @constructor
@@ -36,7 +37,7 @@ class SettingsPairedBluetoothListElement extends
   static get properties() {
     return {
       /**
-       * @private {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+       * @private {!Array<!PairedBluetoothDeviceProperties>}
        */
       devices: {
         type: Array,

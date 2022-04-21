@@ -7,7 +7,7 @@ import("//ui/webui/resources/cr_components/chromeos/os_cr_components.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
+  closure_flags = default_closure_args + mojom_js_args + [
                     "browser_resolver_prefix_replacements=\"chrome://bluetooth-pairing/=../../chrome/browser/resources/chromeos/bluetooth_pairing_dialog/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
@@ -34,7 +34,7 @@ js_library("bluetooth_pairing_ui_test") {
   deps = [
     ":fake_bluetooth_config",
     "../../..:chai_assert",
-    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_ui",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -43,7 +43,7 @@ js_library("bluetooth_pairing_ui_test") {
 js_library("bluetooth_icon_test") {
   deps = [
     "../../..:chai_assert",
-    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_icon",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -60,6 +60,7 @@ js_library("bluetooth_base_page_test") {
 js_library("bluetooth_battery_icon_percentage_tests") {
   deps = [
     "../../..:chai_assert",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_battery_icon_percentage",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -68,6 +69,7 @@ js_library("bluetooth_battery_icon_percentage_tests") {
 js_library("bluetooth_device_battery_info_tests") {
   deps = [
     "../../..:chai_assert",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_device_battery_info",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -85,6 +87,7 @@ js_library("bluetooth_pairing_device_item_test") {
 js_library("bluetooth_pairing_device_selection_page_test") {
   deps = [
     "../../..:chai_assert",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_device_selection_page",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_types",
   ]
@@ -94,6 +97,7 @@ js_library("bluetooth_pairing_device_selection_page_test") {
 js_library("bluetooth_pairing_request_code_page_test") {
   deps = [
     "../../..:chai_assert",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_request_code_page",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_types",
   ]
@@ -104,6 +108,7 @@ js_library("bluetooth_pairing_enter_code_page_test") {
   deps = [
     ":fake_bluetooth_config",
     "../../..:chai_assert",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_enter_code_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -128,14 +133,14 @@ js_library("bluetooth_spinner_page_test") {
 js_library("fake_bluetooth_config") {
   deps = [
     "../../..:chai_assert",
-    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
   ]
 }
 
 js_library("fake_device_pairing_handler") {
-  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile" ]
+  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js" ]
 }
 
 js_library("fake_bluetooth_discovery_delegate") {
-  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile" ]
+  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js" ]
 }

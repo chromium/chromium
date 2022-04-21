@@ -5,6 +5,7 @@
 import 'chrome://os-settings/strings.m.js';
 
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise} from 'chrome://test/test_util.js';
@@ -15,11 +16,7 @@ suite('OsPairedBluetoothListItemTest', function() {
   /** @type {!SettingsPairedBluetoothListItemElement|undefined} */
   let pairedBluetoothListItem;
 
-  /** @type {!chromeos.bluetoothConfig.mojom} */
-  let mojom;
-
   setup(function() {
-    mojom = chromeos.bluetoothConfig.mojom;
     pairedBluetoothListItem =
         document.createElement('os-settings-paired-bluetooth-list-item');
     document.body.appendChild(pairedBluetoothListItem);
@@ -51,7 +48,7 @@ suite('OsPairedBluetoothListItemTest', function() {
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789', /*publicName=*/ publicName,
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
+            DeviceConnectionState.kNotConnected);
         pairedBluetoothListItem.device = device;
 
         const itemIndex = 3;
@@ -99,7 +96,7 @@ suite('OsPairedBluetoothListItemTest', function() {
 
         // Set device to connecting.
         device.deviceProperties.connectionState =
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting;
+            DeviceConnectionState.kConnecting;
         pairedBluetoothListItem.device = {...device};
         await flushAsync();
 
@@ -123,9 +120,8 @@ suite('OsPairedBluetoothListItemTest', function() {
         const nickname = 'nickname';
         device.nickname = nickname;
         device.deviceProperties.connectionState =
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected;
-        device.deviceProperties.deviceType =
-            chromeos.bluetoothConfig.mojom.DeviceType.kComputer;
+            DeviceConnectionState.kConnected;
+        device.deviceProperties.deviceType = DeviceType.kComputer;
         const batteryPercentage = 60;
         device.deviceProperties.batteryInfo = {
           defaultProperties: {batteryPercentage: batteryPercentage}
@@ -195,7 +191,7 @@ suite('OsPairedBluetoothListItemTest', function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     pairedBluetoothListItem.device = device;
 
     const getBatteryInfo = () => {
@@ -215,7 +211,7 @@ suite('OsPairedBluetoothListItemTest', function() {
     const device = createDefaultBluetoothDevice(
         id, /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     pairedBluetoothListItem.device = device;
     await flushAsync();
 
@@ -263,11 +259,11 @@ suite('OsPairedBluetoothListItemTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse,
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse,
         /*opt_isBlockedByPolicy=*/ true);
 
     pairedBluetoothListItem.device = Object.assign({}, device);

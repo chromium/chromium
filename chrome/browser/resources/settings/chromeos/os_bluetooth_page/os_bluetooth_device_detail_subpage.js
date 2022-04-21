@@ -22,14 +22,12 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
 import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
-
-const mojom = chromeos.bluetoothConfig.mojom;
 
 /** @enum {number} */
 const PageState = {
@@ -64,14 +62,14 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   static get properties() {
     return {
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @type {!BluetoothSystemProperties}
        */
       systemProperties: {
         type: Object,
       },
 
       /**
-       * @private {?chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+       * @private {?PairedBluetoothDeviceProperties}
        */
       device_: {
         type: Object,
@@ -186,7 +184,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return false;
     }
     return this.device_.deviceProperties.connectionState ===
-        mojom.DeviceConnectionState.kConnected;
+        DeviceConnectionState.kConnected;
   }
 
   /**
@@ -241,7 +239,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return false;
     }
     return this.device_.deviceProperties.audioCapability ===
-        mojom.AudioOutputCapability.kCapableOfAudioOutput;
+        AudioOutputCapability.kCapableOfAudioOutput;
   }
 
   /**
@@ -265,18 +263,18 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     // |connectionState| has changed.
     if (this.pageState_ === PageState.CONNECTION_FAILED &&
         this.device_.deviceProperties.connectionState ===
-            mojom.DeviceConnectionState.kNotConnected) {
+            DeviceConnectionState.kNotConnected) {
       return;
     }
 
     switch (this.device_.deviceProperties.connectionState) {
-      case mojom.DeviceConnectionState.kConnected:
+      case DeviceConnectionState.kConnected:
         this.pageState_ = PageState.CONNECTED;
         break;
-      case mojom.DeviceConnectionState.kNotConnected:
+      case DeviceConnectionState.kNotConnected:
         this.pageState_ = PageState.DISCONNECTED;
         break;
-      case mojom.DeviceConnectionState.kConnecting:
+      case DeviceConnectionState.kConnecting:
         this.pageState_ = PageState.CONNECTING;
         break;
       default:
@@ -293,7 +291,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return false;
     }
     return this.device_.deviceProperties.audioCapability !==
-        mojom.AudioOutputCapability.kCapableOfAudioOutput;
+        AudioOutputCapability.kCapableOfAudioOutput;
   }
 
   /**
@@ -307,7 +305,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     }
 
     if (this.device_.deviceProperties.connectionState ===
-        mojom.DeviceConnectionState.kConnected) {
+        DeviceConnectionState.kConnected) {
       return this.i18n('bluetoothDeviceDetailHIDMessageConnected');
     }
 
@@ -435,10 +433,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     if (!this.device_ || !this.isDeviceConnected_) {
       return false;
     }
-    return this.device_.deviceProperties.deviceType ===
-        mojom.DeviceType.kMouse ||
+    return this.device_.deviceProperties.deviceType === DeviceType.kMouse ||
         this.device_.deviceProperties.deviceType ===
-        mojom.DeviceType.kKeyboardMouseCombo;
+        DeviceType.kKeyboardMouseCombo;
   }
 
   /**
@@ -449,10 +446,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     if (!this.device_ || !this.isDeviceConnected_) {
       return false;
     }
-    return this.device_.deviceProperties.deviceType ===
-        mojom.DeviceType.kKeyboard ||
+    return this.device_.deviceProperties.deviceType === DeviceType.kKeyboard ||
         this.device_.deviceProperties.deviceType ===
-        mojom.DeviceType.kKeyboardMouseCombo;
+        DeviceType.kKeyboardMouseCombo;
   }
 
   /**
@@ -597,7 +593,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   /**
-   * @return {?chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @return {?PairedBluetoothDeviceProperties}
    */
   getDeviceForTest() {
     return this.device_;

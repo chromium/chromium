@@ -6,6 +6,7 @@ import 'chrome://os-settings/strings.m.js';
 
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.js';
@@ -19,16 +20,12 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
   /** @type {!SettingsBluetoothDeviceDetailSubpageElement|undefined} */
   let bluetoothDeviceDetailPage;
 
-  /** @type {!chromeos.bluetoothConfig.mojom} */
-  let mojom;
-
   /**
-   * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+   * @type {!SystemPropertiesObserverInterface}
    */
   let propertiesObserver;
 
   setup(function() {
-    mojom = chromeos.bluetoothConfig.mojom;
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
   });
@@ -42,7 +39,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     propertiesObserver = {
       /**
        * SystemPropertiesObserverInterface override
-       * @param {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @param {!BluetoothSystemProperties}
        *     properties
        */
       onPropertiesUpdated(properties) {
@@ -82,11 +79,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
             id,
             /*publicName=*/ 'BeatsX',
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected,
+            DeviceConnectionState.kNotConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
-            mojom.AudioOutputCapability.kCapableOfAudioOutput,
-            /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+            AudioOutputCapability.kCapableOfAudioOutput,
+            /*opt_deviceType=*/ DeviceType.kMouse);
 
         device1.deviceProperties.batteryInfo = {
           defaultProperties: {batteryPercentage: 90}
@@ -133,11 +130,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '12345/6789&',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse,
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse,
         /*opt_isBlockedByPolicy=*/ true);
 
     bluetoothConfig.appendToPairedDeviceList([device]);
@@ -171,11 +168,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '12345/6789&',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected,
+        DeviceConnectionState.kNotConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse,
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse,
         /*opt_isBlockedByPolicy=*/ true);
     const fakeUrl = {url: 'fake_image'};
     // Emulate missing the right bud image.
@@ -206,19 +203,17 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     // component if not connected.
     device.deviceProperties.batteryInfo = {};
     device.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kNotConnected;
+        DeviceConnectionState.kNotConnected;
     bluetoothConfig.updatePairedDevice(device);
     await flushAsync();
     assertTrue(!!getTrueWirelessImages());
 
-    device.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kConnecting;
+    device.deviceProperties.connectionState = DeviceConnectionState.kConnecting;
     bluetoothConfig.updatePairedDevice(device);
     await flushAsync();
     assertTrue(!!getTrueWirelessImages());
 
-    device.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kConnected;
+    device.deviceProperties.connectionState = DeviceConnectionState.kConnected;
     bluetoothConfig.updatePairedDevice(device);
     await flushAsync();
     assertFalse(!!getTrueWirelessImages());
@@ -253,11 +248,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
 
     bluetoothConfig.appendToPairedDeviceList([device1]);
     await flushAsync();
@@ -279,13 +274,12 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getChangeMouseSettings().label);
 
     device1.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kNotConnected;
+        DeviceConnectionState.kNotConnected;
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
     assertFalse(!!getChangeMouseSettings());
 
-    device1.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kConnected;
+    device1.deviceProperties.connectionState = DeviceConnectionState.kConnected;
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
     assertTrue(!!getChangeMouseSettings());
@@ -310,7 +304,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getChangeMouseSettings(),
         bluetoothDeviceDetailPage.shadowRoot.activeElement);
 
-    device1.deviceProperties.deviceType = mojom.DeviceType.kKeyboard;
+    device1.deviceProperties.deviceType = DeviceType.kKeyboard;
     bluetoothConfig.updatePairedDevice(device1);
 
     await flushAsync();
@@ -318,13 +312,12 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertTrue(!!getChangeKeyboardSettings());
 
     device1.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kNotConnected;
+        DeviceConnectionState.kNotConnected;
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
     assertFalse(!!getChangeKeyboardSettings());
 
-    device1.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kConnected;
+    device1.deviceProperties.connectionState = DeviceConnectionState.kConnected;
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
     assertTrue(!!getChangeKeyboardSettings());
@@ -349,7 +342,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getChangeKeyboardSettings(),
         bluetoothDeviceDetailPage.shadowRoot.activeElement);
 
-    device1.deviceProperties.deviceType = mojom.DeviceType.kKeyboardMouseCombo;
+    device1.deviceProperties.deviceType = DeviceType.kKeyboardMouseCombo;
     bluetoothConfig.updatePairedDevice(device1);
 
     await flushAsync();
@@ -372,21 +365,21 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '12345/6789&',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
 
     const device2 = createDefaultBluetoothDevice(
         /*id=*/ '987654321',
         /*publicName=*/ 'MX 3',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device2',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
 
     bluetoothConfig.appendToPairedDeviceList([device1, device2]);
     await flushAsync();
@@ -433,11 +426,10 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '123456789',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
-        deviceNickname,
+        DeviceConnectionState.kConnected, deviceNickname,
         /*opt_udioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kHeadset);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kHeadset);
 
     device1.deviceProperties.batteryInfo = {
       defaultProperties: {batteryPercentage: 90}
@@ -467,9 +459,9 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
     // Simulate disconnected state and not audio capable.
     device1.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kNotConnected;
+        DeviceConnectionState.kNotConnected;
     device1.deviceProperties.audioCapability =
-        mojom.AudioOutputCapability.kNotCapableOfAudioOutput;
+        AudioOutputCapability.kNotCapableOfAudioOutput;
     device1.deviceProperties.batteryInfo = {defaultProperties: null};
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
@@ -493,8 +485,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getNonAudioOutputDeviceMessage().textContent.trim());
 
     // Simulate connected state and not audio capable.
-    device1.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kConnected;
+    device1.deviceProperties.connectionState = DeviceConnectionState.kConnected;
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
 
@@ -505,7 +496,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getNonAudioOutputDeviceMessage().textContent.trim());
 
     device1.deviceProperties.audioCapability =
-        mojom.AudioOutputCapability.kCapableOfAudioOutput;
+        AudioOutputCapability.kCapableOfAudioOutput;
     bluetoothConfig.updatePairedDevice(device1);
     // Navigate away from details subpage with while connected and navigate
     // back.
@@ -537,11 +528,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
             /*id=*/ '12//345&6789',
             /*publicName=*/ 'BeatsX',
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+            DeviceConnectionState.kConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
-            mojom.AudioOutputCapability.kCapableOfAudioOutput,
-            /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+            AudioOutputCapability.kCapableOfAudioOutput,
+            /*opt_deviceType=*/ DeviceType.kMouse);
 
         bluetoothConfig.appendToPairedDeviceList([device1]);
         await flushAsync();
@@ -579,11 +570,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ id,
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting,
+        DeviceConnectionState.kConnecting,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
 
     bluetoothConfig.appendToPairedDeviceList([device1]);
     await flushAsync();
@@ -640,11 +631,11 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         id,
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected,
+        DeviceConnectionState.kNotConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
 
     device1.deviceProperties.batteryInfo = {
       defaultProperties: {batteryPercentage: 90}
@@ -750,8 +741,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     // can happen if connection failure was because device was turned off
     // and is turned on. We expect connection error text to not show when
     // disconnected.
-    device1.deviceProperties.connectionState =
-        mojom.DeviceConnectionState.kConnected;
+    device1.deviceProperties.connectionState = DeviceConnectionState.kConnected;
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
     // Connection success.

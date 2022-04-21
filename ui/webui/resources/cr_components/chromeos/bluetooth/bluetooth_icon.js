@@ -10,6 +10,8 @@
 import './bluetooth_icons.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+
 import {hasDefaultImage} from './bluetooth_utils.js';
 
 /** @polymer */
@@ -25,7 +27,7 @@ export class SettingsBluetoothIconElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {!BluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -42,24 +44,23 @@ export class SettingsBluetoothIconElement extends PolymerElement {
       return 'default';
     }
 
-    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
     switch (this.device.deviceType) {
-      case deviceType.kComputer:
+      case DeviceType.kComputer:
         return 'computer';
-      case deviceType.kPhone:
+      case DeviceType.kPhone:
         return 'phone';
-      case deviceType.kHeadset:
+      case DeviceType.kHeadset:
         return 'headset';
-      case deviceType.kVideoCamera:
+      case DeviceType.kVideoCamera:
         return 'video-camera';
-      case deviceType.kGameController:
+      case DeviceType.kGameController:
         return 'game-controller';
-      case deviceType.kKeyboard:
-      case deviceType.kKeyboardMouseCombo:
+      case DeviceType.kKeyboard:
+      case DeviceType.kKeyboardMouseCombo:
         return 'keyboard';
-      case deviceType.kMouse:
+      case DeviceType.kMouse:
         return 'mouse';
-      case deviceType.kTablet:
+      case DeviceType.kTablet:
         return 'tablet';
       default:
         return 'default';

@@ -15,8 +15,9 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
-import {ButtonBarState, ButtonState, PairingAuthType} from './bluetooth_types.js';
+import {ButtonBarState, ButtonState} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';
 
 // Pairing passkey can be a maximum of 16 characters while pairing code a max
@@ -45,7 +46,7 @@ export class SettingsBluetoothPairingEnterCodeElement extends
   static get properties() {
     return {
       /**
-       * @type {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {?BluetoothDeviceProperties}
        */
       device: {
         type: Object,

@@ -16,6 +16,7 @@ import '../../localized_link/localized_link.js';
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {ButtonBarState, ButtonState, DeviceItemState} from './bluetooth_types.js';
 
@@ -42,7 +43,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
   static get properties() {
     return {
       /**
-       * @type {!Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+       * @type {!Array<!BluetoothDeviceProperties>}
        */
       devices: {
         type: Array,
@@ -60,7 +61,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
       },
 
       /**
-       * @type {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {?BluetoothDeviceProperties}
        */
       devicePendingPairing: {
         type: Object,
@@ -112,7 +113,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
 
     /**
      * The last device that was selected for pairing.
-     * @private {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+     * @private {?BluetoothDeviceProperties}
      */
     this.lastSelectedDevice_ = null;
   }
@@ -203,7 +204,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
   }
 
   /**
-   * @param {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
+   * @param {?BluetoothDeviceProperties} device
    * @return {!DeviceItemState}
    * @private
    */

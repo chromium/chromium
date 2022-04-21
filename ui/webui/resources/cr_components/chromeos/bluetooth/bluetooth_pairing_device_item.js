@@ -13,7 +13,10 @@ import './bluetooth_icon.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+
 import {assertNotReached} from '../../../js/assert.m.js';
+
 import {DeviceItemState} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';
 
@@ -39,7 +42,7 @@ export class SettingsBluetoothPairingDeviceItemElement extends
   static get properties() {
     return {
       /**
-       * @type {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {?BluetoothDeviceProperties}
        */
       device: Object,
 
@@ -170,27 +173,26 @@ export class SettingsBluetoothPairingDeviceItemElement extends
    * @private
    */
   getA11yDeviceTypeTextName_() {
-    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
     switch (this.device.deviceType) {
-      case deviceType.kUnknown:
+      case DeviceType.kUnknown:
         return 'bluetoothA11yDeviceTypeUnknown';
-      case deviceType.kComputer:
+      case DeviceType.kComputer:
         return 'bluetoothA11yDeviceTypeComputer';
-      case deviceType.kPhone:
+      case DeviceType.kPhone:
         return 'bluetoothA11yDeviceTypePhone';
-      case deviceType.kHeadset:
+      case DeviceType.kHeadset:
         return 'bluetoothA11yDeviceTypeHeadset';
-      case deviceType.kVideoCamera:
+      case DeviceType.kVideoCamera:
         return 'bluetoothA11yDeviceTypeVideoCamera';
-      case deviceType.kGameController:
+      case DeviceType.kGameController:
         return 'bluetoothA11yDeviceTypeGameController';
-      case deviceType.kKeyboard:
+      case DeviceType.kKeyboard:
         return 'bluetoothA11yDeviceTypeKeyboard';
-      case deviceType.kKeyboardMouseCombo:
+      case DeviceType.kKeyboardMouseCombo:
         return 'bluetoothA11yDeviceTypeKeyboardMouseCombo';
-      case deviceType.kMouse:
+      case DeviceType.kMouse:
         return 'bluetoothA11yDeviceTypeMouse';
-      case deviceType.kTablet:
+      case DeviceType.kTablet:
         return 'bluetoothA11yDeviceTypeTablet';
       default:
         assertNotReached();

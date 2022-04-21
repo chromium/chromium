@@ -10,4 +10,6 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom"
 }

@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {BluetoothBatteryIconPercentageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_battery_icon_percentage.js';
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
-import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BluetoothDeviceProperties, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertTrue} from '../../../chai_assert.js';
 
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
-
-// clang-format on
 
 suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
   /** @type {?BluetoothBatteryIconPercentageElement} */
@@ -59,7 +57,7 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
     bluetoothBatteryIconPercentage.batteryType = batteryType;
     bluetoothBatteryIconPercentage.device =
         /**
-         * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+         * @type {!BluetoothDeviceProperties}
          */
         (Object.assign({}, bluetoothBatteryIconPercentage.device));
     return flushAsync();
@@ -110,7 +108,7 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothBatteryIconPercentage.device = device.deviceProperties;
 
     // Lower bound edge case.
@@ -193,7 +191,7 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothBatteryIconPercentage.device = device.deviceProperties;
     bluetoothBatteryIconPercentage.isTypeLabeled = true;
 
@@ -228,7 +226,7 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothBatteryIconPercentage.device = device.deviceProperties;
     bluetoothBatteryIconPercentage.isTypeLabeled = false;
 

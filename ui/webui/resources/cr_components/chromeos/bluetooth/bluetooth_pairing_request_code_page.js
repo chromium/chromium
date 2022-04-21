@@ -14,10 +14,10 @@ import '../../../cr_elements/cr_input/cr_input.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {ButtonBarState, ButtonState, PairingAuthType} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';
-
 
 /**
  * Maximum length of a PIN code, it can range from 1 to 6 digits.
@@ -53,7 +53,7 @@ export class SettingsBluetoothRequestCodePageElement extends
   static get properties() {
     return {
       /**
-       * @type {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {?BluetoothDeviceProperties}
        */
       device: {
         type: Object,

@@ -22,6 +22,7 @@ import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo} from 'ch
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {Router} from '../../router.js';
 import {routes} from '../os_route.js';
@@ -49,7 +50,7 @@ class SettingsPairedBluetoothListItemElement extends
   static get properties() {
     return {
       /**
-       * @private {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+       * @private {!PairedBluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -118,7 +119,7 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!PairedBluetoothDeviceProperties}
    *     device
    * @return {string}
    * @private
@@ -128,7 +129,7 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!PairedBluetoothDeviceProperties}
    *     device
    * @return {boolean}
    * @private
@@ -140,7 +141,7 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!PairedBluetoothDeviceProperties}
    *     device
    * @return {string}
    * @private
@@ -177,18 +178,18 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!PairedBluetoothDeviceProperties}
    *     device
    * @return {boolean}
    * @private
    */
   isDeviceConnecting_(device) {
     return device.deviceProperties.connectionState ===
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting;
+        DeviceConnectionState.kConnecting;
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!PairedBluetoothDeviceProperties}
    *     device
    * @return {string}
    * @private
@@ -221,14 +222,13 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!PairedBluetoothDeviceProperties}
    *     device
    * @return {string}
    * @private
    */
   getA11yDeviceConnectionStatusTextName_(device) {
-    const connectionState =
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState;
+    const connectionState = DeviceConnectionState;
     switch (device.deviceProperties.connectionState) {
       case connectionState.kConnected:
         return 'bluetoothA11yDeviceConnectionStateConnected';
@@ -242,33 +242,32 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!PairedBluetoothDeviceProperties}
    *     device
    * @return {string}
    * @private
    */
   getA11yDeviceTypeTextName_(device) {
-    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
     switch (device.deviceProperties.deviceType) {
-      case deviceType.kUnknown:
+      case DeviceType.kUnknown:
         return 'bluetoothA11yDeviceTypeUnknown';
-      case deviceType.kComputer:
+      case DeviceType.kComputer:
         return 'bluetoothA11yDeviceTypeComputer';
-      case deviceType.kPhone:
+      case DeviceType.kPhone:
         return 'bluetoothA11yDeviceTypePhone';
-      case deviceType.kHeadset:
+      case DeviceType.kHeadset:
         return 'bluetoothA11yDeviceTypeHeadset';
-      case deviceType.kVideoCamera:
+      case DeviceType.kVideoCamera:
         return 'bluetoothA11yDeviceTypeVideoCamera';
-      case deviceType.kGameController:
+      case DeviceType.kGameController:
         return 'bluetoothA11yDeviceTypeGameController';
-      case deviceType.kKeyboard:
+      case DeviceType.kKeyboard:
         return 'bluetoothA11yDeviceTypeKeyboard';
-      case deviceType.kKeyboardMouseCombo:
+      case DeviceType.kKeyboardMouseCombo:
         return 'bluetoothA11yDeviceTypeKeyboardMouseCombo';
-      case deviceType.kMouse:
+      case DeviceType.kMouse:
         return 'bluetoothA11yDeviceTypeMouse';
-      case deviceType.kTablet:
+      case DeviceType.kTablet:
         return 'bluetoothA11yDeviceTypeTablet';
       default:
         assertNotReached();

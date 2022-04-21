@@ -7,6 +7,7 @@ import 'chrome://os-settings/strings.m.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.js';
@@ -21,16 +22,11 @@ suite('OsBluetoothSummaryTest', function() {
   let bluetoothSummary;
 
   /**
-   * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+   * @type {!SystemPropertiesObserverInterface}
    */
   let propertiesObserver;
 
-  /** @type {!chromeos.bluetoothConfig.mojom} */
-  let mojom;
-
   setup(function() {
-    mojom = chromeos.bluetoothConfig.mojom;
-
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
   });
@@ -43,7 +39,7 @@ suite('OsBluetoothSummaryTest', function() {
     propertiesObserver = {
       /**
        * SystemPropertiesObserverInterface override
-       * @param {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @param {!BluetoothSystemProperties}
        *     properties
        */
       onPropertiesUpdated(properties) {
@@ -85,8 +81,7 @@ suite('OsBluetoothSummaryTest', function() {
   });
 
   test('Toggle button creation and a11y', async function() {
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
     await flushAsync();
     init();
     let a11yMessagesEventPromise =
@@ -144,8 +139,7 @@ suite('OsBluetoothSummaryTest', function() {
     assertTrue(enableBluetoothToggle.checked);
 
     // Mock systemState becoming unavailable.
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kUnavailable);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertTrue(enableBluetoothToggle.disabled);
   });
@@ -179,16 +173,16 @@ suite('OsBluetoothSummaryTest', function() {
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1');
     const device2 = createDefaultBluetoothDevice(
         /*id=*/ '987654321', /*publicName=*/ 'MX 3',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     const device3 = createDefaultBluetoothDevice(
         /*id=*/ '456789', /*publicName=*/ 'Radio head',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device3');
 
     const mockPairedBluetoothDeviceProperties = [

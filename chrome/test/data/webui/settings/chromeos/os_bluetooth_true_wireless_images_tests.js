@@ -6,6 +6,7 @@ import 'chrome://os-settings/chromeos/os_settings.js';
 import 'chrome://os-settings/strings.m.js';
 
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
+import {BluetoothDeviceProperties, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 
@@ -23,7 +24,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     document.body.appendChild(bluetoothTrueWirelessImages);
     flush();
@@ -62,7 +63,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     bluetoothTrueWirelessImages.batteryType = batteryType;
     bluetoothTrueWirelessImages.device =
         /**
-         * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+         * @type {!BluetoothDeviceProperties}
          */
         (Object.assign({}, bluetoothTrueWirelessImages.device));
     return flushAsync();
@@ -82,7 +83,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
 
     bluetoothTrueWirelessImages.device =
         /**
-         * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+         * @type {!BluetoothDeviceProperties}
          */
         (Object.assign({}, bluetoothTrueWirelessImages.device));
     return flushAsync();
@@ -92,7 +93,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     setTrueWirelessImages();
 
@@ -129,7 +130,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     setTrueWirelessImages();
 
@@ -147,7 +148,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     setTrueWirelessImages();
 
@@ -171,7 +172,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     setTrueWirelessImages();
 
@@ -192,7 +193,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     setTrueWirelessImages();
 
@@ -213,7 +214,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     setTrueWirelessImages();
 
@@ -234,7 +235,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
 
     const batteryPercentage = 100;
@@ -257,7 +258,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
+        DeviceConnectionState.kNotConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
     setTrueWirelessImages();
 
@@ -281,7 +282,7 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const device = createDefaultBluetoothDevice(
         /* id= */ '123456789', /* publicName= */ 'BeatsX',
         /* connectionState= */
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
+        DeviceConnectionState.kNotConnected);
     bluetoothTrueWirelessImages.device = device.deviceProperties;
 
     const batteryPercentage = 100;

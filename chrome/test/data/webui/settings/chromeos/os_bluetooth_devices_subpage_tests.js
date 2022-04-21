@@ -7,6 +7,7 @@ import 'chrome://os-settings/strings.m.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.js';
@@ -21,16 +22,11 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   let bluetoothDevicesSubpage;
 
   /**
-   * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+   * @type {!SystemPropertiesObserverInterface}
    */
   let propertiesObserver;
 
-  /** @type {!chromeos.bluetoothConfig.mojom} */
-  let mojom;
-
   setup(function() {
-    mojom = chromeos.bluetoothConfig.mojom;
-
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
   });
@@ -54,7 +50,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     propertiesObserver = {
       /**
        * SystemPropertiesObserverInterface override
-       * @param {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @param {!BluetoothSystemProperties}
        *     properties
        */
       onPropertiesUpdated(properties) {
@@ -77,8 +73,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   });
 
   test('Toggle button creation and a11y', async function() {
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
     await init();
     const toggle = bluetoothDevicesSubpage.shadowRoot.querySelector(
         '#enableBluetoothToggle');
@@ -144,7 +139,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertToggleEnabledState(/*enabled=*/ true);
 
     // Mock systemState becoming unavailable.
-    bluetoothConfig.setSystemState(mojom.BluetoothSystemState.kUnavailable);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertTrue(enableBluetoothToggle.disabled);
   });
@@ -170,15 +165,15 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     const connectedDevice = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        DeviceConnectionState.kConnected);
     const notConnectedDevice = createDefaultBluetoothDevice(
         /*id=*/ '987654321', /*publicName=*/ 'MX 3',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
+        DeviceConnectionState.kNotConnected);
     const connectingDevice = createDefaultBluetoothDevice(
         /*id=*/ '11111111', /*publicName=*/ 'MX 3',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting);
+        DeviceConnectionState.kConnecting);
 
     // Pair connected device.
     bluetoothConfig.appendToPairedDeviceList([connectedDevice]);
@@ -227,12 +222,12 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         const connectedDevice = createDefaultBluetoothDevice(
             /*id=*/ connectedDeviceId, /*publicName=*/ 'BeatsX',
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+            DeviceConnectionState.kConnected);
         const unconnectedDeviceId = '2';
         const unconnectedDevice = createDefaultBluetoothDevice(
             /*id=*/ unconnectedDeviceId, /*publicName=*/ 'MX 3',
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
+            DeviceConnectionState.kNotConnected);
         bluetoothConfig.appendToPairedDeviceList([connectedDevice]);
         bluetoothConfig.appendToPairedDeviceList([unconnectedDevice]);
         await flushAsync();

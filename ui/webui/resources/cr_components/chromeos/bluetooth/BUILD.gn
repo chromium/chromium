@@ -9,6 +9,8 @@ assert(is_chromeos, "Bluetooth dialog is Chrome OS only.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+
   deps = [
     ":bluetooth_base_page",
     ":bluetooth_battery_icon_percentage",
@@ -39,6 +41,10 @@ js_library("bluetooth_metrics_utils") {
 }
 
 js_library("bluetooth_utils") {
+  deps = [
+    ":bluetooth_types",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
+  ]
 }
 
 js_library("bluetooth_icons") {
@@ -50,7 +56,7 @@ js_library("bluetooth_types") {
 js_library("bluetooth_icon") {
   deps = [
     ":bluetooth_icons",
-    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -59,7 +65,7 @@ js_library("bluetooth_pairing_device_item") {
   deps = [
     ":bluetooth_icon",
     ":bluetooth_types",
-    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -87,6 +93,7 @@ js_library("bluetooth_pairing_device_selection_page") {
     ":bluetooth_base_page",
     ":bluetooth_pairing_device_item",
     ":bluetooth_types",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
@@ -98,6 +105,7 @@ js_library("bluetooth_pairing_device_selection_page") {
 js_library("bluetooth_pairing_request_code_page") {
   deps = [
     ":bluetooth_base_page",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
@@ -114,6 +122,7 @@ js_library("bluetooth_pairing_enter_code_page") {
   deps = [
     ":bluetooth_base_page",
     ":bluetooth_types",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -124,7 +133,7 @@ js_library("bluetooth_pairing_ui") {
     ":bluetooth_pairing_device_selection_page",
     ":bluetooth_pairing_request_code_page",
     ":cros_bluetooth_config",
-    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -141,6 +150,7 @@ js_library("bluetooth_base_page") {
 
 js_library("bluetooth_battery_icon_percentage") {
   deps = [
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -149,6 +159,7 @@ js_library("bluetooth_battery_icon_percentage") {
 
 js_library("bluetooth_device_battery_info") {
   deps = [
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -157,7 +168,7 @@ js_library("bluetooth_device_battery_info") {
 }
 
 js_library("cros_bluetooth_config") {
-  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile" ]
+  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js" ]
 }
 
 js_library("bluetooth_spinner_page") {

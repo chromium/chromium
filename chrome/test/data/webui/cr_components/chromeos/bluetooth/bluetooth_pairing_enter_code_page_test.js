@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.js';
+import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
+
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
-
-// clang-format on
-
-const mojom = chromeos.bluetoothConfig.mojom;
 
 suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
   /** @type {?SettingsBluetoothPairingEnterCodeElement} */
@@ -43,11 +40,11 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456', deviceName,
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
 
     bluetoothPairingEnterCodePage.device = device.deviceProperties;
     await flushAsync();

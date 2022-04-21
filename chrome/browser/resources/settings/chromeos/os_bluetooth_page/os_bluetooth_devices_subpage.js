@@ -18,6 +18,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
@@ -25,8 +26,6 @@ import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
-
-const mojom = chromeos.bluetoothConfig.mojom;
 
 /**
  * @constructor
@@ -63,7 +62,7 @@ class SettingsBluetoothDevicesSubpageElement extends
       },
 
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @type {!BluetoothSystemProperties}
        */
       systemProperties: {
         type: Object,
@@ -103,7 +102,7 @@ class SettingsBluetoothDevicesSubpageElement extends
       },
 
       /**
-       * @private {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+       * @private {!Array<!PairedBluetoothDeviceProperties>}
        */
       connectedDevices_: {
         type: Array,
@@ -111,7 +110,7 @@ class SettingsBluetoothDevicesSubpageElement extends
       },
 
       /**
-       * @private {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+       * @private {!Array<!PairedBluetoothDeviceProperties>}
        */
       unconnectedDevices_: {
         type: Array,
@@ -188,17 +187,16 @@ class SettingsBluetoothDevicesSubpageElement extends
     if (this.isToggleDisabled_()) {
       return;
     }
-    this.isBluetoothToggleOn_ = this.systemProperties.systemState ===
-            mojom.BluetoothSystemState.kEnabled ||
-        this.systemProperties.systemState ===
-            mojom.BluetoothSystemState.kEnabling;
+    this.isBluetoothToggleOn_ =
+        this.systemProperties.systemState === BluetoothSystemState.kEnabled ||
+        this.systemProperties.systemState === BluetoothSystemState.kEnabling;
 
     this.connectedDevices_ = this.systemProperties.pairedDevices.filter(
         device => device.deviceProperties.connectionState ===
-            mojom.DeviceConnectionState.kConnected);
+            DeviceConnectionState.kConnected);
     this.unconnectedDevices_ = this.systemProperties.pairedDevices.filter(
         device => device.deviceProperties.connectionState !==
-            mojom.DeviceConnectionState.kConnected);
+            DeviceConnectionState.kConnected);
   }
 
   /** @private */
@@ -254,7 +252,7 @@ class SettingsBluetoothDevicesSubpageElement extends
     // TODO(crbug.com/1010321): Add check for modification state when variable
     // is available.
     return this.systemProperties.systemState ===
-        mojom.BluetoothSystemState.kUnavailable;
+        BluetoothSystemState.kUnavailable;
   }
 
   /**
@@ -269,7 +267,7 @@ class SettingsBluetoothDevicesSubpageElement extends
   }
 
   /**
-   * @param {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+   * @param {!Array<!PairedBluetoothDeviceProperties>}
    *     devices
    * @return boolean
    * @private

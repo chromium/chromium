@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// cros_bluetooth_config.mojom-lite.js depends on url.mojom.Url.
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-// TODO(crbug.com/1010321): Use cros_bluetooth_config.mojom-webui.js instead
-// as non-module JS is deprecated.
-import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';
+import {CrosBluetoothConfig, CrosBluetoothConfigInterface} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -14,11 +10,11 @@ import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/
  * CrosBluetoothConfig implementation for tests.
  */
 
-/** @type {?chromeos.bluetoothConfig.mojom.CrosBluetoothConfigInterface} */
+/** @type {?CrosBluetoothConfigInterface} */
 let bluetoothConfig = null;
 
 /**
- * @param {?chromeos.bluetoothConfig.mojom.CrosBluetoothConfigInterface}
+ * @param {?CrosBluetoothConfigInterface}
  *     testBluetoothConfig The CrosBluetoothConfig implementation used for
  *                         testing. Passing null reverses the override.
  */
@@ -27,14 +23,13 @@ export function setBluetoothConfigForTesting(testBluetoothConfig) {
 }
 
 /**
- * @return {!chromeos.bluetoothConfig.mojom.CrosBluetoothConfigInterface}
+ * @return {!CrosBluetoothConfigInterface}
  */
 export function getBluetoothConfig() {
   if (bluetoothConfig) {
     return bluetoothConfig;
   }
 
-  bluetoothConfig =
-      chromeos.bluetoothConfig.mojom.CrosBluetoothConfig.getRemote();
+  bluetoothConfig = CrosBluetoothConfig.getRemote();
   return bluetoothConfig;
 }

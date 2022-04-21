@@ -15,24 +15,26 @@ import './bluetooth_pairing_confirm_code_page.js';
 import './bluetooth_spinner_page.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BluetoothDeviceProperties, BluetoothDiscoveryDelegateInterface, BluetoothDiscoveryDelegateReceiver, BluetoothSystemState, DevicePairingDelegateInterface, DevicePairingDelegateReceiver, DevicePairingHandlerInterface, KeyEnteredHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerReceiver, PairingResult, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+
 import {assert, assertNotReached} from '../../../js/assert.m.js';
+
 import {PairingAuthType} from './bluetooth_types.js';
 import {getBluetoothConfig} from './cros_bluetooth_config.js';
 
-/** @implements {chromeos.bluetoothConfig.mojom.KeyEnteredHandlerInterface} */
+/** @implements {KeyEnteredHandlerInterface} */
 class KeyEnteredHandler {
   /**
    * @param {!SettingsBluetoothPairingUiElement} page
-   * @param {!chromeos.bluetoothConfig.mojom.KeyEnteredHandlerPendingReceiver}
+   * @param {!KeyEnteredHandlerPendingReceiver}
    *     keyEnteredHandlerReceiver
    */
   constructor(page, keyEnteredHandlerReceiver) {
     /** @private {!SettingsBluetoothPairingUiElement} */
     this.page_ = page;
 
-    /** @private {!chromeos.bluetoothConfig.mojom.KeyEnteredHandlerReceiver} */
-    this.keyEnteredHandlerReceiver_ =
-        new chromeos.bluetoothConfig.mojom.KeyEnteredHandlerReceiver(this);
+    /** @private {!KeyEnteredHandlerReceiver} */
+    this.keyEnteredHandlerReceiver_ = new KeyEnteredHandlerReceiver(this);
     this.keyEnteredHandlerReceiver_.$.bindHandle(
         keyEnteredHandlerReceiver.handle);
   }
@@ -73,10 +75,10 @@ let RequestCodeCallback;
 let ConfirmCodeCallback;
 
 /**
- * @implements {chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
- * @implements {chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface}
- * @implements {chromeos.bluetoothConfig.mojom.DevicePairingDelegateInterface}
- * @implements {chromeos.bluetoothConfig.mojom.KeyEnteredHandlerInterface}
+ * @implements {SystemPropertiesObserverInterface}
+ * @implements {BluetoothDiscoveryDelegateInterface}
+ * @implements {DevicePairingDelegateInterface}
+ * @implements {KeyEnteredHandlerInterface}
  * @polymer
  */
 export class SettingsBluetoothPairingUiElement extends PolymerElement {
@@ -124,7 +126,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       },
 
       /**
-       * @private {Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+       * @private {Array<!BluetoothDeviceProperties>}
        */
       discoveredDevices_: {
         type: Array,
@@ -134,7 +136,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       /**
        * This can be null if no pairing attempt was started or a pairing attempt
        * was cancelled by user.
-       * @private {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @private {?BluetoothDeviceProperties}
        */
       devicePendingPairing_: {
         type: Object,
@@ -188,38 +190,37 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   constructor() {
     super();
     /**
-     * @private {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver}
+     * @private {!SystemPropertiesObserverReceiver}
      */
     this.systemPropertiesObserverReceiver_ =
-        new chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver(
+        new SystemPropertiesObserverReceiver(
             /**
-             * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+             * @type {!SystemPropertiesObserverInterface}
              */
             (this));
 
     /**
-     * @private {!chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateReceiver}
+     * @private {!BluetoothDiscoveryDelegateReceiver}
      */
     this.bluetoothDiscoveryDelegateReceiver_ =
-        new chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateReceiver(
-            this);
+        new BluetoothDiscoveryDelegateReceiver(this);
 
     /**
-     * @private {?chromeos.bluetoothConfig.mojom.DevicePairingHandlerInterface}
+     * @private {?DevicePairingHandlerInterface}
      */
     this.devicePairingHandler_;
 
     /**
      * The device to be paired with after the current pairDevice_() request has
      * finished.
-     * @private {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+     * @private {?BluetoothDeviceProperties}
      */
     this.queuedDevicePendingPairing_;
 
     /**
      * The Mojo receiver of the current ongoing pairing. If null indicates no
      * pairing is occurring.
-     * @private {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver}
+     * @private {?DevicePairingDelegateReceiver}
      */
     this.pairingDelegateReceiver_ = null;
 
@@ -262,8 +263,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   /** @override */
   onPropertiesUpdated(properties) {
     const wasBluetoothEnabled = this.isBluetoothEnabled_;
-    this.isBluetoothEnabled_ = properties.systemState ===
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled;
+    this.isBluetoothEnabled_ =
+        properties.systemState === BluetoothSystemState.kEnabled;
 
     if (!wasBluetoothEnabled && this.isBluetoothEnabled_) {
       // If Bluetooth enables after being disabled, initialize the UI state.
@@ -299,7 +300,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   }
 
   /**
-   * @param {Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+   * @param {Array<!BluetoothDeviceProperties>}
    *     devices
    * @private
    */
@@ -356,7 +357,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
   /**
    * @param {!CustomEvent<!{device:
-   *     chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}>} event
+   *     BluetoothDeviceProperties}>} event
    * @private
    */
   onPairDevice_(event) {
@@ -402,15 +403,14 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
+   * @param {!BluetoothDeviceProperties} device
    * @private
    */
   pairDevice_(device) {
     assert(
         this.devicePairingHandler_, 'devicePairingHandler_ has not been set.');
 
-    this.pairingDelegateReceiver_ =
-        new chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver(this);
+    this.pairingDelegateReceiver_ = new DevicePairingDelegateReceiver(this);
 
     this.devicePendingPairing_ = device;
     assert(this.devicePendingPairing_);
@@ -427,13 +427,12 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
         .catch(() => {
           // Pairing failed due to external issues, such as Mojo pipe
           // disconnecting from Bluetooth disabling.
-          this.handlePairDeviceResult_(
-              chromeos.bluetoothConfig.mojom.PairingResult.kNonAuthFailure);
+          this.handlePairDeviceResult_(PairingResult.kNonAuthFailure);
         });
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairingResult} result
+   * @param {!PairingResult} result
    * @private
    */
   handlePairDeviceResult_(result) {
@@ -449,7 +448,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
     this.pairingDelegateReceiver_ = null;
 
-    if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
+    if (result === PairingResult.kSuccess) {
       this.closeDialog_();
       return;
     }
@@ -546,7 +545,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   }
 
   /**s
-   * @param {!chromeos.bluetoothConfig.mojom.KeyEnteredHandlerPendingReceiver}
+   * @param {!KeyEnteredHandlerPendingReceiver}
    *     handler
    * @param {string} code
    * @private

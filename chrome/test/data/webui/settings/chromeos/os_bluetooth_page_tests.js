@@ -6,6 +6,7 @@ import 'chrome://os-settings/strings.m.js';
 
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {BluetoothSystemState} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 
@@ -53,26 +54,22 @@ suite('OsBluetoothPageTest', function() {
 
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES, null);
 
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
     await flushAsync();
     assertTrue(!!getPairNewDevice());
 
     // Simulate Bluetooth disabled
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kDisabled);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kDisabled);
     await flushAsync();
     assertFalse(!!getPairNewDevice());
 
     // Simulate Bluetooth unavailable
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kUnavailable);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertFalse(!!getPairNewDevice());
 
     // Simulate Bluetooth enabled
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabling);
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabling);
     await flushAsync();
     assertTrue(!!getPairNewDevice());
     getPairNewDevice().click();

@@ -62,6 +62,7 @@ const std::set<int> GetContentResourceIds() {
 const std::set<int> GetChromeosMojoResourceIds() {
   return std::set<int>{
       IDR_BLUETOOTH_CONFIG_MOJOM_LITE_JS,
+      IDR_BLUETOOTH_CONFIG_MOJOM_WEBUI_JS,
       IDR_IP_ADDRESS_MOJOM_HTML,
       IDR_IP_ADDRESS_MOJOM_LITE_JS,
       IDR_IP_ADDRESS_MOJOM_WEBUI_JS,

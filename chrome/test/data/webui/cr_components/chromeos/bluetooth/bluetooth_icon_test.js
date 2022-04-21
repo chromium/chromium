@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {SettingsBluetoothIconElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_icon.js';
+import {AudioOutputCapability, BluetoothDeviceProperties, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
-import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
-// clang-format on
 
-const mojom = chromeos.bluetoothConfig.mojom;
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+
+import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 
 suite('CrComponentsBluetoothIconTest', function() {
   /** @type {?SettingsBluetoothIconElement} */
@@ -37,11 +36,11 @@ suite('CrComponentsBluetoothIconTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
 
     bluetoothIcon.device = device.deviceProperties;
     await flushAsync();
@@ -49,11 +48,11 @@ suite('CrComponentsBluetoothIconTest', function() {
     assertFalse(!!getDefaultImage());
     assertEquals(getDeviceIcon().icon, 'bluetooth:mouse');
 
-    device.deviceProperties.deviceType = mojom.DeviceType.kUnknown;
+    device.deviceProperties.deviceType = DeviceType.kUnknown;
 
     bluetoothIcon.device =
         /**
-           @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+           @type {!BluetoothDeviceProperties}
          */
         (Object.assign({}, device.deviceProperties));
     await flushAsync();
@@ -70,11 +69,11 @@ suite('CrComponentsBluetoothIconTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
-        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
-        mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
     const fakeUrl = 'fake_image';
     device.deviceProperties.imageInfo = {defaultImageUrl: {url: fakeUrl}};
 

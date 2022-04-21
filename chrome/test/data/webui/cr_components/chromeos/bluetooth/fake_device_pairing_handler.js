@@ -2,31 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// cros_bluetooth_config.mojom-lite.js depends on url.mojom.Url.
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-// TODO(crbug.com/1010321): Use cros_bluetooth_config.mojom-webui.js instead
-// as non-module JS is deprecated.
-import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';
 import {PairingAuthType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {BluetoothDeviceProperties, DevicePairingDelegateInterface, DevicePairingHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerRemote, PairingResult} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 /**
  * @fileoverview Fake implementation of DevicePairingHandler for testing.
  */
 
 /**
- * @implements {chromeos.bluetoothConfig.mojom.DevicePairingHandlerInterface}
+ * @implements {DevicePairingHandlerInterface}
  */
 export class FakeDevicePairingHandler {
   constructor() {
     /**
-     * @private {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateInterface}
+     * @private {?DevicePairingDelegateInterface}
      */
     this.devicePairingDelegate_ = null;
 
     /**
      * @private {?function({result:
-     *     chromeos.bluetoothConfig.mojom.PairingResult})}
+     *     PairingResult})}
      */
     this.pairDeviceCallback_ = null;
 
@@ -37,7 +33,7 @@ export class FakeDevicePairingHandler {
 
     /**
      * @private {?function({device:
-     *     ?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties})}
+     *     ?BluetoothDeviceProperties})}
      */
     this.fetchDeviceCallback_ = null;
 
@@ -50,7 +46,7 @@ export class FakeDevicePairingHandler {
     /** @private {boolean} */
     this.confirmPasskeyResult_ = false;
 
-    /** @private {?chromeos.bluetoothConfig.mojom.KeyEnteredHandlerRemote} */
+    /** @private {?KeyEnteredHandlerRemote} */
     this.lastKeyEnteredHandlerRemote_ = null;
 
     /** @private {?function()} */
@@ -160,17 +156,16 @@ export class FakeDevicePairingHandler {
   }
 
   /**
-   * @return {!chromeos.bluetoothConfig.mojom.KeyEnteredHandlerPendingReceiver}
+   * @return {!KeyEnteredHandlerPendingReceiver}
    * @private
    */
   getKeyEnteredHandlerPendingReceiver_() {
-    this.lastKeyEnteredHandlerRemote_ =
-        new chromeos.bluetoothConfig.mojom.KeyEnteredHandlerRemote();
+    this.lastKeyEnteredHandlerRemote_ = new KeyEnteredHandlerRemote();
     return this.lastKeyEnteredHandlerRemote_.$.bindNewPipeAndPassReceiver();
   }
 
   /**s
-   * @return {?chromeos.bluetoothConfig.mojom.KeyEnteredHandlerRemote}
+   * @return {?KeyEnteredHandlerRemote}
    */
   getLastKeyEnteredHandlerRemote() {
     return this.lastKeyEnteredHandlerRemote_;
@@ -205,10 +200,8 @@ export class FakeDevicePairingHandler {
    */
   completePairDevice(success) {
     assert(this.pairDeviceCallback_, 'pairDevice() was never called.');
-    this.pairDeviceCallback_({
-      result: success ? chromeos.bluetoothConfig.mojom.PairingResult.kSuccess :
-                        chromeos.bluetoothConfig.mojom.PairingResult.kAuthFailed
-    });
+    this.pairDeviceCallback_(
+        {result: success ? PairingResult.kSuccess : PairingResult.kAuthFailed});
   }
 
   /**
@@ -239,7 +232,7 @@ export class FakeDevicePairingHandler {
   }
 
   /**
-   * @return {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateInterface}
+   * @return {?DevicePairingDelegateInterface}
    */
   getLastPairingDelegate() {
     return this.devicePairingDelegate_;
@@ -257,7 +250,7 @@ export class FakeDevicePairingHandler {
   }
 
   /**
-   * @param {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
+   * @param {?BluetoothDeviceProperties} device
    */
   async completeFetchDevice(device) {
     if (!this.fetchDeviceCallback_) {
