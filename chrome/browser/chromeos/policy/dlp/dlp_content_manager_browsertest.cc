@@ -462,8 +462,8 @@ class DlpContentManagerReportingBrowserTest
       cloned_tab_observer_;
 };
 
-// TODO(crbug.com/1291074): Flaky on ChromeOS Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1291074): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PrintingRestricted DISABLED_PrintingRestricted
 #else
 #define MAYBE_PrintingRestricted PrintingRestricted
