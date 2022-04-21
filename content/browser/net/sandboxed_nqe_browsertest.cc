@@ -110,9 +110,14 @@ IN_PROC_BROWSER_TEST_F(SandboxedNQEBrowserTest, GetNetworkService) {
   EXPECT_TRUE(GetNetworkService());
 }
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NetworkQualityTracker DISABLED_NetworkQualityTracker
+#else
+#define MAYBE_NetworkQualityTracker NetworkQualityTracker
+#endif
 // Simulate EffectiveConnectionType change in NetworkQualityEstimator and
 // reports it to mojo client.
-IN_PROC_BROWSER_TEST_F(SandboxedNQEBrowserTest, NetworkQualityTracker) {
+IN_PROC_BROWSER_TEST_F(SandboxedNQEBrowserTest, MAYBE_NetworkQualityTracker) {
   // Change the network quality to UNKNOWN to prevent any spurious
   // notifications.
   SimulateNetworkQualityChange(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
