@@ -71,8 +71,6 @@
 
 namespace {
 
-constexpr int kIconHeight = 20;
-
 int ComboboxIconSize() {
   // Use the line height of the body small text. This allows the icons to adapt
   // if the user changes the font size.
@@ -521,7 +519,7 @@ ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
     return ui::ImageModel();
   }
   return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
-                                        ui::kColorIcon, kIconHeight);
+                                        ui::kColorIcon);
 }
 
 void PasswordSaveUpdateView::AddedToWidget() {

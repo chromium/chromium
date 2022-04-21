@@ -8,9 +8,12 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -34,19 +37,33 @@ PasswordGenerationConfirmationView::PasswordGenerationConfirmationView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    auto label = std::make_unique<views::StyledLabel>();
+    label->SetText(controller_.save_confirmation_text());
+    label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+    label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    auto link_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &PasswordGenerationConfirmationView::StyledLabelLinkClicked,
+            base::Unretained(this)));
+    link_style.disable_line_wrapping = false;
+    label->AddStyleRange(controller_.save_confirmation_link_range(),
+                         link_style);
 
-  auto label = std::make_unique<views::StyledLabel>();
-  label->SetText(controller_.save_confirmation_text());
-  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  auto link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PasswordGenerationConfirmationView::StyledLabelLinkClicked,
-          base::Unretained(this)));
-  link_style.disable_line_wrapping = false;
-  label->AddStyleRange(controller_.save_confirmation_link_range(), link_style);
+    AddChildView(std::move(label));
+  } else {
+    SetShowIcon(true);
 
-  AddChildView(label.release());
+    AddChildView(CreateGooglePasswordManagerLabel(
+        /*text_message_id=*/
+        IDS_PASSWORD_GENERATION_CONFIRMATION_GOOGLE_PASSWORD_MANAGER,
+        /*link_message_id=*/
+        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+        base::BindRepeating(
+            &PasswordGenerationConfirmationView::StyledLabelLinkClicked,
+            base::Unretained(this))));
+  }
 
   if (reason == AUTOMATIC) {
     // Unretained() is safe because |timer_| is owned by |this|.
@@ -68,6 +85,11 @@ PasswordGenerationConfirmationView::GetController() {
 const PasswordBubbleControllerBase*
 PasswordGenerationConfirmationView::GetController() const {
   return &controller_;
+}
+
+ui::ImageModel PasswordGenerationConfirmationView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                        ui::kColorIcon);
 }
 
 void PasswordGenerationConfirmationView::StyledLabelLinkClicked() {

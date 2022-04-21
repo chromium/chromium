@@ -31,6 +31,7 @@ class PasswordGenerationConfirmationView : public PasswordBubbleViewBase {
   // PasswordBubbleViewBase:
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
+  ui::ImageModel GetWindowIcon() override;
 
   void StyledLabelLinkClicked();
 

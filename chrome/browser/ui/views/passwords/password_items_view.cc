@@ -54,8 +54,6 @@
 
 namespace {
 
-constexpr int kIconHeight = 20;
-
 // Column set identifiers for displaying or undoing removal of credentials.
 // All of them allocate space differently.
 enum PasswordItemsViewColumnSetType {
@@ -317,7 +315,7 @@ const PasswordBubbleControllerBase* PasswordItemsView::GetController() const {
 
 ui::ImageModel PasswordItemsView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
-                                        ui::kColorIcon, kIconHeight);
+                                        ui::kColorIcon);
 }
 
 void PasswordItemsView::RecreateLayout() {
