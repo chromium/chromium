@@ -31,17 +31,8 @@ class MockEnableAdbSideloadingScreenView
   MockEnableAdbSideloadingScreenView();
   ~MockEnableAdbSideloadingScreenView() override;
 
-  void Bind(EnableAdbSideloadingScreen* screen) override;
-  void Unbind() override;
-
   MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, MockBind, (EnableAdbSideloadingScreen * screen));
-  MOCK_METHOD(void, MockUnbind, ());
   MOCK_METHOD(void, SetScreenState, (UIState value));
-
- private:
-  EnableAdbSideloadingScreen* screen_;
 };
 
 }  // namespace ash

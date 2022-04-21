@@ -8,7 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -45,15 +44,9 @@ EnableAdbSideloadingScreen::EnableAdbSideloadingScreen(
     : BaseScreen(EnableAdbSideloadingScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
       view_(std::move(view)),
-      exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-}
+      exit_callback_(exit_callback) {}
 
-EnableAdbSideloadingScreen::~EnableAdbSideloadingScreen() {
-  if (view_)
-    view_->Unbind();
-}
+EnableAdbSideloadingScreen::~EnableAdbSideloadingScreen() = default;
 
 // static
 void EnableAdbSideloadingScreen::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -122,10 +115,7 @@ void EnableAdbSideloadingScreen::OnQueryAdbSideload(
   view_->Show();
 }
 
-void EnableAdbSideloadingScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
+void EnableAdbSideloadingScreen::HideImpl() {}
 
 void EnableAdbSideloadingScreen::OnCancel() {
   LogEvent(AdbSideloadingPromptEvent::kCanceled);

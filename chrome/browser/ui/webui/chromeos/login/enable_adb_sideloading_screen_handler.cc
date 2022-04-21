@@ -4,15 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/enable_adb_sideloading_screen_handler.h"
 
-#include <string>
-
-#include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 
@@ -23,22 +16,7 @@ EnableAdbSideloadingScreenHandler::~EnableAdbSideloadingScreenHandler() =
     default;
 
 void EnableAdbSideloadingScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
   ShowInWebUI();
-}
-
-void EnableAdbSideloadingScreenHandler::Hide() {}
-
-void EnableAdbSideloadingScreenHandler::Bind(
-    EnableAdbSideloadingScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
-void EnableAdbSideloadingScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void EnableAdbSideloadingScreenHandler::SetScreenState(UIState value) {
@@ -63,16 +41,6 @@ void EnableAdbSideloadingScreenHandler::DeclareLocalizedValues(
                IDS_ENABLE_ARC_ADB_SIDELOADING_CANCEL_BUTTON);
   builder->Add("enableAdbSideloadingOkButton",
                IDS_ENABLE_ARC_ADB_SIDELOADING_OK_BUTTON);
-}
-
-void EnableAdbSideloadingScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed())
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
 }
 
 }  // namespace chromeos

@@ -27,15 +27,4 @@ MockEnableAdbSideloadingScreenView::MockEnableAdbSideloadingScreenView() =
 MockEnableAdbSideloadingScreenView::~MockEnableAdbSideloadingScreenView() =
     default;
 
-void MockEnableAdbSideloadingScreenView::Bind(
-    EnableAdbSideloadingScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-void MockEnableAdbSideloadingScreenView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
-
 }  // namespace ash
