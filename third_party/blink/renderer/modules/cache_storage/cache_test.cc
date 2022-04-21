@@ -151,9 +151,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
     last_error_web_cache_method_called_ = "dispatchMatch";
     CheckUrlIfProvided(fetch_api_request->url);
     CheckCacheQueryOptionsIfProvided(query_options);
-    mojom::blink::MatchResultPtr result = mojom::blink::MatchResult::New();
-    result->set_status(error_);
-    std::move(callback).Run(std::move(result));
+    std::move(callback).Run(mojom::blink::MatchResult::NewStatus(error_));
   }
   void MatchAll(mojom::blink::FetchAPIRequestPtr fetch_api_request,
                 mojom::blink::CacheQueryOptionsPtr query_options,
@@ -163,10 +161,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
     if (fetch_api_request)
       CheckUrlIfProvided(fetch_api_request->url);
     CheckCacheQueryOptionsIfProvided(query_options);
-    mojom::blink::MatchAllResultPtr result =
-        mojom::blink::MatchAllResult::New();
-    result->set_status(error_);
-    std::move(callback).Run(std::move(result));
+    std::move(callback).Run(mojom::blink::MatchAllResult::NewStatus(error_));
   }
   void GetAllMatchedEntries(mojom::blink::FetchAPIRequestPtr request,
                             mojom::blink::CacheQueryOptionsPtr query_options,
@@ -184,8 +179,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
       CheckCacheQueryOptionsIfProvided(query_options);
     }
     mojom::blink::CacheKeysResultPtr result =
-        mojom::blink::CacheKeysResult::New();
-    result->set_status(error_);
+        mojom::blink::CacheKeysResult::NewStatus(error_);
     std::move(callback).Run(std::move(result));
   }
   void Batch(Vector<mojom::blink::BatchOperationPtr> batch_operations,
@@ -586,8 +580,8 @@ class MatchTestCache : public NotImplementedErrorCache {
              bool in_range_fetch_event,
              int64_t trace_id,
              MatchCallback callback) override {
-    mojom::blink::MatchResultPtr result = mojom::blink::MatchResult::New();
-    result->set_response(std::move(response_));
+    mojom::blink::MatchResultPtr result =
+        mojom::blink::MatchResult::NewResponse(std::move(response_));
     std::move(callback).Run(std::move(result));
   }
 
@@ -633,8 +627,7 @@ class KeysTestCache : public NotImplementedErrorCache {
             int64_t trace_id,
             KeysCallback callback) override {
     mojom::blink::CacheKeysResultPtr result =
-        mojom::blink::CacheKeysResult::New();
-    result->set_keys(std::move(requests_));
+        mojom::blink::CacheKeysResult::NewKeys(std::move(requests_));
     std::move(callback).Run(std::move(result));
   }
 
@@ -690,8 +683,7 @@ class MatchAllAndBatchTestCache : public NotImplementedErrorCache {
                 int64_t trace_id,
                 MatchAllCallback callback) override {
     mojom::blink::MatchAllResultPtr result =
-        mojom::blink::MatchAllResult::New();
-    result->set_responses(std::move(responses_));
+        mojom::blink::MatchAllResult::NewResponses(std::move(responses_));
     std::move(callback).Run(std::move(result));
   }
   void Batch(Vector<mojom::blink::BatchOperationPtr> batch_operations,

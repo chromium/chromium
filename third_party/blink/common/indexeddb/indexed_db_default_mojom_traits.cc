@@ -139,21 +139,18 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IndexedDBKeyPath>::data(
   if (key_path.IsNull())
     return nullptr;
 
-  auto data = blink::mojom::IDBKeyPathData::New();
   switch (key_path.type()) {
     case blink::mojom::IDBKeyPathType::String:
-      data->set_string(key_path.string());
-      return data;
+      return blink::mojom::IDBKeyPathData::NewString(key_path.string());
     case blink::mojom::IDBKeyPathType::Array:
-      data->set_string_array(key_path.array());
-      return data;
+      return blink::mojom::IDBKeyPathData::NewStringArray(key_path.array());
 
     // The following key path types are not used.
     case blink::mojom::IDBKeyPathType::Null:;  // No-op, fall out of switch
                                                // block to NOTREACHED().
   }
   NOTREACHED();
-  return data;
+  return nullptr;
 }
 
 // static

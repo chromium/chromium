@@ -272,14 +272,12 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
   if (key_path.GetType() == blink::mojom::IDBKeyPathType::Null)
     return nullptr;
 
-  auto data = blink::mojom::blink::IDBKeyPathData::New();
   switch (key_path.GetType()) {
     case blink::mojom::IDBKeyPathType::String: {
       String key_path_string = key_path.GetString();
       if (key_path_string.IsNull())
         key_path_string = g_empty_string;
-      data->set_string(key_path_string);
-      return data;
+      return blink::mojom::blink::IDBKeyPathData::NewString(key_path_string);
     }
     case blink::mojom::IDBKeyPathType::Array: {
       const auto& array = key_path.Array();
@@ -287,15 +285,15 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
       result.ReserveInitialCapacity(SafeCast<wtf_size_t>(array.size()));
       for (const auto& item : array)
         result.push_back(item);
-      data->set_string_array(result);
-      return data;
+      return blink::mojom::blink::IDBKeyPathData::NewStringArray(
+          std::move(result));
     }
 
     case blink::mojom::IDBKeyPathType::Null:
       break;  // Not used, NOTREACHED.
   }
   NOTREACHED();
-  return data;
+  return nullptr;
 }
 
 // static

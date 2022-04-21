@@ -116,8 +116,8 @@ PermissionDescriptorPtr CreateMidiPermissionDescriptor(bool sysex) {
   auto descriptor = CreatePermissionDescriptor(PermissionName::MIDI);
   auto midi_extension = mojom::blink::MidiPermissionDescriptor::New();
   midi_extension->sysex = sysex;
-  descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
-  descriptor->extension->set_midi(std::move(midi_extension));
+  descriptor->extension = mojom::blink::PermissionDescriptorExtension::NewMidi(
+      std::move(midi_extension));
   return descriptor;
 }
 
@@ -128,8 +128,9 @@ PermissionDescriptorPtr CreateClipboardPermissionDescriptor(
   auto descriptor = CreatePermissionDescriptor(name);
   auto clipboard_extension = mojom::blink::ClipboardPermissionDescriptor::New(
       allow_without_gesture, allow_without_sanitization);
-  descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
-  descriptor->extension->set_clipboard(std::move(clipboard_extension));
+  descriptor->extension =
+      mojom::blink::PermissionDescriptorExtension::NewClipboard(
+          std::move(clipboard_extension));
   return descriptor;
 }
 
@@ -138,8 +139,9 @@ PermissionDescriptorPtr CreateVideoCapturePermissionDescriptor(
   auto descriptor = CreatePermissionDescriptor(PermissionName::VIDEO_CAPTURE);
   auto camera_device_extension =
       mojom::blink::CameraDevicePermissionDescriptor::New(pan_tilt_zoom);
-  descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
-  descriptor->extension->set_camera_device(std::move(camera_device_extension));
+  descriptor->extension =
+      mojom::blink::PermissionDescriptorExtension::NewCameraDevice(
+          std::move(camera_device_extension));
   return descriptor;
 }
 
