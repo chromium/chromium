@@ -40,8 +40,7 @@ class DeviceDisplayCrosTestHelper {
   int GetScaleOfDisplay(int64_t display_id) const;
 };
 
-class DeviceDisplayPolicyCrosBrowserTest
-    : public policy::DevicePolicyCrosBrowserTest {
+class DeviceDisplayPolicyCrosBrowserTest : public DevicePolicyCrosBrowserTest {
  public:
   DeviceDisplayPolicyCrosBrowserTest() = default;
   DeviceDisplayPolicyCrosBrowserTest(

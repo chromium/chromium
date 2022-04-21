@@ -25,9 +25,9 @@
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
+
+namespace em = ::enterprise_management;
 
 class DisplayRotationDefaultTest
     : public DeviceDisplayPolicyCrosBrowserTest,
@@ -212,8 +212,7 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
   const display::Display::Rotation user_rotation = display::Display::ROTATE_180;
 
   // Set policy.
-  policy::DevicePolicyBuilder* const device_policy(
-      policy_helper()->device_policy());
+  DevicePolicyBuilder* const device_policy(policy_helper()->device_policy());
   em::ChromeDeviceSettingsProto& proto(device_policy->payload());
   proto.mutable_display_rotation_default()->set_display_rotation_default(
       static_cast<em::DisplayRotationDefaultProto::Rotation>(policy_rotation));

@@ -157,7 +157,7 @@ class UserAffiliationBrowserTest
     }
 
     // Set retry delay to prevent timeouts.
-    policy::DeviceManagementService::SetRetryDelayForTesting(0);
+    DeviceManagementService::SetRetryDelayForTesting(0);
   }
 
   void CreatedBrowserMainParts(

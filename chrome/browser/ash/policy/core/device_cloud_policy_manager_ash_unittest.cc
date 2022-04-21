@@ -73,22 +73,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::AtMost;
-using testing::DoAll;
-using testing::Invoke;
-using testing::Mock;
-using testing::Return;
-using testing::SaveArg;
-using testing::SetArgPointee;
-using testing::StrictMock;
-using testing::WithArgs;
-
-namespace em = enterprise_management;
-
 namespace policy {
 namespace {
+
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::AtMost;
+using ::testing::DoAll;
+using ::testing::Invoke;
+using ::testing::Mock;
+using ::testing::SaveArg;
+using ::testing::StrictMock;
+using ::testing::WithArgs;
+namespace em = ::enterprise_management;
 
 MATCHER_P(HasJobType, job_type, "matches job type") {
   return arg.GetConfigurationForTesting()->GetType() == job_type;
@@ -272,7 +269,7 @@ class DeviceCloudPolicyManagerAshTest
 
   void InitDeviceCloudPolicyInitializer() {
     manager_->Initialize(&local_state_);
-    policy::EnrollmentRequisitionManager::Initialize();
+    EnrollmentRequisitionManager::Initialize();
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
         &local_state_, &device_management_service_, install_attributes_.get(),
         &state_keys_broker_, store_, manager_.get(),

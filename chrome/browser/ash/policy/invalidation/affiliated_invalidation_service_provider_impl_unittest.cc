@@ -363,7 +363,7 @@ AffiliatedInvalidationServiceProviderImplTest::GetProfileInvalidationService(
     return nullptr;
   return static_cast<invalidation::FakeInvalidationService*>(
       invalidation_provider->GetInvalidationServiceForCustomSender(
-          policy::kPolicyFCMInvalidationSenderID));
+          kPolicyFCMInvalidationSenderID));
 }
 
 // No consumers are registered with the

@@ -16,6 +16,7 @@
 #include "chromeos/network/device_state.h"
 
 namespace policy {
+
 namespace {
 
 // By default, device name policy should be kPolicyHostnameNotConfigurable for
@@ -173,8 +174,8 @@ std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
     }
   }
 
-  return policy::FormatHostname(hostname_template, asset_id, serial, mac,
-                                machine_name, location);
+  return FormatHostname(hostname_template, asset_id, serial, mac, machine_name,
+                        location);
 }
 
 void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(

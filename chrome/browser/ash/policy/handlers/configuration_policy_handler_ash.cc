@@ -42,6 +42,7 @@
 #include "url/gurl.h"
 
 namespace policy {
+
 namespace {
 
 using ::ash::MagnifierType;
@@ -50,7 +51,7 @@ const char kSubkeyURL[] = "url";
 const char kSubkeyHash[] = "hash";
 
 absl::optional<std::string> GetSubkeyString(const base::Value& dict,
-                                            policy::PolicyErrorMap* errors,
+                                            PolicyErrorMap* errors,
                                             const std::string& policy,
                                             const std::string& subkey) {
   const base::Value* policy_value = dict.FindKey(subkey);

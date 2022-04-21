@@ -52,7 +52,7 @@ void DeviceLocalAccountExtensionTracker::OnStoreError(CloudPolicyStore* store) {
 }
 
 void DeviceLocalAccountExtensionTracker::UpdateFromStore() {
-  const policy::PolicyMap& policy_map = store_->policy_map();
+  const PolicyMap& policy_map = store_->policy_map();
 
   // TODO(binjin): Use two policy handlers here after
   // ExtensionManagementPolicyHandler is introduced.

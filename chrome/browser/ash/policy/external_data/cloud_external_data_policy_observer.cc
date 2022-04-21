@@ -26,6 +26,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/user_manager/user.h"
+
 namespace policy {
 
 // Helper class that observes a policy for a logged-in user, notifying the
@@ -231,7 +232,7 @@ void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
   }
 
   std::vector<DeviceLocalAccount> device_local_account_list =
-      policy::GetDeviceLocalAccounts(cros_settings_);
+      GetDeviceLocalAccounts(cros_settings_);
   std::set<std::string> device_local_accounts;
   for (std::vector<DeviceLocalAccount>::const_iterator it =
            device_local_account_list.begin();

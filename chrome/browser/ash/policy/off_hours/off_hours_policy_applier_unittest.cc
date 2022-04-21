@@ -11,12 +11,11 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace em = enterprise_management;
-
-namespace policy {
-namespace off_hours {
+namespace policy::off_hours {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,
@@ -101,11 +100,10 @@ TEST_F(ApplyOffHoursPolicyToProtoTest, Test) {
   SetOffHoursPolicyToProto(
       &proto, OffHoursPolicy(kUtcTimezone, {}, kDefaultIgnoredPolicies));
   std::unique_ptr<em::ChromeDeviceSettingsProto> off_hours_proto =
-      policy::off_hours::ApplyOffHoursPolicyToProto(proto);
+      ApplyOffHoursPolicyToProto(proto);
   EXPECT_TRUE(off_hours_proto->guest_mode_enabled().guest_mode_enabled());
   EXPECT_TRUE(off_hours_proto->allow_new_users().allow_new_users());
   EXPECT_FALSE(off_hours_proto->camera_enabled().camera_enabled());
 }
 
-}  // namespace off_hours
-}  // namespace policy
+}  // namespace policy::off_hours

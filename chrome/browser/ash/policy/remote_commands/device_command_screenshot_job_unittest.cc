@@ -26,9 +26,9 @@
 
 namespace policy {
 
-namespace em = enterprise_management;
-
 namespace {
+
+namespace em = ::enterprise_management;
 
 // String constant identifying the result field in the result payload.
 const char* const kResultFieldName = "result";
@@ -45,8 +45,7 @@ em::RemoteCommand GenerateScreenshotCommandProto(
     base::TimeDelta age_of_command,
     const std::string upload_url) {
   em::RemoteCommand command_proto;
-  command_proto.set_type(
-      enterprise_management::RemoteCommand_Type_DEVICE_SCREENSHOT);
+  command_proto.set_type(em::RemoteCommand_Type_DEVICE_SCREENSHOT);
   command_proto.set_command_id(unique_id);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
   std::string payload;
@@ -57,7 +56,7 @@ em::RemoteCommand GenerateScreenshotCommandProto(
   return command_proto;
 }
 
-class MockUploadJob : public policy::UploadJob {
+class MockUploadJob : public UploadJob {
  public:
   // If |error_code| is a null pointer OnSuccess() will be invoked when the
   // Start() method is called, otherwise OnFailure() will be invoked with the
@@ -67,7 +66,7 @@ class MockUploadJob : public policy::UploadJob {
                 std::unique_ptr<UploadJob::ErrorCode> error_code);
   ~MockUploadJob() override;
 
-  // policy::UploadJob:
+  // UploadJob:
   void AddDataSegment(const std::string& name,
                       const std::string& filename,
                       const std::map<std::string, std::string>& header_entries,

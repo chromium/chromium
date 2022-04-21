@@ -59,7 +59,7 @@ class UserCloudPolicyManagerTest
   ~UserCloudPolicyManagerTest() override = default;
 
   void TearDown() override {
-    policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(nullptr);
+    BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(nullptr);
     MixinBasedInProcessBrowserTest::TearDown();
   }
 
@@ -175,9 +175,8 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
   // Recognize example.com as non-enterprise account. We don't use any
   // available public domain such as gmail.com in order to prevent possible
   // leak of verification keys/signatures.
-  policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
-      "example.com");
-  EXPECT_TRUE(policy::BrowserPolicyConnector::IsNonEnterpriseUser(
+  BrowserPolicyConnector::SetNonEnterpriseDomainForTesting("example.com");
+  EXPECT_TRUE(BrowserPolicyConnector::IsNonEnterpriseUser(
       logged_in_user_mixin_.GetAccountId().GetUserEmail()));
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // If a user signs in with a known non-enterprise account there should be no
@@ -197,9 +196,8 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
 using UserCloudPolicyManagerChildTest = UserCloudPolicyManagerTest;
 
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
-  policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
-      "example.com");
-  EXPECT_TRUE(policy::BrowserPolicyConnector::IsNonEnterpriseUser(
+  BrowserPolicyConnector::SetNonEnterpriseDomainForTesting("example.com");
+  EXPECT_TRUE(BrowserPolicyConnector::IsNonEnterpriseUser(
       logged_in_user_mixin_.GetAccountId().GetUserEmail()));
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
@@ -230,9 +228,8 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
                        PolicyForChildUserMissing) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
-      "example.com");
-  EXPECT_TRUE(policy::BrowserPolicyConnector::IsNonEnterpriseUser(
+  BrowserPolicyConnector::SetNonEnterpriseDomainForTesting("example.com");
+  EXPECT_TRUE(BrowserPolicyConnector::IsNonEnterpriseUser(
       logged_in_user_mixin_.GetAccountId().GetUserEmail()));
 
   // If a user signs in with a known non-enterprise account there should be no

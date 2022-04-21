@@ -22,6 +22,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
+namespace policy {
+
 namespace {
 
 // Timeout for the TPM firmware update availability check.
@@ -34,24 +36,24 @@ const base::TimeDelta kTPMUpdatePlannedNotificationWaitTime = base::Days(1);
 // is temporarily untrusted |callback| will be invoked later when trusted values
 // are available and AutoUpdateMode::kNever will be returned. This value is set
 // via the device policy TPMFirmwareUpdateSettings.
-policy::AutoUpdateMode GetTPMAutoUpdateModeSetting(
+AutoUpdateMode GetTPMAutoUpdateModeSetting(
     const ash::CrosSettings* cros_settings,
     const base::RepeatingClosure callback) {
   if (!g_browser_process->platform_part()
            ->browser_policy_connector_ash()
            ->IsDeviceEnterpriseManaged()) {
-    return policy::AutoUpdateMode::kNever;
+    return AutoUpdateMode::kNever;
   }
 
   ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings->PrepareTrustedValues(callback);
   if (status != ash::CrosSettingsProvider::TRUSTED)
-    return policy::AutoUpdateMode::kNever;
+    return AutoUpdateMode::kNever;
   const base::Value* tpm_settings =
       cros_settings->GetPref(ash::kTPMFirmwareUpdateSettings);
 
   if (!tpm_settings)
-    return policy::AutoUpdateMode::kNever;
+    return AutoUpdateMode::kNever;
 
   const base::Value* const auto_update_mode = tpm_settings->FindKeyOfType(
       ash::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
@@ -59,24 +61,21 @@ policy::AutoUpdateMode GetTPMAutoUpdateModeSetting(
 
   // Policy not set.
   if (!auto_update_mode || auto_update_mode->GetInt() == 0)
-    return policy::AutoUpdateMode::kNever;
+    return AutoUpdateMode::kNever;
 
   // Verify that the value is within range.
-  if (auto_update_mode->GetInt() <
-          static_cast<int>(policy::AutoUpdateMode::kNever) ||
+  if (auto_update_mode->GetInt() < static_cast<int>(AutoUpdateMode::kNever) ||
       auto_update_mode->GetInt() >
-          static_cast<int>(policy::AutoUpdateMode::kEnrollment)) {
+          static_cast<int>(AutoUpdateMode::kEnrollment)) {
     NOTREACHED() << "Invalid value for device policy key "
                     "TPMFirmwareUpdateSettings.AutoUpdateMode";
-    return policy::AutoUpdateMode::kNever;
+    return AutoUpdateMode::kNever;
   }
 
-  return static_cast<policy::AutoUpdateMode>(auto_update_mode->GetInt());
+  return static_cast<AutoUpdateMode>(auto_update_mode->GetInt());
 }
 
 }  // namespace
-
-namespace policy {
 
 TPMAutoUpdateModePolicyHandler::TPMAutoUpdateModePolicyHandler(
     ash::CrosSettings* cros_settings,

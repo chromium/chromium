@@ -108,11 +108,11 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 
-using base::Time;
-
-namespace em = enterprise_management;
+namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 // How many seconds of inactivity triggers the idle state.
 const int kIdleStateThresholdSeconds = 300;
@@ -390,7 +390,7 @@ void GetDisplayStatus(em::GraphicsStatus* graphics_status) {
 // Makes the requested |gpu_memory_stats| available. Collects the other required
 // graphics properties next. Finally, calls |callback|.
 void OnVideoMemoryUsageStatsUpdate(
-    policy::DeviceStatusCollector::GraphicsStatusReceiver callback,
+    DeviceStatusCollector::GraphicsStatusReceiver callback,
     std::unique_ptr<em::GraphicsStatus> graphics_status,
     const gpu::VideoMemoryUsageStats& gpu_memory_stats) {
   auto* gpu_data_manager = content::GpuDataManager::GetInstance();
@@ -407,7 +407,7 @@ void OnVideoMemoryUsageStatsUpdate(
 
 // Fetches display-related and graphics-adapter information.
 void FetchGraphicsStatus(
-    policy::DeviceStatusCollector::GraphicsStatusReceiver callback) {
+    DeviceStatusCollector::GraphicsStatusReceiver callback) {
   std::unique_ptr<em::GraphicsStatus> graphics_status =
       std::make_unique<em::GraphicsStatus>();
   GetDisplayStatus(graphics_status.get());
@@ -417,8 +417,7 @@ void FetchGraphicsStatus(
                      std::move(graphics_status)));
 }
 
-bool ReadAndroidStatus(
-    policy::StatusCollector::AndroidStatusReceiver receiver) {
+bool ReadAndroidStatus(StatusCollector::AndroidStatusReceiver receiver) {
   auto* const arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return false;
@@ -434,26 +433,25 @@ bool ReadAndroidStatus(
   return true;
 }
 
-void ReadTpmStatus(policy::DeviceStatusCollector::TpmStatusReceiver callback) {
+void ReadTpmStatus(DeviceStatusCollector::TpmStatusReceiver callback) {
   // D-Bus calls are allowed only on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto tpm_status_combiner =
-      base::MakeRefCounted<::policy::TpmStatusCombiner>(std::move(callback));
+      base::MakeRefCounted<TpmStatusCombiner>(std::move(callback));
   chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
-      base::BindOnce(&::policy::TpmStatusCombiner::OnGetTpmStatus,
-                     tpm_status_combiner));
+      base::BindOnce(&TpmStatusCombiner::OnGetTpmStatus, tpm_status_combiner));
   chromeos::AttestationClient::Get()->GetStatus(
       ::attestation::GetStatusRequest(),
-      base::BindOnce(&::policy::TpmStatusCombiner::OnGetEnrollmentStatus,
+      base::BindOnce(&TpmStatusCombiner::OnGetEnrollmentStatus,
                      tpm_status_combiner));
   chromeos::TpmManagerClient::Get()->GetDictionaryAttackInfo(
       ::tpm_manager::GetDictionaryAttackInfoRequest(),
-      base::BindOnce(&::policy::TpmStatusCombiner::OnGetDictionaryAttackInfo,
+      base::BindOnce(&TpmStatusCombiner::OnGetDictionaryAttackInfo,
                      tpm_status_combiner));
   chromeos::TpmManagerClient::Get()->GetSupportedFeatures(
       ::tpm_manager::GetSupportedFeaturesRequest(),
-      base::BindOnce(&::policy::TpmStatusCombiner::OnGetSupportedFeatures,
+      base::BindOnce(&TpmStatusCombiner::OnGetSupportedFeatures,
                      tpm_status_combiner));
 }
 
@@ -487,7 +485,7 @@ bool IsKioskSession() {
 
 // Utility method to turn cpu_temp_fetcher_ to OnceCallback
 std::vector<em::CPUTempInfo> InvokeCpuTempFetcher(
-    policy::DeviceStatusCollector::CPUTempFetcher fetcher) {
+    DeviceStatusCollector::CPUTempFetcher fetcher) {
   return fetcher.Run();
 }
 
@@ -592,12 +590,12 @@ em::CrashReportInfo::CrashReportUploadStatus GetCrashReportUploadStatus(
 // - the |source| should be 'kernel' or 'embedded-controller'.
 void CrashReportsLoaded(
     scoped_refptr<UploadList> upload_list,
-    policy::DeviceStatusCollector::CrashReportInfoReceiver callback) {
+    DeviceStatusCollector::CrashReportInfoReceiver callback) {
   std::vector<UploadList::UploadInfo> uploads;
   upload_list->GetUploads(kCrashReportEntryMaxSize, &uploads);
 
-  const Time end_time = Time::Now();
-  const Time start_time = end_time - kCrashReportInfoDuration;
+  const auto end_time = base::Time::Now();
+  const auto start_time = end_time - kCrashReportInfoDuration;
 
   std::vector<em::CrashReportInfo> contents;
   for (const UploadList::UploadInfo& crash_report : uploads) {
@@ -619,7 +617,7 @@ void CrashReportsLoaded(
 
 // Read the crash reports stored in the uploads.log file.
 void ReadCrashReportInfo(
-    policy::DeviceStatusCollector::CrashReportInfoReceiver callback) {
+    DeviceStatusCollector::CrashReportInfoReceiver callback) {
   scoped_refptr<UploadList> upload_list = CreateCrashUploadList();
   upload_list->Load(
       base::BindOnce(CrashReportsLoaded, upload_list, std::move(callback)));
@@ -627,23 +625,23 @@ void ReadCrashReportInfo(
 
 em::ActiveTimePeriod::SessionType GetSessionType(
     const std::string& user_email) {
-  policy::DeviceLocalAccount::Type type;
+  DeviceLocalAccount::Type type;
   if (!IsDeviceLocalAccountUser(user_email, &type)) {
     return em::ActiveTimePeriod::SESSION_AFFILIATED_USER;
   }
 
   switch (type) {
-    case policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION:
-    case policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
+    case DeviceLocalAccount::TYPE_PUBLIC_SESSION:
+    case DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
       return em::ActiveTimePeriod::SESSION_MANAGED_GUEST;
 
-    case policy::DeviceLocalAccount::TYPE_KIOSK_APP:
+    case DeviceLocalAccount::TYPE_KIOSK_APP:
       return em::ActiveTimePeriod::SESSION_KIOSK;
 
-    case policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
+    case DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
       return em::ActiveTimePeriod::SESSION_ARC_KIOSK;
 
-    case policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
+    case DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
       return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
 
     default:
@@ -672,8 +670,6 @@ em::TpmVersionInfo_GscVersion ConvertTpmGscVersion(
 }
 
 }  // namespace
-
-namespace policy {
 
 class DeviceStatusCollectorState : public StatusCollectorState {
  public:
@@ -732,7 +728,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   }
 
   void FetchCrosHealthdData(
-      const policy::DeviceStatusCollector::CrosHealthdDataFetcher&
+      const DeviceStatusCollector::CrosHealthdDataFetcher&
           cros_healthd_data_fetcher,
       std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>
           probe_categories,
@@ -751,8 +747,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   }
 
   void FetchEMMCLifeTime(
-      const policy::DeviceStatusCollector::EMMCLifetimeFetcher&
-          emmc_lifetime_fetcher) {
+      const DeviceStatusCollector::EMMCLifetimeFetcher& emmc_lifetime_fetcher) {
     // Call out to the blocking pool to read disklifetimeestimation.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -762,7 +757,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   }
 
   void FetchStatefulPartitionInfo(
-      const policy::DeviceStatusCollector::StatefulPartitionInfoFetcher&
+      const DeviceStatusCollector::StatefulPartitionInfoFetcher&
           stateful_partition_info_fetcher) {
     // Call out to the blocking pool to read stateful partition information.
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -773,17 +768,15 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             this));
   }
 
-  void FetchGraphicsStatus(
-      const policy::DeviceStatusCollector::GraphicsStatusFetcher&
-          graphics_status_fetcher) {
+  void FetchGraphicsStatus(const DeviceStatusCollector::GraphicsStatusFetcher&
+                               graphics_status_fetcher) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     graphics_status_fetcher.Run(base::BindOnce(
         &DeviceStatusCollectorState::OnGraphicsStatusReceived, this));
   }
 
-  void FetchCrashReportInfo(
-      const policy::DeviceStatusCollector::CrashReportInfoFetcher&
-          crash_report_fetcher) {
+  void FetchCrashReportInfo(const DeviceStatusCollector::CrashReportInfoFetcher&
+                                crash_report_fetcher) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     crash_report_fetcher.Run(base::BindOnce(
         &DeviceStatusCollectorState::OnCrashReportInfoReceived, this));
@@ -834,8 +827,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     android_status->set_droid_guard_info(droid_guard_info);
   }
 
-  void OnTpmStatusReceived(
-      const enterprise_management::TpmStatusInfo& tpm_status_info) {
+  void OnTpmStatusReceived(const em::TpmStatusInfo& tpm_status_info) {
     // Make sure we edit the state on the right thread.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     response_params_.device_status->mutable_tpm_status_info()->MergeFrom(
@@ -1902,7 +1894,7 @@ void DeviceStatusCollector::ProcessIdleState(ui::IdleState state) {
   if (!report_activity_times_)
     return;
 
-  Time now = clock_->Now();
+  base::Time now = clock_->Now();
 
   // For kiosk session we report total uptime instead of active time.
   if (state == ui::IDLE_STATE_ACTIVE || IsKioskSession()) {
@@ -1911,7 +1903,7 @@ void DeviceStatusCollector::ProcessIdleState(ui::IdleState state) {
     // negative (which can happen when the clock changes), assume a single
     // interval of activity.
     base::TimeDelta active_seconds = now - last_idle_check_;
-    Time start;
+    base::Time start;
     if (active_seconds < base::Seconds(0) ||
         active_seconds >= 2 * kIdlePollInterval || last_idle_check_.is_null()) {
       start = now - kIdlePollInterval;
@@ -2049,7 +2041,7 @@ void DeviceStatusCollector::SampleProbeData(
                  << battery_result->get_error()->msg;
     } else if (!battery_result->get_battery_info().is_null()) {
       const auto& battery = battery_result->get_battery_info();
-      enterprise_management::BatterySample battery_sample;
+      em::BatterySample battery_sample;
       battery_sample.set_timestamp(sample->timestamp.ToJavaTime());
       // Convert V to mV:
       battery_sample.set_voltage(std::lround(battery->voltage_now * 1000));
@@ -2220,7 +2212,7 @@ bool DeviceStatusCollector::GetActivityTimes(
       // This is correct even when there are leap seconds, because when a leap
       // second occurs, two consecutive seconds have the same timestamp.
       int64_t end_timestamp =
-          activity_period.start_timestamp() + Time::kMillisecondsPerDay;
+          activity_period.start_timestamp() + base::Time::kMillisecondsPerDay;
 
       em::ActiveTimePeriod* active_period = status->add_active_periods();
       em::TimePeriod* period = active_period->mutable_time_period();
@@ -2609,7 +2601,7 @@ bool DeviceStatusCollector::GetRunningKioskApp(
     return false;
 
   em::AppStatus* running_kiosk_app = status->mutable_running_kiosk_app();
-  if (account->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP) {
+  if (account->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
     running_kiosk_app->set_app_id(account->kiosk_app_id);
 
     const std::string app_version = GetAppVersion(account->kiosk_app_id);
@@ -2625,10 +2617,10 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       running_kiosk_app->set_required_platform_version(
           app_info.required_platform_version);
     }
-  } else if (account->type == policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
+  } else if (account->type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
     // Use package name as app ID for ARC Kiosks.
     running_kiosk_app->set_app_id(account->arc_kiosk_app_info.package_name());
-  } else if (account->type == policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
+  } else if (account->type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
     running_kiosk_app->set_app_id(account->web_kiosk_app_info.url());
   } else {
     NOTREACHED();
@@ -2869,7 +2861,7 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
   // Get the account ID associated with this user.
   status->set_device_local_account_id(account->account_id);
   em::AppStatus* app_status = status->add_installed_apps();
-  if (account->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP) {
+  if (account->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
     app_status->set_app_id(account->kiosk_app_id);
 
     // Look up the app and get the version.
@@ -2880,10 +2872,10 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
     } else {
       app_status->set_extension_version(app_version);
     }
-  } else if (account->type == policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
+  } else if (account->type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
     // Use package name as app ID for ARC Kiosks.
     app_status->set_app_id(account->arc_kiosk_app_info.package_name());
-  } else if (account->type == policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
+  } else if (account->type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
     app_status->set_app_id(account->web_kiosk_app_info.url());
   } else {
     NOTREACHED();

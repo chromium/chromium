@@ -61,10 +61,9 @@ void UserPolicyTestHelper::WaitForInitialPolicy(Profile* profile) {
       user_registration, std::string() /* client_id */,
       "oauth_token_unused" /* oauth_token */);
 
-  policy::ProfilePolicyConnector* const profile_connector =
+  ProfilePolicyConnector* const profile_connector =
       profile->GetProfilePolicyConnector();
-  policy::PolicyService* const policy_service =
-      profile_connector->policy_service();
+  PolicyService* const policy_service = profile_connector->policy_service();
 
   base::RunLoop run_loop;
   policy_service->RefreshPolicies(run_loop.QuitClosure());
@@ -79,10 +78,9 @@ void UserPolicyTestHelper::SetPolicyAndWait(
 }
 
 void UserPolicyTestHelper::RefreshPolicyAndWait(Profile* profile) {
-  policy::ProfilePolicyConnector* const profile_connector =
+  ProfilePolicyConnector* const profile_connector =
       profile->GetProfilePolicyConnector();
-  policy::PolicyService* const policy_service =
-      profile_connector->policy_service();
+  PolicyService* const policy_service = profile_connector->policy_service();
 
   base::RunLoop run_loop;
   policy_service->RefreshPolicies(run_loop.QuitClosure());

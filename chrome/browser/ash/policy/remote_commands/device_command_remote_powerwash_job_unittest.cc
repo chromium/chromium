@@ -55,24 +55,24 @@ class TestingRemoteCommandsService : public RemoteCommandsService {
   base::OnceClosure on_command_acked_callback_;
 };
 
-std::unique_ptr<policy::RemoteCommandJob> CreateRemotePowerwashJob(
+std::unique_ptr<RemoteCommandJob> CreateRemotePowerwashJob(
     base::TimeDelta age_of_command,
     RemoteCommandsService* service) {
   // Create the job proto.
   enterprise_management::RemoteCommand command_proto;
   command_proto.set_type(
       enterprise_management::RemoteCommand_Type_DEVICE_REMOTE_POWERWASH);
-  constexpr policy::RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
+  constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
 
   // Create the job and validate.
-  auto job = std::make_unique<policy::DeviceCommandRemotePowerwashJob>(service);
+  auto job = std::make_unique<DeviceCommandRemotePowerwashJob>(service);
 
   enterprise_management::SignedData signed_command;
   EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, signed_command));
   EXPECT_EQ(kUniqueID, job->unique_id());
-  EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
+  EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
 
   return job;
 }
@@ -107,7 +107,7 @@ DeviceCommandRemotePowerwashJobTest::~DeviceCommandRemotePowerwashJobTest() =
 
 // Make sure that the command is still valid 5*365-1 days after being issued.
 TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandLifetime) {
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateRemotePowerwashJob(kVeryoldCommandAge, service_.get());
 
   EXPECT_TRUE(
@@ -116,7 +116,7 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandLifetime) {
 
 // Make sure that powerwash starts once the command gets ACK'd to the server.
 TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandAckStartsPowerwash) {
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateRemotePowerwashJob(kCommandAge, service_.get());
 
   // No powerwash at this point.
@@ -150,7 +150,7 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandAckStartsPowerwash) {
 
 // Make sure that the failsafe timer starts the powerwash in case of no ACK.
 TEST_F(DeviceCommandRemotePowerwashJobTest, TestFailsafeTimerStartsPowerwash) {
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateRemotePowerwashJob(kCommandAge, service_.get());
 
   // No powerwash at this point.

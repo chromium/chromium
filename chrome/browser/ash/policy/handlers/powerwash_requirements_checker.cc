@@ -56,7 +56,7 @@ const char kNotificationLearnMoreLink[] =
     "https://support.google.com/chromebook?p=factory_reset";
 
 std::u16string GetEnterpriseManager() {
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
 }
@@ -197,9 +197,8 @@ void PowerwashRequirementsChecker::ShowNotification() {
   rich_data.buttons = std::vector<mc::ButtonInfo>{mc::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_POWERWASH_REQUEST_MESSAGE_BUTTON))};
 
-  auto delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&OnNotificationClicked, profile_));
+  auto delegate = base::MakeRefCounted<mc::HandleNotificationClickDelegate>(
+      base::BindRepeating(&OnNotificationClicked, profile_));
 
   auto notification = ash::CreateSystemNotification(
       mc::NOTIFICATION_TYPE_SIMPLE, notification_id,
@@ -234,10 +233,9 @@ void PowerwashRequirementsChecker::ShowCryptohomeErrorNotification() {
       break;
   }
 
-  auto delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&OnNotificationClickedCloseIt, profile_,
-                              notification_id));
+  auto delegate = base::MakeRefCounted<mc::HandleNotificationClickDelegate>(
+      base::BindRepeating(&OnNotificationClickedCloseIt, profile_,
+                          notification_id));
 
   auto notification = ash::CreateSystemNotification(
       mc::NOTIFICATION_TYPE_SIMPLE, notification_id,

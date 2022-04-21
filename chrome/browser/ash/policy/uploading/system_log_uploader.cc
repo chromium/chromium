@@ -188,7 +188,7 @@ std::string SystemLogDelegate::GetPolicyAsJSON() {
   }
   auto client = std::make_unique<ChromePolicyConversionsClient>(
       ProfileManager::GetActiveUserProfile());
-  return policy::DictionaryPolicyConversions(std::move(client))
+  return DictionaryPolicyConversions(std::move(client))
       .EnableUserPolicies(include_user_policies)
       .EnableDeviceLocalAccountPolicies(true)
       .EnableDeviceInfo(true)
@@ -524,7 +524,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   PrefService* local_state = g_browser_process->local_state();
 
   const base::Value* prev_log_uploads =
-      local_state->GetList(policy::prefs::kStoreLogStatesAcrossReboots);
+      local_state->GetList(prefs::kStoreLogStatesAcrossReboots);
 
   std::vector<base::Time> updated_log_uploads;
 
@@ -557,7 +557,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   for (auto it : updated_log_uploads) {
     updated_prev_log_uploads.Append(it.ToDoubleT());
   }
-  local_state->Set(policy::prefs::kStoreLogStatesAcrossReboots,
+  local_state->Set(prefs::kStoreLogStatesAcrossReboots,
                    updated_prev_log_uploads);
 
   // Write the changes to the disk to prevent loss of changes.
@@ -583,7 +583,7 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
   // To ensure at most kLogThrottleCount logs are uploaded in
   // kLogThrottleWindowDuration time.
   if (g_browser_process->local_state()
-              ->GetList(policy::prefs::kStoreLogStatesAcrossReboots)
+              ->GetList(prefs::kStoreLogStatesAcrossReboots)
               ->GetListDeprecated()
               .size() >= kLogThrottleCount &&
       !frequency.is_zero()) {

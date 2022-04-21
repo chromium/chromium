@@ -38,6 +38,7 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace policy {
+
 class ActiveDirectoryJoinDelegate;
 class DeviceCloudPolicyStoreAsh;
 class DMTokenStorage;
@@ -228,10 +229,10 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   ActiveDirectoryJoinDelegate* ad_join_delegate_ = nullptr;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
-  std::unique_ptr<policy::DMTokenStorage> dm_token_storage_;
+  std::unique_ptr<DMTokenStorage> dm_token_storage_;
 
   EnrollmentConfig enrollment_config_;
-  policy::DMAuth dm_auth_;
+  DMAuth dm_auth_;
   std::string client_id_;
   std::string sub_organization_;
   std::unique_ptr<CloudPolicyClient::RegistrationParameters> register_params_;

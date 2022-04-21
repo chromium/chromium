@@ -19,9 +19,9 @@
 
 namespace policy {
 
-namespace em = enterprise_management;
-
 namespace {
+
+namespace em = ::enterprise_management;
 
 const RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 
@@ -31,8 +31,7 @@ const char kVolumeFieldName[] = "volume";
 em::RemoteCommand GenerateSetVolumeCommandProto(base::TimeDelta age_of_command,
                                                 int volume) {
   em::RemoteCommand command_proto;
-  command_proto.set_type(
-      enterprise_management::RemoteCommand_Type_DEVICE_SET_VOLUME);
+  command_proto.set_type(em::RemoteCommand_Type_DEVICE_SET_VOLUME);
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
   std::string payload;

@@ -93,10 +93,10 @@ class LegacyDeviceStatusCollector
   // Format of the function that asynchronously receives data from cros_healthd.
   using CrosHealthdDataReceiver = base::OnceCallback<void(
       chromeos::cros_healthd::mojom::TelemetryInfoPtr,
-      const base::circular_deque<std::unique_ptr<::policy::SampledData>>&)>;
+      const base::circular_deque<std::unique_ptr<SampledData>>&)>;
   // Gets the data from cros_healthd and passes it to CrosHealthdDataReceiver.
   using CrosHealthdDataFetcher =
-      base::RepeatingCallback<void(::policy::CrosHealthdCollectionMode,
+      base::RepeatingCallback<void(CrosHealthdCollectionMode,
                                    CrosHealthdDataReceiver)>;
 
   // Asynchronously receives the graphics status.
@@ -264,29 +264,29 @@ class LegacyDeviceStatusCollector
 
   // Callback for CrosHealthd that samples probe live data. |callback| will
   // be called once all sampling is finished.
-  void SampleProbeData(std::unique_ptr<::policy::SampledData> sample,
+  void SampleProbeData(std::unique_ptr<SampledData> sample,
                        SamplingProbeResultCallback callback,
                        chromeos::cros_healthd::mojom::TelemetryInfoPtr result);
 
   // Callback triggered from PowerManagedClient that samples battery discharge
   // rate. |callback| will be called once all sampling is finished.
-  void SampleDischargeRate(std::unique_ptr<::policy::SampledData> sample,
+  void SampleDischargeRate(std::unique_ptr<SampledData> sample,
                            SamplingCallback callback,
                            const power_manager::PowerSupplyProperties& prop);
 
   // Callback invoked to update our cpu temperature information.
-  void ReceiveCPUTemperature(std::unique_ptr<::policy::SampledData> sample,
+  void ReceiveCPUTemperature(std::unique_ptr<SampledData> sample,
                              SamplingCallback callback,
                              std::vector<enterprise_management::CPUTempInfo>);
 
   // Final sampling step that records data sample, invokes |callback|.
-  void AddDataSample(std::unique_ptr<::policy::SampledData> sample,
+  void AddDataSample(std::unique_ptr<SampledData> sample,
                      SamplingCallback callback);
 
   // CrosHealthdDataReceiver interface implementation, fetches data from
   // cros_healthd and passes it to |callback|. The data collected depends on the
   // collection |mode|.
-  void FetchCrosHealthdData(::policy::CrosHealthdCollectionMode mode,
+  void FetchCrosHealthdData(CrosHealthdCollectionMode mode,
                             CrosHealthdDataReceiver callback);
 
   // Callback for CrosHealthd that performs final sampling and
@@ -354,7 +354,7 @@ class LegacyDeviceStatusCollector
 
   // Samples of probe data (contains multiple samples taken
   // periodically every kHardwareStatusSampleIntervalSeconds)
-  base::circular_deque<std::unique_ptr<::policy::SampledData>> sampled_data_;
+  base::circular_deque<std::unique_ptr<SampledData>> sampled_data_;
 
   // Callback invoked to fetch information about the mounted disk volumes.
   VolumeInfoFetcher volume_info_fetcher_;

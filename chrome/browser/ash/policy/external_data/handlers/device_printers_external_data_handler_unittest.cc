@@ -62,11 +62,10 @@ class DevicePrintersExternalDataHandlerTest : public testing::Test {
   // testing::Test
   void SetUp() override {
     testing::Test::SetUp();
-    EXPECT_CALL(policy_service_,
-                AddObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+    EXPECT_CALL(policy_service_, AddObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
     EXPECT_CALL(policy_service_,
-                RemoveObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+                RemoveObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
     external_printers_ = ash::BulkPrintersCalculator::Create();
     device_printers_external_data_handler_ =

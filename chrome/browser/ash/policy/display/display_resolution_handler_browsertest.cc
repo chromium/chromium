@@ -33,9 +33,11 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 
-namespace em = enterprise_management;
+namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 struct PolicyValue {
   absl::optional<int> external_width;
@@ -159,12 +161,10 @@ std::unique_ptr<extensions::api::system_display::DisplayMode> CreateDisplayMode(
   return result;
 }
 
-}  // anonymous namespace
-
-namespace policy {
+}  // namespace
 
 class DeviceDisplayResolutionTestBase
-    : public policy::DeviceDisplayPolicyCrosBrowserTest,
+    : public DeviceDisplayPolicyCrosBrowserTest,
       public testing::WithParamInterface<PolicyValue> {
  public:
   DeviceDisplayResolutionTestBase(const DeviceDisplayResolutionTestBase&) =
@@ -343,8 +343,7 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
   const PolicyValue policy_value = GetParam();
 
   // Set policy.
-  policy::DevicePolicyBuilder* const device_policy(
-      policy_helper()->device_policy());
+  DevicePolicyBuilder* const device_policy(policy_helper()->device_policy());
   em::ChromeDeviceSettingsProto& proto(device_policy->payload());
   SetPolicyValue(&proto, policy_value, true);
   base::RunLoop run_loop;

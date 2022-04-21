@@ -23,10 +23,9 @@
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace em = enterprise_management;
+namespace policy::off_hours {
 
-namespace policy {
-namespace off_hours {
+namespace em = ::enterprise_management;
 
 DeviceOffHoursController::DeviceOffHoursController()
     : timer_(std::make_unique<base::WallClockTimer>()),
@@ -126,7 +125,7 @@ void DeviceOffHoursController::UpdateOffHoursMode() {
     return;
   }
 
-  namespace wtu = ::policy::weekly_time_utils;
+  namespace wtu = weekly_time_utils;
   const base::Time now = clock_->Now();
   const bool in_interval = wtu::Contains(now, off_hours_intervals_);
   const absl::optional<base::Time> update_time =
@@ -197,5 +196,4 @@ void DeviceOffHoursController::NetworkSynchronizationUpdated(
   UpdateOffHoursMode();
 }
 
-}  // namespace off_hours
-}  // namespace policy
+}  // namespace policy::off_hours

@@ -27,17 +27,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::DoAll;
-using testing::Invoke;
-using testing::Mock;
-using testing::WithArgs;
-
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
+
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Invoke;
+using ::testing::Mock;
+using ::testing::WithArgs;
+namespace em = ::enterprise_management;
 
 constexpr char kStatefulPath[] = "/tmp";
 constexpr char kPackageName[] = "com.example.app";
@@ -145,9 +144,9 @@ class MockAppInstallEventLoggerDelegate
   MOCK_CONST_METHOD1(GetAndroidId_, void(AndroidIdCallback*));
 };
 
-void SetPolicy(policy::PolicyMap* map, const char* name, base::Value value) {
-  map->Set(name, policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-           policy::POLICY_SOURCE_CLOUD, std::move(value), nullptr);
+void SetPolicy(PolicyMap* map, const char* name, base::Value value) {
+  map->Set(name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+           std::move(value), nullptr);
 }
 
 }  // namespace
@@ -399,7 +398,7 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   CreateLogger();
   logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
 
-  policy::PolicyMap new_policy_map;
+  PolicyMap new_policy_map;
 
   base::DictionaryValue arc_policy;
   auto list = std::make_unique<base::ListValue>();
@@ -439,8 +438,8 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   EXPECT_CALL(delegate_,
               Add(std::set<std::string>(), MatchEventExceptTimestamp(event_)));
 
-  logger_->OnPolicyUpdated(policy::PolicyNamespace(),
-                           policy::PolicyMap() /* previous */, new_policy_map);
+  logger_->OnPolicyUpdated(PolicyNamespace(), /*previous=*/PolicyMap(),
+                           new_policy_map);
   Mock::VerifyAndClearExpectations(&delegate_);
 
   // Expected new packages added with disk info.

@@ -19,13 +19,11 @@
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
-namespace em = enterprise_management;
-
-namespace policy {
-namespace off_hours {
-
+namespace policy::off_hours {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,
@@ -150,7 +148,7 @@ class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
     system_clock_client()->SetServiceIsAvailable(false);
 
     device_settings_service_->SetDeviceOffHoursControllerForTesting(
-        std::make_unique<policy::off_hours::DeviceOffHoursController>());
+        std::make_unique<DeviceOffHoursController>());
   }
 
   void TearDown() override {
@@ -176,7 +174,7 @@ class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
     return chromeos::SystemClockClient::Get()->GetTestInterface();
   }
 
-  policy::off_hours::DeviceOffHoursController* device_off_hours_controller() {
+  DeviceOffHoursController* device_off_hours_controller() {
     return device_settings_service_->device_off_hours_controller();
   }
 };
@@ -456,5 +454,4 @@ INSTANTIATE_TEST_SUITE_P(
                         kHour * 10,  // Advancing to 1970-01-01T10:00:00
                         false)));
 
-}  // namespace off_hours
-}  // namespace policy
+}  // namespace policy::off_hours

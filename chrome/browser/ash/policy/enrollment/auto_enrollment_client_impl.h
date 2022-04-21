@@ -119,7 +119,7 @@ class AutoEnrollmentClientImpl
 
  private:
   typedef bool (AutoEnrollmentClientImpl::*RequestCompletionHandler)(
-      policy::DeviceManagementService::Job*,
+      DeviceManagementService::Job*,
       DeviceManagementStatus,
       int,
       const enterprise_management::DeviceManagementResponse&);
@@ -186,21 +186,21 @@ class AutoEnrollmentClientImpl
   // NextStep().
   void HandleRequestCompletion(
       RequestCompletionHandler handler,
-      policy::DeviceManagementService::Job* job,
+      DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
 
   // Parses the server response to a bucket download request.
   bool OnBucketDownloadRequestCompletion(
-      policy::DeviceManagementService::Job* job,
+      DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
 
   // Parses the server response to a device state request.
   bool OnDeviceStateRequestCompletion(
-      policy::DeviceManagementService::Job* job,
+      DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);

@@ -18,6 +18,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/gcm_driver/gcm_driver.h"
 
+namespace policy {
+
 namespace {
 
 constexpr base::TimeDelta kMinHeartbeatInterval = base::Seconds(30);
@@ -64,8 +66,6 @@ std::string GetDestinationID() {
 }
 
 }  // namespace
-
-namespace policy {
 
 // static
 const base::TimeDelta HeartbeatScheduler::kDefaultHeartbeatInterval =
@@ -172,8 +172,8 @@ void HeartbeatRegistrationHelper::OnRegisterAttemptComplete(
 
 HeartbeatScheduler::HeartbeatScheduler(
     gcm::GCMDriver* driver,
-    policy::CloudPolicyClient* cloud_policy_client,
-    policy::CloudPolicyStore* cloud_policy_store,
+    CloudPolicyClient* cloud_policy_client,
+    CloudPolicyStore* cloud_policy_store,
     const std::string& device_id,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner),

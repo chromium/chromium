@@ -826,7 +826,7 @@ void UserCloudPolicyManagerAsh::OnProfileAdded(Profile* profile) {
 
   invalidator_->Initialize(
       invalidation_provider->GetInvalidationServiceForCustomSender(
-          policy::kPolicyFCMInvalidationSenderID));
+          kPolicyFCMInvalidationSenderID));
 
   shutdown_subscription_ =
       UserCloudPolicyManagerAshNotifierFactory::GetInstance()

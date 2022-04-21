@@ -53,7 +53,7 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        policy::PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
+        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
         PsmRlweIdProvider* psm_rlwe_id_provider) override;
 
    private:

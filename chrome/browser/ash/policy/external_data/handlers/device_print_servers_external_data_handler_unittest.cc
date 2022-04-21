@@ -19,12 +19,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Pointee;
-using ::testing::UnorderedElementsAre;
-
 namespace policy {
 
 namespace {
+
+using ::testing::Pointee;
+using ::testing::UnorderedElementsAre;
 
 // An example device native printers configuration file.
 constexpr char kDeviceExternalPrintServersContentsJson[] = R"json(
@@ -65,11 +65,10 @@ class TestObserver : public ash::PrintServersProvider::Observer {
 class DevicePrintServersExternalDataHandlerTest : public testing::Test {
  protected:
   void SetUp() override {
-    EXPECT_CALL(policy_service_,
-                AddObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+    EXPECT_CALL(policy_service_, AddObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
     EXPECT_CALL(policy_service_,
-                RemoveObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+                RemoveObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
 
     print_servers_provider_ =

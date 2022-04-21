@@ -37,12 +37,12 @@
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-using MinimumVersionRequirement =
-    policy::MinimumVersionPolicyHandler::MinimumVersionRequirement;
-
 namespace policy {
 
 namespace {
+
+using MinimumVersionRequirement =
+    MinimumVersionPolicyHandler::MinimumVersionRequirement;
 
 const int kOneWeekEolNotificationInDays = 7;
 

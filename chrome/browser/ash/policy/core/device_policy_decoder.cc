@@ -37,12 +37,11 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using google::protobuf::RepeatedField;
-using google::protobuf::RepeatedPtrField;
-
-namespace em = enterprise_management;
-
 namespace policy {
+
+using ::google::protobuf::RepeatedPtrField;
+
+namespace em = ::enterprise_management;
 
 // A pattern for validating hostnames.
 const char hostNameRegex[] = "^([A-z0-9][A-z0-9-]*\\.)+[A-z0-9]+$";
@@ -2057,8 +2056,7 @@ absl::optional<base::Value> DecodeJsonStringAndNormalize(
   }
   base::Value root = std::move(value_with_error.value.value());
 
-  const Schema& schema =
-      policy::GetChromeSchema().GetKnownProperty(policy_name);
+  const Schema& schema = GetChromeSchema().GetKnownProperty(policy_name);
   CHECK(schema.valid());
 
   std::string schema_error;

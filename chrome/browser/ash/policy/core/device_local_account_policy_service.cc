@@ -46,11 +46,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 // Device local accounts are always affiliated.
 std::string GetDeviceDMToken(
@@ -154,8 +154,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
   // Unblock the |schema_registry_| so that the |component_policy_service_|
   // starts using it.
   schema_registry_.RegisterComponent(
-      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()),
-      policy::GetChromeSchema());
+      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()), GetChromeSchema());
   schema_registry_.SetAllDomainsReady();
 }
 
@@ -210,7 +209,7 @@ void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
 
 std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
   const base::Value* display_name_value = store_->policy_map().GetValue(
-      policy::key::kUserDisplayName, base::Value::Type::STRING);
+      key::kUserDisplayName, base::Value::Type::STRING);
   if (display_name_value)
     return display_name_value->GetString();
   return std::string();

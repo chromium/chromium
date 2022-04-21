@@ -24,27 +24,26 @@
 
 namespace policy {
 
-std::unique_ptr<policy::RemoteCommandJob> CreateArcJob(
-    Profile* profile,
-    base::TimeTicks issued_time,
-    const std::string& payload) {
+std::unique_ptr<RemoteCommandJob> CreateArcJob(Profile* profile,
+                                               base::TimeTicks issued_time,
+                                               const std::string& payload) {
   // Create the job proto.
   enterprise_management::RemoteCommand command_proto;
   command_proto.set_type(
       enterprise_management::RemoteCommand_Type_USER_ARC_COMMAND);
-  constexpr policy::RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
+  constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(
       (base::TimeTicks::Now() - issued_time).InMilliseconds());
   command_proto.set_payload(payload);
 
   // Create the job and validate.
-  auto job = std::make_unique<policy::UserCommandArcJob>(profile);
+  auto job = std::make_unique<UserCommandArcJob>(profile);
 
   EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
                         enterprise_management::SignedData()));
   EXPECT_EQ(kUniqueID, job->unique_id());
-  EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
+  EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
 
   return job;
 }
@@ -87,15 +86,15 @@ UserCommandArcJobTest::~UserCommandArcJobTest() {
 
 TEST_F(UserCommandArcJobTest, TestPayloadReceiving) {
   const std::string kPayload = "testing payload";
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateArcJob(profile_.get(), base::TimeTicks::Now(), kPayload);
   base::RunLoop run_loop;
 
   auto check_result_callback = base::BindOnce(
-      [](base::RunLoop* run_loop, policy::RemoteCommandJob* job,
+      [](base::RunLoop* run_loop, RemoteCommandJob* job,
          arc::FakePolicyInstance* policy_instance,
          std::string expected_payload) {
-        EXPECT_EQ(policy::RemoteCommandJob::SUCCEEDED, job->status());
+        EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job->status());
         EXPECT_EQ(expected_payload, policy_instance->command_payload());
         run_loop->Quit();
       },

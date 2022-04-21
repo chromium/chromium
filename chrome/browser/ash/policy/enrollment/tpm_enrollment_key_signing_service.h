@@ -13,9 +13,9 @@
 
 namespace policy {
 
-// Signing class implementing the policy::SigningService interface to
+// Signing class implementing the `SigningService` interface to
 // sign data using the enrollment certificate's TPM-bound key.
-class TpmEnrollmentKeySigningService : public policy::SigningService {
+class TpmEnrollmentKeySigningService : public SigningService {
  public:
   TpmEnrollmentKeySigningService();
   ~TpmEnrollmentKeySigningService() override;

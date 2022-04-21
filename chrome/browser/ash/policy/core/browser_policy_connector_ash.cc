@@ -94,9 +94,9 @@
 
 namespace policy {
 
-namespace em = enterprise_management;
-
 namespace {
+
+namespace em = ::enterprise_management;
 
 MarketSegment TranslateMarketSegment(
     em::PolicyData::MarketSegment market_segment) {
@@ -114,7 +114,7 @@ MarketSegment TranslateMarketSegment(
 
 // Checks whether forced re-enrollment is enabled.
 bool IsForcedReEnrollmentEnabled() {
-  return policy::AutoEnrollmentTypeChecker::IsFREEnabled();
+  return AutoEnrollmentTypeChecker::IsFREEnabled();
 }
 
 std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
@@ -301,19 +301,18 @@ void BrowserPolicyConnectorAsh::Init(
   DCHECK(calculator_factory)
       << "Policy connector initialized before the bulk printers factory";
   device_cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::DevicePrintersExternalDataHandler>(
+      std::make_unique<DevicePrintersExternalDataHandler>(
           GetPolicyService(), calculator_factory->GetForDevice()));
   device_cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::DevicePrintServersExternalDataHandler>(
+      std::make_unique<DevicePrintServersExternalDataHandler>(
           GetPolicyService()));
 
   device_cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::DeviceWallpaperImageExternalDataHandler>(
+      std::make_unique<DeviceWallpaperImageExternalDataHandler>(
           local_state, GetPolicyService()));
   if (base::FeatureList::IsEnabled(::features::kWilcoDtc)) {
     device_cloud_external_data_policy_handlers_.push_back(
-        std::make_unique<
-            policy::DeviceWilcoDtcConfigurationExternalDataHandler>(
+        std::make_unique<DeviceWilcoDtcConfigurationExternalDataHandler>(
             GetPolicyService()));
   }
   system_proxy_handler_ =
@@ -552,7 +551,7 @@ bool BrowserPolicyConnectorAsh::IsCommandLineSwitchSupported() const {
   return true;
 }
 
-std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
+std::vector<std::unique_ptr<ConfigurationPolicyProvider>>
 BrowserPolicyConnectorAsh::CreatePolicyProviders() {
   auto providers = ChromeBrowserPolicyConnector::CreatePolicyProviders();
   for (auto& provider_ptr : providers_for_init_)

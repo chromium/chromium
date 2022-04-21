@@ -199,7 +199,7 @@ class UploadJobTestBase : public testing::Test, public UploadJob::Delegate {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         access_token_manager_(&token_manager_delegate_) {}
 
-  // policy::UploadJob::Delegate:
+  // UploadJob::Delegate:
   void OnSuccess() override {
     if (!expected_error_)
       run_loop_.Quit();
@@ -207,7 +207,7 @@ class UploadJobTestBase : public testing::Test, public UploadJob::Delegate {
       FAIL();
   }
 
-  // policy::UploadJob::Delegate:
+  // UploadJob::Delegate:
   void OnFailure(UploadJob::ErrorCode error_code) override {
     if (expected_error_ && *expected_error_.get() == error_code)
       run_loop_.Quit();
@@ -227,7 +227,7 @@ class UploadJobTestBase : public testing::Test, public UploadJob::Delegate {
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
     ASSERT_TRUE(test_server_.Start());
     // Set retry delay to prevent timeouts
-    policy::UploadJobImpl::SetRetryDelayForTesting(0);
+    UploadJobImpl::SetRetryDelayForTesting(0);
   }
 
   // testing::Test:

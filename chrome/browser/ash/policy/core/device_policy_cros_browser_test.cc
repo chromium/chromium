@@ -27,20 +27,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::_;
-using ::testing::AnyNumber;
-using ::testing::Return;
-
-namespace em = enterprise_management;
-
 namespace policy {
+
+namespace em = ::enterprise_management;
 
 void DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
     UserPolicyBuilder* policy_builder,
     const std::string& kAccountId,
     const std::string& kDisplayName) {
   policy_builder->policy_data().set_policy_type(
-      policy::dm_protocol::kChromePublicAccountPolicyType);
+      dm_protocol::kChromePublicAccountPolicyType);
   policy_builder->policy_data().set_username(kAccountId);
   policy_builder->policy_data().set_settings_entity_id(kAccountId);
   policy_builder->policy_data().set_public_key_version(1);

@@ -45,11 +45,12 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-using user_manager::ProfileRequiresPolicy;
 namespace policy {
 
-using PolicyEnforcement = UserCloudPolicyManagerAsh::PolicyEnforcement;
 namespace {
+
+using ::user_manager::ProfileRequiresPolicy;
+using PolicyEnforcement = UserCloudPolicyManagerAsh::PolicyEnforcement;
 
 // Directory under the profile directory where policy-related resources are
 // stored, see the following constants for details.
@@ -124,7 +125,7 @@ void CreateConfigurationPolicyProvider(
     return;
   }
 
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_active_directory = false;
   switch (account_id.GetAccountType()) {

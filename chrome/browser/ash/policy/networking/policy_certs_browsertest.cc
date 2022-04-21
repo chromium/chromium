@@ -86,11 +86,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 // Test data file storing an ONC blob with an Authority certificate.
 constexpr char kRootCaCertOnc[] = "root-ca-cert.onc";
@@ -256,9 +256,9 @@ class UserPolicyCertsHelper {
     user_network_configuration_updater->AddPolicyProvidedCertsObserver(
         &trust_roots_changed_observer);
 
-    policy::PolicyMap policy;
-    policy.Set(key::kOpenNetworkConfiguration, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+    PolicyMap policy;
+    policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(onc_policy_data), nullptr);
     mock_policy_provider->UpdateChromePolicy(policy);
     // Note that this relies on the implementation detail that the notification
@@ -500,8 +500,7 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
  protected:
   PolicyProvidedCertsOnUserSessionInitTest() {}
 
-  void GetPolicySettings(
-      enterprise_management::CloudPolicySettings* policy) const override {
+  void GetPolicySettings(em::CloudPolicySettings* policy) const override {
     std::string user_policy_blob = GetTestCertsFileContents(kRootCaCertOnc);
     policy->mutable_opennetworkconfiguration()->set_value(user_policy_blob);
   }
@@ -559,9 +558,9 @@ class PolicyProvidedClientCertsTest : public DevicePolicyCrosBrowserTest {
 
     const std::string& user_policy_blob =
         chromeos::onc::test_utils::ReadTestData(kClientCertOnc);
-    policy::PolicyMap policy;
-    policy.Set(key::kOpenNetworkConfiguration, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+    PolicyMap policy;
+    policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(user_policy_blob), nullptr);
     provider_.UpdateChromePolicy(policy);
 

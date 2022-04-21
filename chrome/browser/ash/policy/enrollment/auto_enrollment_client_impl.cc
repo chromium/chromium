@@ -35,15 +35,12 @@
 #include "third_party/private_membership/src/membership_response_map.h"
 #include "url/gurl.h"
 
-using content::BrowserThread;
-
-namespace psm_rlwe = private_membership::rlwe;
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
 
+namespace em = ::enterprise_management;
+namespace psm_rlwe = ::private_membership::rlwe;
 using EnrollmentCheckType =
     em::DeviceAutoEnrollmentRequest::EnrollmentCheckType;
 
@@ -190,13 +187,12 @@ class AutoEnrollmentClientImpl::StateDownloadMessageProcessor {
       const = 0;
 
   // Fills the specific request type in |request|.
-  virtual void FillRequest(
-      enterprise_management::DeviceManagementRequest* request) = 0;
+  virtual void FillRequest(em::DeviceManagementRequest* request) = 0;
 
   // Parses the |response|. If it is valid, returns a ParsedResponse struct
   // instance. If it is invalid, returns nullopt.
   virtual absl::optional<ParsedResponse> ParseResponse(
-      const enterprise_management::DeviceManagementResponse& response) = 0;
+      const em::DeviceManagementResponse& response) = 0;
 };
 
 class PsmHelper {
@@ -1149,17 +1145,17 @@ void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
   // in the logs.
   LOG(WARNING) << "Request bucket #" << remainder;
 
-  std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
-      DMServerJobConfiguration>(
-      device_management_service_,
-      policy::DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
-      device_id_,
-      /*critical=*/false, DMAuth::NoAuth(),
-      /*oauth_token=*/absl::nullopt, url_loader_factory_,
-      base::BindOnce(
-          &AutoEnrollmentClientImpl::HandleRequestCompletion,
-          base::Unretained(this),
-          &AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion));
+  std::unique_ptr<DMServerJobConfiguration> config =
+      std::make_unique<DMServerJobConfiguration>(
+          device_management_service_,
+          DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+          device_id_,
+          /*critical=*/false, DMAuth::NoAuth(),
+          /*oauth_token=*/absl::nullopt, url_loader_factory_,
+          base::BindOnce(
+              &AutoEnrollmentClientImpl::HandleRequestCompletion,
+              base::Unretained(this),
+              &AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion));
 
   em::DeviceAutoEnrollmentRequest* request =
       config->request()->mutable_auto_enrollment_request();
@@ -1191,7 +1187,7 @@ void AutoEnrollmentClientImpl::SendDeviceStateRequest() {
 
 void AutoEnrollmentClientImpl::HandleRequestCompletion(
     RequestCompletionHandler handler,
-    policy::DeviceManagementService::Job* job,
+    DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
@@ -1224,7 +1220,7 @@ void AutoEnrollmentClientImpl::HandleRequestCompletion(
 }
 
 bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
-    policy::DeviceManagementService::Job* job,
+    DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
@@ -1295,7 +1291,7 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
 }
 
 bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
-    policy::DeviceManagementService::Job* job,
+    DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {

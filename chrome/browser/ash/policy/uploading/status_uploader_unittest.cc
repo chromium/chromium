@@ -36,12 +36,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform_event.h"
 
-using ::testing::_;
-using ::testing::Invoke;
-using ::testing::Return;
-using ::testing::WithArgs;
-
-namespace em = enterprise_management;
+namespace policy {
 
 namespace {
 
@@ -50,27 +45,26 @@ constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
 
 // Using a DeviceStatusCollector to have a concrete StatusCollector, but the
 // exact type doesn't really matter, as it is being mocked.
-class MockDeviceStatusCollector : public policy::DeviceStatusCollector {
+class MockDeviceStatusCollector : public DeviceStatusCollector {
  public:
   explicit MockDeviceStatusCollector(PrefService* local_state)
       : DeviceStatusCollector(local_state, nullptr, nullptr) {}
-  MOCK_METHOD1(GetStatusAsync, void(policy::StatusCollectorCallback));
+  MOCK_METHOD1(GetStatusAsync, void(StatusCollectorCallback));
 
   MOCK_METHOD0(OnSubmittedSuccessfully, void());
 
   // Explicit mock implementation declared here, since gmock::Invoke can't
   // handle returning non-moveable types like scoped_ptr.
-  std::unique_ptr<policy::DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
+  std::unique_ptr<DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
       override {
-    return std::make_unique<policy::DeviceLocalAccount>(
-        policy::DeviceLocalAccount::TYPE_KIOSK_APP, "account_id", "app_id",
+    return std::make_unique<DeviceLocalAccount>(
+        DeviceLocalAccount::TYPE_KIOSK_APP, "account_id", "app_id",
         "update_url");
   }
 };
 
 }  // namespace
 
-namespace policy {
 class StatusUploaderTest : public testing::Test {
  public:
   StatusUploaderTest() : task_runner_(new base::TestSimpleTaskRunner()) {
@@ -78,7 +72,7 @@ class StatusUploaderTest : public testing::Test {
   }
 
   void SetUp() override {
-    // Required for policy::DeviceStatusCollector
+    // Required for `DeviceStatusCollector`.
     chromeos::DBusThreadManager::Initialize();
 
     chromeos::PowerManagerClient::InitializeFake();

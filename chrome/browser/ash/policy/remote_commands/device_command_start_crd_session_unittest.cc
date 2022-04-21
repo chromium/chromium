@@ -36,13 +36,12 @@
 
 namespace policy {
 
-namespace em = enterprise_management;
-
 namespace {
 
-using base::test::TestFuture;
+using ::base::test::TestFuture;
 using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
+namespace em = ::enterprise_management;
 
 constexpr char kResultCodeFieldName[] = "resultCode";
 constexpr char kResultMessageFieldName[] = "message";
@@ -82,8 +81,7 @@ em::RemoteCommand GenerateCommandProto(RemoteCommandJob::UniqueIDType unique_id,
                                        base::TimeDelta idleness_cutoff,
                                        bool acked_user_presence) {
   em::RemoteCommand command_proto;
-  command_proto.set_type(
-      enterprise_management::RemoteCommand_Type_DEVICE_START_CRD_SESSION);
+  command_proto.set_type(em::RemoteCommand_Type_DEVICE_START_CRD_SESSION);
   command_proto.set_command_id(unique_id);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
 

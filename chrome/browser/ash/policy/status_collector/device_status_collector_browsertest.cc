@@ -117,17 +117,16 @@
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
 
-using ::ash::disks::DiskMountManager;
-using base::Time;
-using base::test::ScopedChromeOSVersionInfo;
-using ::testing::Return;
-using ::testing::ReturnRef;
-
-namespace em = enterprise_management;
-
-namespace cros_healthd = chromeos::cros_healthd::mojom;
+namespace policy {
 
 namespace {
+
+using ::ash::disks::DiskMountManager;
+using ::base::test::ScopedChromeOSVersionInfo;
+using ::testing::Return;
+using ::testing::ReturnRef;
+namespace em = ::enterprise_management;
+namespace cros_healthd = ::chromeos::cros_healthd::mojom;
 
 // Test values for cros_healthd:
 // Battery test values:
@@ -278,7 +277,7 @@ constexpr uint8_t kFakeUsbInterfaceNumber1 = 1;
 // Time delta representing 1 hour time interval.
 constexpr base::TimeDelta kHour = base::Hours(1);
 
-const int64_t kMillisecondsPerDay = Time::kMicrosecondsPerDay / 1000;
+const int64_t kMillisecondsPerDay = base::Time::kMicrosecondsPerDay / 1000;
 const char kKioskAccountId[] = "kiosk_user@localhost";
 const char kArcKioskAccountId[] = "arc_kiosk_user@localhost";
 const char kWebKioskAccountId[] = "web_kiosk_user@localhost";
@@ -329,52 +328,50 @@ class TestingDeviceStatusCollectorOptions {
       const TestingDeviceStatusCollectorOptions&) = delete;
   ~TestingDeviceStatusCollectorOptions() = default;
 
-  policy::DeviceStatusCollector::VolumeInfoFetcher volume_info_fetcher;
-  policy::DeviceStatusCollector::CPUStatisticsFetcher cpu_fetcher;
-  policy::DeviceStatusCollector::CPUTempFetcher cpu_temp_fetcher;
-  policy::StatusCollector::AndroidStatusFetcher android_status_fetcher;
-  policy::DeviceStatusCollector::EMMCLifetimeFetcher emmc_lifetime_fetcher;
-  policy::DeviceStatusCollector::StatefulPartitionInfoFetcher
+  DeviceStatusCollector::VolumeInfoFetcher volume_info_fetcher;
+  DeviceStatusCollector::CPUStatisticsFetcher cpu_fetcher;
+  DeviceStatusCollector::CPUTempFetcher cpu_temp_fetcher;
+  StatusCollector::AndroidStatusFetcher android_status_fetcher;
+  DeviceStatusCollector::EMMCLifetimeFetcher emmc_lifetime_fetcher;
+  DeviceStatusCollector::StatefulPartitionInfoFetcher
       stateful_partition_info_fetcher;
-  policy::DeviceStatusCollector::GraphicsStatusFetcher graphics_status_fetcher;
-  policy::DeviceStatusCollector::CrashReportInfoFetcher
-      crash_report_info_fetcher;
-  std::unique_ptr<policy::AppInfoGenerator> app_info_generator;
+  DeviceStatusCollector::GraphicsStatusFetcher graphics_status_fetcher;
+  DeviceStatusCollector::CrashReportInfoFetcher crash_report_info_fetcher;
+  std::unique_ptr<AppInfoGenerator> app_info_generator;
 };
 
-class TestingDeviceStatusCollector : public policy::DeviceStatusCollector {
+class TestingDeviceStatusCollector : public DeviceStatusCollector {
  public:
   // Note that that TpmStatusFetcher is null so the test exercises the
   // production logic with fake tpm manager and attestation clients.
   TestingDeviceStatusCollector(
       PrefService* pref_service,
       chromeos::system::StatisticsProvider* provider,
-      policy::ManagedSessionService* managed_session_service,
+      ManagedSessionService* managed_session_service,
       std::unique_ptr<TestingDeviceStatusCollectorOptions> options,
       base::SimpleTestClock* clock)
-      : policy::DeviceStatusCollector(
-            pref_service,
-            provider,
-            managed_session_service,
-            options->volume_info_fetcher,
-            options->cpu_fetcher,
-            options->cpu_temp_fetcher,
-            options->android_status_fetcher,
-            policy::DeviceStatusCollector::TpmStatusFetcher(),
-            options->emmc_lifetime_fetcher,
-            options->stateful_partition_info_fetcher,
-            options->graphics_status_fetcher,
-            options->crash_report_info_fetcher,
-            clock),
+      : DeviceStatusCollector(pref_service,
+                              provider,
+                              managed_session_service,
+                              options->volume_info_fetcher,
+                              options->cpu_fetcher,
+                              options->cpu_temp_fetcher,
+                              options->android_status_fetcher,
+                              DeviceStatusCollector::TpmStatusFetcher(),
+                              options->emmc_lifetime_fetcher,
+                              options->stateful_partition_info_fetcher,
+                              options->graphics_status_fetcher,
+                              options->crash_report_info_fetcher,
+                              clock),
         test_clock_(*clock) {
     // Set the baseline time to a fixed value (1 hour after day start) to
     // prevent test flakiness due to a single activity period spanning two days.
-    test_clock_.SetNow(Time::Now().LocalMidnight() + kHour);
+    test_clock_.SetNow(base::Time::Now().LocalMidnight() + kHour);
   }
 
   void Simulate(ui::IdleState* states, int len) {
     for (int i = 0; i < len; i++) {
-      test_clock_.Advance(policy::DeviceStatusCollector::kIdlePollInterval);
+      test_clock_.Advance(DeviceStatusCollector::kIdlePollInterval);
       ProcessIdleState(states[i]);
     }
   }
@@ -387,14 +384,14 @@ class TestingDeviceStatusCollector : public policy::DeviceStatusCollector {
     max_stored_future_activity_interval_ = value;
   }
 
-  void set_kiosk_account(std::unique_ptr<policy::DeviceLocalAccount> account) {
+  void set_kiosk_account(std::unique_ptr<DeviceLocalAccount> account) {
     kiosk_account_ = std::move(account);
   }
 
-  std::unique_ptr<policy::DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
+  std::unique_ptr<DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
       override {
     if (kiosk_account_)
-      return std::make_unique<policy::DeviceLocalAccount>(*kiosk_account_);
+      return std::make_unique<DeviceLocalAccount>(*kiosk_account_);
     return nullptr;
   }
 
@@ -425,7 +422,7 @@ class TestingDeviceStatusCollector : public policy::DeviceStatusCollector {
  private:
   base::SimpleTestClock& test_clock_;
 
-  std::unique_ptr<policy::DeviceLocalAccount> kiosk_account_;
+  std::unique_ptr<DeviceLocalAccount> kiosk_account_;
 };
 
 // Return the total number of active milliseconds contained in a device
@@ -483,15 +480,13 @@ std::vector<em::CPUTempInfo> GetFakeCPUTempInfo(
   return cpu_temp_info;
 }
 
-void CallAndroidStatusReceiver(
-    policy::StatusCollector::AndroidStatusReceiver receiver,
-    const std::string& status,
-    const std::string& droid_guard_info) {
+void CallAndroidStatusReceiver(StatusCollector::AndroidStatusReceiver receiver,
+                               const std::string& status,
+                               const std::string& droid_guard_info) {
   std::move(receiver).Run(status, droid_guard_info);
 }
 
-bool GetEmptyAndroidStatus(
-    policy::StatusCollector::AndroidStatusReceiver receiver) {
+bool GetEmptyAndroidStatus(StatusCollector::AndroidStatusReceiver receiver) {
   // Post it to the thread because this call is expected to be asynchronous.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -499,10 +494,9 @@ bool GetEmptyAndroidStatus(
   return true;
 }
 
-bool GetFakeAndroidStatus(
-    const std::string& status,
-    const std::string& droid_guard_info,
-    policy::StatusCollector::AndroidStatusReceiver receiver) {
+bool GetFakeAndroidStatus(const std::string& status,
+                          const std::string& droid_guard_info,
+                          StatusCollector::AndroidStatusReceiver receiver) {
   // Post it to the thread because this call is expected to be asynchronous.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&CallAndroidStatusReceiver, std::move(receiver),
@@ -801,31 +795,29 @@ void SetFakeCrosHealthdData() {
 }
 
 void GetEmptyGraphicsStatus(
-    policy::DeviceStatusCollector::GraphicsStatusReceiver receiver) {
+    DeviceStatusCollector::GraphicsStatusReceiver receiver) {
   std::move(receiver).Run(em::GraphicsStatus());
 }
 
 void GetFakeGraphicsStatus(
     const em::GraphicsStatus& value,
-    policy::DeviceStatusCollector::GraphicsStatusReceiver receiver) {
+    DeviceStatusCollector::GraphicsStatusReceiver receiver) {
   std::move(receiver).Run(value);
 }
 
 void GetEmptyCrashReportInfo(
-    policy::DeviceStatusCollector::CrashReportInfoReceiver receiver) {
+    DeviceStatusCollector::CrashReportInfoReceiver receiver) {
   std::vector<em::CrashReportInfo> crash_report_infos;
   std::move(receiver).Run(crash_report_infos);
 }
 
 void GetFakeCrashReportInfo(
     const std::vector<em::CrashReportInfo>& crash_report_infos,
-    policy::DeviceStatusCollector::CrashReportInfoReceiver receiver) {
+    DeviceStatusCollector::CrashReportInfoReceiver receiver) {
   std::move(receiver).Run(crash_report_infos);
 }
 
 }  // namespace
-
-namespace policy {
 
 // Though it is a unit test, this test is linked with browser_tests so that it
 // runs in a separate process. The intention is to avoid overriding the timezone
@@ -838,7 +830,7 @@ class DeviceStatusCollectorTest : public testing::Test {
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         got_session_status_(false),
         fake_kiosk_device_local_account_(
-            policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+            DeviceLocalAccount::TYPE_KIOSK_APP,
             kKioskAccountId,
             kKioskAppId,
             std::string() /* kiosk_app_update_url */),
@@ -873,8 +865,8 @@ class DeviceStatusCollectorTest : public testing::Test {
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_content_client_);
 
-    // Run this test with a well-known timezone so that Time::LocalMidnight()
-    // returns the same values on all machines.
+    // Run this test with a well-known timezone so that
+    // `base::Time::LocalMidnight()` returns the same values on all machines.
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     env->SetVar("TZ", "UTC");
 
@@ -963,8 +955,7 @@ class DeviceStatusCollectorTest : public testing::Test {
         ash::kReportDeviceNetworkStatus, false);
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kReportDeviceNetworkConfiguration, false);
-    managed_session_service_ =
-        std::make_unique<policy::ManagedSessionService>();
+    managed_session_service_ = std::make_unique<ManagedSessionService>();
     RestartStatusCollector();
   }
 
@@ -1044,7 +1035,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     options->crash_report_info_fetcher =
         base::BindRepeating(&GetEmptyCrashReportInfo);
     options->app_info_generator =
-        std::make_unique<policy::AppInfoGenerator>(nullptr, base::Days(0));
+        std::make_unique<AppInfoGenerator>(nullptr, base::Days(0));
     return options;
   }
 
@@ -1196,7 +1187,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   // Convenience method.
   int64_t ActivePeriodMilliseconds() {
-    return policy::DeviceStatusCollector::kIdlePollInterval.InMilliseconds();
+    return DeviceStatusCollector::kIdlePollInterval.InMilliseconds();
   }
 
   // Since this is a unit test running in browser_tests we must do additional
@@ -1226,13 +1217,13 @@ class DeviceStatusCollectorTest : public testing::Test {
   em::SessionStatusReportRequest session_status_;
   bool got_session_status_;
   TestingPrefServiceSimple profile_pref_service_;
-  std::unique_ptr<policy::ManagedSessionService> managed_session_service_;
+  std::unique_ptr<ManagedSessionService> managed_session_service_;
   std::unique_ptr<TestingDeviceStatusCollector> status_collector_;
-  const policy::DeviceLocalAccount fake_kiosk_device_local_account_;
-  const policy::ArcKioskAppBasicInfo fake_arc_kiosk_app_basic_info_;
-  const policy::DeviceLocalAccount fake_arc_kiosk_device_local_account_;
-  const policy::WebKioskAppBasicInfo fake_web_kiosk_app_basic_info_;
-  const policy::DeviceLocalAccount fake_web_kiosk_device_local_account_;
+  const DeviceLocalAccount fake_kiosk_device_local_account_;
+  const ArcKioskAppBasicInfo fake_arc_kiosk_app_basic_info_;
+  const DeviceLocalAccount fake_arc_kiosk_device_local_account_;
+  const WebKioskAppBasicInfo fake_web_kiosk_app_basic_info_;
+  const DeviceLocalAccount fake_web_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
   chromeos::FakeUpdateEngineClient* const update_engine_client_;
@@ -1408,7 +1399,7 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
   status_collector_->set_max_stored_past_activity_interval(
       base::Days(kMaxDays - 1));
   status_collector_->set_max_stored_future_activity_interval(base::Days(1));
-  test_clock_.SetNow(Time::Now().LocalMidnight());
+  test_clock_.SetNow(base::Time::Now().LocalMidnight());
 
   // Simulate 12 active periods.
   for (int i = 0; i < kMaxDays + 2; i++) {
@@ -1473,7 +1464,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityCrossingMidnight) {
       ash::kReportDeviceActivityTimes, true);
 
   // Set the baseline time to 20 seconds before midnight.
-  test_clock_.SetNow(Time::Now().LocalMidnight() - base::Seconds(20));
+  test_clock_.SetNow(base::Time::Now().LocalMidnight() - base::Seconds(20));
 
   status_collector_->Simulate(test_states, 1);
   GetStatus();
@@ -2557,8 +2548,7 @@ TEST_F(DeviceStatusCollectorTest, NoSessionStatusIfSessionReportingDisabled) {
   // ReportDeviceSessionStatus only controls Kiosk reporting, ARC reporting
   // has to be disabled serarately.
   status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_kiosk_device_local_account_));
+      std::make_unique<DeviceLocalAccount>(fake_kiosk_device_local_account_));
   // Set up a device-local account for single-app kiosk mode.
   MockRunningKioskApp(fake_kiosk_device_local_account_,
                       DeviceLocalAccount::TYPE_KIOSK_APP);
@@ -2573,8 +2563,7 @@ TEST_F(DeviceStatusCollectorTest, ReportKioskSessionStatus) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceSessionStatus, true);
   status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_kiosk_device_local_account_));
+      std::make_unique<DeviceLocalAccount>(fake_kiosk_device_local_account_));
 
   // Set up a device-local account for single-app kiosk mode.
   MockRunningKioskApp(fake_kiosk_device_local_account_,
@@ -2597,9 +2586,8 @@ TEST_F(DeviceStatusCollectorTest, ReportKioskSessionStatus) {
 TEST_F(DeviceStatusCollectorTest, ReportArcKioskSessionStatus) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceSessionStatus, true);
-  status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_arc_kiosk_device_local_account_));
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_arc_kiosk_device_local_account_));
 
   // Set up a device-local account for single-app ARC kiosk mode.
   MockRunningKioskApp(fake_arc_kiosk_device_local_account_,
@@ -2621,9 +2609,8 @@ TEST_F(DeviceStatusCollectorTest, ReportArcKioskSessionStatus) {
 TEST_F(DeviceStatusCollectorTest, ReportWebKioskSessionStatus) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceSessionStatus, true);
-  status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_web_kiosk_device_local_account_));
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_web_kiosk_device_local_account_));
 
   // Set up a device-local account for single-app Web kiosk mode.
   MockRunningKioskApp(fake_web_kiosk_device_local_account_,
@@ -2862,8 +2849,7 @@ TEST_F(DeviceStatusCollectorTest, NoRunningKioskAppByDefault) {
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
   status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_kiosk_device_local_account_));
+      std::make_unique<DeviceLocalAccount>(fake_kiosk_device_local_account_));
 
   MockRunningKioskApp(fake_kiosk_device_local_account_,
                       DeviceLocalAccount::TYPE_KIOSK_APP);
@@ -2894,8 +2880,7 @@ TEST_F(DeviceStatusCollectorTest, ReportRunningKioskApp) {
   MockRunningKioskApp(fake_kiosk_device_local_account_,
                       DeviceLocalAccount::TYPE_KIOSK_APP);
   status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_kiosk_device_local_account_));
+      std::make_unique<DeviceLocalAccount>(fake_kiosk_device_local_account_));
 
   GetStatus();
   ASSERT_TRUE(device_status_.has_running_kiosk_app());
@@ -2914,9 +2899,8 @@ TEST_F(DeviceStatusCollectorTest, ReportRunningArcKioskApp) {
 
   MockRunningKioskApp(fake_arc_kiosk_device_local_account_,
                       DeviceLocalAccount::TYPE_ARC_KIOSK_APP);
-  status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_arc_kiosk_device_local_account_));
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_arc_kiosk_device_local_account_));
 
   GetStatus();
   ASSERT_TRUE(device_status_.has_running_kiosk_app());
@@ -2936,9 +2920,8 @@ TEST_F(DeviceStatusCollectorTest, ReportRunningWebKioskApp) {
 
   MockRunningKioskApp(fake_web_kiosk_device_local_account_,
                       DeviceLocalAccount::TYPE_WEB_KIOSK_APP);
-  status_collector_->set_kiosk_account(
-      std::make_unique<policy::DeviceLocalAccount>(
-          fake_web_kiosk_device_local_account_));
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_web_kiosk_device_local_account_));
 
   GetStatus();
   ASSERT_TRUE(device_status_.has_running_kiosk_app());

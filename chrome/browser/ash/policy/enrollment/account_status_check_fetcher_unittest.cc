@@ -25,13 +25,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::ElementsAre;
-namespace em = enterprise_management;
-
 namespace policy {
 namespace {
 
-using ::testing::_;
+using ::testing::ElementsAre;
+namespace em = ::enterprise_management;
 
 class AccountStatusCheckFetcherUnitTest : public testing::Test {
  public:
@@ -39,8 +37,8 @@ class AccountStatusCheckFetcherUnitTest : public testing::Test {
   ~AccountStatusCheckFetcherUnitTest() override = default;
 
   void SetUpAccountStatusCheckFetcher(const std::string& email) {
-    service_ = std::make_unique<policy::FakeDeviceManagementService>(
-        &job_creation_handler_);
+    service_ =
+        std::make_unique<FakeDeviceManagementService>(&job_creation_handler_);
     service_->ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
     shared_url_loader_factory_ =
@@ -50,8 +48,7 @@ class AccountStatusCheckFetcherUnitTest : public testing::Test {
         email, service_.get(), shared_url_loader_factory_);
   }
 
-  void SetReply(
-      const enterprise_management::DeviceManagementResponse& response) {
+  void SetReply(const em::DeviceManagementResponse& response) {
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
         .WillOnce(DoAll(service_->SendJobOKAsync(response)))
         .RetiresOnSaturation();
@@ -104,13 +101,13 @@ class AccountStatusCheckFetcherUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
-  std::unique_ptr<policy::FakeDeviceManagementService> service_;
+  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  std::unique_ptr<FakeDeviceManagementService> service_;
 };
 
 TEST_F(AccountStatusCheckFetcherUnitTest, NetworkFailure) {
   SetUpAccountStatusCheckFetcher("fooboo@foobooorg.com");
-  SetFailReply(net::OK, policy::DeviceManagementService::kServiceUnavailable);
+  SetFailReply(net::OK, DeviceManagementService::kServiceUnavailable);
   SyncFetch();
   EXPECT_FALSE(fetch_succeeded_);
 }

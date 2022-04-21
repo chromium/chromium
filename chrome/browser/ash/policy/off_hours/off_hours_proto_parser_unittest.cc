@@ -14,12 +14,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace em = enterprise_management;
-
-namespace policy {
-namespace off_hours {
+namespace policy::off_hours {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,
@@ -126,7 +125,7 @@ TEST_F(OffHoursParserTest, ConvertOffHoursProtoToValue) {
       &proto, OffHoursPolicy(kGmtTimezone, intervals, kDefaultIgnoredPolicies));
 
   std::unique_ptr<base::DictionaryValue> off_hours_value =
-      policy::off_hours::ConvertOffHoursProtoToValue(proto.device_off_hours());
+      ConvertOffHoursProtoToValue(proto.device_off_hours());
 
   base::DictionaryValue off_hours_expected;
   off_hours_expected.SetStringKey("timezone", kGmtTimezone);
@@ -199,5 +198,4 @@ INSTANTIATE_TEST_SUITE_P(
                            kLosAngelesTimezone)  // expected timezone
                        ));
 
-}  // namespace off_hours
-}  // namespace policy
+}  // namespace policy::off_hours

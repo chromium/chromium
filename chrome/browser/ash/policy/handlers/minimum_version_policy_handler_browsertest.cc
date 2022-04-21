@@ -68,11 +68,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
+
 const char kNewVersion[] = "13335.4.2";
 const char kUpdatedVersion[] = "13340.0.0";
 const char kCurrentVersion[] = "13332.0.25";
@@ -90,11 +91,12 @@ const char kManagedUserGaiaId[] = "11111";
 const char kUpdateRequiredNotificationId[] = "policy.update_required";
 const char kWifiServicePath[] = "/service/wifi2";
 const char kCellularServicePath[] = "/service/cellular1";
+
 // This is a randomly chosen long delay in milliseconds to make sure that the
 // timer keeps running for a long time in case it is started.
 const int kAutoLoginLoginDelayMilliseconds = 500000;
 
-policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
+MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
       ->GetMinimumVersionPolicyHandler();
@@ -146,7 +148,7 @@ MinimumVersionPolicyTestBase::MinimumVersionPolicyTestBase() {
 
 void MinimumVersionPolicyTestBase::SetMinimumChromeVersionPolicy(
     const base::Value& value) {
-  policy::DevicePolicyBuilder* const device_policy(helper_.device_policy());
+  DevicePolicyBuilder* const device_policy(helper_.device_policy());
   em::ChromeDeviceSettingsProto& proto(device_policy->payload());
   std::string policy_value;
   EXPECT_TRUE(base::JSONWriter::Write(value, &policy_value));

@@ -58,7 +58,7 @@ class DeviceWilcoDtcConfigurationExternalPolicyHandlerTest
     policy_change_registrar_ = std::make_unique<PolicyChangeRegistrar>(
         policy_service_, PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     policy_change_registrar_->Observe(
-        policy::key::kDeviceWilcoDtcConfiguration,
+        key::kDeviceWilcoDtcConfiguration,
         base::BindRepeating(
             &DeviceWilcoDtcConfigurationExternalPolicyHandlerTest ::
                 PolicyChangedCallback,
@@ -85,7 +85,7 @@ class DeviceWilcoDtcConfigurationExternalPolicyHandlerTest
     const PolicyMap& policies = policy_service_->GetPolicies(
         PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     const PolicyMap::Entry* policy_entry =
-        policies.Get(policy::key::kDeviceWilcoDtcConfiguration);
+        policies.Get(key::kDeviceWilcoDtcConfiguration);
     EXPECT_TRUE(policy_entry);
     EXPECT_TRUE(policy_entry->external_data_fetcher);
 

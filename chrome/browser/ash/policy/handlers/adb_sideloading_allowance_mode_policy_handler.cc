@@ -25,14 +25,16 @@
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace policy {
+
 namespace {
 
 constexpr base::TimeDelta kAdbSideloadingPlannedNotificationWaitTime =
     base::Days(1);
 
-absl::optional<policy::AdbSideloadingAllowanceMode>
-GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
-                                  const base::RepeatingClosure callback) {
+absl::optional<AdbSideloadingAllowanceMode> GetAdbSideloadingDevicePolicyMode(
+    const ash::CrosSettings* cros_settings,
+    const base::RepeatingClosure callback) {
   auto status = cros_settings->PrepareTrustedValues(callback);
 
   // If the policy value is still not trusted, return optional null
@@ -47,7 +49,7 @@ GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
     // Here we do not return null because we want to handle this case separately
     // and to reset all the prefs for the notifications so that they can be
     // displayed again if the policy changes
-    return policy::AdbSideloadingAllowanceMode::kNotSet;
+    return AdbSideloadingAllowanceMode::kNotSet;
   }
 
   using Mode =
@@ -55,18 +57,17 @@ GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
 
   switch (sideloading_mode) {
     case Mode::DISALLOW:
-      return policy::AdbSideloadingAllowanceMode::kDisallow;
+      return AdbSideloadingAllowanceMode::kDisallow;
     case Mode::DISALLOW_WITH_POWERWASH:
-      return policy::AdbSideloadingAllowanceMode::kDisallowWithPowerwash;
+      return AdbSideloadingAllowanceMode::kDisallowWithPowerwash;
     case Mode::ALLOW_FOR_AFFILIATED_USERS:
-      return policy::AdbSideloadingAllowanceMode::kAllowForAffiliatedUser;
+      return AdbSideloadingAllowanceMode::kAllowForAffiliatedUser;
     default:
       return absl::nullopt;
   }
 }
-}  // namespace
 
-namespace policy {
+}  // namespace
 
 // static
 void AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(
@@ -125,7 +126,7 @@ void AdbSideloadingAllowanceModePolicyHandler::SetNotificationTimerForTesting(
 }
 
 void AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification() {
-  absl::optional<policy::AdbSideloadingAllowanceMode> mode =
+  absl::optional<AdbSideloadingAllowanceMode> mode =
       GetAdbSideloadingDevicePolicyMode(
           cros_settings_,
           base::BindRepeating(

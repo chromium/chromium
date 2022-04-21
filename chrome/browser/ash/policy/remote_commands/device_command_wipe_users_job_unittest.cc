@@ -61,24 +61,24 @@ class TestingRemoteCommandsService : public RemoteCommandsService {
   base::OnceClosure on_command_acked_callback_;
 };
 
-std::unique_ptr<policy::RemoteCommandJob> CreateWipeUsersJob(
+std::unique_ptr<RemoteCommandJob> CreateWipeUsersJob(
     base::TimeDelta age_of_command,
     RemoteCommandsService* service) {
   // Create the job proto.
   enterprise_management::RemoteCommand command_proto;
   command_proto.set_type(
       enterprise_management::RemoteCommand_Type_DEVICE_WIPE_USERS);
-  constexpr policy::RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
+  constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
 
   // Create the job and validate.
-  auto job = std::make_unique<policy::DeviceCommandWipeUsersJob>(service);
+  auto job = std::make_unique<DeviceCommandWipeUsersJob>(service);
 
   EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
                         enterprise_management::SignedData()));
   EXPECT_EQ(kUniqueID, job->unique_id());
-  EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
+  EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
 
   return job;
 }
@@ -110,7 +110,7 @@ DeviceCommandWipeUsersJobTest::~DeviceCommandWipeUsersJobTest() {}
 
 // Make sure that the command is still valid 175 days after being issued.
 TEST_F(DeviceCommandWipeUsersJobTest, TestCommandLifetime) {
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateWipeUsersJob(kVeryoldCommandAge, service_.get());
 
   EXPECT_TRUE(
@@ -119,12 +119,12 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestCommandLifetime) {
 
 // Make sure that the command's succeeded_callback is being invoked.
 TEST_F(DeviceCommandWipeUsersJobTest, TestCommandSucceededCallback) {
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateWipeUsersJob(kCommandAge, service_.get());
 
   auto check_result_callback = base::BindOnce(
-      [](base::RunLoop* run_loop, policy::RemoteCommandJob* job) {
-        EXPECT_EQ(policy::RemoteCommandJob::SUCCEEDED, job->status());
+      [](base::RunLoop* run_loop, RemoteCommandJob* job) {
+        EXPECT_EQ(RemoteCommandJob::SUCCEEDED, job->status());
         run_loop->Quit();
       },
       &run_loop_, job.get());
@@ -138,7 +138,7 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestCommandSucceededCallback) {
 // Make sure that LogOut is being called after the commands gets ACK'd to the
 // server.
 TEST_F(DeviceCommandWipeUsersJobTest, TestLogOutCalled) {
-  std::unique_ptr<policy::RemoteCommandJob> job =
+  std::unique_ptr<RemoteCommandJob> job =
       CreateWipeUsersJob(kCommandAge, service_.get());
 
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),

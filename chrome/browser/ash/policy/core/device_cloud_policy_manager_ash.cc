@@ -63,8 +63,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
@@ -82,7 +80,7 @@ constexpr base::TimeDelta kDeviceStatusUploadFrequency = base::Hours(3);
 
 // Checks whether forced re-enrollment is enabled.
 bool IsForcedReEnrollmentEnabled() {
-  return policy::AutoEnrollmentTypeChecker::IsFREEnabled();
+  return AutoEnrollmentTypeChecker::IsFREEnabled();
 }
 
 }  // namespace
@@ -346,7 +344,7 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
     return;
   }
 
-  managed_session_service_ = std::make_unique<policy::ManagedSessionService>();
+  managed_session_service_ = std::make_unique<ManagedSessionService>();
   login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
       managed_session_service_.get());
   user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(

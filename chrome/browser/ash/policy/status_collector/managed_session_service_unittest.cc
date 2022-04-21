@@ -22,9 +22,8 @@
 
 namespace policy {
 
-class ManagedSessionServiceTest
-    : public ::testing::Test,
-      public policy::ManagedSessionService::Observer {
+class ManagedSessionServiceTest : public ::testing::Test,
+                                  public ManagedSessionService::Observer {
  protected:
   using SessionState = session_manager::SessionState;
 

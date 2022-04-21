@@ -173,14 +173,12 @@
 #include "url/gurl.h"
 
 namespace policy {
+
 namespace {
 
 namespace em = ::enterprise_management;
 
 using ::ash::test::GetOobeElementPath;
-using ::testing::_;
-using ::testing::InvokeWithoutArgs;
-using ::testing::Return;
 
 const char16_t kDomain[] = u"example.com";
 const char kAccountId1[] = "dla1@example.com";
@@ -900,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DisplayName) {
   device_local_account_policy_.payload().mutable_userdisplayname()->set_value(
       kDisplayName2);
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
@@ -923,8 +921,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, CachedDisplayName) {
   AddPublicSessionToDevicePolicy(kAccountId1);
 
   WaitForDisplayName(account_id_1_.GetUserEmail(), kDisplayName1);
-  auto* dict = g_browser_process->local_state()->GetDictionary(
-      policy::key::kUserDisplayName);
+  auto* dict =
+      g_browser_process->local_state()->GetDictionary(key::kUserDisplayName);
   ASSERT_TRUE(dict);
   ASSERT_TRUE(dict->FindKey(account_id_1_.GetUserEmail()) != nullptr);
   EXPECT_EQ(kDisplayName1, *dict->FindStringKey(account_id_1_.GetUserEmail()));
@@ -1361,7 +1359,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   device_local_account_policy_.payload().mutable_useravatarimage()->set_value(
       policy);
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
@@ -1452,7 +1450,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   device_local_account_policy_.payload().mutable_useravatarimage()->set_value(
       policy);
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
@@ -1835,7 +1833,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   SetRecommendedLocales(kRecommendedLocales2, std::size(kRecommendedLocales2));
 
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
@@ -2316,7 +2314,7 @@ class ManagedSessionsTest : public DeviceLocalAccountTest {
   }
 
   void WaitForCertificateUpdate() {
-    policy::DeviceNetworkConfigurationUpdaterAsh* updater =
+    DeviceNetworkConfigurationUpdaterAsh* updater =
         g_browser_process->platform_part()
             ->browser_policy_connector_ash()
             ->GetDeviceNetworkConfigurationUpdater();
@@ -2738,10 +2736,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, WebAppsInPublicSession) {
   EXPECT_TRUE(web_app::WebAppProvider::GetForTest(profile));
 }
 
-}  // namespace policy
-
 class AmbientAuthenticationManagedGuestSessionTest
-    : public policy::DeviceLocalAccountTest,
+    : public DeviceLocalAccountTest,
       public testing::WithParamInterface<net::AmbientAuthAllowedProfileTypes> {
  public:
   void SetAmbientAuthPolicy(net::AmbientAuthAllowedProfileTypes value) {
@@ -2782,7 +2778,7 @@ IN_PROC_BROWSER_TEST_P(AmbientAuthenticationManagedGuestSessionTest,
   SetAmbientAuthPolicy(GetParam());
 
   UploadAndInstallDeviceLocalAccountPolicy();
-  AddPublicSessionToDevicePolicy(policy::kAccountId1);
+  AddPublicSessionToDevicePolicy(kAccountId1);
   EnableAutoLogin();
 
   WaitForPolicy();
@@ -2801,3 +2797,5 @@ INSTANTIATE_TEST_SUITE_P(
                     net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR,
                     net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR,
                     net::AmbientAuthAllowedProfileTypes::ALL));
+
+}  // namespace policy

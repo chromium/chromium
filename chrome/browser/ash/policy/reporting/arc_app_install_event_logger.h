@@ -49,7 +49,7 @@ class ArcAppInstallEventLogger
           enterprise_management::AppInstallReportLogEvent::EventType,
           std::string>,
       public ArcAppInstallEventLogCollector::Delegate,
-      public policy::PolicyService::Observer,
+      public PolicyService::Observer,
       public arc::ArcPolicyBridge::Observer {
  public:
   // The delegate that events are forwarded to for inclusion in the log.
@@ -94,10 +94,10 @@ class ArcAppInstallEventLogger
            std::unique_ptr<enterprise_management::AppInstallReportLogEvent>
                event) override;
 
-  // policy::PolicyService::Observer:
-  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
-                       const policy::PolicyMap& previous,
-                       const policy::PolicyMap& current) override;
+  // PolicyService::Observer:
+  void OnPolicyUpdated(const PolicyNamespace& ns,
+                       const PolicyMap& previous,
+                       const PolicyMap& current) override;
 
   // arc::ArcPolicyBridge::Observer:
   void OnPolicySent(const std::string& policy) override;
@@ -123,7 +123,7 @@ class ArcAppInstallEventLogger
   // Extracts the list of app push-install requests from |policy|, logs the
   // cancellation of any pending push-installs that are no longer in |policy|
   // and updates the |log_collector_|.
-  void EvaluatePolicy(const policy::PolicyMap& policy, bool initial);
+  void EvaluatePolicy(const PolicyMap& policy, bool initial);
 
   // Override for InstallEventLoggerBase::AddForSetOfApps.
   void AddForSetOfApps(

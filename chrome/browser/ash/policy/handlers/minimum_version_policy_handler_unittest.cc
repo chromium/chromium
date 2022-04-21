@@ -31,15 +31,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using testing::_;
-using testing::Mock;
-
-using MinimumVersionRequirement =
-    policy::MinimumVersionPolicyHandler::MinimumVersionRequirement;
-
 namespace policy {
 
 namespace {
+
+using MinimumVersionRequirement =
+    MinimumVersionPolicyHandler::MinimumVersionRequirement;
+
 const char kFakeCurrentVersion[] = "13305.20.0";
 const char kNewVersion[] = "13305.25.0";
 const char kNewerVersion[] = "13310.0.0";

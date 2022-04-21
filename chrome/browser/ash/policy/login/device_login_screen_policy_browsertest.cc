@@ -37,11 +37,11 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
 
 // Spins the loop until a notification is received from |prefs| that the value
 // of |pref_name| has changed. If the notification is received before Wait()
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest,
 IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
+  DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
   RefreshDevicePolicy();
 
   // Wait for Gaia dialog to be hidden.
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, ResetScreen) {
   ash::OobeScreenWaiter(chromeos::ResetView::kScreenId).Wait();
 
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
+  DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
   RefreshDevicePolicy();
 
   // Wait for users to propagate.

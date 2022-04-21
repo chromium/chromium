@@ -29,16 +29,15 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
 
+namespace em = ::enterprise_management;
+
 constexpr int kNonComplianceReasonAppNotInstalled = 5;
 
-std::set<std::string> GetRequestedPackagesFromPolicy(
-    const policy::PolicyMap& policy) {
+std::set<std::string> GetRequestedPackagesFromPolicy(const PolicyMap& policy) {
   const base::Value* const arc_enabled =
       policy.GetValue(key::kArcEnabled, base::Value::Type::BOOLEAN);
   if (!arc_enabled || !arc_enabled->GetBool())
@@ -65,17 +64,17 @@ ArcAppInstallEventLogger::ArcAppInstallEventLogger(Delegate* delegate,
     return;
   }
 
-  policy::PolicyService* const policy_service =
+  PolicyService* const policy_service =
       profile_->GetProfilePolicyConnector()->policy_service();
-  EvaluatePolicy(policy_service->GetPolicies(policy::PolicyNamespace(
-                     policy::POLICY_DOMAIN_CHROME, std::string())),
+  EvaluatePolicy(policy_service->GetPolicies(
+                     PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())),
                  true /* initial */);
 
   observing_ = true;
   arc::ArcPolicyBridge* bridge =
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
   bridge->AddObserver(this);
-  policy_service->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  policy_service->AddObserver(POLICY_DOMAIN_CHROME, this);
 }
 
 ArcAppInstallEventLogger::~ArcAppInstallEventLogger() {
@@ -85,7 +84,7 @@ ArcAppInstallEventLogger::~ArcAppInstallEventLogger() {
   if (observing_) {
     arc::ArcPolicyBridge::GetForBrowserContext(profile_)->RemoveObserver(this);
     profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
-        policy::POLICY_DOMAIN_CHROME, this);
+        POLICY_DOMAIN_CHROME, this);
   }
 }
 
@@ -116,10 +115,9 @@ void ArcAppInstallEventLogger::Add(
   AddEvent(package, gather_disk_space_info, event);
 }
 
-void ArcAppInstallEventLogger::OnPolicyUpdated(
-    const policy::PolicyNamespace& ns,
-    const policy::PolicyMap& previous,
-    const policy::PolicyMap& current) {
+void ArcAppInstallEventLogger::OnPolicyUpdated(const PolicyNamespace& ns,
+                                               const PolicyMap& previous,
+                                               const PolicyMap& current) {
   EvaluatePolicy(current, false /* initial */);
 }
 
@@ -209,7 +207,7 @@ void ArcAppInstallEventLogger::StopCollector() {
   log_collector_.reset();
 }
 
-void ArcAppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
+void ArcAppInstallEventLogger::EvaluatePolicy(const PolicyMap& policy,
                                               bool initial) {
   const std::set<std::string> previous_requested =
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsRequested);

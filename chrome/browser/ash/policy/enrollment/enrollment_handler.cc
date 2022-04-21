@@ -48,14 +48,14 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace em = enterprise_management;
-
-// An enum for PSM execution result values.
-using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
-
 namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
+
+// An enum for PSM execution result values.
+using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 // This enum is used to define the buckets for an enumerated UMA histogram.
 // Hence,
@@ -467,7 +467,7 @@ void EnrollmentHandler::HandleStateKeysResult(
   DCHECK_EQ(STEP_STATE_KEYS, enrollment_step_);
 
   // Make sure state keys are available if forced re-enrollment is on.
-  if (policy::AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
     client_->SetStateKeysToUpload(state_keys);
     register_params_->current_state_key =
         state_keys_broker_->current_state_key();
@@ -586,7 +586,7 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
 void EnrollmentHandler::StartOfflineDemoEnrollmentFlow() {
   DCHECK(!enrollment_config_.offline_policy_path.empty());
 
-  device_mode_ = policy::DeviceMode::DEVICE_MODE_DEMO;
+  device_mode_ = DeviceMode::DEVICE_MODE_DEMO;
   domain_ = enrollment_config_.management_domain;
   skip_robot_auth_ = true;
   SetStep(STEP_POLICY_FETCH);
@@ -651,7 +651,7 @@ void EnrollmentHandler::OnOfflinePolicyValidated(
 }
 
 std::unique_ptr<DeviceCloudPolicyValidator> EnrollmentHandler::CreateValidator(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
+    std::unique_ptr<em::PolicyFetchResponse> policy,
     const std::string& domain) {
   auto validator = std::make_unique<DeviceCloudPolicyValidator>(
       std::move(policy), background_task_runner_);
@@ -719,7 +719,7 @@ void EnrollmentHandler::OnDeviceAccountClientError(
   // Do nothing, it would be handled in OnClientError.
 }
 
-enterprise_management::DeviceServiceApiAccessRequest::DeviceType
+em::DeviceServiceApiAccessRequest::DeviceType
 EnrollmentHandler::GetRobotAuthCodeDeviceType() {
   return em::DeviceServiceApiAccessRequest::CHROME_OS;
 }
@@ -863,8 +863,8 @@ void EnrollmentHandler::HandleLockDeviceResult(
 void EnrollmentHandler::StartStoreDMToken() {
   DCHECK(device_mode_ == DEVICE_MODE_ENTERPRISE_AD);
   SetStep(STEP_STORE_TOKEN);
-  dm_token_storage_ = std::make_unique<policy::DMTokenStorage>(
-      g_browser_process->local_state());
+  dm_token_storage_ =
+      std::make_unique<DMTokenStorage>(g_browser_process->local_state());
   dm_token_storage_->StoreDMToken(
       client_->dm_token(),
       base::BindOnce(&EnrollmentHandler::HandleDMTokenStoreResult,
@@ -885,7 +885,7 @@ void EnrollmentHandler::StartStoreRobotAuth() {
 void EnrollmentHandler::OnDeviceAccountTokenStored() {
   DCHECK_EQ(STEP_STORE_ROBOT_AUTH, enrollment_step_);
   SetStep(STEP_STORE_POLICY);
-  if (device_mode_ == policy::DEVICE_MODE_ENTERPRISE_AD) {
+  if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
     CHECK(install_attributes_->IsActiveDirectoryManaged());
     // Update device settings so that in case of Active Directory unsigned
     // policy is accepted.

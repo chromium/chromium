@@ -48,7 +48,7 @@ namespace policy {
 namespace {
 
 // Creates policy key file for the user specified in |user_policy|.
-void SetUserKeys(const policy::UserPolicyBuilder& user_policy) {
+void SetUserKeys(const UserPolicyBuilder& user_policy) {
   base::FilePath user_data_dir;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
     chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
@@ -116,11 +116,11 @@ void AffiliationTestHelper::CheckPreconditions() {
 }
 
 void AffiliationTestHelper::SetDeviceAffiliationIDs(
-    policy::DevicePolicyCrosTestHelper* test_helper,
+    DevicePolicyCrosTestHelper* test_helper,
     const std::set<std::string>& device_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
 
-  policy::DevicePolicyBuilder* device_policy = test_helper->device_policy();
+  DevicePolicyBuilder* device_policy = test_helper->device_policy();
   for (const auto& device_affiliation_id : device_affiliation_ids) {
     device_policy->policy_data().add_device_affiliation_ids(
         device_affiliation_id);
@@ -140,7 +140,7 @@ void AffiliationTestHelper::SetDeviceAffiliationIDs(
 }
 
 void AffiliationTestHelper::SetUserAffiliationIDs(
-    policy::UserPolicyBuilder* user_policy,
+    UserPolicyBuilder* user_policy,
     const AccountId& user_account_id,
     const std::set<std::string>& user_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
