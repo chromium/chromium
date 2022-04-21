@@ -670,12 +670,12 @@ void WritePageState(const ExplodedPageState& state, SerializeObject* obj) {
 void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
                               mojom::RequestBody* mojo_body) {
   for (const auto& element : *request_body.elements()) {
-    mojom::ElementPtr data_element = mojom::Element::New();
+    mojom::ElementPtr data_element;
     switch (element.type()) {
       case network::DataElement::Tag::kBytes: {
         const auto& bytes = element.As<network::DataElementBytes>().bytes();
         const char* data = reinterpret_cast<const char*>(bytes.data());
-        data_element->set_bytes(
+        data_element = mojom::Element::NewBytes(
             std::vector<unsigned char>(data, data + bytes.size()));
         break;
       }
@@ -684,12 +684,12 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         mojom::FilePtr file = mojom::File::New(
             element_file.path().AsUTF16Unsafe(), element_file.offset(),
             element_file.length(), element_file.expected_modification_time());
-        data_element->set_file(std::move(file));
+        data_element = mojom::Element::NewFile(std::move(file));
         break;
       }
       case network::DataElement::Tag::kDataPipe:
         NOTIMPLEMENTED();
-        break;
+        continue;
       case network::DataElement::Tag::kChunkedDataPipe:
         NOTREACHED();
         continue;
