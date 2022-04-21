@@ -100,6 +100,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:socket",
   "//third_party/webrtc/rtc_base:socket_address",
   "//third_party/webrtc/rtc_base:threading",
+  "//third_party/webrtc/rtc_base:timestamp_aligner",
   "//third_party/webrtc/rtc_base:timeutils",
   "//third_party/webrtc/rtc_base/system:rtc_export",
   "//third_party/webrtc/rtc_base/task_utils:to_queued_task",
