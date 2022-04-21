@@ -26,18 +26,23 @@ void AggregateFrameData::UpdateCpuUsage(base::TimeTicks update_time,
 
 void AggregateFrameData::ProcessResourceLoadInFrame(
     const mojom::ResourceDataUpdatePtr& resource,
-    bool is_main_frame) {
+    bool is_outermost_main_frame) {
   resource_data_.ProcessResourceLoad(resource);
-  if (is_main_frame)
-    main_frame_resource_data_.ProcessResourceLoad(resource);
+  if (is_outermost_main_frame) {
+    outermost_main_frame_resource_data_.ProcessResourceLoad(resource);
+  }
 }
 
 void AggregateFrameData::AdjustAdBytes(int64_t unaccounted_ad_bytes,
                                        ResourceMimeType mime_type,
-                                       bool is_main_frame) {
+                                       bool is_outermost_main_frame) {
+  // TODO(https://crbug.com/1301880): Test coverage isn't enough for this
+  // method. Add more tests.
   resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
-  if (is_main_frame)
-    main_frame_resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
+  if (is_outermost_main_frame) {
+    outermost_main_frame_resource_data_.AdjustAdBytes(unaccounted_ad_bytes,
+                                                      mime_type);
+  }
 }
 
 }  // namespace page_load_metrics

@@ -22,12 +22,12 @@ class AggregateFrameData {
   ~AggregateFrameData();
 
   void ProcessResourceLoadInFrame(const mojom::ResourceDataUpdatePtr& resource,
-                                  bool is_main_frame);
+                                  bool is_outermost_main_frame);
 
   // Adjusts the overall page and potentially main frame ad bytes.
   void AdjustAdBytes(int64_t unaccounted_ad_bytes,
                      ResourceMimeType mime_type,
-                     bool is_main_frame);
+                     bool is_outermost_main_frame);
 
   // Updates the cpu usage for the page, given whether update is for an ad.
   void UpdateCpuUsage(base::TimeTicks update_time,
@@ -77,16 +77,16 @@ class AggregateFrameData {
   }
 
   // Updates the memory for the main frame of the page.
-  void update_main_frame_memory(int64_t delta_memory) {
-    main_frame_memory_.UpdateUsage(delta_memory);
+  void update_outermost_main_frame_memory(int64_t delta_memory) {
+    outermost_main_frame_memory_.UpdateUsage(delta_memory);
   }
 
   // Updates the total ad cpu usage for the page.
   void update_ad_cpu_usage(base::TimeDelta usage) { ad_cpu_usage_ += usage; }
 
   // Get the total memory usage for this page.
-  int64_t main_frame_max_memory() const {
-    return main_frame_memory_.max_bytes_used();
+  int64_t outermost_main_frame_max_memory() const {
+    return outermost_main_frame_memory_.max_bytes_used();
   }
 
   // Get the total cpu usage of this page.
@@ -95,8 +95,8 @@ class AggregateFrameData {
 
   // Accessor for the total resource data of the page.
   const ResourceLoadAggregator& resource_data() const { return resource_data_; }
-  const ResourceLoadAggregator& main_frame_resource_data() const {
-    return main_frame_resource_data_;
+  const ResourceLoadAggregator& outermost_main_frame_resource_data() const {
+    return outermost_main_frame_resource_data_;
   }
 
  private:
@@ -108,12 +108,12 @@ class AggregateFrameData {
   base::TimeDelta cpu_usage_ = base::TimeDelta();
   base::TimeDelta ad_cpu_usage_ = base::TimeDelta();
 
-  // The memory used by the main frame.
-  MemoryUsageAggregator main_frame_memory_;
+  // The memory used by the outermost main frame.
+  MemoryUsageAggregator outermost_main_frame_memory_;
 
   // The resource data for this page.
   ResourceLoadAggregator resource_data_;
-  ResourceLoadAggregator main_frame_resource_data_;
+  ResourceLoadAggregator outermost_main_frame_resource_data_;
 
   // The peak cpu usages for this page.
   PeakCpuAggregator total_peak_cpu_;

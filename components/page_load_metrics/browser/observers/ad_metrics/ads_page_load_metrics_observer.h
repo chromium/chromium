@@ -82,9 +82,9 @@ class AdsPageLoadMetricsObserver
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       const ApplicationLocaleGetter& application_local_getter);
 
-  // For a given subframe, returns whether or not the subframe's url would be
-  // considering same origin to the main frame's url.
-  static bool IsSubframeSameOriginToMainFrame(
+  // For a given frame, returns whether or not the frame's url would be
+  // considered same origin to the outermost main frame's url.
+  static bool IsFrameSameOriginToOutermostMainFrame(
       content::RenderFrameHost* sub_host);
 
   // |clock| and |blocklist| should be set only by tests. In particular,
