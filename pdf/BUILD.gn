@@ -364,6 +364,7 @@ if (enable_pdf) {
       "draw_utils/coordinates_unittest.cc",
       "file_extension_unittest.cc",
       "page_orientation_unittest.cc",
+      "paint_manager_unittest.cc",
       "parsed_params_unittest.cc",
       "pdf_transform_unittest.cc",
       "pdf_utils/dates_unittest.cc",
