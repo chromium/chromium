@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudManagementEnrollmentTokenLocation.Mac"
-    enum="EnterpriseCloudManagementEnrollmentTokenLocation"
+    enum="EnterpriseCloudManagementEnrollmentTokenLocationMac"
     expires_after="2023-04-01">
   <owner>zmin@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>

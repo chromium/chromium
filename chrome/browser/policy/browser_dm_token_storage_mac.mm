@@ -58,9 +58,9 @@ constexpr char kEnrollmentTokenMetricsName[] =
     "Enterprise.CloudManagementEnrollmentTokenLocation.Mac";
 
 enum EnrollmentTokenLocation {
-  kFromPolicy = 0,
-  kFromFile = 1,
-  kMaxValue = kFromFile,
+  kPolicy = 0,
+  kFile = 1,
+  kMaxValue = kFile,
 };
 
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
@@ -173,13 +173,13 @@ std::string BrowserDMTokenStorageMac::InitEnrollmentToken() {
   std::string enrollment_token;
   if (GetEnrollmentTokenFromPolicy(&enrollment_token)) {
     base::UmaHistogramEnumeration(kEnrollmentTokenMetricsName,
-                                  EnrollmentTokenLocation::kFromPolicy);
+                                  EnrollmentTokenLocation::kPolicy);
     return enrollment_token;
   }
 
   if (GetEnrollmentTokenFromFile(&enrollment_token)) {
     base::UmaHistogramEnumeration(kEnrollmentTokenMetricsName,
-                                  EnrollmentTokenLocation::kFromFile);
+                                  EnrollmentTokenLocation::kFile);
     return enrollment_token;
   }
 
