@@ -406,8 +406,14 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Tests mouse lock then fullscreen.
+// TODO(crbug.com/1318638): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MouseLockThenFullscreen DISABLED_MouseLockThenFullscreen
+#else
+#define MAYBE_MouseLockThenFullscreen MouseLockThenFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MouseLockThenFullscreen) {
+                       MAYBE_MouseLockThenFullscreen) {
   auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
   ASSERT_TRUE(test_server_handle);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
