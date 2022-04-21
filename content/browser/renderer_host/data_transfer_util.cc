@@ -281,7 +281,7 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
   DropData result;
   for (const blink::mojom::DragItemPtr& item : drag_data.items) {
     switch (item->which()) {
-      case blink::mojom::DragItemDataView::Tag::STRING: {
+      case blink::mojom::DragItemDataView::Tag::kString: {
         const blink::mojom::DragItemStringPtr& string_item = item->get_string();
         std::string str_type = string_item->string_type;
         if (str_type == ui::kMimeTypeText) {
@@ -304,7 +304,7 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         }
         break;
       }
-      case blink::mojom::DragItemDataView::Tag::BINARY: {
+      case blink::mojom::DragItemDataView::Tag::kBinary: {
         DCHECK(result.file_contents.empty());
 
         const blink::mojom::DragItemBinaryPtr& binary_item = item->get_binary();
@@ -321,13 +321,13 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         }
         break;
       }
-      case blink::mojom::DragItemDataView::Tag::FILE: {
+      case blink::mojom::DragItemDataView::Tag::kFile: {
         const blink::mojom::DataTransferFilePtr& file_item = item->get_file();
         // TODO(varunjain): This only works on chromeos. Support win/mac/gtk.
         result.filenames.emplace_back(file_item->path, file_item->display_name);
         break;
       }
-      case blink::mojom::DragItemDataView::Tag::FILE_SYSTEM_FILE: {
+      case blink::mojom::DragItemDataView::Tag::kFileSystemFile: {
         const blink::mojom::DragItemFileSystemFilePtr& file_system_file_item =
             item->get_file_system_file();
         // This field should be empty when dragging from the renderer.
