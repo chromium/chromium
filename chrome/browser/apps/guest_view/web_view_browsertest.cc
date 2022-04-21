@@ -94,6 +94,7 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/find_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -5924,4 +5925,41 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
     ASSERT_EQ(2u, web_view_renderer_state->guest_count_for_testing());
   }
   EXPECT_TRUE(script_listener.WaitUntilSatisfied());
+}
+
+class WebViewFencedFrameTest : public WebViewTest {
+ public:
+  ~WebViewFencedFrameTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+INSTANTIATE_TEST_SUITE_P(WebViewTests,
+                         WebViewFencedFrameTest,
+                         testing::Bool(),
+                         WebViewTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
+                       FencedFrameInGuestHasGuestSiteInstance) {
+  TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
+
+  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  std::vector<content::RenderFrameHost*> rfhs =
+      content::CollectAllRenderFrameHosts(guest_web_contents->GetMainFrame());
+  ASSERT_EQ(rfhs.size(), 2u);
+  ASSERT_EQ(rfhs[0], guest_web_contents->GetMainFrame());
+  content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
+
+  content::SiteInstance* fenced_frame_site_instance =
+      fenced_frame->GetSiteInstance();
+  EXPECT_TRUE(fenced_frame_site_instance->IsGuest());
+  EXPECT_EQ(fenced_frame_site_instance->GetStoragePartitionConfig(),
+            guest_web_contents->GetMainFrame()
+                ->GetSiteInstance()
+                ->GetStoragePartitionConfig());
 }
