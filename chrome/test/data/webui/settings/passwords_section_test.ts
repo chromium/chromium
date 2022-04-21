@@ -10,11 +10,12 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrDialogElement, PasswordDialogMode, PasswordsSectionElement} from 'chrome://settings/lazy_load.js';
-import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl,StatusAction, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {CrDialogElement, PasswordsSectionElement} from 'chrome://settings/lazy_load.js';
+import {buildRouter, HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl,StatusAction, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from './passwords_export_test.js';
@@ -1067,50 +1068,34 @@ suite('PasswordsSection', function() {
                 '#showPasswordButton')!.classList.contains('icon-visibility'));
   });
 
-  test('showPasswordOpensViewDialogWhenNotesEnabled', async function() {
+  test('clickingTheRowOpensSubpageWhenNotesEnabled', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
-    const PASSWORD = 'bAn@n@5';
-    const item = createPasswordEntry({url: 'goo.gl', username: 'bart', id: 1});
-    passwordManager.setPlaintextPassword(PASSWORD);
+    Router.resetInstanceForTesting(buildRouter());
+    routes.PASSWORD_VIEW =
+        (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
+    const URL = 'goo.gl';
+    const USERNAME = 'bart';
+    const item = createPasswordEntry({url: URL, username: USERNAME, id: 1});
 
     const passwordSection =
         elementFactory.createPasswordsSection(passwordManager, [item], []);
     const passwordListItem = getFirstPasswordListItem(passwordSection);
-    passwordListItem.shadowRoot!
-        .querySelector<HTMLElement>('#showPasswordButton')!.click();
-    const {id, reason} =
-        await passwordManager.whenCalled('requestPlaintextPassword');
+
+    assertFalse(
+        isVisible(passwordListItem.shadowRoot!.querySelector<HTMLElement>(
+            '#showPasswordButton')));
+    assertFalse(isVisible(passwordListItem.$.moreActionsButton));
+    const subpageButton = passwordListItem.$.seePasswordDetails;
+    assertTrue(isVisible(subpageButton));
+    subpageButton.click();
     await flushTasks();
 
-    assertEquals(1, id);
-    assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
-
-
-    assertEquals(
-        'password',
-        passwordListItem.shadowRoot!
-            .querySelector<HTMLInputElement>('#password')!.type);
-    assertTrue(passwordListItem.shadowRoot!
-                   .querySelector<HTMLInputElement>('#password')!.disabled);
-
-    assertFalse(!!passwordListItem.shadowRoot!.querySelector(
-        '#showPasswordButton.icon-visibility-off'));
-
-    const passwordEditDialog =
-        passwordSection.$.passwordsListHandler.shadowRoot!.querySelector(
-            'password-edit-dialog')!;
-
-    assertEquals(
-        PasswordDialogMode.PASSWORD_VIEW, passwordEditDialog.dialogMode);
-
-    assertEquals(
-        item.urls.shown, passwordEditDialog.$.title.textContent!.trim());
-
-    assertEquals('text', passwordEditDialog.$.passwordInput.type);
-    assertEquals(PASSWORD, passwordEditDialog.$.passwordInput.value);
-    assertTrue(passwordEditDialog.shadowRoot!
-                   .querySelector<HTMLElement>('#showPasswordButton')!.classList
-                   .contains('icon-visibility-off'));
+    const router = Router.getInstance();
+    assertEquals(routes.PASSWORD_VIEW, router.getCurrentRoute());
+    const expectedParams = new URLSearchParams();
+    expectedParams.set('username', USERNAME);
+    expectedParams.set('site', URL);
+    assertDeepEquals(expectedParams, router.getQueryParameters());
   });
 
   // Tests that pressing 'Edit password' sets the corresponding password.
@@ -1192,32 +1177,6 @@ suite('PasswordsSection', function() {
           assertEquals('EDIT', reason);
         });
   });
-
-  test(
-      'onEditPasswordListItemWhenNotesEnabledShouldOpenInEditMode',
-      async function() {
-        loadTimeData.overrideValues({enablePasswordNotes: true});
-        const PASSWORD = 'password';
-        const expectedItem =
-            createPasswordEntry({url: 'goo.gl', username: 'bart', id: 1});
-        passwordManager.setPlaintextPassword(PASSWORD);
-        const passwordsSection = elementFactory.createPasswordsSection(
-            passwordManager, [expectedItem], []);
-
-
-        getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
-        passwordsSection.$.passwordsListHandler.$.menuEditPassword.click();
-        flush();
-
-        await passwordManager.whenCalled('requestPlaintextPassword');
-        await flushTasks();
-
-        const passwordEditDialog =
-            passwordsSection.$.passwordsListHandler.shadowRoot!.querySelector(
-                'password-edit-dialog')!;
-
-        assertEquals(PasswordDialogMode.EDIT, passwordEditDialog.dialogMode);
-      });
 
   test('closingPasswordsSectionHidesUndoToast', function() {
     const passwordEntry =

@@ -7,14 +7,9 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 import {loadTimeData} from '../i18n_setup.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordListItemElement} from './password_list_item.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 
 type Constructor<T> = new (...args: any[]) => T;
-
-export type PasswordShowPasswordClickedEvent = Event&{
-  target: PasswordListItemElement,
-};
 
 /**
  * This mixin bundles functionality required to show a password to the user.
@@ -29,24 +24,10 @@ export const ShowPasswordMixin = dedupingMixin(
         static get properties() {
           return {
             entry: Object,
-
-            /**
-             * Whether password notes is enabled or not. If password notes is
-             * enabled, show password button should open the view dialog instead
-             * of showing inline.
-             */
-            isPasswordNotesEnabled_: {
-              type: Boolean,
-              value() {
-                return loadTimeData.getBoolean('enablePasswordNotes');
-              }
-            },
           };
         }
 
         entry: MultiStorePasswordUiEntry;
-
-        private isPasswordNotesEnabled_: boolean;
 
         getPasswordInputType() {
           return this.entry.password || this.entry.federationText ? 'text' :
@@ -81,13 +62,6 @@ export const ShowPasswordMixin = dedupingMixin(
          * update the text.
          */
         onShowPasswordButtonClick() {
-          if (this.isPasswordNotesEnabled_) {
-            this.dispatchEvent(new Event('password-show-password-clicked', {
-              bubbles: true,
-              composed: true,
-            }));
-            return;
-          }
           if (this.entry.password) {
             this.hide();
             return;

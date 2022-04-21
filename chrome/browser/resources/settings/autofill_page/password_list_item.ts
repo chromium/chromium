@@ -18,8 +18,11 @@ import './passwords_shared_css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './password_list_item.html.js';
+import {PasswordViewPageUrlParams} from './password_view.js';
 import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 export type PasswordMoreActionsClickedEvent = CustomEvent<{
@@ -31,6 +34,7 @@ export interface PasswordListItemElement {
   $: {
     moreActionsButton: HTMLElement,
     originUrl: HTMLAnchorElement,
+    seePasswordDetails: HTMLElement,
     username: HTMLInputElement,
   };
 }
@@ -49,14 +53,46 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
 
   static get properties() {
     return {
+      /** Whether password notes is enabled or not. */
+      isPasswordNotesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordNotes');
+        },
+      },
+
       /**
-       * Whether to hide the 3 dot button that open the more actions menu.
+       * Whether subpage button is visible or not. Subpage button should be
+       * visible only if password notes is enabled and |shouldHideActionButton|
+       * is false.
        */
-      shouldHideMoreActionsButton: {
+      shouldShowSubpageButton_: {
+        type: Boolean,
+        computed: 'computeShouldShowSubpageButton_(' +
+            'isPasswordNotesEnabled_, shouldHideActionButtons)',
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Whether to hide buttons that open the subpage or the more actions menu.
+       */
+      shouldHideActionButtons: {
         type: Boolean,
         value: false,
       },
     };
+  }
+
+  private isPasswordNotesEnabled_: boolean;
+  private shouldShowSubpageButton_: boolean;
+  shouldHideActionButtons: boolean;
+
+  private computeShouldShowSubpageButton_(): boolean {
+    return !this.shouldHideActionButtons && this.isPasswordNotesEnabled_;
+  }
+
+  private shouldHideMoreActionsButton_(): boolean {
+    return this.isPasswordNotesEnabled_ || this.shouldHideActionButtons;
   }
 
   /**
@@ -67,6 +103,16 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
       (this.shadowRoot!.querySelector('#password') as HTMLInputElement)
           .select();
     }
+  }
+
+  private onRowClick_() {
+    if (!this.shouldShowSubpageButton_) {
+      return;
+    }
+    const params = new URLSearchParams();
+    params.set(PasswordViewPageUrlParams.SITE, this.entry.urls.shown);
+    params.set(PasswordViewPageUrlParams.USERNAME, this.entry.username);
+    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
   }
 
   private onPasswordMoreActionsButtonTap_() {

@@ -6,11 +6,12 @@
 
 import 'chrome://settings/lazy_load.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {IronListElement, PasswordMoveToAccountDialogElement, PasswordsDeviceSectionElement} from 'chrome://settings/lazy_load.js';
 import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {simulateStoredAccounts, simulateSyncStatus} from './sync_test_util.js';
@@ -359,17 +360,24 @@ suite('PasswordsDeviceSection', function() {
   });
 
   // Testing moving multiple password dialog doesn't have more actions menu
-  // button next to each password row..
-  test('moveMultiplePasswordsDialogNoMoreActionButton', function() {
-    const deviceEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', deviceId: 42});
-    const moveMultipleDialog =
-        elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
-    const firstPasswordItem =
-        moveMultipleDialog.shadowRoot!.querySelector('password-list-item')!;
-    assertTrue(firstPasswordItem.$.moreActionsButton.hidden);
-  });
-
+  // button next to each password row but it has the eye icon
+  [false, true].forEach(
+      enablePasswordNotes => test(
+          `moveMultiplePasswordsDialogButtonVisibilities` +
+              `WhenPasswordNotesEnabledIs_${enablePasswordNotes}`,
+          function() {
+            loadTimeData.overrideValues({enablePasswordNotes});
+            const deviceEntry = createMultiStorePasswordEntry(
+                {url: 'goo.gl', username: 'bart', deviceId: 42});
+            const moveMultipleDialog =
+                elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
+            const firstPasswordItem =
+                moveMultipleDialog.shadowRoot!.querySelector(
+                    'password-list-item')!;
+            assertFalse(isVisible(firstPasswordItem.$.moreActionsButton));
+            assertTrue(isVisible(firstPasswordItem.shadowRoot!.querySelector(
+                '#showPasswordButton')));
+          }));
 
   test(
       'moveMultiplePasswordsBannerHiddenWhenNoLocalPasswords',

@@ -49,10 +49,15 @@ const PasswordViewElementBase =
           PasswordRequestorMixinInterface & PasswordRemovalMixinInterface,
     };
 
-export const PasswordRemovalUrlParams = {
-  removedFromAccount: 'removedFromAccount',
-  removedFromDevice: 'removedFromDevice',
-};
+export enum PasswordRemovalUrlParams {
+  REMOVED_FROM_ACCOUNT = 'removedFromAccount',
+  REMOVED_FROM_DEVICE = 'removedFromDevice',
+}
+
+export enum PasswordViewPageUrlParams {
+  SITE = 'site',
+  USERNAME = 'username',
+}
 
 export class PasswordViewElement extends PasswordViewElementBase {
   static get is() {
@@ -134,12 +139,12 @@ export class PasswordViewElement extends PasswordViewElementBase {
     }
     const queryParameters = Router.getInstance().getQueryParameters();
 
-    const site = queryParameters.get('site');
+    const site = queryParameters.get(PasswordViewPageUrlParams.SITE);
     if (!site) {
       return;
     }
 
-    const username = queryParameters.get('username');
+    const username = queryParameters.get(PasswordViewPageUrlParams.USERNAME);
     if (!username) {
       return;
     }
@@ -226,7 +231,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     // page to the new credential.
     this.username = newUsername;
     const newParams = Router.getInstance().getQueryParameters();
-    newParams.set('username', newUsername);
+    newParams.set(PasswordViewPageUrlParams.USERNAME, newUsername);
     Router.getInstance().updateRouteParams(newParams);
   }
 
@@ -277,10 +282,10 @@ export class PasswordViewElement extends PasswordViewElementBase {
     // DEVICE_PASSWORDS if view is opened from there.
     const params = new URLSearchParams();
     params.set(
-        PasswordRemovalUrlParams.removedFromAccount,
+        PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT,
         removedFromAccount.toString());
     params.set(
-        PasswordRemovalUrlParams.removedFromDevice,
+        PasswordRemovalUrlParams.REMOVED_FROM_DEVICE,
         removedFromDevice.toString());
     Router.getInstance().navigateTo(routes.PASSWORDS, params);
   }

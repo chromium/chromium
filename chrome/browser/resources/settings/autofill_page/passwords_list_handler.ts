@@ -41,12 +41,10 @@ import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialo
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {PasswordRemovalUrlParams} from './password_view.js';
 import {getTemplate} from './passwords_list_handler.html.js';
-import {PasswordShowPasswordClickedEvent} from './show_password_mixin.js';
 
 declare global {
   interface HTMLElementEventMap {
     'password-more-actions-clicked': PasswordMoreActionsClickedEvent;
-    'password-show-password-clicked': PasswordShowPasswordClickedEvent;
   }
 }
 
@@ -181,8 +179,6 @@ export class PasswordsListHandlerElement extends
     this.addEventListener(
         'password-more-actions-clicked',
         this.passwordMoreActionsClickedHandler_);
-    this.addEventListener(
-        'password-show-password-clicked', this.onPasswordShowPasswordClicked_);
   }
 
   override connectedCallback() {
@@ -203,14 +199,14 @@ export class PasswordsListHandlerElement extends
     }
 
     const params = Router.getInstance().getQueryParameters();
-    if (!params.get(PasswordRemovalUrlParams.removedFromAccount) ||
-        !params.get(PasswordRemovalUrlParams.removedFromDevice)) {
+    if (!params.get(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT) ||
+        !params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE)) {
       return;
     }
 
     this.displayRemovalNotification_(
-        params.get(PasswordRemovalUrlParams.removedFromAccount) === 'true',
-        params.get(PasswordRemovalUrlParams.removedFromDevice) === 'true');
+        params.get(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT) === 'true',
+        params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE) === 'true');
   }
 
   override disconnectedCallback() {
@@ -236,24 +232,6 @@ export class PasswordsListHandlerElement extends
     this.activePassword_ = event.detail.listItem;
     this.$.menu.showAt(target);
     this.activeDialogAnchor_ = target;
-  }
-
-  /**
-   * Opens the password view dialog.
-   */
-  private onPasswordShowPasswordClicked_(event:
-                                             PasswordShowPasswordClickedEvent) {
-    const target = event.target;
-    this.activePassword_ = target;
-    this.requestPlaintextPassword(
-            this.activePassword_!.entry.getAnyId(),
-            chrome.passwordsPrivate.PlaintextReason.VIEW)
-        .then(password => {
-          this.set('activePassword_.entry.password', password);
-          this.requestedDialogMode_ = PasswordDialogMode.PASSWORD_VIEW;
-          this.activeDialogAnchor_ = target;
-          this.showPasswordEditDialog_ = true;
-        });
   }
 
   override onPasswordRemoveDialogPasswordsRemoved(
