@@ -1204,6 +1204,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // virtual because some state is only tracked in WebGL 2.
   virtual void GetCurrentUnpackState(TexImageParams& params);
 
+  void TexImageSkImage(TexImageParams params,
+                       const SkImage* image,
+                       bool image_has_flip_y);
   void TexImageSkPixmap(TexImageParams params,
                         const SkPixmap* pixmap,
                         bool pixmap_has_flip_y);

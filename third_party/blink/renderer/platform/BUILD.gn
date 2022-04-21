@@ -1080,8 +1080,6 @@ component("platform") {
     "graphics/scoped_interpolation_quality.h",
     "graphics/scrollbar_theme_settings.cc",
     "graphics/scrollbar_theme_settings.h",
-    "graphics/skia/image_pixel_locker.cc",
-    "graphics/skia/image_pixel_locker.h",
     "graphics/skia/sk_size_hash.h",
     "graphics/skia/skia_utils.cc",
     "graphics/skia/skia_utils.h",

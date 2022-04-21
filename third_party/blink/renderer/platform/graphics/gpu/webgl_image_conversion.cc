@@ -3735,27 +3735,14 @@ GLenum WebGLImageConversion::ComputeImageSizeInBytes(
   return GL_NO_ERROR;
 }
 
-WebGLImageConversion::ImageExtractor::ImageExtractor(
-    Image* image,
-    ImageHtmlDomSource image_html_dom_source,
-    bool premultiply_alpha,
-    bool ignore_color_space) {
-  image_ = image;
-  image_html_dom_source_ = image_html_dom_source;
-  ExtractImage(premultiply_alpha, ignore_color_space);
-}
-
-void WebGLImageConversion::ImageExtractor::ExtractImage(
-    bool premultiply_alpha,
-    bool ignore_color_space) {
-  DCHECK(!image_pixel_locker_);
-
-  if (!image_)
+WebGLImageConversion::ImageExtractor::ImageExtractor(Image* image,
+                                                     bool premultiply_alpha,
+                                                     bool ignore_color_space) {
+  if (!image)
     return;
 
-  sk_sp<SkImage> skia_image =
-      image_->PaintImageForCurrentFrame().GetSwSkImage();
-  if (image_->HasData() && image_html_dom_source_ == kHtmlDomImage) {
+  sk_sp<SkImage> skia_image = image->PaintImageForCurrentFrame().GetSwSkImage();
+  if (image->HasData()) {
     bool has_alpha = skia_image ? !skia_image->isOpaque() : true;
     bool need_unpremultiplied = has_alpha && !premultiply_alpha;
     bool need_color_conversion = !ignore_color_space && skia_image &&
@@ -3766,7 +3753,7 @@ void WebGLImageConversion::ImageExtractor::ExtractImage(
       // Attempt to get raw unpremultiplied image data.
       const bool data_complete = true;
       std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
-          image_->Data(), data_complete, ImageDecoder::kAlphaNotPremultiplied,
+          image->Data(), data_complete, ImageDecoder::kAlphaNotPremultiplied,
           ImageDecoder::kDefaultBitDepth,
           ignore_color_space ? ColorBehavior::Ignore()
                              : ColorBehavior::TransformToSRGB()));
@@ -3794,12 +3781,12 @@ void WebGLImageConversion::ImageExtractor::ExtractImage(
   DCHECK(skia_image->height());
 
   // Fail if the image was downsampled because of memory limits.
-  if (skia_image->width() != image_->width() ||
-      skia_image->height() != image_->height()) {
+  if (skia_image->width() != image->width() ||
+      skia_image->height() != image->height()) {
     return;
   }
 
-  image_pixel_locker_.emplace(std::move(skia_image));
+  sk_image_ = std::move(skia_image);
 }
 
 unsigned WebGLImageConversion::GetChannelBitsByFormat(GLenum format) {

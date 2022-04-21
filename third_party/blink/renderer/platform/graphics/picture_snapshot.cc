@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/profiling_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/replaying_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/skia/image_pixel_locker.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"

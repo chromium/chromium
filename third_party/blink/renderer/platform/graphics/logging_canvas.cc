@@ -35,7 +35,6 @@
 #include "base/logging.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/graphics/skia/image_pixel_locker.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"

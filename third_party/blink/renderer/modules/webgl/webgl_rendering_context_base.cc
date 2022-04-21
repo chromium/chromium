@@ -5031,10 +5031,39 @@ void WebGLRenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
   params.unpack_flip_y = unpack_flip_y_;
 }
 
+void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
+                                                const SkImage* image,
+                                                bool image_has_flip_y) {
+  const char* func_name = GetTexImageFunctionName(params.function_id);
+
+  // Read `sk_image` into `pixmap`. Use `pixmap_data` as backing storage if
+  // `pixmap` cannot directly reference `sk_image`'s data.
+  SkPixmap pixmap;
+  Vector<uint8_t> pixmap_data;
+  const SkImageInfo sk_image_info = image->imageInfo();
+  if (!image->peekPixels(&pixmap) ||
+      pixmap.rowBytes() != sk_image_info.minRowBytes()) {
+    pixmap_data.resize(
+        base::checked_cast<wtf_size_t>(sk_image_info.computeMinByteSize()));
+    pixmap = SkPixmap(sk_image_info, pixmap_data.data(),
+                      sk_image_info.minRowBytes());
+    if (!image->readPixels(pixmap, 0, 0)) {
+      SynthesizeGLError(GL_OUT_OF_MEMORY, func_name, "bad image data");
+    }
+  }
+  TexImageSkPixmap(params, &pixmap, image_has_flip_y);
+}
+
 void WebGLRenderingContextBase::TexImageSkPixmap(TexImageParams params,
                                                  const SkPixmap* pixmap,
                                                  bool pixmap_has_flip_y) {
-  DCHECK(params.width && params.height && params.depth);
+  if (!params.width)
+    params.width = pixmap->width();
+  if (!params.height)
+    params.height = pixmap->height();
+  if (!params.depth)
+    params.depth = 1;
+
   const char* func_name = GetTexImageFunctionName(params.function_id);
   const gfx::Rect source_rect(params.unpack_skip_pixels,
                               params.unpack_skip_rows, *params.width,
@@ -5159,17 +5188,15 @@ void WebGLRenderingContextBase::TexImageImpl(
   if (!params.depth)
     params.depth = 1;
 
-  WebGLImageConversion::ImageExtractor image_extractor(
-      image, dom_source, params.unpack_premultiply_alpha,
-      unpack_colorspace_conversion_ == GL_NONE);
-  const SkPixmap* const image_extractor_pixmap = image_extractor.GetSkPixmap();
-  if (!image_extractor_pixmap) {
+  sk_sp<SkImage> sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
+  if (!sk_image) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
     return;
   }
-  DCHECK_EQ(image_extractor_pixmap->width(), image->width());
-  DCHECK_EQ(image_extractor_pixmap->height(), image->height());
-  TexImageSkPixmap(params, image_extractor_pixmap, image_has_flip_y);
+  DCHECK_EQ(sk_image->width(), image->width());
+  DCHECK_EQ(sk_image->height(), image->height());
+
+  TexImageSkImage(params, sk_image.get(), image_has_flip_y);
 }
 
 bool WebGLRenderingContextBase::ValidateTexFunc(
@@ -5440,12 +5467,6 @@ void WebGLRenderingContextBase::TexImageHelperImageData(TexImageParams params,
 
   if (!ValidateTexImageBinding(func_name, params.function_id, params.target))
     return;
-  if (!params.width)
-    params.width = pixels->width();
-  if (!params.height)
-    params.height = pixels->height();
-  if (!params.depth)
-    params.depth = 1;
   if (!ValidateTexFunc(params, kSourceImageData, pixels->width(),
                        pixels->height())) {
     return;
@@ -5501,9 +5522,15 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     return;
   }
 
-  TexImageImpl(params, image_for_render.get(),
-               WebGLImageConversion::kHtmlDomImage,
-               /*image_has_flip_y=*/false);
+  WebGLImageConversion::ImageExtractor image_extractor(
+      image_for_render.get(), params.unpack_premultiply_alpha,
+      unpack_colorspace_conversion_ == GL_NONE);
+  const SkImage* const sk_image = image_extractor.GetSkImage();
+  if (!sk_image) {
+    SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
+    return;
+  }
+  TexImageSkImage(params, sk_image, /*image_has_flip_y=*/false);
 }
 
 void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,

@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/skia/image_pixel_locker.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -134,26 +133,14 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     STACK_ALLOCATED();
 
    public:
-    ImageExtractor(Image*,
-                   ImageHtmlDomSource,
-                   bool premultiply_alpha,
-                   bool ignore_color_space);
+    ImageExtractor(Image*, bool premultiply_alpha, bool ignore_color_space);
     ImageExtractor(const ImageExtractor&) = delete;
     ImageExtractor& operator=(const ImageExtractor&) = delete;
 
-    const SkPixmap* GetSkPixmap() {
-      return image_pixel_locker_ ? image_pixel_locker_->GetSkPixmap() : nullptr;
-    }
+    const SkImage* GetSkImage() { return sk_image_.get(); }
 
    private:
-    // Extracts the image and keeps track of its status, such as width, height,
-    // Source Alignment, format, AlphaOp, etc. This needs to lock the resources
-    // or relevant data if needed.
-    void ExtractImage(bool premultiply_alpha, bool ignore_color_space);
-
-    Image* image_;
-    absl::optional<ImagePixelLocker> image_pixel_locker_;
-    ImageHtmlDomSource image_html_dom_source_;
+    sk_sp<SkImage> sk_image_;
   };
 
   // Convert an SkColorType to the most appropriate DataFormat.
