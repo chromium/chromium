@@ -63,6 +63,9 @@ class SystemTrustStore {
 // anchors will be used.
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore();
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+class TrustStoreChrome;
+
 // Creates an instance of SystemTrustStore that wraps the current platform's SSL
 // trust store for user added roots, but uses the Chrome Root Store trust
 // anchors. This cannot return nullptr, even in the case where system trust
@@ -74,7 +77,14 @@ NET_EXPORT std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore();
 // UsesSystemTrustStore() will return false, and only manually-added trust
 // anchors will be used.
 NET_EXPORT std::unique_ptr<SystemTrustStore>
-CreateSslSystemTrustStoreChromeRoot();
+CreateSslSystemTrustStoreChromeRoot(
+    std::unique_ptr<TrustStoreChrome> chrome_root);
+
+NET_EXPORT_PRIVATE std::unique_ptr<SystemTrustStore>
+CreateSystemTrustStoreChromeForTesting(
+    std::unique_ptr<TrustStoreChrome> trust_store_chrome,
+    std::unique_ptr<TrustStore> trust_store_system);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 // Creates an instance of SystemTrustStore that initially does not have any
 // trust roots. (This is the same trust store implementation that will be
@@ -85,14 +95,6 @@ NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
 #if BUILDFLAG(IS_MAC)
 // Initializes trust cache on a worker thread.
 NET_EXPORT void InitializeTrustStoreMacCache();
-#endif
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-class TrustStoreChrome;
-NET_EXPORT_PRIVATE std::unique_ptr<SystemTrustStore>
-CreateSystemTrustStoreChromeForTesting(
-    std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-    std::unique_ptr<TrustStore> trust_store_system);
 #endif
 
 }  // namespace net

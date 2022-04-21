@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -44,6 +45,10 @@ class TestCertVerifierServiceFactoryImpl
   void GetNewCertVerifier(
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
       mojom::CertVerifierCreationParamsPtr creation_params) override;
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store) override;
+#endif
 
   // Pops the first request off the back of the list and forwards it to the
   // delegate CertVerifierServiceFactory.

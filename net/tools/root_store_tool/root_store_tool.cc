@@ -170,6 +170,9 @@ bool WriteRootCppFile(const RootStore& root_store,
     string_to_write += "}}},\n";
   }
   string_to_write += "};";
+
+  string_to_write += "\n\n\nstatic const int64_t kRootStoreVersion = " +
+                     base::NumberToString(root_store.version_major()) + ";\n";
   if (!base::WriteFile(cpp_path, string_to_write)) {
     return false;
   }

@@ -25,6 +25,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/key_pinning.pb.h"
 #include "content/public/browser/network_service_instance.h"
+#include "net/net_buildflags.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -34,6 +35,12 @@
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
 #include "components/certificate_transparency/ct_features.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "net/base/features.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #endif
 
 using component_updater::ComponentUpdateService;
@@ -70,6 +77,11 @@ const base::FilePath::CharType kCTConfigProtoFileName[] =
 const base::FilePath::CharType kKPConfigProtoFileName[] =
     FILE_PATH_LITERAL("kp_pinslist.pb");
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+const base::FilePath::CharType kCRSProtoFileName[] =
+    FILE_PATH_LITERAL("crs.pb");
+#endif
+
 std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
   std::string result;
   if (pb_path.empty())
@@ -83,6 +95,19 @@ std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
   }
   return result;
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+void UpdateChromeRootStoreOnUI(const std::string& chrome_root_store_bytes) {
+  cert_verifier::mojom::CertVerifierServiceFactory*
+      cert_verifier_service_factory = content::GetCertVerifierServiceFactory();
+
+  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
+      cert_verifier::mojom::ChromeRootStore::New(
+          base::as_bytes(base::make_span(chrome_root_store_bytes)));
+  cert_verifier_service_factory->UpdateChromeRootStore(
+      std::move(root_store_ptr));
+}
+#endif
 
 }  // namespace
 
@@ -99,6 +124,17 @@ PKIMetadataComponentInstallerService::GetInstance() {
 
 PKIMetadataComponentInstallerService::PKIMetadataComponentInstallerService() =
     default;
+
+void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&LoadBinaryProtoFromDisk,
+                     install_dir_.Append(kCRSProtoFileName)),
+      base::BindOnce(&UpdateChromeRootStoreOnUI));
+#endif
+}
 
 void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
   // Runs on UI thread.
@@ -133,6 +169,7 @@ void PKIMetadataComponentInstallerService::OnComponentReady(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   install_dir_ = install_dir;
   ReconfigureAfterNetworkRestart();
+  ConfigureChromeRootStore();
 }
 
 void PKIMetadataComponentInstallerService::WriteComponentForTesting(
@@ -153,8 +190,6 @@ void PKIMetadataComponentInstallerService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-// Updates the network service CT list with the component delivered data.
-// |ct_config_bytes| should be a serialized CTLogList proto message.
 void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     const std::string& ct_config_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -418,6 +453,18 @@ void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
       certificate_transparency::features::
           kCertificateTransparencyComponentUpdater);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  should_install |=
+      base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+
+// Even if we aren't using Chrome Root Store for cert verification, we may be
+// trialing it. Check if the trial is enabled.
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+  should_install |= base::FeatureList::IsEnabled(
+      net::features::kCertDualVerificationTrialFeature);
+#endif
+#endif
 
   if (!should_install)
     return;
