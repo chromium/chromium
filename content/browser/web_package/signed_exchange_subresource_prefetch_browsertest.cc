@@ -92,7 +92,8 @@ PrefetchBrowserTestBase::ResponseEntry CreateSignedExchangeResponseEntry(
   // We mock the SignedExchangeHandler, so just return the content as
   // "application/signed-exchange;v=b3".
   return PrefetchBrowserTestBase::ResponseEntry(
-      content, "application/signed-exchange;v=b3", headers);
+      MockSignedExchangeHandler::kMockSxgPrefix + content,
+      "application/signed-exchange;v=b3", headers);
 }
 
 std::string CreateAlternateLinkHeader(const GURL& sxg_url,

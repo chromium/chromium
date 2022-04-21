@@ -226,8 +226,9 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
   base::RunLoop run_loop;
   raw_producer->Write(
       std::make_unique<mojo::StringDataSource>(
-          "Hello, world!", mojo::StringDataSource::AsyncWritingMode::
-                               STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION),
+          MockSignedExchangeHandler::kMockSxgPrefix + "Hello, world!",
+          mojo::StringDataSource::AsyncWritingMode::
+              STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION),
       base::BindOnce([](std::unique_ptr<mojo::DataPipeProducer> producer,
                         base::OnceClosure quit_closure,
                         MojoResult result) { std::move(quit_closure).Run(); },

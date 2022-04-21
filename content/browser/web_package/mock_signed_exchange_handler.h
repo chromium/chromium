@@ -56,6 +56,13 @@ class MockSignedExchangeHandler final : public SignedExchangeHandler {
   bool GetSignedExchangeInfoForPrefetchCache(
       PrefetchedSignedExchangeCacheEntry& entry) const override;
 
+  // The mocked, simulated responses need to include the prefix below, to help
+  // reinforce that SXG format doesn't really sniff as HTML (because of
+  // CBOR/binary encoding).  Ensuring that tests more closely mimic real
+  // behavior seems desirable, even if in the long-term SXG might avoid
+  // `no-cors` mode (see https://crbug.com/1316660).
+  inline static const std::string kMockSxgPrefix = "MOCK-SXG-PREFIX: ";
+
  private:
   const net::SHA256HashValue header_integrity_;
   const base::Time signature_expire_time_;
