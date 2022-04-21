@@ -1,20 +1,16 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// Definitions for the System Events API exposed by the telemetry
-// system web extension.
-// This API is consumed by chrome://.
-//
-// This Mojo interface will go through security review before shipping.
-//
-// This is a subset of the cros_healthd event service interface which is
-// src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom and
-// src/chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.
+
+// API exposed by the Telemetry Services. This API is expected to be consumed by
+// the Telemetry Extension APIs implementation but it is not currently used.
+
+// Note: this is a subset of the cros_healthd probe service interface which is
+// located in //chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.
 
 module ash.health.mojom;
 
-// System Events interface exposed by the Telemetry SWX.
+// System Events interface exposed by the Telemetry Services.
 interface SystemEventsService {
   // Adds an observer to be notified on Bluetooth events. The caller can remove
   // the observer created by this call by closing their end of the message pipe.
@@ -38,7 +34,8 @@ interface SystemEventsService {
   AddPowerObserver(pending_remote<PowerObserver> observer);
 };
 
-// Implemented by clients who desire Bluetooth notifications.
+// Implemented by clients who desire Bluetooth notifications. Normally, this
+// should be the Telemetry Extension APIs implementation.
 interface BluetoothObserver {
   // Fired when a Bluetooth adapter is added.
   OnAdapterAdded();
@@ -54,7 +51,8 @@ interface BluetoothObserver {
   OnDevicePropertyChanged();
 };
 
-// Implemented by clients who desire lid notifications.
+// Implemented by clients who desire lid notifications. Normally, this
+// should be the Telemetry Extension APIs implementation.
 interface LidObserver {
   // Fired when the device's lid is closed.
   OnLidClosed();
@@ -62,7 +60,8 @@ interface LidObserver {
   OnLidOpened();
 };
 
-// Implemented by clients who desire power notifications.
+// Implemented by clients who desire power notifications. Normally, this
+// should be the Telemetry Extension APIs implementation.
 interface PowerObserver {
   // Fired when the power cable is plugged in.
   OnAcInserted();

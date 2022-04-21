@@ -1,19 +1,16 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// cros_healthd daemon implements DiagnosticsService interface, but since
-// callers are third-party Telemetry Extensions, we have PII filtering
-// in the middle that lives in Chrome.
-//
-// Currently we expose this interface to WebUI only in Chrome OS and on
-// non-official builds so that we can prototype Telemetry Extension, while we
-// decide how to expose API to third parties.
-//
-// This Mojo interface will go through security review before shipping.
-//
-// This is a subset of the cros_healthd diagnostics service interface which is
-// located in src/platform2/diagnostics/mojo/cros_healthd_diagnostics.mojom.
+
+// API and definitions exposed by the Telemetry Services. This API is normally
+// consumed by the Telemetry Extension APIs implementation.
+
+// Note: This is a subset of the cros_healthd diagnostics service interface
+// which is located in
+// //chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.
+// This interface serves as PII filtering and data post-processing service
+// between the source (cros_healthd) and the clients
+// (third-party telemetry extensions).
 
 module ash.health.mojom;
 
