@@ -29,20 +29,21 @@ function calculateFullScroll() {
   box.scrollLeft = 100000;
   fullyScrolled += box.scrollLeft - fullyScrolled;
 
-  resetScroll();
+  box.scrollLeft = 0;
 }
 
 calculateFullScroll();
 
-function resetScroll() {
+async function resetScroll() {
   container.scrollLeft = 0;
   box.scrollLeft = 0;
   container.scrollTop = 0;
   box.scrollTop = 0;
+  await waitForCompositorCommit();
 }
 
 promise_test (async () => {
-  resetScroll();
+  await resetScroll();
   assert_equals(box.scrollLeft, 0);
   assert_equals(container.scrollLeft, 0);
 
@@ -50,7 +51,7 @@ promise_test (async () => {
   await waitFor(() => { return box.scrollLeft > 40} );
   assert_equals(container.scrollLeft, 0);
 
-  resetScroll();
+  await resetScroll();
   assert_equals(box.scrollTop, 0);
 
   // Flinging input text past the scrollable width shouldn't scroll containing
@@ -69,7 +70,7 @@ promise_test (async () => {
 }, "gesture fling on input field");
 
 promise_test (async () => {
-  resetScroll();
+  await resetScroll();
   assert_equals(box.scrollLeft, 0);
   assert_equals(container.scrollLeft, 0);
 
@@ -81,7 +82,7 @@ promise_test (async () => {
   });
   assert_equals(container.scrollLeft, 0);
 
-  resetScroll();
+  await resetScroll();
 
   // Gesture scrolling input text past scroll width shouldn't scroll container
   // div.
@@ -92,7 +93,7 @@ promise_test (async () => {
 }, "gesture scroll on input field");
 
 promise_test (async () => {
-  resetScroll();
+  await resetScroll();
   assert_equals(box.scrollTop, 0);
   assert_equals(container.scrollTop, 0);
 
@@ -105,7 +106,7 @@ promise_test (async () => {
   });
   assert_equals(box.scrollTop, 0);
 
-  resetScroll();
+  await resetScroll();
   assert_equals(box.scrollTop, 0);
   assert_equals(container.scrollTop, 0);
   // Vertically flinging input text should scroll the containing div the
@@ -117,6 +118,7 @@ promise_test (async () => {
 }, "vertical scroll on input feild");
 
 promise_test (async () => {
+  await resetScroll();
   box.value = "short";
   assert_equals(box.scrollLeft, 0);
   assert_equals(container.scrollLeft, 0);
