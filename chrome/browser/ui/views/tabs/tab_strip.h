@@ -318,7 +318,7 @@ class TabStrip : public views::View,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  // We don't override OnPerformDrop() because we don't actually want to
+  // We don't override GetDropCallback() because we don't actually want to
   // transfer any data.
 
   // BrowserRootView::DropTarget:

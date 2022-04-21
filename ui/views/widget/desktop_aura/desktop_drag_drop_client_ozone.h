@@ -114,7 +114,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   // Returns a DropTargetEvent to be passed to the DragDropDelegate.
   // Updates the delegate if needed, which in its turn calls their
   // OnDragExited/OnDragEntered, so after getting the event the delegate
-  // is ready to accept OnDragUpdated or OnPerformDrop.  Returns nullptr if
+  // is ready to accept OnDragUpdated or GetDropCallback.  Returns nullptr if
   // drop is not possible.
   std::unique_ptr<ui::DropTargetEvent> UpdateTargetAndCreateDropEvent(
       const gfx::PointF& point,

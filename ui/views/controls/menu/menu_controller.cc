@@ -1105,7 +1105,7 @@ views::View::DropCallback MenuController::GetDropCallback(
     SubmenuView* source,
     const ui::DropTargetEvent& event) {
   DCHECK(drop_target_);
-  // NOTE: the delegate may delete us after invoking OnPerformDrop, as such
+  // NOTE: the delegate may delete us after invoking GetDropCallback, as such
   // we don't call cancel here.
 
   MenuItemView* item = state_.item;

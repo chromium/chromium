@@ -48,8 +48,7 @@ class AURA_EXPORT DragDropDelegate {
 
   // OnDragEntered is invoked when the mouse enters this window during a drag &
   // drop session. This is immediately followed by an invocation of
-  // OnDragUpdated, and eventually one of OnDragExited, OnPerformDrop, or
-  // GetDropCallback.
+  // OnDragUpdated, and eventually one of OnDragExited, or GetDropCallback.
   virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
 
   // Invoked during a drag and drop session while the mouse is over the window.

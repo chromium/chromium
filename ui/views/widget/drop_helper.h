@@ -79,8 +79,6 @@ class VIEWS_EXPORT DropHelper {
   //
   // NOTE: implementations must invoke OnDragOver before invoking this,
   // supplying the return value from OnDragOver as the drag_operation.
-  // TODO(crbug.com/1175682): Remove OnPerformDrop and switch to GetDropCallback
-  // instead.
   ui::mojom::DragOperation OnDrop(const OSExchangeData& data,
                                   const gfx::Point& root_view_location,
                                   int drag_operation);
