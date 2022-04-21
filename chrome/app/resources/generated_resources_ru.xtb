@@ -112,7 +112,6 @@
 <translation id="1108938384783527433">Синхронизация истории</translation>
 <translation id="1110155001042129815">Подождать</translation>
 <translation id="1110965959145884739">Выберите языки, которые нужно установить на это устройство. Чтобы сэкономить место на диске, языковые пакеты доступны всем пользователям. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1111781754511998498">Проектор</translation>
 <translation id="1112420131909513020">На фоновой вкладке используется Bluetooth.</translation>
 <translation id="1113892970288677790">Выберите произведения искусства и красивые фото</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -133,6 +132,7 @@
 <translation id="1125550662859510761">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /> (аппаратное разрешение)</translation>
 <translation id="1126809382673880764">Не защищает вас от сайтов, расширений и скачанных файлов, которые могут представлять опасность. Безопасный просмотр по-прежнему будет работать в других сервисах Google, например в Gmail и Поиске.</translation>
 <translation id="1128591060186966949">Изменить поисковую систему</translation>
+<translation id="1129420403709586868">Просмотр фотографий и медиафайлов с телефона</translation>
 <translation id="1129850422003387628">Управление приложениями</translation>
 <translation id="113050636487300043">Укажите имя и установите цветовую тему, чтобы отличать свой профиль от других.</translation>
 <translation id="1130589222747246278">"<ph name="WINDOW_TITLE" />" – элемент группы "<ph name="GROUP_NAME" />"</translation>
@@ -212,6 +212,7 @@
 <translation id="1195558154361252544">Уведомления со всех сайтов, кроме тех, которым вы предоставили отдельные разрешения, автоматически блокируются.</translation>
 <translation id="1197088940767939838">Оранжевый</translation>
 <translation id="1197199342062592414">Приступим</translation>
+<translation id="11978075283960463">Размер данных приложения: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Отключить</translation>
 <translation id="119944043368869598">Удалить все</translation>
 <translation id="1199814941632954229">Предоставляются сертификаты для следующих профилей:</translation>
@@ -420,6 +421,7 @@
 <translation id="1414648216875402825">Вы устанавливаете нестабильную версию <ph name="PRODUCT_NAME" />, которая содержит разрабатываемые в настоящий момент функции. Будьте осторожны: возможны сбои и неизвестные ошибки.</translation>
 <translation id="1415708812149920388">Доступ к буферу обмена закрыт</translation>
 <translation id="1415990189994829608">Расширение "<ph name="EXTENSION_NAME" />" (ID <ph name="EXTENSION_ID" />) запрещено использовать в ходе сеанса этого типа</translation>
+<translation id="1418552618736477642">Уведомления и приложения</translation>
 <translation id="1418954524306642206">Открыть файловую систему, чтобы выбрать PPD-файл для принтера</translation>
 <translation id="1420834118113404499">Медиалицензии</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, чтобы разрешить подключение</translation>
@@ -1986,6 +1988,7 @@
 <translation id="2897878306272793870">Вы действительно хотите открыть столько вкладок (<ph name="TAB_COUNT" />)?</translation>
 <translation id="2900477968385519153">Искать содержимое экрана с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="290105521672621980">Файл использует неподдерживаемые функции</translation>
+<translation id="2901348420151309559">Недавние фотографии и приложения</translation>
 <translation id="2902127500170292085">Расширение "<ph name="EXTENSION_NAME" />" не может установить связь с принтером. Убедитесь, что он подключен и повторите попытку.</translation>
 <translation id="2902265136119311513">Гостевой режим</translation>
 <translation id="2902312830803030883">Другие действия</translation>
@@ -2198,6 +2201,7 @@
 <translation id="3108931485517391283">Не удалось получить файл</translation>
 <translation id="3109724472072898302">Свернуто</translation>
 <translation id="311214366526552035">Все равно скачать</translation>
+<translation id="3112292765614504292">Размер приложения: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Запретить сайтам изменять файлы и папки на устройстве</translation>
 <translation id="3115147772012638511">Ожидание кеша…</translation>
 <translation id="3115580024857770654">Свернуть все</translation>
@@ -2407,6 +2411,7 @@
 <translation id="3348038390189153836">Обнаружено съемное устройство</translation>
 <translation id="3348131053948466246">Предлагаются эмодзи. Выберите подходящий вариант стрелками вверх или вниз и нажмите Ввод.</translation>
 <translation id="3349933790966648062">Объем потребляемой памяти</translation>
+<translation id="335153035108712532">Вам не нужно запоминать этот пароль. Для аккаунта <ph name="EMAIL" /> он сохранен здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="3354972872297836698">Не удалось подключиться к устройству "<ph name="DEVICE_NAME" />". Чтобы повторить попытку, выберите его.</translation>
 <translation id="3355936511340229503">Ошибка подключения</translation>
 <translation id="3356469410714175391">(виртуальная карта активирована)</translation>
@@ -3895,6 +3900,7 @@
 <translation id="4837128290434901661">Вернуться к Google Поиску?</translation>
 <translation id="4837926214103741331">У вас нет доступа к этому устройству. Свяжитесь с его владельцем.</translation>
 <translation id="4837952862063191349">Чтобы разблокировать и восстановить данные, введите старый пароль устройства <ph name="DEVICE_TYPE" /></translation>
+<translation id="4838170306476614339">Просмотр фотографий, медиафайлов и уведомлений с телефона</translation>
 <translation id="4838836835474292213">Доступ к буферу обмена открыт</translation>
 <translation id="4838907349371614303">Пароль обновлен</translation>
 <translation id="4839303808932127586">Со&amp;хранить видео как...</translation>
@@ -4008,6 +4014,7 @@
 <translation id="4941074198479265146">Обычно сайты подключаются к MIDI-устройствам, чтобы использовать функции, которые позволяют создавать и изменять музыку.</translation>
 <translation id="4941246025622441835">Воспользуйтесь этой заявкой при регистрации устройства в домене предприятия:</translation>
 <translation id="4941627891654116707">Размер шрифта</translation>
+<translation id="4941963255146903244">Просмотр фотографий, медиафайлов и приложений с телефона</translation>
 <translation id="494286511941020793">Справка по конфигурации прокси-сервера</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4943691134276646401">Расширение "<ph name="CHROME_EXTENSION_NAME" />" запрашивает разрешение подключиться к последовательному порту</translation>
@@ -5860,6 +5867,7 @@
 <translation id="6813907279658683733">Весь экран</translation>
 <translation id="6817174620439930047">Уведомлять меня о сайтах, пытающихся использовать системные сообщения для доступа к MIDI-устройствам (рекомендуется)</translation>
 <translation id="6818198425579322765">Исходный язык страницы</translation>
+<translation id="6818547713623251698">Просмотр фотографий, медиафайлов, уведомлений и приложений с телефона</translation>
 <translation id="6818802132960437751">Встроенная защита от вирусов</translation>
 <translation id="6823174134746916417">Нажатие от прикосновения к сенсорной панели</translation>
 <translation id="6824564591481349393">Скопировать адрес электронной почты</translation>
@@ -6763,6 +6771,7 @@
 <translation id="7721258531237831532">В вашей организации обязательно использовать профиль</translation>
 <translation id="7722040605881499779">Для обновления необходимо <ph name="NECESSARY_SPACE" />.</translation>
 <translation id="7724603315864178912">Вырезать</translation>
+<translation id="7726391492136714301">Просмотр уведомлений и приложений с телефона</translation>
 <translation id="7728465250249629478">Изменить язык устройства</translation>
 <translation id="7728570244950051353">Заблокированный экран из спящего режима</translation>
 <translation id="7728668285692163452">Изменение вступит в силу позже</translation>
@@ -7092,6 +7101,7 @@
 <translation id="8037357227543935929">Спрашивать (по умолчанию)</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
+<translation id="8041267120753677077">Трансляция приложений с телефона</translation>
 <translation id="8042142357103597104">Прозрачность текста</translation>
 <translation id="8042331986490021244">Ваши пароли шифруются на устройстве и только потом сохраняются в Диспетчере паролей Google.</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не отвечает</translation>
@@ -7320,6 +7330,7 @@
 <translation id="825238165904109940">Всегда показывать URL полностью</translation>
 <translation id="8252569384384439529">Загрузка...</translation>
 <translation id="8253198102038551905">Чтобы просмотреть свойства сети, нажмите "+"</translation>
+<translation id="8255212965098517578">Недавние фотографии, уведомления и приложения</translation>
 <translation id="8256319818471787266">Дружок</translation>
 <translation id="8257950718085972371">Всегда блокировать доступ к камере</translation>
 <translation id="8260864402787962391">Мышь</translation>

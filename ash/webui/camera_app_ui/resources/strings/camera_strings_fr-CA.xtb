@@ -66,7 +66,6 @@
 <translation id="4118525110028899586">Interrompre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
-<translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4329152592498422850">Bouton permettant de prendre une photo carrée</translation>
 <translation id="4383571725254449280">Imprimer les journaux de performance</translation>
 <translation id="4445542136948522167">Ne pas prendre la photo</translation>
@@ -90,8 +89,11 @@
 <translation id="5753488212459587150">Activer le mode Expert</translation>
 <translation id="5759254179196327752">Numérisation de document</translation>
 <translation id="5775960006311140197">Mode Expert</translation>
+<translation id="5860033963881614850">Désactivé</translation>
 <translation id="5869546221129391014">Grille</translation>
+<translation id="5916664084637901428">Activé</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
+<translation id="5976160379964388480">Autres</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6197807149213783179">Enregistrer les métadonnées</translation>
 <translation id="6233780560267770709">3 par 3</translation>

@@ -808,7 +808,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5920710855273935292">麦克风已静音。</translation>
-<translation id="5924838240953214369">截屏/录屏模式，默认为<ph name="SOURCE" /><ph name="TYPE" />。相机输入设置为<ph name="CAMERA_NAME" />，预览开启。按 Tab 键即可使用键盘进行导航。</translation>
 <translation id="5946788582095584774">“<ph name="FEATURE_NAME" />”功能已开启。</translation>
 <translation id="5947494881799873997">还原</translation>
 <translation id="595202126637698455">已启用性能跟踪</translation>

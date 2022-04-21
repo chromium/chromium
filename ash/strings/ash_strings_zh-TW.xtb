@@ -808,7 +808,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">麥克風已設為靜音。</translation>
-<translation id="5924838240953214369">擷取模式，預設為<ph name="SOURCE" /><ph name="TYPE" />。影像辨識輸入已設為「<ph name="CAMERA_NAME" />」，預覽功能已開啟。按下 Tab 鍵即可查看鍵盤瀏覽資訊。</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>

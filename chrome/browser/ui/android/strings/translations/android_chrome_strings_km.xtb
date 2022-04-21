@@ -136,6 +136,7 @@
 <translation id="1697284962337958118">បញ្ចូល​ទៅ</translation>
 <translation id="1702543251015153180">ប្ដូរការកំណត់​រចនាប័ទ្ម​ងងឹតរបស់អ្នកឬ?</translation>
 <translation id="1702907158640575240">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​ដែលស្ថិតក្រោមការគ្រប់គ្រង</translation>
+<translation id="1710099199314114079">ប្ដូរ ឬបិទផ្ទាំង</translation>
 <translation id="1718835860248848330">មួយម៉ោងមុន</translation>
 <translation id="1724977129262658800">ដោះសោ ដើម្បីកែពាក្យ​សម្ងាត់របស់អ្នក</translation>
 <translation id="1726477445370128854">អ្នកអាចរុករក និងស្វែងរក​បានកាន់តែរហ័ស នៅពេល Chrome ផ្ទុកទំព័រជាមុន​ដែលវាគិតថា​អ្នកប្រហែលជាចូលមើល</translation>
@@ -946,6 +947,7 @@
 <translation id="6324997754869598316">(បញ្ហា <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">ចែករំលែកតាមរយៈ <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">ការអ៊ីនគ្រីប</translation>
+<translation id="6340910702212418132">កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់<ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">សួររក​កន្លែងដែលត្រូវរក្សាទុក​ឯកសារ</translation>
 <translation id="6342069812937806050">អំបាញ់មិញនេះ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}}</translation>
@@ -1146,7 +1148,6 @@
 <translation id="7375125077091615385">ប្រភេទ៖</translation>
 <translation id="7376560087009844242">តាមរយៈ​ការរួមបញ្ចូល​អត្ថបទរបស់ទំព័រ​បន្ថែម អ្នកអាចមើលឃើញ​លទ្ធផលប្រសើរជាងមុន នៅពេលប្រើ​មុខងារ​ចុចដើម្បីស្វែងរក។ អ្នកអាចចូលទៅកាន់<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" /> ដើម្បីផ្លាស់ប្ដូរ​ជម្រើសនេះ​បានជានិច្ច។</translation>
 <translation id="7379900596734708416">អាចប្រើ​រចនាប័ទ្ម​ងងឹត​សម្រាប់គេហទំព័របាន</translation>
-<translation id="7386842512861524348">ការតភ្ជាប់របស់គេហទំព័រ​មានសុវត្ថិភាព ប្រសិនបើ Chrome មិនប្រាប់អ្នក​ផ្សេងពីនេះទេ។</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">បទពិសោធន៍​ដំណើរការ​ដំបូងរបស់ Chrome</translation>
 <translation id="741204030948306876">បាទ/ចាស ខ្ញុំយល់ព្រម</translation>

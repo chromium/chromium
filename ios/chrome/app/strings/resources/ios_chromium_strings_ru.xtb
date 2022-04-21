@@ -21,6 +21,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1867772173333403444">4. Выберите Chromium.</translation>
 <translation id="2006345422933397527">Браузеру Chromium не удалось проверить наличие обновлений. Убедитесь, что устройство подключено к Интернету.</translation>
+<translation id="2052320862053429062">Время от времени Chromium проверяет, есть ли ваши пароли в списках, опубликованных в интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
 <translation id="2054703085270098503">Безопасная работа с Chromium</translation>
 <translation id="2168108852149185974">Некоторые дополнения вызывают сбой Chromium. Необходимо удалить:</translation>
 <translation id="2178608107313874732">Chromium не может получить доступ к камере.</translation>

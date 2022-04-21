@@ -812,7 +812,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5920710855273935292">O micrófono está silenciado.</translation>
-<translation id="5924838240953214369">Modo de captura. Configuración predeterminada: <ph name="TYPE" /> <ph name="SOURCE" />. Entrada por cámara configurada para o dispositivo <ph name="CAMERA_NAME" />. Vista previa activada. Premer tabulador para navegar polo teclado.</translation>
 <translation id="5946788582095584774">A función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>

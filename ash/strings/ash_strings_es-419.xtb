@@ -812,7 +812,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="5924838240953214369">Modo de captura, la configuración predeterminada es <ph name="SOURCE" /> <ph name="TYPE" />. La entrada de cámara se estableció a <ph name="CAMERA_NAME" /> con la vista previa activada. Presiona Tab para navegar con el teclado.</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>

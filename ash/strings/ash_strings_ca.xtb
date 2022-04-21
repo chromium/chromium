@@ -811,7 +811,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">El micròfon està silenciat.</translation>
-<translation id="5924838240953214369">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />. L'entrada per càmera s'ha establert en <ph name="CAMERA_NAME" />, previsualització activada. Prem la tecla de tabulació per navegar amb el teclat.</translation>
 <translation id="5946788582095584774">La funció <ph name="FEATURE_NAME" /> està activada.</translation>
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>

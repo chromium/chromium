@@ -812,7 +812,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="5924838240953214369">Modo de captura, establecido en <ph name="TYPE" /> <ph name="SOURCE" />. Entrada por cámara asignada a <ph name="CAMERA_NAME" />, vista previa activada. Pulsa Tabulador para desplazarte por el teclado.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activado.</translation>
 <translation id="5947494881799873997">Deshacer</translation>
 <translation id="595202126637698455">Se ha habilitado el control del rendimiento</translation>

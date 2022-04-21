@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Typ zařízení je neznámý.</translation>
 <translation id="3966286471246132217">Pokud chcete přesnější výsledky, zavřete všechny aplikace, dokud test nebude dokončen.</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
+<translation id="3969602104473960991">Heslo ChromeOS byla aktualizováno</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="39823212440917567">Tiskové úlohy starší než <ph name="NUMBER_OF_DAYS" /> dní budou odstraněny</translation>
 <translation id="3993704782688964914">Zařízení <ph name="DEVICE_NAME" /> je aktualizované</translation>
@@ -462,6 +463,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6113701710518389813">Šipka nahoru</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> a další alba (<ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Služba metod zadávání systému ChromeOS</translation>
 <translation id="6137767437444130246">Certifikát uživatele</translation>
 <translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interní klávesnice</translation>
+<translation id="8431300646573772016">Novinky v ChromeOS</translation>
 <translation id="843568408673868420">Připojení k internetu</translation>
 <translation id="844521431886043384">Není nastaven server DNS</translation>
 <translation id="8461329675984532579">Název domácího poskytovatele</translation>

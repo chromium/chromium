@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">ହିବ୍ରୁ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="1747761757048858544">ଡଚ୍ (ନେଦରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="174937106936716857">ସମୁଦାୟ ଫାଇଲ୍ ସଂଖ୍ୟା</translation>
+<translation id="1755345808328621801">Windows ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ PC ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ଦୟାକରି ଗୋଟିଏ ଉପଯୁକ୍ତ ରିପ୍ଲେସମେଣ୍ଟ ଆପ ପାଇଁ Chrome ୱେବ ଷ୍ଟୋରରେ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
 <translation id="1773212559869067373">ପ୍ରମାଣିକିକରଣ ସର୍ଟିଫିକେଟ୍‌ ସ୍ଥାନୀୟ ସ୍ତରରେ ଖାରଜ କରାଯାଇଛି</translation>
 <translation id="1775381402323441512">ଭିଡିଓର ସୂଚନା</translation>
 <translation id="180035236176489073">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ନିଶ୍ଚିତ ରୂପେ ଅନ୍‍ଲାଇନ୍ ରହିବାକୁ ହେବ।</translation>
@@ -225,6 +226,7 @@
 <translation id="2943503720238418293">ଟିକେ ଛୋଟ ନାମର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଉଛି...</translation>
 <translation id="2951236788251446349">ଜେଲିଫିସ୍</translation>
+<translation id="2977940621473452797">Macintosh ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ କମ୍ପ୍ୟୁଟର ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ଦୟାକରି ଗୋଟିଏ ଉପଯୁକ୍ତ ରିପ୍ଲେସମେଣ୍ଟ ଆପ ପାଇଁ Chrome ୱେବ ଷ୍ଟୋରରେ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
 <translation id="2984337792991268709">ଆଜି <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" />ଟି ଆଇଟମକୁ ରିଷ୍ଟୋର କରାଯାଉଛି...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />ର ବ୍ୟାକ୍‍ଅପ୍ ନିଆଯାଇପାରିଲା ନାହିଁ</translation>
@@ -422,6 +424,7 @@
 <translation id="4694604912444486114">ମାଙ୍କଡ଼</translation>
 <translation id="469612310041132144">ଚାଇନିଜ୍ କ୍ୱିକ୍</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> ଦ୍ୱାରା ଫାଇଲ୍‌ର ତାଲିକା ସାନରୁ ବଡ଼ କ୍ରମରେ ସଜାଯାଇଛି।</translation>
+<translation id="469897186246626197">Windows ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ PC ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ChromeOSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="4706042980341760088">ଟାଇପରାଇଟର୍ କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="4711094779914110278">ତୁର୍କିସ୍</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ଖୋଲାଯାଉଛି</translation>
@@ -537,6 +540,7 @@
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
 <translation id="5602622065581044566">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ବୁଲଗେରିଆନ୍</translation>
 <translation id="5605830556594064952">US ଡିଭୋରାକ୍</translation>
+<translation id="5618330573454123917">Macintosh ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ କମ୍ପ୍ୟୁଟର ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ChromeOSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="5625294776298156701">ତାମିଲ99 କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="5633226425545095130">ଏହି ଆଇଟମକୁ ମୁଭ୍ କରିବା ଫଳରେ, ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡର୍ '<ph name="DESTINATION_NAME" />'କୁ ଦେଖିପାରୁଥିବା ସମସ୍ତ ଲୋକଙ୍କ ସହିତ ଏହା ସେୟାର୍ ହେବ।</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
@@ -732,6 +736,7 @@
 <translation id="7309413087278791451">ଜର୍ମାନ (ବେଲଜିୟମ୍)</translation>
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="7343393116438664539">ଭିଏତନାମିଜ୍ ଟେଲେକ୍ସ</translation>
+<translation id="7357762654218998920">ଏହି ଫାଇଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ChromeOSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ କପି ହେଉଛି...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ଦ୍ୱାରା ଫାଇଲ୍‌ର ତାଲିକା ବଡ଼ରୁ ସାନ କ୍ରମରେ ସଜାଯାଇଛି।</translation>
 <translation id="7402503521691663770">ChromeOS Flex ଡିଭାଇସଗୁଡ଼ିକ</translation>

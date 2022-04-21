@@ -114,7 +114,6 @@
 <translation id="1108938384783527433">Συγχρονισμός ιστορικού</translation>
 <translation id="1110155001042129815">Αναμονή</translation>
 <translation id="1110965959145884739">Επιλέξτε ποιες γλώσσες θέλετε να εγκατασταθούν σε αυτήν τη συσκευή. Τα αρχεία γλωσσών χρησιμοποιούνται από κοινού με άλλους χρήστες για εξοικονόμηση χώρου. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1111781754511998498">Προβολέας</translation>
 <translation id="1112420131909513020">Μια καρτέλα παρασκηνίου χρησιμοποιεί Bluetooth</translation>
 <translation id="1113892970288677790">Επιλέξτε οργανωμένα έργα τέχνης και εικόνες.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -5715,7 +5714,7 @@
 <translation id="6654509035557065241">Προτίμηση δικτύου</translation>
 <translation id="6655190889273724601">Λειτουργία για προγραμματιστές</translation>
 <translation id="6655458902729017087">Απόκρυψη λογαριασμών</translation>
-<translation id="6657585470893396449">Κωδικός Πρόσβασης</translation>
+<translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659213950629089752">Έγινε εστίαση σε αυτήν τη σελίδα από την επέκταση "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="666099631117081440">Διακομιστές εκτύπωσης</translation>

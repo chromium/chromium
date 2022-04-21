@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">hebrejština (přepis)</translation>
 <translation id="1747761757048858544">nizozemština (Nizozemsko)</translation>
 <translation id="174937106936716857">Celkový počet souborů</translation>
+<translation id="1755345808328621801">Tento soubor je určen pro počítač se softwarem Windows. S vaším zařízením se systémem ChromeOS není kompatibilní. Vyhledejte v Internetovém obchodě Chrome vhodnou náhradní aplikaci.</translation>
 <translation id="1773212559869067373">Ověřovací certifikát byl místně odmítnut</translation>
 <translation id="1775381402323441512">Informace o videu</translation>
 <translation id="180035236176489073">Pro přístup k souborům musíte být online.</translation>
@@ -225,6 +226,7 @@
 <translation id="2943503720238418293">Použijte kratší název</translation>
 <translation id="2949781154072577687">Formátování disku <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medúza</translation>
+<translation id="2977940621473452797">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem ChromeOS není kompatibilní. Vyhledejte v Internetovém obchodě Chrome vhodnou náhradní aplikaci.</translation>
 <translation id="2984337792991268709">Dnes <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Obnovování položek (<ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489">Zálohování souboru <ph name="FILE_NAME" /> se nezdařilo</translation>
@@ -422,6 +424,7 @@
 <translation id="4694604912444486114">Opice</translation>
 <translation id="469612310041132144">čínština (Quick)</translation>
 <translation id="4697043402264950621">Seznam souborů seřazený vzestupně podle sloupce <ph name="COLUMN_NAME" />.</translation>
+<translation id="469897186246626197">Tento soubor je určen pro počítač se softwarem Windows. S vaším zařízením se systémem ChromeOS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
 <translation id="4706042980341760088">tamilština s klávesnicí jako na psacím stroji</translation>
 <translation id="4711094779914110278">turečtina</translation>
 <translation id="4712283082407695269">Otevírání souboru „<ph name="PATH" />“</translation>
@@ -542,6 +545,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">bulharština s fonetickou klávesnicí</translation>
 <translation id="5605830556594064952">Americká klávesnice Dvorak</translation>
+<translation id="5618330573454123917">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem ChromeOS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
 <translation id="5625294776298156701">tamilština s klávesnicí Tamil99</translation>
 <translation id="5633226425545095130">Když tuto položku přesunete, budete ji sdílet s každým, kdo může zobrazit sdílenou složku <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
@@ -737,6 +741,7 @@
 <translation id="7309413087278791451">němčina (Belgie)</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7343393116438664539">vietnamština (telex)</translation>
+<translation id="7357762654218998920">Tento typ souboru není podporován. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
 <translation id="7359359531237882347">Kopírování <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
 <translation id="7375951387215729722">Seznam souborů seřazený sestupně podle sloupce <ph name="COLUMN_NAME" />.</translation>
 <translation id="7402503521691663770">Zařízení se systémem ChromeOS Flex</translation>
