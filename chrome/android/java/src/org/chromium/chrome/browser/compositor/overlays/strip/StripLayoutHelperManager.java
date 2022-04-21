@@ -197,7 +197,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
             if (!isGridTabSwitcherNonPolishEnabled()) return;
 
-            if (mScrimFadeAnimation != null) {
+            if (mScrimFadeAnimation != null && mScrimFadeAnimation.isRunning()) {
                 mScrimFadeAnimation.cancel();
             }
 
@@ -285,6 +285,9 @@ public class StripLayoutHelperManager implements SceneOverlay {
      * Cleans up internal state.
      */
     public void destroy() {
+        if (mScrimFadeAnimation != null) {
+            mScrimFadeAnimation.cancel();
+        }
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
         mIncognitoHelper.destroy();
