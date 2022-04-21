@@ -170,8 +170,7 @@ struct UnionTraits<arc::mojom::BluetoothAdvertisingDataDataView,
   static bool Read(arc::mojom::BluetoothAdvertisingDataDataView data,
                    std::unique_ptr<AdvertisementEntry>* output) {
     switch (data.tag()) {
-      case arc::mojom::BluetoothAdvertisingDataDataView::Tag::
-          SERVICE_UUIDS_16: {
+      case arc::mojom::BluetoothAdvertisingDataDataView::Tag::kServiceUuids16: {
         std::unique_ptr<ServiceUUID16Entry> service_uuids_16 =
             std::make_unique<ServiceUUID16Entry>();
         if (!data.ReadServiceUuids16(&service_uuids_16->service_uuids_16))
@@ -179,7 +178,7 @@ struct UnionTraits<arc::mojom::BluetoothAdvertisingDataDataView,
         *output = std::move(service_uuids_16);
         break;
       }
-      case arc::mojom::BluetoothAdvertisingDataDataView::Tag::SERVICE_UUIDS: {
+      case arc::mojom::BluetoothAdvertisingDataDataView::Tag::kServiceUuids: {
         std::unique_ptr<ServiceUUIDEntry> service_uuids =
             std::make_unique<ServiceUUIDEntry>();
         if (!data.ReadServiceUuids(&service_uuids->service_uuids))
@@ -187,7 +186,7 @@ struct UnionTraits<arc::mojom::BluetoothAdvertisingDataDataView,
         *output = std::move(service_uuids);
         break;
       }
-      case arc::mojom::BluetoothAdvertisingDataDataView::Tag::SERVICE_DATA: {
+      case arc::mojom::BluetoothAdvertisingDataDataView::Tag::kServiceData: {
         std::unique_ptr<ServiceDataEntry> service_data =
             std::make_unique<ServiceDataEntry>();
         if (!data.ReadServiceData(service_data.get()))
@@ -196,7 +195,7 @@ struct UnionTraits<arc::mojom::BluetoothAdvertisingDataDataView,
         break;
       }
       case arc::mojom::BluetoothAdvertisingDataDataView::Tag::
-          MANUFACTURER_DATA: {
+          kManufacturerData: {
         std::unique_ptr<ManufacturerDataEntry> manufacturer_data =
             std::make_unique<ManufacturerDataEntry>();
         // We get manufacturer data as a big blob. The first two bytes
