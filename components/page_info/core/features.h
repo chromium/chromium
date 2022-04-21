@@ -34,6 +34,13 @@ extern const base::Feature kPageInfoAboutThisSiteNonEn;
 // Whether we show hard-coded content for some sites like https://example.com.
 extern const base::FeatureParam<bool> kShowSampleContent;
 
+// Switches from Host-level granularity to URL-level granularity.
+// Used by OptimizationGuide.
+extern const base::Feature kPageInfoAboutThisSiteUrlGranularity;
+
+// Shows a link with more info about a site in PageInfo.
+extern const base::Feature kPageInfoAboutThisSiteMoreInfo;
+
 // Enables the "About this site" banner.
 extern const base::Feature kAboutThisSiteBanner;
 

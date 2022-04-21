@@ -55,6 +55,13 @@ AboutThisSiteStatus ValidateFirstSeen(const proto::SiteFirstSeen& first_seen) {
   return AboutThisSiteStatus::kValid;
 }
 
+AboutThisSiteStatus ValidateMoreAbout(const proto::MoreAbout& more_info) {
+  if (!more_info.has_url() || !GURL(more_info.url()).is_valid())
+    return AboutThisSiteStatus::kInvalidMoreAbout;
+
+  return AboutThisSiteStatus::kValid;
+}
+
 AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
   if (!site_info.has_description() && !site_info.has_first_seen())
     return AboutThisSiteStatus::kEmptySiteInfo;
@@ -68,6 +75,12 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
 
   if (site_info.has_first_seen())
     status = ValidateFirstSeen(site_info.first_seen());
+  if (status != AboutThisSiteStatus::kValid)
+    return status;
+
+  if (site_info.has_more_about())
+    status = ValidateMoreAbout(site_info.more_about());
+
   return status;
 }
 

@@ -34,6 +34,12 @@ proto::SiteFirstSeen GetSampleFirstSeen() {
   return first_seen;
 }
 
+proto::MoreAbout GetSampleMoreAbout() {
+  proto::MoreAbout more_about;
+  more_about.set_url("https://example.com");
+  return more_about;
+}
+
 proto::BannerInfo GetBannerInfo() {
   proto::BannerInfo banner_info;
   banner_info.set_title("Title");
@@ -47,6 +53,7 @@ proto::AboutThisSiteMetadata GetSampleMetaData() {
   auto* site_info = metadata.mutable_site_info();
   *site_info->mutable_description() = GetSampleDescription();
   *site_info->mutable_first_seen() = GetSampleFirstSeen();
+  *site_info->mutable_more_about() = GetSampleMoreAbout();
   return metadata;
 }
 
@@ -130,6 +137,18 @@ TEST(AboutThisSiteValidation, InvalidFirstSeenDuration) {
   first_seen.set_unit(proto::UNIT_UNSPECIFIED);
   EXPECT_EQ(ValidateFirstSeen(first_seen),
             AboutThisSiteStatus::kInvalidTimeStamp);
+}
+
+TEST(AboutThisSiteValidation, InvalidMoreAbout) {
+  proto::MoreAbout more_about = GetSampleMoreAbout();
+  more_about.clear_url();
+  EXPECT_EQ(ValidateMoreAbout(more_about),
+            AboutThisSiteStatus::kInvalidMoreAbout);
+
+  more_about = GetSampleMoreAbout();
+  more_about.set_url("not a url");
+  EXPECT_EQ(ValidateMoreAbout(more_about),
+            AboutThisSiteStatus::kInvalidMoreAbout);
 }
 
 }  // namespace about_this_site_validation

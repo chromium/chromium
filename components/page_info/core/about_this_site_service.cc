@@ -64,6 +64,8 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
           "A domain used in illustrative examples in documents.");
       description->mutable_source()->set_url("https://example.com");
       description->mutable_source()->set_label("Example source");
+      site_info.mutable_more_about()->set_url(
+          "https://example.com/#more-about");
       return site_info;
     }
 

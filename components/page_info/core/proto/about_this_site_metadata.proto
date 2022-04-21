@@ -54,6 +54,12 @@ message Hyperlink {
   optional string url = 2;
 }
 
+// Link to learn more about the input url.
+message MoreAbout {
+  // The absolute url for the link.
+  optional string url = 1;
+}
+
 // Info that is shown in PageInfo.
 message SiteInfo {
   // First-seen date information related to this host/domain.
@@ -62,6 +68,9 @@ message SiteInfo {
 
   // Description for this site.
   optional SiteDescription description = 2;
+
+  // A link to a page with more information about the page, if available.
+  optional MoreAbout more_about = 3;
 }
 
 // Info for a site-specific banner.
