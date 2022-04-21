@@ -207,7 +207,8 @@ HTMLPortalElement::GetGuestContentsEligibility() const {
   if (!is_connected && !was_just_adopted_)
     return GuestContentsEligibility::kIneligible;
 
-  const bool is_top_level = frame && frame->IsMainFrame();
+  const bool is_top_level =
+      frame && frame->IsMainFrame() && !frame->IsInFencedFrameTree();
   if (!is_top_level)
     return GuestContentsEligibility::kNotTopLevel;
 

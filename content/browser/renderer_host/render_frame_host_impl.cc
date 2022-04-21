@@ -7115,8 +7115,9 @@ void RenderFrameHostImpl::CreatePortal(
     return;
   }
 
-  // We don't support attaching a portal inside a nested browsing context.
-  if (!is_main_frame()) {
+  // We don't support attaching a portal inside a nested browsing context or
+  // inside a fenced frame.
+  if (!is_main_frame() || IsFencedFrameRoot()) {
     frame_host_associated_receiver_.ReportBadMessage(
         "RFHI::CreatePortal called in a nested browsing context");
     return;
