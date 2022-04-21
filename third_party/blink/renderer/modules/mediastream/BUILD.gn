@@ -135,6 +135,8 @@ source_set("test_support") {
     "mock_media_stream_audio_sink.h",
     "mock_media_stream_registry.cc",
     "mock_media_stream_registry.h",
+    "mock_media_stream_track.cc",
+    "mock_media_stream_track.h",
     "mock_media_stream_video_sink.cc",
     "mock_media_stream_video_sink.h",
     "mock_media_stream_video_source.cc",
