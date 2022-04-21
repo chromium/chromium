@@ -5171,24 +5171,22 @@ void WebGLRenderingContextBase::TexImage2DBase(GLenum target,
 }
 
 // Software-based upload of Image* to WebGL texture.
-void WebGLRenderingContextBase::TexImageImpl(
-    TexImageParams params,
-    Image* image,
-    WebGLImageConversion::ImageHtmlDomSource dom_source,
-    bool image_has_flip_y) {
+void WebGLRenderingContextBase::TexImageImpl(TexImageParams params,
+                                             Image* image,
+                                             bool image_has_flip_y) {
   // All calling functions check isContextLost, so a duplicate check is not
   // needed here.
   const char* func_name = GetTexImageFunctionName(params.function_id);
 
-  if (!params.width || !params.height) {
-    auto image_size = SafeGetImageSize(image);
-    params.width = image_size.width();
-    params.height = image_size.height();
+  // Apply orientation if necessary
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
+  if (!image->HasDefaultOrientation()) {
+    paint_image = Image::ResizeAndOrientImage(
+        paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
+        kInterpolationNone);
   }
-  if (!params.depth)
-    params.depth = 1;
 
-  sk_sp<SkImage> sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
+  sk_sp<SkImage> sk_image = paint_image.GetSwSkImage();
   if (!sk_image) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
     return;
@@ -5791,8 +5789,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
     // cases, like copying to layers of 3D textures, and elements of
     // 2D texture arrays.
     const bool source_has_flip_y = is_origin_top_left_ && is_webgl_canvas;
-    TexImageImpl(params, image.get(), WebGLImageConversion::kHtmlDomCanvas,
-                 source_has_flip_y);
+    TexImageImpl(params, image.get(), source_has_flip_y);
   }
 }
 
@@ -5901,8 +5898,7 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     auto image = UnacceleratedStaticBitmapImage::Create(std::move(sk_img));
     // Note: kHtmlDomVideo means alpha won't be unmultiplied.
     params.internalformat = adjusted_internalformat;
-    TexImageImpl(params, image.get(), WebGLImageConversion::kHtmlDomVideo,
-                 /*image_has_flip_y=*/false);
+    TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);
     texture->UpdateLastUploadedFrame(metadata);
     return;
   }
@@ -6115,8 +6111,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   } else {
     params.internalformat = adjusted_internalformat;
     // Note: kHtmlDomVideo means alpha won't be unmultiplied.
-    TexImageImpl(params, image.get(), WebGLImageConversion::kHtmlDomVideo,
-                 /*image_has_flip_y=*/false);
+    TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);
   }
 
   texture->UpdateLastUploadedFrame(metadata);
@@ -6210,6 +6205,14 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     }
   }
 
+  // When TexImage is called with an ImageBitmap, the values of UNPACK_FLIP_Y,
+  // UNPACK_PREMULTIPLY_ALPHA, and UNPACK_COLORSPACE_CONVERSION are to be
+  // ignored. Set `adjusted_params` such that no conversions will be made using
+  // that state.
+  params.unpack_premultiply_alpha =
+      image->GetSkColorInfo().alphaType() == kPremul_SkAlphaType;
+  params.unpack_flip_y = false;
+
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.
   if (image->IsTextureBacked() && CanUseTexImageViaGPU(params) &&
       !selecting_sub_rectangle) {
@@ -6220,52 +6223,10 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     // All AcceleratedStaticBitmapImages have premultiplied alpha, so setting
     // `unpack_premultiply_alpha` ensures a no-op.
     DCHECK_NE(accel_image->GetSkColorInfo().alphaType(), kUnpremul_SkAlphaType);
-    params.unpack_premultiply_alpha = true;
-    params.unpack_flip_y = false;
     TexImageViaGPU(params, texture, accel_image, nullptr, source_sub_rect);
-    return;
+  } else {
+    TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);
   }
-
-  // Apply orientation if necessary
-  PaintImage paint_image = image->PaintImageForCurrentFrame();
-  if (!image->HasDefaultOrientation()) {
-    paint_image = Image::ResizeAndOrientImage(
-        paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
-        kInterpolationNone);
-  }
-
-  // TODO(kbr): refactor this away to use TexImageImpl on image.
-  sk_sp<SkImage> sk_image = paint_image.GetSwSkImage();
-  if (!sk_image) {
-    SynthesizeGLError(GL_OUT_OF_MEMORY, func_name,
-                      "ImageBitmap unexpectedly empty");
-    return;
-  }
-
-  SkPixmap pixmap;
-  Vector<uint8_t> pixel_data;
-  // PaintImage::GetSwSkImage() can return a lazily generated image which will
-  // cause peekPixels() to fail. In that case we use CopyBitmapData to force
-  // image generation.
-  if (!sk_image->peekPixels(&pixmap)) {
-    SkImageInfo info = bitmap->GetBitmapSkImageInfo();
-    info = info.makeAlphaType(image->IsPremultiplied() ? kPremul_SkAlphaType
-                                                       : kUnpremul_SkAlphaType);
-    if (info.colorType() == kN32_SkColorType)
-      info = info.makeColorType(kRGBA_8888_SkColorType);
-    pixel_data = image->CopyImageData(info, /*apply_orientation=*/true);
-    pixmap = SkPixmap(info, pixel_data.data(), info.minRowBytes());
-  }
-
-  // When TexImage is called with an ImageBitmap, the values of UNPACK_FLIP_Y,
-  // UNPACK_PREMULTIPLY_ALPHA, and UNPACK_COLORSPACE_CONVERSION are to be
-  // ignored. Set `adjusted_params` such that no conversions will be made using
-  // that state.
-  TexImageParams adjusted_params = params;
-  adjusted_params.unpack_premultiply_alpha =
-      pixmap.alphaType() == kPremul_SkAlphaType;
-  adjusted_params.unpack_flip_y = false;
-  TexImageSkPixmap(adjusted_params, &pixmap, /*pixmap_has_flip_y=*/false);
 }
 
 void WebGLRenderingContextBase::texImage2D(GLenum target,

@@ -1220,10 +1220,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                       GLenum format,
                       GLenum type,
                       const void* pixels);
-  void TexImageImpl(TexImageParams params,
-                    Image* image,
-                    WebGLImageConversion::ImageHtmlDomSource,
-                    bool image_has_flip_y);
+  void TexImageImpl(TexImageParams params, Image* image, bool image_has_flip_y);
   template <typename T>
   gfx::Rect GetTextureSourceSize(T* texture_source) {
     return gfx::Rect(0, 0, texture_source->width(), texture_source->height());

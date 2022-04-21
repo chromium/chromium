@@ -158,7 +158,8 @@ PaintImage Image::ResizeAndOrientImage(
   }
 
   const SkImageInfo surface_info = SkImageInfo::MakeN32(
-      size.width(), size.height(), kPremul_SkAlphaType, surface_color_space);
+      size.width(), size.height(), image.GetSkImageInfo().alphaType(),
+      surface_color_space);
   sk_sp<SkSurface> surface = SkSurface::MakeRaster(surface_info);
   if (!surface)
     return PaintImage();

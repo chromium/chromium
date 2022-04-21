@@ -111,13 +111,6 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     kAlphaDoUnmultiply = 2
   };
 
-  enum ImageHtmlDomSource {
-    kHtmlDomImage = 0,
-    kHtmlDomCanvas = 1,
-    kHtmlDomVideo = 2,
-    kHtmlDomNone = 3
-  };
-
   struct PLATFORM_EXPORT PixelStoreParams final {
     PixelStoreParams();
 
