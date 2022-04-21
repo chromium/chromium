@@ -93,14 +93,14 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
   }
 
   switch (ptr->routine_update_union->which()) {
-    case ash::health::mojom::RoutineUpdateUnion::Tag::NONINTERACTIVE_UPDATE: {
+    case ash::health::mojom::RoutineUpdateUnion::Tag::kNoninteractiveUpdate: {
       auto& routine_update =
           ptr->routine_update_union->get_noninteractive_update();
       result.status = converters::ConvertRoutineStatus(routine_update->status);
       result.status_message = std::move(routine_update->status_message);
       break;
     }
-    case ash::health::mojom::RoutineUpdateUnion::Tag::INTERACTIVE_UPDATE:
+    case ash::health::mojom::RoutineUpdateUnion::Tag::kInteractiveUpdate:
       // Routine is waiting for user action. Set the status to waiting.
       result.status = api::os_diagnostics::RoutineStatus::
           ROUTINE_STATUS_WAITING_USER_ACTION;
