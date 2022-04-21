@@ -1449,7 +1449,7 @@
     Help sites fight fraud and distinguish bots from people
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TITLE" desc="Title of a page The page is broken up into two sections because there are two APIs a website can use in order to target ads: the Topics API and the FLEDGE API. There is some friction between the page title and the name of the control. The name of the control is “Browser-based ad personalization”. (We wanted to use the simpler “Ad personalization” but we need to distinguish this Chrome setting from the Google Account setting (https://adssettings.google.com/authenticated)). The page should ideally read “About Browser-base ad personalization” but we didn’t want the title to wrap to a new line, so we shortened it. But the two sections on this page describe both ways a site can target ads to the user if the user is part of trials (which would mean that “Browser-based ad personalization” is on for them).">
-    About ad personalization
+    About Browser-based ad personalization
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_TITLE" desc="FLEDGE API A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
     Sites you visit that define your interests
