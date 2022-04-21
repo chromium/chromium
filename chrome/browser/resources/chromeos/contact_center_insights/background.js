@@ -11,6 +11,8 @@ goog.require('proto.reporting.Record');
 goog.require('proto.reporting.Destination');
 goog.require('proto.reporting.Priority');
 goog.require('proto.reporting.NetworksTelemetry');
+goog.require('proto.reporting.MetricData');
+goog.require('proto.reporting.TelemetryData');
 
 const NETWORK_BANDWIDTH_ALARM = 'NetworkBandwidth';
 const REPORT_NETWORK_BANDWIDTH_PERIOD_MINUTES = 12 /** hours **/ * 60;
@@ -29,12 +31,18 @@ function reportBandwidthData() {
   const downloadSpeedKbps = networkInfo.downlink /** mbps **/ * 1000;
   bandwidth.setDownloadSpeedKbps(downloadSpeedKbps);
 
-  const telemetryData = new proto.reporting.NetworksTelemetry();
-  telemetryData.setBandwidthData(bandwidth);
+  const networksTelemetry = new proto.reporting.NetworksTelemetry();
+  networksTelemetry.setBandwidthData(bandwidth);
+
+  const telemetryData = new proto.reporting.TelemetryData();
+  telemetryData.setNetworksTelemetry(networksTelemetry);
+
+  const metricData = new proto.reporting.MetricData();
+  metricData.setTelemetryData(telemetryData);
 
   const record = new proto.reporting.Record();
   record.setDestination(proto.reporting.Destination.TELEMETRY_METRIC);
-  record.setData(telemetryData.serializeBinary());
+  record.setData(metricData.serializeBinary());
 
   // Prepare enqueue record request
   const request = {
