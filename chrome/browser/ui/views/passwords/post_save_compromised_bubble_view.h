@@ -20,6 +20,7 @@ class PostSaveCompromisedBubbleView : public PasswordBubbleViewBase {
   // PasswordBubbleViewBase:
   PostSaveCompromisedBubbleController* GetController() override;
   const PostSaveCompromisedBubbleController* GetController() const override;
+  ui::ImageModel GetWindowIcon() override;
 
   // View:
   void AddedToWidget() override;

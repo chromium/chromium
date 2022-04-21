@@ -7420,8 +7420,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
           =1 {Successfully changed the compromised password. You have # more compromised password. Chrome recommends checking this password now.}
           other {Successfully changed the compromised password. You have # more compromised passwords. Chrome recommends checking these passwords now.}}
         </message>
+        <message name="IDS_PASSWORD_MANAGER_MORE_TO_FIX_BODY_MESSAGE_GOOGLE_PASSWORD_MANAGER" desc="The content of the bubble notifying that there are no more problems with compromised credentials.">
+          {COUNT, plural,
+          =1 {Successfully changed the compromised password.
+
+You have # more compromised password. Google Password Manager recommends checking this password now.}
+          other {Successfully changed the compromised password.
+
+You have # more compromised passwords. Google Password Manager recommends checking these passwords now.}}
+        </message>
         <message name="IDS_PASSWORD_MANAGER_SAFE_STATE_BODY_MESSAGE" desc="The content of the bubble notifying that there are more problems to fix after the user changed a compromised password.">
           Successfully changed the compromised password. Check your passwords anytime in <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_SAFE_STATE_BODY_MESSAGE_GOOGLE_PASSWORD_MANAGER" desc="The content of the bubble notifying that there are more problems to fix after the user changed a compromised password.">
+          Successfully changed the compromised password.
+
+Check your passwords anytime in  <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>.
         </message>
         <message name="IDS_PASSWORD_MANAGER_SAFE_STATE_SETTINGS" meaning="The hyperlink text referring to Chrome settings. It replaces the placeholder in 'Check your passwords anytime in $1' string">
           Settings
