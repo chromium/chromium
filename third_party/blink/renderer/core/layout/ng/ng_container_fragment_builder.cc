@@ -401,6 +401,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       // static position (before fragmentation).
       static_position.offset +=
           relative_offset - fixedpos_containing_block->RelativeOffset();
+      if (fixedpos_inline_container)
+        static_position.offset -= fixedpos_inline_container->relative_offset;
       if (fixedpos_containing_block && fixedpos_containing_block->Fragment()) {
         NGInlineContainer<LogicalOffset> new_fixedpos_inline_container;
         if (fixedpos_inline_container)
@@ -451,7 +453,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       const NGPhysicalFragment* fixedpos_containing_block_fragment =
           multicol_info->fixedpos_containing_block.Fragment();
 
-      AdjustFixedposContainerInfo(box_fragment, &new_fixedpos_inline_container,
+      AdjustFixedposContainerInfo(box_fragment, relative_offset,
+                                  &new_fixedpos_inline_container,
                                   &fixedpos_containing_block_fragment);
 
       // If a fixedpos containing block was found, the |multicol_offset|
@@ -554,6 +557,26 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       containing_block_offset += offset;
     containing_block_offset.block_offset += containing_block_adjustment;
 
+    LogicalOffset inline_relative_offset = converter.ToLogical(
+        descendant.inline_container.relative_offset, PhysicalSize());
+    NGInlineContainer<LogicalOffset> new_inline_container(
+        descendant.inline_container.container, inline_relative_offset);
+
+    // The static position should remain relative to its containing block
+    // fragment.
+    const WritingModeConverter containing_block_converter(
+        GetWritingDirection(), containing_block_fragment->Size());
+    NGLogicalStaticPosition static_position =
+        descendant.StaticPosition().ConvertToLogical(
+            containing_block_converter);
+
+    // The relative offset should be applied after fragmentation. Subtract out
+    // the accumulated relative offset from the inline container to the
+    // containing block so that it can be re-applied at the correct time.
+    if (new_inline_container.container && box_fragment &&
+        containing_block_fragment == box_fragment)
+      static_position.offset -= inline_relative_offset;
+
     LogicalOffset fixedpos_inline_relative_offset = converter.ToLogical(
         descendant.fixedpos_inline_container.relative_offset, PhysicalSize());
     NGInlineContainer<LogicalOffset> new_fixedpos_inline_container(
@@ -562,8 +585,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalFragment* fixedpos_containing_block_fragment =
         descendant.fixedpos_containing_block.Fragment();
 
-    AdjustFixedposContainerInfo(box_fragment, &new_fixedpos_inline_container,
-                                &fixedpos_containing_block_fragment);
+    AdjustFixedposContainerInfo(
+        box_fragment, relative_offset, &new_fixedpos_inline_container,
+        &fixedpos_containing_block_fragment, &new_inline_container);
 
     LogicalOffset fixedpos_containing_block_offset;
     LogicalOffset fixedpos_containing_block_rel_offset;
@@ -592,29 +616,6 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           fixedpos_containing_block->RelativeOffset();
     }
 
-    LogicalOffset inline_relative_offset = converter.ToLogical(
-        descendant.inline_container.relative_offset, PhysicalSize());
-    NGInlineContainer<LogicalOffset> new_inline_container(
-        descendant.inline_container.container, inline_relative_offset);
-
-    // The static position should remain relative to its containing block
-    // fragment.
-    const WritingModeConverter containing_block_converter(
-        GetWritingDirection(), containing_block_fragment->Size());
-    NGLogicalStaticPosition static_position =
-        descendant.StaticPosition().ConvertToLogical(
-            containing_block_converter);
-
-    // The relative offset should be applied after fragmentation. Subtract out
-    // the accumulated relative offset from the inline container to the
-    // containing block so that it can be re-applied at the correct time.
-    // TODO(almaher): We will want to do something similar for
-    // |new_fixedpos_inline_container|, but this would need to happen at a
-    // different point.
-    if (new_inline_container.container && box_fragment &&
-        containing_block_fragment == box_fragment)
-      static_position.offset -= inline_relative_offset;
-
     AddOutOfFlowFragmentainerDescendant(
         {descendant.Node(), static_position, new_inline_container,
          /* needs_block_offset_adjustment */ false,
@@ -639,20 +640,26 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
 
 void NGContainerFragmentBuilder::AdjustFixedposContainerInfo(
     const NGPhysicalFragment* box_fragment,
+    LogicalOffset relative_offset,
     NGInlineContainer<LogicalOffset>* fixedpos_inline_container,
-    const NGPhysicalFragment** fixedpos_containing_block_fragment) const {
+    const NGPhysicalFragment** fixedpos_containing_block_fragment,
+    const NGInlineContainer<LogicalOffset>* current_inline_container) const {
   DCHECK(fixedpos_inline_container);
   DCHECK(fixedpos_containing_block_fragment);
   if (!box_fragment)
     return;
 
   if (!*fixedpos_containing_block_fragment && box_fragment->GetLayoutObject()) {
-    if (box_fragment->GetLayoutObject()->CanContainFixedPositionObjects()) {
+    if (current_inline_container && current_inline_container->container &&
+        current_inline_container->container->CanContainFixedPositionObjects()) {
+      *fixedpos_inline_container = *current_inline_container;
+      *fixedpos_containing_block_fragment = box_fragment;
+    } else if (box_fragment->GetLayoutObject()
+                   ->CanContainFixedPositionObjects()) {
       if (!fixedpos_inline_container->container &&
           box_fragment->GetLayoutObject()->IsLayoutInline()) {
         *fixedpos_inline_container = NGInlineContainer<LogicalOffset>(
-            To<LayoutInline>(box_fragment->GetLayoutObject()),
-            /* relative_offset */ LogicalOffset());
+            To<LayoutInline>(box_fragment->GetLayoutObject()), relative_offset);
       } else {
         *fixedpos_containing_block_fragment = box_fragment;
       }
