@@ -7,11 +7,6 @@
 //
 // Inserts placeholders into the DOM on top of unsupported plugins.
 
-goog.provide('__crWeb.pluginPlaceholder');
-
-/* Beginning of anonymous object. */
-(function() {
-
 /**
  * Checks whether an <object> node is plugin content (as <object> can also be
  * used to embed images).
@@ -317,5 +312,3 @@ if (plugins.length > 0) {
   // to injection.
   addPluginPlaceholders('$(PLUGIN_NOT_SUPPORTED_TEXT)', plugins);
 }
-
-}());  // End of anonymous object

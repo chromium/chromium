@@ -30,11 +30,11 @@
 namespace web {
 namespace {
 
-const char kBaseScriptName[] = "base_js";
-const char kCommonScriptName[] = "common_js";
-const char kMessageScriptName[] = "message_js";
-const char kPluginPlaceholderScriptName[] = "plugin_placeholder_js";
-const char kShareWorkaroundScriptName[] = "share_workaround_js";
+const char kBaseScriptName[] = "base";
+const char kCommonScriptName[] = "common";
+const char kMessageScriptName[] = "message";
+const char kPluginPlaceholderScriptName[] = "plugin_placeholder";
+const char kShareWorkaroundScriptName[] = "share_workaround";
 
 const char kMainFrameDescription[] = "Main frame";
 const char kIframeDescription[] = "Iframe";
