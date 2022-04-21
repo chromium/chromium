@@ -298,9 +298,6 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
-    experiments = {
-        "remove_src_checkout_experiment": 10,
-    },
 )
 
 try_.compilator_builder(
