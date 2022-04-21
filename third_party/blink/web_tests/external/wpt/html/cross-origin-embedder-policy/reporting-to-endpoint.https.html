@@ -36,7 +36,7 @@ function wait(ms) {
 }
 
 async function fetchReports(endpoint) {
-  const res = await fetch(`resources/report.py?endpoint=${endpoint}`, {cache: 'no-store'});
+  const res = await fetch(`resources/report.py?key=${endpoint}`, {cache: 'no-store'});
   if (res.status == 200) {
     return await res.json();
   }
