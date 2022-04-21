@@ -217,6 +217,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       row_list_view_(row_list_view),
       bubble_controller_(bubble_controller),
       navigation_handler_(navigation_handler) {
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
   model_->AddObserver(this);
   set_context_menu_controller(this);
 
