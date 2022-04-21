@@ -8,15 +8,11 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 import com.google.common.base.Optional;
 
@@ -27,7 +23,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
@@ -43,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -191,19 +185,6 @@ public class PasswordManagerHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testLaunchesCredentialManagerForLocal() {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
-                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
-
-        verify(mCredentialManagerLauncherMock)
-                .getCredentialManagerIntentForLocal(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
-                        any(Callback.class), any(Callback.class));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForAccountIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -272,94 +253,6 @@ public class PasswordManagerHelperTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testRecordsSuccessMetricsForLocalIntent() {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        setUpSuccessfulIntentFetchingForLocal();
-
-        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
-                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(LOCAL_GET_INTENT_ERROR_HISTOGRAM));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testRecordsErrorMetricsForLocalIntent() {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        returnErrorWhenFetchingIntentForLocal(CredentialManagerError.API_ERROR);
-
-        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
-                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
-
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testRecordsMetricsWhenLocalIntentFails() throws CanceledException {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        setUpSuccessfulIntentFetchingForLocal();
-        doThrow(CanceledException.class).when(mPendingIntentMock).send();
-
-        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
-                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
-
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(LOCAL_GET_INTENT_ERROR_HISTOGRAM));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testDoesntCallIntentIfFeatureIsDisabled() throws CanceledException {
-        Context contextMock = Mockito.mock(Context.class);
-        final String passwordSettingsFragment =
-                "org.chromium.chrome.browser.password_manager.settings.PasswordSettings";
-        Intent dummyIntent = new Intent();
-        when(mSettingsLauncherMock.createSettingsActivityIntent(
-                     eq(contextMock), eq(passwordSettingsFragment), any(Bundle.class)))
-                .thenReturn(dummyIntent);
-        setUpSuccessfulIntentFetchingForAccount();
-        PasswordManagerHelper.showPasswordSettings(contextMock,
-                ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
-        verify(contextMock).startActivity(eq(dummyIntent));
-        verify(mPendingIntentMock, never()).send();
     }
 
     @Test
@@ -497,17 +390,6 @@ public class PasswordManagerHelperTest {
                         any(Callback.class));
     }
 
-    private void setUpSuccessfulIntentFetchingForLocal() {
-        doAnswer(invocation -> {
-            Callback<PendingIntent> cb = invocation.getArgument(1);
-            cb.onResult(mPendingIntentMock);
-            return true;
-        })
-                .when(mCredentialManagerLauncherMock)
-                .getCredentialManagerIntentForLocal(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
-                        any(Callback.class), any(Callback.class));
-    }
-
     private void returnErrorWhenFetchingIntentForAccount(@CredentialManagerError int error) {
         doAnswer(invocation -> {
             Callback<Integer> cb = invocation.getArgument(3);
@@ -517,17 +399,6 @@ public class PasswordManagerHelperTest {
                 .when(mCredentialManagerLauncherMock)
                 .getCredentialManagerIntentForAccount(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
-    }
-
-    private void returnErrorWhenFetchingIntentForLocal(@CredentialManagerError int error) {
-        doAnswer(invocation -> {
-            Callback<Integer> cb = invocation.getArgument(2);
-            cb.onResult(error);
-            return true;
-        })
-                .when(mCredentialManagerLauncherMock)
-                .getCredentialManagerIntentForLocal(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
-                        any(Callback.class), any(Callback.class));
     }
 
     private void returnErrorWhenFetchingIntentForPasswordCheckup(

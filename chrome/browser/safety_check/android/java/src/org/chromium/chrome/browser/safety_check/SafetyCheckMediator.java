@@ -25,6 +25,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncherFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
@@ -544,10 +545,13 @@ class SafetyCheckMediator
         } else {
             listener = (p) -> {
                 // Open the Password Manager.
+                CredentialManagerLauncher credentialManagerLauncher =
+                        PasswordManagerHelper.usesUnifiedPasswordManagerUI()
+                        ? CredentialManagerLauncherFactory.getInstance().createLauncher()
+                        : null;
                 PasswordManagerHelper.showPasswordSettings(p.getContext(),
                         ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher,
-                        CredentialManagerLauncherFactory.getInstance().createLauncher(),
-                        SyncService.get());
+                        credentialManagerLauncher, SyncService.get());
                 return true;
             };
         }

@@ -34,9 +34,12 @@ public class PasswordManagerLauncher {
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             PasswordScriptsFetcherBridge.prewarmCache();
         }
-        CredentialManagerLauncher credentialManagerLauncher = null;
+        CredentialManagerLauncher credentialManagerLauncher =
+                PasswordManagerHelper.usesUnifiedPasswordManagerUI()
+                ? CredentialManagerLauncherFactory.getInstance().createLauncher()
+                : null;
         PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl(),
-                CredentialManagerLauncherFactory.getInstance().createLauncher(), syncService);
+                credentialManagerLauncher, syncService);
     }
 
     @CalledByNative

@@ -74,17 +74,9 @@ public class PasswordManagerHelper {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
-        // The credential manager is NonNull if the Unified password manager is active or there is
-        // a dry run measuring the latency/success of fetching the launch intent.
-        if (credentialManagerLauncher != null) {
-            // This method always request the launch intent but only actually launches it when the
-            // UnifiedPasswordManager feature allows it.
+        if (credentialManagerLauncher != null && hasChosenToSyncPasswords(syncService)) {
             launchTheCredentialManager(referrer, credentialManagerLauncher, syncService);
-
-            if (usesUnifiedPasswordManagerUI()) {
-                // While waiting for the new UI, exit early to prevent launching the old settings.
-                return;
-            }
+            return;
         }
 
         Bundle fragmentArgs = new Bundle();
@@ -177,28 +169,21 @@ public class PasswordManagerHelper {
 
     private static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
             CredentialManagerLauncher credentialManagerLauncher, SyncService syncService) {
-        if (hasChosenToSyncPasswords(syncService)) {
-            long startTimeMs = SystemClock.elapsedRealtime();
-            credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
-
-                    CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
-                    (intent)
-                            -> PasswordManagerHelper.launchCredentialManager(
-                                    intent, startTimeMs, true),
-                    (error) -> PasswordManagerHelper.recordFailureMetrics(error, true));
-            return;
-        }
-
+        if (!hasChosenToSyncPasswords(syncService)) return;
         long startTimeMs = SystemClock.elapsedRealtime();
-        credentialManagerLauncher.getCredentialManagerIntentForLocal(referrer,
+        credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
+
+                CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
                 (intent)
-                        -> PasswordManagerHelper.launchCredentialManager(
-                                intent, startTimeMs, false),
-                (error) -> PasswordManagerHelper.recordFailureMetrics(error, false));
+                        -> PasswordManagerHelper.launchCredentialManagerIntent(
+                                intent, startTimeMs, true),
+                (error) -> PasswordManagerHelper.recordFailureMetrics(error, true));
     }
 
     private static void recordFailureMetrics(
             @CredentialManagerError int error, boolean forAccount) {
+        // While support for the local storage API exists in Chrome, it isn't used at this time.
+        assert forAccount : "Local storage for preferences not ready for use";
         final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
                                                              : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
         final String kGetIntentErrorHistogram =
@@ -218,13 +203,11 @@ public class PasswordManagerHelper {
         return launchIntentSuccessfully;
     }
 
-    private static void launchCredentialManager(
+    private static void launchCredentialManagerIntent(
             PendingIntent intent, long startTimeMs, boolean forAccount) {
+        // While support for the local storage API exists in Chrome, it isn't used at this time.
+        assert forAccount : "Local storage for preferences not ready for use";
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
-
-        if (!usesUnifiedPasswordManagerUI()) {
-            return; // The built-in settings screen has already been started at this point.
-        }
 
         boolean launchIntentSuccessfully = launchIntent(intent);
         RecordHistogram.recordBooleanHistogram(forAccount
@@ -245,6 +228,8 @@ public class PasswordManagerHelper {
     }
 
     private static void recordSuccessMetrics(long elapsedTimeMs, boolean forAccount) {
+        // While support for the local storage API exists in Chrome, it isn't used at this time.
+        assert forAccount : "Local storage for preferences not ready for use";
         final String kGetIntentLatencyHistogram = forAccount ? ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM
                                                              : LOCAL_GET_INTENT_LATENCY_HISTOGRAM;
         final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
