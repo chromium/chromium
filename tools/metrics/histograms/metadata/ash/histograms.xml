@@ -777,6 +777,17 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when the close event list animation is finished.</summary>
 </histogram>
 
+<histogram name="Ash.CalendarView.ConstructionTime" units="ms"
+    expires_after="2023-02-18">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    The time to build the CalendarView, recorded when CalendarView is
+    constructed, which happens every time the calendar is shown from the status
+    area.
+  </summary>
+</histogram>
+
 <histogram name="Ash.CalendarView.OnMonthChanged.AnimationSmoothness" units="%"
     expires_after="2023-02-18">
   <owner>newcomer@google.com</owner>

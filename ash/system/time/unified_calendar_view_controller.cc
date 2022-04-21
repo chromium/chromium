@@ -8,6 +8,8 @@
 #include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/i18n/time_formatting.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -22,7 +24,10 @@ UnifiedCalendarViewController::~UnifiedCalendarViewController() = default;
 
 views::View* UnifiedCalendarViewController::CreateView() {
   DCHECK(!view_);
+  const base::Time start_time = base::Time::Now();
   view_ = new CalendarView(detailed_view_delegate_.get(), tray_controller_);
+  base::UmaHistogramTimes("Ash.CalendarView.ConstructionTime",
+                          base::Time::Now() - start_time);
   return view_;
 }
 
