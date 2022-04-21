@@ -351,6 +351,31 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
       ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
 }
 
+TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+
+  form.password_issues.insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+
+  store().AddLogin(form);
+  RunUntilIdle();
+  std::vector<PasswordForm> forms = {form};
+
+  const std::u16string kNewNoteValue = u"new note";
+
+  EXPECT_TRUE(presenter().EditSavedPasswords(
+      forms, form.username_value, form.password_value, kNewNoteValue));
+  RunUntilIdle();
+
+  PasswordForm expected_updated_form = form;
+  expected_updated_form.note = PasswordNote(kNewNoteValue, base::Time::Now());
+  EXPECT_THAT(
+      store().stored_passwords(),
+      ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
+}
+
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
   PasswordNote kExistingNote =
       PasswordNote(u"existing note", base::Time::Now());
