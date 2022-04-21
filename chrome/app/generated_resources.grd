@@ -7052,6 +7052,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_BOOKMARK_FOLDER_BUTTON_ROLE_DESCRIPTION" desc="The accessible role description for bookmark folders.">
         Bookmark folder button
       </message>
+      <message name="IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION" desc="The accessible role description for tab group buttons.">
+        Saved Tab Group button
+      </message>
       <message name="IDS_ACCNAME_CHROMELABS_BUTTON" desc="The accessible name for the Chrome Labs experiments button">
         Experiments
       </message>

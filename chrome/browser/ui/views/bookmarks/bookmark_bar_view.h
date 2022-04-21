@@ -299,11 +299,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void ConfigureButton(const bookmarks::BookmarkNode* node,
                        views::LabelButton* button);
 
-  // Configures the button from the specified saved tab group. This sets the
-  // text, text color, highlight and background color of the tab group.
-  void ConfigureButton(const SavedTabGroup& saved_group,
-                       views::LabelButton* button);
-
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
   // is required.
   bool BookmarkNodeAddedImpl(bookmarks::BookmarkModel* model,
