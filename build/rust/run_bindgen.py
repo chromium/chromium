@@ -82,7 +82,8 @@ def main():
   env = os.environ
   if args.ld_library_path:
     env["LD_LIBRARY_PATH"] = args.ld_library_path
-  if subprocess.run([args.exe, *genargs], env=env).returncode != 0:
+  returncode = subprocess.run([args.exe, *genargs], env=env).returncode
+  if returncode != 0:
     # Make sure we don't emit anything if bindgen failed.
     try:
       os.remove(args.output)
@@ -92,6 +93,7 @@ def main():
       os.remove(args.depfile)
     except FileNotFoundError:
       pass
+  return returncode
 
 
 if __name__ == '__main__':

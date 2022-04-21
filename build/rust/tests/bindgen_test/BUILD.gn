@@ -6,18 +6,24 @@ import("//build/rust/rust_bindgen.gni")
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
 
-component("c_lib") {
+source_set("c_lib_headers") {
   sources = [
-    "lib.c",
     "lib.h",
+    "lib2.h",
   ]
+}
+
+component("c_lib") {
+  sources = [ "lib.c" ]
+
+  deps = [ ":c_lib_headers" ]
 
   defines = [ "COMPONENT_IMPLEMENTATION" ]
 }
 
 rust_bindgen("c_lib_bindgen") {
   header = "lib.h"
-  configs = default_compiler_configs
+  deps = [ ":c_lib_headers" ]
 }
 
 rust_static_library("bindgen_test_lib") {

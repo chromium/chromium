@@ -5,6 +5,8 @@
 #ifndef BUILD_RUST_TESTS_BINDGEN_TEST_LIB_H_
 #define BUILD_RUST_TESTS_BINDGEN_TEST_LIB_H_
 
+#include "build/rust/tests/bindgen_test/lib2.h"
+
 #include <stdint.h>
 
 // The following is equivalent to //base/base_export.h.

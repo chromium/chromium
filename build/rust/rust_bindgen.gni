@@ -50,8 +50,11 @@ template("rust_bindgen") {
     }
 
     sources = [ invoker.header ]
+
+    # Several important compiler flags come from default_compiler_configs
+    configs = default_compiler_configs
     if (defined(invoker.configs)) {
-      configs = invoker.configs
+      configs += invoker.configs
     }
 
     bindgen_target = "//third_party/rust/bindgen/v0_59:bindgen($host_toolchain)"
@@ -96,10 +99,13 @@ template("rust_bindgen") {
       "{{defines}}",
       "{{include_dirs}}",
       "{{cflags}}",
+      "{{cflags_c}}",
 
-      # Despite passing {{cflags}} this is still necessary for some standard C
-      # includes. It seems for C++ code these files come from libc++, which is
-      # obviously not available for C.
+      # This path contains important C headers (e.g. stddef.h) and {{cflags}}
+      # does not include it. Normally this path is implicitly added by clang but
+      # it does not happen for libclang.
+      #
+      # Add it last so includes from deps and configs take precedence.
       "-isystem" + rebase_path(
               clang_base_path + "/lib/clang/" + clang_version + "/include",
               root_build_dir),
