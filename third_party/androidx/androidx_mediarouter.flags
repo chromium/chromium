@@ -8,3 +8,9 @@
 -assumevalues class androidx.mediarouter.** {
   static boolean DEBUG return false;
 }
+
+# Help R8 determine that we don't use MediaRouteDynamicChooserDialog.
+# https://crbug.com/1147188
+-assumevalues class ** {
+  boolean mUseDynamicGroup return false;
+}
