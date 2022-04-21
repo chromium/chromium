@@ -54,7 +54,7 @@ class ModelLoadManager {
   // loading of all |desired_types|.
   // |desired_types| must be a subset of |preferred_types|.
   // |preferred_types| contains all types selected by the user.
-  void Initialize(ModelTypeSet desired_types,
+  void Initialize(ModelTypeSet preferred_types_without_errors,
                   ModelTypeSet preferred_types,
                   const ConfigureContext& context);
 

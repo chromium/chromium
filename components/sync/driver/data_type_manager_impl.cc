@@ -376,7 +376,7 @@ void DataTypeManagerImpl::Restart() {
   configuration_types_queue_ = PrioritizeTypes(preferred_types_without_errors_);
 
   model_load_manager_.Initialize(
-      /*desired_types=*/preferred_types_without_errors_,
+      /*preferred_types_without_errors=*/preferred_types_without_errors_,
       /*preferred_types=*/preferred_types_, last_requested_context_);
 }
 

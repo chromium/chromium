@@ -23,12 +23,13 @@ ModelLoadManager::ModelLoadManager(
 
 ModelLoadManager::~ModelLoadManager() = default;
 
-void ModelLoadManager::Initialize(ModelTypeSet desired_types,
+void ModelLoadManager::Initialize(ModelTypeSet preferred_types_without_errors,
                                   ModelTypeSet preferred_types,
                                   const ConfigureContext& context) {
-  // |desired_types| must be a subset of |preferred_types|.
-  DCHECK(preferred_types.HasAll(desired_types))
-      << " desired: " << ModelTypeSetToDebugString(desired_types)
+  // |preferred_types_without_errors| must be a subset of |preferred_types|.
+  DCHECK(preferred_types.HasAll(preferred_types_without_errors))
+      << " desired: "
+      << ModelTypeSetToDebugString(preferred_types_without_errors)
       << ", preferred: " << ModelTypeSetToDebugString(preferred_types);
 
   bool sync_mode_changed = configure_context_.sync_mode != context.sync_mode;
@@ -37,7 +38,7 @@ void ModelLoadManager::Initialize(ModelTypeSet desired_types,
 
   // Only keep types that have controllers.
   desired_types_.Clear();
-  for (ModelType type : desired_types) {
+  for (ModelType type : preferred_types_without_errors) {
     auto dtc_iter = controllers_->find(type);
     if (dtc_iter != controllers_->end()) {
       const DataTypeController* dtc = dtc_iter->second.get();

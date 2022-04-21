@@ -72,7 +72,7 @@ TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
 
   // Initialize() kicks off model loading.
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -89,7 +89,7 @@ TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
   types.Put(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
 
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -111,7 +111,7 @@ TEST_F(SyncModelLoadManagerTest, ModelLoadFail) {
   types.Put(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
 
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -125,7 +125,7 @@ TEST_F(SyncModelLoadManagerTest, StopAfterConfiguration) {
   ModelTypeSet types;
   types.Put(BOOKMARKS);
 
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -153,7 +153,7 @@ TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
   // loaded yet.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
 
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -183,9 +183,9 @@ TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
   ModelTypeSet reduced_types(APPS);
-  model_load_manager.Initialize(/*desired_types=*/reduced_types,
-                                /*preferred_types=*/reduced_types,
-                                BuildConfigureContext());
+  model_load_manager.Initialize(
+      /*preferred_types_without_errors=*/reduced_types,
+      /*preferred_types=*/reduced_types, BuildConfigureContext());
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
@@ -205,7 +205,7 @@ TEST_F(SyncModelLoadManagerTest,
   // loaded yet.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
 
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -239,7 +239,7 @@ TEST_F(SyncModelLoadManagerTest,
   // OnAllDataTypesReadyForConfigure shouldn't be called.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
 
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -278,7 +278,7 @@ TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
   ModelTypeSet types(BOOKMARKS);
 
   // Initialize() kicks off model loading.
-  model_load_manager.Initialize(/*desired_types=*/types,
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
                                 /*preferred_types=*/types,
                                 BuildConfigureContext());
 
@@ -300,7 +300,7 @@ TEST_F(SyncModelLoadManagerTest, StopDataType) {
 
   // Initialize() kicks off model loading.
   model_load_manager.Initialize(
-      /*desired_types=*/ModelTypeSet(BOOKMARKS),
+      /*preferred_types_without_errors=*/ModelTypeSet(BOOKMARKS),
       /*preferred_types=*/ModelTypeSet(BOOKMARKS), BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
