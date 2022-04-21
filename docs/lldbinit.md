@@ -8,7 +8,7 @@ To use, add the following to your `~/.lldbinit`
 
 ```
 # So that lldbinit.py takes precedence.
-script sys.path[:0] = ['<.../path/to/chromium/src/tools/lldb>']
+script sys.path[:0] = ['/<your-path>/chromium/src/tools/lldb']
 script import lldbinit
 ```
 
