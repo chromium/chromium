@@ -201,13 +201,13 @@ blink::AllowCSPFromHeaderValuePtr ConvertToBlink(
   if (!allow_csp_from)
     return nullptr;
   switch (allow_csp_from->which()) {
-    case AllowCSPFromHeaderValue::Tag::ALLOW_STAR:
+    case AllowCSPFromHeaderValue::Tag::kAllowStar:
       return blink::AllowCSPFromHeaderValue::NewAllowStar(
           allow_csp_from->get_allow_star());
-    case AllowCSPFromHeaderValue::Tag::ORIGIN:
+    case AllowCSPFromHeaderValue::Tag::kOrigin:
       return blink::AllowCSPFromHeaderValue::NewOrigin(
           ConvertToBlink(allow_csp_from->get_origin()));
-    case AllowCSPFromHeaderValue::Tag::ERROR_MESSAGE:
+    case AllowCSPFromHeaderValue::Tag::kErrorMessage:
       return blink::AllowCSPFromHeaderValue::NewErrorMessage(
           ConvertToBlink(allow_csp_from->get_error_message()));
   }
