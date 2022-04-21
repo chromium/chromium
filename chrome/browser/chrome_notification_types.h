@@ -83,14 +83,6 @@ enum NotificationType {
   // https://crbug.com/1038437.
   NOTIFICATION_PROFILE_ADDED,
 
-  // Printing ----------------------------------------------------------------
-
-  // Notification from PrintJob that an event occurred. It can be that a page
-  // finished printing or that the print job failed. Details is
-  // PrintJob::EventDetails. Source is a PrintJob.
-  // TODO(https://crbug.com/796051): Remove.
-  NOTIFICATION_PRINT_JOB_EVENT,
-
   // Misc --------------------------------------------------------------------
   // Note:-
   // Currently only Content and Chrome define and use notifications.
