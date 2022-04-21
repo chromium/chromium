@@ -252,6 +252,9 @@
       <message name="IDS_AUTOFILL_ASSISTANT_OVERFLOW_OPTIONS" desc="Content description for the overflow icon displayed in the first prompt, which will open a popup menu with additional options.">
         Preferences
       </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_TTS_BUTTON" desc="Content description for the text to speech button, which is used to start or stop voice instructions.">
+        Start or stop voice instructions
+      </message>
       <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_TERMS_TITLE" desc="The title of the terms and conditions popup dialog.">
         Google Assistant needs your permission
       </message>
