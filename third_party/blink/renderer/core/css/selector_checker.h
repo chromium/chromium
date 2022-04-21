@@ -252,6 +252,7 @@ class CORE_EXPORT SelectorChecker {
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,
                                  MatchResult&) const;
   bool CheckPseudoHost(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoScope(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
 

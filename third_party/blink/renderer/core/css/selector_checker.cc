@@ -1336,13 +1336,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return vtt_element && vtt_element->IsPastNode();
     }
     case CSSSelector::kPseudoScope:
-      if (!context.scope)
-        return false;
-      if (context.scope == &element.GetDocument())
-        return element == element.GetDocument().documentElement();
-      if (auto* shadow_root = DynamicTo<ShadowRoot>(context.scope))
-        return element == shadow_root->host();
-      return context.scope == &element;
+      return CheckPseudoScope(context, result);
     case CSSSelector::kPseudoDefined:
       return element.IsDefined();
     case CSSSelector::kPseudoHostContext:
@@ -1579,6 +1573,18 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
 
   // FIXME: this was a fallthrough condition.
   return false;
+}
+
+bool SelectorChecker::CheckPseudoScope(const SelectorCheckingContext& context,
+                                       MatchResult& result) const {
+  Element& element = *context.element;
+  if (!context.scope)
+    return false;
+  if (context.scope == &element.GetDocument())
+    return element == element.GetDocument().documentElement();
+  if (auto* shadow_root = DynamicTo<ShadowRoot>(context.scope))
+    return element == shadow_root->host();
+  return context.scope == &element;
 }
 
 bool SelectorChecker::CheckScrollbarPseudoClass(
