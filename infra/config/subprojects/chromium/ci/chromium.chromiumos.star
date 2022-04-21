@@ -197,7 +197,6 @@ ci.builder(
 
 ci.builder(
     name = "chromeos-amd64-generic-dbg (reclient shadow)",
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "simple|debug|x64",
         short_name = "dbg",
@@ -403,7 +402,6 @@ ci.builder(
 
 ci.builder(
     name = "chromeos-kevin-rel (reclient shadow)",
-    branch_selector = branches.CROS_LTS_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "kvn",
