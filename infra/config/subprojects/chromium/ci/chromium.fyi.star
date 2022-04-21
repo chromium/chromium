@@ -1389,6 +1389,9 @@ ci.builder(
         category = "msan",
         short_name = "lin",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
     os = os.LINUX_FOCAL,
 )
 
@@ -1413,6 +1416,7 @@ ci.builder(
         category = "msan",
         short_name = "crs",
     ),
+    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     os = os.LINUX_FOCAL,
 )
 
