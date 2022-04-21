@@ -4,10 +4,7 @@
 
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 
-#include "base/cpu.h"
 #include "base/system/sys_info.h"
-#include "build/build_config.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -59,7 +56,7 @@ std::u16string ObsoleteSystem::LocalizedObsoleteString() {
 
 // static
 bool ObsoleteSystem::IsEndOfTheLine() {
-  return false;
+  return CHROME_VERSION_MAJOR >= 103;
 }
 
 // static
