@@ -4,6 +4,7 @@
 
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 import {quoteString} from 'chrome://resources/js/util.m.js';
+import {MatchPosition} from './history_clusters.mojom-webui.js';
 
 type Range = {
   start: number,
@@ -33,7 +34,7 @@ function getRanges(text: string, query: string): Range[] {
 }
 
 /**
- * Populates the container with the highlighted text based on the given query.
+ * Populates `container` with the highlighted text based on the given query.
  */
 export function insertHighlightedTextIntoElement(
     container: HTMLElement, text: string, query: string) {
@@ -41,6 +42,30 @@ export function insertHighlightedTextIntoElement(
   container.textContent = '';
   const node = document.createTextNode(text);
   container.appendChild(node);
+  if (ranges.length > 0) {
+    highlight(node, ranges);
+  }
+}
+
+/**
+ * Populates `container` with the highlighted `text` based on the mojom provided
+ * `match_positions`. This function takes care of converting from the mojom
+ * format to the format expected by search_highlight_utils.
+ */
+export function insertHighlightedTextWithMatchesIntoElement(
+    container: HTMLElement, text: string, matches: MatchPosition[]) {
+  container.textContent = '';
+  const node = document.createTextNode(text);
+  container.appendChild(node);
+
+  const ranges = [];
+  for (const match of matches) {
+    ranges.push({
+      start: match.begin,
+      length: match.end - match.begin,
+    });
+  }
+
   if (ranges.length > 0) {
     highlight(node, ranges);
   }

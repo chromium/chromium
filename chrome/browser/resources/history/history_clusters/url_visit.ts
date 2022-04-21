@@ -14,7 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';
 import {getTemplate} from './url_visit.html.js';
-import {insertHighlightedTextIntoElement} from './utils.js';
+import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -186,14 +186,15 @@ class VisitRowElement extends PolymerElement {
   }
 
   private computeTitle_(_visit: URLVisit): string {
-    insertHighlightedTextIntoElement(
-        this.$.title, this.visit.pageTitle, this.query);
+    insertHighlightedTextWithMatchesIntoElement(
+        this.$.title, this.visit.pageTitle, this.visit.titleMatchPositions);
     return this.visit.pageTitle;
   }
 
   private computeUrlForDisplay_(_visit: URLVisit): string {
-    insertHighlightedTextIntoElement(
-        this.$.url, this.visit.urlForDisplay, this.query);
+    insertHighlightedTextWithMatchesIntoElement(
+        this.$.url, this.visit.urlForDisplay,
+        this.visit.urlForDisplayMatchPositions);
     return this.visit.urlForDisplay;
   }
 }

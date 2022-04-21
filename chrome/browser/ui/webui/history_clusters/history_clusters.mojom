@@ -15,6 +15,13 @@ struct SearchQuery {
   url.mojom.Url url;
 };
 
+// Each MatchPosition is the [begin, end) positions of a match within a string.
+// Equivalent to MatchPosition in components/query_parser/snippet.h.
+struct MatchPosition {
+  uint32 begin;
+  uint32 end;
+};
+
 // Available annotations for a visit.
 enum Annotation {
   // Indicates that the visited URL was added to the bookmarks or was already
@@ -46,6 +53,11 @@ struct URLVisit {
 
   // Title of the visited webpage.
   string page_title;
+
+  // The positions within the `page_title` and `url_for_display` that match the
+  // search terms. Used for bolding in the WebUI.
+  array<MatchPosition> title_match_positions;
+  array<MatchPosition> url_for_display_match_positions;
 
   // Time of the most recent visit in the Cluster to the same (or a qualifying
   // near-duplicate) URL.

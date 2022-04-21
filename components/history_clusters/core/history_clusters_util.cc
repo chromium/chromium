@@ -16,6 +16,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/query_parser/query_parser.h"
+#include "components/query_parser/snippet.h"
 #include "components/url_formatter/url_formatter.h"
 
 namespace history_clusters {
@@ -40,7 +41,7 @@ bool DoesQueryMatchClusterKeywords(
 // Flags any elements within `cluster_visits` that match `find_nodes`. The
 // matching is deliberately meant to closely mirror the History implementation.
 // Returns the total score of matching visits, and returns 0 if no visits match.
-float ComputeTotalMatchScore(
+float MarkMatchesAndGetScore(
     const query_parser::QueryNodeVector& find_nodes,
     std::vector<history::ClusterVisit>* cluster_visits) {
   DCHECK(cluster_visits);
@@ -48,26 +49,39 @@ float ComputeTotalMatchScore(
   float total_matching_visit_score = 0.0;
 
   for (auto& visit : *cluster_visits) {
-    query_parser::QueryWordVector find_in_words;
+    bool match_found = false;
+
+    // Search through the visible elements and highlight match positions.
     GURL gurl = visit.annotated_visit.url_row.url();
+    auto url_for_display_lower = base::i18n::ToLower(visit.url_for_display);
+    match_found |= query_parser::QueryParser::DoesQueryMatch(
+        url_for_display_lower, find_nodes,
+        &visit.url_for_display_match_positions);
+    auto title_lower =
+        base::i18n::ToLower(visit.annotated_visit.url_row.title());
+    match_found |= query_parser::QueryParser::DoesQueryMatch(
+        title_lower, find_nodes, &visit.title_match_positions);
 
-    std::u16string url_lower =
-        base::i18n::ToLower(base::UTF8ToUTF16(gurl.possibly_invalid_spec()));
-    query_parser::QueryParser::ExtractQueryWords(url_lower, &find_in_words);
+    // If we couldn't find it in the visible elements, try a second search
+    // where we put all the text into one bag and try again. We need to do this
+    // to be as exhaustive as History.
+    // TODO(tommycli): Downgrade the score of these matches, or investigate if
+    // we can discard this second pass. The consequence of discarding the second
+    // pass is to omit matches that span both the URL and title.
+    if (!match_found) {
+      query_parser::QueryWordVector find_in_words;
+      std::u16string url_lower =
+          base::i18n::ToLower(base::UTF8ToUTF16(gurl.possibly_invalid_spec()));
+      query_parser::QueryParser::ExtractQueryWords(url_lower, &find_in_words);
+      query_parser::QueryParser::ExtractQueryWords(url_for_display_lower,
+                                                   &find_in_words);
+      query_parser::QueryParser::ExtractQueryWords(title_lower, &find_in_words);
 
-    if (gurl.is_valid()) {
-      // Decode punycode to match IDN.
-      std::u16string ascii = base::ASCIIToUTF16(gurl.host());
-      std::u16string utf = url_formatter::IDNToUnicode(gurl.host());
-      if (ascii != utf)
-        query_parser::QueryParser::ExtractQueryWords(utf, &find_in_words);
+      match_found |=
+          query_parser::QueryParser::DoesQueryMatch(find_in_words, find_nodes);
     }
 
-    std::u16string title_lower =
-        base::i18n::ToLower(visit.annotated_visit.url_row.title());
-    query_parser::QueryParser::ExtractQueryWords(title_lower, &find_in_words);
-
-    if (query_parser::QueryParser::DoesQueryMatch(find_in_words, find_nodes)) {
+    if (match_found) {
       visit.matches_search_query = true;
       DCHECK_GE(visit.score, 0);
       total_matching_visit_score += visit.score;
@@ -184,7 +198,7 @@ void ApplySearchQuery(const std::string& query,
 
   for (auto& cluster : all_clusters) {
     const float total_matching_visit_score =
-        ComputeTotalMatchScore(find_nodes, &cluster.visits);
+        MarkMatchesAndGetScore(find_nodes, &cluster.visits);
     DCHECK_GE(total_matching_visit_score, 0);
     if (total_matching_visit_score > 0 &&
         GetConfig().rescore_visits_within_clusters_for_query) {
