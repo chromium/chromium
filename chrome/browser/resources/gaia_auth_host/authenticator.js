@@ -9,7 +9,7 @@
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js'
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {$, appendParam} from 'chrome://resources/js/util.m.js';
-// #import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// #import {sendWithPromise, getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
 
 // #import {SamlHandler, OnHeadersReceivedDetails} from './saml_handler.m.js';
 // #import {WebviewEventManager} from './webview_event_manager.m.js';
@@ -1453,7 +1453,6 @@ cr.define('cr.login', function() {
     }
   }
 
-  // #cr_define_end
   /**
    * The current auth flow of the hosted auth page.
    * @type {AuthFlow}
@@ -1485,5 +1484,6 @@ cr.define('cr.login', function() {
   Authenticator.AuthMode = AuthMode;
   Authenticator.SUPPORTED_PARAMS = SUPPORTED_PARAMS;
 
+  // #cr_define_end
   return {Authenticator: Authenticator};
 });

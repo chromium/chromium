@@ -165,6 +165,7 @@ js_modulizer("modulize") {
   namespace_rewrites = [
     "DOMWindow|Object",
     "cr.EventTarget|EventTarget",
+    "cr.getPropertyDescriptor|getPropertyDescriptor",
     "cr.login.SamlHandler|SamlHandler",
     "samlPasswordAttributes.PasswordAttributes|PasswordAttributes",
     "samlPasswordAttributes.readPasswordAttributes|readPasswordAttributes",
