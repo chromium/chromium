@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -29,22 +28,22 @@ namespace blink::attribution_response_parsing {
 
 namespace {
 
-bool ParseAttributionAggregatableKey(const JSONObject* object,
-                                     absl::uint128* out) {
+mojom::blink::AttributionAggregatableKeyPtr ParseAttributionAggregatableKey(
+    const JSONObject* object) {
   String key_piece;
   if (!object->GetString("key_piece", &key_piece))
-    return false;
+    return nullptr;
 
   // Final keys will be restricted to a maximum of 128 bits and the hex strings
   // should be limited to at most 32 digits.
   if (key_piece.length() < 3 || key_piece.length() > 34 ||
       !key_piece.StartsWith("0x", kTextCaseASCIIInsensitive)) {
-    return false;
+    return nullptr;
   }
 
   for (wtf_size_t i = 2; i < key_piece.length(); ++i) {
     if (!IsASCIIHexDigit(key_piece[i]))
-      return false;
+      return nullptr;
   }
 
   uint64_t low_bits;
@@ -55,20 +54,19 @@ bool ParseAttributionAggregatableKey(const JSONObject* object,
   if (key_piece.length() <= 18) {
     low_bits = key_piece.Substring(2).HexToUInt64Strict(&ok);
     if (!ok)
-      return false;
+      return nullptr;
     high_bits = 0;
   } else {
     low_bits = key_piece.Right(16).HexToUInt64Strict(&ok);
     if (!ok)
-      return false;
+      return nullptr;
     high_bits =
         key_piece.Substring(2, key_piece.length() - 18).HexToUInt64Strict(&ok);
     if (!ok)
-      return false;
+      return nullptr;
   }
 
-  *out = absl::MakeUint128(high_bits, low_bits);
-  return true;
+  return mojom::blink::AttributionAggregatableKey::New(high_bits, low_bits);
 }
 
 bool ParseAttributionFilterData(
@@ -155,11 +153,12 @@ bool ParseAttributionAggregatableSource(
       return false;
     }
 
-    absl::uint128 key;
-    if (!ParseAttributionAggregatableKey(object, &key))
+    mojom::blink::AttributionAggregatableKeyPtr key =
+        ParseAttributionAggregatableKey(object);
+    if (!key)
       return false;
 
-    source.keys.insert(std::move(key_id), key);
+    source.keys.insert(std::move(key_id), std::move(key));
   }
 
   return true;
@@ -358,7 +357,8 @@ bool ParseAttributionAggregatableTriggerData(
 
     auto data = mojom::blink::AttributionAggregatableTriggerData::New();
 
-    if (!ParseAttributionAggregatableKey(object, &data->key))
+    data->key = ParseAttributionAggregatableKey(object);
+    if (!data->key)
       return false;
 
     JSONArray* source_keys_val = object->GetArray("source_keys");

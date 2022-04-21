@@ -19,7 +19,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -289,7 +288,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
       aggregatable_trigger_data;
   aggregatable_trigger_data.push_back(
       blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/0, /*low=*/1),
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/0,
+                                                        /*low_bits=*/1),
           std::vector<std::string>{"a"},
           blink::mojom::AttributionFilterData::New(),
           blink::mojom::AttributionFilterData::New()));

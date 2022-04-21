@@ -4,7 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 
@@ -20,15 +19,21 @@ struct AttributionFilterData {
   map<string, array<string>> filter_values;
 };
 
+// The aggregatable key is a 128-bit unsigned integer.
+struct AttributionAggregatableKey {
+  uint64 high_bits;
+  uint64 low_bits;
+};
+
 // Defines a list of named histogram contributions.
 struct AttributionAggregatableSource {
   // Map of key id to the key.
-  map<string, mojo_base.mojom.Uint128> keys;
+  map<string, AttributionAggregatableKey> keys;
 };
 
 // Struct containing the trigger-side aggregatable data.
 struct AttributionAggregatableTriggerData {
-  mojo_base.mojom.Uint128 key;
+  AttributionAggregatableKey key;
   array<string> source_keys;
   AttributionFilterData filters;
   AttributionFilterData not_filters;

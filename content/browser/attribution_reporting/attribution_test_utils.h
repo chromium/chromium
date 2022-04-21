@@ -53,10 +53,6 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
 
-namespace absl {
-class uint128;
-}  // namespace absl
-
 namespace mojo {
 
 template <typename Interface>
@@ -620,7 +616,9 @@ class AggregatableSourceMojoBuilder {
   AggregatableSourceMojoBuilder();
   ~AggregatableSourceMojoBuilder();
 
-  AggregatableSourceMojoBuilder& AddKey(std::string key_id, absl::uint128 key);
+  AggregatableSourceMojoBuilder& AddKey(
+      std::string key_id,
+      blink::mojom::AttributionAggregatableKeyPtr key);
 
   blink::mojom::AttributionAggregatableSourcePtr Build() const;
 

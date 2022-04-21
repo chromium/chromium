@@ -614,7 +614,9 @@ class AttributionSimulatorInputParser {
 
               aggregatable_triggers.push_back(
                   blink::mojom::AttributionAggregatableTriggerData::New(
-                      key, std::move(source_keys),
+                      blink::mojom::AttributionAggregatableKey::New(
+                          absl::Uint128High64(key), absl::Uint128Low64(key)),
+                      std::move(source_keys),
                       blink::mojom::AttributionFilterData::New(
                           std::move(filters.filter_values())),
                       blink::mojom::AttributionFilterData::New(

@@ -712,8 +712,8 @@ AggregatableSourceMojoBuilder::~AggregatableSourceMojoBuilder() = default;
 
 AggregatableSourceMojoBuilder& AggregatableSourceMojoBuilder::AddKey(
     std::string key_id,
-    absl::uint128 key) {
-  aggregatable_source_.keys.emplace(std::move(key_id), key);
+    blink::mojom::AttributionAggregatableKeyPtr key) {
+  aggregatable_source_.keys.emplace(std::move(key_id), std::move(key));
   return *this;
 }
 
@@ -1387,7 +1387,8 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
     std::string key_id = base::NumberToString(i);
     trigger_mojo->trigger_data.push_back(
         blink::mojom::AttributionAggregatableTriggerData::New(
-            absl::MakeUint128(/*high=*/i, /*low=*/0),
+            blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/i,
+                                                          /*low_bits=*/0),
             std::vector<std::string>{key_id},
             blink::mojom::AttributionFilterData::New(),
             blink::mojom::AttributionFilterData::New()));

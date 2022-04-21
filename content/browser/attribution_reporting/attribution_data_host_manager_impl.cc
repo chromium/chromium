@@ -90,6 +90,21 @@ const base::FeatureParam<base::TimeDelta> kTriggerDelay{
 
 constexpr size_t kMaxDelayedTriggers = 30;
 
+absl::optional<AttributionAggregatableSource> Convert(
+    blink::mojom::AttributionAggregatableSourcePtr aggregatable_source) {
+  AttributionAggregatableSource::Keys::container_type keys;
+  keys.reserve(aggregatable_source->keys.size());
+  for (auto& [key_id, key_ptr] : aggregatable_source->keys) {
+    keys.emplace_back(std::move(key_id),
+                      absl::MakeUint128(/*high=*/key_ptr->high_bits,
+                                        /*low=*/key_ptr->low_bits));
+  }
+
+  return AttributionAggregatableSource::FromKeys(
+      AttributionAggregatableSource::Keys(base::sorted_unique,
+                                          std::move(keys)));
+}
+
 }  // namespace
 
 struct AttributionDataHostManagerImpl::FrozenContext {
@@ -262,8 +277,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   absl::optional<AttributionAggregatableSource> aggregatable_source =
-      AttributionAggregatableSource::FromKeys(
-          std::move(data->aggregatable_source->keys));
+      Convert(std::move(data->aggregatable_source));
   if (!aggregatable_source.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
     return;

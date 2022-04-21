@@ -41,7 +41,8 @@ AttributionAggregatableTriggerData::FromMojo(
     return absl::nullopt;
 
   return AttributionAggregatableTriggerData(
-      mojo->key,
+      absl::MakeUint128(/*high=*/mojo->key->high_bits,
+                        /*low=*/mojo->key->low_bits),
       base::flat_set<std::string>(
           std::make_move_iterator(mojo->source_keys.begin()),
           std::make_move_iterator(mojo->source_keys.end())),

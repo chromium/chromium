@@ -41,7 +41,8 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   // The first trigger data applies to "key1", "key3".
   trigger_mojo->trigger_data.push_back(
       blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/0, /*low=*/1024),
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/0,
+                                                        /*low_bits=*/1024),
           /*source_keys=*/std::vector<std::string>{"key1", "key3"},
           /*filters=*/
           blink::mojom::AttributionFilterData::New(
@@ -51,7 +52,8 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   // The second trigger data applies to "key2", "key4" is ignored.
   trigger_mojo->trigger_data.push_back(
       blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/0, /*low=*/2688),
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/0,
+                                                        /*low_bits=*/2688),
           /*source_keys=*/std::vector<std::string>{"key2", "key4"},
           /*filters=*/
           blink::mojom::AttributionFilterData::New(
@@ -61,7 +63,8 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   // The third trigger will be ignored due to mismatched filters.
   trigger_mojo->trigger_data.push_back(
       blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/0, /*low=*/4096),
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/0,
+                                                        /*low_bits=*/4096),
           /*source_keys=*/std::vector<std::string>{"key1", "key2"},
           /*filters=*/
           blink::mojom::AttributionFilterData::New(
@@ -71,7 +74,8 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   // The fourth trigger will be ignored due to matched not_filters.
   trigger_mojo->trigger_data.push_back(
       blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/0, /*low=*/4096),
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/0,
+                                                        /*low_bits=*/4096),
           /*source_keys=*/std::vector<std::string>{"key1", "key2"},
           /*filters=*/blink::mojom::AttributionFilterData::New(),
           /*not_filters=*/

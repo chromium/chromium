@@ -2349,7 +2349,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
       blink::mojom::AttributionAggregatableTrigger::New();
   aggregatable_trigger->trigger_data.push_back(
       blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/1, /*low=*/0),
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/1,
+                                                        /*low_bits=*/0),
           std::vector<std::string>{"0"},
           blink::mojom::AttributionFilterData::New(),
           blink::mojom::AttributionFilterData::New()));
@@ -2508,7 +2509,8 @@ TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
       blink::mojom::AttributionAggregatableTrigger::New();
   aggregatable_trigger->trigger_data.push_back(
       blink::mojom::AttributionAggregatableTriggerData::New(
-          absl::MakeUint128(/*high=*/1, /*low=*/0),
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/1,
+                                                        /*low_bits=*/0),
           std::vector<std::string>{"0"},
           blink::mojom::AttributionFilterData::New(
               AttributionFilterData::FilterValues{{"abc", {"456"}}}),
