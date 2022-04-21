@@ -21,19 +21,23 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 
 namespace {
 
 constexpr char kRpETLDPlusOne[] = "rp-example.com";
 constexpr char kIdpETLDPlusOne[] = "idp-example.com";
-const std::u16string kTitle = u"Sign in to rp-example.com with idp-example.com";
+const std::u16string kTitleSignIn =
+    u"Sign in to rp-example.com with idp-example.com";
+const std::u16string kTitleSigningIn = u"Verifying…";
 
 }  // namespace
 
@@ -152,7 +156,7 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   EXPECT_FALSE(dialog()->GetOkButton());
   EXPECT_FALSE(dialog()->GetCancelButton());
 
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitle);
+  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
 
   // Check basic structure.
   std::vector<views::View*> children = dialog()->children();
@@ -235,7 +239,7 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
   EXPECT_FALSE(dialog()->GetOkButton());
   EXPECT_FALSE(dialog()->GetCancelButton());
 
-  EXPECT_EQ(dialog()->GetWindowTitle(), kTitle);
+  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
 
   // Check basic structure.
   std::vector<views::View*> children = dialog()->children();
@@ -266,4 +270,85 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
     EXPECT_EQ(account_row->title()->GetText(), expected[i].name);
     EXPECT_EQ(account_row->subtitle()->GetText(), expected[i].email);
   }
+}
+
+TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
+  // Create multiple account view.
+  CreateMultipleAccountViewAndShow();
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 2u);
+  views::View* multiple_account_chooser = children[1];
+  std::vector<views::View*> accounts = multiple_account_chooser->children();
+  ASSERT_EQ(accounts.size(), 3u);
+
+  // Click on the middle account, i.e. accounts[1].
+  HoverButton* account_row = static_cast<HoverButton*>(accounts[1]);
+  ASSERT_TRUE(account_row);
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi button_test(account_row);
+  button_test.NotifyClick(event);
+
+  // Test that we arrive to the single account selection. Check buttons and
+  // title.
+  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
+  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
+  EXPECT_FALSE(dialog()->GetOkButton());
+  EXPECT_FALSE(dialog()->GetCancelButton());
+  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
+
+  // Check basic structure.
+  children = dialog()->children();
+  ASSERT_EQ(children.size(), 2u);
+  views::Separator* separator = static_cast<views::Separator*>(children[0]);
+  EXPECT_TRUE(separator);
+  views::View* single_account_chooser = children[1];
+  ASSERT_EQ(single_account_chooser->children().size(), 3u);
+  views::View* single_account_row = single_account_chooser->children()[0];
+  std::vector<views::View*> row_children = single_account_row->children();
+  ASSERT_EQ(row_children.size(), 2u);
+  views::ImageView* image_view =
+      static_cast<views::ImageView*>(row_children[0]);
+  EXPECT_TRUE(image_view);
+
+  // Check the text shown.
+  views::View* text_view = row_children[1];
+  views::BoxLayout* layout_manager =
+      static_cast<views::BoxLayout*>(text_view->GetLayoutManager());
+  ASSERT_TRUE(layout_manager);
+  EXPECT_EQ(layout_manager->GetOrientation(),
+            views::BoxLayout::Orientation::kVertical);
+  std::vector<views::View*> text_view_children = text_view->children();
+  ASSERT_EQ(text_view_children.size(), 2u);
+  views::Label* name_view = static_cast<views::Label*>(text_view_children[0]);
+  ASSERT_TRUE(name_view);
+  EXPECT_EQ(name_view->GetText(), u"name1");
+  views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
+  ASSERT_TRUE(email_view);
+  EXPECT_EQ(email_view->GetText(), u"email1");
+
+  // Check the "Continue as" button.
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->GetText(), u"Continue as given_name1");
+
+  views::StyledLabel* consent_text =
+      static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
+  ASSERT_TRUE(consent_text);
+  EXPECT_EQ(consent_text->GetText(),
+            u"To continue, idp-example.com will share your name, email "
+            u"address, and profile picture with this site. See this site's "
+            u"privacy policy and terms of service.");
+
+  // Click to Continue. We can reuse the |event|.
+  views::test::ButtonTestApi button_test_continue(button);
+  button_test_continue.NotifyClick(event);
+
+  // Check that the UI changes to sign in.
+  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
+  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
+  EXPECT_FALSE(dialog()->GetOkButton());
+  EXPECT_FALSE(dialog()->GetCancelButton());
+  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSigningIn);
 }

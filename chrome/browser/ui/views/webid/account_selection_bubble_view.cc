@@ -78,7 +78,9 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       idp_etld_plus_one_(base::ASCIIToUTF16(idp_etld_plus_one)),
       brand_text_color_(idp_metadata.brand_text_color),
       brand_background_color_(idp_metadata.brand_background_color),
-      tab_strip_model_(tab_strip_model) {
+      tab_strip_model_(tab_strip_model),
+      delegate_(delegate),
+      client_data_(client_data) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(), url_loader_factory);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -96,25 +98,23 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       views::BoxLayout::Orientation::kVertical));
 
   AddChildView(std::make_unique<views::Separator>());
-  AddChildView(CreateAccountChooser(accounts, client_data));
+  AddChildView(CreateAccountChooser(accounts));
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountChooser(
-    base::span<const content::IdentityRequestAccount> accounts,
-    const content::ClientIdData& client_data) {
+    base::span<const content::IdentityRequestAccount> accounts) {
   DCHECK(!accounts.empty());
   if (accounts.size() == 1u) {
-    return CreateSingleAccountChooser(accounts.front(), client_data);
+    return CreateSingleAccountChooser(accounts.front());
   }
-  return CreateMultipleAccountChooser(accounts, client_data);
+  return CreateMultipleAccountChooser(accounts);
 }
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateSingleAccountChooser(
-    const content::IdentityRequestAccount& account,
-    const content::ClientIdData& client_data) {
+    const content::IdentityRequestAccount& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -125,7 +125,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       account.given_name.empty() ? account.name : account.given_name;
   auto button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(&AccountSelectionBubbleView::OnAccountSelected,
-                          weak_ptr_factory_.GetWeakPtr()),
+                          weak_ptr_factory_.GetWeakPtr(), account),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::ASCIIToUTF16(display_name)));
   button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
@@ -150,7 +150,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       row->AddChildView(std::make_unique<views::StyledLabel>());
   consent_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   std::vector<size_t> offsets;
-  if (client_data.terms_of_service_url.is_empty()) {
+  if (client_data_.terms_of_service_url.is_empty()) {
     // Case for when we only need to add a link for privacy policy URL, but not
     // terms of service. We use two placeholders for the start and end of
     // 'privacy policy' in order to style that text as a link.
@@ -163,7 +163,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
         gfx::Range(offsets[1], offsets[2]),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             &AccountSelectionBubbleView::OnLinkClicked,
-            weak_ptr_factory_.GetWeakPtr(), client_data.privacy_policy_url)));
+            weak_ptr_factory_.GetWeakPtr(), client_data_.privacy_policy_url)));
     return row;
   }
 
@@ -182,20 +182,19 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       gfx::Range(offsets[1], offsets[2]),
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &AccountSelectionBubbleView::OnLinkClicked,
-          weak_ptr_factory_.GetWeakPtr(), client_data.privacy_policy_url)));
+          weak_ptr_factory_.GetWeakPtr(), client_data_.privacy_policy_url)));
   // Add link styling for terms of service url.
   consent_label->AddStyleRange(
       gfx::Range(offsets[3], offsets[4]),
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &AccountSelectionBubbleView::OnLinkClicked,
-          weak_ptr_factory_.GetWeakPtr(), client_data.terms_of_service_url)));
+          weak_ptr_factory_.GetWeakPtr(), client_data_.terms_of_service_url)));
   return row;
 }
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateMultipleAccountChooser(
-    base::span<const content::IdentityRequestAccount> accounts,
-    const content::ClientIdData& client_data) {
+    base::span<const content::IdentityRequestAccount> accounts) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -220,7 +219,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
   if (should_hover) {
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(&AccountSelectionBubbleView::OnSingleAccountPicked,
-                            weak_ptr_factory_.GetWeakPtr()),
+                            weak_ptr_factory_.GetWeakPtr(), account),
         std::move(image_view), base::ASCIIToUTF16(account.name),
         base::ASCIIToUTF16(account.email));
     row->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
@@ -262,12 +261,34 @@ void AccountSelectionBubbleView::OnLinkClicked(const GURL& gurl) {
   tab_strip_model_->delegate()->AddTabAt(gurl, -1, true);
 }
 
-void AccountSelectionBubbleView::OnSingleAccountPicked() {
-  // TODO(npm): transform the bubble once an account is selected.
+void AccountSelectionBubbleView::OnSingleAccountPicked(
+    const content::IdentityRequestAccount& account) {
+  // TODO(npm): differentiate new users from returning users upon single account
+  // being picked.
+  RemoveAllChildViews();
+  AddChildView(std::make_unique<views::Separator>());
+  std::vector<const content::IdentityRequestAccount> accounts = {account};
+  AddChildView(CreateAccountChooser(accounts));
+  SizeToContents();
+  PreferredSizeChanged();
 }
 
-void AccountSelectionBubbleView::OnAccountSelected() {
-  // TODO(npm): call the FedCM API here.
+void AccountSelectionBubbleView::OnAccountSelected(
+    const content::IdentityRequestAccount& account) {
+  ShowVerifySheet(account);
+  delegate_->OnAccountSelected(account);
+}
+
+void AccountSelectionBubbleView::ShowVerifySheet(
+    const content::IdentityRequestAccount& account) {
+  SetTitle(l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
+  RemoveAllChildViews();
+  // TODO(npm): replace the basic views::Separator with a separator that has the
+  // loading animation.
+  AddChildView(std::make_unique<views::Separator>());
+  AddChildView(CreateAccountRow(account, /*should_hover=*/false));
+  SizeToContents();
+  PreferredSizeChanged();
 }
 
 BEGIN_METADATA(AccountSelectionBubbleView, views::BubbleDialogDelegateView)

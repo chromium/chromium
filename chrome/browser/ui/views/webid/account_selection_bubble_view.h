@@ -36,21 +36,18 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // Returns a View containing the account chooser, i.e. everything that goes
   // below the horizontal separator on the initial FedCM bubble.
   std::unique_ptr<views::View> CreateAccountChooser(
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::ClientIdData& client_data);
+      base::span<const content::IdentityRequestAccount> accounts);
 
   // Returns a View for single account chooser. It contains the account
   // information, disclosure text and a button for the user to confirm the
   // selection.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const content::IdentityRequestAccount& account,
-      const content::ClientIdData& client_data);
+      const content::IdentityRequestAccount& account);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::ClientIdData& client_data);
+      base::span<const content::IdentityRequestAccount> accounts);
 
   // Returns a View containing information about an account: the picture for the
   // account on the left, and information about the account on the right.
@@ -73,10 +70,14 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // 1. For new users, the single account chooser.
   // 2. For returning users, fetch the ID token automatically while displaying
   // "Signing you in".
-  void OnSingleAccountPicked();
+  void OnSingleAccountPicked(const content::IdentityRequestAccount& account);
 
   // Called when the user clicks on the button from the single account chooser.
-  void OnAccountSelected();
+  void OnAccountSelected(const content::IdentityRequestAccount& account);
+
+  // Shows 'verifying' once the user has clicked to continue with a given
+  // account.
+  void ShowVerifySheet(const content::IdentityRequestAccount& account);
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
@@ -91,6 +92,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // The TabStripModel of the current browser. We need this in order to show the
   // privacy policy and terms of service urls when the user clicks on the links.
   const raw_ptr<TabStripModel> tab_strip_model_;
+
+  // The delegate to which the account selection is sent.
+  raw_ptr<AccountSelectionView::Delegate> delegate_ = nullptr;
+
+  // The privacy policy and terms of service URLs
+  const content::ClientIdData client_data_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.
