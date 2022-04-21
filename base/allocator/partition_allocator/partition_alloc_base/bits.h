@@ -4,15 +4,15 @@
 
 // This file defines some bit utilities.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_BITS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_BITS_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_BITS_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_BITS_H_
 
 #include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -237,4 +237,4 @@ constexpr T LeftmostBit() {
 
 }  // namespace partition_alloc::internal::base::bits
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_BITS_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_BITS_H_

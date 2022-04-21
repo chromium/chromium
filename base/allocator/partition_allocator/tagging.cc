@@ -4,7 +4,7 @@
 
 #include "base/allocator/partition_allocator/tagging.h"
 
-#include "base/allocator/partition_allocator/base/cpu.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/files/file_path.h"

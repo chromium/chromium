@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_DEBUG_ALIAS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_DEBUG_ALIAS_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_DEBUG_ALIAS_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_DEBUG_ALIAS_H_
 
 #include <stddef.h>
 
-#include "base/allocator/partition_allocator/base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/base_export.h"
 
 namespace partition_alloc::internal::base::debug {
@@ -90,4 +90,4 @@ void BASE_EXPORT Alias(const void* var);
   const int line_number = __LINE__; \
   ::partition_alloc::internal::base::debug::Alias(&line_number)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_DEBUG_ALIAS_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_DEBUG_ALIAS_H_

@@ -8,8 +8,8 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 
-#include "base/allocator/partition_allocator/base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"

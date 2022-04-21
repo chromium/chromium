@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_CPU_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_CPU_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CPU_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CPU_H_
 
-#include "base/allocator/partition_allocator/base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
 
@@ -97,4 +97,4 @@ class BASE_EXPORT CPU final {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_CPU_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CPU_H_

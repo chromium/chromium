@@ -4,7 +4,7 @@
 
 // This file contains the unit tests for the bit utilities.
 
-#include "base/allocator/partition_allocator/base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 
 #include <cstddef>
 #include <limits>

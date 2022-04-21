@@ -4,8 +4,8 @@
 
 #include "base/allocator/partition_allocator/partition_oom.h"
 
-#include "base/allocator/partition_allocator/base/debug/alias.h"
 #include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 

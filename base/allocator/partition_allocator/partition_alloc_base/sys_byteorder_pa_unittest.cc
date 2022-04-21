@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/base/sys_byteorder.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/sys_byteorder.h"
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

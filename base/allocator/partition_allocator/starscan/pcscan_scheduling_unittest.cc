@@ -4,7 +4,7 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 
-#include "base/allocator/partition_allocator/base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"

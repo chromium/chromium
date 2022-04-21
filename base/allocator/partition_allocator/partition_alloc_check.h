@@ -8,8 +8,8 @@
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/base/debug/alias.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"

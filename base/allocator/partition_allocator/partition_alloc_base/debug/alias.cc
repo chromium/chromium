@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 
 #include "base/compiler_specific.h"
 

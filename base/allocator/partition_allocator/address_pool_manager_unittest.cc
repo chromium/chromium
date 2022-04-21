@@ -7,8 +7,8 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/address_space_stats.h"
-#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

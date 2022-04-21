@@ -8,12 +8,12 @@
 // Use the functions defined here rather than using the platform-specific
 // functions directly.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_SYS_BYTEORDER_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_SYS_BYTEORDER_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_SYS_BYTEORDER_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_SYS_BYTEORDER_H_
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "build/build_config.h"
 
 #if defined(COMPILER_MSVC)
@@ -141,4 +141,4 @@ inline uint64_t HostToNet64(uint64_t x) {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_BASE_SYS_BYTEORDER_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_SYS_BYTEORDER_H_

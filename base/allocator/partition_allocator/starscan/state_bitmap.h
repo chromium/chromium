@@ -15,7 +15,7 @@
 #include <tuple>
 #include <utility>
 
-#include "base/allocator/partition_allocator/base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/compiler_specific.h"
 
