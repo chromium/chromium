@@ -12,8 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "cc/test/pixel_comparator.h"
-#include "cc/test/pixel_test_utils.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
@@ -23,7 +21,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -776,17 +777,14 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
     ASSERT_GT(stride, 0);
     ASSERT_EQ(image_info.minRowBytes(), static_cast<size_t>(stride));
     std::vector<uint8_t> data = thumbnail.TakeData();
-    SkBitmap bitmap;
-    EXPECT_TRUE(bitmap.installPixels(image_info, data.data(),
-                                     image_info.minRowBytes()));
+    sk_sp<SkImage> image = SkImage::MakeRasterCopy(
+        SkPixmap(image_info, data.data(), image_info.minRowBytes()));
+    ASSERT_TRUE(image);
 
     base::FilePath expectation_png_file_path = GetThumbnailTestData(
         expectation_file_prefix, page_index, device_pixel_ratio);
 
-    EXPECT_TRUE(cc::MatchesPNGFile(
-        bitmap, GetTestDataFilePath(expectation_png_file_path),
-        cc::ExactPixelComparator(/*discard_alpha=*/false)))
-        << "Reference: " << expectation_png_file_path;
+    EXPECT_TRUE(MatchesPngFile(image.get(), expectation_png_file_path));
   }
 };
 

@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
-#include "cc/test/pixel_test_utils.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "pdf/pdfium/pdfium_test_base.h"
@@ -20,7 +19,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -39,8 +40,8 @@ constexpr gfx::Rect kPrintableAreaRect = {{18, 18}, {576, 733}};
 using ExpectedDimensions = std::vector<gfx::SizeF>;
 
 base::FilePath GetReferenceFilePath(base::StringPiece test_filename) {
-  return GetTestDataFilePath(base::FilePath(FILE_PATH_LITERAL("pdfium_print"))
-                                 .AppendASCII(test_filename));
+  return base::FilePath(FILE_PATH_LITERAL("pdfium_print"))
+      .AppendASCII(test_filename);
 }
 
 blink::WebPrintParams GetDefaultPrintParams() {
@@ -97,10 +98,8 @@ void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
   ASSERT_TRUE(exports.RenderPDFPageToBitmap(pdf_data, page_number, settings,
                                             page_bitmap.getPixels()));
 
-  EXPECT_TRUE(cc::MatchesPNGFile(
-      page_bitmap, GetReferenceFilePath(expected_png_filename),
-      cc::ExactPixelComparator(/*discard_alpha=*/false)))
-      << "Reference: " << expected_png_filename;
+  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(),
+                             GetReferenceFilePath(expected_png_filename)));
 }
 
 }  // namespace

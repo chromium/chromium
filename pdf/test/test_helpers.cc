@@ -7,9 +7,13 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
@@ -23,6 +27,21 @@ base::FilePath GetTestDataFilePath(const base::FilePath& path) {
       .Append(FILE_PATH_LITERAL("test"))
       .Append(FILE_PATH_LITERAL("data"))
       .Append(path);
+}
+
+testing::AssertionResult MatchesPngFile(
+    const SkImage* actual_image,
+    const base::FilePath& expected_png_file) {
+  SkBitmap actual_bitmap;
+  if (!actual_image->asLegacyBitmap(&actual_bitmap))
+    return testing::AssertionFailure() << "Reference: " << expected_png_file;
+
+  if (!cc::MatchesPNGFile(actual_bitmap, GetTestDataFilePath(expected_png_file),
+                          cc::ExactPixelComparator(/*discard_alpha=*/false))) {
+    return testing::AssertionFailure() << "Reference: " << expected_png_file;
+  }
+
+  return testing::AssertionSuccess();
 }
 
 SkBitmap CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {

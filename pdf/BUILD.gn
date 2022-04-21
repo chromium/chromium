@@ -331,6 +331,7 @@ if (enable_pdf) {
       ":internal",
       ":ppapi_migration",
       "//base",
+      "//cc:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public/common:headers",
