@@ -59,7 +59,6 @@ generate_grd("build_grd") {
     # Vector resources
     "assistant_ready_1x.svg",
     "assistant_ready_2x.svg",
-    "assistant_ready.svg",
     "assistant_related_info.svg",
   ]
   resource_path_prefix = "assistant_optin"
