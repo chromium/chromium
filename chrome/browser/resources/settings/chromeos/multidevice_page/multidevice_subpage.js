@@ -16,6 +16,7 @@ import './multidevice_wifi_sync_item.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -201,6 +202,19 @@ Polymer({
       default:
         return this.i18n('multideviceNotificationAccessProhibitedTooltip');
     }
+  },
+
+  /**
+   * TODO(b/227674947): Delete method when Sign in with Smart Lock is removed.
+   * If Smart Lock Sign in is removed there is no subpage to navigate to, so we
+   * set the subpageRoute to undefined.
+   * @return {undefined | Object}
+   * @private
+   */
+  getSmartLockSubpageRoute_() {
+    return loadTimeData.getBoolean('isSmartLockSignInRemoved') ?
+        undefined :
+        routes.SMART_LOCK;
   },
 
   /**

@@ -221,6 +221,33 @@ suite('Multidevice', function() {
     assertEquals(Router.getInstance().getCurrentRoute(), routes.SMART_LOCK);
   });
 
+  test(
+      'setting isSmartLockSignInRemoved flat removes SmartLock subpage route',
+      function() {
+        multideviceSubpage.remove();
+        loadTimeData.overrideValues({'isSmartLockSignInRemoved': true});
+        browserProxy = new TestMultideviceBrowserProxy();
+        MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+
+        PolymerTest.clearBody();
+        multideviceSubpage =
+            document.createElement('settings-multidevice-subpage');
+        multideviceSubpage.pageContentData = {hostDeviceName: 'Pixel XL'};
+        setMode(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+        setSupportedFeatures(Object.values(MultiDeviceFeature));
+
+        document.body.appendChild(multideviceSubpage);
+        flush();
+
+        assertEquals(
+            undefined, multideviceSubpage.$$('#smartLockItem').subpageRoute);
+        const routeBefore = Router.getInstance().getCurrentRoute();
+        multideviceSubpage.$$('#smartLockItem').$$('.link-wrapper').click();
+        assertEquals(Router.getInstance().getCurrentRoute(), routeBefore);
+
+        loadTimeData.overrideValues({'isSmartLockSignInRemoved': false});
+      });
+
   test('AndroidMessages item shows button when not set up', function() {
     setAndroidSmsPairingComplete(false);
     flush();

@@ -40,8 +40,8 @@ Polymer({
 
     /**
      * If it is truthy, the item should be actionable and clicking on it should
-     * navigate to the provided route. Otherwise, the item is simply not
-     * actionable.
+     * navigate to the provided route. Otherwise, the item does not have a
+     * subpage to navigate to.
      * @type {!Route|undefined}
      */
     subpageRoute: Object,
