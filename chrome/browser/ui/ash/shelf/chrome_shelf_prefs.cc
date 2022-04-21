@@ -66,6 +66,12 @@ using syncer::UserSelectableType;
 
 namespace {
 
+std::string GetBrowserAppId() {
+  return crosapi::browser_util::IsAshWebBrowserEnabled()
+             ? app_constants::kChromeAppId
+             : app_constants::kLacrosAppId;
+}
+
 const char kDefaultPinnedAppsKey[] = "default";
 
 // This is the default prefix for a chrome app loaded in the primary profile in
@@ -313,7 +319,7 @@ syncer::StringOrdinal GetFirstPinnedAppPosition(
   for (const auto& sync_peer : syncable_service->sync_items()) {
     if (!sync_peer.second->item_pin_ordinal.IsValid())
       continue;
-    if (exclude_chrome && sync_peer.first == app_constants::kChromeAppId)
+    if (exclude_chrome && sync_peer.first == GetBrowserAppId())
       continue;
     if (!position.IsValid() ||
         sync_peer.second->item_pin_ordinal.LessThan(position)) {
@@ -360,8 +366,13 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
     app_list::AppListSyncableService* syncable_service,
     const std::vector<std::string>& app_ids) {
   // Chrome must be pinned at this point.
-  const syncer::StringOrdinal chrome_position =
+  syncer::StringOrdinal chrome_position =
       syncable_service->GetPinPosition(app_constants::kChromeAppId);
+  // If the ash icon does not exist, then the Lacros icon must exist.
+  if (!chrome_position.IsValid()) {
+    chrome_position =
+        syncable_service->GetPinPosition(app_constants::kLacrosAppId);
+  }
   DCHECK(chrome_position.IsValid());
 
   // New pins are inserted after this position.
@@ -593,8 +604,9 @@ void ChromeShelfPrefs::EnsureChromePinned(
       syncable_service->GetPinPosition(app_constants::kChromeAppId);
   if (!chrome_position.IsValid()) {
     chrome_position = CreateFirstPinPosition(syncable_service);
-    syncable_service->SetPinPosition(app_constants::kChromeAppId,
-                                     chrome_position);
+    // If Lacros is the only browser, and Ash is not already pinned, then we pin
+    // Lacros.
+    syncable_service->SetPinPosition(GetBrowserAppId(), chrome_position);
   }
 }
 
@@ -651,6 +663,7 @@ PrefService* ChromeShelfPrefs::GetPrefs() {
 bool ChromeShelfPrefs::IsSyncItemValid(const std::string& id,
                                        ShelfControllerHelper* helper) {
   return id == app_constants::kChromeAppId ||
+         id == app_constants::kLacrosAppId ||
          helper->IsValidIDForCurrentUser(id);
 }
 
