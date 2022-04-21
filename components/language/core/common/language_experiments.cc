@@ -36,8 +36,6 @@ const base::Feature kTranslateIntent{"TranslateIntent",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kContentLanguagesInLanguagePicker{
     "ContentLanguagesInLanguagePicker", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kUseULPLanguagesInChrome{"UseULPLanguagesInChrome",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Params:
 const char kBackoffThresholdKey[] = "backoff_threshold";

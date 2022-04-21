@@ -134,13 +134,11 @@ void PrepareLanguageModels(Profile* const profile,
     // On Android, additionally create a ULPLanguageModel and populate it with
     // ULP data.
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(language::kUseULPLanguagesInChrome)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&JavaLanguageBridgeGetULPLanguagesWrapper,
-                       profile->GetProfileUserName()),
-        base::BindOnce(&CreateAndAddULPLanguageModel, profile));
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&JavaLanguageBridgeGetULPLanguagesWrapper,
+                     profile->GetProfileUserName()),
+      base::BindOnce(&CreateAndAddULPLanguageModel, profile));
 #endif
 }
 

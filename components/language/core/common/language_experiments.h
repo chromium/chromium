@@ -55,9 +55,6 @@ extern const base::Feature kTranslateIntent;
 // This feature enables an intent that starts translating the foreground tab.
 extern const base::Feature kContentLanguagesInLanguagePicker;
 
-// This feature enables use of ULP language data in Chrome.
-extern const base::Feature kUseULPLanguagesInChrome;
-
 enum class OverrideLanguageModel {
   DEFAULT,
   GEO,
