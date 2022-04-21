@@ -120,7 +120,6 @@ ShelfConfig::ShelfConfig()
       shelf_status_area_hit_region_padding_dense_(2),
       app_icon_group_margin_tablet_(16),
       app_icon_group_margin_clamshell_(12),
-      shelf_focus_border_color_(gfx::kGoogleBlue300),
       workspace_area_visible_inset_(2),
       workspace_area_auto_hide_inset_(5),
       hidden_shelf_in_screen_portion_(3),

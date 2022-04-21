@@ -10,6 +10,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -153,10 +154,12 @@ class BasePinButton : public views::View {
     View::OnFocus();
     SchedulePaint();
   }
+
   void OnBlur() override {
     View::OnBlur();
     SchedulePaint();
   }
+
   void OnEvent(ui::Event* event) override {
     bool is_key_press = event->type() == ui::ET_KEY_PRESSED &&
                         (event->AsKeyEvent()->code() == ui::DomCode::ENTER ||
@@ -171,9 +174,17 @@ class BasePinButton : public views::View {
 
     views::View::OnEvent(event);
   }
+
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->SetName(accessible_name_);
     node_data->role = ax::mojom::Role::kButton;
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    views::FocusRing::Get(this)->SetColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
  protected:

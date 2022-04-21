@@ -9,6 +9,7 @@
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/style/ash_color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/focus_ring.h"
@@ -183,7 +184,6 @@ void ConfigureRectFocusRingCircleInkDrop(views::View* view,
                                          absl::optional<int> radius) {
   DCHECK(view);
   DCHECK(focus_ring);
-  focus_ring->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
   focus_ring->SetPathGenerator(
       std::make_unique<views::RectHighlightPathGenerator>());
 

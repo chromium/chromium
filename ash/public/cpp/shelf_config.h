@@ -145,7 +145,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // if the shelf visibility should change during a drag.
   float drag_hide_ratio_threshold() const;
 
-  SkColor shelf_focus_border_color() const { return shelf_focus_border_color_; }
   int workspace_area_visible_inset() const {
     return workspace_area_visible_inset_;
   }
@@ -301,8 +300,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // The margin on either side of the group of app icons in tablet/clamshell.
   const int app_icon_group_margin_tablet_;
   const int app_icon_group_margin_clamshell_;
-
-  const SkColor shelf_focus_border_color_;
 
   // We reserve a small area on the edge of the workspace area to ensure that
   // the resize handle at the edge of the window can be hit.

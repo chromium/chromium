@@ -4,7 +4,6 @@
 
 #include "ash/login/ui/system_label_button.h"
 
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
@@ -64,8 +63,6 @@ SystemLabelButton::SystemLabelButton(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColor(
-      ShelfConfig::Get()->shelf_focus_border_color());
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kSystemButtonBorderRadius);
 }
@@ -87,6 +84,9 @@ gfx::Insets SystemLabelButton::GetInsets() const {
 void SystemLabelButton::OnThemeChanged() {
   views::LabelButton::OnThemeChanged();
   SetBackgroundAndFont(alert_mode_);
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void SystemLabelButton::SetBackgroundAndFont(bool alert_mode) {

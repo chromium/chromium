@@ -12,7 +12,6 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/login_types.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -461,8 +460,6 @@ class LoginPasswordView::DisplayPasswordButton
         IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
-    views::FocusRing::Get(this)->SetColor(
-        ShelfConfig::Get()->shelf_focus_border_color());
 
     SetEnabled(false);
   }
@@ -483,6 +480,13 @@ class LoginPasswordView::DisplayPasswordButton
     SetImage(views::Button::STATE_NORMAL, visible_icon);
     SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
     SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
+  }
+
+  void OnThemeChanged() override {
+    views::ToggleImageButton::OnThemeChanged();
+    views::FocusRing::Get(this)->SetColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 };
 

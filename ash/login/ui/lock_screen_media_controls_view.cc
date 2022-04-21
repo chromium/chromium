@@ -214,6 +214,9 @@ class MediaActionButton : public views::ImageButton {
         this,
         GetVectorIconForMediaAction(static_cast<MediaSessionAction>(tag())),
         icon_size_, icon_color, icon_disabled_color);
+    views::FocusRing::Get(this)->SetColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
   int const icon_size_;

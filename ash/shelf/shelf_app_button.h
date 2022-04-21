@@ -104,6 +104,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
                        ui::MenuSourceType source_type) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool ShouldEnterPushedState(const ui::Event& event) override;
+  void OnThemeChanged() override;
 
   // views::View overrides:
   const char* GetClassName() const override;

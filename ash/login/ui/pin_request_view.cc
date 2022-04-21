@@ -93,14 +93,19 @@ class PinRequestView::FocusableLabelButton : public views::LabelButton {
   FocusableLabelButton(PressedCallback callback, const std::u16string& text)
       : views::LabelButton(std::move(callback), text) {
     SetInstallFocusRingOnFocus(true);
-    views::FocusRing::Get(this)->SetColor(
-        ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 
   FocusableLabelButton(const FocusableLabelButton&) = delete;
   FocusableLabelButton& operator=(const FocusableLabelButton&) = delete;
   ~FocusableLabelButton() override = default;
+
+  void OnThemeChanged() override {
+    views::LabelButton::OnThemeChanged();
+    views::FocusRing::Get(this)->SetColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor));
+  }
 };
 
 PinRequestView::TestApi::TestApi(PinRequestView* view) : view_(view) {

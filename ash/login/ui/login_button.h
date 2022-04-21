@@ -21,6 +21,9 @@ class ASH_EXPORT LoginButton : public views::ImageButton {
 
   ~LoginButton() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  protected:
   virtual int GetInkDropRadius() const;
 };

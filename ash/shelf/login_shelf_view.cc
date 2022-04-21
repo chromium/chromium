@@ -233,8 +233,6 @@ class LoginShelfButton : public views::LabelButton {
     SetInstallFocusRingOnFocus(true);
     views::InstallRoundRectHighlightPathGenerator(
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
-    views::FocusRing::Get(this)->SetColor(
-        ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
@@ -298,6 +296,13 @@ class LoginShelfButton : public views::LabelButton {
     keyboard_controller->HideKeyboardImplicitlyByUser();
   }
 
+  void OnThemeChanged() override {
+    views::LabelButton::OnThemeChanged();
+    views::FocusRing::Get(this)->SetColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor));
+  }
+
  private:
   const int text_resource_id_;
   const gfx::VectorIcon& icon_;
@@ -323,8 +328,6 @@ class KioskAppsButton : public views::MenuButton,
     SetInstallFocusRingOnFocus(true);
     views::InstallRoundRectHighlightPathGenerator(
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
-    views::FocusRing::Get(this)->SetColor(
-        ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
@@ -438,6 +441,13 @@ class KioskAppsButton : public views::MenuButton,
   bool IsCommandIdChecked(int command_id) const override { return false; }
 
   bool IsCommandIdEnabled(int command_id) const override { return true; }
+
+  void OnThemeChanged() override {
+    views::MenuButton::OnThemeChanged();
+    views::FocusRing::Get(this)->SetColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor));
+  }
 
  private:
   base::RepeatingCallback<void(const KioskAppMenuEntry&)> launch_app_callback_;

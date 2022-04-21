@@ -328,8 +328,6 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   views::InstallEmptyHighlightPathGenerator(this);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColor(
-      ShelfConfig::Get()->shelf_focus_border_color());
   // The focus ring should have an inset of half the focus border thickness, so
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(
@@ -968,6 +966,13 @@ void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {
 
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::HIDDEN);
+}
+
+void ShelfAppButton::OnThemeChanged() {
+  ShelfButton::OnThemeChanged();
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 }  // namespace ash
