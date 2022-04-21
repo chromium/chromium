@@ -3566,8 +3566,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            TestMPArchType::kFencedFrame,
                                            TestMPArchType::kPortal));
 
+// TODO(https://crbug.com/1317838): The kPortal variant is flaky on Mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldNotUpdateHistory DISABLED_ShouldNotUpdateHistory
+#else
+#define MAYBE_ShouldNotUpdateHistory ShouldNotUpdateHistory
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
-                       ShouldNotUpdateHistory) {
+                       MAYBE_ShouldNotUpdateHistory) {
   const auto get_observer = [&](WebContents* web_contents) {
     return DidFinishNavigationObserver(
         web_contents,
