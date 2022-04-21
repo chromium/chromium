@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_mac or chromeos_ash">
+// <if expr="chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 
@@ -146,12 +146,6 @@ suite(extension_toolbar_tests.suiteName, function() {
           const dialog =
               toolbar.shadowRoot!.querySelector('extensions-pack-dialog');
           assertTrue(!!dialog);
-
-          // <if expr="is_mac">
-          const whenFocused = eventToPromise('focus', toolbar.$.packExtensions);
-          dialog!.$.dialog.cancel();
-          return whenFocused;
-          // </if>
         });
   });
 
@@ -159,7 +153,7 @@ suite(extension_toolbar_tests.suiteName, function() {
   test(
       assert(extension_toolbar_tests.TestNames.FailedUpdateFiresLoadError),
       function() {
-        let item = document.createElement('extensions-item');
+        const item = document.createElement('extensions-item');
         item.data = createExtensionInfo();
         item.delegate = mockDelegate;
         document.body.appendChild(item);
