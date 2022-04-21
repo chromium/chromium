@@ -31,6 +31,28 @@
 
 namespace headless {
 
+namespace {
+
+base::FilePath MakeAbsolutePath(const base::FilePath& path) {
+#if BUILDFLAG(IS_WIN)
+  // On Windows it's common to omit drive specification assuming the current
+  // drive, which makes the path specification not absolute, but relative to
+  // the current drive. Handle this case by prepending the current drive to
+  // the "\path" specification.
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
+  if (components.size() > 0 && components[0].length() == 1 &&
+      base::FilePath::IsSeparator(components[0].front())) {
+    components =
+        base::PathService::CheckedGet(base::DIR_CURRENT).GetComponents();
+    return base::FilePath(components[0]).Append(path);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  return base::PathService::CheckedGet(base::DIR_CURRENT).Append(path);
+}
+
+}  // namespace
+
 HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
     HeadlessBrowserImpl* browser,
     std::unique_ptr<HeadlessBrowserContextOptions> context_options)
@@ -170,7 +192,8 @@ void HeadlessBrowserContextImpl::InitWhileIOAllowed() {
     base::FilePath path =
         context_options_->user_data_dir().Append(kDefaultProfileName);
     if (!path.IsAbsolute())
-      path = base::PathService::CheckedGet(base::DIR_CURRENT).Append(path);
+      path = MakeAbsolutePath(path);
+
     path_ = std::move(path);
   } else {
     base::PathService::Get(base::DIR_EXE, &path_);
