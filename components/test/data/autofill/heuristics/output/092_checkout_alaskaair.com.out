@@ -19,22 +19,22 @@ ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.CAStates_Selected
 ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.MXStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1-default
 UNKNOWN_TYPE | CreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1-default
 ADDRESS_HOME_ZIP | CreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_COUNTRY | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-PHONE_HOME_WHOLE_NUMBER | CreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-UNKNOWN_TYPE | TripInsurance.QuoteID | Yes, add trip protection for a total of $21.00. | 657566350481481886 | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-UNKNOWN_TYPE | TripInsurance.QuoteID | No, I choose not to protect my purchase. | 657566350481481887 | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
+PHONE_HOME_COUNTRY_CODE | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | MyWalletInformation.UseMyWalletFunds_1-default
+PHONE_HOME_CITY_AND_NUMBER | CreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | MyWalletInformation.UseMyWalletFunds_1-default
+UNKNOWN_TYPE | TripInsurance.QuoteID | Yes, add trip protection for a total of $21.00. | 657566350481481886 | MyWalletInformation.UseMyWalletFunds_1-default
+UNKNOWN_TYPE | TripInsurance.QuoteID | No, I choose not to protect my purchase. | 657566350481481887 | MyWalletInformation.UseMyWalletFunds_1-default
 CREDIT_CARD_NUMBER | AncillaryCreditCardInformation.BillingCreditCardEntry.CardNumber | Card Number |  | credit-card-cc
 CREDIT_CARD_EXP_MONTH | AncillaryCreditCardInformation.BillingCreditCardEntry.ExpirationMonths_Selected | Expiration* |  | credit-card-cc
 CREDIT_CARD_EXP_4_DIGIT_YEAR | AncillaryCreditCardInformation.BillingCreditCardEntry.ExpirationYears_Selected | Expiration* |  | credit-card-cc
 CREDIT_CARD_NAME_FULL | AncillaryCreditCardInformation.BillingCreditCardEntry.CardPersonName | Name on Card |  | credit-card-cc
-ADDRESS_HOME_COUNTRY | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected | Country | US | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_LINE1 | AncillaryCreditCardInformation.BillingAddressEntry.Address1 | Address |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_LINE2 | AncillaryCreditCardInformation.BillingAddressEntry.Address2 | Address Line 2 |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_CITY | AncillaryCreditCardInformation.BillingAddressEntry.City | City |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.USStates_Selected | State/Province |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.CAStates_Selected | State/Province |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.MXStates_Selected | State/Province |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-UNKNOWN_TYPE | AncillaryCreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_ZIP | AncillaryCreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_3-default
-ADDRESS_HOME_COUNTRY | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_4-default
-PHONE_HOME_WHOLE_NUMBER | AncillaryCreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected_4-default
+ADDRESS_HOME_COUNTRY | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected | Country | US | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+ADDRESS_HOME_LINE1 | AncillaryCreditCardInformation.BillingAddressEntry.Address1 | Address |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+ADDRESS_HOME_LINE2 | AncillaryCreditCardInformation.BillingAddressEntry.Address2 | Address Line 2 |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+ADDRESS_HOME_CITY | AncillaryCreditCardInformation.BillingAddressEntry.City | City |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.USStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.CAStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.MXStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+UNKNOWN_TYPE | AncillaryCreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+ADDRESS_HOME_ZIP | AncillaryCreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+PHONE_HOME_COUNTRY_CODE | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+PHONE_HOME_CITY_AND_NUMBER | AncillaryCreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default

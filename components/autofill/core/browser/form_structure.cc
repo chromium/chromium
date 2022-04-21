@@ -540,18 +540,21 @@ void PopulateRandomizedFieldMetadata(
   }
 }
 
-// Creates the type relationship rules map. The keys represent the type that has
-// rules, and the value represents the list of required types for the given
-// key. In order to respect the rule, only one of the required types is needed.
-// For example, for Autofill to support fields of type
-// "PHONE_HOME_COUNTRY_CODE", there would need to be at least one other field
-// of type "PHONE_HOME_NUMBER" or "PHONE_HOME_CITY_AND_NUMBER".
-const auto& GetTypeRelationshipMap() {
-  static const auto rules =
-      base::MakeFixedFlatMap<ServerFieldType, ServerFieldTypeSet>(
-          {{PHONE_HOME_COUNTRY_CODE,
-            {PHONE_HOME_NUMBER, PHONE_HOME_CITY_AND_NUMBER}}});
-  return rules;
+// Defines necessary types for the rationalization logic, meaning that fields of
+// `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
+// is present.
+// TODO(crbug.com/1311937) Cleanup PHONE_HOME_CITY_AND_NUMBER when launched.
+ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
+  switch (type) {
+    case PHONE_HOME_COUNTRY_CODE:
+      return {PHONE_HOME_NUMBER,
+              base::FeatureList::IsEnabled(
+                  features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+                  ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
+                  : PHONE_HOME_CITY_AND_NUMBER};
+    default:
+      return {};
+  }
 }
 
 LogBufferSubmitter LogRationalization(LogManager* log_manager) {
@@ -2730,23 +2733,17 @@ void FormStructure::RationalizeTypeRelationships(LogManager* log_manager) {
     types.insert(field->Type().GetStorableType());
   }
 
-  const auto& type_relationship_rules = GetTypeRelationshipMap();
-
   for (const auto& field : fields_) {
     ServerFieldType field_type = field->Type().GetStorableType();
-    const auto* ruleset_iterator = type_relationship_rules.find(field_type);
-    if (ruleset_iterator != type_relationship_rules.end()) {
-      // We have relationship rules for this type. Verify that at least one of
-      // the required related type is present.
-      if (!types.contains_any(ruleset_iterator->second)) {
-        // No required type was found, the current field failed the relationship
-        // requirements for its type. Disabling Autofill for this field.
-        field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-        LogRationalization(log_manager)
-            << "RationalizeTypeRelationships: Fields of type "
-            << FieldTypeToStringPiece(field_type)
-            << " can only exist if other fields of specific types exist.";
-      }
+    ServerFieldTypeSet necessary_types = GetNecessaryTypesFor(field_type);
+    if (!necessary_types.empty() && !types.contains_any(necessary_types)) {
+      // We have relationship rules for this type, but no `neccessary_type` was
+      // found. Disabling Autofill for this field.
+      field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+      LogRationalization(log_manager)
+          << "RationalizeTypeRelationships: Fields of type "
+          << FieldTypeToStringPiece(field_type)
+          << " can only exist if other fields of specific types exist.";
     }
   }
 }

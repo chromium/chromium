@@ -137,9 +137,9 @@ const PhoneField::Parser PhoneField::kPhoneFieldGrammars[] = {
     {REGEX_AREA, FIELD_AREA_CODE, 0},
     {REGEX_PHONE, FIELD_PHONE, 0},
     {REGEX_SEPARATOR, FIELD_NONE, 0},
-    // Phone: <cc>:3 - <phone>:10 (Ext: <ext>)?
+    // Phone: <cc>:3 - <phone> (Ext: <ext>)?
     {REGEX_PHONE, FIELD_COUNTRY_CODE, 3},
-    {REGEX_PHONE, FIELD_PHONE, 14},
+    {REGEX_PHONE, FIELD_PHONE, 0},
     {REGEX_SEPARATOR, FIELD_NONE, 0},
     // Ext: <ext>
     {REGEX_EXTENSION, FIELD_EXTENSION, 0},
@@ -318,10 +318,10 @@ void PhoneField::AddClassifications(
     FieldCandidatesMap* field_candidates) const {
   DCHECK(parsed_phone_fields_[FIELD_PHONE]);  // Phone was correctly parsed.
 
-  if ((parsed_phone_fields_[FIELD_COUNTRY_CODE]) ||
-      (parsed_phone_fields_[FIELD_AREA_CODE]) ||
-      (parsed_phone_fields_[FIELD_SUFFIX])) {
-    if (parsed_phone_fields_[FIELD_COUNTRY_CODE]) {
+  bool has_country_code = parsed_phone_fields_[FIELD_COUNTRY_CODE] != nullptr;
+  if (has_country_code || parsed_phone_fields_[FIELD_AREA_CODE] ||
+      parsed_phone_fields_[FIELD_SUFFIX]) {
+    if (has_country_code) {
       AddClassification(parsed_phone_fields_[FIELD_COUNTRY_CODE],
                         PHONE_HOME_COUNTRY_CODE, kBasePhoneParserScore,
                         field_candidates);
@@ -329,13 +329,22 @@ void PhoneField::AddClassifications(
 
     ServerFieldType field_number_type = PHONE_HOME_NUMBER;
     if (parsed_phone_fields_[FIELD_AREA_CODE]) {
-      AddClassification(parsed_phone_fields_[FIELD_AREA_CODE],
-                        PHONE_HOME_CITY_CODE, kBasePhoneParserScore,
-                        field_candidates);
-    } else if (parsed_phone_fields_[FIELD_COUNTRY_CODE]) {
+      ServerFieldType area_code_type =
+          has_country_code ||
+                  !base::FeatureList::IsEnabled(
+                      features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+              ? PHONE_HOME_CITY_CODE
+              : PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX;
+      AddClassification(parsed_phone_fields_[FIELD_AREA_CODE], area_code_type,
+                        kBasePhoneParserScore, field_candidates);
+    } else if (has_country_code) {
       // Only if we can find country code without city code, it means the phone
       // number include city code.
-      field_number_type = PHONE_HOME_CITY_AND_NUMBER;
+      field_number_type =
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+              ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
+              : PHONE_HOME_CITY_AND_NUMBER;
     }
     // We tag the prefix as PHONE_HOME_NUMBER, then when filling the form
     // we fill only the prefix depending on the size of the input field.

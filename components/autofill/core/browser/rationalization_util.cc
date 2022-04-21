@@ -49,6 +49,7 @@ void RationalizePhoneNumberFields(
         found_number_field_second = field;
         phone_number_found = true;
         break;
+      case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
       case PHONE_HOME_CITY_CODE:
       case PHONE_BILLING_CITY_CODE:
         if (!found_city_code_field)
@@ -60,6 +61,7 @@ void RationalizePhoneNumberFields(
           found_country_code_field = field;
         break;
       case PHONE_HOME_CITY_AND_NUMBER:
+      case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
       case PHONE_BILLING_CITY_AND_NUMBER:
         DCHECK(!phone_number_found && !found_city_and_number_field);
         found_city_and_number_field = field;
@@ -128,6 +130,7 @@ void RationalizePhoneNumberFields(
           field->set_only_fill_when_focused(true);
         break;
       case PHONE_HOME_CITY_CODE:
+      case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
       case PHONE_BILLING_CITY_CODE:
         if (field != found_city_code_field)
           field->set_only_fill_when_focused(true);
@@ -138,6 +141,7 @@ void RationalizePhoneNumberFields(
           field->set_only_fill_when_focused(true);
         break;
       case PHONE_HOME_CITY_AND_NUMBER:
+      case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
       case PHONE_BILLING_CITY_AND_NUMBER:
         if (field != found_city_and_number_field)
           field->set_only_fill_when_focused(true);

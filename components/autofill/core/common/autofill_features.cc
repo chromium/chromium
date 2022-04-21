@@ -228,7 +228,8 @@ const base::Feature kAutofillEnableSupportForHonorificPrefixes{
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, trunk prefix-related phone number types are added to the
-// supported and matching types of |PhoneNumber|.
+// supported and matching types of |PhoneNumber|. Local heuristics for these
+// types are enabled as well.
 const base::Feature kAutofillEnableSupportForPhoneNumberTrunkTypes{
     "AutofillEnableSupportForPhoneNumberTrunkTypes",
     base::FEATURE_DISABLED_BY_DEFAULT};
