@@ -50,7 +50,9 @@ MockClientHintsControllerDelegate::GetNetworkQualityTracker() {
   return nullptr;
 }
 
-bool MockClientHintsControllerDelegate::IsJavaScriptAllowed(const GURL& url) {
+bool MockClientHintsControllerDelegate::IsJavaScriptAllowed(
+    const GURL& url,
+    content::RenderFrameHost* parent_rfh) {
   return true;
 }
 
@@ -66,6 +68,7 @@ MockClientHintsControllerDelegate::GetUserAgentMetadata() {
 
 void MockClientHintsControllerDelegate::PersistClientHints(
     const url::Origin& primary_origin,
+    content::RenderFrameHost* parent_rfh,
     const std::vector<::network::mojom::WebClientHintsType>& client_hints) {
   blink::EnabledClientHints enabled_client_hints;
   for (const auto& type : client_hints) {

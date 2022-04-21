@@ -34,13 +34,15 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
       const url::Origin& origin,
       blink::EnabledClientHints* client_hints) override;
 
-  bool IsJavaScriptAllowed(const GURL& url) override;
+  bool IsJavaScriptAllowed(const GURL& url,
+                           content::RenderFrameHost* parent_rfh) override;
 
   bool AreThirdPartyCookiesBlocked(const GURL& url) override;
 
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void PersistClientHints(
       const url::Origin& primary_origin,
+      content::RenderFrameHost* parent_rfh,
       const std::vector<::network::mojom::WebClientHintsType>& client_hints)
       override;
 

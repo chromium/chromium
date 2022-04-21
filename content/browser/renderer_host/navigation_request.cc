@@ -967,7 +967,9 @@ void RemoveOriginTrialHintsFromAcceptCH(
     }
   }
   if (need_update_storage) {
-    PersistAcceptCH(url::Origin::Create(url), delegate, client_hints);
+    PersistAcceptCH(url::Origin::Create(url),
+                    frame_tree_node->GetParentOrOuterDocument(), delegate,
+                    client_hints);
   }
 
   if (auto* cookie_manager = frame_tree_node->current_frame_host()

@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -105,7 +106,8 @@ ClientHints::ClientHints(
     auto command_line_hints = ParseInitializeClientHintsStroage();
 
     for (const auto& origin_hints_pair : command_line_hints) {
-      PersistClientHints(origin_hints_pair.first, origin_hints_pair.second);
+      PersistClientHints(origin_hints_pair.first, nullptr,
+                         origin_hints_pair.second);
     }
   }
 }
@@ -128,10 +130,14 @@ void ClientHints::GetAllowedClientHintsFromSource(
     client_hints->SetIsEnabled(hint, true);
 }
 
-bool ClientHints::IsJavaScriptAllowed(const GURL& url) {
-  return settings_map_->GetContentSetting(url, url,
-                                          ContentSettingsType::JAVASCRIPT) !=
-         CONTENT_SETTING_BLOCK;
+bool ClientHints::IsJavaScriptAllowed(const GURL& url,
+                                      content::RenderFrameHost* parent_rfh) {
+  return settings_map_->GetContentSetting(
+             parent_rfh ? parent_rfh->GetOutermostMainFrame()
+                              ->GetLastCommittedOrigin()
+                              .GetURL()
+                        : url,
+             url, ContentSettingsType::JAVASCRIPT) != CONTENT_SETTING_BLOCK;
 }
 
 bool ClientHints::AreThirdPartyCookiesBlocked(const GURL& url) {
@@ -146,6 +152,7 @@ blink::UserAgentMetadata ClientHints::GetUserAgentMetadata() {
 
 void ClientHints::PersistClientHints(
     const url::Origin& primary_origin,
+    content::RenderFrameHost* parent_rfh,
     const std::vector<network::mojom::WebClientHintsType>& client_hints) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -157,7 +164,7 @@ void ClientHints::PersistClientHints(
       !network::IsUrlPotentiallyTrustworthy(primary_url))
     return;
 
-  if (!IsJavaScriptAllowed(primary_url))
+  if (!IsJavaScriptAllowed(primary_url, parent_rfh))
     return;
 
   DCHECK_LE(

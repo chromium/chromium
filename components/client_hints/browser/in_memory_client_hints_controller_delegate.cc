@@ -32,6 +32,7 @@ InMemoryClientHintsControllerDelegate::
 // implementation.
 void InMemoryClientHintsControllerDelegate::PersistClientHints(
     const url::Origin& primary_origin,
+    content::RenderFrameHost* parent_rfh,
     const std::vector<network::mojom::WebClientHintsType>& client_hints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const GURL primary_url = primary_origin.GetURL();
@@ -39,7 +40,7 @@ void InMemoryClientHintsControllerDelegate::PersistClientHints(
   DCHECK(network::IsUrlPotentiallyTrustworthy(primary_url));
 
   // Client hints should only be enabled when JavaScript is enabled.
-  if (!IsJavaScriptAllowed(primary_url))
+  if (!IsJavaScriptAllowed(primary_url, parent_rfh))
     return;
 
   blink::EnabledClientHints enabled_hints;
@@ -84,7 +85,8 @@ InMemoryClientHintsControllerDelegate::GetNetworkQualityTracker() {
 }
 
 bool InMemoryClientHintsControllerDelegate::IsJavaScriptAllowed(
-    const GURL& url) {
+    const GURL& url,
+    content::RenderFrameHost* parent_rfh) {
   return is_javascript_allowed_callback_.Run(url);
 }
 

@@ -4727,6 +4727,32 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyUaOriginTrialBrowserTest,
   EXPECT_EQ(GetLastRequestedURL()->path(), "/simple.html");
 }
 
+// Tests that headers are not sent to a third-party iframe after script is
+// disabled with content settings.
+IN_PROC_BROWSER_TEST_P(ThirdPartyUaOriginTrialBrowserTest, ScriptDisabled) {
+  SetUaPermissionsPolicy("*");
+  const GURL url = accept_ch_ua_cross_origin_iframe_request_url();
+  NavigateAndCheckHeaders(url,
+                          /*ch_ua_reduced_expected=*/GetParam() ==
+                              UserAgentOriginTrialTestType::UAReduction,
+                          /*ch_ua_exist_expected=*/true);
+
+  // Disable script for first party origin.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetContentSettingCustomScope(
+          ContentSettingsPattern::FromURL(GURL(kFirstPartyOriginUrl)),
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::JAVASCRIPT,
+          CONTENT_SETTING_BLOCK);
+  // Headers should not be sent in third party iframe.
+  NavigateAndCheckHeaders(url,
+                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_exist_expected=*/false);
+
+  // Make sure the last intercepted URL was the request for the embedded
+  // iframe.
+  EXPECT_EQ(GetLastRequestedURL()->path(), "/simple.html");
+}
+
 IN_PROC_BROWSER_TEST_P(ThirdPartyUaOriginTrialBrowserTest,
                        ThirdPartySubresourceUaWithWildcardPolicy) {
   SetUaPermissionsPolicy("*");  // Allow all third-party sites.

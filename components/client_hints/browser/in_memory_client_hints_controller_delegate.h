@@ -51,6 +51,7 @@ class InMemoryClientHintsControllerDelegate final
 
   // content::ClientHintsControllerDelegate implementation:
   void PersistClientHints(const url::Origin& primary_origin,
+                          content::RenderFrameHost* parent_rfh,
                           const std::vector<network::mojom::WebClientHintsType>&
                               client_hints) override;
   void GetAllowedClientHintsFromSource(
@@ -60,7 +61,8 @@ class InMemoryClientHintsControllerDelegate final
       const std::vector<network::mojom::WebClientHintsType>&) override;
   void ClearAdditionalClientHints() override;
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
-  bool IsJavaScriptAllowed(const GURL& url) override;
+  bool IsJavaScriptAllowed(const GURL& url,
+                           content::RenderFrameHost* parent_rfh) override;
   bool AreThirdPartyCookiesBlocked(const GURL& url) override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 

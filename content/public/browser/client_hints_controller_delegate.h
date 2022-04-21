@@ -27,6 +27,8 @@ class NetworkQualityTracker;
 
 namespace content {
 
+class RenderFrameHost;
+
 class CONTENT_EXPORT ClientHintsControllerDelegate {
  public:
   virtual ~ClientHintsControllerDelegate() = default;
@@ -38,7 +40,11 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
       const url::Origin& origin,
       blink::EnabledClientHints* client_hints) = 0;
 
-  virtual bool IsJavaScriptAllowed(const GURL& url) = 0;
+  // Checks is script is enabled. |parent_rfh| is the document embedding the
+  // frame in which the request is taking place (it is null for outermost main
+  // frame requests).
+  virtual bool IsJavaScriptAllowed(const GURL& url,
+                                   RenderFrameHost* parent_rfh) = 0;
 
   // Returns true iff cookies are blocked for the URL or third-party cookies
   // are disabled in the user agent.
@@ -48,6 +54,7 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
 
   virtual void PersistClientHints(
       const url::Origin& primary_origin,
+      RenderFrameHost* parent_rfh,
       const std::vector<network::mojom::WebClientHintsType>& client_hints) = 0;
 
   // Optionally implemented by implementations used in tests. Clears all hints

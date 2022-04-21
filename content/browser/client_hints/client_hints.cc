@@ -848,7 +848,10 @@ bool ShouldAddClientHints(const url::Origin& origin,
   // WebView) enable/disable JavaScript on a per-View basis, using the
   // WebPreferences setting.
   return IsValidURLForClientHints(origin_to_check) &&
-         delegate->IsJavaScriptAllowed(origin_to_check.GetURL()) &&
+         delegate->IsJavaScriptAllowed(
+             origin_to_check.GetURL(),
+             frame_tree_node ? frame_tree_node->GetParentOrOuterDocument()
+                             : nullptr) &&
          (!frame_tree_node || IsJavascriptEnabled(frame_tree_node));
 }
 
@@ -1044,7 +1047,8 @@ ParseAndPersistAcceptCHForNavigation(
   // IsJavaScriptAllowed to check a given origin. Other platforms (Android
   // WebView) enable/disable JavaScript on a per-View basis, using the
   // WebPreferences setting.
-  if (!delegate->IsJavaScriptAllowed(origin.GetURL()) ||
+  if (!delegate->IsJavaScriptAllowed(
+          origin.GetURL(), frame_tree_node->GetParentOrOuterDocument()) ||
       !IsJavascriptEnabled(frame_tree_node)) {
     return absl::nullopt;
   }
@@ -1085,7 +1089,8 @@ ParseAndPersistAcceptCHForNavigation(
 
   const std::vector<WebClientHintsType> persisted_hints =
       enabled_hints.GetEnabledHints();
-  PersistAcceptCH(origin, delegate, persisted_hints);
+  PersistAcceptCH(origin, frame_tree_node->GetParentOrOuterDocument(), delegate,
+                  persisted_hints);
   if (std::find(persisted_hints.begin(), persisted_hints.end(),
                 WebClientHintsType::kPartitionedCookies) ==
       persisted_hints.end()) {
@@ -1099,10 +1104,11 @@ ParseAndPersistAcceptCHForNavigation(
 }
 
 void PersistAcceptCH(const url::Origin& origin,
+                     content::RenderFrameHost* parent_rfh,
                      ClientHintsControllerDelegate* delegate,
                      const std::vector<WebClientHintsType>& hints) {
   DCHECK(delegate);
-  delegate->PersistClientHints(origin, hints);
+  delegate->PersistClientHints(origin, parent_rfh, hints);
 }
 
 std::vector<WebClientHintsType> LookupAcceptCHForCommit(
