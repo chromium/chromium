@@ -2227,7 +2227,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_13_main',
+          'xcode_13_beta_bots',
           'xctest',
         ],
         'test_suites': {
