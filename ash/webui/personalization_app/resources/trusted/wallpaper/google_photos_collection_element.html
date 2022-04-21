@@ -51,21 +51,20 @@
       </cr-button>
     </div>
   </template>
-  <template is="dom-if" if="[[!isPhotosEmpty_(photos_)]]">
-    <google-photos-photos id="photosContent"
-      hidden="[[!isPhotosTabVisible_(hidden, tab_)]]">
-    </google-photos-photos>
-  </template>
+  <google-photos-photos id="photosContent"
+    hidden="[[!isPhotosTabContentVisible_(hidden, photos_, tab_)]]">
+  </google-photos-photos>
   <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
     <google-photos-albums id="albumsContent"
-      hidden="[[!isAlbumsTabVisible_(hidden, tab_)]]">
+      hidden="[[!isAlbumsTabContentVisible_(hidden, tab_)]]">
     </google-photos-albums>
     <google-photos-photos-by-album-id id="photosByAlbumIdContent"
       album-id="[[albumId]]"
-      hidden="[[!isPhotosByAlbumIdTabVisible_(hidden, tab_)]]">
+      hidden="[[!isPhotosByAlbumIdTabContentVisible_(albumId, hidden, photosByAlbumId_, tab_)]]">
     </google-photos-photos-by-album-id>
   </template>
-  <template is="dom-if" if="[[isPhotosEmpty_(photos_)]]">
+  <template is="dom-if"
+    if="[[isZeroStateVisible_(albumId, photos_, photosByAlbumId_, tab_)]]">
     <google-photos-zero-state id="zeroState"></google-photos-zero-state>
   </template>
 </main>

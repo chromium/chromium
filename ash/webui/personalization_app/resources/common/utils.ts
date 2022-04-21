@@ -10,6 +10,13 @@
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 
 /**
+ * Checks if argument is an array with zero length.
+ */
+export function isEmptyArray(maybeArray: unknown): maybeArray is[] {
+  return Array.isArray(maybeArray) && maybeArray.length === 0;
+}
+
+/**
  * Checks if argument is an array with non-zero length.
  */
 export function isNonEmptyArray(maybeArray: unknown): maybeArray is unknown[] {
