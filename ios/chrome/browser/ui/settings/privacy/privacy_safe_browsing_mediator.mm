@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -71,6 +72,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Local pref service used to check if a specific pref is managed by enterprise
 // policies.
 @property(nonatomic, assign, readonly) PrefService* localPrefService;
+
+@property(nonatomic, readonly) BOOL enterpriseEnabled;
 
 @end
 
@@ -152,16 +155,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
         accessibilityIdentifier:kSettingsSafeBrowsingStandardProtectionCellId];
     [items addObject:safeBrowsingStandardProtectionItem];
 
-    SettingsImageDetailTextItem* safeBrowsingNoProtectionItem = [self
-             detailItemWithType:ItemTypeSafeBrowsingNoProtection
-                        titleId:
-                            IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE
-                     detailText:
-                         IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
-                  accessoryType:UITableViewCellAccessoryNone
-        accessibilityIdentifier:kSettingsSafeBrowsingNoProtectionCellId];
-    [items addObject:safeBrowsingNoProtectionItem];
-
+    if (self.enterpriseEnabled) {
+      TableViewInfoButtonItem* safeBrowsingNoProtectionItem = [self
+               infoButtonItemType:ItemTypeSafeBrowsingNoProtection
+                          titleId:
+                              IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE
+                       detailText:
+                           IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
+          accessibilityIdentifier:kSettingsSafeBrowsingNoProtectionCellId];
+      [items addObject:safeBrowsingNoProtectionItem];
+    } else {
+      SettingsImageDetailTextItem* safeBrowsingNoProtectionItem = [self
+               detailItemWithType:ItemTypeSafeBrowsingNoProtection
+                          titleId:
+                              IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE
+                       detailText:
+                           IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
+                    accessoryType:UITableViewCellAccessoryNone
+          accessibilityIdentifier:kSettingsSafeBrowsingNoProtectionCellId];
+      [items addObject:safeBrowsingNoProtectionItem];
+    }
     _safeBrowsingItems = items;
   }
   return _safeBrowsingItems;
@@ -172,6 +185,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   _consumer = consumer;
   [_consumer setSafeBrowsingItems:self.safeBrowsingItems];
+  [_consumer setEnterpriseEnabled:self.enterpriseEnabled];
+}
+
+- (BOOL)enterpriseEnabled {
+  return self.userPrefService->IsManagedPreference(prefs::kSafeBrowsingEnabled);
 }
 
 #pragma mark - Private
@@ -197,6 +215,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
 
   return detailItem;
+}
+
+// Creates item with an image checkmark and an info button.
+- (TableViewInfoButtonItem*)infoButtonItemType:(NSInteger)type
+                                       titleId:(NSInteger)titleId
+                                    detailText:(NSInteger)detailText
+                       accessibilityIdentifier:
+                           (NSString*)accessibilityIdentifier {
+  TableViewInfoButtonItem* managedItem =
+      [[TableViewInfoButtonItem alloc] initWithType:type];
+  managedItem.text = l10n_util::GetNSString(titleId);
+  managedItem.detailText = l10n_util::GetNSString(detailText);
+  // If Safe Browsing is controlled by enterprise, make non-selected options
+  // greyed out.
+  if (self.enterpriseEnabled && ![self shouldItemTypeHaveCheckmark:type]) {
+    managedItem.textColor =
+        [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
+    managedItem.detailTextColor =
+        [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
+  }
+  managedItem.image = [UIImage systemImageNamed:@"checkmark"
+                              withConfiguration:SymbolConfiguration()];
+  managedItem.tintColor = [self shouldItemTypeHaveCheckmark:type]
+                              ? [UIColor colorNamed:kBlueColor]
+                              : [UIColor clearColor];
+  managedItem.accessibilityIdentifier = accessibilityIdentifier;
+  managedItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+
+  return managedItem;
 }
 
 // Returns whether an ItemType should have a checkmark based on its related

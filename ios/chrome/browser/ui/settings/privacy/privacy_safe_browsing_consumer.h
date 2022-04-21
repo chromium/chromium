@@ -20,6 +20,9 @@
 // Initializes item array for |safeBrowsingItems|.
 - (void)setSafeBrowsingItems:(NSArray<TableViewItem*>*)safeBrowsingItems;
 
+// Tells consumer if enterprise is enabled based on pref values in model.
+- (void)setEnterpriseEnabled:(BOOL)enterpriseEnabled;
+
 // Select |item|.
 - (void)selectItem:(TableViewItem*)item;
 
