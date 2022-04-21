@@ -190,8 +190,12 @@ void SpeculativeReportQueueImpl::MaybeEnqueueRecord(
 void SpeculativeReportQueueImpl::EnqueuePendingRecords(
     EnqueueCallback callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!pending_records_.empty());
   DCHECK(report_queue_);
+  if (pending_records_.empty()) {
+    std::move(callback).Run(Status::StatusOK());
+    return;
+  }
+
   std::string record(pending_records_.front().first);
   Priority priority = pending_records_.front().second;
   pending_records_.pop();
