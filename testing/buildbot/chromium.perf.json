@@ -1436,6 +1436,7 @@
             {
               "cpu": "x86-64",
               "gpu": "8086:1626",
+              "os": "Mac",
               "pool": "chrome.tests.perf",
               "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
             }
