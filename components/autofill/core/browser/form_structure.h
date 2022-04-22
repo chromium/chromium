@@ -218,6 +218,8 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger)
       const;
 
+  void LogDetermineHeuristicTypesMetrics();
+
   // Classifies each field in |fields_| based upon its |autocomplete| attribute,
   // if the attribute is available.  The association is stored into the field's
   // |heuristic_type|.
@@ -227,6 +229,9 @@ class FormStructure {
   // Fills |has_author_specified_sections_| with |true| if the attribute
   // specifies a section for at least one field.
   void ParseFieldTypesFromAutocompleteAttributes();
+
+  // Classifies each field in |fields_| using the regular expressions.
+  void ParseFieldTypesWithPatterns(LogManager* log_manager);
 
   // Returns the values that can be filled into the form structure for the
   // given type. For example, there's no way to fill in a value of "The Moon"

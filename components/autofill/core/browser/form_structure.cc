@@ -687,75 +687,19 @@ FormStructure::~FormStructure() = default;
 void FormStructure::DetermineHeuristicTypes(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
-  const auto determine_heuristic_types_start_time =
-      AutofillTickClock::NowTicks();
+  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
-  // First, try to detect field types based on each field's |autocomplete|
-  // attribute value.
   ParseFieldTypesFromAutocompleteAttributes();
-
-  // Then if there are enough active fields, and if we are dealing with either a
-  // proper <form> or a <form>-less checkout, run the heuristics and server
-  // prediction routines.
-  FieldCandidatesMap field_type_map;
-  if (ShouldRunHeuristics()) {
-    field_type_map = FormField::ParseFormFields(
-        fields_, current_page_language_, is_form_tag_,
-        PredictionSource::kDefaultHeuristics, log_manager);
-  } else if (ShouldRunPromoCodeHeuristics()) {
-    field_type_map = FormField::ParseFormFieldsForPromoCodes(
-        fields_, current_page_language_, is_form_tag_,
-        PredictionSource::kDefaultHeuristics, log_manager);
-  }
-  if (!field_type_map.empty()) {
-    for (const auto& field : fields_) {
-      auto iter = field_type_map.find(field->global_id());
-      if (iter != field_type_map.end()) {
-        const FieldCandidates& candidates = iter->second;
-        field->set_heuristic_type(candidates.BestHeuristicType());
-
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
-        auto set_hypothetical_type =
-            [&field, &candidates](PredictionSource source) -> void {
-          absl::optional<ServerFieldType> type =
-              candidates.GetHypotheticalType(source);
-          if (type)
-            field->set_prediction(source, *type);
-        };
-        set_hypothetical_type(PredictionSource::kExperimentalHeuristics);
-        set_hypothetical_type(PredictionSource::kNextGenHeuristics);
-#endif
-      }
-    }
-  }
+  ParseFieldTypesWithPatterns(log_manager);
 
   UpdateAutofillCount();
   IdentifySections(has_author_specified_sections_);
 
-  developer_engagement_metrics_ = 0;
-  if (IsAutofillable()) {
-    AutofillMetrics::DeveloperEngagementMetric metric =
-        has_author_specified_types_
-            ? AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS
-            : AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS;
-    developer_engagement_metrics_ |= 1 << metric;
-    AutofillMetrics::LogDeveloperEngagementMetric(metric);
-  }
-
-  if (has_author_specified_upi_vpa_hint_) {
-    AutofillMetrics::LogDeveloperEngagementMetric(
-        AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT);
-    developer_engagement_metrics_ |=
-        1 << AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT;
-  }
-
-  if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection))
     RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
-  }
   RationalizeFieldTypePredictions(log_manager);
 
-  AutofillMetrics::LogDetermineHeuristicTypesTiming(
-      AutofillTickClock::NowTicks() - determine_heuristic_types_start_time);
+  LogDetermineHeuristicTypesMetrics();
 }
 
 std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
@@ -1572,6 +1516,25 @@ void FormStructure::LogQualityMetricsBasedOnAutocomplete(
   }
 }
 
+void FormStructure::LogDetermineHeuristicTypesMetrics() {
+  developer_engagement_metrics_ = 0;
+  if (IsAutofillable()) {
+    AutofillMetrics::DeveloperEngagementMetric metric =
+        has_author_specified_types_
+            ? AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS
+            : AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS;
+    developer_engagement_metrics_ |= 1 << metric;
+    AutofillMetrics::LogDeveloperEngagementMetric(metric);
+  }
+
+  if (has_author_specified_upi_vpa_hint_) {
+    AutofillMetrics::LogDeveloperEngagementMetric(
+        AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT);
+    developer_engagement_metrics_ |=
+        1 << AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT;
+  }
+}
+
 void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   if (was_parsed_for_autocomplete_attributes_)
     return;
@@ -1681,6 +1644,43 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   }
 
   was_parsed_for_autocomplete_attributes_ = true;
+}
+
+void FormStructure::ParseFieldTypesWithPatterns(LogManager* log_manager) {
+  // Then if there are enough active fields, and if we are dealing with either a
+  // proper <form> or a <form>-less checkout, run the heuristics and server
+  // prediction routines.
+  FieldCandidatesMap field_type_map;
+  if (ShouldRunHeuristics()) {
+    field_type_map = FormField::ParseFormFields(
+        fields_, current_page_language_, is_form_tag_,
+        PredictionSource::kDefaultHeuristics, log_manager);
+  } else if (ShouldRunPromoCodeHeuristics()) {
+    field_type_map = FormField::ParseFormFieldsForPromoCodes(
+        fields_, current_page_language_, is_form_tag_,
+        PredictionSource::kDefaultHeuristics, log_manager);
+  }
+  if (!field_type_map.empty()) {
+    for (const auto& field : fields_) {
+      auto iter = field_type_map.find(field->global_id());
+      if (iter != field_type_map.end()) {
+        const FieldCandidates& candidates = iter->second;
+        field->set_heuristic_type(candidates.BestHeuristicType());
+
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+        auto set_hypothetical_type =
+            [&field, &candidates](PredictionSource source) -> void {
+          absl::optional<ServerFieldType> type =
+              candidates.GetHypotheticalType(source);
+          if (type)
+            field->set_prediction(source, *type);
+        };
+        set_hypothetical_type(PredictionSource::kExperimentalHeuristics);
+        set_hypothetical_type(PredictionSource::kNextGenHeuristics);
+#endif
+      }
+    }
+  }
 }
 
 const AutofillField* FormStructure::field(size_t index) const {

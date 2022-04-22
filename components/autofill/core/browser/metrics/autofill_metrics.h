@@ -1845,10 +1845,6 @@ class AutofillMetrics {
   static void LogCreditCardSeamlessnessAtSubmissionTime(
       const ServerFieldTypeSet& autofilled_types);
 
-  // This should be called when determining the heuristic types for a form's
-  // fields.
-  static void LogDetermineHeuristicTypesTiming(const base::TimeDelta& duration);
-
   // This should be called when parsing each form.
   static void LogParseFormTiming(const base::TimeDelta& duration);
 

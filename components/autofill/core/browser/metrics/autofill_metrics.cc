@@ -2679,12 +2679,6 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
 }
 
 // static
-void AutofillMetrics::LogDetermineHeuristicTypesTiming(
-    const base::TimeDelta& duration) {
-  UMA_HISTOGRAM_TIMES("Autofill.Timing.DetermineHeuristicTypes", duration);
-}
-
-// static
 void AutofillMetrics::LogParseFormTiming(const base::TimeDelta& duration) {
   UMA_HISTOGRAM_TIMES("Autofill.Timing.ParseForm", duration);
 }
