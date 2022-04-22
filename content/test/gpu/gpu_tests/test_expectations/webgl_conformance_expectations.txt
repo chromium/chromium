@@ -343,6 +343,9 @@ crbug.com/1282819 [ win amd-0x6613 angle-d3d11 passthrough ] conformance/canvas/
 # Bug where RelaxedPrecision applied to normalize() produces 0
 crbug.com/angleproject/6228 [ win intel angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 
+# Flaky timeouts on multiple platforms - at least Linux/Mac/Win
+crbug.com/1254497 conformance/misc/type-conversion-test.html [ RetryOnFailure ]
+
 ####################
 # Fuchsia failures #
 ####################

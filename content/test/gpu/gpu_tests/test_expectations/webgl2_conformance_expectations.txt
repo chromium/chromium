@@ -244,6 +244,9 @@ crbug.com/949249 [ linux passthrough angle-opengl ] conformance2/extensions/ovr_
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
+# Flaky timeouts on multiple platforms - at least Linux/Mac/Win
+crbug.com/1254497 conformance/misc/type-conversion-test.html [ RetryOnFailure ]
+
 ####################
 # Win failures     #
 ####################
