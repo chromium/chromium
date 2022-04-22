@@ -452,7 +452,7 @@ async function verifyRsaKeySign(
 
   let webCryptoPublicKey;
   try {
-    webCryptoPublicKey = await window.crypto.subtle.importKey(
+    webCryptoPublicKey = await crypto.subtle.importKey(
         'spki', spki, importParams, false, ['verify']);
   } catch (error) {
     fail(debugMessage + ': Import failed: ' + error);
@@ -465,7 +465,7 @@ async function verifyRsaKeySign(
 
   let success;
   try {
-    success = await window.crypto.subtle.verify(
+    success = await crypto.subtle.verify(
         algorithm, webCryptoPublicKey, signature, DATA);
   } catch (error) {
     fail(debugMessage + ': Verification failed: ' + error);
@@ -492,7 +492,7 @@ async function verifyEcKeySign(
 
   let webCryptoPublicKey;
   try {
-    webCryptoPublicKey = await window.crypto.subtle.importKey(
+    webCryptoPublicKey = await crypto.subtle.importKey(
         'spki', spki, params.importKey, false, ['verify']);
   } catch (error) {
     fail(debugMessage + ': Import failed: ' + error);
@@ -502,7 +502,7 @@ async function verifyEcKeySign(
 
   let success;
   try {
-    success = await window.crypto.subtle.verify(
+    success = await crypto.subtle.verify(
         params.verify, webCryptoPublicKey, signature, DATA);
   } catch (error) {
     fail(debugMessage + ': Verification failed: ' + error);
