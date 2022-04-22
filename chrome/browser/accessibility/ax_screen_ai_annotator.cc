@@ -9,6 +9,7 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 
@@ -33,25 +34,38 @@ void AXScreenAIAnnotator::Run() {
   gfx::NativeWindow native_window = web_contents->GetContentNativeView();
   if (!native_window)
     return;
+
   ui::GrabViewSnapshotAsync(
       native_window, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     web_contents->GetMainFrame()->GetAXTreeID()));
 }
 
-void AXScreenAIAnnotator::OnScreenshotReceived(gfx::Image snapshot) {
+void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
+                                               gfx::Image snapshot) {
   screen_ai_annotator_->Annotate(
       snapshot.AsBitmap(),
       base::BindOnce(&AXScreenAIAnnotator::OnAnnotationReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), ax_tree_id));
 }
 
 void AXScreenAIAnnotator::OnAnnotationReceived(
+    const ui::AXTreeID& ax_tree_id,
     const ui::AXTreeUpdate& updates) {
-  VLOG(2) << "AxScreenAIAnnotator received " << updates.nodes.size()
-          << " updates";
+  ui::AXTreeManager* manager =
+      ui::AXTreeManagerMap::GetInstance().GetManager(ax_tree_id);
 
-  // TODO(https://crbug.com/1278249): Send back the data.
+  if (!manager) {
+    VLOG(1) << "ScreenAI annotations received, but the corresponding AxTree "
+               "does not exist anymore.";
+    return;
+  }
+
+  VLOG(2) << "AxScreenAIAnnotator received " << updates.nodes.size()
+          << " updates for " << manager->GetRootAsAXNode();
+  // TODO(https://crbug.com/1278249): To keep the ScreenAI related heuristics
+  // centeralized, apply |updates| here.
 }
 
 }  // namespace screen_ai
