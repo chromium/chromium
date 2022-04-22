@@ -74,13 +74,8 @@ void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
 
 }  // namespace
 
-// TODO(crbug.com/1223602): Flaky on Linux, ChromeOS and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_LargestContentfulPaint DISABLED_LargestContentfulPaint
-#else
-#define MAYBE_LargestContentfulPaint LargestContentfulPaint
-#endif
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
+// TODO(crbug.com/1223602): Flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
   Start();
   StartTracing({"loading"});
   Load("/largest_contentful_paint.html");
