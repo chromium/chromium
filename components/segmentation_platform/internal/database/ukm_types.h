@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 
@@ -18,6 +20,8 @@ constexpr base::TimeDelta kNumDaysToKeepUkm = base::Days(30);
 using UkmEventHash = base::IdTypeU64<class UkmEventHashTag>;
 using UkmMetricHash = base::IdTypeU64<class UkmMetricHashTag>;
 using UrlId = base::IdType64<class UrlIdTag>;
+
+namespace processing {
 
 // A struct that can accommodate multiple output types needed for Segmentation
 // metadata's feature processing. It can only hold one value at a time with the
@@ -68,6 +72,15 @@ struct ProcessedValue {
   std::string str_val;
   base::Time time_val;
 };
+
+// Represents a set of values that can represent inputs or outputs for a model.
+using Tensor = std::vector<ProcessedValue>;
+
+// Intermediate representation of processed features from the metadata queries.
+using FeatureIndex = int;
+using IndexedTensors = base::flat_map<FeatureIndex, Tensor>;
+
+}  // namespace processing
 
 }  // namespace segmentation_platform
 

@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
@@ -25,28 +26,28 @@ namespace segmentation_platform {
 
 // Database backend class that handles various tables in the SQL database. Runs
 // in database task runner.
-class UkmDatabaseBackend {
+class UkmDatabaseBackend : public UkmDatabase {
  public:
   UkmDatabaseBackend(
       const base::FilePath& database_path,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
-  ~UkmDatabaseBackend();
+  ~UkmDatabaseBackend() override;
 
   UkmDatabaseBackend(const UkmDatabaseBackend&) = delete;
   UkmDatabaseBackend& operator=(const UkmDatabaseBackend&) = delete;
 
-  using SuccessCallback = base::OnceCallback<void(bool)>;
-
   // UkmDatabase implementation. All callbacks will be posted to
   // |callback_task_runner|.
-  void InitDatabase(SuccessCallback callback);
-  void StoreUkmEntry(ukm::mojom::UkmEntryPtr ukm_entry);
+  void InitDatabase(SuccessCallback callback) override;
+  void StoreUkmEntry(ukm::mojom::UkmEntryPtr ukm_entry) override;
   void UpdateUrlForUkmSource(ukm::SourceId source_id,
                              const GURL& url,
-                             bool is_validated);
-  void OnUrlValidated(const GURL& url);
-  void RemoveUrls(const std::vector<GURL>& urls);
-  void DeleteEntriesOlderThan(base::Time time);
+                             bool is_validated) override;
+  void OnUrlValidated(const GURL& url) override;
+  void RemoveUrls(const std::vector<GURL>& urls) override;
+  void RunReadonlyQueries(const QueryList& queries,
+                          QueryCallback callback) override;
+  void DeleteEntriesOlderThan(base::Time time) override;
 
   sql::Database& db() { return db_; }
 

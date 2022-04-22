@@ -33,8 +33,7 @@ UkmDatabaseBackend::UkmDatabaseBackend(
 
 UkmDatabaseBackend::~UkmDatabaseBackend() = default;
 
-void UkmDatabaseBackend::InitDatabase(
-    UkmDatabaseBackend::SuccessCallback callback) {
+void UkmDatabaseBackend::InitDatabase(SuccessCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::File::Error error{};
   bool result = true;
@@ -141,6 +140,11 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls) {
   }
   url_table_.RemoveUrls(url_ids);
   metrics_table_.DeleteEventsForUrls(url_ids);
+}
+
+void UkmDatabaseBackend::RunReadonlyQueries(const QueryList& queries,
+                                            QueryCallback callback) {
+  // TODO: implement.
 }
 
 void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {

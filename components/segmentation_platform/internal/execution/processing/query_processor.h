@@ -20,10 +20,13 @@ class FeatureProcessorState;
 // inference data.
 class QueryProcessor {
  public:
-  using FeatureIndex = int;
-  using Tensor = std::vector<ProcessedValue>;
+  // TODO(ssid): Remove these indirections and replace all uses with the global
+  // types.
+  using Tensor = Tensor;
+  using IndexedTensors = IndexedTensors;
+  using FeatureIndex = FeatureIndex;
+
   // TODO(haileywang): Maybe use a unique_ptr<> here.
-  using IndexedTensors = base::flat_map<FeatureIndex, Tensor>;
   using QueryProcessorCallback =
       base::OnceCallback<void(std::unique_ptr<FeatureProcessorState>,
                               IndexedTensors)>;

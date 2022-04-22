@@ -356,7 +356,7 @@ TEST_F(MetadataUtilsTest, MetadataIndexedTensorsValidation) {
       metadata_utils::ValidateIndexedTensors(tensor, /* expected_size */ 0));
 
   // Not continuously indexed tensors are invalid.
-  const std::vector<ProcessedValue> value;
+  const std::vector<processing::ProcessedValue> value;
   tensor[0] = value;
   tensor[1] = value;
   tensor[3] = value;

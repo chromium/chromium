@@ -5,7 +5,7 @@
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 
 #include "base/check_op.h"
-#include "components/segmentation_platform/internal/database/ukm_database.h"
+#include "components/segmentation_platform/internal/database/ukm_database_impl.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
@@ -43,7 +43,8 @@ void UkmDataManagerImpl::InitializeForTesting(
 
 void UkmDataManagerImpl::Initialize(const base::FilePath& database_path,
                                     UkmObserver* ukm_observer) {
-  InitiailizeImpl(std::make_unique<UkmDatabase>(database_path), ukm_observer);
+  InitiailizeImpl(std::make_unique<UkmDatabaseImpl>(database_path),
+                  ukm_observer);
 }
 
 void UkmDataManagerImpl::InitiailizeImpl(
@@ -59,7 +60,7 @@ void UkmDataManagerImpl::InitiailizeImpl(
   ukm_database_ = std::move(ukm_database);
   // TODO(ssid): Move this call  to constructor to make it clear any transaction
   // is posted after initialization.
-  ukm_database_->InitDatabase();
+  ukm_database_->InitDatabase(base::DoNothing());
 
   GetOrCreateUrlHandler();
 

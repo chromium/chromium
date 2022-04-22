@@ -71,7 +71,7 @@ ValidationResult ValidateMetadataAndFeatures(
 // Whether the given indexed tensor is valid to be used for the current
 // segmentation platform.
 ValidationResult ValidateIndexedTensors(
-    const processing::QueryProcessor::IndexedTensors& tensor,
+    const processing::IndexedTensors& tensor,
     size_t expected_size);
 
 // Whether the given SegmentInfo, metadata and feature metadata is valid to be

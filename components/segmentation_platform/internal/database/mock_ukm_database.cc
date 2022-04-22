@@ -8,7 +8,7 @@
 
 namespace segmentation_platform {
 
-MockUkmDatabase::MockUkmDatabase() : UkmDatabase(base::FilePath()) {}
+MockUkmDatabase::MockUkmDatabase() = default;
 MockUkmDatabase::~MockUkmDatabase() = default;
 
 }  // namespace segmentation_platform
