@@ -396,15 +396,11 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseMessageStreamMessage(
 mojom::MessageStreamMessagePtr FastPairDataParser::ParseBluetoothEvent(
     uint8_t message_code) {
   if (message_code == kEnableSilenceModeCode) {
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_enable_silence_mode(true);
-    return message;
+    return mojom::MessageStreamMessage::NewEnableSilenceMode(true);
   }
 
   if (message_code == kDisableSilenceModeCode) {
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_enable_silence_mode(false);
-    return message;
+    return mojom::MessageStreamMessage::NewEnableSilenceMode(false);
   }
 
   QP_LOG(WARNING) << __func__ << ": Unknown message code. Received 0x"
@@ -416,9 +412,7 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseBluetoothEvent(
 mojom::MessageStreamMessagePtr FastPairDataParser::ParseCompanionAppEvent(
     uint8_t message_code) {
   if (message_code == kLogBufferFullCode) {
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_companion_app_log_buffer_full(true);
-    return message;
+    return mojom::MessageStreamMessage::NewCompanionAppLogBufferFull(true);
   }
 
   QP_LOG(WARNING) << __func__ << ": Unknown message code. Received 0x"
@@ -441,9 +435,8 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
       return nullptr;
     }
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_model_id(base::HexEncode(additional_data));
-    return message;
+    return mojom::MessageStreamMessage::NewModelId(
+        base::HexEncode(additional_data));
   }
 
   if (message_code == kBleAddressUpdatedCode) {
@@ -461,10 +454,8 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
     std::array<uint8_t, 6> address_bytes;
     std::copy_n(additional_data.begin(), 6, address_bytes.begin());
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_ble_address_update(
+    return mojom::MessageStreamMessage::NewBleAddressUpdate(
         device::CanonicalizeBluetoothAddress(address_bytes));
-    return message;
   }
 
   if (message_code == kBatteryUpdatedCode) {
@@ -486,9 +477,8 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
     battery_update->right_bud_info = CreateBatteryInfo(additional_data[1]);
     battery_update->case_info = CreateBatteryInfo(additional_data[2]);
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_battery_update(std::move(battery_update));
-    return message;
+    return mojom::MessageStreamMessage::NewBatteryUpdate(
+        std::move(battery_update));
   }
 
   if (message_code == kRemainingBatteryTimeCode) {
@@ -502,14 +492,12 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
       return nullptr;
     }
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-
     // If we have a single byte of remaining battery time, we can just set it
     // as the remaining battery time.
     if (additional_data.size() == 1) {
       uint16_t remaining_battery_time{additional_data[0]};
-      message->set_remaining_battery_time(remaining_battery_time);
-      return message;
+      return mojom::MessageStreamMessage::NewRemainingBatteryTime(
+          remaining_battery_time);
     }
 
     // If we have two bytes of remaining battery time, then we need to combine
@@ -518,8 +506,8 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
     uint16_t byte_to_shift{additional_data[0]};
     byte_to_shift = byte_to_shift << 8;
     remaining_battery_time |= byte_to_shift;
-    message->set_remaining_battery_time(remaining_battery_time);
-    return message;
+    return mojom::MessageStreamMessage::NewRemainingBatteryTime(
+        remaining_battery_time);
   }
 
   if (message_code == kActiveComponentsResponseCode) {
@@ -541,9 +529,8 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
       return nullptr;
     }
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_active_components_byte(additional_data[0]);
-    return message;
+    return mojom::MessageStreamMessage::NewActiveComponentsByte(
+        additional_data[0]);
   }
 
   if (message_code == kPlatformTypeCode) {
@@ -571,10 +558,8 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
       return nullptr;
     }
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
     int sdk_version = additional_data[1];
-    message->set_sdk_version(sdk_version);
-    return message;
+    return mojom::MessageStreamMessage::NewSdkVersion(sdk_version);
   }
 
   QP_LOG(WARNING) << __func__ << ": Unknown message code. Received 0x"
@@ -620,9 +605,8 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceActionEvent(
   else
     ring_device->timeout_in_seconds = -1;
 
-  mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-  message->set_ring_device_event(std::move(ring_device));
-  return message;
+  return mojom::MessageStreamMessage::NewRingDeviceEvent(
+      std::move(ring_device));
 }
 
 // https://developers.google.com/nearby/fast-pair/spec#MessageStreamAcknowledgements
@@ -663,9 +647,7 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseAcknowledgementEvent(
     ack->acknowledgement = mojom::Acknowledgement::kAck;
     ack->action_message_group = message_group.value();
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_acknowledgement(std::move(ack));
-    return message;
+    return mojom::MessageStreamMessage::NewAcknowledgement(std::move(ack));
   }
 
   if (message_code == kNakCode) {
@@ -704,9 +686,7 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseAcknowledgementEvent(
     ack->action_message_group = message_group.value();
     ack->acknowledgement = nak_reason.value();
 
-    mojom::MessageStreamMessagePtr message = mojom::MessageStreamMessage::New();
-    message->set_acknowledgement(std::move(ack));
-    return message;
+    return mojom::MessageStreamMessage::NewAcknowledgement(std::move(ack));
   }
 
   return nullptr;
