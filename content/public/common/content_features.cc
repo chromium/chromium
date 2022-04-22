@@ -203,9 +203,6 @@ const base::Feature kClearCrossSiteCrossBrowsingContextGroupWindowName{
     "ClearCrossSiteCrossBrowsingContextGroupWindowName",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kCapabilityDelegationPaymentRequest{
-    "CapabilityDelegationPaymentRequest", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kClickPointerEvent{"ClickPointerEvent",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -805,9 +802,6 @@ const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
 // will be used to deprecate basic-card eventually: crbug.com/1209835.
 const base::Feature kPaymentRequestBasicCard{"PaymentRequestBasicCard",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPaymentRequestRequiresUserActivation{
-    "PaymentRequestRequiresUserActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use this feature to experiment terminating a service worker when it doesn't
 // control any clients: https://crbug.com/1043845.

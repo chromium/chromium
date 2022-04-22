@@ -86,8 +86,6 @@ class WebRuntimeFeatures {
       bool);
   BLINK_PLATFORM_EXPORT static void EnableBlockingFocusWithoutUserActivation(
       bool);
-  BLINK_PLATFORM_EXPORT static void EnableCapabilityDelegationPaymentRequest(
-      bool enable);
   BLINK_PLATFORM_EXPORT static void EnableClickPointerEvent(bool enable);
   BLINK_PLATFORM_EXPORT static void EnableCompositeBGColorAnimation(
       bool enable);

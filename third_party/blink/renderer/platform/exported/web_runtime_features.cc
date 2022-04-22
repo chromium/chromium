@@ -49,10 +49,6 @@ void WebRuntimeFeatures::EnableBrowserVerifiedUserActivationMouse(bool enable) {
   RuntimeEnabledFeatures::SetBrowserVerifiedUserActivationMouseEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableCapabilityDelegationPaymentRequest(bool enable) {
-  RuntimeEnabledFeatures::SetCapabilityDelegationPaymentRequestEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableClickPointerEvent(bool enable) {
   RuntimeEnabledFeatures::SetClickPointerEventEnabled(enable);
 }
@@ -267,12 +263,6 @@ void WebRuntimeFeatures::EnablePaymentRequest(bool enable) {
 
 void WebRuntimeFeatures::EnablePaymentRequestBasicCard(bool enable) {
   RuntimeEnabledFeatures::SetPaymentRequestBasicCardEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnablePaymentRequestRequiresUserActivation(
-    bool enable) {
-  RuntimeEnabledFeatures::SetPaymentRequestRequiresUserActivationEnabled(
-      enable);
 }
 
 void WebRuntimeFeatures::EnablePercentBasedScrolling(bool enable) {

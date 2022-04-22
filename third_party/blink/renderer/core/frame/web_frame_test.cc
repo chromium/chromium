@@ -972,7 +972,6 @@ class CapabilityDelegationMessageListener final : public NativeEventListener {
 }  // namespace
 
 TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
-  ScopedCapabilityDelegationPaymentRequestForTest payment_delegation(true);
   ScopedCapabilityDelegationFullscreenRequestForTest fullscreen_delegation(
       true);
 

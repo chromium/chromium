@@ -50,7 +50,6 @@ CONTENT_EXPORT extern const base::Feature
     kBrowserVerifiedUserActivationKeyboard;
 CONTENT_EXPORT extern const base::Feature kBrowserVerifiedUserActivationMouse;
 CONTENT_EXPORT extern const base::Feature kCanvas2DImageChromium;
-CONTENT_EXPORT extern const base::Feature kCapabilityDelegationPaymentRequest;
 CONTENT_EXPORT extern const base::Feature
     kClearCrossSiteCrossBrowsingContextGroupWindowName;
 CONTENT_EXPORT extern const base::Feature kClickPointerEvent;
@@ -162,7 +161,6 @@ CONTENT_EXPORT extern const base::Feature kOriginIsolationHeader;
 CONTENT_EXPORT extern const base::Feature kOriginPolicy;
 CONTENT_EXPORT extern const base::Feature kOverscrollHistoryNavigation;
 CONTENT_EXPORT extern const base::Feature kPaymentRequestBasicCard;
-CONTENT_EXPORT extern const base::Feature kPaymentRequestRequiresUserActivation;
 CONTENT_EXPORT extern const base::Feature kPeriodicBackgroundSync;
 CONTENT_EXPORT extern const base::Feature kFeaturePolicyHeader;
 CONTENT_EXPORT extern const base::Feature kPepper3DImageChromium;

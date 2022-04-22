@@ -1163,9 +1163,8 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
                               ActionAfterPagehide::kReceivedPostMessage);
   }
 
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(this) &&
-      event->delegatedCapability() ==
-          mojom::blink::DelegatedCapability::kPaymentRequest) {
+  if (event->delegatedCapability() ==
+      mojom::blink::DelegatedCapability::kPaymentRequest) {
     UseCounter::Count(this, WebFeature::kCapabilityDelegationOfPaymentRequest);
     payment_request_token_.Activate();
   }

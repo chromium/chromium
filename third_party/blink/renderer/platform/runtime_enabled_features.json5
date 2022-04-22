@@ -354,17 +354,7 @@
       status: "experimental",
     },
     {
-      name: "CapabilityDelegation",
-      implied_by: ["CapabilityDelegationFullscreenRequest", "CapabilityDelegationPaymentRequest"],
-      origin_trial_feature_name: "CapabilityDelegationPaymentRequest",
-    },
-    {
       name: "CapabilityDelegationFullscreenRequest",
-    },
-    {
-      name: "CapabilityDelegationPaymentRequest",
-      origin_trial_feature_name: "CapabilityDelegationPaymentRequest",
-      status: "stable",
     },
     {
       name: "CaptureHandle",
@@ -1809,10 +1799,6 @@
     {
       name: "PaymentRequestMerchantValidationEvent",
       status: "experimental",
-    },
-    {
-      name: "PaymentRequestRequiresUserActivation",
-      status: "stable",
     },
     {
       name: "PaymentRetry",

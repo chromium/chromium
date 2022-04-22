@@ -322,9 +322,6 @@ TEST(PaymentRequestTest, CannotShowAfterAborted) {
 }
 
 TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
-  ScopedCapabilityDelegationPaymentRequestForTest capability_delegation(true);
-  ScopedPaymentRequestRequiresUserActivationForTest
-      payment_request_requires_user_activation(true);
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -341,9 +338,6 @@ TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
 }
 
 TEST(PaymentRequestTest, ShowConsumesUserActivation) {
-  ScopedCapabilityDelegationPaymentRequestForTest capability_delegation(true);
-  ScopedPaymentRequestRequiresUserActivationForTest
-      payment_request_requires_user_activation(true);
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(

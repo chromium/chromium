@@ -819,28 +819,22 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     }
   }
 
-  bool payment_request_allowed = has_transient_user_activation;
+  bool payment_request_allowed =
+      has_transient_user_activation || payment_request_token_active;
+  DomWindow()->ConsumePaymentRequestToken();
 
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
-          GetExecutionContext())) {
-    payment_request_allowed |= payment_request_token_active;
-    DomWindow()->ConsumePaymentRequestToken();
-  }
-  if (RuntimeEnabledFeatures::PaymentRequestRequiresUserActivationEnabled(
-          GetExecutionContext())) {
-    if (payment_request_allowed) {
-      LocalFrame::ConsumeTransientUserActivation(local_frame);
-    } else {
-      String message =
-          "PaymentRequest.show() requires either transient user activation or "
-          "delegated payment request capability";
-      GetExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning, message));
-      exception_state.ThrowSecurityError(message);
-      return ScriptPromise();
-    }
+  if (payment_request_allowed) {
+    LocalFrame::ConsumeTransientUserActivation(local_frame);
+  } else {
+    String message =
+        "PaymentRequest.show() requires either transient user activation or "
+        "delegated payment request capability";
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning, message));
+    exception_state.ThrowSecurityError(message);
+    return ScriptPromise();
   }
 
   // TODO(crbug.com/779126): add support for handling payment requests in
