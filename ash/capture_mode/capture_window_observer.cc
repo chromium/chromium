@@ -8,8 +8,8 @@
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_finder.h"
 #include "ash/shell.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/public/activation_client.h"
@@ -35,17 +35,8 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
     return;
   location_in_screen_ = location_in_screen;
 
-  std::set<aura::Window*> updated_ignore_windows(ignore_windows);
-  auto* camera_controller = CaptureModeController::Get()->camera_controller();
-  if (camera_controller && camera_controller->camera_preview_widget()) {
-    updated_ignore_windows.insert(
-        camera_controller->camera_preview_widget()->GetNativeWindow());
-  }
-
-  // Find the toplevel window under the mouse/touch position.
-  aura::Window* window =
-      GetTopmostWindowAtPoint(location_in_screen_, updated_ignore_windows);
-  SetSelectedWindow(window);
+  SetSelectedWindow(
+      capture_mode_util::GetTopMostCapturableWindowAtPoint(location_in_screen));
   capture_mode_session_->UpdateCursor(location_in_screen, /*is_touch=*/false);
 }
 

@@ -114,6 +114,12 @@ ASH_EXPORT CameraPreviewSizeSpecs
 CalculateCameraPreviewSizeSpecs(const gfx::Size& confine_bounds_size,
                                 bool is_collapsed);
 
+// Gets the top-most window that is capturable under the mouse/touch position.
+// The windows that are not capturable include the camera preview widget and
+// capture label. There will be a crash if the capture label widget gets picked
+// since the snapshot code tries to snap a deleted window.
+aura::Window* GetTopMostCapturableWindowAtPoint(const gfx::Point& screen_point);
+
 }  // namespace ash::capture_mode_util
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_UTIL_H_

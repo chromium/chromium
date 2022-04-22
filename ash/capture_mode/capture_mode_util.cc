@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -12,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/public/cpp/window_finder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -314,6 +316,26 @@ CameraPreviewSizeSpecs CalculateCameraPreviewSizeSpecs(
 
   return CameraPreviewSizeSpecs{gfx::Size(diameter, diameter), is_collapsible,
                                 should_be_visible};
+}
+
+aura::Window* GetTopMostCapturableWindowAtPoint(
+    const gfx::Point& screen_point) {
+  auto* controller = CaptureModeController::Get();
+  std::set<aura::Window*> ignore_windows;
+  auto* camera_controller = controller->camera_controller();
+  if (camera_controller && camera_controller->camera_preview_widget()) {
+    ignore_windows.insert(
+        camera_controller->camera_preview_widget()->GetNativeWindow());
+  }
+
+  if (controller->IsActive()) {
+    if (auto* capture_label_widget =
+            controller->capture_mode_session()->capture_label_widget()) {
+      ignore_windows.insert(capture_label_widget->GetNativeWindow());
+    }
+  }
+
+  return GetTopmostWindowAtPoint(screen_point, ignore_windows);
 }
 
 }  // namespace ash::capture_mode_util

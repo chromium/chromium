@@ -17,6 +17,7 @@
 #include "ash/capture_mode/capture_mode_menu_group.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
@@ -2232,6 +2233,42 @@ TEST_F(CaptureModeTest, VerifyWindowRecordingVideoFrames) {
 
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+// Tests that minimized windows are ignored while tabbing through in kWindow
+// capture source type.
+// TODO(crbug.com/1318231) : Add tests cases for occluded windows when the
+// algorithm is ready.
+TEST_F(CaptureModeTest, IgnoreUnselectableWindowsWhileTabbingInKWindow) {
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindow(gfx::Rect(10, 10, 500, 600)));
+  // Create `window2` to be minized.
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindow(gfx::Rect(0, 0, 50, 90)));
+  WindowState::Get(window2.get())->Minimize();
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsMinimized());
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  auto* event_generator = GetEventGenerator();
+
+  // Tab six times, `window1` should be focused.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(window1.get(), capture_mode_session->GetSelectedWindow());
+
+  // Tab once, the `settings` button should be focused. The minimized `window2`
+  // will be ignored during the tabbing process.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
 }
 
 class CaptureModeSaveFileTest

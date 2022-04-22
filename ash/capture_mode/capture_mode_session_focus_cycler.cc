@@ -24,6 +24,7 @@
 #include "ash/shell.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/window_state.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
@@ -58,6 +59,12 @@ views::Widget* GetCameraPreviewWidget() {
 CameraPreviewView* GetCameraPreviewView() {
   auto* camera_controller = CaptureModeController::Get()->camera_controller();
   return camera_controller ? camera_controller->camera_preview_view() : nullptr;
+}
+
+// TODO(crbug.com/1318231) : Update the function to include scenarios when
+// `window` is occluded.
+bool IsCaptureWindowSelectable(aura::Window* window) {
+  return !WindowState::Get(window)->IsMinimized();
 }
 
 }  // namespace
@@ -185,6 +192,8 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   for (auto* window : GetWindowListIgnoreModalForActiveDesk()) {
+    if (!IsCaptureWindowSelectable(window))
+      continue;
     highlightable_windows_.emplace(
         window, std::make_unique<HighlightableWindow>(window, session_));
   }
