@@ -866,6 +866,10 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
   }
 
+  DeferredShapingDisallowScope disallow_deferred(
+      *box_->GetFrameView(),
+      Style().HasTransform() ||
+          !IsHorizontalWritingMode(Style().GetWritingMode()));
   bool is_orthogonal_flow_root =
       !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());
 
