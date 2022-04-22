@@ -193,23 +193,23 @@ PermissionValueDataView::Tag
 UnionTraits<PermissionValueDataView, apps::PermissionValuePtr>::GetTag(
     const apps::PermissionValuePtr& r) {
   if (r->bool_value.has_value()) {
-    return PermissionValueDataView::Tag::BOOL_VALUE;
+    return PermissionValueDataView::Tag::kBoolValue;
   } else if (r->tristate_value.has_value()) {
-    return PermissionValueDataView::Tag::TRISTATE_VALUE;
+    return PermissionValueDataView::Tag::kTristateValue;
   }
   NOTREACHED();
-  return PermissionValueDataView::Tag::BOOL_VALUE;
+  return PermissionValueDataView::Tag::kBoolValue;
 }
 
 bool UnionTraits<PermissionValueDataView, apps::PermissionValuePtr>::Read(
     PermissionValueDataView data,
     apps::PermissionValuePtr* out) {
   switch (data.tag()) {
-    case PermissionValueDataView::Tag::BOOL_VALUE: {
+    case PermissionValueDataView::Tag::kBoolValue: {
       *out = std::make_unique<apps::PermissionValue>(data.bool_value());
       return true;
     }
-    case PermissionValueDataView::Tag::TRISTATE_VALUE: {
+    case PermissionValueDataView::Tag::kTristateValue: {
       apps::TriState tristate_value;
       if (!data.ReadTristateValue(&tristate_value))
         return false;
